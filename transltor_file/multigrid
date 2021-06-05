@@ -1,0 +1,1207 @@
+include/deal.II-translator/multigrid/mg_base_0.txt
+[0.x.0] This file contains some abstract base classes used by Multigrid.
+
+* 
+* [0.x.1]*
+ Multilevel matrix base. This class sets up the interface needed by multilevel algorithms. It has no relation to the actual matrix type and takes the vector class as only template argument.
+*  Usually, the derived class  [2.x.0]  which operates on an MGLevelObject of matrices, will be sufficient for applications.
+
+* 
+* [0.x.2]   Virtual destructor.  
+* [0.x.3]*
+   Matrix-vector-multiplication on a certain level.  
+* [0.x.4]*
+   Adding matrix-vector-multiplication on a certain level.  
+* [0.x.5]*
+   Transpose matrix-vector-multiplication on a certain level.  
+* [0.x.6]*
+   Adding transpose matrix-vector-multiplication on a certain level.  
+* [0.x.7]*
+   Return the minimal level for which matrices are stored.  
+* [0.x.8]*
+   Return the minimal level for which matrices are stored.  
+* [0.x.9]*
+ Base class for coarse grid solvers.  This defines the virtual parenthesis operator, being the interface used by multigrid methods. Any implementation will be done by derived classes.
+
+* 
+* [0.x.10]*
+   Virtual destructor.  
+* [0.x.11]*
+   Solution operator.  
+* [0.x.12]*
+ Base class used to declare the operations needed by a concrete class implementing prolongation and restriction of vectors in the multigrid context. This class is abstract and has no implementation of these operations.
+*  There are several derived classes, reflecting the fact that vector types and numbering of the fine-grid discretization and of the multi-level implementation are independent.
+*  If you use multigrid for a single PDE or for your complete system of equations, you will use MGTransferPrebuilt together with Multigrid. The vector types used on the fine grid as well as for the multilevel operations may be Vector or BlockVector. In both cases, MGTransferPrebuilt will operate on all components of the solution.
+* 
+
+* 
+*  [2.x.1]  For the following, it is important to realize the difference between a solution  [2.x.2]  "component" and a solution  [2.x.3]  "block". The distinction only applies if vector valued elements are used, but is quite important then. This is reflected in the fact that it is not possible right now to use transfer classes based on MGTransferComponentBase for genuine vector valued elements, but descendants of MGTransferBlockBase would have to be applied. In the following text, we will use the term  [2.x.4] block [2.x.5] , but remark that it might refer to components as well.
+*   [2.x.6]  update the following documentation, since it does not reflect the latest changes in structure.
+*  For mixed systems, it may be required to do multigrid only for a single component or for some components. The classes MGTransferSelect and MGTransferBlock handle these cases.
+*  MGTransferSelect is used if you use multigrid (on Vector objects) for a single component, possibly grouped using <tt>mg_target_component</tt>.
+*  The class MGTransferBlock handles the case where your multigrid method operates on BlockVector objects. These can contain all or a consecutive set of the blocks of the complete system. Since most smoothers cannot operate on block structures, it is not clear whether this case is really useful. Therefore, a tested implementation of this case will be supplied when needed.
+
+* 
+* [0.x.13]*
+   Destructor. Does nothing here, but needs to be declared virtual anyway.  
+* [0.x.14]*
+   Prolongate a vector from level <tt>to_level-1</tt> to level   <tt>to_level</tt>. The previous content of <tt>dst</tt> is overwritten.      [2.x.7]  src is a vector with as many elements as there are degrees of   freedom on the coarser level involved.      [2.x.8]  dst has as many elements as there are degrees of freedom on the   finer level.  
+* [0.x.15]*
+   Prolongate a vector from level <tt>to_level-1</tt> to level   <tt>to_level</tt>, summing into the previous content of <tt>dst</tt>.      [2.x.9]  src is a vector with as many elements as there are degrees of   freedom on the coarser level involved.      [2.x.10]  dst has as many elements as there are degrees of freedom on the   finer level.  
+* [0.x.16]*
+   Restrict a vector from level <tt>from_level</tt> to level   <tt>from_level-1</tt> and add this restriction to <tt>dst</tt>. If the   region covered by cells on level <tt>from_level</tt> is smaller than that   of level <tt>from_level-1</tt> (local refinement), then some degrees of   freedom in <tt>dst</tt> are active and will not be altered. For the other   degrees of freedom, the result of the restriction is added.      [2.x.11]  src is a vector with as many elements as there are degrees of   freedom on the finer level      [2.x.12]  dst has as many elements as there are degrees of freedom on the   coarser level.  
+* [0.x.17]*
+ Base class for multigrid smoothers. Does nothing but defining the interface used by multigrid methods.
+*  The smoother interface provides two methods, a smooth() method and an apply() method. The multigrid preconditioner interfaces distinguish between the two for efficiency reasons: Upon entry to the preconditioner operations, the vector  [2.x.13]  needs to be set to zero and smoothing starts by a simple application of the smoother on the  [2.x.14]  vector. This method is provided by the apply() method of this class. It is the same as first setting  [2.x.15]  to zero and then calling smooth(), but for many classes the separate apply() interface is more efficient because it can skip one matrix-vector product.
+*  In the multigrid preconditioner interfaces, the apply() method is used for the pre-smoothing operation because the previous content in the solution vector needs to be overwritten for a new incoming residual. On the other hand, all subsequent operations need to smooth the content already present in the vector  [2.x.16]  given the right hand side, which is done by smooth().
+
+* 
+* [0.x.18]*
+   Virtual destructor.  
+* [0.x.19]*
+   Release matrices.  
+* [0.x.20]*
+   Smoothing function that smooths the content in  [2.x.17]  given the right hand   side vector  [2.x.18]  This is the function used in multigrid methods.  
+* [0.x.21]*
+   As opposed to the smooth() function, this function applies the action of   the smoothing, overwriting the previous content in the vector u. This   function must be equivalent to the following code  
+* [1.x.0]
+*    but can usually be implemented more efficiently than the former. If a   particular smoother does not override the apply() method, the default   implementation as described here is used.     In the multigrid preconditioner interfaces, the apply() method is used for   the pre-smoothing operation because the previous content in the solution   vector needs to be overwritten for a new incoming residual. On the other   hand, all subsequent operations need to smooth the content already present   in the vector  [2.x.19]  given the right hand side, which is done by smooth().  
+* [0.x.22]
+
+include/deal.II-translator/multigrid/mg_block_smoother_0.txt
+[0.x.0] MGSmootherBase is defined in mg_base.h
+
+* 
+* [0.x.1]*
+ General smoother class for block vectors. This class gives complete freedom to the choice of a block smoother by being initialized with a matrix and a smoother object. Therefore, the smoother object for each level must be constructed by hand.
+
+* 
+* [0.x.2]*
+   Constructor.  
+* [0.x.3]*
+   Initialize for matrices. The parameter <tt>matrices</tt> can be any   object having functions <tt>get_minlevel()</tt> and   <tt>get_maxlevel()</tt> as well as an <tt>operator[]</tt> returning a   reference to  [2.x.0]      The same convention is used for the parameter <tt>smoothers</tt>, such   that <tt>operator[]</tt> returns the object doing the block-smoothing on   a single level.     This function stores pointers to the level matrices and smoothing   operator for each level.  
+* [0.x.4]*
+   Empty all vectors.  
+* [0.x.5]*
+   Switch on/off reversed. This is mutually exclusive with transpose().  
+* [0.x.6]*
+   Implementation of the interface for  [2.x.1]  This function does   nothing, which by comparison with the definition of this function means   that the smoothing operator equals the null operator.  
+* [0.x.7]*
+   Memory used by this object.  
+* [0.x.8]*
+   Pointer to the matrices.  
+* [0.x.9]*
+   Pointer to the matrices.  
+* [0.x.10]*
+   Reverse?  
+* [0.x.11]*
+   Memory for auxiliary vectors.  
+* [0.x.12]
+
+include/deal.II-translator/multigrid/mg_coarse_0.txt
+[0.x.0]*
+ Coarse grid solver using smoother only. This is a little wrapper, transforming a smoother into a coarse grid solver.
+
+* 
+* [0.x.1]*
+   Default constructor.  
+* [0.x.2]*
+   Constructor. Store a pointer to the smoother for later use.  
+* [0.x.3]*
+   Clear the pointer.  
+* [0.x.4]*
+   Initialize new data.  
+* [0.x.5]*
+   Implementation of the abstract function.  
+* [0.x.6]*
+   Reference to the smoother.  
+* [0.x.7]*
+ Coarse grid multigrid operator for an iterative solver.
+*  This class provides a wrapper for a deal.II iterative solver with a given matrix and preconditioner as a coarse grid operator.
+
+* 
+* [0.x.8]*
+   Default constructor.  
+* [0.x.9]*
+   Constructor. Only a reference to these objects is stored, so   their lifetime needs to exceed the usage in this class.  
+* [0.x.10]*
+   Initialize with new data, see the corresponding constructor for more   details.  
+* [0.x.11]*
+   Clear all pointers.  
+* [0.x.12]*
+   Implementation of the abstract function. Calls the solve method of the   given solver with matrix, vectors, and preconditioner.  
+* [0.x.13]*
+   Reference to the solver.  
+* [0.x.14]*
+   Reference to the matrix.  
+* [0.x.15]*
+   Reference to the preconditioner.  
+* [0.x.16]*
+ Coarse grid solver by QR factorization implemented in the class Householder.
+*  Upon initialization, the QR decomposition of the matrix is computed. then, the operator() uses  [2.x.0]  to compute the action of the inverse.
+
+* 
+* [0.x.17]*
+   Constructor, taking the coarse grid matrix.  
+* [0.x.18]*
+   Initialize for a new matrix.  
+* [0.x.19]*
+   Matrix for QR-factorization.  
+* [0.x.20]*
+ Coarse grid solver using singular value decomposition of LAPACK matrices.
+*  Upon initialization, the singular value decomposition of the matrix is computed. then, the operator() uses
+
+* 
+* [0.x.21]*
+   Constructor leaving an uninitialized object.  
+* [0.x.22]*
+   Initialize for a new matrix. This resets the dimensions to the  
+* [0.x.23]*
+   Write the singular values to  [2.x.1]   
+* [0.x.24]*
+   Matrix for singular value decomposition.  
+* [0.x.25]
+
+include/deal.II-translator/multigrid/mg_constrained_dofs_0.txt
+[0.x.0]*
+ Collection of boundary constraints and refinement edge constraints for level vectors.
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   Fill the internal data structures with hanging node constraints extracted   from the dof handler object. Works with natural boundary conditions only.   There exists a sister function setting up boundary constraints as well.     This function ensures that on every level, degrees of freedom at interior   edges of a refinement level are treated corrected but leaves degrees of   freedom at the boundary of the domain untouched assuming that no   Dirichlet boundary conditions for them exist.     Furthermore, this call sets up an AffineConstraints object on each   level that contains possible periodicity constraints in case those   have been added to the underlying triangulation. The AffineConstraints   object can be queried by get_level_constraints(level). Note that the   current implementation of periodicity constraints in this class does   not support rotation matrices in the periodicity definition, i.e., the   respective argument in the  [2.x.1]  may not   be different from the identity matrix.   If no level_relevant_dofs are passed as the second argument, the function   uses the locally relevant level DoFs, extracted by    [2.x.2]  Otherwise, the   user-provided IndexSets, which should define a superset of locally relevant   DoFs, are used on each level to allow the user to add additional indices to   the set of constrained DoFs.  
+* [0.x.2]*
+   Fill the internal data structures with information   about Dirichlet boundary dofs.     The initialize() function has to be called before   to set hanging node constraints.     This function can be called multiple times to allow considering   different sets of boundary_ids for different components.  
+* [0.x.3]*
+   Add user defined constraints to be used on level  [2.x.3]      The user can call this function multiple times and any new,   conflicting constraints will overwrite the previous constraints   for that DoF.     Before the transfer, the user defined constraints will be distributed   to the source vector, and then any DoF index set using   make_zero_boundary_constraints() will be overwritten with   value zero.    
+*  [2.x.4]  This is currently only implemented for MGTransferMatrixFree.  
+* [0.x.4]*
+   Fill the internal data structures with information   about no normal flux boundary dofs.     This function is limited to meshes whose no normal flux boundaries   have faces which are normal to the x-, y-, or z-axis. Also, for a   specific boundary id, all faces must be facing in the same direction,   i.e., a boundary normal to the x-axis must have a different boundary   id than a boundary normal to the y- or z-axis and so on. If the mesh   was produced, for example, using the  [2.x.5]    function, setting <tt>colorize=true</tt> during mesh generation and calling   make_no_normal_flux_constraints() for each no normal flux boundary is   sufficient.  
+* [0.x.5]*
+   Reset the data structures.  
+* [0.x.6]*
+   Determine whether a dof index is subject to a boundary constraint.  
+* [0.x.7]*
+   Determine whether a dof index is at the refinement edge.  
+* [0.x.8]*
+   Determine whether the (i,j) entry of the interface matrix   on a given level should be set. This is taken in terms of   dof i, that is, return true if i is at a refinement edge,   j is not, and both are not on the external boundary.  
+* [0.x.9]*
+   Return the indices of level dofs on the given level that are subject to   Dirichlet boundary conditions (as set by the  [2.x.6]  parameter in   initialize()).  The indices are restricted to the set of locally relevant   level dofs.  
+* [0.x.10]*
+   Return the indices of dofs on the given level that lie on an refinement   edge (dofs on faces to neighbors that are coarser).  
+* [0.x.11]*
+   Return if Dirichlet boundary indices are set in initialize().  
+* [0.x.12]*
+   Return the AffineConstraints object for a given level, containing   periodicity constraints (if enabled on the triangulation).  
+* [0.x.13]*
+   Return the user defined constraint matrix for a given level. These   constraints are set using the function add_user_constraints() and   should not contain constraints for DoF indices set in   make_zero_boundary_constraints() as they will be overwritten during   the transfer.  
+* [0.x.14]*
+   The indices of boundary dofs for each level.  
+* [0.x.15]*
+   The degrees of freedom on a given level that live on the refinement edge   between the level and cells on a coarser level.  
+* [0.x.16]*
+   Constraint matrices containing information regarding potential   periodic boundary conditions for each level .  
+* [0.x.17]*
+   Constraint matrices defined by user.  
+* [0.x.18]
+
+include/deal.II-translator/multigrid/mg_matrix_0.txt
+[0.x.0]*
+   Multilevel matrix. This matrix stores an MGLevelObject of   LinearOperator objects. It implements the interface defined in   MGMatrixBase, so that it can be used as a matrix in Multigrid.  
+* [0.x.1]*
+     Default constructor for an empty object.    
+* [0.x.2]*
+     Constructor setting up pointers to the matrices in <tt>M</tt> by     calling initialize().    
+* [0.x.3]*
+     Initialize the object such that the level multiplication uses the     matrices in <tt>M</tt>    
+* [0.x.4]*
+     Reset the object.    
+* [0.x.5]*
+     Access matrix on a level.    
+* [0.x.6]*
+     Memory used by this object.    
+* [0.x.7]*
+ Multilevel matrix selecting from block matrices. This class implements the interface defined by MGMatrixBase.  The template parameter  [2.x.0]  should be a block matrix class like BlockSparseMatrix or  [2.x.1]  BlockSparseMatrixEZ. Then, this class stores a pointer to a MGLevelObject of this matrix class. In each  [2.x.2]  the block selected on initialization will be multiplied with the vector provided.
+
+* 
+* [0.x.8]*
+   Constructor.  [2.x.3]  and  [2.x.4]  are the coordinate of the selected block.   The other argument is handed over to the  [2.x.5]  constructor.  
+* [0.x.9]*
+   Set the matrix object to be used. The matrix object must exist longer as   the  [2.x.6]  object, since only a pointer is stored.  
+* [0.x.10]*
+   Select the block for multiplication.  
+* [0.x.11]*
+   Matrix-vector-multiplication on a certain level.  
+* [0.x.12]*
+   Adding matrix-vector-multiplication on a certain level.  
+* [0.x.13]*
+   Transpose matrix-vector-multiplication on a certain level.  
+* [0.x.14]*
+   Adding transpose matrix-vector-multiplication on a certain level.  
+* [0.x.15]*
+   Pointer to the matrix objects on each level.  
+* [0.x.16]*
+   Row coordinate of selected block.  
+* [0.x.17]*
+   Column coordinate of selected block.  
+* [0.x.18]
+
+include/deal.II-translator/multigrid/mg_smoother_0.txt
+[0.x.0] MGSmootherBase is defined in mg_base.h
+
+* 
+* [0.x.1]*
+ A base class for smoother handling information on smoothing. While not adding to the abstract interface in MGSmootherBase, this class stores information on the number and type of smoothing steps, which in turn can be used by a derived class.
+
+* 
+* [0.x.2]*
+   Constructor.  
+* [0.x.3]*
+   Modify the number of smoothing steps on finest level.  
+* [0.x.4]*
+   Switch on/off variable smoothing.  
+* [0.x.5]*
+   Switch on/off symmetric smoothing.  
+* [0.x.6]*
+   Switch on/off transposed smoothing. The effect is overridden by   set_symmetric().  
+* [0.x.7]*
+   Set  [2.x.0]  to a nonzero value to get debug information logged to  [2.x.1]    deallog. Increase to get more information  
+* [0.x.8]*
+   A memory object to be used for temporary vectors.     The object is marked as mutable since we will need to use it to allocate   temporary vectors also in functions that are const.  
+* [0.x.9]*
+   Number of smoothing steps on the finest level. If no #variable smoothing   is chosen, this is the number of steps on all levels.  
+* [0.x.10]*
+   Variable smoothing: double the number of smoothing steps whenever going   to the next coarser level  
+* [0.x.11]*
+   Symmetric smoothing: in the smoothing iteration, alternate between the   relaxation method and its transpose.  
+* [0.x.12]*
+   Use the transpose of the relaxation method instead of the method itself.   This has no effect if #symmetric smoothing is chosen.  
+* [0.x.13]*
+   Output debugging information to  [2.x.2]  if this is nonzero.  
+* [0.x.14]*
+ Smoother doing nothing. This class is not useful for many applications other than for testing some multigrid procedures. Also some applications might get convergence without smoothing and then this class brings you the cheapest possible multigrid.
+
+* 
+* [0.x.15]*
+   Implementation of the interface for  [2.x.3]  This function does   nothing, which by comparison with the definition of this function means   that the smoothing operator equals the null operator.  
+* [0.x.16]*
+   Smoother using relaxation classes.     A relaxation class is an object that satisfies the    [2.x.4]  "relaxation concept".     This class performs smoothing on each level. The operation can be   controlled by several parameters. First, the relaxation parameter  [2.x.5]    omega is used in the underlying relaxation method.  [2.x.6]  is the number   of relaxation steps on the finest level (on all levels if  [2.x.7]  is   off). If  [2.x.8]  is  [2.x.9]  the number of smoothing steps is doubled   on each coarser level. This results in a method having the complexity of   the W-cycle, but saving grid transfers. This is the method proposed by   Bramble at al.     The option  [2.x.10]  switches on alternating between the smoother and   its transpose in each step as proposed by Bramble.      [2.x.11]  uses the transposed smoothing operation using <tt>Tstep</tt>   instead of the regular <tt>step</tt> of the relaxation scheme.     If you are using block matrices, the second  [2.x.12]  function offers   the possibility to extract a single block for smoothing. In this case,   the multigrid method must be used only with the vector associated to that   single block.  
+* [0.x.17]*
+     Constructor. Sets smoothing parameters.    
+* [0.x.18]*
+     Initialize for matrices. This function initializes the smoothing     operator with the same smoother for each level.          [2.x.13]  is an object of type  [2.x.14]       [2.x.15]  and is handed to the initialization     function of the relaxation method.    
+* [0.x.19]*
+     Initialize matrices and additional data for each level.         If minimal or maximal level of the two objects differ, the greatest     common range is utilized. This way, smoothing can be restricted to     certain levels even if the matrix was generated for all levels.    
+* [0.x.20]*
+     Empty all vectors.    
+* [0.x.21]*
+     The actual smoothing method.    
+* [0.x.22]*
+     The apply variant of smoothing, setting the vector u to zero before     calling the smooth function. This function is equivalent to the     following code    
+* [1.x.0]
+*          In the multigrid preconditioner interfaces, the apply() method is used     for the pre-smoothing operation because the previous content in the     solution vector needs to be overwritten for a new incoming residual. On     the other hand, all subsequent operations need to smooth the content     already present     in the vector  [2.x.16]  given the right hand side, which is done by smooth().    
+* [0.x.23]*
+     Memory used by this object.    
+* [0.x.24]*
+ Smoother using a solver that satisfies the  [2.x.17]  "relaxation concept".
+*  This class performs smoothing on each level. The operation can be controlled by several parameters. First, the relaxation parameter  [2.x.18]  is used in the underlying relaxation method.  [2.x.19]  is the number of relaxation steps on the finest level (on all levels if  [2.x.20]  is off). If  [2.x.21]  is  [2.x.22]  the number of smoothing steps is doubled on each coarser level. This results in a method having the complexity of the W-cycle, but saving grid transfers. This is the method proposed by Bramble at al.
+*  The option  [2.x.23]  switches on alternating between the smoother and its transpose in each step as proposed by Bramble.
+*   [2.x.24]  uses the transposed smoothing operation using <tt>Tstep</tt> instead of the regular <tt>step</tt> of the relaxation scheme.
+*  If you are using block matrices, the second  [2.x.25]  function offers the possibility to extract a single block for smoothing. In this case, the multigrid method must be used only with the vector associated to that single block.
+*  The library contains instantiation for <tt>SparseMatrix<.></tt> and <tt>Vector<.></tt>, where the template arguments are all combinations of  [2.x.26]  float and  [2.x.27]  Additional instantiations may be created by including the file mg_smoother.templates.h.
+
+* 
+* [0.x.25]*
+   Constructor. Sets smoothing parameters.  
+* [0.x.26]*
+   Initialize for matrices. This function stores pointers to the level   matrices and initializes the smoothing operator with the same smoother   for each level.      [2.x.28]  is an object of type  [2.x.29]    and is handed to the initialization function of the relaxation method.  
+* [0.x.27]*
+   Initialize for matrices. This function stores pointers to the level   matrices and initializes the smoothing operator with the according   smoother for each level.      [2.x.30]  is an object of type  [2.x.31]    and is handed to the initialization function of the relaxation method.  
+* [0.x.28]*
+   Initialize for single blocks of matrices. Of this block matrix, the block   indicated by  [2.x.32]  and  [2.x.33]  is selected on each level.   This function stores pointers to the level matrices and initializes the   smoothing operator with the same smoother for each level.      [2.x.34]  is an object of type  [2.x.35]    and is handed to the initialization function of the relaxation method.  
+* [0.x.29]*
+   Initialize for single blocks of matrices. Of this block matrix, the block   indicated by  [2.x.36]  and  [2.x.37]  is selected on each level.   This function stores pointers to the level matrices and initializes the   smoothing operator with the according smoother for each level.      [2.x.38]  is an object of type  [2.x.39]    and is handed to the initialization function of the relaxation method.  
+* [0.x.30]*
+   Empty all vectors.  
+* [0.x.31]*
+   The actual smoothing method.  
+* [0.x.32]*
+   The apply variant of smoothing, setting the vector u to zero before   calling the smooth function. This function is equivalent to the   following code  
+* [1.x.1]
+*      In the multigrid preconditioner interfaces, the apply() method is used for   the pre-smoothing operation because the previous content in the solution   vector needs to be overwritten for a new incoming residual. On the other   hand, all subsequent operations need to smooth the content already present   in the vector  [2.x.40]  given the right hand side, which is done by smooth().  
+* [0.x.33]*
+   Object containing relaxation methods.  
+* [0.x.34]*
+   Memory used by this object.  
+* [0.x.35]*
+   Pointer to the matrices.  
+* [0.x.36]*
+ Smoother using preconditioner classes.
+*  This class performs smoothing on each level. The operation can be controlled by several parameters. First, the relaxation parameter  [2.x.41]  is used in the underlying relaxation method.  [2.x.42]  is the number of relaxation steps on the finest level (on all levels if  [2.x.43]  is off). If  [2.x.44]  is  [2.x.45]  the number of smoothing steps is doubled on each coarser level. This results in a method having the complexity of the W-cycle, but saving grid transfers. This is the method proposed by Bramble at al.
+*  The option  [2.x.46]  switches on alternating between the smoother and its transpose in each step as proposed by Bramble.
+*   [2.x.47]  uses the transposed smoothing operation using <tt>Tvmult</tt> instead of the regular <tt>vmult</tt> of the relaxation scheme.
+*  If you are using block matrices, the second  [2.x.48]  function offers the possibility to extract a single block for smoothing. In this case, the multigrid method must be used only with the vector associated to that single block.
+*  The library contains instantiation for <tt>SparseMatrix<.></tt> and <tt>Vector<.></tt>, where the template arguments are all combinations of  [2.x.49]  float and  [2.x.50]  Additional instantiations may be created by including the file mg_smoother.templates.h.
+
+* 
+* [0.x.37]*
+   Constructor. Sets smoothing parameters.  
+* [0.x.38]*
+   Initialize for matrices. This function stores pointers to the level   matrices and initializes the smoothing operator with the same smoother   for each level.      [2.x.51]  is an object of type  [2.x.52]     [2.x.53]  and is handed to the initialization   function of the relaxation method.  
+* [0.x.39]*
+   Initialize for matrices. This function stores pointers to the level   matrices and initializes the smoothing operator with the according   smoother for each level.      [2.x.54]  is an object of type  [2.x.55]     [2.x.56]  and is handed to the initialization   function of the relaxation method.  
+* [0.x.40]*
+   Initialize for single blocks of matrices. Of this block matrix, the block   indicated by  [2.x.57]  and  [2.x.58]  is selected on each level.   This function stores pointers to the level matrices and initializes the   smoothing operator with the same smoother for each level.      [2.x.59]  is an object of type  [2.x.60]     [2.x.61]  and is handed to the initialization   function of the relaxation method.  
+* [0.x.41]*
+   Initialize for single blocks of matrices. Of this block matrix, the block   indicated by  [2.x.62]  and  [2.x.63]  is selected on each level.   This function stores pointers to the level matrices and initializes the   smoothing operator with the according smoother for each level.      [2.x.64]  is an object of type  [2.x.65]     [2.x.66]  and is handed to the initialization   function of the relaxation method.  
+* [0.x.42]*
+   Empty all vectors.  
+* [0.x.43]*
+   The actual smoothing method.  
+* [0.x.44]*
+   The apply variant of smoothing, setting the vector u to zero before   calling the smooth function. This function is equivalent to the   following code  
+* [1.x.2]
+*      In the multigrid preconditioner interfaces, the apply() method is used for   the pre-smoothing operation because the previous content in the solution   vector needs to be overwritten for a new incoming residual. On the other   hand, all subsequent operations need to smooth the content already present   in the vector  [2.x.67]  given the right hand side, which is done by smooth().  
+* [0.x.45]*
+   Object containing relaxation methods.  
+* [0.x.46]*
+   Memory used by this object.  
+* [0.x.47]*
+   Pointer to the matrices.  
+* [0.x.48]
+
+include/deal.II-translator/multigrid/mg_tools_0.txt
+[0.x.0]*
+ This is a collection of functions operating on, and manipulating the numbers of degrees of freedom in a multilevel triangulation. It is similar in purpose and function to the  [2.x.0]  namespace, but operates on levels of DoFHandler objects. See there and the documentation of the member functions for more information.
+
+* 
+* [0.x.1]*
+   Compute row length vector for multilevel methods.  
+* [0.x.2]*
+   Compute row length vector for multilevel methods with optimization for   block couplings.  
+* [0.x.3]*
+   Write the sparsity structure of the matrix belonging to the specified  [2.x.1]    level. The sparsity pattern is not compressed, so before creating the   actual matrix you have to compress the matrix yourself, using    [2.x.2]      The optional AffineConstraints argument allows to define constraints of   the level matrices like Dirichlet boundary conditions. Note that there is   need to consider hanging nodes on the typical level matrices, since only   one level is considered. See  [2.x.3]  for more   details about the arguments.  
+* [0.x.4]*
+   Make a sparsity pattern including fluxes of discontinuous Galerkin   methods.    [2.x.4]     [2.x.5]    and    [2.x.6]   
+* [0.x.5]*
+   Create sparsity pattern for the fluxes at refinement edges. The matrix   maps a function of the fine level space  [2.x.7]  to the coarser space.     make_flux_sparsity_pattern()  
+* [0.x.6]*
+   This function does the same as the other with the same name, but it gets   two additional coefficient matrices. A matrix entry will only be   generated for two basis functions, if there is a non-zero entry linking   their associated components in the coefficient matrix.     There is one matrix for couplings in a cell and one for the couplings   occurring in fluxes.  
+* [0.x.7]*
+   Create sparsity pattern for the fluxes at refinement edges. The matrix   maps a function of the fine level space  [2.x.8]  to the coarser space.   This is the version restricting the pattern to the elements actually   needed.     make_flux_sparsity_pattern()  
+* [0.x.8]*
+   Create sparsity pattern for interface_in/out matrices used in a multigrid   computation. These matrices contain an entry representing the coupling of   degrees of freedom on a refinement edge to those not on the refinement edge   of a certain level.  
+* [0.x.9]*
+   Count the dofs block-wise on each level.     Result is a vector containing for each level a vector containing the   number of dofs for each block (access is <tt>result[level][block]</tt>).  
+* [0.x.10]*
+   Count the dofs component-wise on each level.     Result is a vector containing for each level a vector containing the   number of dofs for each component (access is   <tt>result[level][component]</tt>).  
+* [0.x.11]*
+   Generate a list of those degrees of freedom at the boundary of the domain   that should be eliminated from the matrix because they will be   constrained by Dirichlet boundary conditions.     This is the multilevel equivalent of    [2.x.9]  but since the multilevel method   does not have its own right hand side, the function values returned by   the function object that is part of the function_map argument are   ignored.      [2.x.10]  <tt>boundary_indices</tt> is a vector which on return contains all   indices of degrees of freedom for each level that are at the part of the   boundary identified by the function_map argument. Its length has to match   the number of levels in the dof handler object.     Previous content in  [2.x.11]  is not overwritten,   but added to.  
+* [0.x.12]*
+   The same function as above, but return an IndexSet rather than a    [2.x.12]  int> on each level.     Previous content in  [2.x.13]  is not overwritten,   but added to.  
+* [0.x.13]*
+   The same function as above, but return an IndexSet rather than a    [2.x.14]  int> on each level and use a  [2.x.15]  of boundary_ids   as input.     Previous content in  [2.x.16]  is not overwritten, but added to.  
+* [0.x.14]*
+   For each level in a multigrid hierarchy, produce an IndexSet that   indicates which of the degrees of freedom are along interfaces of this   level to cells that only exist on coarser levels.  
+* [0.x.15]*
+   Return the highest possible level that can be used as the coarsest level in   a Multigrid computation, that is, the highest level in the hierarchy whose   mesh covers the entire domain. This corresponds to the minimum level of a   cell on the active mesh. Since each processor only has a local view of the   mesh, each processor must call this function. Note that this is a global   minimum over the entire mesh and therefore each processor will return the   same value.  
+* [0.x.16]*
+   Return the imbalance of the parallel distribution of the multigrid   mesh hierarchy. Ideally this value is equal to 1 (every processor owns   the same number of cells on each level, approximately true for most   globally refined meshes). Values greater than 1 estimate the slowdown   one should see in a geometric multigrid v-cycle as compared with the same   computation on a perfectly distributed mesh hierarchy.     This function is a collective MPI call between all ranks of the   Triangulation and therefore needs to be called from all ranks.    
+*  [2.x.17]  This function requires that    [2.x.18]    is true, which can be controlled by setting the   construct_multigrid_hierarchy flag when constructing the   Triangulation.  
+* [0.x.17]
+
+include/deal.II-translator/multigrid/mg_transfer.templates_0.txt
+[0.x.0]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.0]  each level     vector to this length. For compatibility reasons with the next function     the target_component is added here but is not used.    
+* [0.x.1]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.1]  each level     vector to this length. The target_component is handed to      [2.x.2]  See for documentation there.    
+* [0.x.2]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.3]  each level     vector to this length.    
+* [0.x.3]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.4]  each level     vector to this length.    
+* [0.x.4]
+
+include/deal.II-translator/multigrid/mg_transfer_0.txt
+[0.x.0] MGTransferBase is defined in mg_base.h
+
+* 
+* [0.x.1]*
+ Implementation of transfer between the global vectors and the multigrid levels for use in the derived class MGTransferPrebuilt and other classes.
+
+* 
+* [0.x.2]*
+   Reset the object to the state it had right after the default constructor.  
+* [0.x.3]*
+   Transfer from a vector on the global grid to vectors defined on each of   the levels separately for the active degrees of freedom. In particular,   for a globally refined mesh only the finest level in  [2.x.0]  is filled as a   plain copy of  [2.x.1]  All the other level objects are left untouched.  
+* [0.x.4]*
+   Transfer from multi-level vector to normal vector.     Copies data from active portions of an MGVector into the respective   positions of a <tt>Vector<number></tt>. In order to keep the result   consistent, constrained degrees of freedom are set to zero.  
+* [0.x.5]*
+   Add a multi-level vector to a normal vector.     Works as the previous function, but probably not for continuous elements.  
+* [0.x.6]*
+   If this object operates on BlockVector objects, we need to describe how   the individual vector components are mapped to the blocks of a vector.   For example, for a Stokes system, we have dim+1 vector components for   velocity and pressure, but we may want to use block vectors with only two   blocks for all velocities in one block, and the pressure variables in the   other.     By default, if this function is not called, block vectors have as many   blocks as the finite element has vector components. However, this can be   changed by calling this function with an array that describes how vector   components are to be grouped into blocks. The meaning of the argument is   the same as the one given to the  [2.x.2]    function.  
+* [0.x.7]*
+   Memory used by this object.  
+* [0.x.8]*
+   Print the copy index fields for debugging purposes.  
+* [0.x.9]*
+   Internal function to  [2.x.3]  copy_indices*. Called by derived classes.  
+* [0.x.10]*
+   Sizes of the multi-level vectors.  
+* [0.x.11]*
+   Mapping for the copy_to_mg() and copy_from_mg() functions. Here only   index pairs locally owned     The data is organized as follows: one vector per level. Each element of   these vectors contains first the global index, then the level index.  
+* [0.x.12]*
+   Additional degrees of freedom for the copy_to_mg() function. These are   the ones where the global degree of freedom is locally owned and the   level degree of freedom is not.     Organization of the data is like for  [2.x.4]   
+* [0.x.13]*
+   Additional degrees of freedom for the copy_from_mg() function. These are   the ones where the level degree of freedom is locally owned and the   global degree of freedom is not.     Organization of the data is like for  [2.x.5]   
+* [0.x.14]*
+   This variable stores whether the copy operation from the global to the   level vector is actually a plain copy to the finest level. This means that   the grid has no adaptive refinement and the numbering on the finest   multigrid level is the same as in the global case.  
+* [0.x.15]*
+   The vector that stores what has been given to the   set_component_to_block_map() function.  
+* [0.x.16]*
+   The mg_constrained_dofs of the level systems.  
+* [0.x.17]*
+   This function is called to make sure that build() has been invoked.  
+* [0.x.18]*
+ Implementation of transfer between the global vectors and the multigrid levels for use in the derived class MGTransferPrebuilt and other classes. This class is a specialization for the case of  [2.x.6]  that requires a few different calling routines as compared to the %parallel vectors in the PETScWrappers and TrilinosWrappers namespaces.
+
+* 
+* [0.x.19]*
+   Reset the object to the state it had right after the default constructor.  
+* [0.x.20]*
+   Transfer from a vector on the global grid to vectors defined on each of   the levels separately for the active degrees of freedom. In particular, for   a globally refined mesh only the finest level in  [2.x.7]  is filled as a   plain copy of  [2.x.8]  All the other level objects are left untouched.  
+* [0.x.21]*
+   Transfer from multi-level vector to normal vector.     Copies data from active portions of an MGVector into the respective   positions of a <tt>Vector<number></tt>. In order to keep the result   consistent, constrained degrees of freedom are set to zero.  
+* [0.x.22]*
+   Add a multi-level vector to a normal vector.     Works as the previous function, but probably not for continuous elements.  
+* [0.x.23]*
+   If this object operates on BlockVector objects, we need to describe how   the individual vector components are mapped to the blocks of a vector.   For example, for a Stokes system, we have dim+1 vector components for   velocity and pressure, but we may want to use block vectors with only two   blocks for all velocities in one block, and the pressure variables in the   other.     By default, if this function is not called, block vectors have as many   blocks as the finite element has vector components. However, this can be   changed by calling this function with an array that describes how vector   components are to be grouped into blocks. The meaning of the argument is   the same as the one given to the  [2.x.9]    function.  
+* [0.x.24]*
+   Memory used by this object.  
+* [0.x.25]*
+   Print the copy index fields for debugging purposes.  
+* [0.x.26]*
+   Internal function to perform transfer of residuals or solutions   basesd on the flag  [2.x.10]   
+* [0.x.27]*
+   Internal function to  [2.x.11]  copy_indices*. Called by derived classes.  
+* [0.x.28]*
+   Sizes of the multi-level vectors.  
+* [0.x.29]*
+   Mapping for the copy_to_mg() and copy_from_mg() functions. Here only   index pairs locally owned is stored.     The data is organized as follows: one table per level. This table has two   rows. The first row contains the global index, the second one the level   index.  
+* [0.x.30]*
+   Same as above, but used to transfer solution vectors.  
+* [0.x.31]*
+   Additional degrees of freedom for the copy_to_mg() function. These are   the ones where the global degree of freedom is locally owned and the   level degree of freedom is not.     Organization of the data is like for  [2.x.12]   
+* [0.x.32]*
+   Same as above, but used to transfer solution vectors.  
+* [0.x.33]*
+   Additional degrees of freedom for the copy_from_mg() function. These are   the ones where the level degree of freedom is locally owned and the   global degree of freedom is not.     Organization of the data is like for  [2.x.13]   
+* [0.x.34]*
+   Same as above, but used to transfer solution vectors.  
+* [0.x.35]*
+   This variable stores whether the copy operation from the global to the   level vector is actually a plain copy to the finest level. This means that   the grid has no adaptive refinement and the numbering on the finest   multigrid level is the same as in the global case.  
+* [0.x.36]*
+   This variable stores whether the copy operation from the global to the   level vector is actually a plain copy to the finest level except for a   renumbering within the finest level of the degrees of freedom. This means   that the grid has no adaptive refinement.  
+* [0.x.37]*
+   The vector that stores what has been given to the   set_component_to_block_map() function.  
+* [0.x.38]*
+   The mg_constrained_dofs of the level systems.  
+* [0.x.39]*
+   In the function copy_to_mg, we need to access ghosted entries of the   global vector for inserting into the level vectors. This vector is   populated with those entries.  
+* [0.x.40]*
+   Same as above but used when working with solution vectors.  
+* [0.x.41]*
+   In the function copy_from_mg, we access all level vectors with certain   ghost entries for inserting the result into a global vector.  
+* [0.x.42]*
+   Same as above but used when working with solution vectors.  
+* [0.x.43]*
+   This function is called to make sure that build() has been invoked.  
+* [0.x.44]*
+ Implementation of the MGTransferBase interface for which the transfer operations are prebuilt upon construction of the object of this class as matrices. This is the fast way, since it only needs to build the operation once by looping over all cells and storing the result in a matrix for each level, but requires additional memory.
+*  See MGTransferBase to find out which of the transfer classes is best for your needs.
+
+* 
+* [0.x.45]*
+   Constructor without constraint matrices. Use this constructor only with   discontinuous finite elements or with no local refinement.  
+* [0.x.46]*
+   Constructor with constraints. Equivalent to the default constructor   followed by initialize_constraints().  
+* [0.x.47]*
+   Destructor.  
+* [0.x.48]*
+   Initialize the constraints to be used in build().  
+* [0.x.49]*
+   Reset the object to the state it had right after the default constructor.  
+* [0.x.50]*
+   Actually build the information required for the transfer operations. Needs   to be called before prolongate() or restrict_and_add() can be used.  
+* [0.x.51]*
+   Prolongate a vector from level <tt>to_level-1</tt> to level   <tt>to_level</tt> using the embedding matrices of the underlying finite   element. The previous content of <tt>dst</tt> is overwritten.      [2.x.14]  src is a vector with as many elements as there are degrees of   freedom on the coarser level involved.      [2.x.15]  dst has as many elements as there are degrees of freedom on the   finer level.  
+* [0.x.52]*
+   Restrict a vector from level <tt>from_level</tt> to level   <tt>from_level-1</tt> using the transpose operation of the  [2.x.16]    method. If the region covered by cells on level <tt>from_level</tt> is   smaller than that of level <tt>from_level-1</tt> (local refinement), then   some degrees of freedom in <tt>dst</tt> are active and will not be   altered. For the other degrees of freedom, the result of the restriction   is added.      [2.x.17]  src is a vector with as many elements as there are degrees of   freedom on the finer level involved.      [2.x.18]  dst has as many elements as there are degrees of freedom on the   coarser level.  
+* [0.x.53]*
+   Finite element does not provide prolongation matrices.  
+* [0.x.54]*
+   You have to call build() before using this object.  
+* [0.x.55]*
+   Memory used by this object.  
+* [0.x.56]*
+   Print all the matrices for debugging purposes.  
+* [0.x.57]*
+   Sparsity patterns for transfer matrices.  
+* [0.x.58]*
+   The actual prolongation matrix.  column indices belong to the dof indices   of the mother cell, i.e. the coarse level.  while row indices belong to   the child cell, i.e. the fine level.  
+* [0.x.59]*
+   Degrees of freedom on the refinement edge excluding those on the   boundary.  
+* [0.x.60]
+
+include/deal.II-translator/multigrid/mg_transfer_block.templates_0.txt
+[0.x.0]
+
+include/deal.II-translator/multigrid/mg_transfer_block_0.txt
+[0.x.0] MGTransferBase is defined in mg_base.h
+
+* 
+* [0.x.1]*
+ Implementation of matrix generation for MGTransferBlock.
+*  This is the base class for MGTransfer objects for systems of equations where multigrid is applied only to one or some blocks, where a  [2.x.0]  comprises all degrees of freedom generated by one base element.
+
+* 
+* [0.x.2]*
+   Constructor without constraint matrices. Use this constructor only with   discontinuous finite elements or with no local refinement.  
+* [0.x.3]*
+   Constructor with constraint matrices as well as mg_constrained_dofs.  
+* [0.x.4]*
+   Memory used by this object.  
+* [0.x.5]*
+   Actually build the prolongation matrices for each level.     This function is only called by derived classes. These can also set the   member variables #selected and others to restrict the transfer matrices   to certain blocks.  
+* [0.x.6]*
+   Flag of selected blocks.     The transfer operators only act on the blocks having a <tt>true</tt>   entry here.  
+* [0.x.7]*
+   Number of blocks of multigrid vector.  
+* [0.x.8]*
+   For each block of the whole block vector, list to what block of the   multigrid vector it is mapped. Since depending on #selected, there may be   fewer multilevel blocks than original blocks, some of the entries may be   illegal unsigned integers.  
+* [0.x.9]*
+   Sizes of the multi-level vectors.  
+* [0.x.10]*
+   Start index of each block.  
+* [0.x.11]*
+   Start index of each block on all levels.  
+* [0.x.12]*
+   Call build() function first.  
+* [0.x.13]*
+   The actual prolongation matrix. column indices belong to the dof indices   of the mother cell, i.e. the coarse level. while row indices belong to   the child cell, i.e. the fine level.  
+* [0.x.14]*
+   Mapping for the <tt>copy_to/from_mg</tt>-functions. The indices into this   vector are (in this order): global block number, level number. The data   is first the global index inside the block, then the level index inside   the block.  
+* [0.x.15]*
+   The mg_constrained_dofs of the level systems.  
+* [0.x.16]*
+ Implementation of the MGTransferBase interface for block matrices and block vectors.
+*   [2.x.1]  This class is in an untested state. If you use it and you encounter problems, please contact Guido Kanschat.
+*  In addition to the functionality of MGTransferPrebuilt, the operation may be restricted to certain blocks of the vector.
+*  If the restricted mode is chosen, block vectors used in the transfer routines may only have as many blocks as there are  [2.x.2]  in the selected-field.
+*  See MGTransferBase to find out which of the transfer classes is best for your needs.
+
+* 
+* [0.x.17]*
+   Default constructor.  
+* [0.x.18]*
+   Destructor.  
+* [0.x.19]*
+   Initialize additional #factors and #memory if the restriction of the   blocks is to be weighted differently.  
+* [0.x.20]*
+   Build the prolongation matrices for each level.     This function is a front-end for the same function in   MGTransferBlockBase.  
+* [0.x.21]*
+   Transfer from a vector on the global grid to a multilevel vector for the   active degrees of freedom. In particular, for a globally refined mesh only   the finest level in  [2.x.3]  is filled  as a plain copy of  [2.x.4]  All the   other level objects are left untouched.     The action for discontinuous elements is as follows: on an active mesh   cell, the global vector entries are simply copied to the corresponding   entries of the level vector. Then, these values are restricted down to   the coarsest level.  
+* [0.x.22]*
+   Transfer from multi-level vector to normal vector.     Copies data from active portions of a multilevel vector into the   respective positions of a global vector.  
+* [0.x.23]*
+   Add a multi-level vector to a normal vector.     Works as the previous function, but probably not for continuous elements.  
+* [0.x.24]*
+   Optional multiplication factors for each block. Requires initialization   of #memory.  
+* [0.x.25]*
+   Memory pool required if additional multiplication using #factors is   desired.  
+* [0.x.26]*
+ Implementation of the MGTransferBase interface for block matrices and simple vectors. This class uses MGTransferBlockBase selecting a single block. The intergrid transfer operators are implemented for Vector objects, The copy functions between regular and multigrid vectors for Vector and BlockVector.
+*  See MGTransferBase to find out which of the transfer classes is best for your needs.
+
+* 
+* [0.x.27]*
+   Constructor without constraint matrices. Use this constructor only with   discontinuous finite elements or with no local refinement.  
+* [0.x.28]*
+   Constructor with constraint matrices as well as mg_constrained_dofs.  
+* [0.x.29]*
+   Destructor.  
+* [0.x.30]*
+   Actually build the prolongation matrices for grouped blocks.     This function is a front-end for the same function in   MGTransferBlockBase.      [2.x.5]  dof_handler The DoFHandler to use.    [2.x.6]  selected Number of the block for which the transfer matrices   should be built.  
+* [0.x.31]*
+   Change selected block. Handle with care!  
+* [0.x.32]*
+   Transfer a single block from a vector on the global grid to a multilevel   vector for the active degrees of freedom. In particular, for a globally   refined mesh only the finest level in  [2.x.7]  is filled as a plain copy of    [2.x.8]  All the other level objects are left untouched.  
+* [0.x.33]*
+   Transfer from multilevel vector to normal vector.     Copies data from active portions of an multilevel vector into the   respective positions of a Vector.  
+* [0.x.34]*
+   Add a multi-level vector to a normal vector.     Works as the previous function, but probably not for continuous elements.  
+* [0.x.35]*
+   Transfer a block from a vector on the global grid to multilevel vectors.   Only the values for the active degrees of freedom of the block selected are   transferred. In particular, for a globally refined mesh only the finest   level in  [2.x.9]  is filled as a plain copy of  [2.x.10]  All the other level   objects are left untouched.  
+* [0.x.36]*
+   Transfer from multilevel vector to normal vector.     Copies data from active portions of a multilevel vector into the   respective positions of a global BlockVector.  
+* [0.x.37]*
+   Add a multi-level vector to a normal vector.     Works as the previous function, but probably not for continuous elements.  
+* [0.x.38]*
+   Memory used by this object.  
+* [0.x.39]*
+   Implementation of the public function.  
+* [0.x.40]*
+   Implementation of the public function.  
+* [0.x.41]*
+   Actual implementation of copy_to_mg().  
+* [0.x.42]*
+   Selected block.  
+* [0.x.43]
+
+include/deal.II-translator/multigrid/mg_transfer_component.templates_0.txt
+[0.x.0]
+
+include/deal.II-translator/multigrid/mg_transfer_component_0.txt
+[0.x.0] MGTransferBase is defined in mg_base.h
+
+* 
+* [0.x.1]*
+ Implementation of matrix generation for component wise multigrid transfer.
+* 
+
+* 
+*  [2.x.0]  MGTransferBlockBase is probably the more logical class. Still eventually, a class should be developed allowing to select multiple components.
+
+* 
+* [0.x.2]*
+   Memory used by this object.  
+* [0.x.3]*
+   Actually build the prolongation matrices for each level.     This function is only called by derived classes. These can also set the   member variables  [2.x.1]  and    [2.x.2]  member variables to restrict the   transfer matrices to certain components. Furthermore, they use    [2.x.3]  for   re-ordering and grouping of components.  
+* [0.x.4]*
+   Flag of selected components.     The transfer operators only act on the components having a <tt>true</tt>   entry here. If renumbering by #target_component is used, this refers to   the [1.x.0] components.  
+* [0.x.5]*
+   Flag of selected components.     The transfer operators only act on the components having a <tt>true</tt>   entry here. If renumbering by #mg_target_component is used, this refers   to the [1.x.1] components.  
+* [0.x.6]*
+   Target component of the fine-level vector if renumbering is required.  
+* [0.x.7]*
+   Target component if renumbering of level vectors is required.  
+* [0.x.8]*
+   Sizes of the multi-level vectors.  
+* [0.x.9]*
+   Start index of each component.  
+* [0.x.10]*
+   Start index of each component on all levels.  
+* [0.x.11]*
+   Call build() function first.  
+* [0.x.12]*
+   The actual prolongation matrix. column indices belong to the dof indices   of the mother cell, i.e. the coarse level. while row indices belong to   the child cell, i.e. the fine level.  
+* [0.x.13]*
+   This variable holds the mapping for the <tt>copy_to/from_mg</tt>-functions.   The data is first the global index, then the level index.  
+* [0.x.14]*
+   Store the boundary_indices. These are needed for the boundary values in   the restriction matrix.  
+* [0.x.15]*
+ Implementation of the MGTransferBase interface for block matrices and simple vectors. This class uses MGTransferComponentBase selecting a single component or grouping several components into a single block. The transfer operators themselves are implemented for Vector and BlockVector objects.
+*  See MGTransferBase to find out which of the transfer classes is best for your needs.
+
+* 
+* [0.x.16]*
+   Constructor without constraint matrices. Use this constructor only with   discontinuous finite elements or with no local refinement.  
+* [0.x.17]*
+   Constructor with constraint matrices.  
+* [0.x.18]*
+   Destructor.  
+* [0.x.19]*
+   Actually build the prolongation matrices for grouped components.     This function is a front-end for the same function in   MGTransferComponentBase.      [2.x.4]  selected Number of the block of the global vector to be copied from   and to the multilevel vector. This number refers to the renumbering by   <tt>target_component</tt>.      [2.x.5]  mg_selected Number of the block for which the transfer matrices   should be built.     If <tt>mg_target_component</tt> is present, this refers to the renumbered   components.      [2.x.6]  target_component this argument allows grouping and renumbering of   components in the fine-level vector (see  [2.x.7]       [2.x.8]  mg_target_component this argument allows grouping and renumbering   of components in the level vectors (see  [2.x.9]    It also affects the behavior of the <tt>selected</tt> argument      [2.x.10]  boundary_indices holds the boundary indices on each level.  
+* [0.x.20]*
+   Change selected component. Handle with care!  
+* [0.x.21]*
+   Transfer from a vector on the global grid to a multilevel vector for the   active degrees of freedom. In particular, for a globally refined mesh only   the finest level in  [2.x.11]  is filled as a plain copy of  [2.x.12]  All the   other level objects are left untouched.  
+* [0.x.22]*
+   Transfer from multilevel vector to normal vector.     Copies data from active portions of an multilevel vector into the   respective positions of a Vector.  
+* [0.x.23]*
+   Add a multi-level vector to a normal vector.     Works as the previous function, but probably not for continuous elements.  
+* [0.x.24]*
+   Transfer from a vector on the global grid to a multilevel vector for the   active degrees of freedom. In particular, for a globally refined mesh only   the finest level in  [2.x.13]  is filled as a plain copy of  [2.x.14]  All the   other level objects are left untouched.  
+* [0.x.25]*
+   Transfer from multilevel vector to normal vector.     Copies data from active portions of a multilevel vector into the   respective positions of a global BlockVector.  
+* [0.x.26]*
+   Add a multi-level vector to a normal vector.     Works as the previous function, but probably not for continuous elements.  
+* [0.x.27]*
+   Memory used by this object.  
+* [0.x.28]*
+   Implementation of the public function.  
+* [0.x.29]*
+   Implementation of the public function.  
+* [0.x.30]*
+   Actual implementation of copy_to_mg().  
+* [0.x.31]*
+   Selected component of global vector.  
+* [0.x.32]*
+   Selected component inside multigrid.  
+* [0.x.33]*
+   The degrees of freedom on the refinement edges. For each level the index   set denotes which level degrees of freedom are on the refinement edge   towards the lower level, excluding boundary dofs.  
+* [0.x.34]*
+   The constraints of the global system.  
+* [0.x.35]
+
+include/deal.II-translator/multigrid/mg_transfer_global_coarsening.templates_0.txt
+[0.x.0]*
+   Helper class to select the right templated implementation.    
+*  [2.x.0]  This class is similar to  [2.x.1]   
+* [0.x.1]*
+   Helper class containing the cell-wise prolongation operation.  
+* [0.x.2]*
+   Helper class containing the cell-wise restriction operation.  
+* [0.x.3]
+
+include/deal.II-translator/multigrid/mg_transfer_global_coarsening_0.txt
+[0.x.0]*
+ Global coarsening utility functions.
+
+* 
+* [0.x.1]*
+   Common polynomial coarsening sequences.    
+*  [2.x.0]  These polynomial coarsening sequences up to a degree of 9 are     precompiled in MGTwoLevelTransfer. See also:      [2.x.1]   
+* [0.x.2]*
+     Half polynomial degree by integer division. For example, for degree=7     the following sequence would be obtained:: 7
+* 
+-> 3
+* 
+-> 1    
+* [0.x.3]*
+     Decrease the polynomial degree by one. E.g., for degree=7 following     sequence would result: 7
+* 
+-> 6
+* 
+-> 5
+* 
+-> 4
+* 
+-> 3
+* 
+-> 2
+* 
+-> 1    
+* [0.x.4]*
+     Decrease the polynomial degree to one. E.g., for degree=7 following     sequence would result: 7
+* 
+-> 1    
+* [0.x.5]*
+   For a given  [2.x.2]  and polynomial coarsening sequence  [2.x.3]    determine the next coarser degree.  
+* [0.x.6]*
+   For a given  [2.x.4]  and polynomial coarsening sequence  [2.x.5]    determine the full sequence of polynomial degrees, sorted in ascending   order.  
+* [0.x.7]*
+   For a given triangulation  [2.x.6]  determine the geometric coarsening   sequence by repeated global coarsening of the provided triangulation.    
+*  [2.x.7]  For convenience, a reference to the input triangulation is stored in     the last entry of the return vector.  
+*  [2.x.8]  Currently, not implemented for  [2.x.9]   
+*  [2.x.10]  The type of the returned triangulations is the same as of the input     triangulation.  
+* [0.x.8]*
+   Similar to the above function but also taking a  [2.x.11]  for   repartitioning the triangulations on the coarser levels. If    [2.x.12]  is set, the input triangulation is not   altered,   else the triangulation is coarsened. If  [2.x.13]    is set, the triangulation on the finest level is repartitioned as well. If   the flags are set to true/false, the input triangulation is simply used as   the finest triangulation.    
+*  [2.x.14]  For convenience, a reference to the input triangulation is stored in     the last entry of the return vector.  
+*  [2.x.15]  The type of the returned triangulations is      [2.x.16]   
+*  [2.x.17]  Currently, only implemented for  [2.x.18]   
+* [0.x.9]*
+   Similar to the above function but taking in a constant version of    [2.x.19]  and as a consequence not allowing to directly use it for   coarsening, requiring that internally a temporal copy is created.  
+* [0.x.10]*
+ Class for transfer between two multigrid levels for p- or global coarsening.
+
+* 
+* [0.x.11]*
+   Perform prolongation.  
+* [0.x.12]*
+   Perform restriction.  
+* [0.x.13]*
+   Perform interpolation of a solution vector from the fine level to the   coarse level. This function is different from restriction, where a   weighted residual is transferred to a coarser level (transposition of   prolongation matrix).  
+* [0.x.14]*
+ Class for transfer between two multigrid levels for p- or global coarsening. Specialization for  [2.x.20] 
+
+* 
+* [0.x.15]*
+   Set up global coarsening between the given DoFHandler objects (    [2.x.21]  and  [2.x.22]  The transfer   can be only performed on active levels.  
+* [0.x.16]*
+   Set up polynomial coarsening between the given DoFHandler objects (    [2.x.23]  and  [2.x.24]  Polynomial transfers   can be only performed on active levels  [2.x.25]    or on coarse-grid levels.    
+*  [2.x.26]  The function polynomial_transfer_supported() can be used to     check if the given polynomial coarsening strategy is supported.  
+* [0.x.17]*
+   Check if a fast templated version of the polynomial transfer between    [2.x.27]  and  [2.x.28]  is available.    
+*  [2.x.29]  Currently, the polynomial coarsening strategies: 1) go-to-one,     2) bisect, and 3) decrease-by-one are precompiled with templates for     degrees up to 9.  
+* [0.x.18]*
+   Perform prolongation.  
+* [0.x.19]*
+   Perform restriction.  
+* [0.x.20]*
+   Perform interpolation of a solution vector from the fine level to the   coarse level. This function is different from restriction, where a   weighted residual is transferred to a coarser level (transposition of   prolongation matrix).  
+* [0.x.21]*
+   A multigrid transfer scheme. A multrigrid transfer class can have different   transfer schemes to enable p-adaptivity (one transfer scheme per   polynomial degree pair) and to enable global coarsening (one transfer   scheme for transfer between children and parent cells, as well as, one   transfer scheme for cells that are not refined).  
+* [0.x.22]*
+     Number of coarse cells.    
+* [0.x.23]*
+     Number of degrees of freedom of a coarse cell.    
+* [0.x.24]*
+     Number of degrees of freedom of fine cell.    
+* [0.x.25]*
+     Polynomial degree of the finite element of the coarse cells.    
+* [0.x.26]*
+     Polynomial degree of the finite element of the fine cells.    
+* [0.x.27]*
+     Weights for continuous elements.    
+* [0.x.28]*
+     Prolongation matrix for non-tensor-product elements.    
+* [0.x.29]*
+     1D prolongation matrix for tensor-product elements.    
+* [0.x.30]*
+     Restriction matrix for non-tensor-product elements.    
+* [0.x.31]*
+     1D restriction matrix for tensor-product elements.    
+* [0.x.32]*
+     DoF indices of the coarse cells, expressed in indices local to the MPI     rank.    
+* [0.x.33]*
+     DoF indices of the fine cells, expressed in indices local to the MPI     rank.    
+* [0.x.34]*
+   Transfer schemes.  
+* [0.x.35]*
+   Flag if the finite elements on the fine cells are continuous. If yes,   the multiplicity of DoF sharing a vertex/line as well as constraints have   to be taken into account via weights.  
+* [0.x.36]*
+   Partitioner needed by the intermediate vector.  
+* [0.x.37]*
+   Partitioner needed by the intermediate vector.  
+* [0.x.38]*
+   Internal vector needed for collecting all degrees of freedom of the fine   cells. It is only initialized if the fine-level DoF indices touch DoFs   other than the locally active ones (which we always assume can be   accessed by the given vectors in the prolongate/restrict functions),   otherwise it is left at size zero.  
+* [0.x.39]*
+   Internal vector on that the actual prolongation/restriction is performed.  
+* [0.x.40]*
+   Internal vector for performing manual constraint_coarse.distribute(), which   is needed for acceptable performance.  
+* [0.x.41]*
+   Constraint-entry indices for manually performing   constraint_coarse.distribute() in MPI-local indices (for performance   reasons).  
+* [0.x.42]*
+   Constraint-entry values for manually performing   constraint_coarse.distribute() in MPI-local indices (for performance   reasons).  
+* [0.x.43]*
+   Pointers to the constraint entries for performing manual   constraint_coarse.distribute().  
+* [0.x.44]*
+   Constraint-entry indices for performing manual   constraint_coarse.distribute_local_to_global().  
+* [0.x.45]*
+   Constraint-entry values for performing manual   constraint_coarse.distribute_local_to_global().  
+* [0.x.46]*
+   Pointers to the constraint entries for performing manual   constraint_coarse.distribute_local_to_global().  
+* [0.x.47]*
+   Number of components.  
+* [0.x.48]*
+ Implementation of the MGTransferBase. In contrast to other multigrid transfer operators, the user can provide separate transfer operators of type MGTwoLevelTransfer between each level.
+*  This class currently only works for tensor-product finite elements based on FE_Q and FE_DGQ elements. Systems involving multiple components of one of these element, as well as, systems with different elements or other elements are currently not implemented.
+
+* 
+* [0.x.49]*
+   Value type.  
+* [0.x.50]*
+   Constructor taking a collection of transfer operators (with the coarsest   level kept   empty in  [2.x.30]  and an optional function that initializes the   internal level vectors within the function call copy_to_mg() if used in the   context of PreconditionMG.  
+* [0.x.51]*
+   Perform prolongation.  
+* [0.x.52]*
+   Perform restriction.  
+* [0.x.53]*
+   Initialize internal vectors and copy  [2.x.31]  vector to the finest   multigrid level.    
+*  [2.x.32]  DoFHandler is not needed here, but is required by the interface.  
+* [0.x.54]*
+   Initialize internal vectors and copy the values on the finest   multigrid level to  [2.x.33]  vector.    
+*  [2.x.34]  DoFHandler is not needed here, but is required by the interface.  
+* [0.x.55]*
+   Interpolate fine-mesh field  [2.x.35]  to each multigrid level in    [2.x.36]  and store the result in  [2.x.37]  This function is different   from restriction, where a weighted residual is   transferred to a coarser level (transposition of prolongation matrix).     The argument  [2.x.38]  has to be initialized with the correct size according   to the number of levels of the triangulation.     If an inner vector of  [2.x.39]  is empty or has incorrect locally owned size,   it will be resized to locally relevant degrees of freedom on each level.    
+*  [2.x.40]  DoFHandler is not needed here, but is required by the interface.  
+* [0.x.56]*
+   Collection of the two-level transfer operators.  
+* [0.x.57]*
+   %Function to initialize internal level vectors.  
+* [0.x.58]
+
+include/deal.II-translator/multigrid/mg_transfer_internal_0.txt
+[0.x.0]*
+     Internal function for filling the copy indices from global to level     indices         If  [2.x.0]  is false, the mapping will also contain     DoFs at the interface between levels. This is desirable when     transferring solution vectors instead of residuals.    
+* [0.x.1]*
+     Given the collection of child cells in lexicographic ordering as seen     from the parent, this function computes the first index of the given     child    
+* [0.x.2]*
+     A structure that stores data related to the finite element contained in     the DoFHandler. Used only for the initialization using     <tt>setup_transfer</tt>.    
+* [0.x.3]*
+       A variable storing the degree of the finite element. The selection of       the computational kernel is based on this number.      
+* [0.x.4]*
+       A variable storing whether the element is continuous and there is a       joint degree of freedom in the center of the 1D line.      
+* [0.x.5]*
+       A variable storing the number of components in the finite element.      
+* [0.x.6]*
+       A variable storing the number of degrees of freedom on all child cells.       It is <tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt> for DG elements and       somewhat less for continuous elements.      
+* [0.x.7]*
+       An array that holds the numbering between the numbering of degrees of       freedom in the finite element and the lexicographic numbering needed       for the tensor product application.      
+* [0.x.8]*
+       This variable holds the one-dimensional embedding (prolongation) matrix       from mother element to all the children.      
+* [0.x.9]*
+     Set up most of the internal data structures of MGTransferMatrixFree    
+* [0.x.10]
+
+include/deal.II-translator/multigrid/mg_transfer_matrix_free_0.txt
+[0.x.0]*
+ Implementation of the MGTransferBase interface for which the transfer operations is implemented in a matrix-free way based on the interpolation matrices of the underlying finite element. This requires considerably less memory than MGTransferPrebuilt and can also be considerably faster than that variant.
+*  This class currently only works for tensor-product finite elements based on FE_Q and FE_DGQ elements, including systems involving multiple components of one of these elements. Systems with different elements or other elements are currently not implemented.
+
+* 
+* [0.x.1]*
+   Constructor without constraint matrices. Use this constructor only with   discontinuous finite elements or with no local refinement.  
+* [0.x.2]*
+   Constructor with constraints. Equivalent to the default constructor   followed by initialize_constraints().  
+* [0.x.3]*
+   Destructor.  
+* [0.x.4]*
+   Initialize the constraints to be used in build().  
+* [0.x.5]*
+   Reset the object to the state it had right after the default constructor.  
+* [0.x.6]*
+   Actually build the information for the prolongation for each level.     The optional second argument of external partitioners allows the user to   suggest vector partitioning on the levels. In case the partitioners   are found to contain all ghost unknowns that are visited through the   transfer, the given partitioners are chosen. This ensures compatibility   of vectors during prolongate and restrict with external partitioners as   given by the user, which in turn saves some copy operations. However, in   case there are unknowns missing
+* 
+*  -  and this is typically the case at some   point during h-coarsening since processors will need to drop out and   thus children's unknowns on some processor will be needed as ghosts to a   parent cell on another processor
+* 
+*  -  the provided external partitioners are   ignored and internal variants are used instead.  
+* [0.x.7]*
+   Prolongate a vector from level <tt>to_level-1</tt> to level   <tt>to_level</tt> using the embedding matrices of the underlying finite   element. The previous content of <tt>dst</tt> is overwritten.      [2.x.0]  to_level The index of the level to prolongate to, which is the   level of  [2.x.1]       [2.x.2]  src is a vector with as many elements as there are degrees of   freedom on the coarser level involved.      [2.x.3]  dst has as many elements as there are degrees of freedom on the   finer level.  
+* [0.x.8]*
+   Restrict a vector from level <tt>from_level</tt> to level   <tt>from_level-1</tt> using the transpose operation of the prolongate()   method. If the region covered by cells on level <tt>from_level</tt> is   smaller than that of level <tt>from_level-1</tt> (local refinement), then   some degrees of freedom in <tt>dst</tt> are active and will not be   altered. For the other degrees of freedom, the result of the restriction   is added.      [2.x.4]  from_level The index of the level to restrict from, which is the   level of  [2.x.5]       [2.x.6]  src is a vector with as many elements as there are degrees of   freedom on the finer level involved.      [2.x.7]  dst has as many elements as there are degrees of freedom on the   coarser level.  
+* [0.x.9]*
+   Interpolate fine-mesh field  [2.x.8]  to each multigrid level in    [2.x.9]  and store the result in  [2.x.10]  This function is different   from restriction, where a weighted residual is   transferred to a coarser level (transposition of prolongation matrix).     The argument  [2.x.11]  has to be initialized with the correct size according   to the number of levels of the triangulation.     If an inner vector of  [2.x.12]  is empty or has incorrect locally owned size,   it will be resized to locally relevant degrees of freedom on each level.     The use of this function is demonstrated in  [2.x.13] .  
+* [0.x.10]*
+   Finite element does not provide prolongation matrices.  
+* [0.x.11]*
+   Memory used by this object.  
+* [0.x.12]*
+   A variable storing the degree of the finite element contained in the   DoFHandler passed to build(). The selection of the computational kernel is   based on this number.  
+* [0.x.13]*
+   A variable storing whether the element is continuous and there is a joint   degree of freedom in the center of the 1D line.  
+* [0.x.14]*
+   A variable storing the number of components in the finite element contained   in the DoFHandler passed to build().  
+* [0.x.15]*
+   A variable storing the number of degrees of freedom on all child cells. It   is <tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt> for DG elements and   somewhat less for continuous elements.  
+* [0.x.16]*
+   This variable holds the indices for cells on a given level, extracted from   DoFHandler for fast access. All DoF indices on a given level are stored as   a plain array (since this class assumes constant DoFs per cell). To index   into this array, use the cell number times dofs_per_cell.     This array first is arranged such that all locally owned level cells come   first (found in the variable n_owned_level_cells) and then other cells   necessary for the transfer to the next level.  
+* [0.x.17]*
+   A variable storing the connectivity from parent to child cell numbers for   each level.  
+* [0.x.18]*
+   A variable storing the number of cells owned on a given process (sets the   bounds for the worker loops) for each level.  
+* [0.x.19]*
+   This variable holds the one-dimensional embedding (prolongation) matrix   from mother element to all the children.  
+* [0.x.20]*
+   This variable holds the temporary values for the tensor evaluation  
+* [0.x.21]*
+   For continuous elements, restriction is not additive and we need to   weight the result at the end of prolongation (and at the start of   restriction) by the valence of the degrees of freedom, i.e., on how many   elements they appear. We store the data in vectorized form to allow for   cheap access. Moreover, we utilize the fact that we only need to store   <tt>3<sup>dim</sup></tt> indices.     Data is organized in terms of each level (outer vector) and the cells on   each level (inner vector).  
+* [0.x.22]*
+   A variable storing the local indices of Dirichlet boundary conditions on   cells for all levels (outer index), the cells within the levels (second   index), and the indices on the cell (inner index).  
+* [0.x.23]*
+   A vector that holds shared pointers to the partitioners of the   transfer. These partitioners might be shared with what was passed in from   the outside through build() or be shared with the level vectors inherited   from MGLevelGlobalTransfer.  
+* [0.x.24]*
+   Perform the prolongation operation.  
+* [0.x.25]*
+   Performs the restriction operation.  
+* [0.x.26]*
+ Implementation of the MGTransferBase interface for which the transfer operations is implemented in a matrix-free way based on the interpolation matrices of the underlying finite element. This requires considerably less memory than MGTransferPrebuilt and can also be considerably faster than that variant.
+*  This class works with  [2.x.14]  and performs exactly the same transfer operations for each block as MGTransferMatrixFree. Both the cases that the same DoFHandler is used for all the blocks and that each block uses its own DoFHandler are supported.
+
+* 
+* [0.x.27]*
+   Constructor without constraint matrices. Use this constructor only with   discontinuous finite elements or with no local refinement.  
+* [0.x.28]*
+   Constructor with constraints. Equivalent to the default constructor   followed by initialize_constraints().  
+* [0.x.29]*
+   Same as above for the case that each block has its own DoFHandler.  
+* [0.x.30]*
+   Destructor.  
+* [0.x.31]*
+   Initialize the constraints to be used in build().  
+* [0.x.32]*
+   Same as above for the case that each block has its own DoFHandler.  
+* [0.x.33]*
+   Reset the object to the state it had right after the default constructor.  
+* [0.x.34]*
+   Actually build the information for the prolongation for each level.  
+* [0.x.35]*
+   Same as above for the case that each block has its own DoFHandler.  
+* [0.x.36]*
+   Prolongate a vector from level <tt>to_level-1</tt> to level   <tt>to_level</tt> using the embedding matrices of the underlying finite   element. The previous content of <tt>dst</tt> is overwritten.      [2.x.15]  to_level The index of the level to prolongate to, which is the   level of  [2.x.16]       [2.x.17]  src is a vector with as many elements as there are degrees of   freedom on the coarser level involved.      [2.x.18]  dst has as many elements as there are degrees of freedom on the   finer level.  
+* [0.x.37]*
+   Restrict a vector from level <tt>from_level</tt> to level   <tt>from_level-1</tt> using the transpose operation of the prolongate()   method. If the region covered by cells on level <tt>from_level</tt> is   smaller than that of level <tt>from_level-1</tt> (local refinement), then   some degrees of freedom in <tt>dst</tt> are active and will not be   altered. For the other degrees of freedom, the result of the restriction   is added.      [2.x.19]  from_level The index of the level to restrict from, which is the   level of  [2.x.20]       [2.x.21]  src is a vector with as many elements as there are degrees of   freedom on the finer level involved.      [2.x.22]  dst has as many elements as there are degrees of freedom on the   coarser level.  
+* [0.x.38]*
+   Transfer from a block-vector on the global grid to block-vectors defined   on each of the levels separately for active degrees of freedom.   In particular, for a globally refined mesh only the finest level in  [2.x.23]    is filled as a plain copy of  [2.x.24]  All the other level objects are left   untouched.     This function will initialize  [2.x.25]  accordingly if needed as required by   the Multigrid class.  
+* [0.x.39]*
+   Same as above for the case that each block has its own DoFHandler.  
+* [0.x.40]*
+   Transfer from multi-level block-vector to normal vector.  
+* [0.x.41]*
+   Same as above for the case that each block has its own DoFHandler.  
+* [0.x.42]*
+   Memory used by this object.  
+* [0.x.43]*
+   This class can both be used with a single DoFHandler   or a separate DoFHandler for each block.  
+* [0.x.44]*
+   Non-block matrix-free versions of transfer operation.  
+* [0.x.45]*
+   A flag to indicate whether the same DoFHandler is used for all   the components or if each block has its own DoFHandler.  
+* [0.x.46]
+
+include/deal.II-translator/multigrid/multigrid.templates_0.txt
+[0.x.0]
+
+include/deal.II-translator/multigrid/multigrid_0.txt
+[0.x.0]*
+   A structure containing  [2.x.0]  objects for optional processing in   multigrid solvers.     Each of these signals is called twice, once before and once after   the action is performed. The two function calls differ in the   boolean argument  [2.x.1]  which is true the first time and   false the second.  
+* [0.x.1]*
+     This signal is triggered before ( [2.x.2]  is true) and after ( [2.x.3]      is false) the call to  [2.x.4]  which transfers the vector     given to it to a multi-level vector.    
+* [0.x.2]*
+     This signal is triggered before ( [2.x.5]  is true) and after ( [2.x.6]      is false) the call to  [2.x.7]  which transfers the     multi-level vector given to it to a normal vector.    
+* [0.x.3]*
+     This signal is triggered before ( [2.x.8]  is true) and after ( [2.x.9]      is     false) the call to the coarse solver on  [2.x.10]          The coarse solve will be done with ``defect[leve]`` and returned in     ``solution[level]``, which can be inspected by the user using this     signal.    
+* [0.x.4]*
+     This signal is triggered before ( [2.x.11]  is true) and after ( [2.x.12]      is false) the call to  [2.x.13]  which restricts a     vector from  [2.x.14]  to the next coarser one ( [2.x.15] 
+* 
+*  - 1).         The vector ``defect[level-1]`` will be updated between these two     triggers and can be inspected by the user using this signal.    
+* [0.x.5]*
+     This signal is triggered before ( [2.x.16]  is true) and after ( [2.x.17]      is false) the call to  [2.x.18]  which prolongs a vector to      [2.x.19]  from the next coarser one ( [2.x.20] 
+* 
+*  - 1).    
+* [0.x.6]*
+     This signal is triggered before ( [2.x.21]  is true) and after ( [2.x.22]      is false) the call to a pre-smoothing step via  [2.x.23]  on      [2.x.24]          The smoother result will be stored in ``solution[level]`` and can be     inspected by the user using this signal.    
+* [0.x.7]*
+     This signal is triggered before ( [2.x.25]  is true) and after ( [2.x.26]      is false) the call to a post-smoothing step via  [2.x.27]      on      [2.x.28]     
+* [0.x.8]*
+ Implementation of the multigrid method. The implementation supports both continuous and discontinuous elements and follows the procedure described in the  [2.x.29]  "multigrid paper by Janssen and Kanschat".
+*  The function which starts a multigrid cycle on the finest level is cycle(). Depending on the cycle type chosen with the constructor (see enum Cycle), this function triggers one of the cycles level_v_step() or level_step(), where the latter one can do different types of cycles.
+*  Using this class, it is expected that the right hand side has been converted from a vector living on the locally finest level to a multilevel vector. This is a nontrivial operation, usually initiated automatically by the class PreconditionMG and performed by the classes derived from MGTransferBase.
+* 
+
+* 
+*  [2.x.30]  The interface of this class is still very clumsy. In particular, you will have to set up quite a few auxiliary objects before you can use it. Unfortunately, it seems that this can be avoided only be restricting the flexibility of this class in an unacceptable way.
+
+* 
+* [0.x.9]*
+   List of implemented cycle types.  
+* [0.x.10]*
+   Constructor. <tt>transfer</tt> is an object performing prolongation and   restriction. For levels in [minlevel, maxlevel] matrix has to contain   valid matrices. By default the maxlevel is set to the maximal valid level.     This function already initializes the vectors which will be used later in   the course of the computations. You should therefore create objects of   this type as late as possible.  
+* [0.x.11]*
+   Reinit this class according to #minlevel and #maxlevel.  
+* [0.x.12]*
+   Execute one multigrid cycle. The type of cycle is selected by the   constructor argument cycle. See the enum Cycle for available types.  
+* [0.x.13]*
+   Execute one step of the V-cycle algorithm.  This function assumes, that   the multilevel vector #defect is filled with the residual of an outer   defect correction scheme. This is usually taken care of by   PreconditionMG). After vcycle(), the result is in the multilevel vector   #solution. See <tt>copy_*_mg</tt> in the MGTools namespace if you want to   use these vectors yourself.     The actual work for this function is done in level_v_step().  
+* [0.x.14]*
+   Set additional matrices to correct residual computation at refinement   edges. Since we only smoothen in the interior of the refined part of the   mesh, the coupling across the refinement edge is missing. This coupling   is provided by these two matrices.    
+*  [2.x.31]  While <tt>edge_out.vmult</tt> is used, for the second argument, we   use <tt>edge_in.Tvmult</tt>. Thus, <tt>edge_in</tt> should be assembled   in transposed form. This saves a second sparsity pattern for   <tt>edge_in</tt>. In particular, for symmetric operators, both arguments   can refer to the same matrix, saving assembling of one of them.  
+* [0.x.15]*
+   Set additional matrices to correct residual computation at refinement   edges. These matrices originate from discontinuous Galerkin methods (see   FE_DGQ etc.), where they correspond to the edge fluxes at the refinement   edge between two levels.    
+*  [2.x.32]  While <tt>edge_down.vmult</tt> is used, for the second argument, we   use <tt>edge_up.Tvmult</tt>. Thus, <tt>edge_up</tt> should be assembled   in transposed form. This saves a second sparsity pattern for   <tt>edge_up</tt>. In particular, for symmetric operators, both arguments   can refer to the same matrix, saving assembling of one of them.  
+* [0.x.16]*
+   Return the finest level for multigrid.  
+* [0.x.17]*
+   Return the coarsest level for multigrid.  
+* [0.x.18]*
+   Set the highest level for which the multilevel method is performed. By   default, this is the finest level of the Triangulation. Accepted are   values not smaller than the current #minlevel.  
+* [0.x.19]*
+   Set the coarsest level for which the multilevel method is performed. By   default, this is zero. Accepted are non-negative values not larger than   the current #maxlevel.     If <tt>relative</tt> is <tt>true</tt>, then this function determines the   number of levels used, that is, it sets #minlevel to   #maxlevel-<tt>level</tt>.    
+*  [2.x.33]  The mesh on the coarsest level must cover the whole domain. There   may not be hanging nodes on #minlevel.    
+*  [2.x.34]  If #minlevel is set to a nonzero value, do not forget to adjust   your coarse grid solver!  
+* [0.x.20]*
+   Chance #cycle_type used in cycle().  
+* [0.x.21]*
+   Connect a function to  [2.x.35]   
+* [0.x.22]*
+   Connect a function to  [2.x.36]   
+* [0.x.23]*
+   Connect a function to  [2.x.37]   
+* [0.x.24]*
+   Connect a function to  [2.x.38]   
+* [0.x.25]*
+   Connect a function to  [2.x.39]   
+* [0.x.26]*
+   Signals for the various actions that the Multigrid algorithm uses.  
+* [0.x.27]*
+   The V-cycle multigrid method. <tt>level</tt> is the level the function   starts on. It will usually be called for the highest level from outside,   but will then call itself recursively for <tt>level-1</tt>, unless we are   on #minlevel where the coarse grid solver solves the problem exactly.  
+* [0.x.28]*
+   The actual W-cycle or F-cycle multigrid method. <tt>level</tt> is the   level the function starts on. It will usually be called for the highest   level from outside, but will then call itself recursively for   <tt>level-1</tt>, unless we are on #minlevel where the coarse grid solver   solves the problem exactly.  
+* [0.x.29]*
+   Cycle type performed by the method cycle().  
+* [0.x.30]*
+   Level for coarse grid solution.  
+* [0.x.31]*
+   Highest level of cells.  
+* [0.x.32]*
+   Input vector for the cycle. Contains the defect of the outer method   projected to the multilevel vectors.  
+* [0.x.33]*
+   The solution update after the multigrid step.  
+* [0.x.34]*
+   Auxiliary vector.  
+* [0.x.35]*
+   Auxiliary vector for W- and F-cycles. Left uninitialized in V-cycle.  
+* [0.x.36]*
+   The matrix for each level.  
+* [0.x.37]*
+   The matrix for each level.  
+* [0.x.38]*
+   Object for grid transfer.  
+* [0.x.39]*
+   The pre-smoothing object.  
+* [0.x.40]*
+   The post-smoothing object.  
+* [0.x.41]*
+   Edge matrix from the interior of the refined part to the refinement edge.    
+*  [2.x.40]  Only <tt>vmult</tt> is used for these matrices.  
+* [0.x.42]*
+   Transpose edge matrix from the refinement edge to the interior of the   refined part.    
+*  [2.x.41]  Only <tt>Tvmult</tt> is used for these matrices.  
+* [0.x.43]*
+   Edge matrix from fine to coarse.    
+*  [2.x.42]  Only <tt>vmult</tt> is used for these matrices.  
+* [0.x.44]*
+   Transpose edge matrix from coarse to fine.    
+*  [2.x.43]  Only <tt>Tvmult</tt> is used for these matrices.  
+* [0.x.45]*
+ Multi-level preconditioner. Here, we collect all information needed for multi-level preconditioning and provide the standard interface for LAC iterative methods.
+*  Furthermore, it needs functions <tt>void copy_to_mg(const VectorType&)</tt> to store  [2.x.44]  in the right hand side of the multi-level method and <tt>void copy_from_mg(VectorType&)</tt> to store the result of the v-cycle in  [2.x.45] 
+*  If VectorType is in fact a block vector and the TRANSFER object supports use of a separate DoFHandler for each block, this class also allows to be initialized with a separate DoFHandler for each block.
+
+* 
+* [0.x.46]*
+   Constructor. Arguments are the multigrid object, pre-smoother, post-   smoother and coarse grid solver.  
+* [0.x.47]*
+   Same as above in case every component of a block vector   uses its own DoFHandler.  
+* [0.x.48]*
+   Dummy function needed by other classes.  
+* [0.x.49]*
+   Preconditioning operator. Calls the  [2.x.46]  function of the  [2.x.47]    object passed to the constructor.     This is the operator used by LAC iterative solvers.  
+* [0.x.50]*
+   Preconditioning operator. Calls the  [2.x.48]  function of the  [2.x.49]    object passed to the constructor.  
+* [0.x.51]*
+   Transposed preconditioning operator.     Not implemented, but the definition may be needed.  
+* [0.x.52]*
+   Transposed preconditioning operator.     Not implemented, but the definition may be needed.  
+* [0.x.53]*
+   Return the partitioning of the range space of this preconditioner, i.e.,   the partitioning of the vectors that are result from matrix-vector   products. By default, the respective information for the first DoFHandler   object are returned.  
+* [0.x.54]*
+   Return the partitioning of the domain space of this preconditioner, i.e.,   the partitioning of the vectors this matrix has to be multiplied with.   By default, the respective information for the first DoFHandler object   are returned.  
+* [0.x.55]*
+   Return the MPI communicator object in use with this preconditioner.  
+* [0.x.56]*
+   Connect a function to  [2.x.50]   
+* [0.x.57]*
+   Connect a function to  [2.x.51]   
+* [0.x.58]*
+   Associated  [2.x.52]   
+* [0.x.59]*
+   Storage for the pointers to the DoFHandler objects   without SmartPointer wrapper.  
+* [0.x.60]*
+   The multigrid object.  
+* [0.x.61]*
+   Object for grid transfer.  
+* [0.x.62]*
+   Flag to indicate if the object is initialized with a single DoFHandler   or with one for each block.  
+* [0.x.63]*
+   Signals used by this object  
+* [0.x.64]
+
+include/deal.II-translator/multigrid/sparse_matrix_collection_0.txt
+[0.x.0]*
+   Handler and storage for all five SparseMatrix object involved in using   multigrid with local refinement.  
+* [0.x.1]
+

@@ -1,0 +1,455 @@
+include/deal.II-translator/particles/data_out_0.txt
+[0.x.0]*
+   This class generates graphical output for the particles stored by a   ParticleHandler object. From a particle handler, it generates patches which   can then be used to write traditional output files. This class currently   only supports witing the particle position and their ID and does not allow   to write the properties attached to the particles    
+*  [2.x.0]   
+* [0.x.1]*
+     Default constructor for the  [2.x.1]  class.    
+* [0.x.2]*
+     Destructor for the  [2.x.2]  class.    
+* [0.x.3]*
+     Build the patches for a given particle handler.          [2.x.3]  [in] particles A particle handler for which the patches will be built.     A dim=0 patch is built for each particle. The position of the particle is     used to build the node position and the ID of the particle is added as a     single data element.      [2.x.4]  [in] data_component_names An optional vector of strings that     describe the properties of each particle. Particle properties will only     be written if this vector     is provided.      [2.x.5]  [in] data_component_interpretations An optional vector that     controls if the particle properties are interpreted as scalars, vectors,     or tensors. Has to be of the same length as  [2.x.6]     
+* [0.x.4]*
+     Returns the patches built by the data_out class which was previously     built using a particle handler    
+* [0.x.5]*
+     Virtual function through which the names of data sets are obtained from     this class    
+* [0.x.6]*
+     Overload of the respective  [2.x.7]      function. See there for a more extensive documentation.     This function is a reimplementation of the function      [2.x.8]     
+* [0.x.7]*
+     This is a vector of patches that is created each time build_patches() is     called. These patches are used in the output routines of the base     classes.    
+* [0.x.8]*
+     A vector of field names for all data components stored in patches.    
+* [0.x.9]*
+     A vector that for each of the data components of the     current data set indicates whether they are scalar fields, parts of a     vector-field, or any of the other supported kinds of data.    
+* [0.x.10]
+
+include/deal.II-translator/particles/generators_0.txt
+[0.x.0]*
+   A namespace that contains all classes that are related to the particle   generation.  
+* [0.x.1]*
+     A function that generates particles in every cell at specified  [2.x.0]      The total number of particles that is added to the  [2.x.1]  object is     the number of locally owned cells of the  [2.x.2]  times the number of     locations in  [2.x.3]  An optional  [2.x.4]  argument     can be used to map from  [2.x.5]  to the real particle locations.          [2.x.6]  triangulation The triangulation associated with the  [2.x.7]           [2.x.8]  particle_reference_locations A vector of positions in the unit cell.     Particles will be generated in every cell at these locations.          [2.x.9]  particle_handler The particle handler that will take ownership     of the generated particles.          [2.x.10]  mapping An optional mapping object that is used to map reference     location in the unit cell to the real cells of the triangulation. If no     mapping is provided a MappingQ1 is assumed.    
+* [0.x.2]*
+     A function that generates one particle at a random location in cell  [2.x.11]  and with     index  [2.x.12]  The function expects a random number generator to avoid the expensive generation     and destruction of a generator for every particle and optionally takes     into account a mapping for the cell. The algorithm implemented in the     function is described in  [2.x.13] . In short, the algorithm     generates     random locations within the bounding box of the  [2.x.14]  It then inverts the mapping     to check if the generated particle is within the cell itself. This makes     sure the algorithm produces statistically random locations even for     nonlinear mappings and distorted cells. However, if the ratio between     bounding box and cell volume becomes very large
+* 
+*  -  i.e. the cells become     strongly deformed, for example a pencil shaped cell that lies diagonally     in the domain
+* 
+*  -  then the algorithm can become very inefficient.     Therefore, it only tries to find a location ni the cell a fixed number of     times before throwing an error message.          [2.x.15]  cell The cell in which a particle is generated.          [2.x.16]  id The particle index that will be assigned to the new     particle.          [2.x.17]  random_number_generator A random number generator that     will be used for the creation of th particle.          [2.x.18]  mapping An optional mapping object that is used to map     reference location in the unit cell to the real cell. If no mapping is     provided a MappingQ1 is assumed.    
+* [0.x.3]*
+     A function that generates particles randomly in the domain with a     particle density     according to a provided probability density function  [2.x.19]      The total number of particles that is added to the  [2.x.20]  object is      [2.x.21]  An optional  [2.x.22]  argument     can be used to map from  [2.x.23]  to the real particle locations.     The function can compute the number of particles per cell either     deterministically by computing the integral of the probability density     function for each cell and creating     particles accordingly (if option  [2.x.24]  set to false), or it can     select cells randomly based on the probability density function and the     cell size     (if option  [2.x.25]  set to true). In either case the position of     individual particles inside the cell is computed randomly.         The algorithm implemented in the function is described in      [2.x.26] .          [2.x.27]  triangulation The triangulation associated with the  [2.x.28]           [2.x.29]  probability_density_function A function with non-negative     values that determines the probability density of a particle to be     generated in this location. The function does not need to be normalized.          [2.x.30]  random_cell_selection A bool that determines, how the number     of particles per cell is computed (see the description above).          [2.x.31]  n_particles_to_create The number of particles that will be     created by this function.          [2.x.32]  particle_handler The particle handler that will take     ownership of the generated particles.          [2.x.33]  mapping An optional mapping object that is used to map     reference location in the unit cell to the real cells of the     triangulation. If no mapping is provided a MappingQ1 is assumed.          [2.x.34]  random_number_seed An optional seed that determines the     initial state of the random number generator. Use the same number to get     a reproducible particle distribution, or a changing number (e.g. based on     system time) to generate different particle distributions for each call     to this function.    
+* [0.x.4]*
+     A function that generates particles at the locations of the support     points of a DoFHandler, possibly based on a different Triangulation with     respect to the one used to construct the ParticleHandler.     The total number of particles that is added to the  [2.x.35]  object is     the number of dofs of the DoFHandler that is passed that are within the     triangulation and whose components are within the ComponentMask.     This function uses insert_global_particles and consequently may induce     considerable mpi communication overhead.         This function is used in  [2.x.36] .          [2.x.37]  dof_handler A DOF handler that may live on another     triangulation that is used to establsh the positions of the particles.          [2.x.38]  global_bounding_boxes A vector that contains all the bounding     boxes for all processors. This vector can be established by first using      [2.x.39]  and gathering all the     bounding boxes using  [2.x.40]           [2.x.41]  particle_handler The particle handler that will take     ownership of the generated particles. The particles that are generated     will be appended to the particles currently owned by the particle     handler.          [2.x.42]  mapping An optional mapping object that is used to map     the DOF locations. If no mapping is provided a MappingQ1 is assumed.          [2.x.43]  components Component mask that decides which subset of the     support points of the dof_handler are used to generate the particles.          [2.x.44]  properties An optional vector of vector of properties     for each particle to be inserted.    
+* [0.x.5]*
+     A function that generates particles at the locations of the quadrature     points of a Triangulation. This Triangulation can be different     from the one used to construct the ParticleHandler.     The total number of particles that is added to the  [2.x.45]  object is the     number of cells multiplied by the number of particle reference locations     which are generally constructed using a quadrature.     This function uses insert_global_particles and consequently may     induce considerable mpi communication overhead.          [2.x.46]  triangulation The possibly non-matching triangulation which is     used to insert the particles into the domain.          [2.x.47]  quadrature A quadrature whose reference location are used to     insert the particles within the cells.          [2.x.48]  global_bounding_boxes A vector that contains all the bounding     boxes for all processors. This vector can be established by first using      [2.x.49]  and gathering all the     bounding boxes using  [2.x.50]           [2.x.51]  particle_handler The particle handler that will take     ownership of the generated particles.          [2.x.52]  mapping An optional mapping object that is used to map     the quadrature locations. If no mapping is provided a MappingQ1 is     assumed.          [2.x.53]  properties An optional vector of vector of properties     for each particle to be inserted.    
+* [0.x.6]
+
+include/deal.II-translator/particles/particle_0.txt
+[0.x.0]*
+ A namespace that contains all classes that are related to the particle implementation, in particular the fundamental Particle class.
+
+* 
+* [0.x.1]*
+     Internal alias of cell level/index pair.    
+* [0.x.2]*
+   A class that represents a particle in a domain that is meshed by   a triangulation of some kind. The data this class stores is the   position of the particle in the overall space, the position of   the particle in the reference coordinate system of the cell it is   currently in, an ID number that is unique among all particles,   and a variable number of "properties".     The "properties" attached to each object of this class are   stored by a PropertyPool object. These properties are   stored as an array of `double` variables that can be accessed   via an ArrayView object. For example, if one wanted to equip   each particle with a "temperature" and "chemical composition"   property that is advected along with the particle (and may change   from time step to time step based on some differential equation,   for example), then one would allocate two properties per particle   in the PropertyPool object.     In practice, however, one often wants to associate properties   with particles that are not just independent numbers as in the   situation above. An example would be if one wanted to track the   stress or strain that a particle is subjected to
+* 
+*  -  a tensor-valued   quantity. In these cases, one would [1.x.0] these scalar   properties as the [1.x.1]. In   other words, one would first tell the PropertyPool to allocate   as many properties per particle as there are components in the   tensor one wants to track, and then write small conversion functions that   take the ArrayView of scalar properties returned by the   get_properties() function and convert it to a tensor of the   appropriate type. This can then be evaluated and evolved in each   time step. A second conversion function would convert back from a   tensor to an ArrayView object to store the updated data back in the   particle via the set_properties() function.     There are of course cases where the properties one cares about are   not real (or, in computers, floating point) numbers but rather   categorical: For example, one may want to mark some particles   as "red", "blue", or "green". The property might then either be   represented as an integer, or as an element of an `enum`. In these   cases, one would need to come up with a way to [1.x.2]   these sorts of categorical fields in terms of floating point   numbers. For example, one could map "red" to the floating point number   1.0, "blue" to 2.0, and "green" to 3.0. The conversion functions   to translate between these two representations should then not be very   difficult to write either.    
+*  [2.x.0]   
+* [0.x.3]*
+     Empty constructor for Particle, creates a particle at the     origin.    
+* [0.x.4]*
+     Constructor for Particle. This function creates a particle with the     specified ID at the specified location. Note that there is no check for     duplicate particle IDs so the user must make sure the IDs are unique over     all processes. Data is stored in a global PropertyPool object     (corresponding to the global "heap") but can later be transferred to     another property pool by calling set_property_pool().          [2.x.1]  location Initial location of particle.      [2.x.2]  reference_location Initial location of the particle     in the coordinate system of the reference cell.      [2.x.3]  id Globally unique ID number of particle.    
+* [0.x.5]*
+     Copy-constructor for Particle. This function creates a particle with     exactly the state of the input argument. The copied data is stored in a     global PropertyPool object (corresponding to the global "heap") but can     later be transferred to another property pool by calling     set_property_pool().    
+* [0.x.6]*
+     Constructor for Particle. This function creates a particle from a data     vector. Data is stored in a global PropertyPool object (corresponding to     the global "heap") but can later be transferred to another property pool     by calling set_property_pool(). This constructor is usually called after     serializing a particle by calling the write_data() function.          [2.x.4]  begin_data A pointer to a memory location from which     to read the information that completely describes a particle. This     class then de-serializes its data from this memory location and     advances the pointer beyond the data that has been read to initialize     the particle information.          [2.x.5]  property_pool An optional pointer to a property pool     that is used to manage the property data used by this particle. If this     argument is not provided, then a global property pool is used; on the     other hand,     if a non-null pointer is provided, this constructor assumes  [2.x.6]      contains serialized data of the same length and type that is allocated     by  [2.x.7]  If the data pointer provided here corresponds     to data for a particle that has properties, then this function will only     succeed if a property pool is provided as second argument that is able to     store the correct number of properties per particle.    
+* [0.x.7]*
+     Move constructor for Particle, creates a particle from an existing     one by stealing its state.    
+* [0.x.8]*
+     Copy assignment operator.    
+* [0.x.9]*
+     Move assignment operator.    
+* [0.x.10]*
+     Destructor. Releases the property handle if it is valid, and     therefore frees that memory space for other particles. (Note:     the memory is managed by the property pool, and the pool is responsible     for what happens to the memory.    
+* [0.x.11]*
+     Write particle data into a data array. The array is expected     to be large enough to take the data, and the void pointer should     point to the first entry of the array to which the data should be     written. This function is meant for serializing all particle properties     and later de-serializing the properties by calling the appropriate     constructor Particle(void&data, PropertyPoolproperty_pool = nullptr);          [2.x.8]  [in] data The memory location to write particle data       into.          [2.x.9]  A pointer to the next byte after the array to which data has       been written.    
+* [0.x.12]*
+     Update all of the data associated with a particle: id,     location, reference location and, if any, properties by using a     data array. The array is expected to be large enough to take the data,     and the void pointer should point to the first entry of the array to     which the data should be written. This function is meant for     de-serializing the particle data without requiring that a new Particle     class be built. This is used in the ParticleHandler to update the     ghost particles without de-allocating and re-allocating memory.          [2.x.10]  data A pointer to a memory location from which     to read the information that completely describes a particle. This     class then de-serializes its data from this memory location.          [2.x.11]  A pointer to the next byte after the array from which data has       been read.    
+* [0.x.13]*
+     Set the location of this particle. Note that this does not check     whether this is a valid location in the simulation domain.          [2.x.12]  [in] new_location The new location for this particle.        
+*  [2.x.13]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.14]  "vectors with ghost elements"       or  [2.x.15]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.14]*
+     Get the location of this particle.          [2.x.16]  The location of this particle.    
+* [0.x.15]*
+     Set the reference location of this particle.          [2.x.17]  [in] new_reference_location The new reference location for     this particle.        
+*  [2.x.18]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.19]  "vectors with ghost elements"       or  [2.x.20]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.16]*
+     Return the reference location of this particle in its current cell.    
+* [0.x.17]*
+     Return the ID number of this particle. The ID of a particle is intended     to be a property that is globally unique even in parallel computations     and is transferred along with other properties of a particle if it     moves from a cell owned by the current processor to a cell owned by     a different processor, or if ownership of the cell it is on is     transferred to a different processor.    
+* [0.x.18]*
+     Set the ID number of this particle. The ID of a particle is intended     to be a property that is globally unique even in parallel computations     and is transferred along with other properties of a particle if it     moves from a cell owned by the current processor to a cell owned by     a different processor, or if ownership of the cell it is on is     transferred to a different processor. As a consequence, when setting     the ID of a particle, care needs to be taken to ensure that particles     have globally unique IDs. (The ParticleHandler does not itself check     whether particle IDs so set are globally unique in a parallel setting     since this would be a very expensive operation.)          [2.x.21]  new_id The new ID number for this particle.        
+*  [2.x.22]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.23]  "vectors with ghost elements"       or  [2.x.24]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.19]*
+     Tell the particle where to store its properties (even if it does not     own properties). Usually this is only done once per particle, but     since the particle does not know about the properties,     we want to do it not at construction time. Another use for this     function is after particle transfer to a new process.         If a particle already stores properties in a property pool, then     their values are saved, the memory is released in the previous     property pool, and a copy of the particle's properties will be     allocated in the new property pool.    
+* [0.x.20]*
+     Return whether this particle has a valid property pool and a valid     handle to properties.    
+* [0.x.21]*
+     Set the properties of this particle.          [2.x.25]  [in] new_properties An ArrayView containing the     new properties for this particle.        
+*  [2.x.26]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.27]  "vectors with ghost elements"       or  [2.x.28]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.22]*
+     Get write-access to properties of this particle. If the     particle has no properties yet, but has access to a     PropertyPool object it will allocate properties to     allow writing into them. If it has no properties and     has no access to a PropertyPool this function will     throw an exception.          [2.x.29]  An ArrayView of the properties of this particle.    
+* [0.x.23]*
+     Get read-access to properties of this particle. If the particle     has no properties this function throws an exception.          [2.x.30]  An ArrayView of the properties of this particle.    
+* [0.x.24]*
+     Return the size in bytes this particle occupies if all of its data is     serialized (i.e. the number of bytes that is written by the write_data     function of this class).    
+* [0.x.25]*
+     Write the data of this object to a stream for the purpose of     serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.26]*
+     Read the data of this object from a stream for the purpose of     serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).     Note that in order to store the properties correctly, the property pool     of this particle has to be known at the time of reading, i.e.     set_property_pool() has to have been called, before this function is     called.    
+* [0.x.27]*
+     Free the memory of the property pool    
+* [0.x.28]*
+     Write and read the data of this object from a stream for the purpose     of serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.29]*
+     A global property pool used when a particle is not associated with     a property pool that belongs to, for example, a ParticleHandler.    
+* [0.x.30]*
+     A pointer to the property pool. Necessary to translate from the     handle to the actual memory locations.    
+* [0.x.31]*
+     A handle to all particle properties    
+* [0.x.32]*
+       Make sure we can construct an RTree of  [2.x.31]  objects.      
+* [0.x.33]*
+          [2.x.32]  expects a const reference to an indexable object. For         a  [2.x.33]  object, this is its reference location.        
+* [0.x.34]
+
+include/deal.II-translator/particles/particle_accessor_0.txt
+[0.x.0]*
+   Accessor class used by ParticleIterator to access particle data.  
+* [0.x.1]*
+      [2.x.0]   [2.x.1]     
+* [0.x.2]*
+      [2.x.2]   [2.x.3]     
+* [0.x.3]*
+     Set the location of this particle. Note that this does not check     whether this is a valid location in the simulation domain.          [2.x.4]  [in] new_location The new location for this particle.        
+*  [2.x.5]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.6]  "vectors with ghost elements"       or  [2.x.7]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.4]*
+     Get the location of this particle.          [2.x.8]  The location of this particle.    
+* [0.x.5]*
+     Set the reference location of this particle.          [2.x.9]  [in] new_reference_location The new reference location for     this particle.        
+*  [2.x.10]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.11]  "vectors with ghost elements"       or  [2.x.12]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.6]*
+     Return the reference location of this particle in its current cell.    
+* [0.x.7]*
+     Return the ID number of this particle.    
+* [0.x.8]*
+     Tell the particle where to store its properties (even if it does not     own properties). Usually this is only done once per particle, but     since the particle generator does not know about the properties     we want to do it not at construction time. Another use for this     function is after particle transfer to a new process.    
+* [0.x.9]*
+     Return whether this particle has a valid property pool and a valid     handle to properties.    
+* [0.x.10]*
+     Set the properties of this particle.          [2.x.13]  [in] new_properties A vector containing the     new properties for this particle.        
+*  [2.x.14]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.15]  "vectors with ghost elements"       or  [2.x.16]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.11]*
+     Set the properties of this particle.          [2.x.17]  [in] new_properties An ArrayView pointing to memory locations     containing the new properties for this particle.        
+*  [2.x.18]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.19]  "vectors with ghost elements"       or  [2.x.20]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.12]*
+     Get write-access to properties of this particle.          [2.x.21]  An ArrayView of the properties of this particle.    
+* [0.x.13]*
+     Get read-access to properties of this particle.          [2.x.22]  An ArrayView of the properties of this particle.    
+* [0.x.14]*
+     Return the size in bytes this particle occupies if all of its data is     serialized (i.e. the number of bytes that is written by the write_data     function of this class).    
+* [0.x.15]*
+     Get a cell iterator to the cell surrounding the current particle.     As particles are organized in the structure of a triangulation,     but the triangulation itself is not stored in the particle this     operation requires a reference to the triangulation.    
+* [0.x.16]*
+     Serialize the contents of this class using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.17]*
+     Advance the ParticleAccessor to the next particle.    
+* [0.x.18]*
+     Move the ParticleAccessor to the previous particle.    
+* [0.x.19]*
+     Inequality operator.    
+* [0.x.20]*
+     Equality operator.    
+* [0.x.21]*
+     Construct an invalid accessor. Such an object is not usable.    
+* [0.x.22]*
+     Construct an accessor from a reference to a map and an iterator to the     map. This constructor is `private` so that it can only be accessed by     friend classes.    
+* [0.x.23]*
+     A pointer to the container that stores the particles. Obviously,     this accessor is invalidated if the container changes.    
+* [0.x.24]*
+     An iterator into the container of particles. Obviously,     this accessor is invalidated if the container changes.    
+* [0.x.25]*
+       Make sure we can construct an RTree from  [2.x.23]        objects.      
+* [0.x.26]*
+          [2.x.24]  expects a const reference to an indexable object. For         a  [2.x.25]  object, this is its reference location.        
+* [0.x.27]
+
+include/deal.II-translator/particles/particle_handler_0.txt
+[0.x.0]*
+   This class manages the storage and handling of particles. It provides   the data structures necessary to store particles efficiently, accessor   functions to iterate over particles and find particles, and algorithms   to distribute particles in parallel domains. Note that the class   is designed in a similar way as the triangulation class. In particular,   we call particles in the domain of the local process local particles,   and particles that belong to neighbor processes and live in the ghost cells   around the locally owned domain "ghost particles".     This class is used in  [2.x.0] .    
+*  [2.x.1]   
+* [0.x.1]*
+     A type that can be used to iterate over all particles in the domain.    
+* [0.x.2]*
+     A type that represents a range of particles.    
+* [0.x.3]*
+     Default constructor.    
+* [0.x.4]*
+     Constructor that initializes the particle handler with     a given triangulation and mapping. Since particles are stored in     respect to their surrounding cells this information is necessary to     correctly organize the particle collection.     This constructor is equivalent to calling the default constructor and     the initialize function.    
+* [0.x.5]*
+     Destructor.    
+* [0.x.6]*
+     Initialize the particle handler. This function does not clear the     internal data structures, it just sets the triangulation and the     mapping to be used.    
+* [0.x.7]*
+     Copy the state of particle handler  [2.x.2]  into the     current object. This will copy     all particles and properties and leave this object     as an identical copy of  [2.x.3]  Existing     particles in this object are deleted. Be aware that this     does not copy functions that are connected to the signals of      [2.x.4]  nor does it connect the current object's member     functions to triangulation signals, which must be done by the caller     if necessary, that is if the  [2.x.5]  had     connected functions.         This function is expensive as it has to duplicate all data     in  [2.x.6]  and insert it into this object,     which may be a significant amount of data. However, it can     be useful to save the state of a particle     collection at a certain point in time and reset this     state later under certain conditions, for example if     a timestep has to be undone and repeated.    
+* [0.x.8]*
+     Clear all particle related data.    
+* [0.x.9]*
+     Only clear particle data, but keep cache information about number     of particles. This is useful during reorganization of particle data     between processes.    
+* [0.x.10]*
+     Update all internally cached numbers. Note that all functions that     modify internal data structures and act on multiple particles will     call this function automatically (e.g. insert_particles), while     functions that act on single particles will not call this function     (e.g. insert_particle). This is done because the update is     expensive compared to single operations.    
+* [0.x.11]*
+     Return an iterator to the first particle.    
+* [0.x.12]*
+     Return an iterator to the first particle.    
+* [0.x.13]*
+     Return an iterator past the end of the particles.    
+* [0.x.14]*
+     Return an iterator past the end of the particles.    
+* [0.x.15]*
+     Return an iterator to the first ghost particle.    
+* [0.x.16]*
+     Return an iterator to the first ghost particle.    
+* [0.x.17]*
+     Return an iterator past the end of the ghost particles.    
+* [0.x.18]*
+     Return an iterator past the end of the ghost particles.    
+* [0.x.19]*
+     Return the number of particles that live on the given cell.        
+*  [2.x.7]  While this function is used in  [2.x.8] , it is not an efficient       function to use if the number of particles is large. That is because       to find the particles that are located in one cell costs        [2.x.9]  where  [2.x.10]  is the number of overall particles. Since       you will likely do this for every cell, and assuming that the number       of particles and the number of cells are roughly proportional,       you end up with an  [2.x.11]  algorithm. A better approach       is to use the fact that internally, particles are arranged in the       order of the active cells they are in. In other words, if you iterate       over all particles, you will encounter them in the same order as       you walk over the active cells. You can exploit this by keeping an       iterator to the first particle of the first cell, and when you move       to the next cell, you increment the particle iterator as well until       you find a particle located on that next cell. Counting how many       steps this took will then give you the number you are looking for,       at a cost of  [2.x.12]  when accumulated over all cells.       This is the approach used in  [2.x.13] , for example. The approach is       also detailed in the "Possibilities for extensions section"       of  [2.x.14] .    
+* [0.x.20]*
+     Return a pair of particle iterators that mark the begin and end of     the particles in a particular cell. The last iterator is the first     particle that is no longer in the cell.         The number of elements in the returned range equals what the     n_particles_in_cell() function returns.        
+*  [2.x.15]  While this function is used in  [2.x.16] , it is not an efficient       function to use if the number of particles is large. That is because       to find the particles that are located in one cell costs        [2.x.17]  where  [2.x.18]  is the number of overall particles. Since       you will likely do this for every cell, and assuming that the number       of particles and the number of cells are roughly proportional,       you end up with an  [2.x.19]  algorithm. A better approach       is to use the fact that internally, particles are arranged in the       order of the active cells they are in. In other words, if you iterate       over all particles, you will encounter them in the same order as       you walk over the active cells. You can exploit this by keeping an       iterator to the first particle of the first cell, and when you move       to the next cell, you increment the particle iterator as well until       you find a particle located on that next cell. This is the approach       used in  [2.x.20] , for example, and has an overall cost of        [2.x.21]  when accumulated over all cells. The approach is       also detailed in the "Possibilities for extensions section"       of  [2.x.22] .    
+* [0.x.21]*
+     Return a pair of particle iterators that mark the begin and end of     the particles in a particular cell. The last iterator is the first     particle that is no longer in the cell.         The number of elements in the returned range equals what the     n_particles_in_cell() function returns.        
+*  [2.x.23]  While this function is used in  [2.x.24] , it is not an efficient       function to use if the number of particles is large. That is because       to find the particles that are located in one cell costs        [2.x.25]  where  [2.x.26]  is the number of overall particles. Since       you will likely do this for every cell, and assuming that the number       of particles and the number of cells are roughly proportional,       you end up with an  [2.x.27]  algorithm. A better approach       is to use the fact that internally, particles are arranged in the       order of the active cells they are in. In other words, if you iterate       over all particles, you will encounter them in the same order as       you walk over the active cells. You can exploit this by keeping an       iterator to the first particle of the first cell, and when you move       to the next cell, you increment the particle iterator as well until       you find a particle located on that next cell. This is the approach       used in  [2.x.28] , for example, and has an overall cost of        [2.x.29]  when accumulated over all cells. The approach is       also detailed in the "Possibilities for extensions section"       of  [2.x.30] .    
+* [0.x.22]*
+     Remove a particle pointed to by the iterator.    
+* [0.x.23]*
+     Insert a particle into the collection of particles. Return an iterator     to the new position of the particle. This function involves a copy of     the particle and its properties. Note that this function is of  [2.x.31]  complexity for  [2.x.32]  particles.    
+* [0.x.24]*
+     Insert a number of particles into the collection of particles.     This function involves a copy of the particles and their properties.     Note that this function is of O(n_existing_particles + n_particles)     complexity.    
+* [0.x.25]*
+     Create and insert a number of particles into the collection of particles.     This function takes a list of positions and creates a set of particles     at these positions, which are then added to the local particle     collection. Note that this function currently uses      [2.x.33]  which assumes all positions are     within the local part of the triangulation. If one of them is not in the     local domain this function will throw an exception.    
+* [0.x.26]*
+     Create and insert a number of particles into the collection of particles.     This function takes a list of positions and creates a set of particles     at these positions, which are then distributed and added to the local     particle collection of a processor. Note that this function uses      [2.x.34]  Consequently, it can     require intense communications between the processors. This function     is used in  [2.x.35] .         This function figures out what mpi process owns the points that do not     fall within the locally owned part of the triangulation, it sends     to that process the points passed to this function on this process,     and receives the points that fall within the locally owned cells of     the triangulation from whoever received them as input.         In order to keep track of what mpi process received what points, a map     from mpi process to IndexSet is returned by the function. This IndexSet     contains the local indices of the points that were passed to this     function on the calling mpi process, and that falls within the part of     triangulation owned by this mpi process.         The ids of the resulting particles are assigned from the optional     argument  [2.x.36]  If the vector of  [2.x.37]  is empty, then the ids are     computed automatically from the get_next_free_particle_index() onward.     For example, if the method get_next_free_particle_index() returns n0,     calling this function with two MPI processes each adding n1 and n2     particles will result in the n1 particles added by process zero having     ids equal to `[n0,n0+n1)`, and the n2 particles added by process one     having ids `[n0+n1, n0+n1+n2)`.          [2.x.38]  positions A vector of points that do not need to be on the     local processor, but have to be in the triangulation that is associated     with this ParticleHandler object.          [2.x.39]  global_bounding_boxes A vector of vectors of bounding boxes.     The bounding boxes `global_bboxes[rk]` describe which part of the mesh is     locally owned by the mpi process with rank `rk`. The local description     can be obtained from  [2.x.40]      and the global one can be obtained by passing the local ones to      [2.x.41]           [2.x.42]  properties (Optional) A vector of vector of properties     associated with each local point. The size of the vector should be either     zero (no properties will be transferred nor attached to the generated     particles) or it should be a vector of `positions.size()` vectors of size     `n_properties_per_particle()`. Notice that this function call will     transfer the properties from the local mpi process to the final mpi     process that will own each of the particles, and it may therefore be     communication intensive.          [2.x.43]  ids (Optional) A vector of ids to associate to each particle.     If the vector is empty, the ids are assigned as a continuous range     from the first available index, as documented above. If the vector is not     empty, then its size must match the size of the  [2.x.44]  vector.          [2.x.45]  A map from owner to IndexSet, that contains the local indices     of the points that were passed to this function on the calling mpi     process, and that falls within the part of triangulation owned by this     mpi process.    
+* [0.x.27]*
+     Insert a number of particles into the collection of particles. This     function takes a list of particles for which we don't know the associated     cell iterator, and distributes them to the correct local particle     collection of a processor, by unpacking the locations, figuring out where     to send the particles by calling      [2.x.46]  and sending the     particles to the corresponding process.         In order to keep track of what mpi process received what particles, a map     from mpi process to IndexSet is returned by the function. This IndexSet     contains the local indices of the particles that were passed to this     function on the calling mpi process, and that falls within the part of     the triangulation owned by this mpi process.          [2.x.47]  particles A vector of particles that do not need to be on the     local processor.          [2.x.48]  global_bounding_boxes A vector of vectors of bounding boxes.     The bounding boxes `global_bboxes[rk]` describe which part of the mesh is     locally owned by the mpi process with rank `rk`. The local description     can be obtained from  [2.x.49]      and the global one can be obtained by passing the local ones to      [2.x.50]           [2.x.51]  A map from owner to IndexSet, that contains the local indices     of the points that were passed to this function on the calling mpi     process, and that falls within the part of triangulation owned by this     mpi process.    
+* [0.x.28]*
+     Set the position of the particles by using the values contained in the     vector  [2.x.52]           [2.x.53]  VectorType Any of the parallel distributed vectors supported by     the library.         The vector  [2.x.54]  should have read access to the indices     created by extracting the locally relevant ids with     locally_owned_particle_ids(), and taking its tensor     product with the index set representing the range `[0, spacedim)`, i.e.:    
+* [1.x.0]
+*          The position of the particle with global index `id` is read from     spacedim consecutive entries starting from     `input_vector[id*spacedim]`.         Notice that it is not necessary that the  [2.x.55]  those     indices, however it has to have read access to them (i.e., it can be a     distributed vector with ghost entries).         If the argument  [2.x.56]  is set to false, then the new     position taken from the values contained in      [2.x.57]  replacing the previously stored particle position.     By default, the particles are displaced by the amount contained in the      [2.x.58]  i.e., the contents of the vector are considered    offsets* that are added to the previous position.         After setting the new position, this function calls internally the method     sort_particles_into_subdomains_and_cells(). You should     make sure you satisfy the requirements of that function.          [2.x.59]  input_vector A parallel distributed vector containing     the displacement to apply to each particle, or their new absolute     position.          [2.x.60]  displace_particles Control if the  [2.x.61]  should     be interpreted as a displacement vector, or a vector of absolute     positions.    
+* [0.x.29]*
+     Set the position of the particles within the particle handler using a     vector of points. The new set of point defined by the     vector has to be sufficiently close to the original one to ensure that     the sort_particles_into_subdomains_and_cells() function manages to find     the new cells in which the particles belong.         Points are numbered in the same way they are traversed locally by the     ParticleHandler. A typical way to use this method, is to first call the     get_particle_positions() function, and then modify the resulting vector.          [2.x.62]  [in] new_positions A vector of points of dimension     particle_handler.n_locally_owned_particles()          [2.x.63]  [in] displace_particles When true, this function adds the value     of the vector of points to the     current position of the particle, thus displacing them by the     amount given by the function. When false, the position of the     particle is replaced by the value in the vector.    
+* [0.x.30]*
+     Set the position of the particles within the particle handler using a     function with spacedim components. The new set of point defined by the     function has to be sufficiently close to the original one to ensure that     the sort_particles_into_subdomains_and_cells algorithm manages to find     the new cells in which the particles belong.         The function is evaluated at the current location of the particles.          [2.x.64]  [in] function A function that has n_components==spacedim that     describes either the displacement or the new position of the particles as     a function of the current location of the particle.          [2.x.65]  [in] displace_particles When true, this function adds the results     of the function to the current position of the particle, thus displacing     them by the amount given by the function. When false, the position of the     particle is replaced by the value of the function.    
+* [0.x.31]*
+     Read the position of the particles and store them into the distributed     vector  [2.x.66]  By default the      [2.x.67]  is overwritten by this operation, but you can add to     its entries by setting  [2.x.68]  to `true`.          [2.x.69]  VectorType Any of the parallel distributed vectors supported by     the library.         This is the reverse operation of the set_particle_positions() function.     The position of the particle with global index `id` is written to     spacedim consecutive entries starting from     `output_vector[id*spacedim]`.         Notice that, if you use a distributed vector type, it is not necessary     for the  [2.x.70]  to own the entries corresponding to the indices     that will be written. However you should keep in mind that this requires     a global communication to distribute the entries above to their     respective owners.          [2.x.71]  out] output_vector A parallel distributed vector containing     the positions of the particles, or updated with the positions of the     particles.          [2.x.72]  add_to_output_vector Control if the function should set the     entries of the  [2.x.73]  or if should add to them.    
+* [0.x.32]*
+     Gather the position of the particles within the particle handler in     a vector of points. The order of the points is the same on would obtain     by iterating over all (local) particles, and querying their locations.          [2.x.74]  [in,out] positions A vector preallocated at size     `particle_handler.n_locally_owned_articles` and whose points will become     the positions of the locally owned particles          [2.x.75]  [in] add_to_output_vector When true, the value of the point of     the particles is added to the positions vector. When false,     the value of the points in the positions vector are replaced by the     position of the particles.    
+* [0.x.33]*
+     This function allows to register three additional functions that are     called every time a particle is transferred to another process     (i.e. during sorting into cells, during ghost particle transfer, or     during serialization of all particles).          [2.x.76]  size_callback A function that is called when serializing     particle data. The function gets no arguments and is expected to     return the size of the additional data that is serialized per     particle. Note that this currently implies the data size has to be     the same for every particle.      [2.x.77]  store_callback A function that is called once per particle     when serializing particle data. Arguments to the function are a     particle iterator that identifies the current particle and a void     pointer that points to a data block of size size_callback() in which     the function can store additional data. The function is expected to     return a void pointer pointing to a position right after its data     block.      [2.x.78]  load_callback A function that is called once per particle     when deserializing particle data. Arguments to the function are a     particle iterator that identifies the current particle and a void     pointer that points to a data block of size size_callback() in which     additional data was stored by the store_callback function. The     function is expected to return a void pointer pointing to a position     right after its data block.    
+* [0.x.34]*
+     Return the total number of particles that were managed by this class     the last time the update_cached_numbers() function was called.     The actual number of particles may have changed since then if     particles have been added or removed.          [2.x.79]  Total number of particles in simulation.    
+* [0.x.35]*
+     Return the maximum number of particles per cell the last     time the update_cached_numbers() function was called.          [2.x.80]  Maximum number of particles in one cell in simulation.    
+* [0.x.36]*
+     Return the number of particles in the local part of the     triangulation.    
+* [0.x.37]*
+     Return the next free particle index in the global set     of particles the last     time the update_cached_numbers() function was called.    
+* [0.x.38]*
+     Extract an IndexSet with global dimensions equal to     get_next_free_particle_index(), containing the locally owned     particle indices.         This function can be used to construct distributed vectors and matrices     to manipulate particles using linear algebra operations.         Notice that it is the user's responsibility to guarantee that particle     indices are unique, and no check is performed to verify that this is the     case, nor that the union of all IndexSet objects on each mpi process is     complete.          [2.x.81]  An IndexSet of size get_next_free_particle_index(), containing     n_locally_owned_particle() indices.          [2.x.82]  Use locally_owned_particle_ids() instead.    
+* [0.x.39]*
+     Extract an IndexSet with global dimensions equal to     get_next_free_particle_index(), containing the locally owned     particle indices.         This function can be used to construct distributed vectors and matrices     to manipulate particles using linear algebra operations.         Notice that it is the user's responsibility to guarantee that particle     indices are unique, and no check is performed to verify that this is the     case, nor that the union of all IndexSet objects on each mpi process is     complete.          [2.x.83]  An IndexSet of size get_next_free_particle_index(), containing     n_locally_owned_particle() indices.    
+* [0.x.40]*
+     Return the number of properties each particle has.    
+* [0.x.41]*
+     Return a reference to the property pool that owns all particle     properties, and organizes them physically.    
+* [0.x.42]*
+     Find and update the cells containing each particle for all locally owned     particles. If particles moved out of the local subdomain     they will be sent to their new process and inserted there.     After this function call every particle is either on its current     process and in its current cell, or deleted (if it could not find     its new process or cell).         The user may attach a function to the signal      [2.x.84]  The signal is     triggered whenever a particle is deleted, and the connected functions     are called passing an iterator to the particle in question, and its last     known cell association.    
+* [0.x.43]*
+     Exchange all particles that live in cells that are ghost cells to     other processes. Clears and re-populates the ghost_neighbors     member variable.    
+* [0.x.44]*
+     Update all particles that live in cells that are ghost cells to     other processes. In this context, update means to update the     location and the properties of the ghost particles assuming that     the ghost particles have not changed cells. Consequently, this will     not update the reference location of the particles.    
+* [0.x.45]*
+     Callback function that should be called before every refinement     and when writing checkpoints. This function is used to     register store_particles() with the triangulation. This function     is used in  [2.x.85] .    
+* [0.x.46]*
+     Callback function that should be called after every refinement     and after resuming from a checkpoint.  This function is used to     register load_particles() with the triangulation. This function     is used in  [2.x.86] .    
+* [0.x.47]*
+     Serialize the contents of this class using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.48]*
+     A structure that has  [2.x.87]  objects for a number of actions that a     particle handler can do to itself. How signals can be used in     applications is explained in the "Getting notice when a triangulation     changes" section in the Triangulation class with more information and     examples. In short these signals allow the particle handler to notify     applications about certain events inside the particle handler, e.g. when     a particle is lost.         For documentation on signals, see     http://www.boost.org/doc/libs/release/libs/signals2 .    
+* [0.x.49]*
+       This signal is triggered whenever the        [2.x.88]  function       encounters a particle that can not be associated with a cell. This can       happen if the particle leaves the domain of the triangulation, or if it       leaves the locally known domain in a parallel triangulation (including       the ghost cells for a  [2.x.89]              The connected function receives an iterator to the particle in       question, and its last known cell association.             This signal is used in  [2.x.90] .      
+* [0.x.50]*
+     Signals for the events that a particle handler can notify the     calling application about.    
+* [0.x.51]*
+     Address of the triangulation to work on.    
+* [0.x.52]*
+     Address of the mapping to work on.    
+* [0.x.53]*
+     This object owns and organizes the memory for all particle     properties. Since particles reference the property pool, the     latter has to be destroyedafter* the particles are destroyed.     This is achieved by making sure the `property_pool` member variable     precedes the declaration of the `particles` and `ghost_particles`     members.    
+* [0.x.54]*
+     Set of particles currently living in the local domain, organized by     the level/index of the cell they are in.    
+* [0.x.55]*
+     Set of particles that currently live in the ghost cells of the local     domain, organized by the level/index of the cell they are in. These     particles are equivalent to the ghost entries in distributed vectors.    
+* [0.x.56]*
+     This variable stores how many particles are stored globally. It is     calculated by update_cached_numbers().    
+* [0.x.57]*
+     The maximum number of particles per cell in the global domain. This     variable is important to store and load particle data during     repartition and serialization of the solution. Note that the     variable is only updated when it is needed, e.g. after particle     movement, before/after mesh refinement, before creating a     checkpoint and after resuming from a checkpoint.    
+* [0.x.58]*
+     This variable stores the next free particle index that is available     globally in case new particles need to be generated.    
+* [0.x.59]*
+     A function that can be registered by calling     register_additional_store_load_functions. It is called when serializing     particle data. The function gets no arguments and is expected to     return the size of the additional data that is serialized per     particle. Note that this currently implies the data size has to be     the same for every particle, but it does not have to be the same for     every serialization process (e.g. a serialization during particle     movement might include temporary data, while a serialization after     movement was finished does not need to transfer this data).    
+* [0.x.60]*
+     A function that can be registered by calling     register_additional_store_load_functions. It is called once per     particle when serializing particle data. Arguments to the function     are a particle iterator that identifies the current particle and a void     pointer that points to a data block of size size_callback() in which     the function can store additional data. The function is expected to     return a void pointer pointing to a position right after its data     block.    
+* [0.x.61]*
+     A function that is called once per particle     when deserializing particle data. Arguments to the function are a     particle iterator that identifies the current particle and a void     pointer that points to a data block of size size_callback() from     which the function can load additional data. This block was filled     by the store_callback function during serialization. This function     is expected to return a void pointer pointing to a position right     after its data block.    
+* [0.x.62]*
+     This variable is set by the register_store_callback_function()     function and used by the register_load_callback_function() function     to check where the particle data was registered in the corresponding     triangulation object.    
+* [0.x.63]*
+     The  [2.x.91]  is used to store the information about the     vertex_to_cells set and the vertex_to_cell_centers vectors to prevent     recomputing them every time we sort_into_subdomain_and_cells().     This cache is automatically updated when the triangulation has     changed. This cache is stored within a unique pointer because the     particle handler has a constructor that enables it to be constructed     without a triangulation. The cache does not have such a constructor.    
+* [0.x.64]*
+     Transfer particles that have crossed subdomain boundaries to other     processors.     All received particles and their new cells will be appended to the      [2.x.92]  vector.          [2.x.93]  [in] particles_to_send All particles that should be sent and     their new subdomain_ids are in this map.          [2.x.94]  [in,out] received_particles Vector that stores all received     particles. Note that it is not required nor checked that the list     is empty, received particles are simply attached to the end of     the vector.          [2.x.95]  [in] new_cells_for_particles Optional vector of cell     iterators with the same structure as  [2.x.96]  If this     parameter is given it should contain the cell iterator for every     particle to be send in which the particle belongs. This parameter     is necessary if the cell information of the particle iterator is     outdated (e.g. after particle movement).          [2.x.97]  [in] enable_cache Optional bool that enables updating     the ghost particles without rebuilding them from scratch by     building a cache of type GhostParticlePartitioner, which     stores the necessary information to update the ghost particles.     Once this cache is built, the ghost particles can be updated     by a call to send_recv_particles_properties_and_location().    
+* [0.x.65]*
+     Transfer particles position and properties assuming that     the particles have not changed cells. This routine uses the     GhostParticlePartitioner as a caching structure to update the particles.     It inherently assumes that particles cannot have changed cell.     All updated particles will be appended to the      [2.x.98]  container.          [2.x.99]  [in] particles_to_send All particles for which information     should be sent and their new subdomain_ids are in this map.          [2.x.100]  [in,out] received_particles A map with all received     particles. Note that it is not required nor checked that the container     is empty, received particles are simply inserted into     the map.        
+* [0.x.66]*
+     Cache structure used to store the elements which are required to     exchange the particle information (location and properties) across     processors in order to update the ghost particles. This structure     is only used to update the ghost particles.    
+* [0.x.67]*
+     Called by listener functions from Triangulation for every cell     before a refinement step. All particles have to be attached to their     cell to be sent around to the new processes.    
+* [0.x.68]*
+     Called by listener functions after a refinement step. The local map     of particles has to be read from the triangulation user_pointer.    
+* [0.x.69]
+
+include/deal.II-translator/particles/particle_iterator_0.txt
+[0.x.0]*
+   A class that is used to iterate over particles. Together with the   ParticleAccessor class this is used to hide the internal implementation   of the particle class and the particle container.  
+* [0.x.1]*
+     Empty constructor. Such an object is not usable!    
+* [0.x.2]*
+     Constructor of the iterator. Takes a reference to the particle     container, and an iterator to the cell-particle pair.    
+* [0.x.3]*
+     Dereferencing operator, returns a reference to an accessor. Usage is thus     like <tt>(*i).get_id ();</tt>    
+* [0.x.4]*
+     Dereferencing operator, non- [2.x.0]  version.    
+* [0.x.5]*
+     Dereferencing operator, returns a pointer of the particle pointed to.     Usage is thus like <tt>i->get_id ();</tt>         There is a  [2.x.1]  and a non- [2.x.2]  version.    
+* [0.x.6]*
+     Dereferencing operator, non- [2.x.3]  version.    
+* [0.x.7]*
+     Compare for equality.    
+* [0.x.8]*
+     Compare for inequality.    
+* [0.x.9]*
+     Prefix <tt>++</tt> operator: <tt>++iterator</tt>. This operator advances     the iterator to the next element and returns a reference to     <tt>*this</tt>.    
+* [0.x.10]*
+     Postfix <tt>++</tt> operator: <tt>iterator++</tt>. This operator advances     the iterator to the next element, but returns an iterator to the element     previously pointed to.    
+* [0.x.11]*
+     Prefix <tt>\--</tt> operator: <tt>\--iterator</tt>. This operator moves     the iterator to the previous element and returns a reference to     <tt>*this</tt>.    
+* [0.x.12]*
+     Postfix <tt>\--</tt> operator: <tt>iterator\--</tt>. This operator moves     the iterator to the previous element, but returns an iterator to the     element previously pointed to.    
+* [0.x.13]*
+     Mark the class as bidirectional iterator and declare some alias which     are standard for iterators and are used by algorithms to enquire about     the specifics of the iterators they work on.    
+* [0.x.14]*
+     The accessor to the actual particle.    
+* [0.x.15]
+
+include/deal.II-translator/particles/partitioner_0.txt
+[0.x.0]*
+     Cache structure used to store the elements which are required to     exchange the particle information (location and properties) across     processors in order to update the ghost particles.         This structure should only be used when one wishes to carry out work     using the particles without calling     sort_particles_into_subdomain_and_cells at every iteration. This is     useful when particle-particle interaction occurs at a different time     scale than particle-mesh interaction.    
+* [0.x.1]*
+       A type that can be used to iterate over all particles in the domain.      
+* [0.x.2]*
+       Indicates if the cache has been built to prevent updating particles       with an invalid cache.      
+* [0.x.3]*
+       Vector of the subdomain id of all possible neighbors of the current       subdomain.      
+* [0.x.4]*
+       Vector of size (neighbors.size()+1) used to store the start and the       end point of the data that must go from the current subdomain to the       neighbors. For neighbor i, send_pointers[i] indicates the beginning       and send_pointers[i+1] indicates the end of the data that must be       sent.      
+* [0.x.5]*
+       Set of particles that currently live in the ghost cells of the local       domain, organized by the subdomain_id. These       particles are equivalent to the ghost entries in distributed vectors.      
+* [0.x.6]*
+       Vector of size (neighbors.size()+1) used to store the start and the       end point of the data that must be received from neighbor[i] on       the current subdomain. For neighbor i, recv_pointers[i] indicate the       beginning and recv_pointers[i+1] indicates the end of the data that       must be received.             This structure is similar to        [2.x.0]  when combined with       neighbors.      
+* [0.x.7]*
+       Vector of ghost particles in the order in which they are inserted       in the multimap used to store particles on the triangulation. This       information is used to update the ghost particle information       without clearing the multimap of ghost particles, thus greatly       reducing the cost of exchanging the ghost particles information.      
+* [0.x.8]*
+       Temporary storage that holds the data of the particles to be sent       to other processors to update the ghost particles information       in update_ghost_particles()       send_recv_particles_properties_and_location()      
+* [0.x.9]*
+       Temporary storage that holds the data of the particles to receive       the ghost particles information from other processors in       update_ghost_particles()       send_recv_particles_properties_and_location()      
+* [0.x.10]
+
+include/deal.II-translator/particles/property_pool_0.txt
+[0.x.0]*
+   The type used for indices of particles. While in   sequential computations the 4 billion indices of 32-bit unsigned integers   is plenty, parallel computations using hundreds of processes can overflow   this number and we need a bigger index space. We here utilize the same   build variable that controls the dof indices because the number   of degrees of freedom and the number of particles are typically on the same   order of magnitude.     The data type always indicates an unsigned integer type.  
+* [0.x.1]*
+   An identifier that denotes the MPI type associated with    [2.x.0]   
+* [0.x.2]*
+   The type used for indices of particles. While in   sequential computations the 4 billion indices of 32-bit unsigned integers   is plenty, parallel computations using hundreds of processes can overflow   this number and we need a bigger index space. We here utilize the same   build variable that controls the dof indices because the number   of degrees of freedom and the number of particles are typically on the same   order of magnitude.     The data type always indicates an unsigned integer type.  
+* [0.x.3]*
+   An identifier that denotes the MPI type associated with    [2.x.1]   
+* [0.x.4]*
+   This class manages a memory space in which all particles associated with   a ParticleHandler store their properties. It also stores the locations   and reference locations of particles.     The rationale for this class is   that because typically every particle stores the same number of   properties, and because algorithms generally traverse over all particles   doing the same operation on all particles' properties, it is more efficient   to let the memory used for properties be handled by a central manager.   Particles then do not store a pointer to a memory area in which they store   their properties, but instead a "handle" that the PropertyPool class then   translates into a pointer to concrete memory.     All this said, the current implementation only provides this kind of   interface, but still uses simple new/delete allocation for every   set of properties requested by a particle. Additionally, the current   implementation assumes the same number of properties per particle, but of   course the PropertyType could contain a pointer to dynamically allocated   memory with varying sizes per particle (this memory would not be managed by   this class).  
+* [0.x.5]*
+     Typedef for the handle that is returned to the particles, and that     uniquely identifies the slot of memory that is reserved for this     particle.    
+* [0.x.6]*
+     Define a default (invalid) value for handles.    
+* [0.x.7]*
+     Constructor. Stores the number of properties per reserved slot.    
+* [0.x.8]*
+     Destructor. This function ensures that all memory that had     previously been allocated using allocate_properties_array()     has also been returned via deallocate_properties_array().    
+* [0.x.9]*
+     Clear the dynamic memory allocated by this class. This function     ensures that all memory that had previously been allocated using     allocate_properties_array() has also been returned via     deallocate_properties_array().    
+* [0.x.10]*
+     Return a new handle that allows a particle to store information such as     properties and locations. This also allocated memory in this PropertyPool     variable.    
+* [0.x.11]*
+     Return a handle obtained by register_particle() and mark the memory     allocated for storing the particle's data as free for re-use.    
+* [0.x.12]*
+     Return the location of a particle identified by the given `handle`.    
+* [0.x.13]*
+     Set the location of a particle identified by the given `handle`.    
+* [0.x.14]*
+     Return the reference_location of a particle identified by the given     `handle`.    
+* [0.x.15]*
+     Set the reference location of a particle identified by the given     `handle`.    
+* [0.x.16]*
+     Return the ID number of this particle identified by the given     `handle`.    
+* [0.x.17]*
+     Set the ID number of this particle identified by the given     `handle`.    
+* [0.x.18]*
+     Return an ArrayView to the properties that correspond to the given     handle  [2.x.2]     
+* [0.x.19]*
+     Reserve the dynamic memory needed for storing the properties of      [2.x.3]  particles.    
+* [0.x.20]*
+     Return how many properties are stored per slot in the pool.    
+* [0.x.21]*
+     The number of properties that are reserved per particle.    
+* [0.x.22]*
+     A vector that stores the locations of particles. It is indexed in the     same way as the `reference_locations` and `properties` arrays, i.e., via     handles.    
+* [0.x.23]*
+     A vector that stores the reference locations of particles. It is indexed     in the same way as the `locations` and `properties` arrays, i.e., via     handles.    
+* [0.x.24]*
+     A vector that stores the unique identifiers of particles. It is indexed     in the same way as the `locations` and `properties` arrays, i.e., via     handles.    
+* [0.x.25]*
+     The currently allocated properties (whether assigned to     a particle or available for assignment). It is indexed the same way as     the `locations` and `reference_locations` arrays via handles.    
+* [0.x.26]*
+     A collection of handles that have been created by     allocate_properties_array() and have been destroyed by     deallocate_properties_array(). Since the memory is still     allocated these handles can be reused for new particles     to avoid memory allocation.    
+* [0.x.27]
+
+include/deal.II-translator/particles/utilities_0.txt
+[0.x.0]*
+   A namespace for functions offering tools to handle ParticleHandler objects   and their coupling with DoFHandler objects.  
+* [0.x.1]*
+     Create an interpolation sparsity pattern for particles.         Given a triangulation representing the domain  [2.x.0] , a particle     handler of particles in  [2.x.1] , and a scalar finite element space      [2.x.2] , compute the sparsity pattern     that would be necessary to assemble the matrix     [1.x.0]     where  [2.x.3]  is the finite element space associated with the     `space_dh`, and the index `i` is given by the particle id whose position     is `x_i`.         In the case of vector valued finite element spaces, the components on     which interpolation must be performed can be selected using a component     mask. Only primitive finite element spaces are supported.         When selecting more than one component, the resulting sparsity will have     dimension equal to `particle_handler.n_global_particles()     mask.n_selected_components()` times `space_dh.n_dofs()`, and the     corresponding matrix entries are given by     [1.x.1]     where `comp_j` is the only non zero component of the vector valued basis     function `v_j` (equal to `fe.system_to_component_index(j).first`),     `k` corresponds to its index within the selected components of the mask,     and  [2.x.4]  is the unit vector in the direction `comp_j`.         The `sparsity` is filled by locating the position of the particle with     index `i` within the particle handler with respect to the embedding     triangulation  [2.x.5] , and coupling it with all the local degrees of     freedom specified in the component mask  [2.x.6]  following the     ordering in which they are selected in the mask  [2.x.7]          If a particle does not fall within  [2.x.8] , it is ignored, and the     corresponding rows of the sparsity will be empty.         Constraints of the form supported by the AffineConstraints class may be     supplied with the  [2.x.9]  argument. The method      [2.x.10]  is used to fill the     final sparsity pattern.    
+* [0.x.2]*
+     Create an interpolation matrix for particles.         Given a triangulation representing the domains  [2.x.11] , a particle     handler of particles in  [2.x.12] , and a scalar finite element space      [2.x.13] , compute the matrix     [1.x.2]     where  [2.x.14]  is the finite element space associated with the     `space_dh`, and the index `i` is given by the particle id whose position     is `x_i`.         In the case of vector valued finite element spaces, the components on     which interpolation must be performed can be selected using a component     mask. Only primitive finite element spaces are supported.         When selecting more than one component, the resulting sparsity will have     dimension equal to `particle_handler.n_global_particles()     mask.n_selected_components()` times `space_dh.n_dofs()`, and the     corresponding matrix entries are given by     [1.x.3]     where `comp_j` is the only non zero component of the vector valued basis     function `v_j` (equal to `fe.system_to_component_index(j).first`),     `k` corresponds to its index within the selected components of the mask,     and  [2.x.15]  is the unit vector in the direction `comp_j`.         The matrix is filled by locating the position of the particle with     index `i` within the particle handler with respect to the embedding     triangulation  [2.x.16] , and coupling it with all the local degrees of     freedom specified in the component mask  [2.x.17]  following the     ordering in which they are selected in the mask  [2.x.18]          If a particle does not fall within  [2.x.19] , it is ignored, and the     corresponding rows of the matrix will be zero.         Constraints of the form supported by the AffineConstraints class may be     supplied with the  [2.x.20]  argument. The method      [2.x.21]  is used to distribute     the entries of the matrix to respect the given constraints.    
+* [0.x.3]*
+     Given a DoFHandler and a ParticleHandler, interpolate a vector field     at the position of the particles. The result is stored in an output     vector whose size corresponds to the number of locally owned particles     number of active components          [2.x.22]  field_dh The DOF Handler which was used to generate the     field vector that is to be interpolated.          [2.x.23]  particle_handler The particle handler whose particle serve as     the interpolation points.          [2.x.24]  field_vector The vector of the field to be interpolated. This     vector must be coherent with the dof_handler provided          [2.x.25]  interpolated_field The interpolated value of the field at     the position of the particles. The size of the vector must be     n_locally_owned_particles times the n_components          [2.x.26]  field_comps An optional component mask that decides which     subset of the vector fields are interpolated    
+* [0.x.4]
+

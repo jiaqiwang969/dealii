@@ -1,0 +1,73 @@
+include/deal.II-translator/differentiation/ad_0.txt
+[0.x.0]*
+ A namespace that encapsulates various classes and helper functions related to automatic and symbolic differentiation.
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   Wrappers for automatic differentiation libraries. Currently there is   support for the following libraries:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - ADOL-C
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Sacado (a component of Trilinos)    
+*  [2.x.1]   
+* [0.x.2]
+
+include/deal.II-translator/differentiation/sd_0.txt
+[0.x.0]*
+   Wrappers for symbolic differentiation libraries. Currently there is support   for the following libraries:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - SymEngine    
+*  [2.x.0]   
+* [0.x.1]*
+     This namespace defines the classes and functions that help provide a     structured interface to symbolic numbers and operations.    
+* [0.x.2]
+

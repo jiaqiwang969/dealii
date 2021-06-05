@@ -1,0 +1,1164 @@
+include/deal.II-translator/meshworker/assemble_flags_0.txt
+[0.x.0]*
+   The enum type given to the mesh_loop() function, telling that function   which elements need to be assembled.     You can select more than one flag by concatenation using the bitwise or    [2.x.0] .  
+* [0.x.1]*
+     Do Nothing.    
+* [0.x.2]*
+     Assemble on locally owned cells.    
+* [0.x.3]*
+     Assemble on ghost cells.    
+* [0.x.4]*
+     Assemble on interior faces between two locally owned cells,     visiting each face only once.    
+* [0.x.5]*
+     Assemble on interior faces between two locally owned cells,     visiting each interior face twice, once from each of the two     adjacent cells.    
+* [0.x.6]*
+     Assemble on faces between a locally owned cell and a ghost cell, making     sure that only one of the processes will assemble these faces (from the     finer side or the process with the lower mpi rank).    
+* [0.x.7]*
+     Assemble on faces between a locally owned cell and a ghost cell. Both     processes will assemble these faces. Note that they are never     assembled from both sides on a single process.    
+* [0.x.8]*
+     Assemble on boundary faces of the locally owned cells.    
+* [0.x.9]*
+     By default we assemble cell integrals before face integrals. If this     flag is specified, cells will be assembled after faces and boundaries.    
+* [0.x.10]*
+     Combination of flags to determine if any work on cells is done.    
+* [0.x.11]*
+     Combination of flags to determine if any work is done on faces.    
+* [0.x.12]*
+     Combination of flags to determine if any work is done on the boundary     faces.    
+* [0.x.13]*
+   Output operator which outputs assemble flags as a set of or'd text values.      [2.x.1]   
+* [0.x.14]*
+   Global operator which returns an object in which all bits are set which are   either set in the first or the second argument. This operator exists since   if it did not then the result of the bit-or <tt>operator |</tt> would be an   integer which would in turn trigger a compiler warning when we tried to   assign it to an object of type AssembleFlags.      [2.x.2]   
+* [0.x.15]*
+   Global operator which sets the bits from the second argument also in the   first one.      [2.x.3]   
+* [0.x.16]*
+   Global operator which returns an object in which all bits are set which are   set in the first as well as the second argument. This operator exists since   if it did not then the result of the bit-and <tt>operator &</tt> would be   an integer which would in turn trigger a compiler warning when we tried to   assign it to an object of type AssembleFlags.      [2.x.4]   
+* [0.x.17]*
+   Global operator which clears all the bits in the first argument if they are   not also set in the second argument.      [2.x.5]   
+* [0.x.18]
+
+include/deal.II-translator/meshworker/assembler_0.txt
+[0.x.0]*
+   The namespace containing objects that can be used to assemble data   computed on cells and faces into global objects. This can reach from   collecting the total error estimate from cell and face contributions to   assembling matrices and multilevel matrices.     [1.x.0]     The class chosen from this namespace determines which data model is used.   For the local as well as the global objects, we have the choice between   two models:     [1.x.1]     This is the structure set up by the FESystem class. Globally, this means,   data is assembled into one residual vector and into one matrix. These   objects may be block vectors and block matrices, but the process of   assembling ignores this fact.     Similarly, there is only a single cell vector and cell matrix,   respectively, which is indexed by all degrees of freedom of the FESystem.   When building the cell matrix, it is necessary to distinguish between the   different components of the system and select the right operator for each   pair.     [1.x.2]     Here, all the blocks are treated separately (in spite of using FESystem   for its convenience in other places). For instance, no block matrix is   assembled, but a list of blocks, which can be combined later by   BlockMatrixArray. Locally, this means, that each matrix block of a system   is generated separately and assembled into the corresponding global   block.     This approach is advantageous, if the number of matrices for each block   position in the global system is different. For instance, block   preconditioners for the Oseen problem require 3 pressure matrices, but   only one divergence and one advection-diffusion operator for velocities.     Additionally, this approach enables the construction of a system of   equations from building blocks for each equation and coupling operator.     Nevertheless, since a separate FEValues object must be created for each   base element, it is not quite clear a priori, which data model is more   efficient.    
+*  [2.x.0]   
+* [0.x.1]*
+     Assemble local residuals into global residuals.         The global residuals are expected as an FEVectors object. The local     residuals are block vectors.         Depending on whether the BlockInfo object was initialize with      [2.x.1]  the comprehensive or block data model is     used locally.         In the block model, each of the blocks of the local vectors corresponds     to the restriction of a single block of the system to this cell (see      [2.x.2] ).     Thus, the size of this local block is the number of degrees of freedom     of the corresponding base element of the FESystem.          [2.x.3]  Comprehensive model currently not implemented.        
+*  [2.x.4]     
+* [0.x.2]*
+       Copy the BlockInfo and the matrix pointers into local variables.      
+* [0.x.3]*
+       Initialize the constraints.      
+* [0.x.4]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.5]  object refers to a cell if  [2.x.6] , or else to an       interior or boundary face.      
+* [0.x.5]*
+       Assemble the local residuals into the global residuals.      
+* [0.x.6]*
+       Assemble both local residuals into the global residuals.      
+* [0.x.7]*
+       Assemble a single local residual into the global.      
+* [0.x.8]*
+       The global vectors, stored as an AnyData container of pointers.      
+* [0.x.9]*
+       A pointer to the object containing the block structure.      
+* [0.x.10]*
+       A pointer to the object containing constraints.      
+* [0.x.11]*
+     A helper class assembling local matrices into global matrices.         The global matrices are expected as a vector of MatrixBlock objects,     each containing a matrix object with a function corresponding to      [2.x.7]  and information on the block row and column this     matrix represents in a block system.         The local matrices are expected as a similar vector of MatrixBlock     objects, but containing a FullMatrix.         Like with ResidualLocalBlocksToGlobalBlocks, the initialization of the     BlockInfo object decides whether the comprehensive data model or the     block model is used.         In the comprehensive model, each of the LocalMatrixBlocks has     coordinates (0,0) and dimensions equal to the number of degrees of     freedom of the FESystem.         In the comprehensive model, each block has its own block coordinates     and the size depends on the associated  [2.x.8]  These     blocks can be generated separately and will be assembled into the     correct matrix block by this object.        
+*  [2.x.9]     
+* [0.x.12]*
+       Constructor, initializing the #threshold, which limits how small       numbers may be to be entered into the matrix.      
+* [0.x.13]*
+       Copy the BlockInfo and the matrix pointers into local variables and       initialize cell matrix vectors.      
+* [0.x.14]*
+       Initialize the constraints.      
+* [0.x.15]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.10]  object refers to a cell if  [2.x.11] , or else to an       interior or boundary face.      
+* [0.x.16]*
+       Assemble the local matrices into the global matrices.      
+* [0.x.17]*
+       Assemble all local matrices into the global matrices.      
+* [0.x.18]*
+       Assemble a single local matrix into a global one.      
+* [0.x.19]*
+       The global matrices, stored as a vector of pointers.      
+* [0.x.20]*
+       A pointer to the object containing the block structure.      
+* [0.x.21]*
+       A pointer to the object containing constraints.      
+* [0.x.22]*
+       The smallest positive number that will be entered into the global       matrix. All smaller absolute values will be treated as zero and will       not be assembled.      
+* [0.x.23]*
+     A helper class assembling local matrices into global multilevel     matrices. This class is the multilevel equivalent of     MatrixLocalBlocksToGlobalBlocks and documentation of that class applies     here to a large extend.         The global matrices are expected as a vector of pointers to MatrixBlock     objects, each containing a MGLevelObject with matrices with a function     corresponding to  [2.x.12]  and information on the block row     and column this matrix represents in a block system.         The local matrices are a similar vector of MatrixBlock objects, but     containing a FullMatrix.         If local refinement occurs, the Multigrid method needs more matrices,     two for continuous elements and another two if numerical fluxes are     computed on interfaces. The second set can be added using     initialize_edge_flux(). Once added, the contributions in all     participating matrices will be assembled from the cell and face     matrices automatically.        
+*  [2.x.13]     
+* [0.x.24]*
+       Constructor, initializing the #threshold, which limits how small       numbers may be to be entered into the matrix.      
+* [0.x.25]*
+       Copy the BlockInfo and the matrix pointers into local variables and       initialize cell matrix vectors.      
+* [0.x.26]*
+       Initialize the multilevel constraints.      
+* [0.x.27]*
+       Multigrid methods on locally refined meshes need additional matrices.       For discontinuous Galerkin methods, these are two flux matrices       across the refinement edge, which are set by this method.      
+* [0.x.28]*
+       Multigrid methods on locally refined meshes need additional matrices.       For discontinuous Galerkin methods, these are two flux matrices       across the refinement edge, which are set by this method.      
+* [0.x.29]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.14]  object refers to a cell if  [2.x.15] , or else to an       interior or boundary face.      
+* [0.x.30]*
+       Assemble the local matrices into the global matrices.      
+* [0.x.31]*
+       Assemble all local matrices into the global matrices.      
+* [0.x.32]*
+       Assemble a single local matrix into a global one.      
+* [0.x.33]*
+       Assemble a single local matrix into a global one.      
+* [0.x.34]*
+       Assemble a single local matrix into a global one.      
+* [0.x.35]*
+       Assemble a single local matrix into a global one.      
+* [0.x.36]*
+       Assemble a single local matrix into a global one.      
+* [0.x.37]*
+       Assemble a single local matrix into a global one.      
+* [0.x.38]*
+       The level matrices, stored as a vector of pointers.      
+* [0.x.39]*
+       The flux matrix between the fine and the coarse level at refinement       edges.      
+* [0.x.40]*
+       The flux matrix between the coarse and the fine level at refinement       edges.      
+* [0.x.41]*
+       The interface matrix between the fine and the coarse level at       refinement edges.      
+* [0.x.42]*
+       The interface matrix between the coarse and the fine level at       refinement edges.      
+* [0.x.43]*
+       A pointer to the object containing the block structure.      
+* [0.x.44]*
+       A pointer to the object containing constraints.      
+* [0.x.45]*
+       The smallest positive number that will be entered into the global       matrix. All smaller absolute values will be treated as zero and will       not be assembled.      
+* [0.x.46]
+
+include/deal.II-translator/meshworker/copy_data_0.txt
+[0.x.0]*
+   Helper copy data struct.     This class is a good default drop in CopyData object for the    [2.x.0]  and  [2.x.1]  functions.     It arrays of (local) full matrices, vectors, and local degrees of freedom   index vectors, with size determined by the corresponding template argument.     In particular, you can specify the following template arguments
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.2]  n_matrices: Size of the array of matrices
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.3]  n_vectors: size of the array of vectors
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.4]  n_dof_indices: size of the array of local dof indices  
+* [0.x.1]*
+     Initialize everything with the same  [2.x.5]  This is usually the number     of local degrees of freedom.    
+* [0.x.2]*
+     For every object, specify the size they should have.    
+* [0.x.3]*
+     Deep copy constructor.    
+* [0.x.4]*
+     An array of local matrices.    
+* [0.x.5]*
+     An array of local vectors.    
+* [0.x.6]*
+     An array of local degrees of freedom indices.    
+* [0.x.7]
+
+include/deal.II-translator/meshworker/dof_info.templates_0.txt
+[0.x.0]
+
+include/deal.II-translator/meshworker/dof_info_0.txt
+[0.x.0]*
+   A class containing information on geometry and degrees of freedom of a   mesh object.     The information in these objects is usually used by one of the Assembler   classes. It is also the kind of information which is needed in mesh based   matrices (often referred to as matrix free methods).     In addition to the information on degrees of freedom stored in this   class, it also provides the local computation space for the worker object   operating on it in LocalResults. This base class will automatically be   reinitialized on each cell, but initial setup is up to the user and   should be done when initialize() for this class is called.     This class operates in two different modes, corresponding to the data   models discussed in the Assembler namespace documentation.     The choice of the local data model is triggered by the vector    [2.x.0]  which in turn is usually filled by    [2.x.1]  If this function has been used, or the   vector has been changed from zero-length, then local dof indices stored   in this object will automatically be renumbered to reflect local block   structure. This means, the first entries in  [2.x.2]  will refer to the   first block of the system, then comes the second block and so on.     The BlockInfo object is stored as a pointer. Therefore, if the block   structure changes, for instance because of mesh refinement, the DoFInfo   class will automatically use the new structures.    
+*  [2.x.3]   
+* [0.x.1]*
+     The number of the current face on the current cell.         This number is  [2.x.4]  if the  [2.x.5]  object was     initialized with a cell.    
+* [0.x.2]*
+     The number of the current subface on the current face         This number is  [2.x.6]  if the  [2.x.7]  object was not     initialized with a subface.    
+* [0.x.3]*
+     The DoF indices of the     current cell    
+* [0.x.4]*
+     The DoF indices on the current cell, organized by local blocks. The     size of this vector is zero, unless local blocks are used.    
+* [0.x.5]*
+     Constructor setting the #block_info pointer.    
+* [0.x.6]*
+     Constructor leaving the #block_info pointer empty, but setting the     #aux_local_indices.    
+* [0.x.7]*
+     Set the current cell and fill  [2.x.8]     
+* [0.x.8]*
+     Set the current face and fill  [2.x.9]  if the #cell changed.    
+* [0.x.9]*
+     Set the current subface and fill  [2.x.10]  if the #cell changed.    
+* [0.x.10]*
+     Switch to a new face of the same cell. Does not change  [2.x.11]  and     does not reset data in LocalResults.    
+* [0.x.11]*
+     Switch to a new subface of the same cell. Does not change  [2.x.12]      and does not reset data in LocalResults.    
+* [0.x.12]*
+     The structure refers to a cell with level data instead of active data.    
+* [0.x.13]*
+     Standard constructor, not setting any block indices. Use of this     constructor is not recommended, but it is needed for the arrays in     DoFInfoBox.    
+* [0.x.14]*
+     An auxiliary local BlockIndices object created if #block_info is not     set. It contains just a single block of the size of degrees of freedom     per cell.    
+* [0.x.15]*
+   A class bundling the  [2.x.13]  objects used on a cell.      [2.x.14]  Currently, we are storing an object for the cells and two for each   face. We could gather all face data pertaining to the cell itself in one   object, saving a bit of memory and a few operations, but sacrificing some   cleanliness.    
+*  [2.x.15]   
+* [0.x.16]*
+     Constructor copying the seed into all other objects.    
+* [0.x.17]*
+     Copy constructor, taking #cell and using it as a seed in the other     constructor.    
+* [0.x.18]*
+     Copy assignment operator, taking another object as seed.    
+* [0.x.19]*
+     Reset all the availability flags.    
+* [0.x.20]*
+     After all DOFINFO objects have been filled appropriately, use the     ASSEMBLER object to assemble them into the global data. See      [2.x.16]  for available classes.    
+* [0.x.21]*
+     The data for the cell.    
+* [0.x.22]*
+     The data for the faces from inside.    
+* [0.x.23]*
+     The data for the faces from outside.    
+* [0.x.24]*
+     A set of flags, indicating whether data on an interior face is     available.    
+* [0.x.25]*
+     A set of flags, indicating whether data on an exterior face is     available.    
+* [0.x.26]*
+     A flag to specify if the current object has been set to a valid cell.    
+* [0.x.27]
+
+include/deal.II-translator/meshworker/functional_0.txt
+[0.x.0]*
+     The class assembling local contributions to a functional into global     functionals.                
+*  [2.x.0]     
+* [0.x.1]*
+       Initialize local data to store functionals. The number <tt>n</tt> is       the number of functionals to be computed.      
+* [0.x.2]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.1]  object refers to a cell if  [2.x.2] , or else to an       interior or boundary face.      
+* [0.x.3]*
+       Assemble the local values into the global vectors.      
+* [0.x.4]*
+       Assemble both local values into the global vectors.      
+* [0.x.5]*
+       The value of the ith entry in #results.      
+* [0.x.6]*
+       The values into which the results are added.      
+* [0.x.7]*
+     Compute cell and face contributions of one or several functionals,     typically for error estimates. The information in which component the     result is stored for a given cell or face is transmitted by its     user_index variable. Hence, you need to make sure to set these variables     appropriately before using this class.        
+*  [2.x.3]     
+* [0.x.8]*
+       Constructor. Initialize the member variables.      
+* [0.x.9]*
+       The initialization function, specifying the  [2.x.4]  vectors and       whether face data should be collected separately.              [2.x.5]  should contain two block vectors named "cells" and "faces"       (the latter only if  [2.x.6]  is true). In each of the two,       each block should have equal size and be large enough to accommodate       all user indices set in the cells and faces covered by the loop it is       used in. Typically, for estimators, this is        [2.x.7]  and  [2.x.8]        respectively.             The use of BlockVector may seem cumbersome, but it allows us to       assemble several functionals at the same time, one in each block. The       typical situation for error estimate is just having a single block in       each vector.      
+* [0.x.10]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.9]  object refers to a cell if  [2.x.10] , or else to an       interior or boundary face.      
+* [0.x.11]*
+       Assemble the local values into the global vectors.      
+* [0.x.12]*
+       Assemble both local values into the global vectors.      
+* [0.x.13]*
+       The value of the ith entry in  [2.x.11]       
+* [0.x.14]
+
+include/deal.II-translator/meshworker/integration_info.templates_0.txt
+[0.x.0]
+
+include/deal.II-translator/meshworker/integration_info_0.txt
+[0.x.0]*
+   Class for objects handed to local integration functions.     Objects of this class contain one or more objects of type FEValues,   FEFaceValues or FESubfaceValues to be used in local integration. They are   stored in an array of pointers to the base classes FEValuesBase. The   template parameter VectorType allows the use of different data types for   the global system.     Additionally, this function contains space to store the values of finite   element functions stored in #global_data in the quadrature points. These   vectors are initialized automatically on each cell or face. In order to   avoid initializing unused vectors, you can use initialize_selector() to   select the vectors by name that you actually want to use.     [1.x.0]     This class supports two local integration models, corresponding to the   data models in the documentation of the Assembler namespace. One is the   standard model suggested by the use of FESystem. Namely, there is one   FEValuesBase object in this class, containing all shape functions of the   whole system, and having as many components as the system. Using this   model involves loops over all system shape functions. It requires to   identify the system components for each shape function and to select the   correct bilinear form, usually in an  [2.x.0]  or  [2.x.1]  statement.     The second integration model builds one FEValuesBase object per base   element of the system. The degrees of freedom on each cell are renumbered   by block, such that they represent the same block structure as the global   system. Objects performing the integration can then process each block   separately, which improves reusability of code considerably.    
+*  [2.x.2]  As described in DoFInfo, the use of the local block model is   triggered by calling  [2.x.3]  before using   initialize() in this class.    
+*  [2.x.4]   
+* [0.x.1]*
+     Constructor.    
+* [0.x.2]*
+     Copy constructor, creating a clone to be used by  [2.x.5]     
+* [0.x.3]*
+     Build all internal structures, in particular the FEValuesBase objects     and allocate space for data vectors.          [2.x.6]  el is the finite element of the DoFHandler.          [2.x.7]  mapping is the Mapping object used to map the mesh cells.          [2.x.8]  quadrature is a Quadrature formula used in the constructor of     the FEVALUES objects.          [2.x.9]  flags are the UpdateFlags used in the constructor of the     FEVALUES objects.          [2.x.10]  local_block_info is an optional parameter for systems of PDE. If     it is provided with reasonable data, then the degrees of freedom on the     cells will be re-ordered to reflect the block structure of the system.    
+* [0.x.4]*
+     Initialize the data vector and cache the selector.    
+* [0.x.5]*
+     Delete the data created by initialize().    
+* [0.x.6]*
+     Return a reference to the FiniteElement that was used to initialize     this object.    
+* [0.x.7]*
+     This is the access function being used, if initialize() for a single     element was used (without the BlockInfo argument). It throws an     exception, if applied to a vector of elements.    
+* [0.x.8]*
+     This access function must be used if the initialize() for a group of     elements was used (with a valid BlockInfo object).    
+* [0.x.9]*
+     The vector containing the values of finite element functions in the     quadrature points.         There is one vector per selected finite element function, containing     one vector for each component, containing vectors with values for each     quadrature point.    
+* [0.x.10]*
+     The vector containing the derivatives of finite element functions in     the quadrature points.         There is one vector per selected finite element function, containing     one vector for each component, containing vectors with values for each     quadrature point.    
+* [0.x.11]*
+     The vector containing the second derivatives of finite element     functions in the quadrature points.         There is one vector per selected finite element function, containing     one vector for each component, containing vectors with values for each     quadrature point.    
+* [0.x.12]*
+     Reinitialize internal data structures for use on a cell.    
+* [0.x.13]*
+     Use the finite element functions in #global_data and fill the vectors     #values, #gradients and #hessians.    
+* [0.x.14]*
+     The global data vector used to compute function values in quadrature     points.    
+* [0.x.15]*
+     The memory used by this object.    
+* [0.x.16]*
+     The pointer to the (system) element used for initialization.    
+* [0.x.17]*
+     Use the finite element functions in #global_data and fill the vectors     #values, #gradients and #hessians with values according to the     selector.    
+* [0.x.18]*
+     Cache the number of components of the system element.    
+* [0.x.19]*
+   The object holding the scratch data for integrating over cells and faces.   IntegrationInfoBox serves three main purposes:      [2.x.11]     [2.x.12]  It provides the interface needed by  [2.x.13]  namely the   two functions post_cell() and post_faces(), as well as the data members   #cell, #boundary, #face, #subface, and #neighbor.      [2.x.14]  It contains all information needed to initialize the FEValues and   FEFaceValues objects in the IntegrationInfo data members.      [2.x.15]  It stores information on finite element vectors and whether their   data should be used to compute values or derivatives of functions at   quadrature points.      [2.x.16]  It makes educated guesses on quadrature rules and update flags, so   that minimal code has to be written when default parameters are   sufficient.    [2.x.17]      In order to allow for sufficient generality, a few steps have to be   undertaken to use this class.     First, you should consider if you need values from any vectors in a   AnyData object. If so, fill the VectorSelector objects #cell_selector,   #boundary_selector and #face_selector with their names and the data type   (value, gradient, Hessian) to be extracted.     Afterwards, you will need to consider UpdateFlags for FEValues objects. A   good start is initialize_update_flags(), which looks at the selectors   filled before and adds all the flags needed to get the selection.   Additional flags can be set with add_update_flags().     Finally, we need to choose quadrature formulas. In the simplest case, you   might be happy with the default settings, which are [1.x.1]-point Gauss   formulas. If only derivatives of the shape functions are used   (#update_values is not set) [1.x.2] equals the highest polynomial degree   in the FiniteElement, if #update_values is set, [1.x.3] is one higher   than this degree.  If you choose to use Gauss formulas of other size, use   initialize_gauss_quadrature() with appropriate values. Otherwise, you can   fill the variables #cell_quadrature, #boundary_quadrature and   #face_quadrature directly.     In order to save time, you can set the variables boundary_fluxes and   interior_fluxes of the base class to false, thus telling the    [2.x.18]  not to loop over those faces.     All the information in here is used to set up IntegrationInfo objects   correctly, typically in an IntegrationInfoBox.    
+*  [2.x.19]   
+* [0.x.20]*
+     The type of the  [2.x.20]  object for cells.    
+* [0.x.21]*
+     Default constructor.    
+* [0.x.22]*
+     Initialize the IntegrationInfo objects contained.         Before doing so, add update flags necessary to produce the data needed     and also set uninitialized quadrature rules to Gauss formulas, which     integrate polynomial bilinear forms exactly.    
+* [0.x.23]*
+     Initialize the IntegrationInfo objects contained.         Before doing so, add update flags necessary to produce the data needed     and also set uninitialized quadrature rules to Gauss formulas, which     integrate polynomial bilinear forms exactly.    
+* [0.x.24]*
+     Initialize the IntegrationInfo objects contained.         Before doing so, add update flags necessary to produce the data needed     and also set uninitialized quadrature rules to Gauss formulas, which     integrate polynomial bilinear forms exactly.    
+* [0.x.25]*
+      [2.x.21]  FEValues setup    
+* [0.x.26]*
+     Call this function before initialize() in order to guess the update     flags needed, based on the data selected.         When computing face fluxes, we normally can use the geometry     (integration weights and normal vectors) from the original cell and     thus can avoid updating these values on the neighboring cell. Set     <tt>neighbor_geometry</tt> to true in order to initialize these values     as well.    
+* [0.x.27]*
+     Add FEValues UpdateFlags for integration on all objects (cells,     boundary faces and all interior faces).    
+* [0.x.28]*
+     Add FEValues UpdateFlags for integration on cells.    
+* [0.x.29]*
+     Add FEValues UpdateFlags for integration on boundary faces.    
+* [0.x.30]*
+     Add FEValues UpdateFlags for integration on interior faces.    
+* [0.x.31]*
+     Add additional update flags to the ones already set in this program.     The four boolean flags indicate whether the additional flags should be     set for cell, boundary, interelement face for the cell itself or     neighbor cell, or any combination thereof.    
+* [0.x.32]*
+     Assign n-point Gauss quadratures to each of the quadrature rules. Here,     a size of zero points means that no loop over these grid entities     should be performed.         If the parameter <tt>force</tt> is true, then all quadrature sets are     filled with new quadrature rules. If it is false, then only empty rules     are changed.    
+* [0.x.33]*
+     The memory used by this object.    
+* [0.x.34]*
+     The set of update flags for boundary cell integration.         Defaults to #update_JxW_values.    
+* [0.x.35]*
+     The set of update flags for boundary face integration.         Defaults to #update_JxW_values and #update_normal_vectors.    
+* [0.x.36]*
+     The set of update flags for interior face integration.         Defaults to #update_JxW_values and #update_normal_vectors.    
+* [0.x.37]*
+     The set of update flags for interior face integration.         Defaults to #update_default, since quadrature weights are taken from     the other cell.    
+* [0.x.38]*
+     The quadrature rule used on cells.    
+* [0.x.39]*
+     The quadrature rule used on boundary faces.    
+* [0.x.40]*
+     The quadrature rule used on interior faces.    
+* [0.x.41]*
+      [2.x.22]  Data vectors    
+* [0.x.42]*
+     Initialize the VectorSelector objects #cell_selector,     #boundary_selector and #face_selector in order to save computational     effort. If no selectors are used, then values for all named vectors in      [2.x.23]  will be computed in all quadrature points.         This function will also add UpdateFlags to the flags stored in this     class.    
+* [0.x.43]*
+     Select the vectors from  [2.x.24]  that should be computed in     the quadrature points on cells.    
+* [0.x.44]*
+     Select the vectors from  [2.x.25]  that should be computed in     the quadrature points on boundary faces.    
+* [0.x.45]*
+     Select the vectors from  [2.x.26]  that should be computed in     the quadrature points on interior faces.    
+* [0.x.46]*
+      [2.x.27]  Interface for  [2.x.28]     
+* [0.x.47]*
+     A callback function which is called in the loop over all cells, after     the action on a cell has been performed and before the faces are dealt     with.         In order for this function to have this effect, at least either of the     arguments <tt>boundary_worker</tt> or <tt>face_worker</tt> arguments of     loop() should be nonzero. Additionally, <tt>cells_first</tt> should be     true. If <tt>cells_first</tt> is false, this function is called before     any action on a cell is taken.         And empty function in this class, but can be replaced in other classes     given to loop() instead.         See loop() and cell_action() for more details of how this function can     be used.    
+* [0.x.48]*
+     A callback function which is called in the loop over all cells, after     the action on the faces of a cell has been performed and before the     cell itself is dealt with (assumes <tt>cells_first</tt> is false).         In order for this function to have a reasonable effect, at least either     of the arguments <tt>boundary_worker</tt> or <tt>face_worker</tt>     arguments of loop() should be nonzero. Additionally,     <tt>cells_first</tt> should be false.         And empty function in this class, but can be replaced in other classes     given to loop() instead.         See loop() and cell_action() for more details of how this function can     be used.    
+* [0.x.49]*
+     The  [2.x.29]  object for a cell.    
+* [0.x.50]*
+     The  [2.x.30]  object for a boundary face.    
+* [0.x.51]*
+     The  [2.x.31]  object for a regular interior face, seen from the first cell.    
+* [0.x.52]*
+     The  [2.x.32]  object for the refined side of an interior face seen from the     first cell.    
+* [0.x.53]*
+     The  [2.x.33]  object for an interior face, seen from the other cell.    
+* [0.x.54]
+
+include/deal.II-translator/meshworker/local_integrator_0.txt
+[0.x.0]*
+   A local integrator object, which can be used to simplify the call of   loop(). Instead of providing the three local integration functions   separately, we bundle them as virtual functions in this class.     Additionally, since we cannot have a virtual null function, we provide   flags, which allow us to indicate, whether we want to integrate on   boundary and interior faces. These flags are true by default, but can be   modified by applications to speed up the loop.     If a function is not overloaded in a derived class, but its usage flag is   true, the function will cause an exception ExcPureFunction.    
+*  [2.x.0]   
+* [0.x.1]*
+     The constructor setting default values, namely all integration flags to     true.    
+* [0.x.2]*
+     The constructor setting integration flags to specified values.    
+* [0.x.3]*
+     The empty virtual destructor.    
+* [0.x.4]*
+     Virtual function for integrating on cells. Throws exception     PureFunctionCalled if not overloaded by a derived class.    
+* [0.x.5]*
+     Virtual function for integrating on boundary faces. Throws exception     PureFunctionCalled if not overloaded by a derived class.    
+* [0.x.6]*
+     Virtual function for integrating on interior faces. Throws exception     PureFunctionCalled if not overloaded by a derived class.    
+* [0.x.7]*
+     The flag indicating whether the cell integrator cell() is to be used in     the loop. Defaults to <tt>true</tt>.    
+* [0.x.8]*
+     The flag indicating whether the boundary integrator boundary() is to be     used in the loop. Defaults to <tt>true</tt>.    
+* [0.x.9]*
+     The flag indicating whether the interior face integrator face() is to     be used in the loop. Defaults to <tt>true</tt>.    
+* [0.x.10]*
+     The names of the input vectors. If this vector is nonempty, it can be     used by application programs to automatically select and verify the     input vectors used for integration.        
+*  [2.x.1]  This variable is currently not used by the library, but it is     provided to help develop application programs.    
+* [0.x.11]*
+     The names of the results produced. If this vector is nonempty, it can     be used by application programs to automatically assign names to output     values and/or verify the names of vectors.        
+*  [2.x.2]  This variable is currently not used by the library, but it is     provided to help develop application programs.    
+* [0.x.12]*
+     This error is thrown if one of the virtual functions cell(),     boundary(), or face() is called without being overloaded in a derived     class. Consider setting #use_cell, #use_boundary, and #use_face to     false, respectively.        
+*  [2.x.3]     
+* [0.x.13]
+
+include/deal.II-translator/meshworker/local_results_0.txt
+[0.x.0]*
+ A collection of functions and classes for the mesh loops that are an ubiquitous part of each finite element program.
+*  The workhorse of this namespace is the loop() function, which implements a completely generic loop over all mesh cells. Since the calls to loop() are error-prone due to its generality, for many applications it is advisable to derive a class from  [2.x.0]  and use the less general integration_loop() instead.
+*  The loop() depends on certain objects handed to it as arguments. These objects are of two types,  [2.x.1]  objects like DoFInfo and IntegrationInfo and worker objects like LocalWorker and IntegrationWorker.
+*  Worker objects usually do two different jobs: first, they compute the local contribution of a cell or face to the global operation. Second, they assemble this local contribution into the global result, whether a functional, a form or a bilinear form. While the first job is particular to the problem being solved, the second is generic and only depends on the data structures. Therefore, base classes for workers assembling into global data are provided in the namespace Assembler.
+*  [1.x.0]
+*  The functions loop() and cell_action() take some arguments which are template parameters. Let us list the minimum requirements for these classes here and describe their properties.
+*  [1.x.1]
+*  Any object that has an <tt>operator++()</tt> and points to a TriaAccessor or derived class.
+*  [1.x.2]
+*  For an example implementation, refer to the class template DoFInfo. In order to work with cell_action() and loop(), DOFINFO needs to follow the following interface.
+
+* 
+* [1.x.3]
+* 
+*  The three private functions are called by DoFInfoBox and should not be needed elsewhere. Obviously, they can be made public and then the friend declaration at the end may be missing.
+*  Additionally, you will need at least one public constructor. Furthermore DOFINFO is pretty useless yet: functions to interface with INTEGRATIONINFO and ASSEMBLER are needed.
+*  DOFINFO objects are gathered in a DoFInfoBox. In those objects, we store the results of local operations on each cell and its faces. Once all this information has been gathered, an ASSEMBLER is used to assemble it into global data.
+*  [1.x.4]
+*  This type is exemplified in IntegrationInfoBox. It collects the input data for actions on cells and faces in INFO objects (see below). It provides the following interface to loop() and cell_action():
+* 
+
+* 
+* [1.x.5]
+* 
+*  The main purpose of this class is gathering the five INFO objects, which contain the temporary data used on each cell or face. The requirements on these objects are listed below. Here, we only note that there need to be these 5 objects with the names listed above.
+*  The two function templates are call back functions called in cell_action(). The first is called before the faces are worked on, the second after the faces.
+*  [1.x.6]
+*  See IntegrationInfo for an example of these objects. They contain the temporary data needed on each cell or face to compute the result. The MeshWorker only uses the interface
+* 
+
+* 
+* [1.x.7]
+* 
+*  [1.x.8]
+*  Since the loop() is fairly general, a specialization integration_loop() is available, which is a wrapper around loop() with a simplified interface.
+*  The integration_loop() function loop takes most of the information that it needs to pass to loop() from an IntegrationInfoBox object. Its use is explained in  [2.x.2] , but in short it requires functions that do the local integration on a cell, interior or boundary face, and it needs an object (called "assembler") that copies these local contributions into the global matrix and right hand side objects.
+*  Before we can run the integration loop, we have to initialize several data structures in our IntegrationWorker and assembler objects. For instance, we have to decide on the quadrature rule or we may need more than the default update flags.
+* 
+
+* 
+*  [2.x.3] 
+
+* 
+*  [2.x.4] 
+
+* 
+* [0.x.1]*
+   The class providing the scrapbook to fill with results of local   integration. Depending on the task the mesh worker loop is performing,   local results can be of different types: They can be scalars, vectors   of size equal to the number of degrees of freedom used in the integrals,   or square matrices of that same size. All of these have in common that they   are the result of local integration over a cell or face. Which kind of   object is the result of an operation is determined by the Assembler using   them. It is also the assembler that determines [1.x.9] of each   kind of object are produced (for example, an assembler may create   both the local contributions to a mass and a stiffness matrix), and for   setting the arrays of local results to the sizes needed.     The interface of this class allows accessing all of this information   via the following functions:      [2.x.5]     [2.x.6]  Scalars: n_values() returns the number of scalars stored by   an object of this class, and they are accessed via the value() function.      [2.x.7]  Vectors: n_vectors() returns the number of vectors stored by   an object of this class (each vector has length equal to the number of   degrees of freedom on this cell on which the integration happens).   The vectors are accessed by the vector() function.      [2.x.8]  Matrices: n_matrices() returns the number of matrices stored,   each of which is a square matrix of dimension equal to the number of   degrees of freedom per cell. The matrices are   accessed by matrix() with second argument <tt>false</tt>. These are   matrices coupling degrees of freedom in   the same cell. For fluxes across faces, there is an additional set of   matrices of the same size, with the dimension of these matrices being   according to the degrees of freedom on both cells. These are accessed   with matrix(), using the second argument <tt>true</tt>.    [2.x.9]      The local matrices are initialized by reinit() of the  [2.x.10]  object and then   assembled into the global system by Assembler classes.    
+*  [2.x.11]   
+* [0.x.2]*
+     The number of scalar values stored by the current object.         This number is set to a nonzero value by  [2.x.12]     
+* [0.x.3]*
+     The number of vectors stored by the current object.         This number is set to a nonzero value by  [2.x.13]  and      [2.x.14]     
+* [0.x.4]*
+     The number of matrices stored by the current object.    
+* [0.x.5]*
+     The number of quadrature points in quadrature_values().    
+* [0.x.6]*
+     The number of values in each quadrature point in quadrature_values().    
+* [0.x.7]*
+     Read-write access to the `i`th scalar stored by this class.    
+* [0.x.8]*
+     Read access to the `i`th scalar stored by this class.    
+* [0.x.9]*
+     Read-write access to the `i`th vector stored by this class    
+* [0.x.10]*
+     Read-write access to the `i`th vector stored by this class    
+* [0.x.11]*
+     Read-write access to the `i`th matrix stored by this class.         For an explanation of the second argument, see the documentation     of the current class itself.    
+* [0.x.12]*
+     Read access to the `i`th matrix stored by this class.         For an explanation of the second argument, see the documentation     of the current class itself.    
+* [0.x.13]*
+     Access to the vector #quadrature_data of data in quadrature points,     organized such that there is a vector for each point, containing one     entry for each component.    
+* [0.x.14]*
+     Access the [1.x.10]th value at quadrature point [1.x.11]    
+* [0.x.15]*
+     Read the [1.x.12]th value at quadrature point [1.x.13]    
+* [0.x.16]*
+     Initialize the vector with scalar values.        
+*  [2.x.15]  This function is usually only called by the assembler.    
+* [0.x.17]*
+     Initialize the vector with vector values.        
+*  [2.x.16]  This function is usually only called by the assembler.    
+* [0.x.18]*
+     Allocate  [2.x.17]  local matrices. Additionally, set their block row and     column coordinates to zero. The matrices themselves are resized by     reinit().        
+*  [2.x.18]  This function is usually only called by the assembler.    
+* [0.x.19]*
+     Allocate a local matrix for each of the global ones in  [2.x.19]      Additionally, set their block row and column coordinates. The matrices     themselves are resized by reinit().        
+*  [2.x.20]  This function is usually only called by the assembler.    
+* [0.x.20]*
+     Allocate a local matrix for each of the global level objects in  [2.x.21]      matrices. Additionally, set their block row and column coordinates. The     matrices themselves are resized by reinit().        
+*  [2.x.22]  This function is usually only called by the assembler.    
+* [0.x.21]*
+     Initialize quadrature values to <tt>nv</tt> values in <tt>np</tt>     quadrature points.    
+* [0.x.22]*
+     Reinitialize matrices for new cell. Does not resize any of the data     vectors stored in this object, but resizes the vectors in #R and the     matrices in #M1 and #M2 for hp and sets them to zero.    
+* [0.x.23]*
+     The memory used by this object.    
+* [0.x.24]*
+     The local numbers, computed on a cell or on a face.    
+* [0.x.25]*
+     The local vectors. This field is public, so that local integrators can     write to it.    
+* [0.x.26]*
+     The local matrices coupling degrees of freedom in the cell itself or     within the first cell on a face.    
+* [0.x.27]*
+     The local matrices coupling test functions on the cell with trial     functions on the other cell.         Only used on interior faces.    
+* [0.x.28]*
+     Values in quadrature points for writing into patch data.    
+* [0.x.29]
+
+include/deal.II-translator/meshworker/loop_0.txt
+[0.x.0]*
+   Find out if an iterator supports inactive cells.  
+* [0.x.1]*
+   Collection of parameters to control the execution of MeshWorker loops.  
+* [0.x.2]*
+     Constructor.    
+* [0.x.3]*
+     Loop over cells owned by this process. Defaults to  [2.x.0] .    
+* [0.x.4]*
+     Loop over cells not owned by this process. Defaults to      [2.x.1] .    
+* [0.x.5]*
+     Enumeration describing when to do assembly on a face: see, e.g.,      [2.x.2]  for an example of how the value     of this enumeration is interpreted in a particular circumstance.    
+* [0.x.6]*
+       Do not perform assembly on a face.      
+* [0.x.7]*
+       Perform assembly on one face.      
+* [0.x.8]*
+       Perform assembly on both faces.      
+* [0.x.9]*
+     Control for looping over faces between a locally owned cell and a ghost     cell:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - never: Do not assembly these faces.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - one: Only one of the processes will assemble these faces (from the       finer side or the process with the lower MPI rank).
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - both: Both processes will assemble these faces. Note that these faces       are never assembled from both sides on a single process.         The default is  [2.x.3] .    
+* [0.x.10]*
+     Control for looping over faces between two locally owned cells:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - never: Do not assemble face terms.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - one: Assemble once (always coming from the finer side).
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - both: Assemble each face twice (not implemented for hanging nodes!).         The default is  [2.x.4] .    
+* [0.x.11]*
+     A flag to determine if cells integrals should be done before or after     face integrals. The default is  [2.x.5] .    
+* [0.x.12]*
+   The function called by loop() to perform the required actions on a cell   and its faces. The three functions <tt>cell_worker</tt>,   <tt>boundary_worker</tt> and <tt>face_worker</tt> are the same ones   handed to loop(). While there we only run the loop over all cells, here,   we do a single cell and, if necessary, its faces, interior and boundary.     Upon return, the DoFInfo objects in the DoFInfoBox are filled with the   data computed on the cell and each of the faces. Thus, after the   execution of this function, we are ready to call  [2.x.6]    to distribute the local data into global data.      [2.x.7]  cell is the cell we work on    [2.x.8]  dof_info is the object into which local results are entered. It is   expected to have been set up for the right types of data.    [2.x.9]  info is the object containing additional data only needed for   internal processing.    [2.x.10]  cell_worker defines the local action on each cell.    [2.x.11]  boundary_worker defines the local action on boundary faces    [2.x.12]  face_worker defines the local action on interior faces.    [2.x.13]  loop_control control structure to specify what actions should be   performed.    
+*  [2.x.14]   
+* [0.x.13]*
+   The main work function of this namespace. It is a loop over all cells in   an iterator range, in which cell_action() is called for each cell.   Unilaterally refined interior faces are handled automatically by the   loop. Most of the work in this loop is done in cell_action(), which also   receives most of the parameters of this function. See the documentation   there for more details.     If you don't want anything to be done on cells, interior or boundary   faces to happen, simply pass the Null pointer to one of the function   arguments.    
+*  [2.x.15]   
+* [0.x.14]*
+   Simplified interface for loop() if specialized for integration, using the   virtual functions in LocalIntegrator.    
+*  [2.x.16]   
+* [0.x.15]
+
+include/deal.II-translator/meshworker/mesh_loop_0.txt
+[0.x.0]*
+     A helper class to provide a type definition for the underlying cell     iterator type.    
+* [0.x.1]*
+       Type definition for the cell iterator type.      
+* [0.x.2]*
+     A helper class to provide a type definition for the underlying cell     iterator type.         This specialization is for IteratorRange, which may have either a     TriaActiveIterator or a FilteredIterator as its base type.    
+* [0.x.3]*
+       Type definition for the cell iterator type.      
+* [0.x.4]*
+     A helper class to provide a type definition for the underlying cell     iterator type.         This specialization is for FilteredIterator, which may have either a     TriaActiveIterator as its base type, or may be nested with another     FilteredIterator as the type to iterate over.    
+* [0.x.5]*
+       Type definition for the cell iterator type.      
+* [0.x.6]*
+   This alias introduces a friendly and short name for the function type   for the cell worker used in mesh_loop().  
+* [0.x.7]*
+   This alias introduces a friendly and short name for the function type   for the cell worker used in mesh_loop().  
+* [0.x.8]*
+   This alias introduces a friendly and short name for the function type   for the boundary worker used in mesh_loop().  
+* [0.x.9]*
+   This alias introduces a friendly and short name for the function type   for the face worker used in mesh_loop().  
+* [0.x.10]*
+   This function extends the WorkStream concept to work on meshes   (cells and/or faces) and handles the complicated logic for   work on adaptively refined faces   and parallel computation (work on faces to ghost neighbors for example).   The  [2.x.0]  can be used to simplify operations on cells (for example   assembly), on boundaries (Neumann type boundary conditions), or on   interior faces (for example in discontinuous Galerkin methods). The   function is used in a number of tutorials, including  [2.x.1] ,  [2.x.2] ,   and  [2.x.3] , to name just a few.     For uniformly refined meshes, it would be relatively easy to use    [2.x.4]  with a  [2.x.5]  that also loops over faces, and   takes care of assembling face terms depending on the current and neighbor   cell. All user codes that do these loops would then need to insert   manually the logic that identifies, for every face of the current cell,   the neighboring cell, and the face index on the neighboring cell that   corresponds to the current face.     This is more complicated if local refinement is enabled and the current or   neighbor cells have hanging nodes. In this case it is also necessary to   identify the corresponding subface on either the current or the neighbor   faces.     This method externalizes that logic (which is independent from user codes)   and separates the assembly of face terms (internal faces, boundary faces,   or faces between different subdomain ids on parallel computations) from   the assembling on cells, allowing the user to specify two additional   workers (a  [2.x.6]  a  [2.x.7]  and a  [2.x.8]  that   are called automatically in each  [2.x.9]  according to the specific   AssembleFlags  [2.x.10]  that are passed. The  [2.x.11]  is passed the   cell identifier, a ScratchData object, and a CopyData object, following   the same principles of  [2.x.12]  Internally the function passes to    [2.x.13]  in addition to the above, also a  [2.x.14]  parameter   that identifies the face on which the integration should be performed. The    [2.x.15]  instead needs to identify the current face unambiguously   both on the cell and on the neighboring cell, and it is therefore called   with six arguments (three for each cell: the actual cell, the face index,   and the subface_index. If no subface integration is needed, then the   subface_index is  [2.x.16]  in addition to the usual   ScratchData and CopyData objects.     If the flag  [2.x.17]  is passed, then the default   behavior is to first loop over faces and do the work there, and then   compute the actual work on the cell. It is possible to perform the   integration on the cells after working on faces, by adding the flag    [2.x.18]      If the flag  [2.x.19]  is specified,   then each interior face is visited only once, and the  [2.x.20]  is   assumed to integrate all face terms at once (and add contributions to both   sides of the face in a discontinuous Galerkin setting).     This method is equivalent to the  [2.x.21]  method when   AssembleFlags contains only  [2.x.22]  and can be used as a   drop-in replacement for that method.     The two data types ScratchData and CopyData need to have a working copy   constructor. ScratchData is only used in the worker function, while   CopyData is the object passed from the worker to the copier. The CopyData   object is reset to the value provided to this function every time this   function visits a new cell (where it then calls the cell and face   workers). In other words, no state carries over between calling the   `copier` on one cell and the `cell_worker`/`face_worker`/`boundary_worker`   functions on the next cell, and user code needs not reset the copy   object either at the beginning of the cell integration or end of the   copy operation. Resetting the state of the `copier ` inside of a   `face_worker` or `boundary_worker` constitutes a bug, and may lead to   some unexpected results. The following example shows what is not   permissible, as the copier is potentially shared among numerous faces   on a cell:  
+* [1.x.0]
+*      The queue_length argument indicates the number of items that can be live at   any given time. Each item consists of chunk_size elements of the input   stream that will be worked on by the worker and copier functions one after   the other on the same thread.     If your data objects are large, or their constructors are expensive, it is   helpful to keep in mind that queue_length copies of the ScratchData object   and `queue_length*chunk_size` copies of the CopyData object are generated.    
+*  [2.x.23]  The types of the function arguments and the default values (empty worker functions)   displayed in the Doxygen documentation here are slightly simplified   compared to the real types.    
+*  [2.x.24]  More information about requirements on template types and meaning   of  [2.x.25]  and  [2.x.26]  can be found in the documentation of the   WorkStream namespace and its members.    
+*  [2.x.27]   
+* [0.x.11]*
+   Same as the function above, but for iterator ranges (and, therefore,   filtered iterators).     An example usage of the function for the serial case is given by  
+* [1.x.1]
+*      and an example usage of the function for the parallel distributed case,   where the copier is only to be called on locally owned cells, is given by  
+* [1.x.2]
+*     
+*  [2.x.28]   
+* [0.x.12]*
+   This is a variant of the mesh_loop() function that can be used for worker   and copier functions that are member functions of a class.     The argument passed as  [2.x.29]  must be convertible to the same type as  [2.x.30]    begin, but doesn't have to be of the same type itself. This allows to   write code like <code>mesh_loop(dof_handler.begin_active(),   dof_handler.end(), ...)</code> where the first is of type    [2.x.31]  whereas the second is of type    [2.x.32]      The  [2.x.33]  argument indicates the number of items that can be   live at any given time. Each item consists of  [2.x.34]  elements of   the input stream that will be worked on by the worker and copier   functions one after the other on the same thread.    
+*  [2.x.35]  If your data objects are large, or their constructors are   expensive, it is helpful to keep in mind that <tt>queue_length</tt>   copies of the <tt>ScratchData</tt> object and   <tt>queue_length*chunk_size</tt> copies of the <tt>CopyData</tt> object   are generated.     An example usage of the function is given by  
+* [1.x.3]
+*     
+*  [2.x.36]   
+* [0.x.13]*
+   Same as the function above, but for iterator ranges (and, therefore,   filtered iterators).     An example usage of the function for the serial case is given by  
+* [1.x.4]
+*      and an example usage of the function for the parallel distributed case,   where the copier is only to be called on locally owned cells, is given by  
+* [1.x.5]
+*     
+*  [2.x.37]   
+* [0.x.14]
+
+include/deal.II-translator/meshworker/output_0.txt
+[0.x.0]*
+     A class that, instead of assembling into a matrix or vector, outputs     the results on a cell to a gnuplot patch.         This assembler expects that LocalResults contains quadrature values set     with  [2.x.0]  When it is initialized with the     number of quadrature points in a single (!) space direction and the     number of data fields to be displayed, it initializes LocalResults     automatically. The number of data fields in local results will be     increased by dim in order to accommodate for the coordinates of the     data points.         While data slots for the space coordinates are allocated automatically,     these coordinates are not entered. It is up to the user to enter the     coordinates in the first dim data entries at every point. This adds the     flexibility to output transformed coordinates or even something     completely different.        
+*  [2.x.1]  In the current implementation, only cell data can be written.    
+* [0.x.1]*
+       Constructor.      
+* [0.x.2]*
+       Initialize for writing [1.x.0] data vectors. The number of points is       the number of quadrature points in a single direction in a tensor       product formula. It must match the number in the actual Quadrature       used to create the patches. The total number of data vectors produced       is <tt>n+dim</tt> and the first dim should be the space coordinates       of the points. Nevertheless, it is up to the user to set these values       to whatever is desired.      
+* [0.x.3]*
+       Set the stream #os to which data is written. If no stream is selected       with this function, data goes to  [2.x.2]       
+* [0.x.4]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.3]  object refers to a cell if  [2.x.4] , or else to an       interior or boundary face.      
+* [0.x.5]*
+       Write the patch to the output stream.      
+* [0.x.6]*
+        [2.x.5]  Not implemented yet      
+* [0.x.7]*
+       Write the object T either to the stream #os, if initialize_stream()       has been called, or to  [2.x.6]  if no pointer has been set.      
+* [0.x.8]*
+       Write an end-of-line marker either to the stream #os, if       initialize_stream has been called, or to  [2.x.7]  if no pointer has       been set.      
+* [0.x.9]*
+       The number of output components in each point.      
+* [0.x.10]*
+       The number of points in one direction.      
+* [0.x.11]*
+       Stream to which output is to be written. Set by initialize_stream().      
+* [0.x.12]
+
+include/deal.II-translator/meshworker/scratch_data_0.txt
+[0.x.0]*
+   A helper class to simplify the parallel assembly of linear and non-linear   problems, and the evaluation of finite element fields.     This class is a drop in ScratchData to use with the  [2.x.0]    function and with the  [2.x.1]  function().     The ScratchData class has three main goals:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - to create FEValues, FEFaceValues, FESubfaceValues, and FEInterfaceValues     for the current cell and for its neighbor cellon demand* (only if they     are necessary for the algorithm provided by the user), and to provide a     uniform interface to access the FEValues objects when assembling cell,     face, or subface contributions
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - to store arbitrary data types (or references to arbitrary data types),     that can be retrieved by name (for example, when the assembly needs to     make reference to other objects such as previous time steps' solution     vectors, previous nonlinear iteration vectors, geometry descriptions,     etc.) in an object of type
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - to provide a reasonable interface for those use cases where the user may     need temporary vectors of data at quadrature points, allowing the     construction of these temporarieson demand*, and easy access to     values, gradients, etc., of already computed solution vectors.     The methods in the section "Methods to work on current cell"   initialize on demand internal FEValues, FEFaceValues, FESubfaceValues, and   FEInterfaceValues objects on the current cell, allowing the use of this   class as a single substitute for four different objects used to integrate   and query finite element values on cells, faces, and subfaces.     Similarly, the methods in the section "Methods to work on neighbor cell"   initialize on demand   (different) internal FEValues, FEFaceValues, and FESubfaceValues, on   neighbor cells, allowing the use of this class also as a single substitute   for the additional three objects you would typically need to integrate on   the neighbor cell, and on its faces and subfaces (for example, in   discontinuous Galerkin methods).     If you need to retrieve values or gradients of finite element solution   vectors, on the cell, face, or subface that has just been initialized   with one of the functions in the section "Methods to work on current cell",   you can use the methods in the section "Evaluation of finite element fields   and their derivatives on the current cell".     An example usage for this class is given by the following snippet of code:    
+* [1.x.0]
+*      The order in which you call functions of this class matters: if you call   the  [2.x.2]  function that takes an active cell iterator,   then subsequent calls to methods that internally need an FEValuesBase   object will use the internal FEValues object initialized with the given   cell to perform their calculations. On the other hand, if you have called   the  [2.x.3]  method that also takes a face index, all   subsequent calls to methods that need an FEValuesBase object, will use an   internally stored FEFaceValues object, initialized with the cell and face   index passed to the  [2.x.4]  function. The same applies for   the  [2.x.5]  method that takes three arguments: the cell, the   face index, and the subface index.     The user code should be structured without interleaving work on cells and   work on faces.     Consider, for example, the following snippet of code:    
+* [1.x.1]
+*      When using this class, please cite  
+* [1.x.2]
+*   
+* [0.x.1]*
+     Create an empty ScratchData object. A SmartPointer pointing to      [2.x.6]  and  [2.x.7]  is stored internally. Make sure they live longer     than this class instance.         The constructor does not initialize any of the internal FEValues objects.     These are initialized the first time one of the reinit() functions is     called, using the arguments passed here.          [2.x.8]  mapping The mapping to use in the internal FEValues objects      [2.x.9]  fe The finite element      [2.x.10]  quadrature The cell quadrature      [2.x.11]  update_flags UpdateFlags for the current cell FEValues and     neighbor cell FEValues      [2.x.12]  face_quadrature Face quadrature, used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell      [2.x.13]  face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell    
+* [0.x.2]*
+     Similar to the other constructor, but this one allows to specify     different flags for neighbor cells and faces.          [2.x.14]  mapping The mapping to use in the internal FEValues objects      [2.x.15]  fe The finite element      [2.x.16]  quadrature The cell quadrature      [2.x.17]  update_flags UpdateFlags for the current cell FEValues      [2.x.18]  neighbor_update_flags UpdateFlags for the neighbor cell FEValues      [2.x.19]  face_quadrature Face quadrature, used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell      [2.x.20]  face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for the current cell      [2.x.21]  neighbor_face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for the neighbor cell    
+* [0.x.3]*
+     Same as the other constructor, using the default MappingQ1.          [2.x.22]  fe The finite element      [2.x.23]  quadrature The cell quadrature      [2.x.24]  update_flags UpdateFlags for the current cell FEValues and     neighbor cell FEValues      [2.x.25]  face_quadrature Face quadrature, used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell      [2.x.26]  face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell    
+* [0.x.4]*
+     Same as the other constructor, using the default MappingQ1.          [2.x.27]  fe The finite element      [2.x.28]  quadrature The cell quadrature      [2.x.29]  update_flags UpdateFlags for the current cell FEValues      [2.x.30]  neighbor_update_flags UpdateFlags for the neighbor cell FEValues      [2.x.31]  face_quadrature Face quadrature, used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell      [2.x.32]  face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for the current cell      [2.x.33]  neighbor_face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for the neighbor cell    
+* [0.x.5]*
+     Deep copy constructor. FEValues objects are not copied.    
+* [0.x.6]*
+      [2.x.34]  Methods to work on current cell    
+* [0.x.7]*
+     Initialize the internal FEValues with the given  [2.x.35]  and return     a reference to it.         After calling this function, get_current_fe_values() will return the     same object of this method, as an FEValuesBase reference.    
+* [0.x.8]*
+     Initialize the internal FEFaceValues to use the given  [2.x.36]  on the given      [2.x.37]  and return a reference to it.         After calling this function, get_current_fe_values() will return the     same object of this method, as an FEValuesBase reference.    
+* [0.x.9]*
+     Initialize the internal FESubfaceValues to use the given  [2.x.38]      on  [2.x.39]  on the given  [2.x.40]  and return a reference to it.         After calling this function, get_current_fe_values() will return the     same object of this method, as an FEValuesBase reference.         If  [2.x.41]  is  [2.x.42]  the reinit() function     that takes only the  [2.x.43]  and the  [2.x.44]  is called.    
+* [0.x.10]*
+     Initialize the internal FEInterfaceValues with the given arguments, and     return a reference to it.         After calling this function, get_local_dof_indices(),     get_quadrature_points(), get_normal_vectors(), and get_JxW_values() will     be forwarded to the local FEInterfaceValues object. The methods     get_current_fe_values() will return the FEValuesBase associated to the     current cell, while get_neighbor_fe_values() will be associated with the     neighbor cell. The method get_local_dof_indices() will return the     same result of  [2.x.45]      while the get_neighbor_dof_indices() will return the local dof indices     of the neighbor cell.    
+* [0.x.11]*
+     Get the currently initialized FEValues.         This function will return the internal FEValues if the     reinit(cell) function was called last. If the reinit(cell, face_no)     function was called, then this function returns the internal     FEFaceValues, and if the reinit(cell, face_no, subface_no) function was     called (with a valid  [2.x.46]  argument), it returns the internal     FESubfaceValues object.    
+* [0.x.12]*
+     Return the quadrature points of the internal FEValues object.    
+* [0.x.13]*
+     Return the JxW values of the internal FEValues object.    
+* [0.x.14]*
+     Return the last computed normal vectors.    
+* [0.x.15]*
+     Return the local dof indices for the cell passed the last time the     reinit() function was called.    
+* [0.x.16]*
+      [2.x.47]  Methods to work on neighbor cell    
+* [0.x.17]*
+     Initialize the internal neighbor FEValues to use the given  [2.x.48]  and     return a reference to it.         After calling this function, get_current_neighbor_fe_values() will return     the same object of this method, as an FEValuesBase reference.    
+* [0.x.18]*
+     Initialize the internal FEFaceValues to use the given  [2.x.49]  on the     given  [2.x.50]  and return a reference to it.         After calling this function, get_current_neighbor_fe_values() will return     the same object of this method, as an FEValuesBase reference.    
+* [0.x.19]*
+     Initialize the internal FESubfaceValues to use the given  [2.x.51]      on  [2.x.52]  on the given  [2.x.53]  and return a reference to it.         After calling this function, get_current_neighbor_fe_values() will return     the same object of this method, as an FEValuesBase reference.         If  [2.x.54]  is  [2.x.55]  the reinit() function     that takes only the  [2.x.56]  and the  [2.x.57]  is called.    
+* [0.x.20]*
+     Get the currently initialized neighbor FEValues.         This function will return the neighbor FEValues if the     reinit_neighbor(cell) function was called last. If the     reinit_neighbor(cell, face_no) function was called, then this function     returns the internal neighbor FEFaceValues, and if the     reinit_neighbor(cell, face_no, subface_no) function was     called (with a valid  [2.x.58]  argument), it returns the internal neighbor     FESubfaceValues object.    
+* [0.x.21]*
+     Return the JxW values of the neighbor FEValues object.    
+* [0.x.22]*
+     Return the last computed normal vectors on the neighbor.    
+* [0.x.23]*
+     Return the local dof indices of the neighbor passed the last time the     reinit_neighbor() function was called.    
+* [0.x.24]*
+     Return a GeneralDataStorage object that can be used to store any amount     of data, of any type, which is then made accessible by an identifier     string.    
+* [0.x.25]*
+     Return a GeneralDataStorage object that can be used to store any amount     of data, of any type, which is then made accessible by an identifier     string.    
+* [0.x.26]*
+      [2.x.59]  Evaluation of finite element fields and their derivatives on the current cell    
+* [0.x.27]*
+     Extract the local dof values associated with the internally initialized     cell.         Before you call this function, you have to make sure you have previously     called one of the reinit() functions.         At every call of this function, a new vector of dof values is generated     and stored internally, unless a previous vector with the same name is     found. If this is the case, the content of that vector is overwritten.         If you give a unique  [2.x.60]  then for each cell you are     guaranteed to get a unique vector of independent dofs of the same type     as the dummy variable. If you use an automatic differentiation number     type (like  [2.x.61]       [2.x.62]  etc.) this method will     also initialize the independent variables internally, allowing you     to perform automatic differentiation.         You can access the extracted local dof values by calling the method     get_local_dof_values() with the same  [2.x.63]  argument     you passed here.         Notice that using this initialization strategy renders the use of this     ScratchData object incompatible with the AD helper classes (since they     do their own data management). In particular, it is necessary for the     user to manage all of the AD data themselves (both before and after this     call).    
+* [0.x.28]*
+     After calling extract_local_dof_values(), you can retrieve the stored     information through this method.         Both the argument  [2.x.64]  and the type of the  [2.x.65]      variable should match the ones you passed to the     extract_local_dof_values() function.    
+* [0.x.29]*
+     For the solution vector identified by  [2.x.66]  compute     the values of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.67]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.68]  string, and the same type for the variable  [2.x.69]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_values flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.30]*
+     For the solution vector identified by  [2.x.70]  compute     the gradients of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.71]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.72]  string, and the same type for the variable  [2.x.73]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_gradients flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.31]*
+     For the solution vector identified by  [2.x.74]  compute     the symmetric gradients of the function at the quadrature points, and     return a vector with the correct type deduced by the Extractor you passed     as the      [2.x.75]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.76]  string, and the same type for the variable  [2.x.77]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_gradients flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.32]*
+     For the solution vector identified by  [2.x.78]  compute     the divergences of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.79]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.80]  string, and the same type for the variable  [2.x.81]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_gradients flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.33]*
+     For the solution vector identified by  [2.x.82]  compute     the curls of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.83]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.84]  string, and the same type for the variable  [2.x.85]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_gradients flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.34]*
+     For the solution vector identified by  [2.x.86]  compute     the hessians of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.87]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.88]  string, and the same type for the variable  [2.x.89]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_hessians flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.35]*
+     For the solution vector identified by  [2.x.90]  compute     the Laplacians of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.91]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.92]  string, and the same type for the variable  [2.x.93]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_hessians flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.36]*
+     For the solution vector identified by  [2.x.94]  compute     the third_derivatives of the function at the quadrature points, and     return a vector with the correct type deduced by the Extractor you passed     as the  [2.x.95]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.96]  string, and the same type for the variable  [2.x.97]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_3rd_derivatives flag must be an     element of the list of UpdateFlags that you passed to the constructor of     this object. See "The interplay of UpdateFlags, Mapping, and     FiniteElement" in the documentation of the FEValues for more information.    
+* [0.x.37]*
+     Return a reference to the used mapping.    
+* [0.x.38]*
+     Construct a unique name to store vectors of values, gradients,     divergences, etc., in the internal GeneralDataStorage object.    
+* [0.x.39]*
+     Construct a unique name to store local dof values.    
+* [0.x.40]*
+     The mapping used by the internal FEValues. Make sure it lives     longer than this class.    
+* [0.x.41]*
+     The finite element used by the internal FEValues. Make sure it lives     longer than this class.    
+* [0.x.42]*
+     Quadrature formula used to integrate on the current cell, and on its     neighbor.    
+* [0.x.43]*
+     Quadrature formula used to integrate on faces, subfaces, and neighbor     faces and subfaces.    
+* [0.x.44]*
+     UpdateFlags to use when initializing the cell FEValues object.    
+* [0.x.45]*
+     UpdateFlags to use when initializing the neighbor cell FEValues objects.    
+* [0.x.46]*
+     UpdateFlags to use when initializing FEFaceValues and FESubfaceValues     objects.    
+* [0.x.47]*
+     UpdateFlags to use when initializing neighbor FEFaceValues and     FESubfaceValues objects.    
+* [0.x.48]*
+     Finite element values on the current cell.    
+* [0.x.49]*
+     Finite element values on the current face.    
+* [0.x.50]*
+     Finite element values on the current subface.    
+* [0.x.51]*
+     Finite element values on the neighbor cell.    
+* [0.x.52]*
+     Finite element values on the neighbor face.    
+* [0.x.53]*
+     Finite element values on the neighbor subface.    
+* [0.x.54]*
+     Interface values on facets.    
+* [0.x.55]*
+     Dof indices on the current cell.    
+* [0.x.56]*
+     Dof indices on the neighbor cell.    
+* [0.x.57]*
+     User data storage.    
+* [0.x.58]*
+     Internal data storage.    
+* [0.x.59]*
+     A pointer to the last used FEValues/FEFaceValues, or FESubfaceValues     object on this cell.    
+* [0.x.60]*
+     A pointer to the last used FEValues/FEFaceValues, or FESubfaceValues     object on the neighbor cell.    
+* [0.x.61]
+
+include/deal.II-translator/meshworker/simple_0.txt
+[0.x.0] The header containing the classes  [2.x.0]   [2.x.1]   [2.x.2]  and  [2.x.3] 
+
+* 
+* [0.x.1]*
+     Assemble residuals without block structure.         The data structure for this Assembler class is a simple vector on each     cell with entries from zero to  [2.x.4]  and a     simple global vector with entries numbered from zero to      [2.x.5]  No BlockInfo is required and the global vector     may be any type of vector having element access through <tt>operator()     (unsigned int)</tt>        
+*  [2.x.6]     
+* [0.x.2]*
+       Initialize with an AnyData object holding the result of assembling.             Assembling currently writes into the first vector of       <tt>results</tt>.      
+* [0.x.3]*
+       Initialize the constraints.      
+* [0.x.4]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.7]  object refers to a cell if  [2.x.8] , or else to an       interior or boundary face.      
+* [0.x.5]*
+       Assemble the local residuals into the global residuals.             Values are added to the previous contents. If constraints are active,        [2.x.9]  is used.      
+* [0.x.6]*
+       Assemble both local residuals into the global residuals.      
+* [0.x.7]*
+       The global residual vectors filled by assemble().      
+* [0.x.8]*
+       A pointer to the object containing constraints.      
+* [0.x.9]*
+     Assemble local matrices into a single global matrix or several global     matrices associated with the same DoFHandler. If these global matrix     have a block structure, this structure is not used, but rather the     global numbering of degrees of freedom.         After being initialized with a SparseMatrix object (or another matrix     offering the same functionality as  [2.x.10]  or a vector of     such, this class can be used in a  [2.x.11]  to assemble the     cell and face matrices into the global matrix.         If a AffineConstraints has been provided during initialization, this     matrix will be used  [2.x.12]  to     be precise) to enter the local matrix into the global sparse matrix.         The assembler can handle two different types of local data. First, by     default, the obvious choice of taking a single local matrix with     dimensions equal to the number of degrees of freedom of the cell.     Alternatively, a local block structure can be initialized in DoFInfo.     After this, the local data will be arranged as an array of n by n     FullMatrix blocks (n being the number of blocks in the FESystem used by     the DoFHandler in DoFInfo), which are ordered lexicographically with     column index fastest in DoFInfo. If the matrix was initialized with a     vector of several matrices and local block structure is used, then the     first n<sup>2</sup> matrices in LocalResults will be used for the first     matrix in this vector, the second set of n<sup>2</sup> for the second,     and so on.        
+*  [2.x.13]     
+* [0.x.10]*
+       Constructor, initializing the #threshold, which limits how small       numbers may be to be entered into the matrix.      
+* [0.x.11]*
+       Store the result matrix for later assembling.      
+* [0.x.12]*
+       Store several result matrices for later assembling.      
+* [0.x.13]*
+       Initialize the constraints. After this function has been called with       a valid AffineConstraints object, the function        [2.x.14]  will be used by       assemble() to distribute the cell and face matrices into a global       sparse matrix.      
+* [0.x.14]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.15]  object refers to a cell if  [2.x.16] , or else to an       interior or boundary face.      
+* [0.x.15]*
+       Assemble the local matrices associated with a single cell into the       global matrix.      
+* [0.x.16]*
+       Assemble all local matrices associated with an interior face in the        [2.x.17]  and  [2.x.18]  objects into the global matrix.      
+* [0.x.17]*
+       The vector of global matrices being assembled.      
+* [0.x.18]*
+       The smallest positive number that will be entered into the global       matrix. All smaller absolute values will be treated as zero and will       not be assembled.      
+* [0.x.19]*
+       Assemble a single matrix  [2.x.19]  into the element at        [2.x.20]  in the vector #matrix.      
+* [0.x.20]*
+       A pointer to the object containing constraints.      
+* [0.x.21]*
+     Assemble local matrices into level matrices without using block     structure.          [2.x.21]  The matrix structures needed for assembling level matrices with     local refinement and continuous elements are missing.        
+*  [2.x.22]     
+* [0.x.22]*
+       Constructor, initializing the #threshold, which limits how small       numbers may be to be entered into the matrix.      
+* [0.x.23]*
+       Store the result matrix for later assembling.      
+* [0.x.24]*
+       Initialize the multilevel constraints.      
+* [0.x.25]*
+       Initialize the matrices #flux_up and #flux_down used for local       refinement with discontinuous Galerkin methods.      
+* [0.x.26]*
+       Initialize the matrices #interface_in and #interface_out used for       local refinement with continuous Galerkin methods.      
+* [0.x.27]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.23]  object refers to a cell if  [2.x.24] , or else to an       interior or boundary face.      
+* [0.x.28]*
+       Assemble the matrix  [2.x.25]  into the global matrix.      
+* [0.x.29]*
+       Assemble both local matrices in the  [2.x.26]  and  [2.x.27]        objects into the global matrices.      
+* [0.x.30]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.31]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.32]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.33]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.34]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.35]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.36]*
+       The global matrix being assembled.      
+* [0.x.37]*
+       The matrix used for face flux terms across the refinement edge,       coupling coarse to fine.      
+* [0.x.38]*
+       The matrix used for face flux terms across the refinement edge,       coupling fine to coarse.      
+* [0.x.39]*
+       The matrix used for face contributions for continuous elements across       the refinement edge, coupling coarse to fine.      
+* [0.x.40]*
+       The matrix used for face contributions for continuous elements across       the refinement edge, coupling fine to coarse.      
+* [0.x.41]*
+       A pointer to the object containing constraints.      
+* [0.x.42]*
+       The smallest positive number that will be entered into the global       matrix. All smaller absolute values will be treated as zero and will       not be assembled.      
+* [0.x.43]*
+     Assemble a simple matrix and a simple right hand side at once. We use a     combination of MatrixSimple and ResidualSimple to achieve this. Cell     and face operators should fill the matrix and vector objects in     LocalResults and this class will assemble them into matrix and vector     objects.        
+*  [2.x.28]     
+* [0.x.44]*
+       Constructor setting the threshold value in MatrixSimple.      
+* [0.x.45]*
+       Store the two objects data is assembled into.      
+* [0.x.46]*
+       Initialize the constraints. After this function has been called with       a valid AffineConstraints object, the function        [2.x.29]  will be used by       assemble() to distribute the cell and face matrices into a global       sparse matrix.      
+* [0.x.47]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.30]  object refers to a cell if  [2.x.31] , or else to an       interior or boundary face.      
+* [0.x.48]*
+       Assemble the matrix  [2.x.32]  into the global matrix.      
+* [0.x.49]*
+       Assemble both local matrices in the  [2.x.33]  and  [2.x.34]        objects into the global matrix.      
+* [0.x.50]*
+       Assemble a single matrix  [2.x.35]  into the element at        [2.x.36]  in the vector #matrix.      
+* [0.x.51]
+
+include/deal.II-translator/meshworker/vector_selector.templates_0.txt
+[0.x.0]
+
+include/deal.II-translator/meshworker/vector_selector_0.txt
+[0.x.0]*
+   A class that selects vectors from a list of named vectors.     Since the number of vectors in an AnyData object may grow with every   nesting of applications or loops, it is important to be able to select   those, which are actually used in computing residuals etc. This class   organizes the selection.     It is used for instance in IntegrationWorker to determine which values,   derivatives or second derivatives are actually computed.    
+*  [2.x.0]   
+* [0.x.1]*
+     Add a vector to the selection of finite element functions. The     arguments are the name of the vector and indicators, which information     is to be extracted from the vector. The name refers to an entry in a     AnyData object, which will be identified by initialize().  The three     bool parameters indicate, whether values, gradients and Hessians of the     finite element function are to be computed on each cell or face.    
+* [0.x.2]*
+     Does the same as the function above but it is possible to select a     block of the global vector.    
+* [0.x.3]*
+     Initialize the selection field with a data vector. While add() only     enters the names of vectors, which will be used in the integration loop     over cells and faces, this function links the names to actual vectos in     a AnyData object.        
+*  [2.x.1]  This function caches the index associated with a name. Therefore,     it must be called every time after the AnyData object has changed.    
+* [0.x.4]*
+     Check whether any vector is selected.    
+* [0.x.5]*
+     Return true if values are selected for any vector.    
+* [0.x.6]*
+     Return true if gradients are selected for any vector.    
+* [0.x.7]*
+     Return true if hessians are selected for any vector.    
+* [0.x.8]*
+     Number of vectors for values    
+* [0.x.9]*
+     Number of vectors for gradients    
+* [0.x.10]*
+     Number of vectors for Hessians    
+* [0.x.11]*
+     The vector index for the ith value    
+* [0.x.12]*
+     The vector index for the ith gradient    
+* [0.x.13]*
+     The vector index for the ith Hessian    
+* [0.x.14]*
+     Print the contents of the selection to the stream.    
+* [0.x.15]*
+     Print the number of selections to the stream.    
+* [0.x.16]*
+     The memory used by this object.    
+* [0.x.17]*
+     Selection of the vectors used to compute values.    
+* [0.x.18]*
+     Selection of the vectors used to compute gradients.    
+* [0.x.19]*
+     Selection of the vectors used to compute hessians.    
+* [0.x.20]*
+   Based on VectorSelector, this is the class used by IntegrationInfo to   compute values of source vectors in quadrature points.    
+*  [2.x.2]   
+* [0.x.21]*
+     Constructor    
+* [0.x.22]*
+     Constructor from a base class object    
+* [0.x.23]*
+     Initialize with a AnyData object and cache the indices in the     VectorSelector base class.        
+*  [2.x.3]  Make sure the VectorSelector base class was filled with     reasonable data before calling this function.    
+* [0.x.24]*
+     Virtual, but empty destructor.    
+* [0.x.25]*
+     The only function added to VectorSelector is an abstract virtual     function implemented in the derived class template and called by     IntegrationInfo.         Depending on the selections made in our base class, this fills the     first three arguments with the local data of the finite element     functions. It is usually called either for the whole FESystem, or for     each base element separately.          [2.x.4]  values is the vector filled with the values of the finite     element function in the quadrature points.          [2.x.5]  gradients is the vector filled with the derivatives of the     finite element function in the quadrature points.          [2.x.6]  hessians is the vector filled with the second derivatives of the     finite element function in the quadrature points.          [2.x.7]  fe is the FEValuesBase object which is used to compute the     function values. Its UpdateFlags must have been set appropriately.          [2.x.8]  index is the local index vector. If  [2.x.9]  refers to base     elements of the system, this vector should be sorted by block and the     arguments  [2.x.10]  and  [2.x.11]  below specify the subset of  [2.x.12]      used.          [2.x.13]  component is the first index in  [2.x.14]   [2.x.15]  and  [2.x.16]      hessians entered in this function.          [2.x.17]  n_comp is the number of components to be filled.          [2.x.18]  start is the first index of this block in  [2.x.19]  or zero if     no base elements are used.          [2.x.20]  size is the number of dofs per cell of the current element or     base element.    
+* [0.x.26]*
+     Fill the local data vector from level vectors. Performs exactly what     the other fill() does, but uses the cell level to access a single level     out of a hierarchy of level vectors, instead of a global data vector on     the active cells.    
+* [0.x.27]*
+   Based on VectorSelector, this is the class that implements the function    [2.x.21]  for a certain type of vector, using AnyData to   identify vectors by name.    
+*  [2.x.22]   
+* [0.x.28]*
+     Constructor.    
+* [0.x.29]*
+     Constructor using a prefilled VectorSelector    
+* [0.x.30]*
+     Initialize with an object of named vectors.    
+* [0.x.31]*
+     Initialize with a single vector and cache the indices in the     VectorSelector base class.        
+*  [2.x.23]  Make sure the VectorSelector base class was filled with     reasonable data before calling this function.    
+* [0.x.32]*
+     The memory used by this object.    
+* [0.x.33]*
+   Based on VectorSelector, this is the class that implements the function    [2.x.24]  for a certain type of multilevel vectors, using   AnyData to identify vectors by name.    
+*  [2.x.25]   
+* [0.x.34]*
+     Constructor.    
+* [0.x.35]*
+     Constructor using a prefilled VectorSelector    
+* [0.x.36]*
+     Initialize with an object of named vectors    
+* [0.x.37]*
+     Initialize with a single vector and cache the indices in the     VectorSelector base class.        
+*  [2.x.26]  Make sure the VectorSelector base class was filled with     reasonable data before calling this function.    
+* [0.x.38]
+

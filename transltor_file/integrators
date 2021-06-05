@@ -1,0 +1,216 @@
+include/deal.II-translator/integrators/advection_0.txt
+[0.x.0]*
+  
+*  [2.x.0]    its DG formulations     All advection operators depend on an advection velocity denoted by   [1.x.0] in the formulas below. It is denoted as <tt>velocity</tt> in the   parameter lists.     The functions cell_matrix() and both upwind_value_matrix() are taking the   equation in weak form, that is, the directional derivative is on the test   function.    
+*  [2.x.1]   
+* [0.x.1]*
+     Advection along the direction [1.x.1] in weak form with derivative on     the test function [1.x.2]         The FiniteElement in <tt>fe</tt> may be scalar or vector valued. In the     latter case, the advection operator is applied to each component     separately.          [2.x.2]  M: The advection matrix obtained as result      [2.x.3]  fe: The FEValues object describing the local trial function     space. #update_values and #update_gradients, and #update_JxW_values     must be set.      [2.x.4]  fetest: The FEValues object describing the local test function     space. #update_values and #update_gradients must be set.      [2.x.5]  velocity: The advection velocity, a vector of dimension     <tt>dim</tt>. Each component may either contain a vector of length one,     in which case a constant velocity is assumed, or a vector with as many     entries as quadrature points if the velocity is not constant.      [2.x.6]  factor is an optional multiplication factor for the result.    
+* [0.x.2]*
+     Scalar advection residual operator in strong form         [1.x.3]         \warning This is not the residual consistent with cell_matrix(), but     with its transpose.    
+* [0.x.3]*
+     Vector-valued advection residual operator in strong form             [1.x.4]         \warning This is not the residual consistent with cell_matrix(), but     with its transpose.    
+* [0.x.4]*
+     Scalar advection residual operator in weak form         [1.x.5]    
+* [0.x.5]*
+     Vector-valued advection residual operator in weak form             [1.x.6]    
+* [0.x.6]*
+     Upwind flux at the boundary for weak advection operator. This is the     value of the trial function at the outflow boundary and zero else:     [1.x.7]         The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>     vectors, one for each velocity component. Each of the vectors must     either have only a single entry, if the advection velocity is constant,     or have an entry for each quadrature point.         The finite element can have several components, in which case each     component is advected by the same velocity.    
+* [0.x.7]*
+     Scalar case: Residual for upwind flux at the boundary for weak     advection operator. This is the value of the trial function at the     outflow boundary and the value of the incoming boundary condition on     the inflow boundary:     [1.x.8]         Here, the numerical flux  [2.x.7]  is the upwind value at the face,     namely the finite element function whose values are given in the     argument `input` on the outflow boundary. On the inflow boundary, it is     the inhomogeneous boundary value in the argument `data`.         The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>     vectors, one for each velocity component. Each of the vectors must     either have only a single entry, if the advection velocity is constant,     or have an entry for each quadrature point.         The finite element can have several components, in which case each     component is advected by the same velocity.    
+* [0.x.8]*
+     Vector-valued case: Residual for upwind flux at the boundary for weak     advection operator. This is the value of the trial function at the     outflow boundary and the value of the incoming boundary condition on     the inflow boundary:     [1.x.9]         Here, the numerical flux  [2.x.8]  is the upwind value at the face,     namely the finite element function whose values are given in the     argument `input` on the outflow boundary. On the inflow boundary, it is     the inhomogeneous boundary value in the argument `data`.         The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>     vectors, one for each velocity component. Each of the vectors must     either have only a single entry, if the advection velocity is constant,     or have an entry for each quadrature point.         The finite element can have several components, in which case each     component is advected by the same velocity.    
+* [0.x.9]*
+     Upwind flux in the interior for weak advection operator. Matrix entries     correspond to the upwind value of the trial function, multiplied by the     jump of the test functions     [1.x.10]         The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>     vectors, one for each velocity component. Each of the vectors must     either have only a single entry, if the advection velocity is constant,     or have an entry for each quadrature point.         The finite element can have several components, in which case each     component is advected the same way.    
+* [0.x.10]*
+     Scalar case: Upwind flux in the interior for weak advection operator.     Matrix entries correspond to the upwind value of the trial function,     multiplied by the jump of the test functions     [1.x.11]         The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>     vectors, one for each velocity component. Each of the vectors must     either have only a single entry, if the advection velocity is constant,     or have an entry for each quadrature point.         The finite element can have several components, in which case each     component is advected the same way.    
+* [0.x.11]*
+     Vector-valued case: Upwind flux in the interior for weak advection     operator. Matrix entries correspond to the upwind value of the trial     function, multiplied by the jump of the test functions     [1.x.12]         The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>     vectors, one for each velocity component. Each of the vectors must     either have only a single entry, if the advection velocity is constant,     or have an entry for each quadrature point.         The finite element can have several components, in which case each     component is advected the same way.    
+* [0.x.12]
+
+include/deal.II-translator/integrators/divergence_0.txt
+[0.x.0]*
+  
+*  [2.x.0]    trace.    
+*  [2.x.1]   
+* [0.x.1]*
+     Cell matrix for divergence. The derivative is on the trial function.     [1.x.0] This is the strong     divergence operator and the trial space should be at least     [1.x.1]<sup>div</sup>. The test functions may be discontinuous.    
+* [0.x.2]*
+     The residual of the divergence operator in strong form. [1.x.2] This is the strong divergence operator     and the trial space should be at least [1.x.3]<sup>div</sup>. The test     functions may be discontinuous.         The function cell_matrix() is the Frechet derivative of this function     with respect to the test functions.    
+* [0.x.3]*
+     The residual of the divergence operator in weak form. [1.x.4] This is the weak divergence operator     and the test space should be at least [1.x.5]<sup>1</sup>. The trial     functions may be discontinuous.          [2.x.2]  Verify: The function cell_matrix() is the Frechet derivative of     this function with respect to the test functions.    
+* [0.x.4]*
+     Cell matrix for gradient. The derivative is on the trial function. [1.x.6]         This is the strong gradient and the trial space should be at least in     [1.x.7]<sup>1</sup>. The test functions can be discontinuous.    
+* [0.x.5]*
+     The residual of the gradient operator in strong form. [1.x.8] This is the strong gradient operator     and the trial space should be at least [1.x.9]<sup>1</sup>. The test     functions may be discontinuous.         The function gradient_matrix() is the Frechet derivative of this     function with respect to the test functions.    
+* [0.x.6]*
+     The residual of the gradient operator in weak form. [1.x.10] This is the weak gradient operator and     the test space should be at least [1.x.11]<sup>div</sup>. The trial     functions may be discontinuous.          [2.x.3]  Verify: The function gradient_matrix() is the Frechet derivative     of this function with respect to the test functions.    
+* [0.x.7]*
+     The trace of the divergence operator, namely the product of the normal     component of the vector valued trial space and the test space.     [1.x.12]    
+* [0.x.8]*
+     The trace of the divergence operator, namely the product of the normal     component of the vector valued trial space and the test space.     [1.x.13]    
+* [0.x.9]*
+     The trace of the gradient operator, namely the product of the normal     component of the vector valued test space and the trial space.     [1.x.14]    
+* [0.x.10]*
+     The trace of the divergence operator, namely the product of the jump of     the normal component of the vector valued trial function and the mean     value of the test function.     [1.x.15]    
+* [0.x.11]*
+     The jump of the normal component     [1.x.16]    
+* [0.x.12]*
+     The [1.x.17]<sup>2</sup>-norm of the divergence over the quadrature set     determined by the FEValuesBase object.         The vector is expected to consist of dim vectors of length equal to the     number of quadrature points. The number of components of the finite     element has to be equal to the space dimension.    
+* [0.x.13]
+
+include/deal.II-translator/integrators/elasticity_0.txt
+[0.x.0]*
+  
+*  [2.x.0]     
+*  [2.x.1]   
+* [0.x.1]*
+     The linear elasticity operator in weak form, namely double contraction     of symmetric gradients.         [1.x.0]    
+* [0.x.2]*
+     Vector-valued residual operator for linear elasticity in weak form         [1.x.1]    
+* [0.x.3]*
+     The matrix for the weak boundary condition of Nitsche type for linear     elasticity:     [1.x.2]    
+* [0.x.4]*
+     The matrix for the weak boundary condition of Nitsche type for the     tangential displacement in linear elasticity:     [1.x.3]    
+* [0.x.5]*
+     Weak boundary condition for the elasticity operator by Nitsche, namely     on the face [1.x.4] the vector     [1.x.5]         Here, [1.x.6] is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively. [1.x.7] is the inhomogeneous boundary value in the     argument <tt>data</tt>.  [2.x.2]  is the outer normal vector and  [2.x.3]  is     the usual penalty parameter.    
+* [0.x.6]*
+     The weak boundary condition of Nitsche type for the tangential     displacement in linear elasticity:     [1.x.8]    
+* [0.x.7]*
+     Homogeneous weak boundary condition for the elasticity operator by     Nitsche, namely on the face [1.x.9] the vector     [1.x.10]         Here, [1.x.11] is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively.  [2.x.4]  is the outer normal vector and  [2.x.5]  is the usual     penalty parameter.    
+* [0.x.8]*
+     The interior penalty flux for symmetric gradients.    
+* [0.x.9]*
+     Elasticity residual term for the symmetric interior penalty method.    
+* [0.x.10]
+
+include/deal.II-translator/integrators/grad_div_0.txt
+[0.x.0]*
+   Local integrators related to the grad-div operator and its boundary   traces    
+*  [2.x.0]   
+* [0.x.1]*
+     The weak form of the grad-div operator penalizing volume changes     [1.x.0]    
+* [0.x.2]*
+     The weak form of the grad-div residual     [1.x.1]    
+* [0.x.3]*
+     The matrix for the weak boundary condition of Nitsche type for linear     elasticity:     [1.x.2]    
+* [0.x.4]*
+     Weak boundary condition for the Laplace operator by Nitsche, vector     valued version, namely on the face [1.x.3] the vector     [1.x.4]         Here, [1.x.5] is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively. [1.x.6] is the inhomogeneous boundary value in the     argument <tt>data</tt>.  [2.x.1]  is the usual penalty parameter.    
+* [0.x.5]*
+     The interior penalty flux for the grad-div operator. See     ip_residual() for details.    
+* [0.x.6]*
+     Grad-div residual term for the symmetric interior penalty method:     [1.x.7]         See for instance Hansbo and Larson, 2002    
+* [0.x.7]
+
+include/deal.II-translator/integrators/l2_0.txt
+[0.x.0]*
+  
+*  [2.x.0]     
+*  [2.x.1]   
+* [0.x.1]*
+     The mass matrix for scalar or vector values finite elements. [1.x.1]         Likewise, this term can be used on faces, where it computes  the     integrals [1.x.2]          [2.x.2]  M The mass matrix obtained as result.      [2.x.3]  fe The FEValues object describing the local trial function     space. #update_values and #update_JxW_values must be set.      [2.x.4]  factor A constant that multiplies the mass matrix.    
+* [0.x.2]*
+     The weighted mass matrix for scalar or vector values finite elements.     [1.x.3]         Likewise, this term can be used on faces, where it computes  the     integrals [1.x.4]          [2.x.5]  M The weighted mass matrix obtained as result.      [2.x.6]  fe The FEValues object describing the local trial function     space. #update_values and #update_JxW_values must be set.      [2.x.7]  weights The weights,  [2.x.8] , evaluated at the quadrature     points in the finite element (size must be equal to the number of     quadrature points in the element).    
+* [0.x.3]*
+     [1.x.5]-inner product for scalar functions.         [1.x.6]          [2.x.9]  result The vector obtained as result.      [2.x.10]  fe The FEValues object describing the local trial function     space. #update_values and #update_JxW_values must be set.      [2.x.11]  input The representation of  [2.x.12]  evaluated at the quadrature     points in the finite element (size must be equal to the number of     quadrature points in the element).      [2.x.13]  factor A constant that multiplies the result.    
+* [0.x.4]*
+     [1.x.7]-inner product for a slice of a vector valued right     hand side. [1.x.8]          [2.x.14]  result The vector obtained as result.      [2.x.15]  fe The FEValues object describing the local trial function     space. #update_values and #update_JxW_values must be set.      [2.x.16]  input The vector valued representation of  [2.x.17]  evaluated     at the quadrature points in the finite element (size of each component     must be equal to the number of quadrature points in the element).      [2.x.18]  factor A constant that multiplies the result.    
+* [0.x.5]*
+     The jump matrix between two cells for scalar or vector values finite     elements. Note that the factor  [2.x.19]  can be used to implement     weighted jumps. [1.x.9]         Using appropriate weights, this term can be used to penalize violation     of conformity in [1.x.10].         Note that for the parameters that follow, the external matrix refers to     the flux between cells, while the internal matrix refers to entries     coupling inside the cell.          [2.x.20]  M11 The internal matrix for the first cell obtained as result.      [2.x.21]  M12 The external matrix for the first cell obtained as result.      [2.x.22]  M21 The external matrix for the second cell obtained as result.      [2.x.23]  M22 The internal matrix for the second cell obtained as result.      [2.x.24]  fe1 The FEValues object describing the local trial function     space for the first cell. #update_values and #update_JxW_values must be     set.      [2.x.25]  fe2 The FEValues object describing the local trial function     space for the second cell. #update_values and #update_JxW_values must be     set.      [2.x.26]  factor1 A constant that multiplies the shape functions for the     first cell.      [2.x.27]  factor2 A constant that multiplies the shape functions for the     second cell.    
+* [0.x.6]
+
+include/deal.II-translator/integrators/laplace_0.txt
+[0.x.0]*
+  
+*  [2.x.0]     
+*  [2.x.1]   
+* [0.x.1]*
+     Laplacian in weak form, namely on the cell [1.x.0] the matrix [1.x.1]         The FiniteElement in <tt>fe</tt> may be scalar or vector valued. In the     latter case, the Laplacian is applied to each component separately.    
+* [0.x.2]*
+     Laplacian residual operator in weak form         [1.x.2]    
+* [0.x.3]*
+     Vector-valued Laplacian residual operator in weak form         [1.x.3]    
+* [0.x.4]*
+     Weak boundary condition of Nitsche type for the Laplacian, namely on     the face [1.x.4] the matrix     [1.x.5]         Here,  [2.x.2]  is the <tt>penalty</tt> parameter suitably computed with     compute_penalty().    
+* [0.x.5]*
+     Weak boundary condition of Nitsche type for the Laplacian applied to the     tangential component only, namely on     the face [1.x.6] the matrix     [1.x.7]         Here,  [2.x.3]  is the <tt>penalty</tt> parameter suitably computed with     compute_penalty().    
+* [0.x.6]*
+     Weak boundary condition for the Laplace operator by Nitsche, scalar     version, namely on the face [1.x.8] the vector     [1.x.9]         Here, [1.x.10] is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively. [1.x.11] is the inhomogeneous boundary value in the     argument <tt>data</tt>.  [2.x.4]  is the usual penalty parameter.    
+* [0.x.7]*
+     Weak boundary condition for the Laplace operator by Nitsche, vector     valued version, namely on the face [1.x.12] the vector     [1.x.13]         Here, [1.x.14] is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively. [1.x.15] is the inhomogeneous boundary value in the     argument <tt>data</tt>.  [2.x.5]  is the usual penalty parameter.    
+* [0.x.8]*
+     Flux for the interior penalty method for the Laplacian, namely on the     face [1.x.16] the matrices associated with the bilinear form     [1.x.17]         The penalty parameter should always be the mean value of the penalties     needed for stability on each side. In the case of constant     coefficients, it can be computed using compute_penalty().         If <tt>factor2</tt> is missing or negative, the factor is assumed the     same on both sides. If factors differ, note that the penalty parameter     has to be computed accordingly.    
+* [0.x.9]*
+     Flux for the interior penalty method for the Laplacian applied to the     tangential components of a vector field, namely on the face [1.x.18]     the matrices associated with the bilinear form     [1.x.19]          [2.x.6]  This function is still under development!    
+* [0.x.10]*
+     Residual term for the symmetric interior penalty method:     [1.x.20]    
+* [0.x.11]*
+     Vector-valued residual term for the symmetric interior penalty method:     [1.x.21]    
+* [0.x.12]*
+     Auxiliary function computing the penalty parameter for interior penalty     methods on rectangles.         Computation is done in two steps: first, we compute on each cell     [1.x.22] the value [1.x.23], where     [1.x.24] is the polynomial degree on cell     [1.x.25] and [1.x.26] is the length of     [1.x.27] orthogonal to the current face.    
+* [0.x.13]
+
+include/deal.II-translator/integrators/local_integrators_0.txt
+[0.x.0]*
+
+
+* 
+*  [2.x.0] 
+*  This namespace contains application specific local integrals for bilinear forms, forms and error estimates. It is a collection of functions organized into namespaces devoted to certain applications. For instance, the namespace Laplace contains functions for computing cell matrices and cell residuals for the Laplacian operator, as well as functions for the weak boundary conditions by Nitsche or the interior penalty discontinuous Galerkin method. The namespace Maxwell does the same for curl-curl type problems.
+*  The namespace L2 contains functions for mass matrices and [1.x.0]-inner products.
+*  [1.x.1]
+*  In most cases, the action of a function in this namespace can be described by a single integral. We distinguish between integrals over cells [1.x.2] and over faces [1.x.3]. If an integral is denoted as [1.x.4] it will yield the following results, depending on the type of operation  [2.x.1]   [2.x.2]  If the function returns a matrix, the entry at position [1.x.5] will be the integrated product of test function [1.x.6] and trial function [1.x.7] (note the reversion of indices) [2.x.3]   [2.x.4]  If the function returns a vector, then the vector entry at position [1.x.8] will be the integrated product of the given function [1.x.9] with the test function [1.x.10]. [2.x.5]   [2.x.6]  If the function returns a number, then this number is the integral of the two given functions [1.x.11] and [1.x.12].  [2.x.7] 
+*  We will use regular cursive symbols  [2.x.8]  for scalars and bold symbols  [2.x.9]  for vectors. Test functions are always [1.x.13] and trial functions are always [1.x.14]. Parameters are Greek and the face normal vectors are  [2.x.10] .
+*  [1.x.15]
+*  Functions in this namespace follow a generic signature. In the simplest case, you have two related functions
+
+* 
+* [1.x.16]
+* 
+*  There is typically a pair of functions for the same operator, the function <tt>cell_residual</tt> implementing the mapping of the operator from the finite element space into its dual, and the function <tt>cell_matrix</tt> generating the bilinear form corresponding to the Frechet derivative of <tt>cell_residual</tt>.
+*  The first argument of these functions is the return type, which is  [2.x.11]   [2.x.12]  FullMatrix&lt;double&gt; for matrices  [2.x.13]  BlockVector&ltdouble&gt; for vectors  [2.x.14] 
+*  The next argument is the FEValuesBase object representing the finite element for integration. If the integrated operator maps from one finite element space into the dual of another (for instance an off-diagonal matrix in a block system), then first the FEValuesBase for the trial space and after this the one for the test space are specified.
+*  This list is followed by the set of required data in the order  [2.x.15]   [2.x.16]  Data vectors from finite element functions  [2.x.17]  Data vectors from other objects  [2.x.18]  Additional data  [2.x.19]  A factor which is multiplied with the whole result  [2.x.20] 
+*  [1.x.17]
+*  The local integrators can be used wherever a local integration loop would have been implemented instead. The following example is from the implementation of a Stokes solver, using  [2.x.21]  The matrices are  [2.x.22]   [2.x.23]  0: The vector Laplacian for the velocity (here with a vector valued element)  [2.x.24]  1: The divergence matrix  [2.x.25]  2: The pressure mass matrix used in the preconditioner  [2.x.26] 
+*  With these matrices, the function called by  [2.x.27]  could be written like
+
+* 
+* [1.x.18]
+*  See  [2.x.28]  for a worked out example of this code.
+* 
+
+* 
+*  [2.x.29] 
+
+* 
+* [0.x.1]
+
+include/deal.II-translator/integrators/maxwell_0.txt
+[0.x.0]*
+  
+*  [2.x.0]      We use the following conventions for curl operators. First, in three   space dimensions     [1.x.0]     In two space dimensions, the curl is obtained by extending a vector   [1.x.1] to  [2.x.1]  and a scalar [1.x.2] to  [2.x.2] .   Computing the nonzero components, we obtain the scalar curl of a vector   function and the vector curl of a scalar function. The current   implementation exchanges the sign and we have:   [1.x.3]    
+*  [2.x.3]   
+* [0.x.1]*
+     Auxiliary function. Given the tensors of <tt>dim</tt> second     derivatives, compute the curl of the curl of a vector function. The     result in two and three dimensions is:     [1.x.4]        
+*  [2.x.4]  The third tensor argument is not used in two dimensions and can     for instance duplicate one of the previous.    
+* [0.x.2]*
+     Auxiliary function. Given <tt>dim</tt> tensors of first derivatives and     a normal vector, compute the tangential curl     [1.x.5]        
+*  [2.x.5]  The third tensor argument is not used in two dimensions and can     for instance duplicate one of the previous.    
+* [0.x.3]*
+     The curl-curl operator     [1.x.6]     in weak form.    
+* [0.x.4]*
+     The matrix for the curl operator     [1.x.7]         This is the standard curl operator in 3D and the scalar curl in 2D. The     vector curl operator can be obtained by exchanging test and trial     functions.    
+* [0.x.5]*
+     The matrix for weak boundary condition of Nitsche type for the     tangential component in Maxwell systems.         [1.x.8]    
+* [0.x.6]*
+     The product of two tangential traces,     [1.x.9]    
+* [0.x.7]*
+     The interior penalty fluxes for Maxwell systems.         [1.x.10]    
+* [0.x.8]
+
+include/deal.II-translator/integrators/patches_0.txt
+[0.x.0]*
+  
+*  [2.x.0]   
+* [0.x.1]
+
