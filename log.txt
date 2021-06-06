@@ -1,0 +1,2781 @@
+include/deal.II-translator/A-headers
+LaTeX file: include/deal.II-translator/A-headers/automatic_and_symbolic_differentiation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/automatic_and_symbolic_differentiation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/c++.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/c++_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/coding_conventions.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/coding_conventions_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/concepts.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/concepts_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/constraints.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/constraints_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/cuda.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/cuda_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/distributed.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/distributed_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/dofs.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/dofs_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/exceptions.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/exceptions_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/fe.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/fe_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/fe_vs_mapping_vs_fevalues.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/fe_vs_mapping_vs_fevalues_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/functions.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/functions_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/geodynamics.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/geodynamics_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/geometry_and_primitives.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/geometry_and_primitives_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/global_dof_index.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/global_dof_index_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/glossary.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/glossary_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/grid.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/grid_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/hp.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/hp_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/instantiations.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/instantiations_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/integrators.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/integrators_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/io.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/io_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/iterators.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/iterators_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/lac.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/lac_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/laoperators.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/laoperators_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/main.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/main_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/manifold.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/manifold_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/matrices.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/matrices_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/matrixfree.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/matrixfree_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/memory.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/memory_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/mesh_worker.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/mesh_worker_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/mg.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/mg_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/multithreading.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/multithreading_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/namespace_dealii.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/namespace_dealii_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/numerical_algorithms.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/numerical_algorithms_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/parallel.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/parallel_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/petsc.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/petsc_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/physics.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/physics_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/polynomials.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/polynomials_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/preconditioners.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/preconditioners_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/quadrature.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/quadrature_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/reordering.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/reordering_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/simplex.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/simplex_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/slepc.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/slepc_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/solvers.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/solvers_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/sparsity.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/sparsity_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/trilinos.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/trilinos_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/update_flags.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/update_flags_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/utilities.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/utilities_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/vector_memory.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/vector_memory_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/vectors.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/vectors_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-headers/vector_valued.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-headers/vector_valued_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/algorithms
+LaTeX file: include/deal.II-translator/algorithms/any_data.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/algorithms/any_data_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/algorithms/general_data_storage.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/algorithms/general_data_storage_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/algorithms/named_selection.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/algorithms/named_selection_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/algorithms/newton.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/algorithms/newton_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/algorithms/newton.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/algorithms/newton.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/algorithms/operator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/algorithms/operator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/algorithms/operator.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/algorithms/operator.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/algorithms/theta_timestepping.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/algorithms/theta_timestepping_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/algorithms/theta_timestepping.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/algorithms/theta_timestepping.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/algorithms/timestep_control.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/algorithms/timestep_control_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/arborx
+LaTeX file: include/deal.II-translator/arborx/access_traits.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/arborx/access_traits_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/arborx/bvh.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/arborx/bvh_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/A-tutorial
+LaTeX file: include/deal.II-translator/A-tutorial/step-10.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-10_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-11.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-11_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-12b.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-12b_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-12.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-12_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-13.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-13_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-14.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-14_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-15.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-15_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-16b.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-16b_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-16.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-16_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-17.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-17_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-18.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-18_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-19.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-19_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-1.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-1_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-20.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-20_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-21.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-21_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-22.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-22_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-23.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-23_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-24.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-24_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-25.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-25_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-26.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-26_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-27.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-27_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-28.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-28_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-29.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-29_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-2.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-2_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-30.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-30_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-31.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-31_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-32.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-32_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-33.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-33_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-34.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-34_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-35.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-35_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-36.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-36_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-37.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-37_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-38.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-38_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-39.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-39_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-3.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-3_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-40.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-40_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-41.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-41_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-42.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-42_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-43.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-43_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-44.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-44_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-45.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-45_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-46.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-46_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-47.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-47_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-48.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-48_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-49.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-49_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-4.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-4_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-50.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-50_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-51.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-51_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-52.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-52_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-53.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-53_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-54.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-54_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-55.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-55_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-56.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-56_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-57.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-57_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-58.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-58_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-59.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-59_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-5.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-5_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-60.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-60_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-61.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-61_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-62.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-62_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-63.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-63_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-64.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-64_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-65.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-65_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-66.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-66_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-67.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-67_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-68.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-68_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-69.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-69_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-6.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-6_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-70.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-70_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-71.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-71_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-72.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-72_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-74.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-74_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-75.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-75_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-76.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-76_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-77.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-77_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-78.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-78_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-79.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-79_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-7.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-7_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-8.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-8_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/step-9.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/step-9_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/A-tutorial/tutorial.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/A-tutorial/tutorial_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/base
+LaTeX file: include/deal.II-translator/base/aligned_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/aligned_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/array_view.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/array_view_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/auto_derivative_function.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/auto_derivative_function_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/bounding_box_data_out.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/bounding_box_data_out_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/bounding_box.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/bounding_box_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/communication_pattern_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/communication_pattern_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/complex_overloads.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/complex_overloads_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/conditional_ostream.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/conditional_ostream_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/convergence_table.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/convergence_table_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/cuda.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/cuda_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/cuda_size.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/cuda_size_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/data_out_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/data_out_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/derivative_form.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/derivative_form_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/discrete_time.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/discrete_time_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/event.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/event_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/exceptions.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/exceptions_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/flow_function.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/flow_function_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_bessel.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_bessel_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_cspline.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_cspline_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_derivative.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_derivative_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_level_set.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_level_set_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_lib.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_lib_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_parser.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_parser_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_restriction.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_restriction_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_spherical.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_spherical_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_time.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_time_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_time.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_time.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/function_tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/function_tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/geometric_utilities.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/geometric_utilities_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/geometry_info.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/geometry_info_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/graph_coloring.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/graph_coloring_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/hdf5.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/hdf5_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/incremental_function.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/incremental_function_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/index_set.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/index_set_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/iterator_range.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/iterator_range_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/job_identifier.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/job_identifier_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/linear_index_iterator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/linear_index_iterator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/logstream.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/logstream_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/memory_consumption.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/memory_consumption_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/memory_space_data.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/memory_space_data_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/memory_space.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/memory_space_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mg_level_object.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mg_level_object_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mpi_compute_index_owner_internal.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mpi_compute_index_owner_internal_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mpi_consensus_algorithms.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mpi_consensus_algorithms_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mpi_consensus_algorithms.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mpi_consensus_algorithms.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mpi.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mpi_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mpi_noncontiguous_partitioner.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mpi_noncontiguous_partitioner_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mpi_noncontiguous_partitioner.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mpi_noncontiguous_partitioner.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mpi_remote_point_evaluation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mpi_remote_point_evaluation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mpi_tags.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mpi_tags_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mpi.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mpi.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/multithread_info.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/multithread_info_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mu_parser_internal.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mu_parser_internal_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/mutable_bind.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/mutable_bind_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/ndarray.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/ndarray_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/numbers.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/numbers_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/parallel.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/parallel_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/parameter_acceptor.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/parameter_acceptor_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/parameter_handler.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/parameter_handler_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/parsed_convergence_table.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/parsed_convergence_table_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/parsed_function.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/parsed_function_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/partitioner.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/partitioner_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/partitioner.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/partitioner.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/path_search.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/path_search_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/patterns.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/patterns_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/point.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/point_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomial.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomial_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_abf.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_abf_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_adini.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_adini_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_barycentric.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_barycentric_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_bdm.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_bdm_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_bernardi_raugel.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_bernardi_raugel_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_bernstein.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_bernstein_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_integrated_legendre_sz.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_integrated_legendre_sz_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_nedelec.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_nedelec_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomial_space.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomial_space_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_p.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_p_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_piecewise.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_piecewise_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_pyramid.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_pyramid_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_rannacher_turek.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_rannacher_turek_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_raviart_thomas.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_raviart_thomas_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_rt_bubbles.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_rt_bubbles_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/polynomials_wedge.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/polynomials_wedge_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/process_grid.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/process_grid_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/qprojector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/qprojector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/quadrature.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/quadrature_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/quadrature_lib.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/quadrature_lib_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/quadrature_point_data.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/quadrature_point_data_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/quadrature_selector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/quadrature_selector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/sacado_product_type.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/sacado_product_type_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/scalar_polynomials_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/scalar_polynomials_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/signaling_nan.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/signaling_nan_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/smartpointer.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/smartpointer_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/subscriptor.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/subscriptor_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/symbolic_function.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/symbolic_function_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/symbolic_function.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/symbolic_function.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/symmetric_tensor.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/symmetric_tensor_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/symmetric_tensor.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/symmetric_tensor.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/synchronous_iterator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/synchronous_iterator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/table.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/table_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/table_handler.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/table_handler_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/table_indices.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/table_indices_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/template_constraints.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/template_constraints_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/tensor_accessors.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/tensor_accessors_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/tensor_function.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/tensor_function_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/tensor_function_parser.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/tensor_function_parser_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/tensor_function.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/tensor_function.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/tensor.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/tensor_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/tensor_polynomials_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/tensor_polynomials_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/tensor_product_polynomials_bubbles.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/tensor_product_polynomials_bubbles_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/tensor_product_polynomials_const.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/tensor_product_polynomials_const_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/tensor_product_polynomials.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/tensor_product_polynomials_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/thread_local_storage.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/thread_local_storage_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/thread_management.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/thread_management_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/timer.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/timer_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/time_stepping.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/time_stepping_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/time_stepping.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/time_stepping.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/types.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/types_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/undefine_macros.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/undefine_macros_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/utilities.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/utilities_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/vectorization.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/vectorization_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/vector_slice.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/vector_slice_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/base/work_stream.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/base/work_stream_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/boost_adaptors
+LaTeX file: include/deal.II-translator/boost_adaptors/bounding_box.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/boost_adaptors/bounding_box_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/boost_adaptors/point.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/boost_adaptors/point_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/boost_adaptors/segment.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/boost_adaptors/segment_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/differentiation
+LaTeX file: include/deal.II-translator/differentiation/ad.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/differentiation/ad_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/differentiation/sd.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/differentiation/sd_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/distributed
+LaTeX file: include/deal.II-translator/distributed/cell_data_transfer.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/cell_data_transfer_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/distributed/cell_data_transfer.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/cell_data_transfer.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/distributed/cell_weights.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/cell_weights_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/distributed/fully_distributed_tria.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/fully_distributed_tria_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/distributed/grid_refinement.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/grid_refinement_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/distributed/p4est_wrappers.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/p4est_wrappers_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/distributed/repartitioning_policy_tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/repartitioning_policy_tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/distributed/shared_tria.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/shared_tria_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/distributed/solution_transfer.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/solution_transfer_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/distributed/tria_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/tria_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/distributed/tria.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/distributed/tria_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/dofs
+LaTeX file: include/deal.II-translator/dofs/block_info.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/block_info_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/dof_accessor.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/dof_accessor_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/dof_accessor.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/dof_accessor.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/dof_faces.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/dof_faces_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/dof_handler.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/dof_handler_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/dof_handler_policy.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/dof_handler_policy_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/dof_iterator_selector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/dof_iterator_selector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/dof_levels.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/dof_levels_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/dof_objects.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/dof_objects_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/dof_renumbering.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/dof_renumbering_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/dof_tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/dof_tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/dofs/number_cache.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/dofs/number_cache_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/fe
+LaTeX file: include/deal.II-translator/fe/block_mask.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/block_mask_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/component_mask.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/component_mask_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_abf.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_abf_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_bdm.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_bdm_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_bernardi_raugel.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_bernardi_raugel_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_bernstein.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_bernstein_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_dgp.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_dgp_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_dgp_monomial.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_dgp_monomial_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_dgp_nonparametric.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_dgp_nonparametric_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_dgq.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_dgq_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_dg_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_dg_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_dg_vector.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_dg_vector.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_enriched.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_enriched_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_face.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_face_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_interface_values.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_interface_values_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_nedelec.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_nedelec_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_nedelec_sz.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_nedelec_sz_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_nothing.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_nothing_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_p1nc.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_p1nc_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_poly_face.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_poly_face_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_poly_face.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_poly_face.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_poly.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_poly_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_poly.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_poly.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_poly_tensor.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_poly_tensor_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_pyramid_p.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_pyramid_p_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_q_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_q_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_q_bubbles.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_q_bubbles_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_q_dg0.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_q_dg0_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_q.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_q_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_q_hierarchical.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_q_hierarchical_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_q_iso_q1.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_q_iso_q1_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_rannacher_turek.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_rannacher_turek_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_raviart_thomas.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_raviart_thomas_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_rt_bubbles.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_rt_bubbles_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_series.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_series_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_simplex_p_bubbles.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_simplex_p_bubbles_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_simplex_p.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_simplex_p_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_system.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_system_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_tools_extrapolate.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_tools_extrapolate.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_tools_interpolate.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_tools_interpolate.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_tools.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_tools.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_trace.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_trace_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_update_flags.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_update_flags_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_values_extractors.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_values_extractors_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_values.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_values_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/fe_wedge_p.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/fe_wedge_p_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_c1.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_c1_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_cartesian.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_cartesian_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_fe_field.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_fe_field_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_fe.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_fe_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_manifold.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_manifold_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_q1_eulerian.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_q1_eulerian_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_q1.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_q1_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_q_cache.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_q_cache_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_q_eulerian.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_q_eulerian_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_q_generic.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_q_generic_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_q.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_q_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/fe/mapping_q_internal.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/fe/mapping_q_internal_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/gmsh
+LaTeX file: include/deal.II-translator/gmsh/utilities.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/gmsh/utilities_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/grid
+LaTeX file: include/deal.II-translator/grid/cell_id.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/cell_id_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/composition_manifold.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/composition_manifold_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/connectivity.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/connectivity_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/filtered_iterator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/filtered_iterator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/grid_generator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/grid_generator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/grid_in.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/grid_in_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/grid_out.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/grid_out_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/grid_refinement.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/grid_refinement_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/grid_reordering.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/grid_reordering_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/grid_tools_cache.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/grid_tools_cache_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/grid_tools_cache_update_flags.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/grid_tools_cache_update_flags_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/grid_tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/grid_tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/intergrid_map.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/intergrid_map_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/magic_numbers.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/magic_numbers_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/manifold.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/manifold_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/manifold_lib.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/manifold_lib_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/persistent_tria.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/persistent_tria_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/reference_cell.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/reference_cell_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tensor_product_manifold.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tensor_product_manifold_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria_accessor.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_accessor_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria_accessor.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_accessor.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria_description.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_description_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria_faces.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_faces_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria_iterator_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_iterator_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria_iterator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_iterator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria_iterator_selector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_iterator_selector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria_iterator.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_iterator.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria_levels.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_levels_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/grid/tria_objects.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/grid/tria_objects_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/hp
+LaTeX file: include/deal.II-translator/hp/collection.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/hp/collection_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/hp/dof_handler.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/hp/dof_handler_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/hp/fe_collection.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/hp/fe_collection_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/hp/fe_values.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/hp/fe_values_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/hp/mapping_collection.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/hp/mapping_collection_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/hp/q_collection.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/hp/q_collection_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/hp/refinement.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/hp/refinement_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/integrators
+LaTeX file: include/deal.II-translator/integrators/advection.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/integrators/advection_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/integrators/divergence.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/integrators/divergence_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/integrators/elasticity.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/integrators/elasticity_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/integrators/grad_div.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/integrators/grad_div_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/integrators/l2.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/integrators/l2_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/integrators/laplace.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/integrators/laplace_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/integrators/local_integrators.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/integrators/local_integrators_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/integrators/maxwell.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/integrators/maxwell_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/integrators/patches.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/integrators/patches_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/lac
+LaTeX file: include/deal.II-translator/lac/affine_constraints.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/affine_constraints_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/affine_constraints.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/affine_constraints.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/arpack_solver.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/arpack_solver_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/blas_extension_templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/blas_extension_templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_indices.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_indices_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_linear_operator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_linear_operator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_matrix_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_matrix_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_sparse_matrix_ez.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_sparse_matrix_ez_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_sparse_matrix_ez.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_sparse_matrix_ez.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_sparse_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_sparse_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_sparse_matrix.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_sparse_matrix.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_sparsity_pattern.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_sparsity_pattern_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_vector_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_vector_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/block_vector.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/block_vector.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/chunk_sparse_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/chunk_sparse_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/chunk_sparse_matrix.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/chunk_sparse_matrix.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/chunk_sparsity_pattern.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/chunk_sparsity_pattern_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/communication_pattern_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/communication_pattern_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/constrained_linear_operator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/constrained_linear_operator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/constraint_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/constraint_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/cuda_atomic.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/cuda_atomic_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/cuda_kernels.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/cuda_kernels_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/cuda_kernels.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/cuda_kernels.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/cuda_precondition.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/cuda_precondition_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/cuda_solver_direct.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/cuda_solver_direct_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/cuda_sparse_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/cuda_sparse_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/cuda_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/cuda_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/diagonal_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/diagonal_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/dynamic_sparsity_pattern.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/dynamic_sparsity_pattern_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/eigen.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/eigen_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/exceptions.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/exceptions_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/full_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/full_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/full_matrix.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/full_matrix.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/generic_linear_algebra.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/generic_linear_algebra_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/ginkgo_solver.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/ginkgo_solver_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/householder.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/householder_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/identity_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/identity_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/lapack_full_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/lapack_full_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/lapack_support.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/lapack_support_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/lapack_templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/lapack_templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/la_parallel_block_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/la_parallel_block_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/la_parallel_block_vector.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/la_parallel_block_vector.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/la_parallel_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/la_parallel_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/la_parallel_vector.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/la_parallel_vector.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/la_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/la_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/la_vector.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/la_vector.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/linear_operator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/linear_operator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/linear_operator_tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/linear_operator_tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/matrix_block.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/matrix_block_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/matrix_iterator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/matrix_iterator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/matrix_out.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/matrix_out_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/packaged_operation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/packaged_operation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/parallel_block_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/parallel_block_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/parpack_solver.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/parpack_solver_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_block_sparse_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_block_sparse_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_block_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_block_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_compatibility.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_compatibility_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_full_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_full_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_matrix_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_matrix_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_matrix_free.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_matrix_free_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_parallel_block_sparse_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_parallel_block_sparse_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_parallel_block_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_parallel_block_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_parallel_sparse_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_parallel_sparse_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_parallel_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_parallel_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_precondition.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_precondition_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_solver.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_solver_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_sparse_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_sparse_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_vector_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_vector_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/petsc_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/petsc_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/precondition_block_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/precondition_block_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/precondition_block.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/precondition_block_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/precondition_block.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/precondition_block.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/precondition.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/precondition_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/precondition_selector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/precondition_selector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/qr.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/qr_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/read_write_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/read_write_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/read_write_vector.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/read_write_vector.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/relaxation_block.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/relaxation_block_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/relaxation_block.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/relaxation_block.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/scalapack.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/scalapack_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/scalapack.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/scalapack.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/schur_complement.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/schur_complement_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/slepc_solver.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/slepc_solver_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/slepc_spectral_transformation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/slepc_spectral_transformation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_bicgstab.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_bicgstab_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_cg.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_cg_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_control.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_control_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_fire.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_fire_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_gmres.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_gmres_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_idr.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_idr_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_minres.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_minres_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_qmrs.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_qmrs_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_relaxation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_relaxation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_richardson.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_richardson_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/solver_selector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/solver_selector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_decomposition.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_decomposition_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_decomposition.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_decomposition.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_direct.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_direct_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_ilu.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_ilu_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_ilu.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_ilu.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_matrix_ez.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_matrix_ez_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_matrix_ez.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_matrix_ez.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_matrix.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_matrix.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_mic.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_mic_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_mic.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_mic.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_vanka.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_vanka_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparse_vanka.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparse_vanka.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparsity_pattern.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparsity_pattern_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/sparsity_tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/sparsity_tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/tensor_product_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/tensor_product_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/tridiagonal_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/tridiagonal_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_block_sparse_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_block_sparse_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_epetra_communication_pattern.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_epetra_communication_pattern_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_epetra_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_epetra_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_index_access.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_index_access_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_linear_operator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_linear_operator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_parallel_block_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_parallel_block_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_precondition.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_precondition_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_solver.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_solver_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_sparse_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_sparse_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_sparsity_pattern.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_sparsity_pattern_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_tpetra_communication_pattern.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_tpetra_communication_pattern_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_tpetra_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_tpetra_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_tpetra_vector.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_tpetra_vector.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/trilinos_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/trilinos_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/utilities.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/utilities_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/vector_element_access.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/vector_element_access_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/vector_memory.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/vector_memory_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/vector_memory.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/vector_memory.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/vector_operation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/vector_operation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/vector_operations_internal.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/vector_operations_internal_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/vector_space_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/vector_space_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/vector.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/vector.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/lac/vector_type_traits.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/lac/vector_type_traits_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/matrix_free
+LaTeX file: include/deal.II-translator/matrix_free/cuda_fe_evaluation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/cuda_fe_evaluation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/cuda_hanging_nodes_internal.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/cuda_hanging_nodes_internal_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/cuda_matrix_free.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/cuda_matrix_free_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/cuda_matrix_free.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/cuda_matrix_free.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/cuda_tensor_product_kernels.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/cuda_tensor_product_kernels_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/dof_info.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/dof_info_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/dof_info.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/dof_info.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/evaluation_flags.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/evaluation_flags_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/evaluation_kernels.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/evaluation_kernels_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/evaluation_selector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/evaluation_selector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/evaluation_template_factory.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/evaluation_template_factory_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/evaluation_template_factory.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/evaluation_template_factory.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/face_info.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/face_info_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/face_setup_internal.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/face_setup_internal_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/fe_evaluation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/fe_evaluation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/fe_point_evaluation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/fe_point_evaluation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/helper_functions.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/helper_functions_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/mapping_data_on_the_fly.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/mapping_data_on_the_fly_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/mapping_info.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/mapping_info_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/mapping_info.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/mapping_info.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/matrix_free.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/matrix_free_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/matrix_free.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/matrix_free.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/operators.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/operators_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/shape_info.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/shape_info_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/shape_info.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/shape_info.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/task_info.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/task_info_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/tensor_product_kernels.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/tensor_product_kernels_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/type_traits.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/type_traits_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/util.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/util_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/vector_access_internal.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/vector_access_internal_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/matrix_free/vector_data_exchange.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/matrix_free/vector_data_exchange_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/meshworker
+LaTeX file: include/deal.II-translator/meshworker/assemble_flags.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/assemble_flags_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/assembler.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/assembler_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/copy_data.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/copy_data_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/dof_info.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/dof_info_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/dof_info.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/dof_info.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/functional.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/functional_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/integration_info.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/integration_info_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/integration_info.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/integration_info.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/local_integrator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/local_integrator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/local_results.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/local_results_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/loop.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/loop_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/mesh_loop.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/mesh_loop_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/output.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/output_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/scratch_data.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/scratch_data_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/simple.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/simple_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/vector_selector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/vector_selector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/meshworker/vector_selector.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/meshworker/vector_selector.templates_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/multigrid
+LaTeX file: include/deal.II-translator/multigrid/mg_base.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_base_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_block_smoother.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_block_smoother_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_coarse.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_coarse_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_constrained_dofs.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_constrained_dofs_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_matrix.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_matrix_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_smoother.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_smoother_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_transfer_block.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_transfer_block_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_transfer_block.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_transfer_block.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_transfer_component.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_transfer_component_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_transfer_component.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_transfer_component.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_transfer_global_coarsening.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_transfer_global_coarsening_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_transfer_global_coarsening.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_transfer_global_coarsening.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_transfer.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_transfer_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_transfer_internal.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_transfer_internal_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_transfer_matrix_free.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_transfer_matrix_free_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/mg_transfer.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/mg_transfer.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/multigrid.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/multigrid_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/multigrid.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/multigrid.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/multigrid/sparse_matrix_collection.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/multigrid/sparse_matrix_collection_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/non_matching
+LaTeX file: include/deal.II-translator/non_matching/coupling.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/non_matching/coupling_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/non_matching/immersed_surface_quadrature.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/non_matching/immersed_surface_quadrature_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/numerics
+LaTeX file: include/deal.II-translator/numerics/adaptation_strategies.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/adaptation_strategies_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/cell_data_transfer.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/cell_data_transfer_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/cell_data_transfer.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/cell_data_transfer.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/data_component_interpretation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/data_component_interpretation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/data_out_dof_data.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/data_out_dof_data_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/data_out_dof_data.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/data_out_dof_data.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/data_out_faces.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/data_out_faces_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/data_out.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/data_out_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/data_out_rotation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/data_out_rotation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/data_out_stack.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/data_out_stack_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/data_postprocessor.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/data_postprocessor_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/derivative_approximation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/derivative_approximation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/dof_output_operator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/dof_output_operator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/dof_output_operator.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/dof_output_operator.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/dof_print_solver_step.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/dof_print_solver_step_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/error_estimator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/error_estimator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/error_estimator.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/error_estimator.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/fe_field_function.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/fe_field_function_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/fe_field_function.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/fe_field_function.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/histogram.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/histogram_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/history.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/history_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/matrix_creator.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/matrix_creator.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/matrix_tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/matrix_tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/point_value_history.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/point_value_history_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/rtree.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/rtree_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/smoothness_estimator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/smoothness_estimator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/solution_transfer.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/solution_transfer_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/time_dependent.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/time_dependent_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_boundary.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_boundary_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_boundary.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_boundary.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_common.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_common_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_constraints.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_constraints_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_constraints.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_constraints.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_evaluate.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_evaluate_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_integrate_difference.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_integrate_difference_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_integrate_difference.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_integrate_difference.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_interpolate.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_interpolate_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_interpolate.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_interpolate.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_mean_value.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_mean_value_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_mean_value.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_mean_value.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_point_gradient.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_point_gradient_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_point_gradient.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_point_gradient.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_point_value.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_point_value_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_point_value.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_point_value.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_project.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_project_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_project.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_project.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_rhs.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_rhs_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools_rhs.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools_rhs.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/numerics/vector_tools.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/numerics/vector_tools.templates_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/opencascade
+LaTeX file: include/deal.II-translator/opencascade/boundary_lib.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/opencascade/boundary_lib_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/opencascade/manifold_lib.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/opencascade/manifold_lib_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/opencascade/utilities.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/opencascade/utilities_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/optimization
+LaTeX file: include/deal.II-translator/optimization/line_minimization.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/optimization/line_minimization_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/optimization/solver_bfgs.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/optimization/solver_bfgs_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/particles
+LaTeX file: include/deal.II-translator/particles/data_out.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/particles/data_out_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/particles/generators.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/particles/generators_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/particles/particle_accessor.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/particles/particle_accessor_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/particles/particle.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/particles/particle_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/particles/particle_handler.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/particles/particle_handler_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/particles/particle_iterator.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/particles/particle_iterator_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/particles/partitioner.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/particles/partitioner_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/particles/property_pool.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/particles/property_pool_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/particles/utilities.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/particles/utilities_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/physics
+LaTeX file: include/deal.II-translator/physics/notation.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/physics/notation_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/physics/transformations.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/physics/transformations_0.txt
+Supply the output file(s) to Google Translate
+include/deal.II-translator/sundials
+LaTeX file: include/deal.II-translator/sundials/arkode.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/sundials/arkode_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/sundials/ida.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/sundials/ida_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/sundials/kinsol.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/sundials/kinsol_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/sundials/n_vector.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/sundials/n_vector_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/sundials/n_vector.templates.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/sundials/n_vector.templates_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/sundials/sundials_backport.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/sundials/sundials_backport_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/sundials/sunlinsol_newempty.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/sundials/sunlinsol_newempty_0.txt
+Supply the output file(s) to Google Translate
+LaTeX file: include/deal.II-translator/sundials/sunlinsol_wrapper.h
+No token conflicts detected. Proceeding.
+Output file: include/deal.II-translator/sundials/sunlinsol_wrapper_0.txt
+Supply the output file(s) to Google Translate

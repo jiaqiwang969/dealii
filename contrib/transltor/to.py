@@ -114,7 +114,7 @@ text = re.sub(regex1, subst0, text, 0)
 latex = []
 start_values = []
 end_values = []
-for m in re.finditer(r'@dot|@htmlonly|[@\\]f{align\*}|[@\\]f{align}|[@\\]f{eqnarray}|[@\\]f{eqnarray\*}|@f{equation\*}|@f{multline\*}|@f{gather\*}|@code|@verbatim|[@\\]f\[|\<a[ \n]|\<h[1-9]\>|\<[bi]\>', text):
+for m in re.finditer(r'@dot|@htmlonly|[@\\]f{align\*}|[@\\]f{align}|[@\\]f{eqnarray}|[@\\]f{eqnarray\*}|@f{equation\*}|@f{equation}|@f{multline\*}|@f{gather\*}|@code|@verbatim|[@\\]f\[|\<a[ \n]|\<h[1-9]\>|\<[bi]\>', text):
     start_values.append(m.start())
 for m in re.finditer(r'@enddot|@endhtmlonly|@f}|@endcode|@endverbatim|\\f}|[@\\]f\]|\<\/a\>|\<\/h[1-9]\>|<\/[bi]\>', text):
     end_values.append(m.end())
