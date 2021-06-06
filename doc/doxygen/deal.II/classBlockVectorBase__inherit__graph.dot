@@ -1,0 +1,34 @@
+digraph "BlockVectorBase&lt; VectorType &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="BlockVectorBase\< VectorType \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Subscriptor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSubscriptor.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< Vector \>" ,fontname="Helvetica"];
+  Node3 [label="BlockVectorBase\< Vector \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockVectorBase.html",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="PETScWrappers::MPI\l::BlockVector",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1MPI_1_1BlockVector.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< MPI::Vector \>" ,fontname="Helvetica"];
+  Node5 [label="BlockVectorBase\< MPI\l::Vector \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockVectorBase.html",tooltip=" "];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="TrilinosWrappers::MPI\l::BlockVector",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTrilinosWrappers_1_1MPI_1_1BlockVector.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< Vector\< double \> \>" ,fontname="Helvetica"];
+  Node7 [label="BlockVectorBase\< Vector\l\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockVectorBase.html",tooltip=" "];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="BlockVector\< double \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockVector.html",tooltip=" "];
+  Node1 -> Node9 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< Vector\< Number \> \>" ,fontname="Helvetica"];
+  Node9 [label="BlockVectorBase\< Vector\l\< Number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockVectorBase.html",tooltip=" "];
+  Node9 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="BlockVector\< Number \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockVector.html",tooltip=" "];
+  Node10 -> Node8 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< double \>" ,fontname="Helvetica"];
+  Node10 -> Node11 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< number \>" ,fontname="Helvetica"];
+  Node11 [label="BlockVector\< number \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockVector.html",tooltip=" "];
+  Node9 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="LinearAlgebra::distributed\l::BlockVector\< Number \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classLinearAlgebra_1_1distributed_1_1BlockVector.html",tooltip=" "];
+  Node1 -> Node13 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< Vector\< number \> \>" ,fontname="Helvetica"];
+  Node13 [label="BlockVectorBase\< Vector\l\< number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockVectorBase.html",tooltip=" "];
+  Node13 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

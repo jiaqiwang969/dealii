@@ -1,0 +1,10 @@
+digraph "parallel::distributed::CellDataTransfer&lt; dim, spacedim, VectorType &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="parallel::distributed\l::CellDataTransfer\< dim,\l spacedim, VectorType \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, spacedim, std\l::vector\< unsigned int \> \>" ,fontname="Helvetica"];
+  Node2 [label="parallel::distributed\l::CellDataTransfer\< dim,\l spacedim, std::vector\l\< unsigned int \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classparallel_1_1distributed_1_1CellDataTransfer.html",tooltip=" "];
+}

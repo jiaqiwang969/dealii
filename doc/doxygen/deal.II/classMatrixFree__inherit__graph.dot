@@ -1,0 +1,16 @@
+digraph "MatrixFree&lt; dim, Number, VectorizedArrayType &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="MatrixFree\< dim, Number,\l VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Subscriptor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSubscriptor.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, value_type,\l VectorizedArray\< typename\l LinearAlgebra::distributed\l::Vector\< double \> ::value\l_type \> \>" ,fontname="Helvetica"];
+  Node3 [label="MatrixFree\< dim, value\l_type, VectorizedArray\l\< typename LinearAlgebra\l::distributed::Vector\< double\l \> ::value_type \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMatrixFree.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, double, Vectorized\lArray\< double \> \>" ,fontname="Helvetica"];
+  Node4 [label="MatrixFree\< dim, double,\l VectorizedArray\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMatrixFree.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, Number, Vectorized\lArray\< Number \> \>" ,fontname="Helvetica"];
+  Node5 [label="MatrixFree\< dim, Number,\l VectorizedArray\< Number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMatrixFree.html",tooltip=" "];
+}

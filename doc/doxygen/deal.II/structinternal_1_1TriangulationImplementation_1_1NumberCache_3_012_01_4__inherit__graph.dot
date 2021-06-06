@@ -1,0 +1,11 @@
+digraph "internal::TriangulationImplementation::NumberCache&lt; 2 &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="internal::TriangulationImplementation\l::NumberCache\< 2 \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="internal::TriangulationImplementation\l::NumberCache\< 1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1TriangulationImplementation_1_1NumberCache_3_011_01_4.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="internal::TriangulationImplementation\l::NumberCache\< 3 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1TriangulationImplementation_1_1NumberCache_3_013_01_4.html",tooltip=" "];
+}

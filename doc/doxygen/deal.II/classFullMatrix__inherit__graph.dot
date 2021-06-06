@@ -1,0 +1,24 @@
+digraph "FullMatrix&lt; number &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="FullMatrix\< number \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Table\< 2, number \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTable.html",tooltip=" "];
+  Node3 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< 2, number \>" ,fontname="Helvetica"];
+  Node3 [label="Table\< N, T \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTable.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< InverseNumberType \>" ,fontname="Helvetica"];
+  Node4 [label="FullMatrix\< InverseNumber\lType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFullMatrix.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< double \>" ,fontname="Helvetica"];
+  Node5 [label="FullMatrix\< double \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFullMatrix.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< float \>" ,fontname="Helvetica"];
+  Node6 [label="FullMatrix\< float \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFullMatrix.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< inverse_type \>" ,fontname="Helvetica"];
+  Node7 [label="FullMatrix\< inverse\l_type \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFullMatrix.html",tooltip=" "];
+  Node1 -> Node8 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< typename MatrixType\l::value_type \>" ,fontname="Helvetica"];
+  Node8 [label="FullMatrix\< typename\l MatrixType::value_type \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFullMatrix.html",tooltip=" "];
+  Node1 -> Node9 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< CoefficientType \>" ,fontname="Helvetica"];
+  Node9 [label="FullMatrix\< CoefficientType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFullMatrix.html",tooltip=" "];
+}

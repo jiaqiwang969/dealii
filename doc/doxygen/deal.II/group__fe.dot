@@ -1,0 +1,13 @@
+digraph "Finite element space descriptions"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node4 [label="Base classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__febase.html",tooltip="The members of this sub-module describe the implementation mechanics of finite element classes,..."];
+  Node2 [label="Finite elements",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__feall.html",tooltip="All classes related to shape functions and to access to shape functions. This concerns the actual val..."];
+  Node3 [label="Handling vector valued\l problems",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__vector__valued.html",tooltip="Vector-valued problems are systems of partial differential equations. These are problems where the so..."];
+  Node1 [label="Finite element space\l descriptions",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="The classes here describe finite element spaces, such as the simplest Q1 (bi-/trilinear) spaces,..."];
+  Node2->Node1 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, label="BlockMask\nComponentMask\nFESystem", color="orange", dir="none", style="dashed"];
+  Node1->Node4 [shape=plaintext, label="FiniteElement\nFESystem", color="orange", dir="none", style="dashed"];
+}

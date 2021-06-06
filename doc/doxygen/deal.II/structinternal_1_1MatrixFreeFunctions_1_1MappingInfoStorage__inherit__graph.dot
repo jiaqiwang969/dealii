@@ -1,0 +1,30 @@
+digraph "internal::MatrixFreeFunctions::MappingInfoStorage&lt; structdim, spacedim, Number, VectorizedArrayType &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\< structdim,\l spacedim, Number, VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim - 1, dim, double,\l VectorizedArray\< double \> \>" ,fontname="Helvetica"];
+  Node2 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\< dim\l - 1, dim, double, VectorizedArray\l\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim, value_type,\l VectorizedArray\< typename\l LinearAlgebra::distributed\l::Vector\< double \> ::value\l_type \> \>" ,fontname="Helvetica"];
+  Node3 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\< dim,\l dim, value_type, VectorizedArray\l\< typename LinearAlgebra::distributed\l::Vector\< double \> ::value_type \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \<(is_face ? dim - 1\l :dim), dim, Number,\l VectorizedArray\< Number \> \>" ,fontname="Helvetica"];
+  Node4 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\<(is\l_face ? dim - 1 :dim), dim,\l Number, VectorizedArray\< Number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim - 1, dim, Number,\l VectorizedArray\< Number \> \>" ,fontname="Helvetica"];
+  Node5 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\< dim\l - 1, dim, Number, VectorizedArray\l\< Number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \<(is_face ? dim - 1\l :dim), dim, double,\l VectorizedArray\< double \> \>" ,fontname="Helvetica"];
+  Node6 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\<(is\l_face ? dim - 1 :dim), dim,\l double, VectorizedArray\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim - 1, dim, value\l_type, VectorizedArray\l\< typename LinearAlgebra\l::distributed::Vector\< double\l \> ::value_type \> \>" ,fontname="Helvetica"];
+  Node7 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\< dim\l - 1, dim, value_type, VectorizedArray\l\< typename LinearAlgebra::distributed\l::Vector\< double \> ::value_type \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+  Node1 -> Node8 [dir="back",color="orange",fontsize="10",style="dashed",label=" \<(is_face ? dim - 1\l :dim), dim, Number,\l VectorizedArrayType \>" ,fontname="Helvetica"];
+  Node8 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\<(is\l_face ? dim - 1 :dim), dim,\l Number, VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+  Node1 -> Node9 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim, Number,\l VectorizedArrayType \>" ,fontname="Helvetica"];
+  Node9 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\< dim,\l dim, Number, VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+  Node1 -> Node10 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim, Number,\l VectorizedArray\< Number \> \>" ,fontname="Helvetica"];
+  Node10 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\< dim,\l dim, Number, VectorizedArray\l\< Number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+  Node1 -> Node11 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim - 1, dim, Number,\l VectorizedArrayType \>" ,fontname="Helvetica"];
+  Node11 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\< dim\l - 1, dim, Number, VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+  Node1 -> Node12 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim, double,\l VectorizedArray\< double \> \>" ,fontname="Helvetica"];
+  Node12 [label="internal::MatrixFreeFunctions\l::MappingInfoStorage\< dim,\l dim, double, VectorizedArray\l\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html",tooltip=" "];
+}

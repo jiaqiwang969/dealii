@@ -1,0 +1,11 @@
+digraph "include/deal.II-translator/multigrid" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_386d89ad50a3909c2af5a93b48d2c3ff {
+    graph [ bgcolor="#ddddee", pencolor="black", label="deal.II-translator" fontname="Helvetica", fontsize="10", URL="dir_386d89ad50a3909c2af5a93b48d2c3ff.html"]
+  dir_d7c3ad262a6dbe88e2b6275d5eb05496 [shape=box, label="multigrid", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_d7c3ad262a6dbe88e2b6275d5eb05496.html"];
+  }
+  dir_ee90d91a514b839c31faec7a1d916f67 [shape=box label="deal.II" fillcolor="white" style="filled" color="red" URL="dir_ee90d91a514b839c31faec7a1d916f67.html"];
+  dir_d7c3ad262a6dbe88e2b6275d5eb05496->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="107", labeldistance=1.5 headhref="dir_000111_000009.html"];
+}

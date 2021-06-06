@@ -1,0 +1,15 @@
+digraph "Input"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node5 [label="Exceptions and assertions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Exceptions.html",tooltip="This module contains classes that are used in the exception mechanism of deal.II."];
+  Node2 [label="Input/Output",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__IO.html",tooltip="This module collects the classes used for reading and writing meshes and data. There are two sub-modu..."];
+  Node3 [label="Graphical output",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__output.html",tooltip="deal.II generates three types of output: it can write triangulations/meshes in formats understood by ..."];
+  Node4 [label="Grids and Triangulations",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="This module groups functions and classes that have to do with the topology and geometry of meshes...."];
+  Node1 [label="Input",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="deal.II can read meshes in a number of different formats. However, all of them are constrained to so-..."];
+  Node2->Node1 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, label="DataOutReader", color="orange", dir="none", style="dashed"];
+  Node1->Node4 [shape=plaintext, label="GridIn", color="orange", dir="none", style="dashed"];
+  Node1->Node5 [shape=plaintext, label="Patterns::Tools", color="blueviolet", dir="none", style="dashed"];
+}

@@ -1,0 +1,11 @@
+digraph "source/opencascade" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_b2f33c71d4aa5e7af42a1ca61ff5af1b {
+    graph [ bgcolor="#ddddee", pencolor="black", label="source" fontname="Helvetica", fontsize="10", URL="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html"]
+  dir_943739da40d8170036cf76c9e5858a48 [shape=box, label="opencascade", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_943739da40d8170036cf76c9e5858a48.html"];
+  }
+  dir_d44c64559bbebec7f509842c48db8b23 [shape=box label="include" fillcolor="white" style="filled" color="red" URL="dir_d44c64559bbebec7f509842c48db8b23.html"];
+  dir_943739da40d8170036cf76c9e5858a48->dir_d44c64559bbebec7f509842c48db8b23 [headlabel="5", labeldistance=1.5 headhref="dir_000057_000004.html"];
+}

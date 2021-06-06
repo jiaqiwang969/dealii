@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['l2_2eh_12806',['l2.h',['../integrators_2l2_8h.html',1,'(Global Namespace)'],['../origin_2integrators_2l2_8h.html',1,'(Global Namespace)'],['../translator_2integrators_2l2_8h.html',1,'(Global Namespace)']]],
+  ['la_5fparallel_5fblock_5fvector_2ecc_12807',['la_parallel_block_vector.cc',['../la__parallel__block__vector_8cc.html',1,'']]],
+  ['la_5fparallel_5fblock_5fvector_2eh_12808',['la_parallel_block_vector.h',['../lac_2la__parallel__block__vector_8h.html',1,'(Global Namespace)'],['../origin_2lac_2la__parallel__block__vector_8h.html',1,'(Global Namespace)'],['../translator_2lac_2la__parallel__block__vector_8h.html',1,'(Global Namespace)']]],
+  ['la_5fparallel_5fvector_2ecc_12809',['la_parallel_vector.cc',['../la__parallel__vector_8cc.html',1,'']]],
+  ['la_5fparallel_5fvector_2eh_12810',['la_parallel_vector.h',['../lac_2la__parallel__vector_8h.html',1,'(Global Namespace)'],['../origin_2lac_2la__parallel__vector_8h.html',1,'(Global Namespace)'],['../translator_2lac_2la__parallel__vector_8h.html',1,'(Global Namespace)']]],
+  ['la_5fvector_2ecc_12811',['la_vector.cc',['../la__vector_8cc.html',1,'']]],
+  ['la_5fvector_2eh_12812',['la_vector.h',['../lac_2la__vector_8h.html',1,'(Global Namespace)'],['../origin_2lac_2la__vector_8h.html',1,'(Global Namespace)'],['../translator_2lac_2la__vector_8h.html',1,'(Global Namespace)']]],
+  ['lac_2eh_12813',['lac.h',['../doc_2doxygen_2headers_2lac_8h.html',1,'(Global Namespace)'],['../include_2deal_8II-origin_2A-headers_2lac_8h.html',1,'(Global Namespace)'],['../include_2deal_8II-translator_2A-headers_2lac_8h.html',1,'(Global Namespace)']]],
+  ['laoperators_2eh_12814',['laoperators.h',['../doc_2doxygen_2headers_2laoperators_8h.html',1,'(Global Namespace)'],['../include_2deal_8II-origin_2A-headers_2laoperators_8h.html',1,'(Global Namespace)'],['../include_2deal_8II-translator_2A-headers_2laoperators_8h.html',1,'(Global Namespace)']]],
+  ['lapack_5ffull_5fmatrix_2ecc_12815',['lapack_full_matrix.cc',['../lapack__full__matrix_8cc.html',1,'']]],
+  ['lapack_5ffull_5fmatrix_2eh_12816',['lapack_full_matrix.h',['../lac_2lapack__full__matrix_8h.html',1,'(Global Namespace)'],['../origin_2lac_2lapack__full__matrix_8h.html',1,'(Global Namespace)'],['../translator_2lac_2lapack__full__matrix_8h.html',1,'(Global Namespace)']]],
+  ['lapack_5fsupport_2eh_12817',['lapack_support.h',['../lac_2lapack__support_8h.html',1,'(Global Namespace)'],['../origin_2lac_2lapack__support_8h.html',1,'(Global Namespace)'],['../translator_2lac_2lapack__support_8h.html',1,'(Global Namespace)']]],
+  ['lapack_5ftemplates_2eh_12818',['lapack_templates.h',['../lac_2lapack__templates_8h.html',1,'(Global Namespace)'],['../origin_2lac_2lapack__templates_8h.html',1,'(Global Namespace)'],['../translator_2lac_2lapack__templates_8h.html',1,'(Global Namespace)']]],
+  ['laplace_2eh_12819',['laplace.h',['../integrators_2laplace_8h.html',1,'(Global Namespace)'],['../origin_2integrators_2laplace_8h.html',1,'(Global Namespace)'],['../translator_2integrators_2laplace_8h.html',1,'(Global Namespace)']]],
+  ['line_5fminimization_2eh_12820',['line_minimization.h',['../optimization_2line__minimization_8h.html',1,'(Global Namespace)'],['../origin_2optimization_2line__minimization_8h.html',1,'(Global Namespace)'],['../translator_2optimization_2line__minimization_8h.html',1,'(Global Namespace)']]],
+  ['linear_5findex_5fiterator_2eh_12821',['linear_index_iterator.h',['../base_2linear__index__iterator_8h.html',1,'(Global Namespace)'],['../origin_2base_2linear__index__iterator_8h.html',1,'(Global Namespace)'],['../translator_2base_2linear__index__iterator_8h.html',1,'(Global Namespace)']]],
+  ['linear_5foperator_2eh_12822',['linear_operator.h',['../lac_2linear__operator_8h.html',1,'(Global Namespace)'],['../origin_2lac_2linear__operator_8h.html',1,'(Global Namespace)'],['../translator_2lac_2linear__operator_8h.html',1,'(Global Namespace)']]],
+  ['linear_5foperator_5ftools_2eh_12823',['linear_operator_tools.h',['../lac_2linear__operator__tools_8h.html',1,'(Global Namespace)'],['../origin_2lac_2linear__operator__tools_8h.html',1,'(Global Namespace)'],['../translator_2lac_2linear__operator__tools_8h.html',1,'(Global Namespace)']]],
+  ['link_2etxt_12824',['link.txt',['../deal__II_8dir_2link_8txt.html',1,'(Global Namespace)'],['../deal__II_8g_8dir_2link_8txt.html',1,'(Global Namespace)']]],
+  ['local_5fintegrator_2eh_12825',['local_integrator.h',['../meshworker_2local__integrator_8h.html',1,'(Global Namespace)'],['../origin_2meshworker_2local__integrator_8h.html',1,'(Global Namespace)'],['../translator_2meshworker_2local__integrator_8h.html',1,'(Global Namespace)']]],
+  ['local_5fintegrators_2eh_12826',['local_integrators.h',['../integrators_2local__integrators_8h.html',1,'(Global Namespace)'],['../origin_2integrators_2local__integrators_8h.html',1,'(Global Namespace)'],['../translator_2integrators_2local__integrators_8h.html',1,'(Global Namespace)']]],
+  ['local_5fresults_2eh_12827',['local_results.h',['../meshworker_2local__results_8h.html',1,'(Global Namespace)'],['../origin_2meshworker_2local__results_8h.html',1,'(Global Namespace)'],['../translator_2meshworker_2local__results_8h.html',1,'(Global Namespace)']]],
+  ['logstream_2ecc_12828',['logstream.cc',['../logstream_8cc.html',1,'']]],
+  ['logstream_2eh_12829',['logstream.h',['../base_2logstream_8h.html',1,'(Global Namespace)'],['../origin_2base_2logstream_8h.html',1,'(Global Namespace)'],['../translator_2base_2logstream_8h.html',1,'(Global Namespace)']]],
+  ['loop_2eh_12830',['loop.h',['../meshworker_2loop_8h.html',1,'(Global Namespace)'],['../origin_2meshworker_2loop_8h.html',1,'(Global Namespace)'],['../translator_2meshworker_2loop_8h.html',1,'(Global Namespace)']]]
+];

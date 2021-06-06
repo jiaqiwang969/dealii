@@ -1,0 +1,23 @@
+digraph "BlockMatrixBase&lt; MatrixType &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="BlockMatrixBase\< MatrixType \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< SparseMatrix \>" ,fontname="Helvetica"];
+  Node2 [label="BlockMatrixBase\< SparseMatrix \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockMatrixBase.html",tooltip=" "];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="PETScWrappers::MPI\l::BlockSparseMatrix",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1MPI_1_1BlockSparseMatrix.html",tooltip=" "];
+  Node2 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="TrilinosWrappers::BlockSparse\lMatrix",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTrilinosWrappers_1_1BlockSparseMatrix.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< SparseMatrix\< double \> \>" ,fontname="Helvetica"];
+  Node5 [label="BlockMatrixBase\< SparseMatrix\l\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockMatrixBase.html",tooltip=" "];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="BlockSparseMatrix\<\l double \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockSparseMatrix.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< SparseMatrix\< number \> \>" ,fontname="Helvetica"];
+  Node7 [label="BlockMatrixBase\< SparseMatrix\l\< number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockMatrixBase.html",tooltip=" "];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="BlockSparseMatrix\<\l number \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBlockSparseMatrix.html",tooltip=" "];
+  Node8 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< double \>" ,fontname="Helvetica"];
+}

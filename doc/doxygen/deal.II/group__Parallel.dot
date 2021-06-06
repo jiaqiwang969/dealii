@@ -1,0 +1,11 @@
+digraph "Parallel computing"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node1 [label="Parallel computing",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="A module discussing the use of multiple processors."];
+  Node2 [label="Parallel computing\l with multiple processors\l using distributed memory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__distributed.html",tooltip="A module discussing the use of parallelism on distributed memory clusters."];
+  Node3 [label="Parallel computing\l with multiple processors\l accessing shared memory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__threads.html",tooltip="A module discussing the use of parallelism on shared memory machines. See the detailed documentation ..."];
+  Node1->Node2 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, dir="back", style="solid"];
+}

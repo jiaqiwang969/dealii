@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['j_18918',['J',['../classMeshWorker_1_1LocalResults.html#aad194dda1f69585d2fa56516ea6cf1bd',1,'MeshWorker::LocalResults']]],
+  ['j_5fvalue_18919',['J_value',['../classFEEvaluationBaseData.html#afc821aa93e616f724d4e0cf7aa13ad47',1,'FEEvaluationBaseData']]],
+  ['jacobian_18920',['jacobian',['../classFEEvaluationBaseData.html#a60f4dcd67636fdeaacd740d7ddb84ce5',1,'FEEvaluationBaseData']]],
+  ['jacobian_5f2nd_5fderivatives_18921',['jacobian_2nd_derivatives',['../classinternal_1_1FEValuesImplementation_1_1MappingRelatedData.html#ae44b010acc4a2242ee215c9990dcbd42',1,'internal::FEValuesImplementation::MappingRelatedData']]],
+  ['jacobian_5f3rd_5fderivatives_18922',['jacobian_3rd_derivatives',['../classinternal_1_1FEValuesImplementation_1_1MappingRelatedData.html#a19261e0003dc278e0cfd533e56ae7322',1,'internal::FEValuesImplementation::MappingRelatedData']]],
+  ['jacobian_5fgradients_18923',['jacobian_gradients',['../structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html#a939d5f58fcfde4ea5fd369a062b453aa',1,'internal::MatrixFreeFunctions::MappingInfoStorage']]],
+  ['jacobian_5fgrads_18924',['jacobian_grads',['../classinternal_1_1FEValuesImplementation_1_1MappingRelatedData.html#a12ab185879af27627dbf7e7f77a9a157',1,'internal::FEValuesImplementation::MappingRelatedData']]],
+  ['jacobian_5fpreconditioner_5fsetup_18925',['jacobian_preconditioner_setup',['../classSUNDIALS_1_1ARKode.html#a30d5c5bc6158a0cad121bbf995334617',1,'SUNDIALS::ARKode']]],
+  ['jacobian_5fpreconditioner_5fsolve_18926',['jacobian_preconditioner_solve',['../classSUNDIALS_1_1ARKode.html#aadfd919430400b743cb9f3428193413c',1,'SUNDIALS::ARKode']]],
+  ['jacobian_5fpushed_5fforward_5f2nd_5fderivatives_18927',['jacobian_pushed_forward_2nd_derivatives',['../classinternal_1_1FEValuesImplementation_1_1MappingRelatedData.html#abbac675f9252f3dcda80c766534df3d8',1,'internal::FEValuesImplementation::MappingRelatedData']]],
+  ['jacobian_5fpushed_5fforward_5f3rd_5fderivatives_18928',['jacobian_pushed_forward_3rd_derivatives',['../classinternal_1_1FEValuesImplementation_1_1MappingRelatedData.html#ab8182e7424f32cdbadd7f8fbbdfc8037',1,'internal::FEValuesImplementation::MappingRelatedData']]],
+  ['jacobian_5fpushed_5fforward_5fgrads_18929',['jacobian_pushed_forward_grads',['../classinternal_1_1FEValuesImplementation_1_1MappingRelatedData.html#aa839e4d7b99b722798ab9d4ff4ff5a72',1,'internal::FEValuesImplementation::MappingRelatedData']]],
+  ['jacobian_5ftimes_5fsetup_18930',['jacobian_times_setup',['../classSUNDIALS_1_1ARKode.html#a735021ef52e41a0a55598cc664c1a2c6',1,'SUNDIALS::ARKode']]],
+  ['jacobian_5ftimes_5fvector_18931',['jacobian_times_vector',['../classSUNDIALS_1_1ARKode.html#a5b11592fab824e4881f66530cff179c4',1,'SUNDIALS::ARKode']]],
+  ['jacobians_18932',['jacobians',['../classinternal_1_1FEValuesImplementation_1_1MappingRelatedData.html#a17fa29cd5efafa014d3e0d9b11e2b88b',1,'internal::FEValuesImplementation::MappingRelatedData::jacobians()'],['../structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html#afbcc1b84370997abe7b0a11dec2cdefc',1,'internal::MatrixFreeFunctions::MappingInfoStorage::jacobians()']]],
+  ['job_5fsupports_5fmpi_18933',['job_supports_mpi',['../classUtilities_1_1MPI_1_1ConsensusAlgorithms_1_1Interface.html#a6bfb4fac6f29a5a96a49da989bd71249',1,'Utilities::MPI::ConsensusAlgorithms::Interface']]],
+  ['joukowski_5fcenter_18934',['joukowski_center',['../structGridGenerator_1_1Airfoil_1_1AdditionalData.html#aaa3732530062bac2c5b91754c2efdd46',1,'GridGenerator::Airfoil::AdditionalData']]],
+  ['jxw_18935',['JxW',['../classCUDAWrappers_1_1FEEvaluation.html#a96451880b75762aa287b6d67dfab71f7',1,'CUDAWrappers::FEEvaluation::JxW()'],['../structCUDAWrappers_1_1MatrixFree_1_1Data.html#afc2415caf4a569e11a28621525c84710',1,'CUDAWrappers::MatrixFree::Data::JxW()'],['../classCUDAWrappers_1_1MatrixFree.html#a6c7f7643adf4271368d06708aed47439',1,'CUDAWrappers::MatrixFree::JxW()'],['../structCUDAWrappers_1_1DataHost.html#a3cb038232ad866557187b994637d0ba5',1,'CUDAWrappers::DataHost::JxW()']]],
+  ['jxw_5fvalues_18936',['JxW_values',['../classinternal_1_1FEValuesImplementation_1_1MappingRelatedData.html#a3743debb1510ddf2a7a77f29a64eb2d0',1,'internal::FEValuesImplementation::MappingRelatedData::JxW_values()'],['../structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage.html#aa526a8ed6563e6ae9321609f42701062',1,'internal::MatrixFreeFunctions::MappingInfoStorage::JxW_values()']]]
+];

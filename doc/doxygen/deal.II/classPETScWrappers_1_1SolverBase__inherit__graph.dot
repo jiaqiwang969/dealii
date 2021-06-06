@@ -1,0 +1,34 @@
+digraph "PETScWrappers::SolverBase"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="PETScWrappers::SolverBase",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="PETScWrappers::SolverBiCG",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverBiCG.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="PETScWrappers::SolverBicgstab",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverBicgstab.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="PETScWrappers::SolverCG",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverCG.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="PETScWrappers::SolverCGS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverCGS.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="PETScWrappers::SolverChebychev",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverChebychev.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="PETScWrappers::SolverCR",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverCR.html",tooltip=" "];
+  Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="PETScWrappers::SolverGMRES",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverGMRES.html",tooltip=" "];
+  Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="PETScWrappers::SolverLSQR",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverLSQR.html",tooltip=" "];
+  Node1 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="PETScWrappers::SolverPreOnly",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverPreOnly.html",tooltip=" "];
+  Node1 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="PETScWrappers::SolverRichardson",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverRichardson.html",tooltip=" "];
+  Node1 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="PETScWrappers::SolverTCQMR",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverTCQMR.html",tooltip=" "];
+  Node1 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="PETScWrappers::SolverTFQMR",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SolverTFQMR.html",tooltip=" "];
+  Node1 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="PETScWrappers::SparseDirect\lMUMPS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPETScWrappers_1_1SparseDirectMUMPS.html",tooltip=" "];
+}

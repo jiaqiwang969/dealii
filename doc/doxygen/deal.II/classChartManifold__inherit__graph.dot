@@ -1,0 +1,52 @@
+digraph "ChartManifold&lt; dim, spacedim, chartdim &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="ChartManifold\< dim,\l spacedim, chartdim \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Manifold\< dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classManifold.html",tooltip=" "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Subscriptor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSubscriptor.html",tooltip=" "];
+  Node4 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
+  Node4 [label="Manifold\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classManifold.html",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, spacedim, 2 \>" ,fontname="Helvetica"];
+  Node5 [label="ChartManifold\< dim,\l spacedim, 2 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classChartManifold.html",tooltip=" "];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="OpenCASCADE::NURBSPatchManifold\l\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classOpenCASCADE_1_1NURBSPatchManifold.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim_B, spacedim_B,\l chartdim_B \>" ,fontname="Helvetica"];
+  Node7 [label="ChartManifold\< dim\l_B, spacedim_B, chartdim_B \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classChartManifold.html",tooltip=" "];
+  Node1 -> Node8 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, spacedim, 1 \>" ,fontname="Helvetica"];
+  Node8 [label="ChartManifold\< dim,\l spacedim, 1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classChartManifold.html",tooltip=" "];
+  Node8 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="OpenCASCADE::ArclengthProjection\lLineManifold\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classOpenCASCADE_1_1ArclengthProjectionLineManifold.html",tooltip=" "];
+  Node1 -> Node10 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim, 3 \>" ,fontname="Helvetica"];
+  Node10 [label="ChartManifold\< dim,\l dim, 3 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classChartManifold.html",tooltip=" "];
+  Node10 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="CylindricalManifold\l\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCylindricalManifold.html",tooltip=" "];
+  Node1 -> Node12 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim_A, spacedim_A,\l chartdim_A \>" ,fontname="Helvetica"];
+  Node12 [label="ChartManifold\< dim\l_A, spacedim_A, chartdim_A \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classChartManifold.html",tooltip=" "];
+  Node1 -> Node13 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim, dim \>" ,fontname="Helvetica"];
+  Node13 [label="ChartManifold\< dim,\l dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classChartManifold.html",tooltip=" "];
+  Node13 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="CompositionManifold\l\< dim, spacedim, chartdim,\l intermediate_dim, dim1,\l dim2 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCompositionManifold.html",tooltip=" "];
+  Node13 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="EllipticalManifold\l\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classEllipticalManifold.html",tooltip=" "];
+  Node13 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="FunctionManifold\< dim,\l spacedim, chartdim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFunctionManifold.html",tooltip=" "];
+  Node13 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="PolarManifold\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPolarManifold.html",tooltip=" "];
+  Node17 -> Node18 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
+  Node18 [label="PolarManifold\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPolarManifold.html",tooltip=" "];
+  Node13 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node19 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, 3, 3 \>" ,fontname="Helvetica"];
+  Node19 [label="ChartManifold\< dim,\l 3, 3 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classChartManifold.html",tooltip=" "];
+  Node19 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="TorusManifold\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTorusManifold.html",tooltip=" "];
+  Node1 -> Node21 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, spacedim_A+spacedim\l_B, chartdim_A+chartdim_B \>" ,fontname="Helvetica"];
+  Node21 [label="ChartManifold\< dim,\l spacedim_A+spacedim\l_B, chartdim_A+chartdim_B \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classChartManifold.html",tooltip=" "];
+  Node21 -> Node22 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node22 [label="TensorProductManifold\l\< dim, dim_A, spacedim\l_A, chartdim_A, dim_B,\l spacedim_B, chartdim_B \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTensorProductManifold.html",tooltip="Tensor product manifold of two ChartManifolds. This manifold will combine the ChartManifolds A and B ..."];
+}

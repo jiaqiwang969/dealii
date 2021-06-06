@@ -1,0 +1,53 @@
+digraph "FE_PolyTensor&lt; dim, spacedim &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="FE_PolyTensor\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="FiniteElement\< dim,\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFiniteElement.html",tooltip=" "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Subscriptor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSubscriptor.html",tooltip=" "];
+  Node4 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="FiniteElementData\<\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFiniteElementData.html",tooltip=" "];
+  Node5 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
+  Node5 [label="FiniteElement\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFiniteElement.html",tooltip=" "];
+  Node3 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="FE_DGVector\< Polynomials\lBDM\< dim \>, dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGVector.html",tooltip=" "];
+  Node6 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="FE_DGBDM\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGBDM.html",tooltip=" "];
+  Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="FE_DGVector\< Polynomials\lNedelec\< dim \>, dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGVector.html",tooltip=" "];
+  Node8 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="FE_DGNedelec\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGNedelec.html",tooltip=" "];
+  Node1 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="FE_DGVector\< Polynomials\lRaviartThomas\< dim \>,\l dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGVector.html",tooltip=" "];
+  Node10 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="FE_DGRaviartThomas\l\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGRaviartThomas.html",tooltip=" "];
+  Node1 -> Node12 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
+  Node12 [label="FE_PolyTensor\< dim,\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__PolyTensor.html",tooltip=" "];
+  Node12 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="FE_DGVector\< PolynomialType,\l dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGVector.html",tooltip=" "];
+  Node13 -> Node10 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< PolynomialsRaviartThomas\l\< dim \>, dim, dim \>" ,fontname="Helvetica"];
+  Node13 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< PolynomialsBDM\< dim\l \>, dim, dim \>" ,fontname="Helvetica"];
+  Node13 -> Node8 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< PolynomialsNedelec\l\< dim \>, dim, dim \>" ,fontname="Helvetica"];
+  Node1 -> Node14 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
+  Node14 [label="FE_PolyTensor\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__PolyTensor.html",tooltip=" "];
+  Node14 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="FE_ABF\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__ABF.html",tooltip=" "];
+  Node14 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="FE_BDM\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__BDM.html",tooltip=" "];
+  Node14 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="FE_BernardiRaugel\<\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__BernardiRaugel.html",tooltip=" "];
+  Node14 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="FE_Nedelec\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__Nedelec.html",tooltip=" "];
+  Node14 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="FE_RaviartThomas\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__RaviartThomas.html",tooltip=" "];
+  Node14 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="FE_RaviartThomasNodal\l\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__RaviartThomasNodal.html",tooltip=" "];
+  Node14 -> Node21 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node21 [label="FE_RT_Bubbles\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__RT__Bubbles.html",tooltip=" "];
+}

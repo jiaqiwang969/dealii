@@ -1,0 +1,15 @@
+digraph "include/deal.II/gmsh" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_ee90d91a514b839c31faec7a1d916f67 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="deal.II" fontname="Helvetica", fontsize="10", URL="dir_ee90d91a514b839c31faec7a1d916f67.html"]
+  dir_9e864bf130e34543346145583bfcac26 [shape=box, label="gmsh", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_9e864bf130e34543346145583bfcac26.html"];
+  }
+  dir_a933ab6cde53f9fa4d29dc295cb0ac5f [shape=box label="grid" URL="dir_a933ab6cde53f9fa4d29dc295cb0ac5f.html"];
+  dir_90a2ad6518b731f1dc196d14153b8b6b [shape=box label="base" fillcolor="white" style="filled" color="red" URL="dir_90a2ad6518b731f1dc196d14153b8b6b.html"];
+  dir_a933ab6cde53f9fa4d29dc295cb0ac5f->dir_90a2ad6518b731f1dc196d14153b8b6b [headlabel="89", labeldistance=1.5 headhref="dir_000019_000010.html"];
+  dir_9e864bf130e34543346145583bfcac26->dir_a933ab6cde53f9fa4d29dc295cb0ac5f [headlabel="1", labeldistance=1.5 headhref="dir_000025_000019.html"];
+  dir_9e864bf130e34543346145583bfcac26->dir_90a2ad6518b731f1dc196d14153b8b6b [headlabel="2", labeldistance=1.5 headhref="dir_000025_000010.html"];
+  dir_90a2ad6518b731f1dc196d14153b8b6b->dir_a933ab6cde53f9fa4d29dc295cb0ac5f [headlabel="8", labeldistance=1.5 headhref="dir_000010_000019.html"];
+}

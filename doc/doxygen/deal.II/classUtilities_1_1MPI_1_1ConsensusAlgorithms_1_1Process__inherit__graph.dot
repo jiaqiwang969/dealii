@@ -1,0 +1,20 @@
+digraph "Utilities::MPI::ConsensusAlgorithms::Process&lt; T1, T2 &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Utilities::MPI::Consensus\lAlgorithms::Process\< T1, T2 \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Utilities::MPI::Consensus\lAlgorithms::AnonymousProcess\l\< T1, T2 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classUtilities_1_1MPI_1_1ConsensusAlgorithms_1_1AnonymousProcess.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< unsigned int, unsigned\l int \>" ,fontname="Helvetica"];
+  Node3 [label="Utilities::MPI::Consensus\lAlgorithms::Process\< unsigned\l int, unsigned int \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classUtilities_1_1MPI_1_1ConsensusAlgorithms_1_1Process.html",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="Utilities::MPI::Consensus\lAlgorithmsProcessTargets",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classUtilities_1_1MPI_1_1ConsensusAlgorithmsProcessTargets.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< std::pair\< types\l::global_dof_index,\l types::global_dof_index\l \>, unsigned int \>" ,fontname="Helvetica"];
+  Node5 [label="Utilities::MPI::Consensus\lAlgorithms::Process\< std\l::pair\< types::global_dof\l_index, types::global_dof\l_index \>, unsigned int \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classUtilities_1_1MPI_1_1ConsensusAlgorithms_1_1Process.html",tooltip=" "];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="Utilities::MPI::internal\l::ComputeIndexOwner::Consensus\lAlgorithmsPayload",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classUtilities_1_1MPI_1_1internal_1_1ComputeIndexOwner_1_1ConsensusAlgorithmsPayload.html",tooltip=" "];
+  Node5 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="Utilities::MPI::internal\l::ComputeIndexOwner::Dictionary\lPayLoad",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classUtilities_1_1MPI_1_1internal_1_1ComputeIndexOwner_1_1DictionaryPayLoad.html",tooltip=" "];
+}

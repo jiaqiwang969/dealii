@@ -1,0 +1,11 @@
+digraph "MatrixTableIterators::Accessor&lt; TableType, false, storage_order &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="MatrixTableIterators\l::Accessor\< TableType,\l false, storage_order \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Accessor class offering read and write access to the elements of a table."];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="MatrixTableIterators\l::AccessorBase\< TableType,\l false, storage_order \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMatrixTableIterators_1_1AccessorBase.html",tooltip=" "];
+  Node3 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< TableType, false,\l storage_order \>" ,fontname="Helvetica"];
+  Node3 [label="MatrixTableIterators\l::AccessorBase\< TableType,\l Constness, storage_order \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMatrixTableIterators_1_1AccessorBase.html",tooltip="Accessor base class for Table<2, T> and TransposeTable. This class is compatible with the requirement..."];
+}

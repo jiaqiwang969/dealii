@@ -1,0 +1,50 @@
+digraph "DataOutInterface&lt; dim, spacedim &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="DataOutInterface\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< 2, 2 \>" ,fontname="Helvetica"];
+  Node2 [label="DataOutInterface\< 2, 2 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOutInterface.html",tooltip=" "];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="MatrixOut",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMatrixOut.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< patch_dim, patch\l_spacedim \>" ,fontname="Helvetica"];
+  Node4 [label="DataOutInterface\< patch\l_dim, patch_spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOutInterface.html",tooltip=" "];
+  Node4 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="DataOut_DoFData\< dim,\l dim - 1, dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOut__DoFData.html",tooltip=" "];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="DataOutFaces\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOutFaces.html",tooltip=" "];
+  Node4 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="DataOut_DoFData\< dim,\l dim+1, dim, dim+1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOut__DoFData.html",tooltip=" "];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="DataOutRotation\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOutRotation.html",tooltip=" "];
+  Node4 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="DataOut_DoFData\< dim,\l dim, dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOut__DoFData.html",tooltip=" "];
+  Node9 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="DataOut\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOut.html",tooltip=" "];
+  Node10 -> Node11 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
+  Node11 [label="DataOut\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOut.html",tooltip=" "];
+  Node9 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node12 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim+1, spacedim+1 \>" ,fontname="Helvetica"];
+  Node12 [label="DataOutInterface\< dim\l+1, spacedim+1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOutInterface.html",tooltip=" "];
+  Node12 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="DataOutStack\< dim,\l spacedim, void \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOutStack_3_01dim_00_01spacedim_00_01void_01_4.html",tooltip=" "];
+  Node1 -> Node14 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< 0, dim \>" ,fontname="Helvetica"];
+  Node14 [label="DataOutInterface\< 0,\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOutInterface.html",tooltip=" "];
+  Node14 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="Particles::DataOut\l\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classParticles_1_1DataOut.html",tooltip=" "];
+  Node1 -> Node16 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< patch_dim, patch\l_dim \>" ,fontname="Helvetica"];
+  Node16 [label="DataOutInterface\< patch\l_dim, patch_dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOutInterface.html",tooltip=" "];
+  Node16 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="DataOut_DoFData\< dim,\l patch_dim, spacedim,\l patch_spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOut__DoFData.html",tooltip=" "];
+  Node17 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim - 1, dim,\l dim \>" ,fontname="Helvetica"];
+  Node17 -> Node9 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim, dim, dim \>" ,fontname="Helvetica"];
+  Node17 -> Node7 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim+1, dim,\l dim+1 \>" ,fontname="Helvetica"];
+  Node1 -> Node18 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
+  Node18 [label="DataOutInterface\< dim,\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOutInterface.html",tooltip=" "];
+  Node18 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="BoundingBoxDataOut\l\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBoundingBoxDataOut.html",tooltip=" "];
+  Node18 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="DataOutReader\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDataOutReader.html",tooltip=" "];
+}

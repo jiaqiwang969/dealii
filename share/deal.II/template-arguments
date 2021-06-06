@@ -1,0 +1,277 @@
+// input file that will be processed into build/share/deal.II/template-arguments
+// and used by expand_instantiations to process .inst.in files.
+
+
+// booleans
+BOOL            := { true; false }
+
+// real scalar floating point types
+REAL_SCALARS    := { double; float }
+
+// real scalar floating point types (vectorized)
+REAL_SCALARS_VECTORIZED    := { VectorizedArray<double,1>;VectorizedArray<float,1>; }
+FLOAT_VECTORIZED           := { VectorizedArray<float,1>; }
+
+// complex scalar types
+COMPLEX_SCALARS := {
+    std::complex<double>;std::complex<float>;
+    }
+
+// real scalar floating point types
+REAL_AND_COMPLEX_SCALARS    := {
+        double;
+        float;
+        std::complex<double>;std::complex<float>;
+        }
+
+// differentiable ADOL-C scalar types
+DIFFERENTIABLE_ADOLC_REAL_SCALARS := {
+        ;
+        }
+
+// differentiable Sacado scalar types
+DIFFERENTIABLE_TRILINOS_SACADO_REAL_SCALARS_FAD := {
+        ;
+        }
+DIFFERENTIABLE_TRILINOS_SACADO_REAL_SCALARS_RAD := {
+        ;
+        }
+DIFFERENTIABLE_TRILINOS_SACADO_REAL_SCALARS := {
+        ;
+        ;
+        }
+
+// differentiable scalar types
+DIFFERENTIABLE_REAL_SCALARS := {
+        ;
+        ;
+        ;
+        }
+
+// all possible scalar types
+ALL_SCALAR_TYPES := {
+    double;
+    float;
+    std::complex<double>;std::complex<float>;
+    ;
+    ;
+    ;
+}
+
+// scalar types that have a corresponding MPI datatype and that we can
+// therefore use in calls like MPI_Allreduce
+MPI_SCALARS     := { int;
+                     long int;
+                     unsigned int;
+                     unsigned long int;
+                     unsigned long long int;
+                     float;
+                     double;
+                     long double;
+                     std::complex<double>;std::complex<float>;
+                   }
+
+// template names for serial vectors that we can instantiate as T<S> where
+// S=REAL_SCALARS for example
+DEAL_II_VEC_TEMPLATES := { Vector; BlockVector }
+
+// All vector types, based on real or complex scalars
+VECTOR_TYPES := {   Vector<double>;
+                    Vector<float> ;
+
+                    BlockVector<double>;
+                    BlockVector<float>;
+
+                    LinearAlgebra::Vector<double>;
+                    LinearAlgebra::Vector<float> ;
+
+                    LinearAlgebra::distributed::Vector<double>;
+                    LinearAlgebra::distributed::Vector<float> ;
+
+                    LinearAlgebra::distributed::BlockVector<double>;
+                    LinearAlgebra::distributed::BlockVector<float> ;
+
+                    Vector<std::complex<double> >;Vector<std::complex<float> >;
+                    BlockVector<std::complex<double> >;BlockVector<std::complex<float> >;
+                    LinearAlgebra::Vector<std::complex<double> >;LinearAlgebra::Vector<std::complex<float> >;
+                    LinearAlgebra::distributed::Vector<std::complex<double> >;LinearAlgebra::distributed::Vector<std::complex<float> >;
+                    LinearAlgebra::distributed::BlockVector<std::complex<double> >;LinearAlgebra::distributed::BlockVector<std::complex<float> >;
+
+                    ;
+                    ;
+                    ;
+                    ;
+                    ;
+                    ;
+                    ;
+
+                    ;
+                    ;
+                  }
+
+// same as VECTOR_TYPES but only real-valued vectors (and only with PETSc
+// vectors if the PETScScalar data type is real-valued)
+REAL_VECTOR_TYPES  := {  Vector<double>;
+                         Vector<float> ;
+
+                         BlockVector<double>;
+                         BlockVector<float>;
+
+                         LinearAlgebra::Vector<double>;
+                         LinearAlgebra::Vector<float> ;
+
+                         LinearAlgebra::distributed::Vector<double>;
+                         LinearAlgebra::distributed::Vector<float> ;
+
+                         LinearAlgebra::distributed::BlockVector<double>;
+                         LinearAlgebra::distributed::BlockVector<float> ;
+
+                         ;
+                         ;
+                         ;
+                         ;
+                         ;
+
+                         ;
+                         ;
+                       }
+
+// real vector types excluding block vectors
+REAL_NONBLOCK_VECTORS := { Vector<double>;
+                           Vector<float> ;
+
+                           LinearAlgebra::Vector<double>;
+                           LinearAlgebra::Vector<float> ;
+
+                           LinearAlgebra::distributed::Vector<double>;
+                           LinearAlgebra::distributed::Vector<float> ;
+
+                           ;
+                           ;
+                           ;
+                           ;
+                           ;
+                         }
+
+// wrappers for MPI vectors (PETSc/Trilinos)
+EXTERNAL_PARALLEL_VECTORS := { ;
+                               ;
+                               ;
+                               ;
+                               ;
+                               ;
+                               ;
+                               ;
+                               
+                             }
+
+// TODO: I don't understand this one. LA::distributed::Vector does not have a
+// native matrix type, especially if we don't compile with Trilinos. Currently
+// only used: mg_transfer_prebuilt.inst.in and
+// mg_level_global_transfer.inst.in
+VECTORS_WITH_MATRIX := { Vector<double>;
+                         Vector<float> ;
+
+                         BlockVector<double>;
+                         BlockVector<float>;
+
+                         LinearAlgebra::distributed::Vector<double>;
+
+                         ;
+                         ;
+                         ;
+                         ;
+                         ;
+                         ;
+                         ;
+                       }
+
+// Matrices
+SPARSE_MATRICES := { SparseMatrix<double>;
+                     SparseMatrix<float>;
+
+                     BlockSparseMatrix<double>;
+                     BlockSparseMatrix<float>;
+                     ;
+                     ;
+                   }
+
+// Special lists for AffineConstraints:
+AFFINE_CONSTRAINTS_MATRIX_TEMPL := { FullMatrix;
+                                     SparseMatrix;
+                                     SparseMatrixEZ;
+                                     ChunkSparseMatrix;
+                                   }
+
+// General container types
+GENERAL_CONTAINER_TYPES := { std::vector;
+                             ArrayView
+                           }
+
+// Triangulation and DoFHandler templates
+TRIANGULATION_AND_DOFHANDLER_TEMPLATES := { Triangulation;
+                                            parallel::shared::Triangulation;
+                                            parallel::distributed::Triangulation;
+                                            DoFHandler }
+
+// concrete sequential Triangulation and DoFHandler with hard-coded
+// <deal_II_dimension, deal_II_space_dimension> (for iterators!)
+SEQUENTIAL_TRIANGULATION_AND_DOFHANDLER := { Triangulation<deal_II_dimension, deal_II_space_dimension>;
+                                             DoFHandler<deal_II_dimension, deal_II_space_dimension> }
+
+// concrete sequential Triangulation and DoFHandler types with hard-coded
+// <deal_II_dimension, deal_II_space_dimension>
+SEQUENTIAL_TRIANGULATION_AND_DOFHANDLERS := { Triangulation<deal_II_dimension, deal_II_space_dimension>;
+                                              DoFHandler<deal_II_dimension, deal_II_space_dimension> }
+
+// concrete Triangulation and DoFHandler types (all types you can iterate over cells from)
+// with hard-coded <deal_II_dimension, deal_II_space_dimension>
+TRIANGULATION_AND_DOFHANDLERS := { Triangulation<deal_II_dimension, deal_II_space_dimension>;
+                                   parallel::shared::Triangulation<deal_II_dimension, deal_II_space_dimension>;
+                                   parallel::distributed::Triangulation<deal_II_dimension, deal_II_space_dimension>;
+                                   DoFHandler<deal_II_dimension, deal_II_space_dimension> }
+
+// concrete Triangulation types (all types you can iterate over cells from)
+// with hard-coded <deal_II_dimension, deal_II_space_dimension>
+TRIANGULATIONS := { Triangulation<deal_II_dimension, deal_II_space_dimension>;
+                    parallel::shared::Triangulation<deal_II_dimension, deal_II_space_dimension>;
+                    parallel::distributed::Triangulation<deal_II_dimension, deal_II_space_dimension>;}
+
+// serial and parallel sparsity pattern types
+SPARSITY_PATTERNS := { SparsityPattern;
+                       DynamicSparsityPattern;
+                       ;
+
+                       BlockSparsityPattern;
+                       BlockDynamicSparsityPattern;
+                       ; }
+
+// Special lists for AffineConstraints:
+AFFINE_CONSTRAINTS_SP := { SparsityPattern;
+                           DynamicSparsityPattern;
+                           ;
+                         }
+AFFINE_CONSTRAINTS_SP_BLOCK := { BlockSparsityPattern;
+                                 BlockDynamicSparsityPattern;
+                                 ;
+                               }
+
+// all supported logical dimensions
+DIMENSIONS := { 1; 2; 3 }
+
+// all supported output dimensions
+OUTPUT_DIMENSIONS := { 0; 1; 2; 3 }
+
+// all supported spatial dimensions
+SPACE_DIMENSIONS := { 1; 2; 3 }
+
+// all ranks used for instantiating tensors
+RANKS := { 1; 2; 3; 4 }
+
+// all ranks used for instantiating symmetric tensors
+SYM_RANKS := { 2; 4 }
+
+// Flags that are allowed in DataOutInterface::set_flags
+OUTPUT_FLAG_TYPES := { DXFlags; UcdFlags; GnuplotFlags; PovrayFlags; EpsFlags;
+                       GmvFlags; TecplotFlags; VtkFlags; SvgFlags;
+                       Deal_II_IntermediateFlags }

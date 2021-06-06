@@ -1,0 +1,55 @@
+###
+#
+#  deal.II configuration:
+#        CMAKE_BUILD_TYPE:       DebugRelease
+#        BUILD_SHARED_LIBS:      ON
+#        CMAKE_INSTALL_PREFIX:   /usr/local
+#        CMAKE_SOURCE_DIR:       /workspaces/dealii
+#                                (version 10.0.0-pre, shortrev d5ada26dc7)
+#        CMAKE_BINARY_DIR:       /workspaces/dealii
+#        CMAKE_CXX_COMPILER:     GNU 9.3.0 on platform Linux aarch64
+#                                /usr/bin/c++
+#        C++ language standard:  C++14
+#
+#  Configured Features (DEAL_II_ALLOW_BUNDLED = ON, DEAL_II_ALLOW_AUTODETECTION = ON):
+#      ( DEAL_II_WITH_64BIT_INDICES = OFF )
+#      ( DEAL_II_WITH_ADOLC = OFF )
+#      ( DEAL_II_WITH_ARBORX = OFF )
+#        DEAL_II_WITH_ARPACK set up with external dependencies
+#        DEAL_II_WITH_ASSIMP set up with external dependencies
+#        DEAL_II_WITH_BOOST set up with external dependencies
+#        DEAL_II_WITH_COMPLEX_VALUES = ON
+#      ( DEAL_II_WITH_CUDA = OFF )
+#      ( DEAL_II_WITH_GINKGO = OFF )
+#        DEAL_II_WITH_GMSH set up with external dependencies
+#        DEAL_II_WITH_GSL set up with external dependencies
+#      ( DEAL_II_WITH_HDF5 = OFF )
+#      ( DEAL_II_WITH_KOKKOS = OFF )
+#        DEAL_II_WITH_LAPACK set up with external dependencies
+#        DEAL_II_WITH_METIS set up with external dependencies
+#      ( DEAL_II_WITH_MPI = OFF )
+#        DEAL_II_WITH_MUPARSER set up with external dependencies
+#        DEAL_II_WITH_OPENCASCADE set up with external dependencies
+#      ( DEAL_II_WITH_P4EST = OFF )
+#      ( DEAL_II_WITH_PETSC = OFF )
+#      ( DEAL_II_WITH_SCALAPACK = OFF )
+#      ( DEAL_II_WITH_SLEPC = OFF )
+#        DEAL_II_WITH_SUNDIALS set up with external dependencies
+#      ( DEAL_II_WITH_SYMENGINE = OFF )
+#        DEAL_II_WITH_TASKFLOW set up with bundled packages
+#        DEAL_II_WITH_TBB set up with external dependencies
+#      ( DEAL_II_WITH_TRILINOS = OFF )
+#        DEAL_II_WITH_UMFPACK set up with external dependencies
+#        DEAL_II_WITH_ZLIB set up with external dependencies
+#
+#  Component configuration:
+#        DEAL_II_COMPONENT_DOCUMENTATION
+#        DEAL_II_COMPONENT_EXAMPLES
+#      ( DEAL_II_COMPONENT_PACKAGE = OFF )
+#      ( DEAL_II_COMPONENT_PYTHON_BINDINGS = OFF )
+#
+#  Detailed information (compiler flags, feature configuration) can be found in detailed.log
+#
+#  Run  $ make info  to print a help message with a list of top level targets
+#
+###

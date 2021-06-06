@@ -1,0 +1,22 @@
+digraph "GinkgoWrappers::SolverBase&lt; ValueType, IndexType &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="GinkgoWrappers::SolverBase\l\< ValueType, IndexType \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< double, int32_t \>" ,fontname="Helvetica"];
+  Node2 [label="GinkgoWrappers::SolverBase\l\< double, int32_t \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGinkgoWrappers_1_1SolverBase.html",tooltip=" "];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="GinkgoWrappers::SolverBicgstab\l\< ValueType, IndexType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGinkgoWrappers_1_1SolverBicgstab.html",tooltip=" "];
+  Node2 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="GinkgoWrappers::SolverCG\l\< ValueType, IndexType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGinkgoWrappers_1_1SolverCG.html",tooltip=" "];
+  Node2 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="GinkgoWrappers::SolverCGS\l\< ValueType, IndexType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGinkgoWrappers_1_1SolverCGS.html",tooltip=" "];
+  Node2 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="GinkgoWrappers::SolverFCG\l\< ValueType, IndexType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGinkgoWrappers_1_1SolverFCG.html",tooltip=" "];
+  Node2 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="GinkgoWrappers::SolverGMRES\l\< ValueType, IndexType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGinkgoWrappers_1_1SolverGMRES.html",tooltip=" "];
+  Node2 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="GinkgoWrappers::SolverIR\l\< ValueType, IndexType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGinkgoWrappers_1_1SolverIR.html",tooltip=" "];
+}

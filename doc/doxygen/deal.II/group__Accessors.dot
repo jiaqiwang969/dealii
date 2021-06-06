@@ -1,0 +1,13 @@
+digraph "Accessor classes of the mesh iterators"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node1 [label="Accessor classes of\l the mesh iterators",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 [label="Iterators on mesh-like\l containers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Iterators.html",tooltip="deal.II has several classes which are understood conceptually as meshes. Apart from the obvious Trian..."];
+  Node4 [label="Grids and Triangulations",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="This module groups functions and classes that have to do with the topology and geometry of meshes...."];
+  Node3 [label="Degrees of Freedom",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__dofs.html",tooltip="This module groups classes and namespaces that have to do with handling degrees of freedom...."];
+  Node2->Node1 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, label="internal::DoFAccessorImplementation\l::Inheritance\nDoFAccessor\nDoFCellAccessor", color="orange", dir="none", style="dashed"];
+  Node1->Node4 [shape=plaintext, label="TriaAccessorBase\nCellAccessor", color="orange", dir="none", style="dashed"];
+}

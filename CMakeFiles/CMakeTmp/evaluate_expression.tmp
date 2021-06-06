@@ -1,0 +1,4 @@
+
+            IF(NOT (NOT DEAL_II_WITH_SUNDIALS))
+              SET(_setup TRUE)
+            ENDIF()

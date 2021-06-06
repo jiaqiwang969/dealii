@@ -1,0 +1,15 @@
+digraph "include/deal.II-translator/physics" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_386d89ad50a3909c2af5a93b48d2c3ff {
+    graph [ bgcolor="#ddddee", pencolor="black", label="deal.II-translator" fontname="Helvetica", fontsize="10", URL="dir_386d89ad50a3909c2af5a93b48d2c3ff.html"]
+  subgraph clusterdir_7b3963493f820647c12c00537c8808e9 {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_7b3963493f820647c12c00537c8808e9.html"];
+    dir_7b3963493f820647c12c00537c8808e9 [shape=plaintext label="physics"];
+    dir_1359afa272f4ed5b1a7e02ff633529f3 [shape=box label="elasticity" color="black" fillcolor="white" style="filled" URL="dir_1359afa272f4ed5b1a7e02ff633529f3.html"];
+  }
+  }
+  dir_ee90d91a514b839c31faec7a1d916f67 [shape=box label="deal.II" fillcolor="white" style="filled" color="red" URL="dir_ee90d91a514b839c31faec7a1d916f67.html"];
+  dir_1359afa272f4ed5b1a7e02ff633529f3->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="9", labeldistance=1.5 headhref="dir_000126_000009.html"];
+}

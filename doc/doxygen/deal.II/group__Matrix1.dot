@@ -1,0 +1,15 @@
+digraph "Basic matrices"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node3 [label="Exceptions and assertions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Exceptions.html",tooltip="This module contains classes that are used in the exception mechanism of deal.II."];
+  Node4 [label="PETScWrappers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__PETScWrappers.html",tooltip="The classes in this module are wrappers around functionality provided by the PETSc library...."];
+  Node1 [label="Basic matrices",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="These are the actual matrix classes provided by deal.II. It is possible to store values in them and r..."];
+  Node2 [label="Matrix classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Matrices.html",tooltip="deal.II comes with a number of different matrix classes, tailored to the various purposes for which m..."];
+  Node5 [label="TrilinosWrappers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__TrilinosWrappers.html",tooltip="The classes in this module are wrappers around functionality provided by the Trilinos library...."];
+  Node2->Node1 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node4 [shape=plaintext, label="PETScWrappers::MPI\l::BlockSparseMatrix\nPETScWrappers::FullMatrix\nPETScWrappers::MatrixBase\nPETScWrappers::MatrixFree\nPETScWrappers::SparseMatrix\nPETScWrappers::MPI\l::SparseMatrix", color="orange", dir="none", style="dashed"];
+  Node1->Node5 [shape=plaintext, label="TrilinosWrappers::BlockSparse\lMatrix\nTrilinosWrappers::Sparse\lMatrix", color="orange", dir="none", style="dashed"];
+}

@@ -1,0 +1,5 @@
+/workspaces/dealii/cmake/configure/TestBoostBugWorkdir/CMakeFiles/rebuild_cache.dir
+/workspaces/dealii/cmake/configure/TestBoostBugWorkdir/CMakeFiles/run.dir
+/workspaces/dealii/cmake/configure/TestBoostBugWorkdir/CMakeFiles/test_boost.dir
+/workspaces/dealii/cmake/configure/TestBoostBugWorkdir/CMakeFiles/edit_cache.dir
+/workspaces/dealii/cmake/configure/TestBoostBugWorkdir/CMakeFiles/derived.dir

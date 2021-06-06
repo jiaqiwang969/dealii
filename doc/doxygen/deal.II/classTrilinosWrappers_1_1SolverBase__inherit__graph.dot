@@ -1,0 +1,18 @@
+digraph "TrilinosWrappers::SolverBase"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="TrilinosWrappers::SolverBase",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="TrilinosWrappers::Solver\lBicgstab",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTrilinosWrappers_1_1SolverBicgstab.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="TrilinosWrappers::SolverCG",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTrilinosWrappers_1_1SolverCG.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="TrilinosWrappers::SolverCGS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTrilinosWrappers_1_1SolverCGS.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="TrilinosWrappers::Solver\lGMRES",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTrilinosWrappers_1_1SolverGMRES.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="TrilinosWrappers::Solver\lTFQMR",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTrilinosWrappers_1_1SolverTFQMR.html",tooltip=" "];
+}

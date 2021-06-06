@@ -1,0 +1,40 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/obj_numerics_inst"
+  "cell_data_transfer.inst"
+  "data_out.inst"
+  "data_out_dof_data.inst"
+  "data_out_dof_data_codim.inst"
+  "data_out_faces.inst"
+  "data_out_rotation.inst"
+  "data_out_stack.inst"
+  "data_postprocessor.inst"
+  "derivative_approximation.inst"
+  "dof_output_operator.inst"
+  "error_estimator.inst"
+  "error_estimator_1d.inst"
+  "fe_field_function.inst"
+  "matrix_creator.inst"
+  "matrix_tools.inst"
+  "point_value_history.inst"
+  "smoothness_estimator.inst"
+  "solution_transfer.inst"
+  "time_dependent.inst"
+  "vector_tools_boundary.inst"
+  "vector_tools_constraints.inst"
+  "vector_tools_integrate_difference.inst"
+  "vector_tools_interpolate.inst"
+  "vector_tools_mean_value.inst"
+  "vector_tools_point_gradient.inst"
+  "vector_tools_point_value.inst"
+  "vector_tools_project.inst"
+  "vector_tools_project_codim.inst"
+  "vector_tools_project_hp.inst"
+  "vector_tools_project_qp.inst"
+  "vector_tools_project_qpmf.inst"
+  "vector_tools_rhs.inst"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang )
+  include(CMakeFiles/obj_numerics_inst.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

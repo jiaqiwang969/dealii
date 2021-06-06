@@ -1,0 +1,11 @@
+digraph "Utility functions and classes"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node1 [label="Utility functions and\l classes",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="This module simply collects a number of functions and classes that provide general tools for tasks th..."];
+  Node3 [label="Data storage primitives",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__data.html",tooltip="Here are a few simple classes that help in storage and viewing data. For example, the Table templates..."];
+  Node2 [label="Memory handling",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__memory.html",tooltip="This group has some basic classes and namespaces for memory handling. The Subscriptor and SmartPointe..."];
+  Node1->Node2 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, dir="back", style="solid"];
+}

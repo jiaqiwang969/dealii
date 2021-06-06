@@ -1,0 +1,14 @@
+digraph "DoFAccessor&lt; structdim, dim, spacedim, level_dof_access &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="DoFAccessor\< structdim,\l dim, spacedim, level\l_dof_access \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="internal::DoFAccessorImplementation\l:: Inheritance::BaseClass\< structdim,\l dim, spacedim \>",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dimension_, dimension\l_, space_dimension_, level\l_dof_access \>" ,fontname="Helvetica"];
+  Node3 [label="DoFAccessor\< dimension\l_, dimension_, space_dimension\l_, level_dof_access \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDoFAccessor.html",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="DoFCellAccessor\< dimension\l_, space_dimension_, level\l_dof_access \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDoFCellAccessor.html",tooltip=" "];
+}

@@ -1,0 +1,11 @@
+digraph "Timer::ClockMeasurements&lt; clock_type_ &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="Timer::ClockMeasurements\l\< clock_type_ \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< wall_clock_type \>" ,fontname="Helvetica"];
+  Node2 [label="Timer::ClockMeasurements\l\< wall_clock_type \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structTimer_1_1ClockMeasurements.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< CPUClock \>" ,fontname="Helvetica"];
+  Node3 [label="Timer::ClockMeasurements\l\< CPUClock \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structTimer_1_1ClockMeasurements.html",tooltip=" "];
+}

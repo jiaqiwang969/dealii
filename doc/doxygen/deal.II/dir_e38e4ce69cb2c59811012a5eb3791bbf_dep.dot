@@ -1,0 +1,19 @@
+digraph "include/deal.II/physics" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_ee90d91a514b839c31faec7a1d916f67 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="deal.II" fontname="Helvetica", fontsize="10", URL="dir_ee90d91a514b839c31faec7a1d916f67.html"]
+  subgraph clusterdir_e38e4ce69cb2c59811012a5eb3791bbf {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_e38e4ce69cb2c59811012a5eb3791bbf.html"];
+    dir_e38e4ce69cb2c59811012a5eb3791bbf [shape=plaintext label="physics"];
+    dir_961dc5d325c08665ca5a85ba1aa40833 [shape=box label="elasticity" color="black" fillcolor="white" style="filled" URL="dir_961dc5d325c08665ca5a85ba1aa40833.html"];
+  }
+  }
+  dir_b2430326e20a3ae038db3bac19f0573b [shape=box label="lac" URL="dir_b2430326e20a3ae038db3bac19f0573b.html"];
+  dir_90a2ad6518b731f1dc196d14153b8b6b [shape=box label="base" fillcolor="white" style="filled" color="red" URL="dir_90a2ad6518b731f1dc196d14153b8b6b.html"];
+  dir_b2430326e20a3ae038db3bac19f0573b->dir_90a2ad6518b731f1dc196d14153b8b6b [headlabel="306", labeldistance=1.5 headhref="dir_000013_000010.html"];
+  dir_90a2ad6518b731f1dc196d14153b8b6b->dir_b2430326e20a3ae038db3bac19f0573b [headlabel="8", labeldistance=1.5 headhref="dir_000010_000013.html"];
+  dir_e38e4ce69cb2c59811012a5eb3791bbf->dir_b2430326e20a3ae038db3bac19f0573b [headlabel="2", labeldistance=1.5 headhref="dir_000121_000013.html"];
+  dir_961dc5d325c08665ca5a85ba1aa40833->dir_90a2ad6518b731f1dc196d14153b8b6b [headlabel="8", labeldistance=1.5 headhref="dir_000122_000010.html"];
+}

@@ -1,0 +1,834 @@
+Performing C++ SOURCE FILE Test DEAL_II_HAVE_SSE2 failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_4b26f/fast && /usr/bin/make -f CMakeFiles/cmTC_4b26f.dir/build.make CMakeFiles/cmTC_4b26f.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4b26f.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAVE_SSE2   -o CMakeFiles/cmTC_4b26f.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:14: fatal error: x86intrin.h: No such file or directory
+    2 |     #include <x86intrin.h>
+      |              ^~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [CMakeFiles/cmTC_4b26f.dir/build.make:66: CMakeFiles/cmTC_4b26f.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_4b26f/fast] Error 2
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+    #include <x86intrin.h>
+    int main()
+    {
+    __m128d a, b;
+    const unsigned int vector_bytes = sizeof(__m128d);
+    const int n_vectors = vector_bytes/sizeof(double);
+    __m128d * data =
+      reinterpret_cast<__m128d*>(_mm_malloc (2*vector_bytes, vector_bytes));
+    double * ptr = reinterpret_cast<double*>(&a);
+    ptr[0] = static_cast<volatile double>(1.0);
+    for (int i=1; i<n_vectors; ++i)
+      ptr[i] = 0.0;
+    b = _mm_set1_pd (static_cast<volatile double>(2.25));
+    data[0] = _mm_add_pd (a, b);
+    data[1] = _mm_mul_pd (b, data[0]);
+    ptr = reinterpret_cast<double*>(&data[1]);
+    int return_value = 0;
+    if (ptr[0] != 7.3125)
+      return_value = 1;
+    for (int i=1; i<n_vectors; ++i)
+      if (ptr[i] != 5.0625)
+        return_value = 1;
+    _mm_free (data);
+    return return_value;
+    }
+    
+Performing C++ SOURCE FILE Test DEAL_II_HAVE_AVX failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_6131a/fast && /usr/bin/make -f CMakeFiles/cmTC_6131a.dir/build.make CMakeFiles/cmTC_6131a.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_6131a.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAVE_AVX   -o CMakeFiles/cmTC_6131a.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:3:6: error: #error "__AVX__ flag not set, no support for AVX"
+    3 |     #error "__AVX__ flag not set, no support for AVX"
+      |      ^~~~~
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:5:14: fatal error: x86intrin.h: No such file or directory
+    5 |     #include <x86intrin.h>
+      |              ^~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [CMakeFiles/cmTC_6131a.dir/build.make:66: CMakeFiles/cmTC_6131a.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_6131a/fast] Error 2
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+    #ifndef __AVX__
+    #error "__AVX__ flag not set, no support for AVX"
+    #endif
+    #include <x86intrin.h>
+    class VectorizedArray
+    {
+    public:
+      VectorizedArray &
+      operator += (const VectorizedArray &vec)
+      {
+        data = _mm256_add_pd (data, vec.data);
+        return *this;
+      }
+      __m256d data;
+    };
+    inline
+    VectorizedArray
+    operator + (const VectorizedArray &u, const VectorizedArray &v)
+    {
+      VectorizedArray tmp = u;
+      return tmp+=v;
+    }
+    int main()
+    {
+      __m256d a, b;
+      const unsigned int vector_bytes = sizeof(__m256d);
+      const int n_vectors = vector_bytes/sizeof(double);
+      __m256d * data =
+        reinterpret_cast<__m256d*>(_mm_malloc (2*vector_bytes, vector_bytes));
+      double * ptr = reinterpret_cast<double*>(&a);
+      ptr[0] = static_cast<volatile double>(1.0);
+      for (int i=1; i<n_vectors; ++i)
+        ptr[i] = 0.0;
+      b = _mm256_set1_pd (static_cast<volatile double>(2.25));
+      data[0] = _mm256_add_pd (a, b);
+      data[1] = _mm256_mul_pd (b, data[0]);
+      ptr = reinterpret_cast<double*>(&data[1]);
+      int return_value = 0;
+      if (ptr[0] != 7.3125)
+        return_value = 1;
+      for (int i=1; i<n_vectors; ++i)
+        if (ptr[i] != 5.0625)
+          return_value = 1;
+      VectorizedArray c, d, e;
+      c.data = b;
+      d.data = b;
+      e = c + d;
+      ptr = reinterpret_cast<double*>(&e.data);
+      for (int i=0; i<n_vectors; ++i)
+        if (ptr[i] != 4.5)
+          return_value = 1;
+      _mm_free (data);
+      return return_value;
+    }
+    
+Performing C++ SOURCE FILE Test DEAL_II_HAVE_AVX512 failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_6a2e6/fast && /usr/bin/make -f CMakeFiles/cmTC_6a2e6.dir/build.make CMakeFiles/cmTC_6a2e6.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_6a2e6.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAVE_AVX512   -o CMakeFiles/cmTC_6a2e6.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:3:6: error: #error "__AVX512F__ flag not set, no support for AVX512"
+    3 |     #error "__AVX512F__ flag not set, no support for AVX512"
+      |      ^~~~~
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:5:14: fatal error: x86intrin.h: No such file or directory
+    5 |     #include <x86intrin.h>
+      |              ^~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [CMakeFiles/cmTC_6a2e6.dir/build.make:66: CMakeFiles/cmTC_6a2e6.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_6a2e6/fast] Error 2
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+    #ifndef __AVX512F__
+    #error "__AVX512F__ flag not set, no support for AVX512"
+    #endif
+    #include <x86intrin.h>
+    int main()
+    {
+      __m512d a, b;
+      const unsigned int vector_bytes = sizeof(__m512d);
+      const int n_vectors = vector_bytes/sizeof(double);
+      __m512d * data =
+        reinterpret_cast<__m512d*>(_mm_malloc (2*vector_bytes, vector_bytes));
+      double * ptr = reinterpret_cast<double*>(&a);
+      ptr[0] = static_cast<volatile double>(1.0);
+      for (int i=1; i<n_vectors; ++i)
+        ptr[i] = 0.0;
+      const volatile double x = 2.25;
+      b = _mm512_set1_pd(x);
+      data[0] = _mm512_add_pd (a, b);
+      data[1] = _mm512_mul_pd (b, data[0]);
+      ptr = reinterpret_cast<double*>(&data[1]);
+      int return_value = 0;
+      if (ptr[0] != 7.3125)
+        return_value = 1;
+      for (int i=1; i<n_vectors; ++i)
+        if (ptr[i] != 5.0625)
+          return_value = 1;
+      _mm_free (data);
+      return return_value;
+    }
+    
+Performing C++ SOURCE FILE Test DEAL_II_HAVE_ALTIVEC failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_e85a3/fast && /usr/bin/make -f CMakeFiles/cmTC_e85a3.dir/build.make CMakeFiles/cmTC_e85a3.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_e85a3.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAVE_ALTIVEC   -o CMakeFiles/cmTC_e85a3.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:3:6: error: #error "__ALTIVEC__ flag not set, no support for Altivec"
+    3 |     #error "__ALTIVEC__ flag not set, no support for Altivec"
+      |      ^~~~~
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:5:14: fatal error: altivec.h: No such file or directory
+    5 |     #include <altivec.h>
+      |              ^~~~~~~~~~~
+compilation terminated.
+make[1]: *** [CMakeFiles/cmTC_e85a3.dir/build.make:66: CMakeFiles/cmTC_e85a3.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_e85a3/fast] Error 2
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+    #ifndef __ALTIVEC__
+    #error "__ALTIVEC__ flag not set, no support for Altivec"
+    #endif
+    #include <altivec.h>
+    #undef vector
+    #undef pixel
+    #undef bool
+    int main()
+    {
+    __vector double a, b, data1, data2;
+    const int n_vectors = sizeof(a)/sizeof(double);
+    double * ptr = reinterpret_cast<double*>(&a);
+    ptr[0] = static_cast<volatile double>(1.0);
+    for (int i=1; i<n_vectors; ++i)
+      ptr[i] = 0.0;
+    b = vec_splats (static_cast<volatile double>(2.25));
+    data1 = vec_add (a, b);
+    data2 = vec_mul (b, data1);
+    ptr = reinterpret_cast<double*>(&data2);
+    int return_value = 0;
+    if (ptr[0] != 7.3125)
+      return_value += 1;
+    for (int i=1; i<n_vectors; ++i)
+      if (ptr[i] != 5.0625)
+        return_value += 2;
+    b = vec_splats (static_cast<volatile double>(-1.0));
+    data1 = vec_abs(vec_mul (b, data2));
+    vec_vsx_st(data1, 0, ptr);
+    b = vec_vsx_ld(0, ptr);
+    ptr = reinterpret_cast<double*>(&b);
+    if (ptr[0] != 7.3125)
+      return_value += 4;
+    for (int i=1; i<n_vectors; ++i)
+      if (ptr[i] != 5.0625)
+        return_value += 8;
+    return return_value;
+    }
+    
+Performing C++ SOURCE FILE Test DEAL_II_HAVE_CXX17_FEATURES failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_4c86c/fast && /usr/bin/make -f CMakeFiles/cmTC_4c86c.dir/build.make CMakeFiles/cmTC_4c86c.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4c86c.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAVE_CXX17_FEATURES -pedantic -fPIC -Wall -Wextra -Wmissing-braces -Woverloaded-virtual -Wpointer-arith -Wsign-compare -Wsuggest-override -Wswitch -Wsynth -Wwrite-strings -Wno-placement-new -Wno-deprecated-declarations -Wno-literal-suffix -Wno-psabi -Wno-class-memaccess -fopenmp-simd -O0 -ggdb   -o CMakeFiles/cmTC_4c86c.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:7:8: error: #error "insufficient support for C++17"
+    7 |     #  error "insufficient support for C++17"
+      |        ^~~~~
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:11:16: error: ‘std::apply’ has not been declared
+   11 |     using std::apply;
+      |                ^~~~~
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:12:16: error: ‘std::optional’ has not been declared
+   12 |     using std::optional;
+      |                ^~~~~~~~
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:34:10: warning: ‘if constexpr’ only available with ‘-std=c++17’ or ‘-std=gnu++17’
+   34 |       if constexpr(flag)
+      |          ^~~~~~~~~
+make[1]: *** [CMakeFiles/cmTC_4c86c.dir/build.make:66: CMakeFiles/cmTC_4c86c.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_4c86c/fast] Error 2
+
+
+Source file was:
+
+    #include <iostream>
+    #include <optional>
+    #include <tuple>
+
+    #if __cplusplus < 201703L && !defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+    #  error "insufficient support for C++17"
+    #endif
+
+    //check for some C++17 features that we use in our headers:
+    using std::apply;
+    using std::optional;
+
+    [[nodiscard]] int test_nodiscard()
+    {
+      return 1;
+    }
+
+    int main()
+    {
+      const unsigned int n=1;
+      switch (n)
+      {
+        case 1:
+          std::cout << n;
+          [[fallthrough]];
+        case 2:
+          std::cout << n;
+      }
+
+      [[maybe_unused]] int i = test_nodiscard();
+
+      constexpr bool flag = false;
+      if constexpr(flag)
+        return 1;
+      return 0;
+    }
+    
+Performing C++ SOURCE FILE Test DEAL_II_HAVE_CXX20_FEATURES failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_116b7/fast && /usr/bin/make -f CMakeFiles/cmTC_116b7.dir/build.make CMakeFiles/cmTC_116b7.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_116b7.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAVE_CXX20_FEATURES -pedantic -fPIC -Wall -Wextra -Wmissing-braces -Woverloaded-virtual -Wpointer-arith -Wsign-compare -Wsuggest-override -Wswitch -Wsynth -Wwrite-strings -Wno-placement-new -Wno-deprecated-declarations -Wno-literal-suffix -Wno-psabi -Wno-class-memaccess -fopenmp-simd -O0 -ggdb   -o CMakeFiles/cmTC_116b7.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:3:14: fatal error: ranges: No such file or directory
+    3 |     #include <ranges>
+      |              ^~~~~~~~
+compilation terminated.
+make[1]: *** [CMakeFiles/cmTC_116b7.dir/build.make:66: CMakeFiles/cmTC_116b7.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_116b7/fast] Error 2
+
+
+Source file was:
+
+    #include <cmath>
+    #include <ranges>
+
+    #if __cplusplus < 201709L && !defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+    #  error "insufficient support for C++20"
+    #endif
+
+    #if !(defined __cpp_lib_ranges) || (__cpp_lib_ranges < 201911)
+    #  error "insufficient support for C++20"
+    #endif
+
+    int main()
+    {
+    }
+    
+Performing C++ SOURCE FILE Test DEAL_II_HAVE_FLAG_Wno_unused_command_line_argument failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_e06e6/fast && /usr/bin/make -f CMakeFiles/cmTC_e06e6.dir/build.make CMakeFiles/cmTC_e06e6.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_e06e6.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAVE_FLAG_Wno_unused_command_line_argument -pedantic -fPIC -Wall -Wextra -Wmissing-braces -Woverloaded-virtual -Wpointer-arith -Wsign-compare -Wsuggest-override -Wswitch -Wsynth -Wwrite-strings -Wno-placement-new -Wno-deprecated-declarations -Wno-literal-suffix -Wno-psabi -Wno-class-memaccess -fopenmp-simd -O0 -ggdb   -Wunused-command-line-argument -o CMakeFiles/cmTC_e06e6.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+c++: error: unrecognized command line option '-Wunused-command-line-argument'; did you mean '-Wunused-dummy-argument'?
+make[1]: *** [CMakeFiles/cmTC_e06e6.dir/build.make:66: CMakeFiles/cmTC_e06e6.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_e06e6/fast] Error 2
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test DEAL_II_HAVE_COMPLEX_OPERATOR_OVERLOADS failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_ee3aa/fast && /usr/bin/make -f CMakeFiles/cmTC_ee3aa.dir/build.make CMakeFiles/cmTC_ee3aa.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_ee3aa.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAVE_COMPLEX_OPERATOR_OVERLOADS -pedantic -fPIC -Wall -Wextra -Wmissing-braces -Woverloaded-virtual -Wpointer-arith -Wsign-compare -Wsuggest-override -Wswitch -Wsynth -Wwrite-strings -Wno-placement-new -Wno-deprecated-declarations -Wno-literal-suffix -Wno-psabi -Wno-class-memaccess -fopenmp-simd -O0 -ggdb -Werror   -o CMakeFiles/cmTC_ee3aa.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:6:14: error: no match for ‘operator*’ (operand types are ‘double’ and ‘std::complex<float>’)
+    6 |     double() * std::complex<float>();
+      |     ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:391:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const std::complex<_Tp>&)’
+  391 |     operator*(const complex<_Tp>& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:391:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:6:36: note:   mismatched types ‘const std::complex<_Tp>’ and ‘double’
+    6 |     double() * std::complex<float>();
+      |                                    ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:400:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const _Tp&)’
+  400 |     operator*(const complex<_Tp>& __x, const _Tp& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:400:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:6:36: note:   mismatched types ‘const std::complex<_Tp>’ and ‘double’
+    6 |     double() * std::complex<float>();
+      |                                    ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:409:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const _Tp&, const std::complex<_Tp>&)’
+  409 |     operator*(const _Tp& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:409:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:6:36: note:   deduced conflicting types for parameter ‘_Tp’ (‘double’ and ‘float’)
+    6 |     double() * std::complex<float>();
+      |                                    ^
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:7:27: error: no match for ‘operator*’ (operand types are ‘std::complex<float>’ and ‘double’)
+    7 |     std::complex<float>() * double();
+      |          ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:391:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const std::complex<_Tp>&)’
+  391 |     operator*(const complex<_Tp>& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:391:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:7:36: note:   mismatched types ‘const std::complex<_Tp>’ and ‘double’
+    7 |     std::complex<float>() * double();
+      |                                    ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:400:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const _Tp&)’
+  400 |     operator*(const complex<_Tp>& __x, const _Tp& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:400:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:7:36: note:   deduced conflicting types for parameter ‘const _Tp’ (‘float’ and ‘double’)
+    7 |     std::complex<float>() * double();
+      |                                    ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:409:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const _Tp&, const std::complex<_Tp>&)’
+  409 |     operator*(const _Tp& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:409:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:7:36: note:   mismatched types ‘const std::complex<_Tp>’ and ‘double’
+    7 |     std::complex<float>() * double();
+      |                                    ^
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:8:13: error: no match for ‘operator*’ (operand types are ‘float’ and ‘std::complex<double>’)
+    8 |     float() * std::complex<double>();
+      |     ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:391:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const std::complex<_Tp>&)’
+  391 |     operator*(const complex<_Tp>& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:391:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:8:36: note:   mismatched types ‘const std::complex<_Tp>’ and ‘float’
+    8 |     float() * std::complex<double>();
+      |                                    ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:400:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const _Tp&)’
+  400 |     operator*(const complex<_Tp>& __x, const _Tp& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:400:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:8:36: note:   mismatched types ‘const std::complex<_Tp>’ and ‘float’
+    8 |     float() * std::complex<double>();
+      |                                    ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:409:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const _Tp&, const std::complex<_Tp>&)’
+  409 |     operator*(const _Tp& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:409:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:8:36: note:   deduced conflicting types for parameter ‘_Tp’ (‘float’ and ‘double’)
+    8 |     float() * std::complex<double>();
+      |                                    ^
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:9:28: error: no match for ‘operator*’ (operand types are ‘std::complex<double>’ and ‘float’)
+    9 |     std::complex<double>() * float();
+      |          ~~~~~~~~~~~~~~~~~~^~~~~~~~~
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:391:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const std::complex<_Tp>&)’
+  391 |     operator*(const complex<_Tp>& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:391:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:9:36: note:   mismatched types ‘const std::complex<_Tp>’ and ‘float’
+    9 |     std::complex<double>() * float();
+      |                                    ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:400:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const _Tp&)’
+  400 |     operator*(const complex<_Tp>& __x, const _Tp& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:400:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:9:36: note:   deduced conflicting types for parameter ‘const _Tp’ (‘double’ and ‘float’)
+    9 |     std::complex<double>() * float();
+      |                                    ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:409:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const _Tp&, const std::complex<_Tp>&)’
+  409 |     operator*(const _Tp& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:409:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:9:36: note:   mismatched types ‘const std::complex<_Tp>’ and ‘float’
+    9 |     std::complex<double>() * float();
+      |                                    ^
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:10:28: error: no match for ‘operator*’ (operand types are ‘std::complex<double>’ and ‘std::complex<float>’)
+   10 |     std::complex<double>() * std::complex<float>();
+      |          ~~~~~~~~~~~~~~~~~ ^      ~~~~~~~~~~~~~~~~
+      |          |                        |
+      |          complex<double>          complex<float>
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:391:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const std::complex<_Tp>&)’
+  391 |     operator*(const complex<_Tp>& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:391:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:10:50: note:   deduced conflicting types for parameter ‘_Tp’ (‘double’ and ‘float’)
+   10 |     std::complex<double>() * std::complex<float>();
+      |                                                  ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:400:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const _Tp&)’
+  400 |     operator*(const complex<_Tp>& __x, const _Tp& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:400:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:10:50: note:   deduced conflicting types for parameter ‘const _Tp’ (‘double’ and ‘std::complex<float>’)
+   10 |     std::complex<double>() * std::complex<float>();
+      |                                                  ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:409:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const _Tp&, const std::complex<_Tp>&)’
+  409 |     operator*(const _Tp& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:409:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:10:50: note:   deduced conflicting types for parameter ‘_Tp’ (‘std::complex<double>’ and ‘float’)
+   10 |     std::complex<double>() * std::complex<float>();
+      |                                                  ^
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:11:27: error: no match for ‘operator*’ (operand types are ‘std::complex<float>’ and ‘std::complex<double>’)
+   11 |     std::complex<float>() * std::complex<double>();
+      |          ~~~~~~~~~~~~~~~~ ^      ~~~~~~~~~~~~~~~~~
+      |          |                       |
+      |          complex<float>          complex<double>
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:391:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const std::complex<_Tp>&)’
+  391 |     operator*(const complex<_Tp>& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:391:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:11:50: note:   deduced conflicting types for parameter ‘_Tp’ (‘float’ and ‘double’)
+   11 |     std::complex<float>() * std::complex<double>();
+      |                                                  ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:400:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const std::complex<_Tp>&, const _Tp&)’
+  400 |     operator*(const complex<_Tp>& __x, const _Tp& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:400:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:11:50: note:   deduced conflicting types for parameter ‘const _Tp’ (‘float’ and ‘std::complex<double>’)
+   11 |     std::complex<float>() * std::complex<double>();
+      |                                                  ^
+In file included from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/complex:409:5: note: candidate: ‘template<class _Tp> std::complex<_Tp> std::operator*(const _Tp&, const std::complex<_Tp>&)’
+  409 |     operator*(const _Tp& __x, const complex<_Tp>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/9/complex:409:5: note:   template argument deduction/substitution failed:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:11:50: note:   deduced conflicting types for parameter ‘_Tp’ (‘std::complex<float>’ and ‘double’)
+   11 |     std::complex<float>() * std::complex<double>();
+      |                                                  ^
+make[1]: *** [CMakeFiles/cmTC_ee3aa.dir/build.make:66: CMakeFiles/cmTC_ee3aa.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_ee3aa/fast] Error 2
+
+
+Source file was:
+
+  #include <complex>
+
+  int main()
+  {
+    double() * std::complex<float>();
+    std::complex<float>() * double();
+    float() * std::complex<double>();
+    std::complex<double>() * float();
+    std::complex<double>() * std::complex<float>();
+    std::complex<float>() * std::complex<double>();
+
+    return 0;
+  }
+  
+Performing C++ SOURCE FILE Test DEAL_II_HAVE_CXX17_BESSEL_FUNCTIONS failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_daef5/fast && /usr/bin/make -f CMakeFiles/cmTC_daef5.dir/build.make CMakeFiles/cmTC_daef5.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_daef5.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAVE_CXX17_BESSEL_FUNCTIONS -pedantic -fPIC -Wall -Wextra -Wmissing-braces -Woverloaded-virtual -Wpointer-arith -Wsign-compare -Wsuggest-override -Wswitch -Wsynth -Wwrite-strings -Wno-placement-new -Wno-deprecated-declarations -Wno-literal-suffix -Wno-psabi -Wno-class-memaccess -fopenmp-simd -O0 -ggdb -Werror   -o CMakeFiles/cmTC_daef5.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:3:14: error: ‘std::cyl_bessel_j’ has not been declared
+    3 |   using std::cyl_bessel_j;
+      |              ^~~~~~~~~~~~
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:4:14: error: ‘std::cyl_bessel_jf’ has not been declared
+    4 |   using std::cyl_bessel_jf;
+      |              ^~~~~~~~~~~~~
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:5:14: error: ‘std::cyl_bessel_jl’ has not been declared
+    5 |   using std::cyl_bessel_jl;
+      |              ^~~~~~~~~~~~~
+make[1]: *** [CMakeFiles/cmTC_daef5.dir/build.make:66: CMakeFiles/cmTC_daef5.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_daef5/fast] Error 2
+
+
+Source file was:
+
+  #include <cmath>
+  using std::cyl_bessel_j;
+  using std::cyl_bessel_jf;
+  using std::cyl_bessel_jl;
+  int main()
+  {
+  }
+  
+Performing C++ SOURCE FILE Test DEAL_II_HAVE_CXX17_LEGENDRE_FUNCTIONS failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_feea0/fast && /usr/bin/make -f CMakeFiles/cmTC_feea0.dir/build.make CMakeFiles/cmTC_feea0.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_feea0.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAVE_CXX17_LEGENDRE_FUNCTIONS -pedantic -fPIC -Wall -Wextra -Wmissing-braces -Woverloaded-virtual -Wpointer-arith -Wsign-compare -Wsuggest-override -Wswitch -Wsynth -Wwrite-strings -Wno-placement-new -Wno-deprecated-declarations -Wno-literal-suffix -Wno-psabi -Wno-class-memaccess -fopenmp-simd -O0 -ggdb -Werror   -o CMakeFiles/cmTC_feea0.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:3:14: error: ‘std::legendre’ has not been declared
+    3 |   using std::legendre;
+      |              ^~~~~~~~
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:4:14: error: ‘std::legendref’ has not been declared
+    4 |   using std::legendref;
+      |              ^~~~~~~~~
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:5:14: error: ‘std::legendrel’ has not been declared
+    5 |   using std::legendrel;
+      |              ^~~~~~~~~
+make[1]: *** [CMakeFiles/cmTC_feea0.dir/build.make:66: CMakeFiles/cmTC_feea0.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_feea0/fast] Error 2
+
+
+Source file was:
+
+  #include <cmath>
+  using std::legendre;
+  using std::legendref;
+  using std::legendrel;
+  int main()
+  {
+  }
+  
+Performing C++ SOURCE FILE Test DEAL_II_COMPILER_USE_VECTOR_ARITHMETICS failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_e7b41/fast && /usr/bin/make -f CMakeFiles/cmTC_e7b41.dir/build.make CMakeFiles/cmTC_e7b41.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_e7b41.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_COMPILER_USE_VECTOR_ARITHMETICS   -o CMakeFiles/cmTC_e7b41.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:12: fatal error: x86intrin.h: No such file or directory
+    2 |   #include <x86intrin.h>
+      |            ^~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [CMakeFiles/cmTC_e7b41.dir/build.make:66: CMakeFiles/cmTC_e7b41.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_e7b41/fast] Error 2
+
+
+Source file was:
+
+  #include <x86intrin.h>
+  int main()
+  {
+    __m128d a, b;
+    a = _mm_set_sd (1.0);
+    b = _mm_set1_pd (2.1);
+    __m128d c = a + b;
+    __m128d d = b - c;
+    __m128d e = c * a + d;
+    __m128d f = e/a;
+#ifdef __AVX512F__
+    __m512d g, h;
+    g = _mm512_set1_pd (1.0);
+    h = _mm512_set1_pd (2.1);
+    __m512d i = g + h;
+    g = i - g;
+    h *= i;
+    i = h/i;
+    (void)i;
+#endif
+    (void)f;
+  }
+  
+Performing C++ SOURCE FILE Test DEAL_II_COMPILER_HAS_FUSE_LD_LLD failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_0dc82/fast && /usr/bin/make -f CMakeFiles/cmTC_0dc82.dir/build.make CMakeFiles/cmTC_0dc82.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_0dc82.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_COMPILER_HAS_FUSE_LD_LLD -Werror -shared -fPIC -fuse-ld=lld   -o CMakeFiles/cmTC_0dc82.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_0dc82
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0dc82.dir/link.txt --verbose=1
+/usr/bin/c++   -DDEAL_II_COMPILER_HAS_FUSE_LD_LLD -Werror -shared -fPIC -fuse-ld=lld    -rdynamic CMakeFiles/cmTC_0dc82.dir/src.cxx.o  -o cmTC_0dc82 
+collect2: fatal error: cannot find ‘ld’
+compilation terminated.
+make[1]: *** [CMakeFiles/cmTC_0dc82.dir/build.make:87: cmTC_0dc82] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_0dc82/fast] Error 2
+
+
+Source file was:
+
+    #include <iostream>
+    void foo() { std::cout << "Hello, world!" << std::endl; }
+    
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_947bc/fast && /usr/bin/make -f CMakeFiles/cmTC_947bc.dir/build.make CMakeFiles/cmTC_947bc.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_947bc.dir/src.c.o
+/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD -O3 -DNDEBUG   -o CMakeFiles/cmTC_947bc.dir/src.c.o   -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_947bc
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_947bc.dir/link.txt --verbose=1
+/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD -O3 -DNDEBUG    -rdynamic CMakeFiles/cmTC_947bc.dir/src.c.o  -o cmTC_947bc 
+/usr/bin/ld: CMakeFiles/cmTC_947bc.dir/src.c.o: in function `main':
+src.c:(.text.startup+0x30): undefined reference to `pthread_create'
+/usr/bin/ld: src.c:(.text.startup+0x38): undefined reference to `pthread_detach'
+/usr/bin/ld: src.c:(.text.startup+0x44): undefined reference to `pthread_join'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_947bc.dir/build.make:87: cmTC_947bc] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_947bc/fast] Error 2
+
+
+Source file was:
+#include <pthread.h>
+
+void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_f4d89/fast && /usr/bin/make -f CMakeFiles/cmTC_f4d89.dir/build.make CMakeFiles/cmTC_f4d89.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_f4d89.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create -O3 -DNDEBUG   -o CMakeFiles/cmTC_f4d89.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.16/Modules/CheckFunctionExists.c
+Linking C executable cmTC_f4d89
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f4d89.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create -O3 -DNDEBUG    -rdynamic CMakeFiles/cmTC_f4d89.dir/CheckFunctionExists.c.o  -o cmTC_f4d89  -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_f4d89.dir/build.make:87: cmTC_f4d89] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_f4d89/fast] Error 2
+
+
+
+Determining if the Fortran sgemm exists failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_41de2/fast && /usr/bin/make -f CMakeFiles/cmTC_41de2.dir/build.make CMakeFiles/cmTC_41de2.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building Fortran object CMakeFiles/cmTC_41de2.dir/testFortranCompiler.f.o
+/usr/bin/gfortran   -O3 -DNDEBUG -O3   -c /workspaces/dealii/CMakeFiles/CMakeTmp/testFortranCompiler.f -o CMakeFiles/cmTC_41de2.dir/testFortranCompiler.f.o
+Linking Fortran executable cmTC_41de2
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_41de2.dir/link.txt --verbose=1
+/usr/bin/gfortran      -O3 -DNDEBUG -O3 CMakeFiles/cmTC_41de2.dir/testFortranCompiler.f.o  -o cmTC_41de2 
+/usr/bin/ld: CMakeFiles/cmTC_41de2.dir/testFortranCompiler.f.o: in function `main':
+testFortranCompiler.f:(.text.startup+0x1c): undefined reference to `sgemm_'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_41de2.dir/build.make:87: cmTC_41de2] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_41de2/fast] Error 2
+
+
+
+Determining if the Fortran cheev exists failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_00466/fast && /usr/bin/make -f CMakeFiles/cmTC_00466.dir/build.make CMakeFiles/cmTC_00466.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building Fortran object CMakeFiles/cmTC_00466.dir/testFortranCompiler.f.o
+/usr/bin/gfortran   -O3 -DNDEBUG -O3   -c /workspaces/dealii/CMakeFiles/CMakeTmp/testFortranCompiler.f -o CMakeFiles/cmTC_00466.dir/testFortranCompiler.f.o
+Linking Fortran executable cmTC_00466
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_00466.dir/link.txt --verbose=1
+/usr/bin/gfortran      -O3 -DNDEBUG -O3 CMakeFiles/cmTC_00466.dir/testFortranCompiler.f.o  -o cmTC_00466  /usr/lib/aarch64-linux-gnu/libblas.so 
+/usr/bin/ld: CMakeFiles/cmTC_00466.dir/testFortranCompiler.f.o: in function `main':
+testFortranCompiler.f:(.text.startup+0x1c): undefined reference to `cheev_'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_00466.dir/build.make:88: cmTC_00466] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_00466/fast] Error 2
+
+
+
+Performing C++ SOURCE FILE Test MKL_SYMBOL_CHECK failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_be0dd/fast && /usr/bin/make -f CMakeFiles/cmTC_be0dd.dir/build.make CMakeFiles/cmTC_be0dd.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_be0dd.dir/src.cxx.o
+/usr/bin/c++    -DMKL_SYMBOL_CHECK -O3 -DNDEBUG   -o CMakeFiles/cmTC_be0dd.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:14: fatal error: mkl.h: No such file or directory
+    2 |     #include <mkl.h>
+      |              ^~~~~~~
+compilation terminated.
+make[1]: *** [CMakeFiles/cmTC_be0dd.dir/build.make:66: CMakeFiles/cmTC_be0dd.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_be0dd/fast] Error 2
+
+
+Source file was:
+
+    #include <mkl.h>
+    #include <vector>
+    int main(){
+      const int m = 5;
+      const int n = 2;
+      std::vector<double> A(m*n,0.);
+      std::vector<double> B(m*n,0.);
+      mkl_domatcopy('C', 'T', m, n, 1., A.data(), n, B.data(), m);
+      return 0;
+    }
+Performing C++ SOURCE FILE Test DEAL_II_HAS_AUTO_PTR failed with the following output:
+Change Dir: /workspaces/dealii/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_15a30/fast && /usr/bin/make -f CMakeFiles/cmTC_15a30.dir/build.make CMakeFiles/cmTC_15a30.dir/build
+make[1]: Entering directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_15a30.dir/src.cxx.o
+/usr/bin/c++    -DDEAL_II_HAS_AUTO_PTR -Werror -O3 -DNDEBUG   -o CMakeFiles/cmTC_15a30.dir/src.cxx.o -c /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:9:12: error: ‘template<class> class std::auto_ptr’ is deprecated [-Werror=deprecated-declarations]
+    9 |       std::auto_ptr<int> x(i);
+      |            ^~~~~~~~
+In file included from /usr/include/c++/9/memory:80,
+                 from /workspaces/dealii/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/9/bits/unique_ptr.h:53:28: note: declared here
+   53 |   template<typename> class auto_ptr;
+      |                            ^~~~~~~~
+cc1plus: all warnings being treated as errors
+make[1]: *** [CMakeFiles/cmTC_15a30.dir/build.make:66: CMakeFiles/cmTC_15a30.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/workspaces/dealii/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_15a30/fast] Error 2
+
+
+Source file was:
+
+    #include <memory>
+    #include <boost/config.hpp>
+
+    int main()
+    {
+    #ifndef BOOST_NO_AUTO_PTR
+      int *i = new int;
+      std::auto_ptr<int> x(i);
+    #endif
+      return 0;
+    }
+    

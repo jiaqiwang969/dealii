@@ -1,0 +1,14 @@
+digraph "DataOutBase::Patch&lt; dim, spacedim &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="DataOutBase::Patch\l\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< patch_dim, patch\l_spacedim \>" ,fontname="Helvetica"];
+  Node2 [label="DataOutBase::Patch\l\< patch_dim, patch_spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1Patch.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< 0, dim \>" ,fontname="Helvetica"];
+  Node3 [label="DataOutBase::Patch\l\< 0, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1Patch.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
+  Node4 [label="DataOutBase::Patch\l\< dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1Patch.html",tooltip=" "];
+}

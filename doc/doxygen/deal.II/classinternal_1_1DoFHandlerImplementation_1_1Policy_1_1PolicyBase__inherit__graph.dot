@@ -1,0 +1,16 @@
+digraph "internal::DoFHandlerImplementation::Policy::PolicyBase&lt; dim, spacedim &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="internal::DoFHandlerImplementation\l::Policy::PolicyBase\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="internal::DoFHandlerImplementation\l::Policy::ParallelDistributed\l\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classinternal_1_1DoFHandlerImplementation_1_1Policy_1_1ParallelDistributed.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="internal::DoFHandlerImplementation\l::Policy::ParallelShared\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classinternal_1_1DoFHandlerImplementation_1_1Policy_1_1ParallelShared.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="internal::DoFHandlerImplementation\l::Policy::Sequential\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classinternal_1_1DoFHandlerImplementation_1_1Policy_1_1Sequential.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
+  Node5 [label="internal::DoFHandlerImplementation\l::Policy::PolicyBase\< dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classinternal_1_1DoFHandlerImplementation_1_1Policy_1_1PolicyBase.html",tooltip=" "];
+}

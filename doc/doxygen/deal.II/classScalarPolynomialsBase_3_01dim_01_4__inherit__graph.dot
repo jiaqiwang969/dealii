@@ -1,0 +1,41 @@
+digraph "ScalarPolynomialsBase&lt; dim &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="ScalarPolynomialsBase\l\< dim \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="AnisotropicPolynomials\l\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classAnisotropicPolynomials.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="BarycentricPolynomials\l\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBarycentricPolynomials.html",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< 1 \>" ,fontname="Helvetica"];
+  Node4 [label="BarycentricPolynomials\< 1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBarycentricPolynomials.html",tooltip=" "];
+  Node3 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< 2 \>" ,fontname="Helvetica"];
+  Node5 [label="BarycentricPolynomials\< 2 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classBarycentricPolynomials.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="PolynomialsAdini\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPolynomialsAdini.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="PolynomialSpace\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPolynomialSpace.html",tooltip=" "];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="PolynomialsP\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPolynomialsP.html",tooltip=" "];
+  Node7 -> Node9 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim - 1 \>" ,fontname="Helvetica"];
+  Node9 [label="PolynomialSpace\< dim\l - 1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPolynomialSpace.html",tooltip=" "];
+  Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="PolynomialsRannacherTurek\l\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPolynomialsRannacherTurek.html",tooltip=" "];
+  Node1 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="ScalarLagrangePolynomial\lPyramid\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classScalarLagrangePolynomialPyramid.html",tooltip=" "];
+  Node1 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="ScalarLagrangePolynomial\lWedge\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classScalarLagrangePolynomialWedge.html",tooltip=" "];
+  Node1 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="TensorProductPolynomials\l\< dim, PolynomialType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTensorProductPolynomials.html",tooltip=" "];
+  Node13 -> Node14 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim - 1 \>" ,fontname="Helvetica"];
+  Node14 [label="TensorProductPolynomials\l\< dim - 1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTensorProductPolynomials.html",tooltip=" "];
+  Node13 -> Node15 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
+  Node15 [label="TensorProductPolynomials\l\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTensorProductPolynomials.html",tooltip=" "];
+  Node1 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

@@ -1,0 +1,13 @@
+digraph "Input/Output"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node1 [label="Input/Output",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="This module collects the classes used for reading and writing meshes and data. There are two sub-modu..."];
+  Node3 [label="Graphical output",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__output.html",tooltip="deal.II generates three types of output: it can write triangulations/meshes in formats understood by ..."];
+  Node2 [label="Input",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__input.html",tooltip="deal.II can read meshes in a number of different formats. However, all of them are constrained to so-..."];
+  Node4 [label="Textual output",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__textoutput.html",tooltip="In addition to classes that provide graphical output formats (see the Graphical output module),..."];
+  Node1->Node2 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node4 [shape=plaintext, dir="back", style="solid"];
+}

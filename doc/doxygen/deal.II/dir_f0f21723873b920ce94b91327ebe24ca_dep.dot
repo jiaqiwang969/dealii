@@ -1,0 +1,9 @@
+digraph "include/deal.II/base/std_cxx20" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_90a2ad6518b731f1dc196d14153b8b6b {
+    graph [ bgcolor="#ddddee", pencolor="black", label="base" fontname="Helvetica", fontsize="10", URL="dir_90a2ad6518b731f1dc196d14153b8b6b.html"]
+  dir_f0f21723873b920ce94b91327ebe24ca [shape=box, label="std_cxx20", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_f0f21723873b920ce94b91327ebe24ca.html"];
+  }
+}

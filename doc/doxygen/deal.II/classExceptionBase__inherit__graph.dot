@@ -1,0 +1,20 @@
+digraph "ExceptionBase"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="ExceptionBase",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="std::exception",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip="STL class."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="internal::NoPermutation\l\< T, N \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classinternal_1_1NoPermutation.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="LACExceptions::ExcPETScError",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classLACExceptions_1_1ExcPETScError.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="SolverControl::NoConvergence",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSolverControl_1_1NoConvergence.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="StandardExceptions\l::ExcMPI",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classStandardExceptions_1_1ExcMPI.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="Triangulation\< dim,\l spacedim \>::DistortedCellList",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structTriangulation_1_1DistortedCellList.html",tooltip=" "];
+}

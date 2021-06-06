@@ -1,0 +1,129 @@
+###
+#
+#  deal.II configuration:
+#        CMAKE_BUILD_TYPE:       DebugRelease
+#        BUILD_SHARED_LIBS:      ON
+#        CMAKE_INSTALL_PREFIX:   /usr/local
+#        CMAKE_SOURCE_DIR:       /workspaces/dealii
+#                                (version 10.0.0-pre, shortrev d5ada26dc7)
+#        CMAKE_BINARY_DIR:       /workspaces/dealii
+#        CMAKE_CXX_COMPILER:     GNU 9.3.0 on platform Linux aarch64
+#                                /usr/bin/c++
+#        C++ language standard:  C++14
+#        CMAKE_C_COMPILER:       /usr/bin/cc
+#        CMAKE_Fortran_COMPILER: /usr/bin/gfortran
+#        CMAKE_GENERATOR:        Unix Makefiles
+#
+#  Base configuration (prior to feature configuration):
+#        DEAL_II_CXX_FLAGS:            -pedantic -fPIC -Wall -Wextra -Wmissing-braces -Woverloaded-virtual -Wpointer-arith -Wsign-compare -Wsuggest-override -Wswitch -Wsynth -Wwrite-strings -Wno-placement-new -Wno-deprecated-declarations -Wno-literal-suffix -Wno-psabi -Wno-class-memaccess -fopenmp-simd
+#        DEAL_II_CXX_FLAGS_RELEASE:    -O2 -funroll-loops -funroll-all-loops -fstrict-aliasing -Wno-unused-local-typedefs
+#        DEAL_II_CXX_FLAGS_DEBUG:      -O0 -ggdb -Wa,--compress-debug-sections
+#        DEAL_II_LINKER_FLAGS:         -Wl,--as-needed -rdynamic -fuse-ld=gold -lpthread
+#        DEAL_II_LINKER_FLAGS_RELEASE: 
+#        DEAL_II_LINKER_FLAGS_DEBUG:   -ggdb
+#        DEAL_II_DEFINITIONS:          
+#        DEAL_II_DEFINITIONS_RELEASE:  
+#        DEAL_II_DEFINITIONS_DEBUG:    DEBUG
+#        DEAL_II_USER_DEFINITIONS:     
+#        DEAL_II_USER_DEFINITIONS_REL: 
+#        DEAL_II_USER_DEFINITIONS_DEB: DEBUG
+#        DEAL_II_INCLUDE_DIRS          
+#        DEAL_II_USER_INCLUDE_DIRS:    
+#        DEAL_II_BUNDLED_INCLUDE_DIRS: 
+#        DEAL_II_LIBRARIES:            
+#        DEAL_II_LIBRARIES_RELEASE:    
+#        DEAL_II_LIBRARIES_DEBUG:      
+#        DEAL_II_VECTORIZATION_WIDTH_IN_BITS: 0
+#        DEAL_II_HAVE_CXX14
+#
+#  Configured Features (DEAL_II_ALLOW_BUNDLED = ON, DEAL_II_ALLOW_AUTODETECTION = ON):
+#      ( DEAL_II_WITH_64BIT_INDICES = OFF )
+#      ( DEAL_II_WITH_ADOLC = OFF )
+#      ( DEAL_II_WITH_ARBORX = OFF )
+#        DEAL_II_WITH_ARPACK set up with external dependencies
+#            ARPACK_LINKER_FLAGS = 
+#            ARPACK_LIBRARIES = /usr/lib/aarch64-linux-gnu/libarpack.so;/usr/lib/aarch64-linux-gnu/liblapack.so;/usr/lib/aarch64-linux-gnu/libblas.so
+#        DEAL_II_WITH_ASSIMP set up with external dependencies
+#            ASSIMP_INCLUDE_DIRS = /usr/include
+#            ASSIMP_USER_INCLUDE_DIRS = /usr/include
+#            ASSIMP_LIBRARIES = /usr/lib/aarch64-linux-gnu/libassimp.so
+#        DEAL_II_WITH_BOOST set up with external dependencies
+#            BOOST_VERSION = 1.71.0
+#            BOOST_CXX_FLAGS = -Wno-unused-local-typedefs
+#            BOOST_DEFINITIONS = BOOST_NO_AUTO_PTR
+#            BOOST_USER_DEFINITIONS = BOOST_NO_AUTO_PTR
+#            BOOST_INCLUDE_DIRS = /usr/include
+#            BOOST_USER_INCLUDE_DIRS = /usr/include
+#            BOOST_LIBRARIES = /usr/lib/aarch64-linux-gnu/libboost_iostreams.so;/usr/lib/aarch64-linux-gnu/libboost_serialization.so;/usr/lib/aarch64-linux-gnu/libboost_system.so;/usr/lib/aarch64-linux-gnu/libboost_thread.so;/usr/lib/aarch64-linux-gnu/libboost_regex.so;/usr/lib/aarch64-linux-gnu/libboost_chrono.so;/usr/lib/aarch64-linux-gnu/libboost_date_time.so;/usr/lib/aarch64-linux-gnu/libboost_atomic.so
+#        DEAL_II_WITH_COMPLEX_VALUES = ON
+#      ( DEAL_II_WITH_CUDA = OFF )
+#      ( DEAL_II_WITH_GINKGO = OFF )
+#        DEAL_II_WITH_GMSH set up with external dependencies
+#            GMSH_EXE = /usr/bin/gmsh
+#            GMSH_INCLUDE_DIRS = /usr/include
+#            GMSH_USER_INCLUDE_DIRS = /usr/include
+#            GMSH_LIBRARIES = /usr/lib/aarch64-linux-gnu/libgmsh.so
+#        DEAL_II_WITH_GSL set up with external dependencies
+#            GSL_VERSION = 2.5
+#            GSL_INCLUDE_DIRS = /usr/include
+#            GSL_USER_INCLUDE_DIRS = /usr/include
+#            GSL_LIBRARIES = /usr/lib/aarch64-linux-gnu/libgsl.so;/usr/lib/aarch64-linux-gnu/libgslcblas.so
+#      ( DEAL_II_WITH_HDF5 = OFF )
+#      ( DEAL_II_WITH_KOKKOS = OFF )
+#        DEAL_II_WITH_LAPACK set up with external dependencies
+#            LAPACK_WITH_64BIT_BLAS_INDICES = OFF
+#            LAPACK_LINKER_FLAGS = 
+#            LAPACK_INCLUDE_DIRS = 
+#            LAPACK_USER_INCLUDE_DIRS = 
+#            LAPACK_LIBRARIES = /usr/lib/aarch64-linux-gnu/liblapack.so;/usr/lib/aarch64-linux-gnu/libblas.so
+#        DEAL_II_WITH_METIS set up with external dependencies
+#            METIS_VERSION = 5.1.0
+#            METIS_INCLUDE_DIRS = /usr/include
+#            METIS_USER_INCLUDE_DIRS = /usr/include
+#            METIS_LIBRARIES = /usr/lib/aarch64-linux-gnu/libmetis.so
+#      ( DEAL_II_WITH_MPI = OFF )
+#        DEAL_II_WITH_MUPARSER set up with external dependencies
+#            MUPARSER_VERSION = 2.2.6
+#            MUPARSER_INCLUDE_DIRS = /usr/include
+#            MUPARSER_LIBRARIES = /usr/lib/aarch64-linux-gnu/libmuparser.so
+#        DEAL_II_WITH_OPENCASCADE set up with external dependencies
+#            OPENCASCADE_VERSION = 7.3.0
+#            OPENCASCADE_INCLUDE_DIRS = /usr/include/opencascade
+#            OPENCASCADE_USER_INCLUDE_DIRS = /usr/include/opencascade
+#            OPENCASCADE_LIBRARIES = /usr/lib/aarch64-linux-gnu/libTKBO.so;/usr/lib/aarch64-linux-gnu/libTKBool.so;/usr/lib/aarch64-linux-gnu/libTKBRep.so;/usr/lib/aarch64-linux-gnu/libTKernel.so;/usr/lib/aarch64-linux-gnu/libTKFeat.so;/usr/lib/aarch64-linux-gnu/libTKFillet.so;/usr/lib/aarch64-linux-gnu/libTKG2d.so;/usr/lib/aarch64-linux-gnu/libTKG3d.so;/usr/lib/aarch64-linux-gnu/libTKGeomAlgo.so;/usr/lib/aarch64-linux-gnu/libTKGeomBase.so;/usr/lib/aarch64-linux-gnu/libTKHLR.so;/usr/lib/aarch64-linux-gnu/libTKIGES.so;/usr/lib/aarch64-linux-gnu/libTKMath.so;/usr/lib/aarch64-linux-gnu/libTKMesh.so;/usr/lib/aarch64-linux-gnu/libTKOffset.so;/usr/lib/aarch64-linux-gnu/libTKPrim.so;/usr/lib/aarch64-linux-gnu/libTKShHealing.so;/usr/lib/aarch64-linux-gnu/libTKSTEP.so;/usr/lib/aarch64-linux-gnu/libTKSTEPAttr.so;/usr/lib/aarch64-linux-gnu/libTKSTEPBase.so;/usr/lib/aarch64-linux-gnu/libTKSTEP209.so;/usr/lib/aarch64-linux-gnu/libTKSTL.so;/usr/lib/aarch64-linux-gnu/libTKTopAlgo.so;/usr/lib/aarch64-linux-gnu/libTKXSBase.so
+#      ( DEAL_II_WITH_P4EST = OFF )
+#      ( DEAL_II_WITH_PETSC = OFF )
+#      ( DEAL_II_WITH_SCALAPACK = OFF )
+#      ( DEAL_II_WITH_SLEPC = OFF )
+#        DEAL_II_WITH_SUNDIALS set up with external dependencies
+#            SUNDIALS_VERSION = 3.1.2
+#            SUNDIALS_INCLUDE_DIRS = /usr/include
+#            SUNDIALS_USER_INCLUDE_DIRS = /usr/include
+#            SUNDIALS_LIBRARIES = /usr/lib/aarch64-linux-gnu/libsundials_idas.so;/usr/lib/aarch64-linux-gnu/libsundials_arkode.so;/usr/lib/aarch64-linux-gnu/libsundials_kinsol.so;/usr/lib/aarch64-linux-gnu/libsundials_nvecserial.so
+#      ( DEAL_II_WITH_SYMENGINE = OFF )
+#        DEAL_II_WITH_TASKFLOW set up with bundled packages
+#            TASKFLOW_BUNDLED_INCLUDE_DIRS = /workspaces/dealii/bundled/taskflow-2.5.0/include
+#        DEAL_II_WITH_TBB set up with external dependencies
+#            TBB_VERSION = 2020.1
+#            TBB_INCLUDE_DIRS = /usr/include
+#            TBB_USER_INCLUDE_DIRS = /usr/include
+#            TBB_LIBRARIES = /usr/lib/aarch64-linux-gnu/libtbb.so
+#      ( DEAL_II_WITH_TRILINOS = OFF )
+#        DEAL_II_WITH_UMFPACK set up with external dependencies
+#            UMFPACK_VERSION = 5.7.8
+#            UMFPACK_LINKER_FLAGS = 
+#            UMFPACK_INCLUDE_DIRS = /usr/include/suitesparse
+#            UMFPACK_USER_INCLUDE_DIRS = /usr/include/suitesparse
+#            UMFPACK_LIBRARIES = /usr/lib/aarch64-linux-gnu/libumfpack.so;/usr/lib/aarch64-linux-gnu/libcholmod.so;/usr/lib/aarch64-linux-gnu/libccolamd.so;/usr/lib/aarch64-linux-gnu/libcolamd.so;/usr/lib/aarch64-linux-gnu/libcamd.so;/usr/lib/aarch64-linux-gnu/libsuitesparseconfig.so;/usr/lib/aarch64-linux-gnu/libamd.so;/usr/lib/aarch64-linux-gnu/libmetis.so;/usr/lib/aarch64-linux-gnu/liblapack.so;/usr/lib/aarch64-linux-gnu/libblas.so;rt
+#        DEAL_II_WITH_ZLIB set up with external dependencies
+#            ZLIB_VERSION = 1.2.11
+#            ZLIB_INCLUDE_DIRS = /usr/include
+#            ZLIB_LIBRARIES = /usr/lib/aarch64-linux-gnu/libz.so
+#
+#  Component configuration:
+#        DEAL_II_COMPONENT_DOCUMENTATION
+#        DEAL_II_COMPONENT_EXAMPLES
+#      ( DEAL_II_COMPONENT_PACKAGE = OFF )
+#      ( DEAL_II_COMPONENT_PYTHON_BINDINGS = OFF )
+#
+###

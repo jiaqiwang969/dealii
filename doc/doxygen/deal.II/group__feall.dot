@@ -1,0 +1,21 @@
+digraph "Finite elements"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node2 [label="Base classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__febase.html",tooltip="The members of this sub-module describe the implementation mechanics of finite element classes,..."];
+  Node1 [label="Finite elements",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="All classes related to shape functions and to access to shape functions. This concerns the actual val..."];
+  Node8 [label="Handling vector valued\l problems",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__vector__valued.html",tooltip="Vector-valued problems are systems of partial differential equations. These are problems where the so..."];
+  Node3 [label="Finite element access\l/FEValues classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__feaccess.html",tooltip="The classes in this module are used when one wants to assemble matrices or vectors...."];
+  Node5 [label="Mappings between reference\l and real cell",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__mapping.html",tooltip="The classes in this module are used to map from unit coordinates to the coordinates of a cell in real..."];
+  Node6 [label="How Mapping, FiniteElement,\l and FEValues work together",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__FE__vs__Mapping__vs__FEValues.html",tooltip="FEValues work together."];
+  Node4 [label="Finite element space\l descriptions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__fe.html",tooltip="The classes here describe finite element spaces, such as the simplest Q1 (bi-/trilinear) spaces,..."];
+  Node7 [label="The interplay of UpdateFlags,\l Mapping, and FiniteElement\l in FEValues",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__UpdateFlags.html",tooltip="FiniteElement in FEValues."];
+  Node1->Node2 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node4 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node5 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node6 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node7 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node8 [shape=plaintext, dir="back", style="solid"];
+}

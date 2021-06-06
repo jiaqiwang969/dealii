@@ -1,0 +1,11 @@
+digraph "include/deal.II/arborx" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_ee90d91a514b839c31faec7a1d916f67 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="deal.II" fontname="Helvetica", fontsize="10", URL="dir_ee90d91a514b839c31faec7a1d916f67.html"]
+  dir_1d67e712b6b990530091fef3a06fd2cd [shape=box, label="arborx", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_1d67e712b6b990530091fef3a06fd2cd.html"];
+  }
+  dir_90a2ad6518b731f1dc196d14153b8b6b [shape=box label="base" fillcolor="white" style="filled" color="red" URL="dir_90a2ad6518b731f1dc196d14153b8b6b.html"];
+  dir_1d67e712b6b990530091fef3a06fd2cd->dir_90a2ad6518b731f1dc196d14153b8b6b [headlabel="3", labeldistance=1.5 headhref="dir_000067_000010.html"];
+}

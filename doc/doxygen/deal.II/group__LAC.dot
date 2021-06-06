@@ -1,0 +1,27 @@
+digraph "Linear algebra classes"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node11 [label="Vector classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Vectors.html",tooltip="Here, we list all the classes that satisfy the VectorType concept and may be used in linear solvers (..."];
+  Node6 [label="SLEPcWrappers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__SLEPcWrappers.html",tooltip="The classes in this module are wrappers around functionality provided by the SLEPc library...."];
+  Node10 [label="Vector memory management",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__VMemory.html",tooltip="This module groups a few classes that are used to avoid allocating and deallocating vectors over and ..."];
+  Node2 [label="Linear Operators",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAOperators.html",tooltip="deal.II includes support for describing linear transformations in a very general way...."];
+  Node1 [label="Linear algebra classes",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="This module contains classes that involve linear algebra, i.e., those associated with matrices,..."];
+  Node4 [label="PETScWrappers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__PETScWrappers.html",tooltip="The classes in this module are wrappers around functionality provided by the PETSc library...."];
+  Node5 [label="Preconditioners and\l Relaxation Operators",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Preconditioners.html",tooltip=" "];
+  Node8 [label="Sparsity patterns",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Sparsity.html",tooltip="Almost all finite element formulations lead to matrices that are \"sparse\", i.e., for which the number..."];
+  Node3 [label="Matrix classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Matrices.html",tooltip="deal.II comes with a number of different matrix classes, tailored to the various purposes for which m..."];
+  Node7 [label="Linear solver classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Solvers.html",tooltip="This module groups iterative and direct solvers, eigenvalue solvers, and some control classes...."];
+  Node9 [label="TrilinosWrappers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__TrilinosWrappers.html",tooltip="The classes in this module are wrappers around functionality provided by the Trilinos library...."];
+  Node1->Node2 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node4 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node5 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node6 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node7 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node8 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node9 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node10 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node11 [shape=plaintext, dir="back", style="solid"];
+}

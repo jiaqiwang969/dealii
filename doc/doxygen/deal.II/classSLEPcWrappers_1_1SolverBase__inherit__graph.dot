@@ -1,0 +1,22 @@
+digraph "SLEPcWrappers::SolverBase"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="SLEPcWrappers::SolverBase",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="SLEPcWrappers::SolverArnoldi",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSLEPcWrappers_1_1SolverArnoldi.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="SLEPcWrappers::SolverGeneralized\lDavidson",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSLEPcWrappers_1_1SolverGeneralizedDavidson.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="SLEPcWrappers::SolverJacobi\lDavidson",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSLEPcWrappers_1_1SolverJacobiDavidson.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="SLEPcWrappers::SolverKrylov\lSchur",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSLEPcWrappers_1_1SolverKrylovSchur.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="SLEPcWrappers::SolverLanczos",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSLEPcWrappers_1_1SolverLanczos.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="SLEPcWrappers::SolverLAPACK",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSLEPcWrappers_1_1SolverLAPACK.html",tooltip=" "];
+  Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="SLEPcWrappers::SolverPower",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSLEPcWrappers_1_1SolverPower.html",tooltip=" "];
+}

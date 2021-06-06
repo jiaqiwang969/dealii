@@ -1,0 +1,29 @@
+digraph "FEFaceEvaluation&lt; dim, fe_degree, n_q_points_1d, n_components_, Number, VectorizedArrayType &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="FEFaceEvaluation\< dim,\l fe_degree, n_q_points\l_1d, n_components_, Number,\l VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="FEEvaluationAccess\l\< dim, 1, double, true,\l VectorizedArray\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationAccess.html",tooltip=" "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="FEEvaluationBase\< dim,\l n_components_, double,\l is_face, VectorizedArray\l\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBase.html",tooltip=" "];
+  Node4 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="FEEvaluationBaseData\l\< dim, double, is_face,\l VectorizedArray\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBaseData.html",tooltip=" "];
+  Node5 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, double, is_face,\l VectorizedArray\< double \> \>" ,fontname="Helvetica"];
+  Node5 [label="FEEvaluationBaseData\l\< dim, Number, is_face,\l VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBaseData.html",tooltip=" "];
+  Node6 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, n_components\l_, double, is_face,\l VectorizedArray\< double \> \>" ,fontname="Helvetica"];
+  Node6 [label="FEEvaluationBase\< dim,\l n_components_, Number,\l is_face, VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBase.html",tooltip=" "];
+  Node7 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="FEEvaluationBaseData\l\< dim, Number, false,\l VectorizedArray\< Number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBaseData.html",tooltip=" "];
+  Node5 -> Node7 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, Number, false,\l VectorizedArray\< Number \> \>" ,fontname="Helvetica"];
+  Node8 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, 1, double, true,\l VectorizedArray\< double \> \>" ,fontname="Helvetica"];
+  Node8 [label="FEEvaluationAccess\l\< dim, n_components\l_, Number, is_face, Vectorized\lArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationAccess.html",tooltip=" "];
+  Node9 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="FEEvaluationBase\< dim,\l n_components_, Number,\l is_face, VectorizedArray\l\< Number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBase.html",tooltip=" "];
+  Node10 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="FEEvaluationBaseData\l\< dim, Number, is_face,\l VectorizedArray\< Number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBaseData.html",tooltip=" "];
+  Node5 -> Node10 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, Number, is_face,\l VectorizedArray\< Number \> \>" ,fontname="Helvetica"];
+  Node6 -> Node9 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, n_components\l_, Number, is_face,\l VectorizedArray\< Number \> \>" ,fontname="Helvetica"];
+}

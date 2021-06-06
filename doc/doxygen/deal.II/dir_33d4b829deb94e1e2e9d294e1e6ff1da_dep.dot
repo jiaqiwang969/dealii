@@ -1,0 +1,11 @@
+digraph "include/deal.II-origin/optimization/rol" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_2d78c9d3cad7bf6675fde63f6f86da4b {
+    graph [ bgcolor="#ddddee", pencolor="black", label="optimization" fontname="Helvetica", fontsize="10", URL="dir_2d78c9d3cad7bf6675fde63f6f86da4b.html"]
+  dir_33d4b829deb94e1e2e9d294e1e6ff1da [shape=box, label="rol", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_33d4b829deb94e1e2e9d294e1e6ff1da.html"];
+  }
+  dir_ee90d91a514b839c31faec7a1d916f67 [shape=box label="deal.II" fillcolor="white" style="filled" color="red" URL="dir_ee90d91a514b839c31faec7a1d916f67.html"];
+  dir_33d4b829deb94e1e2e9d294e1e6ff1da->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="3", labeldistance=1.5 headhref="dir_000119_000009.html"];
+}

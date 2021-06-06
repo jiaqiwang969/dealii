@@ -1,0 +1,52 @@
+digraph "DataOutBase::OutputFlagsBase&lt; FlagsType &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="DataOutBase::OutputFlags\lBase\< FlagsType \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< TecplotFlags \>" ,fontname="Helvetica"];
+  Node2 [label="DataOutBase::OutputFlags\lBase\< TecplotFlags \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1OutputFlagsBase.html",tooltip=" "];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="DataOutBase::TecplotFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1TecplotFlags.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< UcdFlags \>" ,fontname="Helvetica"];
+  Node4 [label="DataOutBase::OutputFlags\lBase\< UcdFlags \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1OutputFlagsBase.html",tooltip=" "];
+  Node4 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="DataOutBase::UcdFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1UcdFlags.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< PovrayFlags \>" ,fontname="Helvetica"];
+  Node6 [label="DataOutBase::OutputFlags\lBase\< PovrayFlags \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1OutputFlagsBase.html",tooltip=" "];
+  Node6 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="DataOutBase::PovrayFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1PovrayFlags.html",tooltip=" "];
+  Node1 -> Node8 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< DXFlags \>" ,fontname="Helvetica"];
+  Node8 [label="DataOutBase::OutputFlags\lBase\< DXFlags \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1OutputFlagsBase.html",tooltip=" "];
+  Node8 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="DataOutBase::DXFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1DXFlags.html",tooltip=" "];
+  Node1 -> Node10 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< GnuplotFlags \>" ,fontname="Helvetica"];
+  Node10 [label="DataOutBase::OutputFlags\lBase\< GnuplotFlags \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1OutputFlagsBase.html",tooltip=" "];
+  Node10 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="DataOutBase::GnuplotFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1GnuplotFlags.html",tooltip=" "];
+  Node1 -> Node12 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< EpsFlags \>" ,fontname="Helvetica"];
+  Node12 [label="DataOutBase::OutputFlags\lBase\< EpsFlags \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1OutputFlagsBase.html",tooltip=" "];
+  Node12 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="DataOutBase::EpsFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1EpsFlags.html",tooltip=" "];
+  Node1 -> Node14 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< SvgFlags \>" ,fontname="Helvetica"];
+  Node14 [label="DataOutBase::OutputFlags\lBase\< SvgFlags \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1OutputFlagsBase.html",tooltip=" "];
+  Node14 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="DataOutBase::SvgFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1SvgFlags.html",tooltip=" "];
+  Node1 -> Node16 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< VtkFlags \>" ,fontname="Helvetica"];
+  Node16 [label="DataOutBase::OutputFlags\lBase\< VtkFlags \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1OutputFlagsBase.html",tooltip=" "];
+  Node16 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="DataOutBase::VtkFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1VtkFlags.html",tooltip=" "];
+  Node17 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="GridOutFlags::Vtk",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridOutFlags_1_1Vtk.html",tooltip=" "];
+  Node17 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="GridOutFlags::Vtu",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridOutFlags_1_1Vtu.html",tooltip=" "];
+  Node1 -> Node20 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< Deal_II_IntermediateFlags \>" ,fontname="Helvetica"];
+  Node20 [label="DataOutBase::OutputFlags\lBase\< Deal_II_IntermediateFlags \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1OutputFlagsBase.html",tooltip=" "];
+  Node20 -> Node21 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node21 [label="DataOutBase::Deal_II\l_IntermediateFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1Deal__II__IntermediateFlags.html",tooltip=" "];
+  Node1 -> Node22 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< GmvFlags \>" ,fontname="Helvetica"];
+  Node22 [label="DataOutBase::OutputFlags\lBase\< GmvFlags \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1OutputFlagsBase.html",tooltip=" "];
+  Node22 -> Node23 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node23 [label="DataOutBase::GmvFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structDataOutBase_1_1GmvFlags.html",tooltip=" "];
+}

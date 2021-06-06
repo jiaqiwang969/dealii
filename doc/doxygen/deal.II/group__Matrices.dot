@@ -1,0 +1,15 @@
+digraph "Matrix classes"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node2 [label="Linear algebra classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAC.html",tooltip="This module contains classes that involve linear algebra, i.e., those associated with matrices,..."];
+  Node5 [label="Preconditioners and\l Relaxation Operators",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Preconditioners.html",tooltip=" "];
+  Node3 [label="Basic matrices",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Matrix1.html",tooltip="These are the actual matrix classes provided by deal.II. It is possible to store values in them and r..."];
+  Node4 [label="Derived matrices",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Matrix2.html",tooltip="These matrices are built on top of the basic matrices. They perform special operations using the inte..."];
+  Node1 [label="Matrix classes",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="deal.II comes with a number of different matrix classes, tailored to the various purposes for which m..."];
+  Node2->Node1 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node4 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node5 [shape=plaintext, dir="back", style="solid"];
+}

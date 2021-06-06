@@ -1,0 +1,27 @@
+digraph "FE_DGRaviartThomas&lt; dim, spacedim &gt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="FE_DGRaviartThomas\l\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="FE_DGVector\< Polynomials\lRaviartThomas\< dim \>,\l dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGVector.html",tooltip=" "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="FE_PolyTensor\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__PolyTensor.html",tooltip=" "];
+  Node4 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="FiniteElement\< dim,\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFiniteElement.html",tooltip=" "];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="Subscriptor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSubscriptor.html",tooltip=" "];
+  Node6 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="FiniteElementData\<\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFiniteElementData.html",tooltip=" "];
+  Node7 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
+  Node7 [label="FiniteElement\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFiniteElement.html",tooltip=" "];
+  Node5 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< PolynomialsRaviartThomas\l\< dim \>, dim, dim \>" ,fontname="Helvetica"];
+  Node8 [label="FE_DGVector\< PolynomialType,\l dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGVector.html",tooltip=" "];
+  Node9 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="FE_PolyTensor\< dim,\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__PolyTensor.html",tooltip=" "];
+  Node7 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 -> Node9 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
+}

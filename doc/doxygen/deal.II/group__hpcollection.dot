@@ -1,0 +1,10 @@
+digraph "hp-Collections"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node1 [label="hp-Collections",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="In the implementation of the hp-finite element method, each cell might have a different finite elemen..."];
+  Node2 [label="hp-finite element support",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__hp.html",tooltip="Classes and functions that have to do with hp-finite elements. The step-27 tutorial program gives an ..."];
+  Node2->Node1 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node2 [shape=plaintext, label="hp::Collection\nhp::FECollection\nhp::FEValues\nhp::FEFaceValues\nhp::FESubfaceValues\nhp::MappingCollection\nhp::QCollection", color="orange", dir="none", style="dashed"];
+}

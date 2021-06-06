@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['parallel_5fin_5felem_20968',['parallel_in_elem',['../classCUDAWrappers_1_1MatrixFree.html#a7dc68b17fbdb95dab113990d40fce8d1a0df90cf8ccd36abf13ddd22a2482b930',1,'CUDAWrappers::MatrixFree']]],
+  ['parallel_5fover_5felem_20969',['parallel_over_elem',['../classCUDAWrappers_1_1MatrixFree.html#a7dc68b17fbdb95dab113990d40fce8d1aa13f004aef60fb6f809a0060df31ed7f',1,'CUDAWrappers::MatrixFree']]],
+  ['particle_5fhandler_5fsend_5frecv_5fparticles_5fcache_5fsetup_20970',['particle_handler_send_recv_particles_cache_setup',['../namespaceUtilities_1_1MPI_1_1internal_1_1Tags.html#a1c190e50dabbd9b60e230b843c6caa44a28949a7570e488f0ad98933216c0a7f0',1,'Utilities::MPI::internal::Tags']]],
+  ['particle_5fhandler_5fsend_5frecv_5fparticles_5fsend_20971',['particle_handler_send_recv_particles_send',['../namespaceUtilities_1_1MPI_1_1internal_1_1Tags.html#a1c190e50dabbd9b60e230b843c6caa44a37cccc890dd651b1c449640dd414e80f',1,'Utilities::MPI::internal::Tags']]],
+  ['particle_5fhandler_5fsend_5frecv_5fparticles_5fsetup_20972',['particle_handler_send_recv_particles_setup',['../namespaceUtilities_1_1MPI_1_1internal_1_1Tags.html#a1c190e50dabbd9b60e230b843c6caa44af2d377eb0c3bee400466582a9a44a8d4',1,'Utilities::MPI::internal::Tags']]],
+  ['partition_5fauto_20973',['partition_auto',['../classparallel_1_1shared_1_1Triangulation.html#a686a3453dfec098eb64d1510aa1716e1a03a6d62472644081fab346092e9fc1b1',1,'parallel::shared::Triangulation']]],
+  ['partition_5fcolor_20974',['partition_color',['../structMatrixFree_1_1AdditionalData.html#a5b3198735af965d2fc5019543263f927afa5c4de5a9359873e1724b54d64d8d05',1,'MatrixFree::AdditionalData::partition_color()'],['../structinternal_1_1MatrixFreeFunctions_1_1TaskInfo.html#a262bea64ec193764b22635454f978f9fa7e952546a02d501c0f3b3a2097fe4abd',1,'internal::MatrixFreeFunctions::TaskInfo::partition_color()']]],
+  ['partition_5fcustom_5fsignal_20975',['partition_custom_signal',['../classparallel_1_1shared_1_1Triangulation.html#a686a3453dfec098eb64d1510aa1716e1acd0f2e4c9a793c0b69f96f15783fd965',1,'parallel::shared::Triangulation']]],
+  ['partition_5fmetis_20976',['partition_metis',['../classparallel_1_1shared_1_1Triangulation.html#a686a3453dfec098eb64d1510aa1716e1a00e2fd517ca40988e97352df2ba62115',1,'parallel::shared::Triangulation']]],
+  ['partition_5fpartition_20977',['partition_partition',['../structMatrixFree_1_1AdditionalData.html#a5b3198735af965d2fc5019543263f927aff13dad83e4a7d08f5d7ece8e4c95918',1,'MatrixFree::AdditionalData::partition_partition()'],['../structinternal_1_1MatrixFreeFunctions_1_1TaskInfo.html#a262bea64ec193764b22635454f978f9fa15099f57ea8102e4b8223601e02fc90b',1,'internal::MatrixFreeFunctions::TaskInfo::partition_partition()']]],
+  ['partition_5fzoltan_20978',['partition_zoltan',['../classparallel_1_1shared_1_1Triangulation.html#a686a3453dfec098eb64d1510aa1716e1a1f18848bd2c6109712b09af16f189e87',1,'parallel::shared::Triangulation']]],
+  ['partition_5fzorder_20979',['partition_zorder',['../classparallel_1_1shared_1_1Triangulation.html#a686a3453dfec098eb64d1510aa1716e1a02abbf8f3c6deb62078c6d0fa25d119b',1,'parallel::shared::Triangulation']]],
+  ['partitioner_5fexport_5fend_20980',['partitioner_export_end',['../namespaceUtilities_1_1MPI_1_1internal_1_1Tags.html#a1c190e50dabbd9b60e230b843c6caa44a3d92e07042a59c17d4320dcccdb7dac1',1,'Utilities::MPI::internal::Tags']]],
+  ['partitioner_5fexport_5fstart_20981',['partitioner_export_start',['../namespaceUtilities_1_1MPI_1_1internal_1_1Tags.html#a1c190e50dabbd9b60e230b843c6caa44ab450508752d4d2c7469eb71a26a18da4',1,'Utilities::MPI::internal::Tags']]],
+  ['partitioner_5fimport_5fend_20982',['partitioner_import_end',['../namespaceUtilities_1_1MPI_1_1internal_1_1Tags.html#a1c190e50dabbd9b60e230b843c6caa44a036189ae6f2cf9e53a5eb1e28bc66707',1,'Utilities::MPI::internal::Tags']]],
+  ['partitioner_5fimport_5fstart_20983',['partitioner_import_start',['../namespaceUtilities_1_1MPI_1_1internal_1_1Tags.html#a1c190e50dabbd9b60e230b843c6caa44ad18f2f58f368b1c4e09953fe6e199dbb',1,'Utilities::MPI::internal::Tags']]],
+  ['past_5fthe_5fend_20984',['past_the_end',['../namespaceIteratorState.html#a4e92f4a9d339ff987cc3eb5b0a1ac507a855e208fbf88b49f694205eb9f5fe296',1,'IteratorState']]],
+  ['patch_5flevel_5f1_20985',['patch_level_1',['../classTriangulation.html#a0633dd17e535a59162b79f338c6ff5aea821cd647539c7343ff71eebba39e51cf',1,'Triangulation']]],
+  ['picard_20986',['picard',['../classSUNDIALS_1_1KINSOL_1_1AdditionalData.html#a6160e0cd736c36f42c25a05eeb7ec079a484a4a1c1fa3c01183192bde363045c8',1,'SUNDIALS::KINSOL::AdditionalData']]],
+  ['postprocess_20987',['postprocess',['../classTimeStepBase.html#a524c9e9ef065d5f38c0dcbdb4839b14fa5da787bd5ac7fe084323a615886fcd35',1,'TimeStepBase']]],
+  ['povray_20988',['povray',['../group__Exceptions.html#gaa3cbced9f1d4ae661f13018f4c980aa1a06f6243405c9d5ac497ec4651b3bc577',1,'DataOutBase']]],
+  ['primal_5fproblem_20989',['primal_problem',['../classTimeStepBase.html#a524c9e9ef065d5f38c0dcbdb4839b14fad4268023947e903bd6dc23c9f9957e86',1,'TimeStepBase']]],
+  ['prm_20990',['PRM',['../group__Exceptions.html#ga8364dda711b93753c6809eefe2a8e827af5e65a92c16ecd011b38d67ef01dc4c6',1,'ParameterHandler']]],
+  ['process_5fgrid_5fconstructor_20991',['process_grid_constructor',['../namespaceUtilities_1_1MPI_1_1internal_1_1Tags.html#a1c190e50dabbd9b60e230b843c6caa44a92c1214e27e21d464b81cb7e5de4ea3d',1,'Utilities::MPI::internal::Tags']]],
+  ['pure_5frefinement_20992',['pure_refinement',['../classSolutionTransfer.html#ad03cb34b1ace26f6cc38e9ecaa5eab46a3022a037dc82826ed693a1313e12f645',1,'SolutionTransfer']]]
+];

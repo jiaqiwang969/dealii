@@ -1,0 +1,9 @@
+digraph "Memory handling"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node2 [label="Utility functions and\l classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__utilities.html",tooltip="This module simply collects a number of functions and classes that provide general tools for tasks th..."];
+  Node1 [label="Memory handling",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="This group has some basic classes and namespaces for memory handling. The Subscriptor and SmartPointe..."];
+  Node2->Node1 [shape=plaintext, dir="back", style="solid"];
+}

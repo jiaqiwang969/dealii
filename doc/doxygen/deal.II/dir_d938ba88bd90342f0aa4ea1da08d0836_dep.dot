@@ -1,0 +1,11 @@
+digraph "source/differentiation/ad" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_7619c04fbd8f49fec3baf3cd125d542b {
+    graph [ bgcolor="#ddddee", pencolor="black", label="differentiation" fontname="Helvetica", fontsize="10", URL="dir_7619c04fbd8f49fec3baf3cd125d542b.html"]
+  dir_d938ba88bd90342f0aa4ea1da08d0836 [shape=box, label="ad", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_d938ba88bd90342f0aa4ea1da08d0836.html"];
+  }
+  dir_d44c64559bbebec7f509842c48db8b23 [shape=box label="include" fillcolor="white" style="filled" color="red" URL="dir_d44c64559bbebec7f509842c48db8b23.html"];
+  dir_d938ba88bd90342f0aa4ea1da08d0836->dir_d44c64559bbebec7f509842c48db8b23 [headlabel="19", labeldistance=1.5 headhref="dir_000042_000004.html"];
+}

@@ -1,0 +1,9 @@
+digraph "Vector memory management"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node1 [label="Vector memory management",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="This module groups a few classes that are used to avoid allocating and deallocating vectors over and ..."];
+  Node2 [label="Linear algebra classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAC.html",tooltip="This module contains classes that involve linear algebra, i.e., those associated with matrices,..."];
+  Node2->Node1 [shape=plaintext, dir="back", style="solid"];
+}
