@@ -1,0 +1,13 @@
+[0.x.0]*
+ A namespace solely for the declaration of the  [2.x.0]  enum.
+
+* 
+* [0.x.1]*
+   The members of this enum are used to describe the logical interpretation   of what the various components of a vector-valued data set mean. For   example, if one has a finite element for the Stokes equations in 2d,   representing components  [2.x.1] , one would like to indicate that the   first two,  [2.x.2]  and  [2.x.3] , represent a logical vector so that later on when   we generate graphical output we can hand them off to a visualization   program that will automatically know to render them as a vector field,   rather than as two separate and independent scalar fields.     By passing a set of enums of the current kind to the    [2.x.4]  functions, this can be achieved.     See the  [2.x.5]  tutorial program for an example on how this information   can be used in practice.  
+* [0.x.2]*
+     Indicates that a component of a data set corresponds to a scalar field     independent of the others.    
+* [0.x.3]*
+     Indicates that a component of a data set is part of a vector-valued     quantity.    
+* [0.x.4]*
+     Indicates that a component of a data set is part of a tensor-valued     (2nd order) quantity.    
+* [0.x.5]

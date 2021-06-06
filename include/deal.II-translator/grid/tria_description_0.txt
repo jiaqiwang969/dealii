@@ -1,0 +1,160 @@
+[0.x.0]*
+ The CellData class (and the related SubCellData class) is used to provide a comprehensive, but minimal, description of the cells when creating a triangulation via  [2.x.0]  Specifically, each CellData object
+* 
+*  -  describing one cell in a triangulation
+* 
+*  -  has member variables for indices of the  [2.x.1]  vertices (the actual coordinates of the vertices are described in a separate vector passed to  [2.x.2]  so the CellData object only needs to store indices into that vector), the material id of the cell that can be used in applications to describe which part of the domain a cell belongs to (see  [2.x.3]  "the glossary entry on material ids"), and a manifold id that is used to describe the geometry object that is responsible for this cell (see  [2.x.4]  "the glossary entry on manifold ids") to describe the manifold this object belongs to.
+*  This structure is also used to represent data for faces and edges when used as a member of the SubCellData class. In this case, the template argument  [2.x.5]  of an object will be less than the dimension  [2.x.6]  of the triangulation. If this is so, then #vertices array represents the indices of the vertices of one face or edge of one of the cells passed to  [2.x.7]  Furthermore, for faces the material id has no meaning, and the  [2.x.8]  field is reused to store a  [2.x.9]  instead to designate which part of the boundary the face or edge belongs to (see  [2.x.10]  "the glossary entry on boundary ids").
+*  An example showing how this class can be used is in the  [2.x.11]  function of  [2.x.12] . There are also many more use cases in the implementation of the functions of the GridGenerator namespace.
+* 
+
+* 
+*  [2.x.13] 
+
+* 
+* [0.x.1]*
+   Indices of the vertices of this cell. These indices correspond   to entries in the vector of vertex locations passed to    [2.x.14]   
+* [0.x.2]*
+   Material or boundary indicator of this cell.   This field is a union that stores [1.x.0] a boundary or   a material id, depending on whether the current object is used   to describe a cell (in a vector of CellData objects) or a   face or edge (as part of a SubCellData object).  
+* [0.x.3]*
+     The material id of the cell being described. See the documentation     of the CellData class for examples of how to use this field.         This variable can only be used if the current object is used to     describe a cell, i.e., if  [2.x.15]  equals the dimension      [2.x.16]  of a triangulation.    
+* [0.x.4]*
+     The boundary id of a face or edge being described. See the documentation     of the CellData class for examples of how to use this field.         This variable can only be used if the current object is used to     describe a face or edge, i.e., if  [2.x.17]  is less than the dimension      [2.x.18]  of a triangulation. In this case, the CellData object this     variable belongs to will be part of a SubCellData object.    
+* [0.x.5]*
+   Manifold identifier of this object. This identifier should be used to   identify the manifold to which this object belongs, and from which this   object will collect information on how to add points upon refinement.     See the documentation of the CellData class for examples of how to use   this field.  
+* [0.x.6]*
+   Default constructor. Sets the member variables to the following values:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - vertex indices to invalid values
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - boundary or material id zero (the default for boundary or material ids)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - manifold id to  [2.x.19]   
+* [0.x.7]*
+   Comparison operator.  
+* [0.x.8]*
+   Read or write the data of this object to or from a stream for the   purpose of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.9]*
+ The SubCellData class is used to describe information about faces and edges at the boundary of a mesh when creating a triangulation via  [2.x.20]  It contains member variables that describe boundary edges and boundary quads.
+*  The class has no template argument and is used both in the description of boundary edges in 2d (in which case the contents of the  [2.x.21]  member variable are ignored), as well as in the description of boundary edges and faces in 3d (in which case both the  [2.x.22]  and  [2.x.23]  members may be used). It is also used as the argument to  [2.x.24]  in 1d, where the contents of objects of the current type are simply ignored.
+*  By default,  [2.x.25]  simply assigns default boundary indicators and manifold indicators to edges and quads at the boundary of the mesh. (See the glossary entries on  [2.x.26]  "boundary ids" and  [2.x.27]  "manifold ids" for more information on what they represent.) As a consequence, it is not [1.x.1] to explicitly describe the properties of boundary objects. In all cases, these properties can also be set at a later time, once the triangulation has already been created. On the other hand, it is sometimes convenient to describe boundary indicators or manifold ids at the time of creation. In these cases, the current class can be used by filling the  [2.x.28]  and  [2.x.29]  vectors with CellData<1> and CellData<2> objects that correspond to boundary edges and quads for which properties other than the default values should be used.
+*  Each entry in the  [2.x.30]  and  [2.x.31]  vectors then needs to correspond to an edge or quad of the cells that are described by the vector of CellData objects passed to  [2.x.32]  I.e., the vertex indices stored in each entry need to correspond to an edge or face of the triangulation that has the same set of vertex indices, and in the same order. For these boundary edges or quads, one can then set either or both the  [2.x.33]  and  [2.x.34] 
+*  There are also use cases where one may want to set the manifold id of an [1.x.2] edge or face. Such faces, identified by their vertex indices, may also appear in the  [2.x.35]  and  [2.x.36]  vectors (despite the names of these member variables). However, it is then obviously not allowed to set a boundary id (because the object is not actually part of the boundary). As a consequence, to be valid, the  [2.x.37]  of interior edges or faces needs to equal  [2.x.38] 
+* 
+
+* 
+*  [2.x.39] 
+
+* 
+* [0.x.10]*
+   A vector of CellData<1> objects that describe boundary and manifold   information for edges of 2d or 3d triangulations.     This vector may not be used in the creation of 1d triangulations.  
+* [0.x.11]*
+   A vector of CellData<2> objects that describe boundary and manifold   information for quads of 3d triangulations.     This vector may not be used in the creation of 1d or 2d triangulations.  
+* [0.x.12]*
+   Determine whether the member variables above which may not be used in a   given dimension are really empty. In other words, this function returns   whether   both  [2.x.40]  and  [2.x.41]  are empty vectors   when  [2.x.42]  equals one, and whether the  [2.x.43]    vector is empty when  [2.x.44]  equals two.  
+* [0.x.13]*
+ A namespace dedicated to the struct Description, which can be used in  [2.x.45] 
+
+* 
+* [0.x.14]*
+   Configuration flags for Triangulations.   Settings can be combined using bitwise OR.  
+* [0.x.15]*
+     Default settings, other options are disabled.    
+* [0.x.16]*
+     This flag needs to be set to use the geometric multigrid     functionality. This option requires additional computation and     communication.    
+* [0.x.17]*
+   Information needed for each locally relevant cell, stored in   Description and used during construction of a   Triangulation. This struct stores   the cell id, the subdomain_id and the level_subdomain_id as well as   information related to manifold_id and boundary_id.    
+*  [2.x.46]  Similarly to  [2.x.47]  this structure stores information   about a cell. However, in contrast to  [2.x.48]  it also stores   a unique id, partitioning information, and information related to cell   faces and edges.  
+* [0.x.18]*
+     Read or write the data of this object to or from a stream for the     purpose of serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.19]*
+     Comparison operator.    
+* [0.x.20]*
+     Unique CellID of the cell.    
+* [0.x.21]*
+     subdomain_id of the cell.    
+* [0.x.22]*
+     level_subdomain_id of the cell.    
+* [0.x.23]*
+     Manifold id of the cell.    
+* [0.x.24]*
+     Manifold id of all lines of the cell.        
+*  [2.x.49]  Only used for 2D and 3D.    
+* [0.x.25]*
+     Manifold id of all face quads of the cell.        
+*  [2.x.50]  Only used for 3D.    
+* [0.x.26]*
+     List of face number and boundary id of all non-internal faces of the     cell.    
+* [0.x.27]*
+   Data used in  [2.x.51]   
+* [0.x.28]*
+     Read or write the data of this object to or from a stream for the     purpose of serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.29]*
+     Comparison operator.    
+* [0.x.30]*
+     Cells of the locally-relevant coarse-grid triangulation.    
+* [0.x.31]*
+     Vertices of the locally-relevant coarse-grid triangulation.    
+* [0.x.32]*
+     List that for each locally-relevant coarse cell provides the     corresponding global      [2.x.52] .    
+* [0.x.33]*
+     CellData for each locally relevant cell on each level. cell_infos[i]     contains the CellData for each locally relevant cell on the ith     level.    
+* [0.x.34]*
+     The MPI communicator used to create this struct. It will be compared     to the communicator inside of the Triangulation     and an assert is thrown if they do not match.        
+*  [2.x.53]  Please note this is necessary since the communicator inside of      [2.x.54]  is const and cannot be changed after the     constructor has been called.    
+* [0.x.35]*
+     Properties to be use in the construction of the triangulation.    
+* [0.x.36]*
+     Mesh smoothing type.    
+* [0.x.37]*
+   A namespace for  [2.x.55]  utility functions.    
+*  [2.x.56]   
+* [0.x.38]*
+     Construct  [2.x.57]  from a given     partitioned triangulation `tria` and a specified process.     The input triangulation can be either     a serial triangulation of type  [2.x.58]  which has been     colored (subdomain_id and/or level_subdomain_id has been set) or a     distributed triangulation of type      [2.x.59]  where the partitioning is     adopted unaltered.          [2.x.60]  tria Partitioned input triangulation.      [2.x.61]  comm MPI_Communicator to be used. In the case       of  [2.x.62]  the communicators have     to match.      [2.x.63]  settings See the description of the Settings enumerator.      [2.x.64]  my_rank_in Construct Description for the specified rank (only       working for serial triangulations that have been partitioned by       functions like  [2.x.65]       [2.x.66]  Description to be used to set up a Triangulation.        
+*  [2.x.67]  If construct_multigrid_hierarchy is set in the settings, the source       triangulation has to be setup with limit_level_difference_at_vertices.    
+* [0.x.39]*
+     Similar to the above function but the owner of active cells are provided     by a cell vector (see also      [2.x.68]  and      [2.x.69]  This function allows to     repartition distributed Triangulation objects.        
+*  [2.x.70]  The communicator is extracted from the vector  [2.x.71]         
+*  [2.x.72]  The triangulation  [2.x.73]  can be set up on a subcommunicator of the       communicator of  [2.x.74]  All processes that are not part of that       subcommunicator need to set up the local triangulation with the       special-purpose communicator MPI_COMM_NULL.        
+*  [2.x.75]  The multgrid levels are currently not constructed, since        [2.x.76]  only describes the partitioning of the active level.    
+* [0.x.40]*
+     Construct a  [2.x.77]  In contrast     to the function above, this function is also responsible for creating     a serial triangulation and for its partitioning (by calling the     provided  [2.x.78]  objects). Internally only selected processes (     every n-th/each root of a group of size group_size) create a serial     triangulation and the  [2.x.79]  for all     processes in its group, which is communicated.        
+*  [2.x.80]  A reasonable group size is the size of a NUMA domain or the     size of a compute node.          [2.x.81]  serial_grid_generator A function which creates a serial triangulation.      [2.x.82]  serial_grid_partitioner A function which can partition a serial       triangulation, i.e., sets the sudomain_ids of the active cells.       The function takes as the first argument a serial triangulation,       as the second argument the MPI communicator, and as the third       argument the group size.      [2.x.83]  comm MPI communicator.      [2.x.84]  group_size The size of each group.      [2.x.85]  smoothing Mesh smoothing type.      [2.x.86]  setting See the description of the Settings enumerator.      [2.x.87]  Description to be used to set up a Triangulation.        
+*  [2.x.88]  If construct_multigrid_hierarchy is set in the settings, the        [2.x.89]  parameter is extended with the       limit_level_difference_at_vertices flag.    
+* [0.x.41]

@@ -1,0 +1,73 @@
+[0.x.0]*
+ Discontinuous finite elements based on Legendre polynomials.
+*  This finite element implements complete polynomial spaces, that is, dim- dimensional polynomials of degree p. For example, in 2d the element FE_DGP(1) would represent the span of the functions  [2.x.0] , which is in contrast to the element FE_DGQ(1) that is formed by the span of  [2.x.1] . Since the DGP space has only three unknowns for each quadrilateral, it is immediately clear that this element can not be continuous.
+*  The basis functions used in this element for the space described above are chosen to form a Legendre basis on the unit square, i.e., in particular they are  [2.x.2] -orthogonal and normalized on the reference cell (but not necessarily on the real cell). As a consequence, the first basis function of this element is always the function that is constant and equal to one, regardless of the polynomial degree of the element. In addition, as a result of the orthogonality of the basis functions, the mass matrix is diagonal if the grid cells are parallelograms. Note that this is in contrast to the FE_DGPMonomial class that actually uses the monomial basis listed above as basis functions, without transformation from reference to real cell.
+*  The shape functions are defined in the class PolynomialSpace. The polynomials used inside PolynomialSpace are  [2.x.3]  up to degree <tt>p</tt> given in FE_DGP. For the ordering of the basis functions, refer to PolynomialSpace, remembering that the Legendre polynomials are ordered by ascending degree.
+* 
+
+* 
+*  [2.x.4]  This element is not defined by finding shape functions within the given function space that interpolate a particular set of points. Consequently, there are no support points to which a given function could be interpolated; finding a finite element function that approximates a given function is therefore only possible through projection, rather than interpolation. Secondly, the shape functions of this element do not jointly add up to one. As a consequence of this, adding or subtracting a constant value
+* 
+*  -  such as one would do to make a function have mean value zero
+* 
+*  -  can not be done by simply subtracting the constant value from each degree of freedom. Rather, one needs to use the fact that the first basis function is constant equal to one and simply subtract the constant from the value of the degree of freedom corresponding to this first shape function on each cell.
+* 
+
+* 
+
+* 
+*  [2.x.5]  This class is only partially implemented for the codimension one case (<tt>spacedim != dim </tt>), since no passage of information between meshes of different refinement level is possible because the embedding and projection matrices are not computed in the class constructor.
+*  [1.x.0]
+*  It is worth noting that under a (bi-, tri-)linear mapping, the space described by this element does not contain  [2.x.6] , even if we use a basis of polynomials of degree  [2.x.7] . Consequently, for example, on meshes with non-affine cells, a linear function can not be exactly represented by elements of type FE_DGP(1) or FE_DGPMonomial(1).
+*  This can be understood by the following 2-d example: consider the cell with vertices at  [2.x.8] :  [2.x.9] 
+*  For this cell, a bilinear transformation  [2.x.10]  produces the relations  [2.x.11]  and  [2.x.12]  that correlate reference coordinates  [2.x.13]  and coordinates in real space  [2.x.14] . Under this mapping, the constant function is clearly mapped onto itself, but the two other shape functions of the  [2.x.15]  space, namely  [2.x.16]  and  [2.x.17]  are mapped onto  [2.x.18]  where  [2.x.19] .
+*  For the simple case that  [2.x.20] , i.e. if the real cell is the unit square, the expressions can be simplified to  [2.x.21]  and  [2.x.22] . However, for all other cases, the functions  [2.x.23]  are not linear any more, and neither is any linear combination of them. Consequently, the linear functions are not within the range of the mapped  [2.x.24]  polynomials.
+*  [1.x.1] In 2d, the shape functions of this element look as follows.
+*  [1.x.2]
+*   [2.x.25] 
+*  [1.x.3]
+*   [2.x.26] 
+* 
+
+*  [1.x.4]
+*   [2.x.27] 
+* 
+
+*  [1.x.5]
+*   [2.x.28] 
+* 
+
+*  [1.x.6]  [2.x.29] 
+
+* 
+* [0.x.1]*
+   Constructor for tensor product polynomials of degree  [2.x.30]   
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGP<dim>(degree)</tt>, with  [2.x.31]  and  [2.x.32]  replaced   by appropriate values.  
+* [0.x.3]*
+    [2.x.33]  Functions to support hp    [2.x.34]   
+* [0.x.4]*
+   If, on a vertex, several finite elements are active, the hp-code first   assigns the degrees of freedom of each of these FEs different global   indices. It then calls this function to find out which of them should get   identical values, and consequently can receive the same global DoF index.   This function therefore returns a list of identities between DoFs of the   present finite element object with the DoFs of  [2.x.35]  which is a   reference to a finite element object representing one of the other finite   elements active on this particular vertex. The function computes which of   the degrees of freedom of the two finite element objects are equivalent,   both numbered between zero and the corresponding value of   n_dofs_per_vertex() of the two finite elements. The first index of each   pair denotes one of the vertex dofs of the present element, whereas the   second is the corresponding index of the other finite element.     This being a discontinuous element, the set of such constraints is of   course empty.  
+* [0.x.5]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on lines.     This being a discontinuous element, the set of such constraints is of   course empty.  
+* [0.x.6]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on quads.     This being a discontinuous element, the set of such constraints is of   course empty.  
+* [0.x.7]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".     For the FE_DGP class the result is always true (independent of the degree   of the element), as it has no hanging nodes (being a discontinuous   element).  
+* [0.x.8]*
+    [2.x.36]   [2.x.37]   
+* [0.x.9]*
+    [2.x.38]   
+* [0.x.10]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element. The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Derived elements will have to implement this function. They may only   provide interpolation matrices for certain source finite elements, for   example those from the same family. If they don't implement interpolation   from a given element, then they must throw an exception of type    [2.x.39]   
+* [0.x.11]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element. The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Derived elements will have to implement this function. They may only   provide interpolation matrices for certain source finite elements, for   example those from the same family. If they don't implement interpolation   from a given element, then they must throw an exception of type    [2.x.40]   
+* [0.x.12]*
+   This function returns  [2.x.41]  if the shape function  [2.x.42]  has   non-zero function values somewhere on the face  [2.x.43]   
+* [0.x.13]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.     This function is made virtual, since finite element objects are usually   accessed through pointers to their base class, rather than the class   itself.  
+* [0.x.14]*
+   Return a list of constant modes of the element. For this element, the   first entry is true, all other are false.  
+* [0.x.15]*
+   Only for internal use. Its full name is  [2.x.44]    function and it creates the  [2.x.45]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.46]    FiniteElementData.  
+* [0.x.16]

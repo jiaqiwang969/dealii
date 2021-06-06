@@ -1,0 +1,183 @@
+[0.x.0]!  [2.x.0]  Sparsity [2.x.1] 
+
+* 
+* [0.x.1]*
+ Iterators on sparsity patterns
+
+* 
+* [0.x.2]*
+   Accessor class for iterators into sparsity patterns. This class is also   the base class for both const and non-const accessor classes into sparse   matrices.     Note that this class only allows read access to elements, providing their   row and column number. It does not allow modifying the sparsity pattern   itself.  
+* [0.x.3]*
+     Declare the type for container size.    
+* [0.x.4]*
+     Constructor.    
+* [0.x.5]*
+     Constructor. Construct the end accessor for the given sparsity pattern.    
+* [0.x.6]*
+     Row number of the element represented by this object. This function can     only be called for entries for which is_valid_entry() is true.    
+* [0.x.7]*
+     Return the global index from the reduced sparsity pattern.    
+* [0.x.8]*
+     Column number of the element represented by this object. This function     can only be called for entries for which is_valid_entry() is true.    
+* [0.x.9]*
+     Return whether the sparsity pattern entry pointed to by this iterator     is valid or not. Note that after compressing the sparsity pattern, all     entries are valid. However, before compression, the sparsity pattern     allocated some memory to be used while still adding new nonzero     entries; if you create iterators in this phase of the sparsity     pattern's lifetime, you will iterate over elements that are not valid.     If this is so, then this function will return false.    
+* [0.x.10]*
+     Comparison. True, if both iterators point to the same matrix position.    
+* [0.x.11]*
+     Comparison operator. Result is true if either the first row number is     smaller or if the row numbers are equal and the first index is smaller.         This function is only valid if both iterators point into the same     sparsity pattern.    
+* [0.x.12]*
+     The sparsity pattern we operate on accessed.    
+* [0.x.13]*
+     The accessor of the (reduced) sparsity pattern.    
+* [0.x.14]*
+     Current chunk row number.    
+* [0.x.15]*
+     Current chunk col number.    
+* [0.x.16]*
+     Move the accessor to the next nonzero entry in the matrix.    
+* [0.x.17]*
+   Iterator that walks over the elements of a sparsity pattern.  
+* [0.x.18]*
+     Declare the type for container size.    
+* [0.x.19]*
+     Constructor. Create an iterator into the sparsity pattern  [2.x.2]  for the     given row and the index within it.    
+* [0.x.20]*
+     Prefix increment.    
+* [0.x.21]*
+     Postfix increment.    
+* [0.x.22]*
+     Dereferencing operator.    
+* [0.x.23]*
+     Dereferencing operator.    
+* [0.x.24]*
+     Comparison. True, if both iterators point to the same matrix position.    
+* [0.x.25]*
+     Inverse of <tt>==</tt>.    
+* [0.x.26]*
+     Comparison operator. Result is true if either the first row number is     smaller or if the row numbers are equal and the first index is smaller.         This function is only valid if both iterators point into the same     matrix.    
+* [0.x.27]*
+     Store an object of the accessor class.    
+* [0.x.28]*
+ Structure representing the sparsity pattern of a sparse matrix. This class is an example of the "static" type of  [2.x.3] . It uses the compressed row storage (CSR) format to store data.
+*  The use of this class is demonstrated in  [2.x.4] .
+
+* 
+* [0.x.29]*
+   Declare the type for container size.  
+* [0.x.30]*
+   Typedef an iterator class that allows to walk over all nonzero elements   of a sparsity pattern.  
+* [0.x.31]*
+   Typedef an iterator class that allows to walk over all nonzero elements   of a sparsity pattern.     Since the iterator does not allow to modify the sparsity pattern, this   type is the same as that for  [2.x.5]   
+* [0.x.32]*
+   Define a value which is used to indicate that a certain value in the   colnums array is unused, i.e. does not represent a certain column number   index.     Indices with this invalid value are used to insert new entries to the   sparsity pattern using the add() member function, and are removed when   calling compress().     You should not assume that the variable declared here has a certain   value. The initialization is given here only to enable the compiler to   perform some optimizations, but the actual value of the variable may   change over time.  
+* [0.x.33]*
+   Initialize the matrix empty, that is with no memory allocated. This is   useful if you want such objects as member variables in other classes. You   can make the structure usable by calling the reinit() function.  
+* [0.x.34]*
+   Copy constructor. This constructor is only allowed to be called if the   matrix structure to be copied is empty. This is so in order to prevent   involuntary copies of objects for temporaries, which can use large   amounts of computing time. However, copy constructors are needed if one   wants to place a ChunkSparsityPattern in a container, e.g., to write such   statements like <tt>v.push_back (ChunkSparsityPattern());</tt>, with   <tt>v</tt> a vector of ChunkSparsityPattern objects.     Usually, it is sufficient to use the explicit keyword to disallow   unwanted temporaries, but this does not work for  [2.x.6]    Since copying a structure like this is not useful anyway because multiple   matrices can use the same sparsity structure, copies are only allowed for   empty objects, as described above.  
+* [0.x.35]*
+   Initialize a rectangular matrix.      [2.x.7]  m number of rows  [2.x.8]  n number of columns  [2.x.9]  max_per_row maximum   number of nonzero entries per row  
+* [0.x.36]*
+   Initialize a rectangular matrix.      [2.x.10]  m number of rows  [2.x.11]  n number of columns  [2.x.12]  row_lengths possible   number of nonzero entries for each row.  This vector must have one entry   for each row.  
+* [0.x.37]*
+   Initialize a quadratic matrix of dimension <tt>n</tt> with at most   <tt>max_per_row</tt> nonzero entries per row.     This constructor automatically enables optimized storage of diagonal   elements. To avoid this, use the constructor taking row and column   numbers separately.  
+* [0.x.38]*
+   Initialize a quadratic matrix.      [2.x.13]  m number of rows and columns  [2.x.14]  row_lengths possible number of   nonzero entries for each row.  This vector must have one entry for each   row.  
+* [0.x.39]*
+   Destructor.  
+* [0.x.40]*
+   Copy operator. For this the same holds as for the copy constructor: it is   declared, defined and fine to be called, but the latter only for empty   objects.  
+* [0.x.41]*
+   Reallocate memory and set up data structures for a new matrix with <tt>m   </tt>rows and <tt>n</tt> columns, with at most <tt>max_per_row</tt>   nonzero entries per row.     This function simply maps its operations to the other <tt>reinit</tt>   function.  
+* [0.x.42]*
+   Reallocate memory for a matrix of size <tt>m x n</tt>. The number of   entries for each row is taken from the array <tt>row_lengths</tt> which   has to give this number of each row <tt>i=1...m</tt>.     If <tt>m*n==0</tt> all memory is freed, resulting in a total   reinitialization of the object. If it is nonzero, new memory is only   allocated if the new size extends the old one. This is done to save time   and to avoid fragmentation of the heap.     If the number of rows equals the number of columns then diagonal elements   are stored first in each row to allow optimized access in relaxation   methods of SparseMatrix.  
+* [0.x.43]*
+   Same as above, but with an ArrayView argument instead.  
+* [0.x.44]*
+   This function compresses the sparsity structure that this object   represents.  It does so by eliminating unused entries and sorting the   remaining ones to allow faster access by usage of binary search   algorithms. A special sorting scheme is used for the diagonal entry of   quadratic matrices, which is always the first entry of each row.     The memory which is no more needed is released.     SparseMatrix objects require the ChunkSparsityPattern objects they are   initialized with to be compressed, to reduce memory requirements.  
+* [0.x.45]*
+   This function can be used as a replacement for reinit(), subsequent calls   to add() and a final call to close() if you know exactly in advance the   entries that will form the matrix sparsity pattern.     The first two parameters determine the size of the matrix. For the two   last ones, note that a sparse matrix can be described by a sequence of   rows, each of which is represented by a sequence of pairs of column   indices and values. In the present context, the begin() and end()   parameters designate iterators (of forward iterator type) into a   container, one representing one row. The distance between begin() and   end() should therefore be equal to n_rows(). These iterators may be   iterators of  [2.x.15]   [2.x.16]  pointers into a   C-style array, or any other iterator satisfying the requirements of a   forward iterator. The objects pointed to by these iterators (i.e. what we   get after applying <tt>operator*</tt> or <tt>operator-></tt> to one of   these iterators) must be a container itself that provides functions   <tt>begin</tt> and <tt>end</tt> designating a range of iterators that   describe the contents of one line. Dereferencing these inner iterators   must either yield a pair of an integer as column index and a   value of arbitrary type (such a type would be used if we wanted to   describe a sparse matrix with one such object), or simply an integer (if we   only wanted to describe a sparsity pattern). The function is able to   determine itself whether an integer or a pair is what we get after   dereferencing the inner iterators, through some template magic.     While the order of the outer iterators denotes the different rows of the   matrix, the order of the inner iterator denoting the columns does not   matter, as they are sorted internal to this function anyway.     Since that all sounds very complicated, consider the following example   code, which may be used to fill a sparsity pattern:  
+* [1.x.0]
+*      Note that this example works since the iterators dereferenced yield   containers with functions <tt>begin</tt> and <tt>end</tt> (namely    [2.x.17]  and the inner iterators dereferenced yield   integers as column indices. Note that we could have replaced   each of the two  [2.x.18]  occurrences by  [2.x.19]    and the inner one by  [2.x.20]  as well.     Another example would be as follows, where we initialize a whole matrix,   not only a sparsity pattern:  
+* [1.x.1]
+*      This example works because dereferencing iterators of the inner type   yields a pair of integers and a value, the first of which we   take as column index. As previously, the outer  [2.x.21]  could   be replaced by  [2.x.22]  and the inner    [2.x.23]  could be replaced by    [2.x.24]  ></tt>, or a list or set of   such pairs, as they all return iterators that point to such pairs.  
+* [0.x.46]*
+   Copy data from an object of type DynamicSparsityPattern. Previous content   of this object is lost, and the sparsity pattern is in compressed mode   afterwards.  
+* [0.x.47]*
+   Take a full matrix and use its nonzero entries to generate a sparse   matrix entry pattern for this object.     Previous content of this object is lost, and the sparsity pattern is in   compressed mode afterwards.  
+* [0.x.48]*
+   Set the sparsity pattern of the chunk sparsity pattern to be given by   <tt>chunk_size*chunksize</tt> blocks of the sparsity pattern for chunks   specified. Note that the final number of rows <tt>m</tt> of the sparsity   pattern will be approximately <tt>sparsity_pattern_for_chunks.n_rows()   chunk_size</tt> (modulo padding elements in the last chunk) and similarly   for the number of columns <tt>n</tt>.     This is a special initialization option in case you can tell the position   of the chunk already from the beginning without generating the sparsity   pattern using <tt>make_sparsity_pattern</tt> calls. This bypasses the   search for chunks but of course needs to be handled with care in order to   give a correct sparsity pattern.     Previous content of this object is lost, and the sparsity pattern is in   compressed mode afterwards.  
+* [0.x.49]*
+   Return whether the object is empty. It is empty if no memory is   allocated, which is the same as that both dimensions are zero.  
+* [0.x.50]*
+   Return the chunk size given as argument when constructing this object.  
+* [0.x.51]*
+   Return the maximum number of entries per row. Before compression, this   equals the number given to the constructor, while after compression, it   equals the maximum number of entries actually allocated by the user.  
+* [0.x.52]*
+   Add a nonzero entry to the matrix. This function may only be called for   non-compressed sparsity patterns.     If the entry already exists, nothing bad happens.  
+* [0.x.53]*
+   Make the sparsity pattern symmetric by adding the sparsity pattern of the   transpose object.     This function throws an exception if the sparsity pattern does not   represent a quadratic matrix.  
+* [0.x.54]*
+   Return number of rows of this matrix, which equals the dimension of the   image space.  
+* [0.x.55]*
+   Return number of columns of this matrix, which equals the dimension of   the range space.  
+* [0.x.56]*
+   Check if a value at a certain position may be non-zero.  
+* [0.x.57]*
+   Number of entries in a specific row.  
+* [0.x.58]*
+   Compute the bandwidth of the matrix represented by this structure. The   bandwidth is the maximum of  [2.x.25]  for which the index pair  [2.x.26]    represents a nonzero entry of the matrix. Consequently, the maximum   bandwidth a  [2.x.27]  matrix can have is  [2.x.28] .  
+* [0.x.59]*
+   Return the number of nonzero elements of this matrix. Actually, it   returns the number of entries in the sparsity pattern; if any of the   entries should happen to be zero, it is counted anyway.     This function may only be called if the matrix struct is compressed. It   does not make too much sense otherwise anyway.  
+* [0.x.60]*
+   Return whether the structure is compressed or not.  
+* [0.x.61]*
+   Return whether this object stores only those entries that have been added   explicitly, or if the sparsity pattern contains elements that have been   added through other means (implicitly) while building it. For the current   class, the result is true if and only if it is square because it then   unconditionally stores the diagonal entries whether they have been added   explicitly or not.     This function mainly serves the purpose of describing the current class   in cases where several kinds of sparsity patterns can be passed as   template arguments.  
+* [0.x.62]*
+   Iterator starting at the first entry of the matrix. The resulting   iterator can be used to walk over all nonzero entries of the sparsity   pattern.  
+* [0.x.63]*
+   Final iterator.  
+* [0.x.64]*
+   Iterator starting at the first entry of row <tt>r</tt>.     Note that if the given row is empty, i.e. does not contain any nonzero   entries, then the iterator returned by this function equals   <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable in   that case.  
+* [0.x.65]*
+   Final iterator of row <tt>r</tt>. It points to the first element past the   end of line  [2.x.29]  or past the end of the entire sparsity pattern.     Note that the end iterator is not necessarily dereferenceable. This is in   particular the case if it is the end iterator for the last row of a   matrix.  
+* [0.x.66]*
+   Write the data of this object en bloc to a file. This is done in a binary   mode, so the output is neither readable by humans nor (probably) by other   computers using a different operating system of number format.     The purpose of this function is that you can swap out matrices and   sparsity pattern if you are short of memory, want to communicate between   different programs, or allow objects to be persistent across different   runs of the program.  
+* [0.x.67]*
+   Read data that has previously been written by block_write() from a file.   This is done using the inverse operations to the above function, so it is   reasonably fast because the bitstream is not interpreted except for a few   numbers up front.     The object is resized on this operation, and all previous contents are   lost.     A primitive form of error checking is performed which will recognize the   bluntest attempts to interpret some data as a vector stored bitwise to a   file, but not more.  
+* [0.x.68]*
+   Print the sparsity of the matrix. The output consists of one line per row   of the format <tt>[i,j1,j2,j3,...]</tt>. [1.x.2] is the row number and   [1.x.3] are the allocated columns in this row.  
+* [0.x.69]*
+   Print the sparsity of the matrix in a format that <tt>gnuplot</tt>   understands and which can be used to plot the sparsity pattern in a   graphical way. The format consists of pairs <tt>i j</tt> of nonzero   elements, each representing one entry of this matrix, one per line of the   output file. Indices are counted from zero on, as usual. Since sparsity   patterns are printed in the same way as matrices are displayed, we print   the negative of the column index, which means that the <tt>(0,0)</tt>   element is in the top left rather than in the bottom left corner.     Print the sparsity pattern in gnuplot by setting the data style to dots   or points and use the <tt>plot</tt> command.  
+* [0.x.70]*
+   Determine an estimate for the memory consumption (in bytes) of this   object. See MemoryConsumption.  
+* [0.x.71]*
+    [2.x.30]  Exceptions    [2.x.31]   
+* [0.x.72]*
+   Exception  
+* [0.x.73]*
+   Exception  
+* [0.x.74]*
+   Exception  
+* [0.x.75]*
+   The operation is only allowed after the SparsityPattern has been set up   and compress() was called.  
+* [0.x.76]*
+   This operation changes the structure of the SparsityPattern and is not   possible after compress() has been called.  
+* [0.x.77]*
+   Exception  
+* [0.x.78]*
+   Exception  
+* [0.x.79]*
+   Exception  
+* [0.x.80]*
+   Exception  
+* [0.x.81]*
+   Exception  
+* [0.x.82]*
+   Number of rows that this sparsity structure shall represent.  
+* [0.x.83]*
+   Number of columns that this sparsity structure shall represent.  
+* [0.x.84]*
+   The size of chunks.  
+* [0.x.85]*
+   The reduced sparsity pattern. We store only which chunks exist, with each   chunk a block in the matrix of size chunk_size by chunk_size.  
+* [0.x.86]

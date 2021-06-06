@@ -1,0 +1,30 @@
+[0.x.0]*
+     A variadic template helper class to recursively "unroll" the size     information of the ndarray. This is best explained on an example:    
+* [1.x.0]
+*     
+* [0.x.1]*
+     Recursively define the type alias "type" of HelperArray<T, N, ...Ns>     by wrapping a  [2.x.0]  around HelperArray<T,  [2.x.1]     
+* [0.x.2]*
+     End recursion once no  [2.x.2]  template parameters are left and     simply set the type alias to type T    
+* [0.x.3]*
+ A (variadic template) type alias for conveniently defining multidimensional [1.x.1]s
+*  The problem we try to address with the type alias is the following. Suppose you want to create a multdimensional array of doubles of, for example, rank 3, with sizes 2, 3, 4 for the first, middle, and last index. Then using C-style arrays you could simply write
+
+* 
+* [1.x.2]
+*  Nowadays, there are a number of good reasons why using C-style arrays is usually discouraged (ranging from incompatibilities with STL functions requiring awkward wrappers, surprises when comparing for equality, etc.) If you want to do the same, however, using the more modern (and encouraged)  [2.x.3]  class, then you would have to declare
+
+* 
+* [1.x.3]
+*  The repetitions of  [2.x.4]  look awkward and, worse, the index ranges have reversed: the leftmost index has range [0,2), the middle index has range [0,3) and the rightmost index has range [0,4). We address this issue by providing a class ndarray that allows to you declare the above stacked  [2.x.5]  type by simply writing:
+
+* 
+* [1.x.4]
+* 
+* 
+
+* 
+*  [2.x.6]   [2.x.7]  is merely syntactic sugar in form of a [1.x.5] (`using` declaration). It is not a deal.II specific class, but merely a helper to cleanly define multidimensional arrays realized by "stacked"  [2.x.8]  classes.
+
+* 
+* [0.x.4]

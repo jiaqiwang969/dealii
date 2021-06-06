@@ -1,0 +1,239 @@
+[0.x.0]*
+ A variant of FullMatrix using LAPACK functions wherever possible. In order to do this, the matrix is stored in transposed order. The element access functions hide this fact by reverting the transposition.
+* 
+
+* 
+*  [2.x.0]  In order to perform LAPACK functions, the class contains a lot of auxiliary data in the private section. The names of these data vectors are usually the names chosen for the arguments in the LAPACK documentation.
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+   Declare type for container size.  
+* [0.x.2]*
+   Constructor. Initialize the matrix as a square matrix with dimension    [2.x.2]      In order to avoid the implicit conversion of integers and other types to   a matrix, this constructor is declared <tt>explicit</tt>.     By default, no memory is allocated.  
+* [0.x.3]*
+   Constructor. Initialize the matrix as a rectangular matrix  [2.x.3] .  
+* [0.x.4]*
+   Copy constructor. This constructor does a deep copy of the matrix.   Therefore, it poses a possible efficiency problem, if for example,   function arguments are passed by value rather than by reference.   Unfortunately, we can't mark this copy constructor <tt>explicit</tt>,   since that prevents the use of this class in containers, such as    [2.x.4] . The responsibility to check performance of   programs must therefore remain with the user of this class.  
+* [0.x.5]*
+   Assignment operator.  
+* [0.x.6]*
+   Assignment operator from a regular FullMatrix.    
+*  [2.x.5]  Since LAPACK expects matrices in transposed order, this   transposition is included here.  
+* [0.x.7]*
+   Assignment operator from a regular SparseMatrix.    
+*  [2.x.6]  Since LAPACK expects matrices in transposed order, this   transposition is included here.  
+* [0.x.8]*
+   This operator assigns a scalar to a matrix. To avoid confusion with   constructors, zero (when cast to the  [2.x.7]  type) is the only   value allowed for  [2.x.8]   
+* [0.x.9]*
+   This operator multiplies all entries by a fixed  [2.x.9]   
+* [0.x.10]*
+   This operator divides all entries by a fixed  [2.x.10]   
+* [0.x.11]*
+   Set a particular entry of the matrix to a  [2.x.11]    Thus, calling  [2.x.12]  is entirely equivalent to the   operation  [2.x.13] . This function exists for   compatibility with the various sparse matrix objects.      [2.x.14]  i The row index of the element to be set.    [2.x.15]  j The column index of the element to be set.    [2.x.16]  value The value to be written into the element.  
+* [0.x.12]*
+   Simple addition of a scaled matrix, i.e.  [2.x.17] .  
+* [0.x.13]*
+   Perform a rank-1 update of a symmetric matrix    [2.x.18] .     This function also works for Cholesky factorization.   In that case, updating ( [2.x.19] ) is   performed via Givens rotations, whereas downdating ( [2.x.20] ) via hyperbolic   rotations. Note that the latter case might lead to a negative definite   matrix in which case the error will be thrown (because Cholesky   factorizations are only valid for symmetric and positive definite   matrices).  
+* [0.x.14]*
+   Apply [1.x.0]    [2.x.21]  (a triplet of cosine, sine and radius, see    [2.x.22]  for the definition of the   rotation matrix  [2.x.23] )   to this matrix in the plane spanned by the  [2.x.24]  and  [2.x.25]  unit vectors.   If  [2.x.26]  is  [2.x.27] , the rotation is applied from left    [2.x.28]    and only rows  [2.x.29]  and  [2.x.30]  are affected.   Otherwise, transpose of the rotation matrix is applied from right    [2.x.31]    and only columns  [2.x.32]  and  [2.x.33]  are affected.  
+* [0.x.15]*
+   Assignment from different matrix classes, performing the usual conversion   to the transposed format expected by LAPACK. This assignment operator   uses iterators of the typename MatrixType. Therefore, sparse matrices are   possible sources.  
+* [0.x.16]*
+   Regenerate the current matrix by one that has the same properties as if   it were created by the constructor of this class with the same argument   list as this present function.  
+* [0.x.17]*
+   Same as above but will preserve the values of matrix upon resizing.   The original values   of the matrix are kept on increasing the size   [1.x.1]   Whereas if the new size is smaller, the matrix will contain the upper left   block of the original one [1.x.2]  
+* [0.x.18]*
+   Remove row  [2.x.34]  and column  [2.x.35]  from the matrix.   [1.x.3]  
+* [0.x.19]*
+   Regenerate the current matrix by one that has the same properties as if   it were created by the constructor of this class with the same argument   list as this present function.  
+* [0.x.20]*
+   Assign  [2.x.36]  to this matrix.  
+* [0.x.21]*
+   Return the dimension of the codomain (or range) space.    
+*  [2.x.37]  The matrix is of dimension  [2.x.38] .  
+* [0.x.22]*
+   Return the dimension of the domain space.    
+*  [2.x.39]  The matrix is of dimension  [2.x.40] .  
+* [0.x.23]*
+   Fill rectangular block.     A rectangular block of the matrix <tt>src</tt> is copied into   <tt>this</tt>. The upper left corner of the block being copied is   <tt>(src_offset_i,src_offset_j)</tt>.  The upper left corner of the   copied block is <tt>(dst_offset_i,dst_offset_j)</tt>.  The size of the   rectangular block being copied is the maximum size possible, determined   either by the size of <tt>this</tt> or <tt>src</tt>.     The final two arguments allow to enter a multiple of the source or its   transpose.  
+* [0.x.24]*
+   Matrix-vector-multiplication.     Depending on previous transformations recorded in #state, the result of   this function is one of    [2.x.41]     [2.x.42]  If #state is  [2.x.43]  or  [2.x.44]    this will be a regular matrix vector product using LAPACK gemv().    [2.x.45]  If #state is  [2.x.46]  or  [2.x.47]  this   function first multiplies with the right transformation matrix, then with   the diagonal matrix of singular values or their reciprocal values, and   finally with the left transformation matrix.    [2.x.48]      The optional parameter  [2.x.49]  determines, whether the result is   stored in the vector    [2.x.50]    or added to it    [2.x.51] .    
+*  [2.x.52]  Source and destination must not be the same vector.    
+*  [2.x.53]  The template with  [2.x.54]  only exists for compile-time   compatibility with FullMatrix. Only the case  [2.x.55]  =  [2.x.56]  is   implemented due to limitations in the underlying LAPACK interface. All   other variants throw an error upon invocation.  
+* [0.x.25]*
+   Specialization of above function for compatible  [2.x.57]   
+* [0.x.26]*
+   Adding Matrix-vector-multiplication  [2.x.58] .     See the documentation of vmult() for details on the implementation.  
+* [0.x.27]*
+   Specialization of above function for compatible  [2.x.59]   
+* [0.x.28]*
+   Transpose matrix-vector-multiplication.     The optional parameter  [2.x.60]  determines, whether the result is   stored in the vector    [2.x.61]    or added to it    [2.x.62] .     See the documentation of vmult() for details on the implementation.  
+* [0.x.29]*
+   Specialization of above function for compatible  [2.x.63]   
+* [0.x.30]*
+   Adding transpose matrix-vector-multiplication  [2.x.64] .     See the documentation of vmult() for details on the implementation.  
+* [0.x.31]*
+   Specialization of above function for compatible  [2.x.65]   
+* [0.x.32]*
+   Matrix-matrix-multiplication.     The optional parameter  [2.x.66]  determines, whether the result is   stored in the matrix    [2.x.67]    or added to it    [2.x.68] .    
+*  [2.x.69]  It is assumed that  [2.x.70]  and  [2.x.71]  have compatible sizes and that    [2.x.72]  already has the right size.      [2.x.73]  function uses the BLAS function Xgemm.  
+* [0.x.33]*
+   Same as before, but stores the result in a FullMatrix, not in a   LAPACKFullMatrix.  
+* [0.x.34]*
+   Matrix-matrix-multiplication using transpose of <tt>this</tt>.     The optional parameter  [2.x.74]  determines, whether the result is   stored in the matrix    [2.x.75]    or added to it    [2.x.76] .    
+*  [2.x.77]  It is assumed that  [2.x.78]  and  [2.x.79]  have compatible sizes and that    [2.x.80]  already has the right size.    
+*  [2.x.81]  This function uses the BLAS function Xgemm.  
+* [0.x.35]*
+   Same as before, but stores the result in a FullMatrix, not in a   LAPACKFullMatrix.  
+* [0.x.36]*
+   Matrix-matrix-multiplication using transpose of <tt>this</tt> and a   diagonal vector  [2.x.82]      If the  [2.x.83]  then the result is stored in the matrix    [2.x.84]    otherwise it is added  [2.x.85] .    
+*  [2.x.86]  It is assumed that  [2.x.87]   [2.x.88]  and  [2.x.89]  have compatible sizes and that    [2.x.90]  already has the right size.    
+*  [2.x.91]  This function is not provided by LAPACK. The function first forms  [2.x.92]  product and   then uses Xgemm function.  
+* [0.x.37]*
+   Matrix-matrix-multiplication using transpose of  [2.x.93]      The optional parameter  [2.x.94]  determines, whether the result is   stored in the matrix    [2.x.95]    or added to it    [2.x.96] .    
+*  [2.x.97]  It is assumed that  [2.x.98]  and  [2.x.99]  have compatible sizes and that    [2.x.100]  already has the right size.    
+*  [2.x.101]  This function uses the BLAS function Xgemm.  
+* [0.x.38]*
+   Same as before, but stores the result in a FullMatrix, not in a   LAPACKFullMatrix.  
+* [0.x.39]*
+   Matrix-matrix-multiplication using transpose of <tt>this</tt> and    [2.x.102]      The optional parameter  [2.x.103]  determines, whether the result is   stored in the matrix    [2.x.104]    or added to it    [2.x.105] .    
+*  [2.x.106]  It is assumed that  [2.x.107]  and  [2.x.108]  have compatible sizes and that    [2.x.109]  already has the right size.    
+*  [2.x.110]  This function uses the BLAS function Xgemm.  
+* [0.x.40]*
+   Same as before, but stores the result in a FullMatrix, not in a   LAPACKFullMatrix.  
+* [0.x.41]*
+   Performs out-place transposition.   Matrix  [2.x.111]  should be appropriately sized.    
+*  [2.x.112]  for complex number types, conjugate transpose will be performed.    
+*  [2.x.113]  If deal.II is configured with Intel-MKL, `mkl_?omatcopy` will be used,   otherwise transposition is done element by element.  
+* [0.x.42]*
+   Scale rows of this matrix by  [2.x.114]  . This is equivalent to premultiplication   with a diagonal matrix  [2.x.115] .  
+* [0.x.43]*
+   Compute the LU factorization of the matrix using LAPACK function Xgetrf.  
+* [0.x.44]*
+   Compute the Cholesky factorization of the matrix using LAPACK function   Xpotrf.    
+*  [2.x.116]  The factorization is stored in the lower-triangular part of the matrix.  
+* [0.x.45]*
+   Estimate the reciprocal of the condition number  [2.x.117]  in  [2.x.118]    norm ( [2.x.119] ) of a symmetric   positive definite matrix using Cholesky factorization. This function can   only be called if the matrix is already factorized.    
+*  [2.x.120]  The condition number  [2.x.121]  can be used to estimate the numerical   error related to the matrix inversion or the solution of the   system of linear algebraic equations as    [2.x.122] .   Alternatively one can get the number of accurate digits    [2.x.123] .    
+*  [2.x.124]  The function computes reciprocal of the condition number to   avoid possible overflow if the matrix is nearly singular.      [2.x.125]  l1_norm Is the  [2.x.126]  norm of the matrix before calling Cholesky   factorization. It can be obtained by calling l1_norm().  
+* [0.x.46]*
+   Estimate the reciprocal of the condition number  [2.x.127]  in  [2.x.128]    norm for triangular matrices. The matrix has to have the    [2.x.129]  set to either    [2.x.130]  or    [2.x.131]  see set_property().  
+* [0.x.47]*
+   Compute the determinant of a matrix. As it requires the LU factorization of   the matrix, this function can only be called after   compute_lu_factorization() has been called.  
+* [0.x.48]*
+   Compute  [2.x.132]  norm.  
+* [0.x.49]*
+   Compute  [2.x.133]  norm.  
+* [0.x.50]*
+   Compute Frobenius norm  
+* [0.x.51]*
+   Compute trace of the matrix, i.e. the sum of the diagonal values.   Obviously, the matrix needs to be quadratic for this function.  
+* [0.x.52]*
+   Invert the matrix by first computing an LU/Cholesky factorization with the   LAPACK function Xgetrf/Xpotrf and then building the actual inverse using   Xgetri/Xpotri.  
+* [0.x.53]*
+   Solve the linear system with right hand side  [2.x.134]  and put the solution   back to  [2.x.135]  The matrix should be either triangular or LU/Cholesky   factorization should be previously computed.     The flag transposed indicates whether the solution of the transposed   system is to be performed.  
+* [0.x.54]*
+   Same as above but for multiple right hand sides (as many as there   are columns in the matrix  [2.x.136]   
+* [0.x.55]*
+   Compute eigenvalues of the matrix. After this routine has been called,   eigenvalues can be retrieved using the eigenvalue() function. The matrix   itself will be  [2.x.137]  after this operation.     The optional arguments allow to compute left and right eigenvectors as   well.     Note that the function does not return the computed eigenvalues right   away since that involves copying data around between the output arrays of   the LAPACK functions and any return array. This is often unnecessary   since one may not be interested in all eigenvalues at once, but for   example only the extreme ones. In that case, it is cheaper to just have   this function compute the eigenvalues and have a separate function that   returns whatever eigenvalue is requested.    
+*  [2.x.138]  Calls the LAPACK function Xgeev.  
+* [0.x.56]*
+   Compute eigenvalues and eigenvectors of a real symmetric matrix. Only   eigenvalues in the interval  [2.x.139]  are   computed with the absolute tolerance  [2.x.140] . An approximate   eigenvalue is accepted as converged when it is determined to lie in an   interval  [2.x.141]  of width less than or equal to  [2.x.142] , where  [2.x.143]  is the machine precision.  If    [2.x.144]  is less than or equal to zero, then    [2.x.145]  will be used in its place, where  [2.x.146]  is   the 1-norm of the tridiagonal matrix obtained by reducing  [2.x.147]  to   tridiagonal form. Eigenvalues will be computed most accurately when    [2.x.148]  is set to twice the underflow threshold, not zero.   After this routine has been called, all eigenvalues in  [2.x.149]  will be stored in eigenvalues and the corresponding   eigenvectors will be stored in the columns of eigenvectors, whose dimension   is set accordingly.    
+*  [2.x.150]  Calls the LAPACK function Xsyevx.  
+* [0.x.57]*
+   Compute generalized eigenvalues and eigenvectors of a real generalized   symmetric eigenproblem of the form
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - itype = 1:  [2.x.151] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - itype = 2:  [2.x.152] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - itype = 3:  [2.x.153]      where  [2.x.154]  is this matrix.  [2.x.155]    and  [2.x.156]  are assumed to be symmetric, and  [2.x.157]  has to be   positive definite. Only eigenvalues in the interval  [2.x.158]  are computed with the absolute tolerance    [2.x.159] .  An approximate eigenvalue is accepted as converged   when it is determined to lie in an interval  [2.x.160]  of width less than or   equal to  [2.x.161] , where  [2.x.162]  is   the machine precision. If  [2.x.163]  is less than or equal to   zero, then  [2.x.164]  will be used in its place, where    [2.x.165]  is the 1-norm of the tridiagonal matrix obtained by   reducing  [2.x.166]  to tridiagonal form. Eigenvalues will be computed most   accurately when  [2.x.167]  is set to twice the underflow   threshold, not zero. After this routine has been called, all eigenvalues in    [2.x.168]  will be stored in eigenvalues and   the corresponding eigenvectors will be stored in eigenvectors, whose   dimension is set accordingly.    
+*  [2.x.169]  Calls the LAPACK function Xsygvx.  
+* [0.x.58]*
+   Same as the other compute_generalized_eigenvalues_symmetric function   except that all eigenvalues are computed and the tolerance is set   automatically.  Note that this function does not return the computed   eigenvalues right away since that involves copying data around between   the output arrays of the LAPACK functions and any return array. This is   often unnecessary since one may not be interested in all eigenvalues at   once, but for example only the extreme ones. In that case, it is cheaper   to just have this function compute the eigenvalues and have a separate   function that returns whatever eigenvalue is requested. Eigenvalues can   be retrieved using the eigenvalue() function.  The number of computed   eigenvectors is equal to eigenvectors.size()    
+*  [2.x.170]  Calls the LAPACK function Xsygv.  
+* [0.x.59]*
+   Compute the singular value decomposition of the matrix using LAPACK   function Xgesdd.     Requires that the #state is  [2.x.171]  fills the data members   #wr, #svd_u, and #svd_vt, and leaves the object in the #state    [2.x.172]      The singular value decomposition factorizes the provided matrix (A) into   three parts: U, sigma, and the transpose of V (V^T), such that A = U sigma   V^T. Sigma is a MxN matrix which contains the singular values of A on   the diagonal while all the other elements are zero. U is a MxM orthogonal   matrix containing the left singular vectors corresponding to the singular   values of A. V is a NxN orthonal matrix containing the right singular   vectors corresponding the singular values of A.     Note that the variable #svd_vt contains the tranpose of V and can be   accessed by get_svd_vt(), while U is accessed with get_svd_u().  
+* [0.x.60]*
+   Compute the inverse of the matrix by singular value decomposition.     Requires that #state is either  [2.x.173]  or    [2.x.174]  In the first case, this function calls compute_svd().   After this function, the object will have the #state    [2.x.175]      For a singular value decomposition, the inverse is simply computed by   replacing all singular values by their reciprocal values. If the matrix   does not have maximal rank, singular values 0 are not touched, thus   computing the minimal norm right inverse of the matrix.     The parameter  [2.x.176]  determines, when a singular value should   be considered zero. It is the ratio of the smallest to the largest   nonzero singular value  [2.x.177] . Thus, the inverses of all   singular values less than   [2.x.178]  will   be set to zero.  
+* [0.x.61]*
+   Same as above but provide the size of the kernel instead of a threshold,   i.e. the  [2.x.179]  smallest eigenvalues.  
+* [0.x.62]*
+   Retrieve eigenvalue after compute_eigenvalues() was called.  
+* [0.x.63]*
+   Retrieve singular values after compute_svd() or compute_inverse_svd() was   called.  
+* [0.x.64]*
+   Retrieve the matrix #svd_u after compute_svd() or compute_inverse_svd() was   called.  
+* [0.x.65]*
+   Retrieve the matrix #svd_vt after compute_svd() or compute_inverse_svd()   was called.  
+* [0.x.66]*
+   Print the matrix and allow formatting of entries.     The parameters allow for a flexible setting of the output format:      [2.x.180]  out This specifies the stream to write to.      [2.x.181]  precision denotes the number of trailing digits.      [2.x.182]  scientific is used to determine the number format, where    [2.x.183]  means fixed point notation.      [2.x.184]  width denotes the with of each column. A zero entry for    [2.x.185]  makes the function compute a width, but it may be changed   to a positive value, if output is crude.      [2.x.186]  zero_string specifies a string printed for zero entries.      [2.x.187]  denominator Multiply the whole matrix by this common   denominator to get nicer numbers.      [2.x.188]  threshold all entries with absolute value smaller than   this are considered zero.    
+*  [2.x.189]  The entries stored resemble a matrix only if the state is either    [2.x.190]  or  [2.x.191]  Otherwise, calling this   function is not allowed.  
+* [0.x.67]*
+   Internal function to compute various norms.  
+* [0.x.68]*
+   Since LAPACK operations notoriously change the meaning of the matrix   entries, we record the current state after the last operation here.  
+* [0.x.69]*
+   Additional property of the matrix which may help to select more   efficient LAPACK functions.  
+* [0.x.70]*
+   The working array used for some LAPACK functions.  
+* [0.x.71]*
+   Integer working array used for some LAPACK functions.  
+* [0.x.72]*
+   The vector storing the permutations applied for pivoting in the LU-   factorization.     Also used as the scratch array IWORK for LAPACK functions needing it.  
+* [0.x.73]*
+   Workspace for calculating the inverse matrix from an LU factorization.  
+* [0.x.74]*
+   Real parts of eigenvalues or the singular values. Filled by   compute_eigenvalues() or compute_svd().  
+* [0.x.75]*
+   Imaginary parts of eigenvalues, or, in the complex scalar case, the   eigenvalues themselves. Filled by compute_eigenvalues.  
+* [0.x.76]*
+   Space where left eigenvectors can be stored.  
+* [0.x.77]*
+   Space where right eigenvectors can be stored.  
+* [0.x.78]*
+   The matrix  [2.x.192]  in the singular value decomposition    [2.x.193] .  
+* [0.x.79]*
+   The matrix  [2.x.194]   in the singular value decomposition    [2.x.195] .  
+* [0.x.80]*
+   Thread mutex.  
+* [0.x.81]*
+ A preconditioner based on the LU-factorization of LAPACKFullMatrix.
+* 
+
+* 
+*  [2.x.196] 
+
+* 
+* [0.x.82]

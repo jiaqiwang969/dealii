@@ -3,7 +3,7 @@ digraph "Textual output"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
-  Node2 [label="Input/Output",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__IO.html",tooltip="This module collects the classes used for reading and writing meshes and data. There are two sub-modu..."];
-  Node1 [label="Textual output",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="In addition to classes that provide graphical output formats (see the Graphical output module),..."];
+  Node2 [label="Input/Output This module\l collects the classes used\l for reading",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__IO.html",tooltip="and writing meshes and data. There are two sub-modules for each of these operations."];
+  Node1 [label="Textual output",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="In addition to classes that provide graphical output formats (see the Graphical output deal...."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
 }

@@ -1,0 +1,47 @@
+[0.x.0]!  [2.x.0]  Preconditioners [2.x.1] 
+
+* 
+* [0.x.1]*
+ Implementation of the Modified Incomplete Cholesky (MIC(0)) preconditioner for symmetric matrices. This class conforms to the state and usage specification in SparseLUDecomposition.
+* 
+
+*  [1.x.0]
+*  Let a symmetric, positive-definite, sparse matrix  [2.x.2]  be in the form  [2.x.3] , where  [2.x.4]  is the diagonal part of  [2.x.5]  and  [2.x.6]  is a strictly lower triangular matrix. The MIC(0) decomposition of the matrix  [2.x.7]  is defined by  [2.x.8] , where  [2.x.9]  is a diagonal matrix defined by the condition  [2.x.10] .
+
+* 
+* [0.x.2]*
+   Declare type for container size.  
+* [0.x.3]*
+   Constructor. Does nothing, so you have to call  [2.x.11]  sometimes   afterwards.  
+* [0.x.4]*
+   Destructor.  
+* [0.x.5]*
+   Deletes all member variables. Leaves the class in the state that it had   directly after calling the constructor  
+* [0.x.6]*
+   Make the  [2.x.12]  type in the base class accessible to this   class as well.  
+* [0.x.7]*
+   Perform the incomplete LU factorization of the given matrix.     This function needs to be called before an object of this class is used   as preconditioner.     For more details about possible parameters, see the class documentation   of SparseLUDecomposition and the documentation of the  [2.x.13]     [2.x.14]  class.     According to the  [2.x.15]  this function creates a new   SparsityPattern or keeps the previous sparsity or takes the sparsity   given by the user to  [2.x.16]  Then, this function performs the MIC   decomposition.     After this function is called the preconditioner is ready to be used.  
+* [0.x.8]*
+   Apply the incomplete decomposition, i.e. do one forward-backward step    [2.x.17] .     Call  [2.x.18]  before calling this function.  
+* [0.x.9]*
+   Apply the transpose of the incomplete decomposition, i.e. do one forward-   backward step  [2.x.19] .     Call  [2.x.20]  before calling this function.    
+*  [2.x.21]  This function has not yet been implemented  
+* [0.x.10]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.11]*
+    [2.x.22]  Exceptions    [2.x.23]   
+* [0.x.12]*
+   Exception  
+* [0.x.13]*
+   Exception  
+* [0.x.14]*
+   Exception  
+* [0.x.15]*
+   Values of the computed diagonal.  
+* [0.x.16]*
+   Inverses of the diagonal: precomputed for faster vmult.  
+* [0.x.17]*
+   Values of the computed "inner sums", i.e. per-row sums of the elements   laying on the right side of the diagonal.  
+* [0.x.18]*
+   Compute the row-th "inner sum".  
+* [0.x.19]

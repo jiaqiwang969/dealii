@@ -4,7 +4,7 @@ digraph "Constraints on degrees of freedom"
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
   Node1 [label="Constraints on degrees\l of freedom",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
-  Node2 [label="Degrees of Freedom",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__dofs.html",tooltip="This module groups classes and namespaces that have to do with handling degrees of freedom...."];
+  Node2 [label="Degrees of Freedom\l This module groups\l classes and namespaces",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__dofs.html",tooltip="that have to do with handling degrees of freedom. The central class of this group is the DoFHandler c..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
   Node1->Node2 [shape=plaintext, label="AffineConstraints", color="orange", dir="none", style="dashed"];
 }

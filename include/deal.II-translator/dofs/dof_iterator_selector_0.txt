@@ -1,0 +1,7 @@
+[0.x.0]*
+     Define some types for DoF handling in one dimension.         The types have the same meaning as those declared in      [2.x.0]  only the     treatment of templates is a little more complicated. See the      [2.x.1]      module for more information.    
+* [0.x.1]*
+     Define some types for DoF handling in two dimensions.         The types have the same meaning as those declared in      [2.x.2]  only the     treatment of templates is a little more complicated. See the      [2.x.3]      module for more information.    
+* [0.x.2]*
+     Define some types for DoF handling in three dimensions.         The types have the same meaning as those declared in      [2.x.4]  only the     treatment of templates is a little more complicated. See the      [2.x.5]      module for more information.    
+* [0.x.3]

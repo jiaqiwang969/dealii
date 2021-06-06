@@ -1,0 +1,51 @@
+[0.x.0]*
+   All small temporary data objects that are needed once per thread by the   several functions of the error estimator are gathered in this struct.   The reason for this structure is mainly that we have a number of   functions that operate on cells or faces and need a number of small   temporary data objects. Since these functions may run in parallel, we   cannot make these objects member variables of the enclosing class. On   the other hand, declaring them locally in each of these functions would   require their reallocating every time we visit the next cell or face,   which we found can take a significant amount of time if it happens   often even in the single threaded case (10-20 per cent in our   measurements); however, most importantly, memory allocation requires   synchronization in multithreaded mode. While that is done by the C++   library and has not to be handcoded, it nevertheless seriously damages   the ability to efficiently run the functions of this class in parallel,   since they are quite often blocked by these synchronization points,   slowing everything down by a factor of two or three.     Thus, every thread gets an instance of this class to work with and   needs not allocate memory itself, or synchronize with other threads.     The sizes of the arrays are initialized with the maximal number of   entries necessary for the hp-case. Within the loop over individual   cells, we then resize the arrays as necessary. Since for  [2.x.0]    resizing to a smaller size doesn't imply memory allocation, this is   fast.  
+* [0.x.1]*
+     The finite element to be used.    
+* [0.x.2]*
+     The quadrature formulas to be used for the faces.    
+* [0.x.3]*
+     FEFaceValues objects to integrate over the faces of the current and     potentially of neighbor cells.    
+* [0.x.4]*
+     A vector to store the jump of the normal vectors in the quadrature     points for each of the solution vectors (i.e. a temporary value).     This vector is not allocated inside the functions that use it, but     rather globally, since memory allocation is slow, in particular in     presence of multiple threads where synchronization makes things even     slower.    
+* [0.x.5]*
+     A vector for the gradients of the finite element function on one cell         Let psi be a short name for <tt>a grad u_h</tt>, where the third     index be the component of the finite element, and the second index     the number of the quadrature point. The first index denotes the index     of the solution vector.    
+* [0.x.6]*
+     The same vector for a neighbor cell    
+* [0.x.7]*
+     The normal vectors of the finite element function on one face    
+* [0.x.8]*
+     Normal vectors of the opposing face.    
+* [0.x.9]*
+     Two arrays needed for the values of coefficients in the jumps, if     they are given.    
+* [0.x.10]*
+     Array for the products of Jacobian determinants and weights of     quadraturs points.    
+* [0.x.11]*
+     The subdomain id we are to care for.    
+* [0.x.12]*
+     The material id we are to care for.    
+* [0.x.13]*
+     Some more references to input data to the      [2.x.1]  function.    
+* [0.x.14]*
+     Constructor.    
+* [0.x.15]*
+     Resize the arrays so that they fit the number of quadrature points     associated with the given finite element index into the hp-     collections.    
+* [0.x.16]*
+   Copy data from the local_face_integrals map of a single ParallelData   object into a global such map. This is the copier stage of a WorkStream   pipeline.  
+* [0.x.17]*
+   Actually do the computation based on the evaluated gradients in   ParallelData.  
+* [0.x.18]*
+   A factor to scale the integral for the face at the boundary. Used for   Neumann BC.  
+* [0.x.19]*
+   A factor to scale the integral for the regular face.  
+* [0.x.20]*
+   A factor to scale the integral for the irregular face.  
+* [0.x.21]*
+   A factor used when summing up all the contribution from different faces   of each cell.  
+* [0.x.22]*
+   Actually do the computation on a face which has no hanging nodes (it is   regular), i.e. either on the other side there is nirvana (face is at   boundary), or the other side's refinement level is the same as that of   this side, then handle the integration of these both cases together.  
+* [0.x.23]*
+   The same applies as for the function above, except that integration is   over face  [2.x.2]  of  [2.x.3]  where the respective neighbor is   refined, so that the integration is a bit more complex.  
+* [0.x.24]*
+   Computate the error on the faces of a single cell.     This function is only needed in two or three dimensions.  The error   estimator in one dimension is implemented separately.  
+* [0.x.25]

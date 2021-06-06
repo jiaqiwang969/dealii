@@ -1,9 +1,9 @@
-digraph "Geometric and other primitives"
+digraph "Geometric and other primitives This group contains"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
-  Node1 [label="Geometric and other\l primitives",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="This group contains a number of classes that act as geometric primitives or primitives for other math..."];
-  Node2 [label="Grids and Triangulations",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="This module groups functions and classes that have to do with the topology and geometry of meshes...."];
+  Node1 [label="Geometric and other\l primitives This group\l contains",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="a number of classes that act as geometric primitives or primitives for other mathematical objects...."];
+  Node2 [label="Grids and Triangulations\l This module groups functions and",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="classes that have to do with the topology and geometry of meshes. A mesh can be thought of as a colle..."];
   Node1->Node2 [shape=plaintext, label="GeometryInfo\< 0 \>\nGeometryInfo\nReferenceCell", color="orange", dir="none", style="dashed"];
 }

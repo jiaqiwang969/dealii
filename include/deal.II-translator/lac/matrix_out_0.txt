@@ -1,0 +1,55 @@
+[0.x.0]*
+ Output a matrix in graphical form using the generic format independent output routines of the base class. The matrix is converted into a list of patches on a 2d domain where the height is given by the elements of the matrix. The functions of the base class can then write this "mountain representation" of the matrix in a variety of graphical output formats. The coordinates of the matrix output are that the columns run with increasing x-axis, as usual, starting from zero, while the rows run into the negative y-axis, also starting from zero. Note that due to some internal restrictions, this class can only output one matrix at a time, i.e. it can not take advantage of the multiple dataset capabilities of the base class.
+*  A typical usage of this class would be as follows:
+
+* 
+* [1.x.0]
+*  Of course, you can as well choose a different graphical output format. Also, this class supports any matrix, not only of type FullMatrix, as long as it satisfies a number of requirements, stated with the member functions of this class.
+*  The generation of patches through the build_patches() function can be modified by giving it an object holding certain flags. See the documentation of the members of the Options class for a description of these flags.
+* 
+
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   Declare type for container size.  
+* [0.x.2]*
+   Class holding various variables which are used to modify the output of   the MatrixOut class.  
+* [0.x.3]*
+     If  [2.x.1]  only show the absolute values of the matrix entries, rather     than their true values including the sign. Default value is  [2.x.2]     
+* [0.x.4]*
+     If larger than one, do not show each element of the matrix, but rather     an average over a number of entries. The number of output patches is     accordingly smaller. This flag determines how large each shown block     shall be (in rows/columns). For example, if it is two, then always four     entries are collated into one.         Default value is one.    
+* [0.x.5]*
+     If true, plot discontinuous patches, one for each entry.    
+* [0.x.6]*
+     Default constructor. Set all elements of this structure to their     default values.    
+* [0.x.7]*
+   Destructor. Declared in order to make it virtual.  
+* [0.x.8]*
+   Generate a list of patches from the given matrix and use the given string   as the name of the data set upon writing to a file. Once patches have   been built, you can use the functions of the base class to write the data   into a files, using one of the supported output formats.     You may give a structure holding various options. See the description of   the fields of this structure for more information.     Note that this function requires that we can extract elements of the   matrix, which is done using the get_element() function declared in an   internal namespace. By adding specializations, you can extend this class   to other matrix classes which are not presently supported. Furthermore,   we need to be able to extract the size of the matrix, for which we assume   that the matrix type offers member functions <tt>m()</tt> and   <tt>n()</tt>, which return the number of rows and columns, respectively.  
+* [0.x.9]*
+   Abbreviate the somewhat lengthy name for the  [2.x.3]    class.  
+* [0.x.10]*
+   This is a list of patches that is created each time build_patches() is   called. These patches are used in the output routines of the base   classes.  
+* [0.x.11]*
+   Name of the matrix to be written.  
+* [0.x.12]*
+   %Function by which the base class's functions get to know what patches   they shall write to a file.  
+* [0.x.13]*
+   Virtual function through which the names of data sets are obtained by the   output functions of the base class.  
+* [0.x.14]*
+   Get the value of the matrix at gridpoint <tt>(i,j)</tt>. Depending on the   given flags, this can mean different things, for example if only absolute   values shall be shown then the absolute value of the matrix entry is   taken. If the block size is larger than one, then an average of several   matrix entries is taken.  
+* [0.x.15]*
+     Return the element with given indices of a sparse matrix.    
+* [0.x.16]*
+     Return the element with given indices of a block sparse matrix.    
+* [0.x.17]*
+     Return the element with given indices of a Trilinos sparse matrix.    
+* [0.x.18]*
+     Return the element with given indices of a Trilinos block sparse     matrix.    
+* [0.x.19]*
+     Return the element with given indices from any matrix type for which     no specialization of this function was declared above. This will call     <tt>operator()</tt> on the matrix.    
+* [0.x.20]

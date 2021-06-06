@@ -1,0 +1,64 @@
+[0.x.0]*
+  [2.x.0]  Several aspects of the implementation are experimental. For the moment, it is safe to use the element on globally refined meshes with consistent orientation of faces. See the todo entries below for more detailed caveats.
+*  Implementation of N&eacute;d&eacute;lec elements. The N&eacute;d&eacute;lec space is designed to solve problems in which the solution only lives in the space  [2.x.1] , rather than in the more commonly used space  [2.x.2] . In other words, the solution must be a vector field whose curl is square integrable, but for which the gradient may not be square integrable. The typical application for this space (and these elements) is to the Maxwell equations and corresponding simplifications, such as the reduced version of the Maxwell equation that only involves the electric field  [2.x.3]  which has to satisfy the equation  [2.x.4]  in the time independent case when no currents are present, or the equation  [2.x.5]  that the magnetic vector potential  [2.x.6]  has to satisfy in the time independent case.
+*  The defining characteristic of functions in  [2.x.7]  is that they are in general discontinuous
+* 
+*  -  but that if you draw a line in 2d (or a surface in 3d), then the [1.x.0] component(s) of the vector field must be continuous across the line (or surface) even though the normal component may not be. As a consequence, the N&eacute;d&eacute;lec element is constructed in such a way that (i) it is  [2.x.8]  "vector-valued", (ii) the shape functions are discontinuous, but (iii) the tangential component(s) of the vector field represented by each shape function are continuous across the faces of cells.
+*  Other properties of the N&eacute;d&eacute;lec element are that (i) it is  [2.x.9]  "not a primitive element"; (ii) the shape functions are defined so that certain integrals over the faces are either zero or one, rather than the common case of certain point values being either zero or one.
+*  We follow the commonly used
+* 
+*  -  though confusing
+* 
+*  -  definition of the "degree" of N&eacute;d&eacute;lec elements. Specifically, the "degree" of the element denotes the polynomial degree of the [1.x.1] contained in the finite element space, even if the space may contain shape functions of higher polynomial degree. The lowest order element is consequently FE_Nedelec(0), i.e., the Raviart-Thomas element "of degree zero", even though the functions of this space are in general polynomials of degree one in each variable. This choice of "degree" implies that the approximation order of the function itself is [1.x.2], as with usual polynomial spaces. The numbering so chosen implies the sequence [1.x.3] Note that this follows the convention of Brezzi and Raviart, though not the one used in the original paper by N&eacute;d&eacute;lec.
+*  This class is not implemented for the codimension one case (<tt>spacedim != dim</tt>).
+*   [2.x.10]  Even if this element is implemented for two and three space dimensions, the definition of the node values relies on consistently oriented faces in 3D. Therefore, care should be taken on complicated meshes.
+* 
+
+*  [1.x.4]
+*  The  [2.x.11]  "interpolation" operators associated with the N&eacute;d&eacute;lec element are constructed such that interpolation and computing the curl are commuting operations on rectangular mesh cells. We require this from interpolating arbitrary functions as well as the #restriction matrices.
+*  [1.x.5]
+*  The  [2.x.12]  "node values" for an element of degree [1.x.6] on the reference cell are:  [2.x.13]   [2.x.14]  On edges: the moments of the tangential component with respect to polynomials of degree [1.x.7].  [2.x.15]  On faces: the moments of the tangential components with respect to <tt>dim</tt>-1 dimensional FE_Nedelec polynomials of degree [1.x.8]-1.  [2.x.16]  In cells: the moments with respect to gradients of polynomials in FE_Q of degree [1.x.9].  [2.x.17] 
+*  [1.x.10]
+*  The node values above rely on integrals, which will be computed by quadrature rules themselves. The generalized support points are a set of points such that this quadrature can be performed with sufficient accuracy. The points needed are those of QGauss<sub>k+1</sub> on each edge and QGauss<sub>k+2</sub> on each face and in the interior of the cell (or none for N<sub>1</sub>).
+
+* 
+* [0.x.1]*
+   Constructor for the Nedelec element of given  [2.x.18]  The maximal   polynomial degree of the shape functions is `order+1` (in each variable;   the total polynomial degree may be higher). If `order = 0`, the element is   linear and has degrees of freedom only on the edges. If `order >=1` the   element has degrees of freedom on the edges, faces and volume. For example   the 3D version of FE_Nedelec has 12 degrees of freedom for `order = 0`   and 54 for `degree = 1`. It is important to have enough quadrature points   in order to perform the quadrature with sufficient accuracy.   For example [QGauss<dim>(order + 2)]( [2.x.19] ) can be used for the   quadrature formula, where `order` is the order of FE_Nedelec.  
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_Nedelec<dim>(degree)</tt>, with  [2.x.20]  and  [2.x.21]    replaced by appropriate values.  
+* [0.x.3]*
+   This function returns  [2.x.22]  if the shape function  [2.x.23]  has   non-zero function values somewhere on the face  [2.x.24]   
+* [0.x.4]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".     For the <tt>FE_Nedelec</tt> class the result is always true (independent   of the degree of the element), as it implements the complete set of   functions necessary for hp-capability.  
+* [0.x.5]*
+    [2.x.25]   [2.x.26]   
+* [0.x.6]*
+   If, on a vertex, several finite elements are active, the hp-code first   assigns the degrees of freedom of each of these FEs different global   indices. It then calls this function to find out which of them should get   identical values, and consequently can receive the same global DoF index.   This function therefore returns a list of identities between DoFs of the   present finite element object with the DoFs of  [2.x.27]  which is a   reference to a finite element object representing one of the other finite   elements active on this particular vertex. The function computes which of   the degrees of freedom of the two finite element objects are equivalent,   both numbered between zero and the corresponding value of   n_dofs_per_vertex() of the two finite elements. The first index of each   pair denotes one of the vertex dofs of the present element, whereas the   second is the corresponding index of the other finite element.  
+* [0.x.7]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on lines.  
+* [0.x.8]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on lines.  
+* [0.x.9]*
+   Return the matrix interpolating from a face of one element to the face of   the neighboring element. The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Derived elements will have to implement this function. They may only   provide interpolation matrices for certain source finite elements, for   example those from the same family. If they don't implement interpolation   from a given element, then they must throw an exception of type    [2.x.28]   
+* [0.x.10]*
+   Return the matrix interpolating from a face of one element to the subface   of the neighboring element. The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Derived elements will have to implement this function. They may only   provide interpolation matrices for certain source finite elements, for   example those from the same family. If they don't implement interpolation   from a given element, then they must throw an exception of type   <tt>ExcInterpolationNotImplemented</tt>.  
+* [0.x.11]*
+   Projection from a fine grid space onto a coarse grid space. If this   projection operator is associated with a matrix  [2.x.29]  then the   restriction of this matrix  [2.x.30]  to a single child cell is returned   here.     The matrix  [2.x.31]  is the concatenation or the sum of the cell matrices  [2.x.32]    P_i, depending on the #restriction_is_additive_flags. This distinguishes   interpolation (concatenation) and projection with respect to scalar   products (summation).     Row and column indices are related to coarse grid and fine grid spaces,   respectively, consistent with the definition of the associated operator.  
+* [0.x.12]*
+   Embedding matrix between grids.     The identity operator from a coarse grid space into a fine grid space is   associated with a matrix  [2.x.33]  The restriction of this matrix  [2.x.34]  to a   single child cell is returned here.     The matrix  [2.x.35]  is the concatenation, not the sum of the cell matrices  [2.x.36]    P_i. That is, if the same non-zero entry <tt>j,k</tt> exists in two   different child matrices  [2.x.37]  the value should be the same in both   matrices and it is copied into the matrix  [2.x.38]  only once.     Row and column indices are related to fine grid and coarse grid spaces,   respectively, consistent with the definition of the associated operator.     These matrices are used by routines assembling the prolongation matrix   for multi-level methods.  Upon assembling the transfer matrix between   cells using this matrix array, zero elements in the prolongation matrix   are discarded and will not fill up the transfer matrix.  
+* [0.x.13]*
+   Return a list of constant modes of the element.  
+* [0.x.14]*
+   Only for internal use. Its full name is  [2.x.39]    function and it creates the  [2.x.40]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.41]    FiniteElementData.     If the optional argument <tt>dg</tt> is true, the vector returned will   have all degrees of freedom assigned to the cell, none on the faces and   edges.  
+* [0.x.15]*
+   Initialize the  [2.x.42]  field of the FiniteElement   class and fill the tables with interpolation weights (#boundary_weights   and interior_weights). Called from the constructor.  
+* [0.x.16]*
+   Initialize the interpolation from functions on refined mesh cells onto   the father cell. According to the philosophy of the Nédélec element,   this restriction operator preserves the curl of a function weakly.  
+* [0.x.17]*
+   These are the factors multiplied to a function in the   #generalized_face_support_points when computing the integration.     See the    [2.x.43]  "glossary entry on generalized support points"   for more information.  
+* [0.x.18]*
+   Mutex for protecting initialization of restriction and embedding matrix.  
+* [0.x.19]*
+   Initialize the permutation pattern and the pattern of sign change.    
+*  [2.x.44]  This function is not fully filled with the correct implementation   yet. It needs to be consistently implemented in a future release to work   on meshes that contain cells with flipped faces.  
+* [0.x.20]

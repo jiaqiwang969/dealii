@@ -1,0 +1,9 @@
+[0.x.0]*
+ The constructor for <tt>VectorFunctionFromTensorFunction</tt> which initiates the return vector to be size <tt>n_components</tt>.
+
+* 
+* [0.x.1]*
+ Member function <tt>vector_value_list </tt> is the interface for giving a list of points ( [2.x.0] ) of which to evaluate using the <tt>vector_value</tt> member function.  Again, this function is written so as to not replicate the function definition but passes each point on to <tt>vector_value</tt> to be evaluated.
+
+* 
+* [0.x.2]

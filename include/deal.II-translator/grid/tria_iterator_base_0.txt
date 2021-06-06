@@ -1,0 +1,11 @@
+[0.x.0]*
+ Namespace in which an enumeration is declared that denotes the states in which an iterator can be in.
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   The three states an iterator can be in: valid, past-the-end and invalid.  
+* [0.x.2]

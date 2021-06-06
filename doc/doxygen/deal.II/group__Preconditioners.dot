@@ -3,13 +3,13 @@ digraph "Preconditioners and Relaxation Operators"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
-  Node4 [label="Exceptions and assertions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Exceptions.html",tooltip="This module contains classes that are used in the exception mechanism of deal.II."];
-  Node2 [label="Linear algebra classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAC.html",tooltip="This module contains classes that involve linear algebra, i.e., those associated with matrices,..."];
+  Node4 [label="Exceptions and assertions\l This module contains classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Exceptions.html",tooltip="that are used in the exception mechanism of deal.II."];
+  Node2 [label="Linear algebra classes\l This module contains\l classes that",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAC.html",tooltip="involve linear algebra, i.e., those associated with matrices, vectors, and the solution of linear sys..."];
   Node1 [label="Preconditioners and\l Relaxation Operators",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
-  Node5 [label="CUDA Wrappers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__CUDAWrappers.html",tooltip="The classes in this module are concerned with the description of features to be run on GPUs using CUD..."];
+  Node5 [label="CUDA Wrappers The classes\l in this module are",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__CUDAWrappers.html",tooltip="concerned with the description of features to be run on GPUs using CUDA."];
   Node3 [label="Matrix classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Matrices.html",tooltip="deal.II comes with a number of different matrix classes, tailored to the various purposes for which m..."];
-  Node6 [label="Linear solver classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Solvers.html",tooltip="This module groups iterative and direct solvers, eigenvalue solvers, and some control classes...."];
-  Node7 [label="TrilinosWrappers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__TrilinosWrappers.html",tooltip="The classes in this module are wrappers around functionality provided by the Trilinos library...."];
+  Node6 [label="Linear solver classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Solvers.html",tooltip="In order to work properly, solvers that take matrix and vector classes as template arguments require ..."];
+  Node7 [label="TrilinosWrappers The\l classes in this module are",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__TrilinosWrappers.html",tooltip="wrappers around functionality provided by the Trilinos library. They provide a modern object-oriented..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
   Node3->Node1 [shape=plaintext, dir="back", style="solid"];
   Node1->Node4 [shape=plaintext, dir="back", style="solid"];

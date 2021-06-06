@@ -1,0 +1,79 @@
+[0.x.0]!  [2.x.0]  Matrix1 [2.x.1] 
+
+* 
+* [0.x.1]*
+ Blocked sparse matrix based on the SparseMatrix class. This class implements the functions that are specific to the SparseMatrix base objects for a blocked sparse matrix, and leaves the actual work relaying most of the calls to the individual blocks to the functions implemented in the base class. See there also for a description of when this class is useful.
+*   [2.x.2]   [2.x.3]  "Block (linear algebra)"
+
+* 
+* [0.x.2]*
+   Typedef the base class for simpler access to its own alias.  
+* [0.x.3]*
+   Typedef the type of the underlying matrix.  
+* [0.x.4]*
+   Import the alias from the base class.  
+* [0.x.5]*
+    [2.x.4]  Constructors and initialization  
+* [0.x.6]*
+   Constructor; initializes the matrix to be empty, without any structure,   i.e.  the matrix is not usable at all. This constructor is therefore only   useful for matrices which are members of a class. All other matrices   should be created at a point in the data flow where all necessary   information is available.     You have to initialize the matrix before usage with   reinit(BlockSparsityPattern). The number of blocks per row and column are   then determined by that function.  
+* [0.x.7]*
+   Constructor. Takes the given matrix sparsity structure to represent the   sparsity pattern of this matrix. You can change the sparsity pattern   later on by calling the reinit() function.     This constructor initializes all sub-matrices with the sub-sparsity   pattern within the argument.     You have to make sure that the lifetime of the sparsity structure is at   least as long as that of this matrix or as long as reinit() is not called   with a new sparsity structure.  
+* [0.x.8]*
+   Destructor.  
+* [0.x.9]*
+   Pseudo copy operator only copying empty objects. The sizes of the block   matrices need to be the same.  
+* [0.x.10]*
+   This operator assigns a scalar to a matrix. Since this does usually not   make much sense (should we set all matrix entries to this value? Only the   nonzero entries of the sparsity pattern?), this operation is only allowed   if the actual value to be assigned is zero. This operator only exists to   allow for the obvious notation <tt>matrix=0</tt>, which sets all elements   of the matrix to zero, but keep the sparsity pattern previously used.  
+* [0.x.11]*
+   Release all memory and return to a state just like after having called   the default constructor. It also forgets the sparsity pattern it was   previously tied to.     This calls  [2.x.5]  on all sub-matrices and then resets this   object to have no blocks at all.  
+* [0.x.12]*
+   Reinitialize the sparse matrix with the given sparsity pattern. The   latter tells the matrix how many nonzero elements there need to be   reserved.     Basically, this function only calls  [2.x.6]  of the sub-   matrices with the block sparsity patterns of the parameter.     You have to make sure that the lifetime of the sparsity structure is at   least as long as that of this matrix or as long as reinit(const   SparsityPattern &) is not called with a new sparsity structure.     The elements of the matrix are set to zero by this function.  
+* [0.x.13]*
+    [2.x.7]  Information on the matrix  
+* [0.x.14]*
+   Return whether the object is empty. It is empty if either both dimensions   are zero or no BlockSparsityPattern is associated.  
+* [0.x.15]*
+   Return the number of entries in a specific row.  
+* [0.x.16]*
+   Return the number of nonzero elements of this matrix. Actually, it   returns the number of entries in the sparsity pattern; if any of the   entries should happen to be zero, it is counted anyway.  
+* [0.x.17]*
+   Return the number of actually nonzero elements. Just counts the number of   actually nonzero elements (with absolute value larger than threshold) of   all the blocks.  
+* [0.x.18]*
+   Return a (constant) reference to the underlying sparsity pattern of this   matrix.     Though the return value is declared <tt>const</tt>, you should be aware   that it may change if you call any nonconstant function of objects which   operate on it.  
+* [0.x.19]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.20]*
+    [2.x.8]  Multiplications  
+* [0.x.21]*
+   Matrix-vector multiplication: let  [2.x.9]  with  [2.x.10]  being this   matrix.  
+* [0.x.22]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block column.  
+* [0.x.23]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block row.  
+* [0.x.24]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block.  
+* [0.x.25]*
+   Matrix-vector multiplication: let  [2.x.11]  with  [2.x.12]  being this   matrix. This function does the same as vmult() but takes the transposed   matrix.  
+* [0.x.26]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block row.  
+* [0.x.27]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block column.  
+* [0.x.28]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block.  
+* [0.x.29]*
+    [2.x.13]  Preconditioning methods  
+* [0.x.30]*
+   Apply the Jacobi preconditioner, which multiplies every element of the   <tt>src</tt> vector by the inverse of the respective diagonal element and   multiplies the result with the relaxation parameter <tt>omega</tt>.     All diagonal blocks must be square matrices for this operation.  
+* [0.x.31]*
+   Apply the Jacobi preconditioner to a simple vector.     The matrix must be a single square block for this.  
+* [0.x.32]*
+    [2.x.14]  Input/Output  
+* [0.x.33]*
+   Print the matrix in the usual format, i.e. as a matrix and not as a list   of nonzero elements. For better readability, elements not in the matrix   are displayed as empty space, while matrix elements which are explicitly   set to zero are displayed as such.     The parameters allow for a flexible setting of the output format:   <tt>precision</tt> and <tt>scientific</tt> are used to determine the   number format, where <tt>scientific = false</tt> means fixed point   notation.  A zero entry for <tt>width</tt> makes the function compute a   width, but it may be changed to a positive value, if output is crude.     Additionally, a character for an empty value may be specified.     Finally, the whole matrix can be multiplied with a common denominator to   produce more readable output, even integers.      [2.x.15]  This function may produce [1.x.0] amounts of output if   applied to a large matrix!  
+* [0.x.34]*
+    [2.x.16]  Exceptions    [2.x.17]   
+* [0.x.35]*
+   Exception  
+* [0.x.36]*
+   Pointer to the block sparsity pattern used for this matrix. In order to   guarantee that it is not deleted while still in use, we subscribe to it   using the SmartPointer class.  
+* [0.x.37]

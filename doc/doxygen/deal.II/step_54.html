@@ -165,7 +165,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line"><span class="preprocessor">#include &lt;fstream&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
 </div><!-- fragment --><p>We isolate the rest of the program in its own namespace</p>
-<div class="fragment"><div class="line"><span class="keyword">namespace </span>Step54</div>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span><a class="code" href="namespaceStep54.html">Step54</a></div>
 <div class="line">{</div>
 <div class="line">  <span class="keyword">using namespace </span><a class="code" href="namespacedealii.html">dealii</a>;</div>
 </div><!-- fragment --><p><a class="anchor" id="TheTriangulationOnCADclass"></a> </p><h3>The TriangulationOnCAD class</h3>
@@ -188,14 +188,14 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">    <span class="keyword">const</span> std::string &amp;  output_filename,</div>
 <div class="line">    <span class="keyword">const</span> ProjectionType surface_projection_kind = NormalProjection);</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordtype">void</span> <a class="code" href="namespaceWorkStream_1_1internal_1_1tbb__no__coloring.html#a8673698a405bf47aa24002aeb6d76d70">run</a>();</div>
+<div class="line">  <span class="keywordtype">void</span> <a class="code" href="A-headers_2exceptions__0_8txt.html#a8fba07b9a84b89e6be225f5f95c3e355">run</a>();</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">private</span>:</div>
 <div class="line">  <span class="keywordtype">void</span> read_domain();</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordtype">void</span> refine_mesh();</div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordtype">void</span> output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> cycle);</div>
+<div class="line">  <span class="keywordtype">void</span> output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>);</div>
 <div class="line"> </div>
 <div class="line">  <a class="code" href="classTriangulation.html">Triangulation&lt;2, 3&gt;</a> tria;</div>
 <div class="line"> </div>
@@ -226,35 +226,35 @@ If you use this program as a basis for your own work, please consider citing it 
 <p>The following function then first imports the given CAD file. The function arguments are a string containing the desired file name, and a scale factor. In this example, the scale factor is set to 1e-3, as the original geometry is written in millimeters (which is the typical unit of measure for most IGES files), while we prefer to work in meters. The output of the function is an object of <a class="el" href="namespaceOpenCASCADE.html">OpenCASCADE</a> generic topological shape class, namely a <code>TopoDS_Shape</code>.</p>
 <div class="fragment"><div class="line"><span class="keywordtype">void</span> TriangulationOnCAD::read_domain()</div>
 <div class="line">{</div>
-<div class="line">  TopoDS_Shape bow_surface = <a class="code" href="namespaceOpenCASCADE.html#affe07b496f4edf844d5f4e8d7a540295">OpenCASCADE::read_IGES</a>(cad_file_name, 1<a class="code" href="namespacePhysics_1_1Elasticity_1_1Kinematics.html#a496b854daac5cca870bc8008f562daad">e</a>-3);</div>
+<div class="line">  TopoDS_Shape bow_surface = <a class="code" href="namespaceOpenCASCADE.html#affe07b496f4edf844d5f4e8d7a540295">OpenCASCADE::read_IGES</a>(cad_file_name, 1<a class="code" href="coding__conventions__0_8txt.html#a02f5aa616d7b0799c538fe77d6c6c795">e</a>-3);</div>
 </div><!-- fragment --><p>Each CAD geometrical object is defined along with a tolerance, which indicates possible inaccuracy of its placement. For instance, the tolerance <code>tol</code> of a vertex indicates that it can be located in any point contained in a sphere centered in the nominal position and having radius <code>tol</code>. While projecting a point onto a surface (which will in turn have its tolerance) we must keep in mind that the precision of the projection will be limited by the tolerance with which the surface is built.</p>
 <p>The following method extracts the tolerance of the given shape and makes it a bit bigger to stay our of trouble:</p>
-<div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keywordtype">double</span> tolerance = <a class="code" href="namespaceOpenCASCADE.html#aed838d4999b4707c48781b8d732058fe">OpenCASCADE::get_shape_tolerance</a>(bow_surface) * 5;</div>
+<div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a> = <a class="code" href="namespaceOpenCASCADE.html#aed838d4999b4707c48781b8d732058fe">OpenCASCADE::get_shape_tolerance</a>(bow_surface) * 5;</div>
 </div><!-- fragment --><p>We now want to extract a set of composite sub-shapes from the generic shape. In particular, each face of the CAD file is composed of a trimming curve of type <code>TopoDS_Wire</code>, which is the collection of <code>TopoDS_Edges</code> that compose the boundary of a surface, and a NURBS description of the surface itself. We will use a line projector to associate the boundary of our <a class="el" href="classTriangulation.html">Triangulation</a> to the wire delimiting the surface. To extract all compound sub-shapes, like wires, shells, or solids, we resort to a method of the <a class="el" href="namespaceOpenCASCADE.html">OpenCASCADE</a> namespace. The input of <a class="el" href="namespaceOpenCASCADE.html#a1e49f50433c835c841eed35f40862560">OpenCASCADE::extract_compound_shapes</a> is a shape and a set of empty std::vectors of subshapes, which will be filled with all compound shapes found in the given topological shape:</p>
 <div class="fragment"><div class="line">std::vector&lt;TopoDS_Compound&gt;  compounds;</div>
 <div class="line">std::vector&lt;TopoDS_CompSolid&gt; compsolids;</div>
-<div class="line">std::vector&lt;TopoDS_Solid&gt;     solids;</div>
+<div class="line">std::vector&lt;TopoDS_Solid&gt;     <a class="code" href="opencascade_2utilities__0_8txt.html#ab0e76cd31e0a49ab66372b4c5267d66f">solids</a>;</div>
 <div class="line">std::vector&lt;TopoDS_Shell&gt;     shells;</div>
 <div class="line">std::vector&lt;TopoDS_Wire&gt;      wires;</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="namespaceOpenCASCADE.html#a1e49f50433c835c841eed35f40862560">OpenCASCADE::extract_compound_shapes</a>(</div>
-<div class="line">  bow_surface, compounds, compsolids, solids, shells, wires);</div>
+<div class="line">  bow_surface, compounds, compsolids, <a class="code" href="opencascade_2utilities__0_8txt.html#ab0e76cd31e0a49ab66372b4c5267d66f">solids</a>, shells, wires);</div>
 </div><!-- fragment --><p>The next few steps are more familiar, and allow us to import an existing mesh from an external VTK file, and convert it to a deal triangulation.</p>
-<div class="fragment"><div class="line">std::ifstream in;</div>
+<div class="fragment"><div class="line">std::ifstream <a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>;</div>
 <div class="line"> </div>
-<div class="line">in.open(initial_mesh_filename);</div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>.open(initial_mesh_filename);</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="classGridIn.html">GridIn&lt;2, 3&gt;</a> gi;</div>
 <div class="line">gi.<a class="code" href="classGridIn.html#a82ac1c03b0efe87204ad45d2f1d87f7e">attach_triangulation</a>(tria);</div>
-<div class="line">gi.<a class="code" href="group__simplex.html#ga058cd187cea704428ac1118410cd0fb8">read_vtk</a>(in);</div>
+<div class="line">gi.<a class="code" href="group__simplex.html#ga058cd187cea704428ac1118410cd0fb8">read_vtk</a>(<a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>);</div>
 </div><!-- fragment --><p>We output this initial mesh saving it as the refinement step 0.</p>
 <div class="fragment"><div class="line">output_results(0);</div>
 </div><!-- fragment --><p>The mesh imported has a single, two-dimensional cell located in three-dimensional space. We now want to ensure that it is refined according to the CAD geometry imported above. This this end, we get an iterator to that cell and assign to it the manifold_id 1 (see <a class="el" href="DEALGlossary.html#GlossManifoldIndicator">this glossary entry</a>). We also get an iterator to its four faces, and assign each of them the manifold_id 2:</p>
-<div class="fragment"><div class="line"><a class="code" href="classTriaActiveIterator.html">Triangulation&lt;2, 3&gt;::active_cell_iterator</a> cell = tria.<a class="code" href="classTriangulation.html#a9388e821c728eab8d0e699d0ca112482">begin_active</a>();</div>
-<div class="line">cell-&gt;set_manifold_id(1);</div>
+<div class="fragment"><div class="line"><a class="code" href="classTriangulation.html">Triangulation&lt;2, 3&gt;::active_cell_iterator</a> <a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a> = tria.<a class="code" href="classTriangulation.html#a9388e821c728eab8d0e699d0ca112482">begin_active</a>();</div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;set_manifold_id(1);</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;face : cell-&gt;face_iterators())</div>
-<div class="line">  face-&gt;set_manifold_id(2);</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a> : <a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;face_iterators())</div>
+<div class="line">  <a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a>-&gt;set_manifold_id(2);</div>
 </div><!-- fragment --><p>Once both the CAD geometry and the initial mesh have been imported and digested, we use the CAD surfaces and curves to define the projectors and assign them to the manifold ids just specified.</p>
 <p>A first projector is defined using the single wire contained in our CAD file. The ArclengthProjectionLineManifold will make sure that every mesh edge located on the wire is refined with a point that lies on the wire and splits it into two equal arcs lying between the edge vertices. We first check that the wires vector contains at least one element and then create a <a class="el" href="classManifold.html">Manifold</a> object for it.</p>
 <p>Once the projector is created, we then assign it to all the parts of the triangulation with manifold_id = 2:</p>
@@ -264,7 +264,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">    <span class="stringliteral">&quot;I could not find any wire in the CAD file you gave me. Bailing out.&quot;</span>));</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="classOpenCASCADE_1_1ArclengthProjectionLineManifold.html">OpenCASCADE::ArclengthProjectionLineManifold&lt;2, 3&gt;</a> line_projector(</div>
-<div class="line">  wires[0], tolerance);</div>
+<div class="line">  wires[0], <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
 <div class="line"> </div>
 <div class="line">tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(2, line_projector);</div>
 </div><!-- fragment --><p>The surface projector is created according to what is specified with the <code>surface_projection_kind</code> option of the constructor. In particular, if the surface_projection_kind value equals <code>NormalProjection</code>, we select the <a class="el" href="classOpenCASCADE_1_1NormalProjectionManifold.html">OpenCASCADE::NormalProjectionManifold</a>. The new mesh points will then initially be generated at the barycenter of the cell/edge considered, and then projected on the CAD surface along its normal direction. The NormalProjectionManifold constructor only needs a shape and a tolerance, and we then assign it to the triangulation for use with all parts that manifold having id 1:</p>
@@ -273,7 +273,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">    <span class="keywordflow">case</span> NormalProjection:</div>
 <div class="line">      {</div>
 <div class="line">        <a class="code" href="classOpenCASCADE_1_1NormalProjectionManifold.html">OpenCASCADE::NormalProjectionManifold&lt;2, 3&gt;</a> normal_projector(</div>
-<div class="line">          bow_surface, tolerance);</div>
+<div class="line">          bow_surface, <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
 <div class="line">        tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, normal_projector);</div>
 <div class="line"> </div>
 <div class="line">        <span class="keywordflow">break</span>;</div>
@@ -284,7 +284,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">    <a class="code" href="classOpenCASCADE_1_1DirectionalProjectionManifold.html">OpenCASCADE::DirectionalProjectionManifold&lt;2, 3&gt;</a></div>
 <div class="line">      directional_projector(bow_surface,</div>
 <div class="line">                            <a class="code" href="classPoint.html">Point&lt;3&gt;</a>(0.0, 1.0, 0.0),</div>
-<div class="line">                            tolerance);</div>
+<div class="line">                            <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
 <div class="line">    tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, directional_projector);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">break</span>;</div>
@@ -293,7 +293,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="fragment"><div class="line"><span class="keywordflow">case</span> NormalToMeshProjection:</div>
 <div class="line">  {</div>
 <div class="line">    <a class="code" href="classOpenCASCADE_1_1NormalToMeshProjectionManifold.html">OpenCASCADE::NormalToMeshProjectionManifold&lt;2, 3&gt;</a></div>
-<div class="line">      normal_to_mesh_projector(bow_surface, tolerance);</div>
+<div class="line">      normal_to_mesh_projector(bow_surface, <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
 <div class="line">    tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, normal_to_mesh_projector);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">break</span>;</div>
@@ -312,35 +312,35 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">}</div>
 </div><!-- fragment --><p><a class="anchor" id="TriangulationOnCADoutput_results"></a> </p><h4>TriangulationOnCAD::output_results</h4>
 <p>Outputting the results of our computations is a rather mechanical task. All the components of this function have been discussed before:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">void</span> TriangulationOnCAD::output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> cycle)</div>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> TriangulationOnCAD::output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>)</div>
 <div class="line">{</div>
 <div class="line">  <span class="keyword">const</span> std::string filename =</div>
-<div class="line">    (output_filename + <span class="stringliteral">&quot;_&quot;</span> + <a class="code" href="namespaceUtilities.html#a6195c5f009ea8c7c536c6ffdf108c32f">Utilities::int_to_string</a>(cycle) + <span class="stringliteral">&quot;.vtk&quot;</span>);</div>
+<div class="line">    (output_filename + <span class="stringliteral">&quot;_&quot;</span> + <a class="code" href="namespaceUtilities.html#a6195c5f009ea8c7c536c6ffdf108c32f">Utilities::int_to_string</a>(<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>) + <span class="stringliteral">&quot;.vtk&quot;</span>);</div>
 <div class="line">  std::ofstream logfile(filename);</div>
 <div class="line">  <a class="code" href="classGridOut.html">GridOut</a>       grid_out;</div>
 <div class="line">  grid_out.<a class="code" href="classGridOut.html#a6b72484c35abc1f84abb8bf1bc1048dc">write_vtk</a>(tria, logfile);</div>
 <div class="line">}</div>
 </div><!-- fragment --><p><a class="anchor" id="TriangulationOnCADrun"></a> </p><h4>TriangulationOnCAD::run</h4>
 <p>This is the main function. It should be self explanatory in its briefness:</p>
-<div class="fragment"><div class="line">  <span class="keywordtype">void</span> <a class="code" href="namespaceWorkStream_1_1internal_1_1tbb__no__coloring.html#a8673698a405bf47aa24002aeb6d76d70">TriangulationOnCAD::run</a>()</div>
+<div class="fragment"><div class="line">  <span class="keywordtype">void</span> <a class="code" href="A-headers_2exceptions__0_8txt.html#a8fba07b9a84b89e6be225f5f95c3e355">TriangulationOnCAD::run</a>()</div>
 <div class="line">  {</div>
 <div class="line">    read_domain();</div>
 <div class="line"> </div>
 <div class="line">    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n_cycles = 5;</div>
-<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> cycle = 0; cycle &lt; n_cycles; ++cycle)</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> = 0; <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> &lt; n_cycles; ++<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>)</div>
 <div class="line">      {</div>
 <div class="line">        refine_mesh();</div>
-<div class="line">        output_results(cycle + 1);</div>
+<div class="line">        output_results(<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> + 1);</div>
 <div class="line">      }</div>
 <div class="line">  }</div>
 <div class="line">} <span class="comment">// namespace Step54</span></div>
-</div><!-- fragment --><p><a class="anchor" id="Themainfunction"></a> </p><h3>The main() function</h3>
+</div><!-- fragment --><p><a class="anchor" id="Themainfunction"></a> </p><h3>The <a class="el" href="step-1_8cc.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a> function</h3>
 <p>This is the main function of this program. It is in its basic structure like all previous tutorial programs, but runs the main class through the three possibilities of new vertex placement:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> main()</div>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="step-1_8cc.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a>()</div>
 <div class="line">{</div>
 <div class="line">  <span class="keywordflow">try</span></div>
 <div class="line">    {</div>
-<div class="line">      <span class="keyword">using namespace </span>Step54;</div>
+<div class="line">      <span class="keyword">using namespace </span><a class="code" href="namespaceStep54.html">Step54</a>;</div>
 <div class="line"> </div>
 <div class="line">      <span class="keyword">const</span> std::string in_mesh_filename = <span class="stringliteral">&quot;input/initial_mesh_3d.vtk&quot;</span>;</div>
 <div class="line">      <span class="keyword">const</span> std::string cad_file_name    = <span class="stringliteral">&quot;input/DTMB-5415_bulbous_bow.iges&quot;</span>;</div>
@@ -352,10 +352,10 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
 <div class="line">      std::string        out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_normal_projection&quot;</span>);</div>
-<div class="line">      TriangulationOnCAD tria_on_cad_norm(in_mesh_filename,</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_norm(in_mesh_filename,</div>
 <div class="line">                                          cad_file_name,</div>
 <div class="line">                                          out_mesh_filename,</div>
-<div class="line">                                          TriangulationOnCAD::NormalProjection);</div>
+<div class="line">                                          <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081aff7c1480c068c2daa656cff36865da86">TriangulationOnCAD::NormalProjection</a>);</div>
 <div class="line">      tria_on_cad_norm.run();</div>
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
@@ -368,11 +368,11 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
 <div class="line">      out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_directional_projection&quot;</span>);</div>
-<div class="line">      TriangulationOnCAD tria_on_cad_dir(</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_dir(</div>
 <div class="line">        in_mesh_filename,</div>
 <div class="line">        cad_file_name,</div>
 <div class="line">        out_mesh_filename,</div>
-<div class="line">        TriangulationOnCAD::DirectionalProjection);</div>
+<div class="line">        <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081a71c32dcebb205e89d710cee701b4410e">TriangulationOnCAD::DirectionalProjection</a>);</div>
 <div class="line">      tria_on_cad_dir.run();</div>
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
@@ -386,18 +386,18 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
 <div class="line">      out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_normal_to_mesh_projection&quot;</span>);</div>
-<div class="line">      TriangulationOnCAD tria_on_cad_norm_to_mesh(</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_norm_to_mesh(</div>
 <div class="line">        in_mesh_filename,</div>
 <div class="line">        cad_file_name,</div>
 <div class="line">        out_mesh_filename,</div>
-<div class="line">        TriangulationOnCAD::NormalToMeshProjection);</div>
+<div class="line">        <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081a6cd85de9b34d5dea8542043c826934c1">TriangulationOnCAD::NormalToMeshProjection</a>);</div>
 <div class="line">      tria_on_cad_norm_to_mesh.run();</div>
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
 <div class="line">      std::cout &lt;&lt; std::endl;</div>
 <div class="line">      std::cout &lt;&lt; std::endl;</div>
 <div class="line">    }</div>
-<div class="line">  <span class="keywordflow">catch</span> (std::exception &amp;exc)</div>
+<div class="line">  <span class="keywordflow">catch</span> (<a class="code" href="parameter__handler__0_8txt.html#ad919e2b915d8e8226aef004c2d8399a8">std::exception</a> &amp;exc)</div>
 <div class="line">    {</div>
 <div class="line">      std::cerr &lt;&lt; std::endl</div>
 <div class="line">                &lt;&lt; std::endl</div>
@@ -494,7 +494,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line"><span class="preprocessor">#include &lt;fstream&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">namespace </span>Step54</div>
+<div class="line"><span class="keyword">namespace </span><a class="code" href="namespaceStep54.html">Step54</a></div>
 <div class="line">{</div>
 <div class="line">  <span class="keyword">using namespace </span><a class="code" href="namespacedealii.html">dealii</a>;</div>
 <div class="line"> </div>
@@ -502,7 +502,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"> </div>
-<div class="line">  <span class="keyword">class </span>TriangulationOnCAD</div>
+<div class="line">  <span class="keyword">class </span><a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a></div>
 <div class="line">  {</div>
 <div class="line">  <span class="keyword">public</span>:</div>
 <div class="line">    <span class="keyword">enum</span> ProjectionType</div>
@@ -513,20 +513,20 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">    };</div>
 <div class="line"> </div>
 <div class="line"> </div>
-<div class="line">    TriangulationOnCAD(</div>
+<div class="line">    <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a>(</div>
 <div class="line">      <span class="keyword">const</span> std::string &amp;  initial_mesh_filename,</div>
 <div class="line">      <span class="keyword">const</span> std::string &amp;  cad_file_name,</div>
 <div class="line">      <span class="keyword">const</span> std::string &amp;  output_filename,</div>
 <div class="line">      <span class="keyword">const</span> ProjectionType surface_projection_kind = NormalProjection);</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordtype">void</span> <a class="code" href="namespaceWorkStream_1_1internal_1_1tbb__no__coloring.html#a8673698a405bf47aa24002aeb6d76d70">run</a>();</div>
+<div class="line">    <span class="keywordtype">void</span> <a class="code" href="A-headers_2exceptions__0_8txt.html#a8fba07b9a84b89e6be225f5f95c3e355">run</a>();</div>
 <div class="line"> </div>
 <div class="line">  <span class="keyword">private</span>:</div>
 <div class="line">    <span class="keywordtype">void</span> read_domain();</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordtype">void</span> refine_mesh();</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordtype">void</span> output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> cycle);</div>
+<div class="line">    <span class="keywordtype">void</span> output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>);</div>
 <div class="line"> </div>
 <div class="line">    <a class="code" href="classTriangulation.html">Triangulation&lt;2, 3&gt;</a> tria;</div>
 <div class="line"> </div>
@@ -540,7 +540,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"> </div>
-<div class="line">  TriangulationOnCAD::TriangulationOnCAD(</div>
+<div class="line">  <a class="code" href="classStep54_1_1TriangulationOnCAD.html#a6776e4b3df1602d7e16f3712b03998c7">TriangulationOnCAD::TriangulationOnCAD</a>(</div>
 <div class="line">    <span class="keyword">const</span> std::string &amp;  initial_mesh_filename,</div>
 <div class="line">    <span class="keyword">const</span> std::string &amp;  cad_file_name,</div>
 <div class="line">    <span class="keyword">const</span> std::string &amp;  output_filename,</div>
@@ -556,35 +556,35 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line"> </div>
 <div class="line">  <span class="keywordtype">void</span> TriangulationOnCAD::read_domain()</div>
 <div class="line">  {</div>
-<div class="line">    TopoDS_Shape bow_surface = <a class="code" href="namespaceOpenCASCADE.html#affe07b496f4edf844d5f4e8d7a540295">OpenCASCADE::read_IGES</a>(cad_file_name, 1<a class="code" href="namespacePhysics_1_1Elasticity_1_1Kinematics.html#a496b854daac5cca870bc8008f562daad">e</a>-3);</div>
+<div class="line">    TopoDS_Shape bow_surface = <a class="code" href="namespaceOpenCASCADE.html#affe07b496f4edf844d5f4e8d7a540295">OpenCASCADE::read_IGES</a>(cad_file_name, 1<a class="code" href="coding__conventions__0_8txt.html#a02f5aa616d7b0799c538fe77d6c6c795">e</a>-3);</div>
 <div class="line"> </div>
 <div class="line"> </div>
-<div class="line">    <span class="keyword">const</span> <span class="keywordtype">double</span> tolerance = <a class="code" href="namespaceOpenCASCADE.html#aed838d4999b4707c48781b8d732058fe">OpenCASCADE::get_shape_tolerance</a>(bow_surface) * 5;</div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a> = <a class="code" href="namespaceOpenCASCADE.html#aed838d4999b4707c48781b8d732058fe">OpenCASCADE::get_shape_tolerance</a>(bow_surface) * 5;</div>
 <div class="line"> </div>
 <div class="line">    std::vector&lt;TopoDS_Compound&gt;  compounds;</div>
 <div class="line">    std::vector&lt;TopoDS_CompSolid&gt; compsolids;</div>
-<div class="line">    std::vector&lt;TopoDS_Solid&gt;     solids;</div>
+<div class="line">    std::vector&lt;TopoDS_Solid&gt;     <a class="code" href="opencascade_2utilities__0_8txt.html#ab0e76cd31e0a49ab66372b4c5267d66f">solids</a>;</div>
 <div class="line">    std::vector&lt;TopoDS_Shell&gt;     shells;</div>
 <div class="line">    std::vector&lt;TopoDS_Wire&gt;      wires;</div>
 <div class="line"> </div>
 <div class="line">    <a class="code" href="namespaceOpenCASCADE.html#a1e49f50433c835c841eed35f40862560">OpenCASCADE::extract_compound_shapes</a>(</div>
-<div class="line">      bow_surface, compounds, compsolids, solids, shells, wires);</div>
+<div class="line">      bow_surface, compounds, compsolids, <a class="code" href="opencascade_2utilities__0_8txt.html#ab0e76cd31e0a49ab66372b4c5267d66f">solids</a>, shells, wires);</div>
 <div class="line"> </div>
-<div class="line">    std::ifstream in;</div>
+<div class="line">    std::ifstream <a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>;</div>
 <div class="line"> </div>
-<div class="line">    in.open(initial_mesh_filename);</div>
+<div class="line">    <a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>.open(initial_mesh_filename);</div>
 <div class="line"> </div>
 <div class="line">    <a class="code" href="classGridIn.html">GridIn&lt;2, 3&gt;</a> gi;</div>
 <div class="line">    gi.<a class="code" href="classGridIn.html#a82ac1c03b0efe87204ad45d2f1d87f7e">attach_triangulation</a>(tria);</div>
-<div class="line">    gi.<a class="code" href="group__simplex.html#ga058cd187cea704428ac1118410cd0fb8">read_vtk</a>(in);</div>
+<div class="line">    gi.<a class="code" href="group__simplex.html#ga058cd187cea704428ac1118410cd0fb8">read_vtk</a>(<a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>);</div>
 <div class="line"> </div>
 <div class="line">    output_results(0);</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="classTriaActiveIterator.html">Triangulation&lt;2, 3&gt;::active_cell_iterator</a> cell = tria.<a class="code" href="classTriangulation.html#a9388e821c728eab8d0e699d0ca112482">begin_active</a>();</div>
-<div class="line">    cell-&gt;set_manifold_id(1);</div>
+<div class="line">    <a class="code" href="classTriangulation.html">Triangulation&lt;2, 3&gt;::active_cell_iterator</a> <a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a> = tria.<a class="code" href="classTriangulation.html#a9388e821c728eab8d0e699d0ca112482">begin_active</a>();</div>
+<div class="line">    <a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;set_manifold_id(1);</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;face : cell-&gt;face_iterators())</div>
-<div class="line">      face-&gt;set_manifold_id(2);</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a> : <a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;face_iterators())</div>
+<div class="line">      <a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a>-&gt;set_manifold_id(2);</div>
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line">    <a class="code" href="group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>(</div>
@@ -593,7 +593,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">        <span class="stringliteral">&quot;I could not find any wire in the CAD file you gave me. Bailing out.&quot;</span>));</div>
 <div class="line"> </div>
 <div class="line">    <a class="code" href="classOpenCASCADE_1_1ArclengthProjectionLineManifold.html">OpenCASCADE::ArclengthProjectionLineManifold&lt;2, 3&gt;</a> line_projector(</div>
-<div class="line">      wires[0], tolerance);</div>
+<div class="line">      wires[0], <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
 <div class="line"> </div>
 <div class="line">    tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(2, line_projector);</div>
 <div class="line"> </div>
@@ -602,7 +602,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">        <span class="keywordflow">case</span> NormalProjection:</div>
 <div class="line">          {</div>
 <div class="line">            <a class="code" href="classOpenCASCADE_1_1NormalProjectionManifold.html">OpenCASCADE::NormalProjectionManifold&lt;2, 3&gt;</a> normal_projector(</div>
-<div class="line">              bow_surface, tolerance);</div>
+<div class="line">              bow_surface, <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
 <div class="line">            tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, normal_projector);</div>
 <div class="line"> </div>
 <div class="line">            <span class="keywordflow">break</span>;</div>
@@ -613,7 +613,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">            <a class="code" href="classOpenCASCADE_1_1DirectionalProjectionManifold.html">OpenCASCADE::DirectionalProjectionManifold&lt;2, 3&gt;</a></div>
 <div class="line">              directional_projector(bow_surface,</div>
 <div class="line">                                    <a class="code" href="classPoint.html">Point&lt;3&gt;</a>(0.0, 1.0, 0.0),</div>
-<div class="line">                                    tolerance);</div>
+<div class="line">                                    <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
 <div class="line">            tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, directional_projector);</div>
 <div class="line"> </div>
 <div class="line">            <span class="keywordflow">break</span>;</div>
@@ -622,7 +622,7 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">        <span class="keywordflow">case</span> NormalToMeshProjection:</div>
 <div class="line">          {</div>
 <div class="line">            <a class="code" href="classOpenCASCADE_1_1NormalToMeshProjectionManifold.html">OpenCASCADE::NormalToMeshProjectionManifold&lt;2, 3&gt;</a></div>
-<div class="line">              normal_to_mesh_projector(bow_surface, tolerance);</div>
+<div class="line">              normal_to_mesh_projector(bow_surface, <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
 <div class="line">            tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, normal_to_mesh_projector);</div>
 <div class="line"> </div>
 <div class="line">            <span class="keywordflow">break</span>;</div>
@@ -643,10 +643,10 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordtype">void</span> TriangulationOnCAD::output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> cycle)</div>
+<div class="line">  <span class="keywordtype">void</span> TriangulationOnCAD::output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>)</div>
 <div class="line">  {</div>
 <div class="line">    <span class="keyword">const</span> std::string filename =</div>
-<div class="line">      (output_filename + <span class="stringliteral">&quot;_&quot;</span> + <a class="code" href="namespaceUtilities.html#a6195c5f009ea8c7c536c6ffdf108c32f">Utilities::int_to_string</a>(cycle) + <span class="stringliteral">&quot;.vtk&quot;</span>);</div>
+<div class="line">      (output_filename + <span class="stringliteral">&quot;_&quot;</span> + <a class="code" href="namespaceUtilities.html#a6195c5f009ea8c7c536c6ffdf108c32f">Utilities::int_to_string</a>(<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>) + <span class="stringliteral">&quot;.vtk&quot;</span>);</div>
 <div class="line">    std::ofstream logfile(filename);</div>
 <div class="line">    <a class="code" href="classGridOut.html">GridOut</a>       grid_out;</div>
 <div class="line">    grid_out.<a class="code" href="classGridOut.html#a6b72484c35abc1f84abb8bf1bc1048dc">write_vtk</a>(tria, logfile);</div>
@@ -654,26 +654,26 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"> </div>
-<div class="line">  <span class="keywordtype">void</span> <a class="code" href="namespaceWorkStream_1_1internal_1_1tbb__no__coloring.html#a8673698a405bf47aa24002aeb6d76d70">TriangulationOnCAD::run</a>()</div>
+<div class="line">  <span class="keywordtype">void</span> <a class="code" href="A-headers_2exceptions__0_8txt.html#a8fba07b9a84b89e6be225f5f95c3e355">TriangulationOnCAD::run</a>()</div>
 <div class="line">  {</div>
 <div class="line">    read_domain();</div>
 <div class="line"> </div>
 <div class="line">    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n_cycles = 5;</div>
-<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> cycle = 0; cycle &lt; n_cycles; ++cycle)</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> = 0; <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> &lt; n_cycles; ++<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>)</div>
 <div class="line">      {</div>
 <div class="line">        refine_mesh();</div>
-<div class="line">        output_results(cycle + 1);</div>
+<div class="line">        output_results(<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> + 1);</div>
 <div class="line">      }</div>
 <div class="line">  }</div>
 <div class="line">} <span class="comment">// namespace Step54</span></div>
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main()</div>
+<div class="line"><span class="keywordtype">int</span> <a class="code" href="step-1_8cc.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a>()</div>
 <div class="line">{</div>
 <div class="line">  <span class="keywordflow">try</span></div>
 <div class="line">    {</div>
-<div class="line">      <span class="keyword">using namespace </span>Step54;</div>
+<div class="line">      <span class="keyword">using namespace </span><a class="code" href="namespaceStep54.html">Step54</a>;</div>
 <div class="line"> </div>
 <div class="line">      <span class="keyword">const</span> std::string in_mesh_filename = <span class="stringliteral">&quot;input/initial_mesh_3d.vtk&quot;</span>;</div>
 <div class="line">      <span class="keyword">const</span> std::string cad_file_name    = <span class="stringliteral">&quot;input/DTMB-5415_bulbous_bow.iges&quot;</span>;</div>
@@ -685,10 +685,10 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
 <div class="line">      std::string        out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_normal_projection&quot;</span>);</div>
-<div class="line">      TriangulationOnCAD tria_on_cad_norm(in_mesh_filename,</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_norm(in_mesh_filename,</div>
 <div class="line">                                          cad_file_name,</div>
 <div class="line">                                          out_mesh_filename,</div>
-<div class="line">                                          TriangulationOnCAD::NormalProjection);</div>
+<div class="line">                                          <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081aff7c1480c068c2daa656cff36865da86">TriangulationOnCAD::NormalProjection</a>);</div>
 <div class="line">      tria_on_cad_norm.run();</div>
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
@@ -701,11 +701,11 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
 <div class="line">      out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_directional_projection&quot;</span>);</div>
-<div class="line">      TriangulationOnCAD tria_on_cad_dir(</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_dir(</div>
 <div class="line">        in_mesh_filename,</div>
 <div class="line">        cad_file_name,</div>
 <div class="line">        out_mesh_filename,</div>
-<div class="line">        TriangulationOnCAD::DirectionalProjection);</div>
+<div class="line">        <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081a71c32dcebb205e89d710cee701b4410e">TriangulationOnCAD::DirectionalProjection</a>);</div>
 <div class="line">      tria_on_cad_dir.run();</div>
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
@@ -719,18 +719,18 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
 <div class="line">      out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_normal_to_mesh_projection&quot;</span>);</div>
-<div class="line">      TriangulationOnCAD tria_on_cad_norm_to_mesh(</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_norm_to_mesh(</div>
 <div class="line">        in_mesh_filename,</div>
 <div class="line">        cad_file_name,</div>
 <div class="line">        out_mesh_filename,</div>
-<div class="line">        TriangulationOnCAD::NormalToMeshProjection);</div>
+<div class="line">        <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081a6cd85de9b34d5dea8542043c826934c1">TriangulationOnCAD::NormalToMeshProjection</a>);</div>
 <div class="line">      tria_on_cad_norm_to_mesh.run();</div>
 <div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
 <div class="line">                &lt;&lt; std::endl;</div>
 <div class="line">      std::cout &lt;&lt; std::endl;</div>
 <div class="line">      std::cout &lt;&lt; std::endl;</div>
 <div class="line">    }</div>
-<div class="line">  <span class="keywordflow">catch</span> (std::exception &amp;exc)</div>
+<div class="line">  <span class="keywordflow">catch</span> (<a class="code" href="parameter__handler__0_8txt.html#ad919e2b915d8e8226aef004c2d8399a8">std::exception</a> &amp;exc)</div>
 <div class="line">    {</div>
 <div class="line">      std::cerr &lt;&lt; std::endl</div>
 <div class="line">                &lt;&lt; std::endl</div>
@@ -759,22 +759,692 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
-</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- fragment --><p><br  />
+ This tutorial depends on <a class="el" href="step_53.html">step-53</a> .  
+<table class="tutorial" width="50%">
+<tr><th colspan="2"><b><small>Table of contents</small></b><b><small>Table of contents</small></b></th></tr>
+<tr><td width="50%" valign="top">
+<ol>
+  <li> <a href="#Intro" class=bold>Introduction</a><a href="#Intro" class=bold>Introduction</a>
+    <ul>
+        <li><a href="#CADsurfaces"> CAD surfaces </a><a href="#CADsurfaces"> CAD surfaces </a>
+        <li><a href="#TheCADboundaryprojectorclasses"> The CAD boundary projector classes </a><a href="#TheCADboundaryprojectorclasses"> The CAD boundary projector classes </a>
+        <li><a href="#Thetestcase"> The testcase </a><a href="#Thetestcase"> The testcase </a>
+    </ul>
+  <li> <a href="#CommProg" class=bold>The commented program</a><a href="#CommProg" class=bold>The commented program</a>
+    <ul>
+        <li><a href="#Includefiles">Include files</a><a href="#Includefiles">Include files</a>
+        <li><a href="#TheTriangulationOnCADclass">The TriangulationOnCAD class</a><a href="#TheTriangulationOnCADclass">The TriangulationOnCAD class</a>
+      <ul>
+        <li><a href="#TriangulationOnCADTriangulationOnCAD">TriangulationOnCAD::TriangulationOnCAD</a><a href="#TriangulationOnCADTriangulationOnCAD">TriangulationOnCAD::TriangulationOnCAD</a>
+        <li><a href="#TriangulationOnCADread_domain">TriangulationOnCAD::read_domain</a><a href="#TriangulationOnCADread_domain">TriangulationOnCAD::read_domain</a>
+        <li><a href="#TriangulationOnCADrefine_mesh">TriangulationOnCAD::refine_mesh</a><a href="#TriangulationOnCADrefine_mesh">TriangulationOnCAD::refine_mesh</a>
+        <li><a href="#TriangulationOnCADoutput_results">TriangulationOnCAD::output_results</a><a href="#TriangulationOnCADoutput_results">TriangulationOnCAD::output_results</a>
+        <li><a href="#TriangulationOnCADrun">TriangulationOnCAD::run</a><a href="#TriangulationOnCADrun">TriangulationOnCAD::run</a>
+      </ul>
+        <li><a href="#Themainfunction">The main() function</a><a href="#Themainfunction">The main() function</a>
+      </ul>
+</ol></td><td width="50%" valign="top"><ol>
+  <li value="3"> <a href="#Results" class=bold>Results</a><a href="#Results" class=bold>Results</a>
+    <ul>
+    </ul>
+  <li> <a href="#PlainProg" class=bold>The plain program</a><a href="#PlainProg" class=bold>The plain program</a>
+</ol> </td> </tr> </table>
+ <br  />
+ <br  />
+ <em>This program was contributed by Andrea Mola and Luca Heltai.</em> </p><dl class="section note"><dt>Note</dt><dd>This program elaborates on concepts of industrial geometry, using toolsthat interface with the <a class="el" href="namespaceOpenCASCADE.html">OpenCASCADE</a> library (<a href="http://www.opencascade.org">http://www.opencascade.org</a>) thatallow the specification of arbitrary IGES files to describe the boundaries foryour geometries. </dd>
+<dd>
+If you use this program as a basis for your own work, please consider citing it in your list of references. The initial version of this work was contributed to the deal.II project by the authors listed in the following citation: <a href="https://doi.org/10.5281/zenodo.546220"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.546220.svg" alt="10.5281/zenodo.546220"/></a>  <br  />
+ <a class="anchor" id="Intro"></a><a class="anchor" id="Introduction"></a><h1>Introduction</h1>
+</dd></dl>
+<p>In some of the previous tutorial programs ( <a class="el" href="step_1.html">step-1</a> , <a class="el" href="step_3.html">step-3</a> , <a class="el" href="step_5.html">step-5</a> , <a class="el" href="step_6.html">step-6</a> and <a class="el" href="step_49.html">step-49</a> among others) we have learned how to use the mesh refinement methodsprovided in deal.II. These tutorials have shown how to employ such tools toproduce a fine grid for a single simulation, as done in <a class="el" href="step_3.html">step-3</a> ; or to start froma coarse grid and carry out a series of simulations on adaptively refined grids,as is the case of <a class="el" href="step_6.html">step-6</a> . Regardless of which approach is taken, the meshrefinement requires a suitable geometrical description of the computationaldomain boundary in order to place, at each refinement, the new mesh nodes ontothe boundary surface. For instance, <a class="el" href="step_5.html">step-5</a> shows how creating a circular gridautomatically attaches a circular manifold object to the computational domain,so that the faces lying on the boundary are refined onto the circle. <a class="el" href="step_53.html">step-53</a> shows how to do this with a <a class="el" href="classManifold.html">Manifold</a> defined by experimentally obtained data.But, at least as far as elementary boundary shapes are concerned, deal.II reallyonly provides circles, spheres, boxes and other elementary combinations. In thistutorial, we will show how to use a set of classes developed to import arbitraryCAD geometries, assign them to the desired boundary of the computational domain,and refine a computational grid on such complex shapes.</p>
+<p><a class="anchor" id="CADsurfaces"></a></p><h3>CAD surfaces </h3>
+<p>In the most common industrial practice, the geometrical models of arbitrarilyshaped objects are realized by means of Computer Aided Design (CAD) tools. Theuse of CAD modelers has spread in the last decades, as they allow for thegeneration of a full virtual model of each designed object, which through acomputer can be visualized, inspected, and analyzed in its finest details wellbefore it is physically crafted. From a mathematical perspective, the enginelying under the hood of CAD modelers is represented by analytical geometry,and in particular by parametric curves and surfaces such as B-splines andNURBS that are rich enough that they can represent most surfaces of practicalinterest. Once a virtual model is ready, all the geometrical features of thedesired object are stored in files which materially contain the coefficientsof the parametric surfaces and curves composing the object. Depending on thespecific CAD tool used to define the geometrical model, there are of courseseveral different file formats in which the information of a CAD model can beorganized. To provide a common ground to exchange data across CAD tools, theU.S. National Bureau of Standards published in 1980 the Initial GraphicsExchange Representation (IGES) neutral file format, which is used in thisexample. <a class="anchor" id="TheCADboundaryprojectorclasses"></a></p><h3>The CAD boundary projector classes </h3>
+<p>To import and interrogate CAD models, the deal.II library implements a series ofwrapper functions for the <a class="el" href="namespaceOpenCASCADE.html">OpenCASCADE</a> open source library for CAD modeling.These functions allow to import IGES files into <a class="el" href="namespaceOpenCASCADE.html">OpenCASCADE</a> native objects, andwrap them inside a series of <a class="el" href="classManifold.html">Manifold</a> classes. Once imported from an IGES file, the model is stored in a <code>TopoDS_Shape</code> , which is the generic topological entity defined inthe <a class="el" href="namespaceOpenCASCADE.html">OpenCASCADE</a> framework. From a <code>TopoDS_Shape</code> , it is then possibleto access all the sub-shapes (such as vertices, edges and faces) composing it,along with their geometrical description. In the deal.II framework, thetopological entities composing a shape are used to create a correspondingManifold representation. In <a class="el" href="step_6.html">step-6</a> we saw how to use <a class="el" href="namespaceGridGenerator.html#ab2dc2f16fc52cf1e51b9afdc4264ac70">GridGenerator::hyper_sphere()</a> to create a hyper sphere, which automatically attaches a SphericalManifoldto all boundary faces. This guarantees that boundary faces stay on asphere or circle during mesh refinement. The functions of the CAD modeling interfacehave been designed to retain the same structure, allowing the user to build aprojector object using the imported CAD shapes, maintaining the same procedurewe used in other tutorial programs, i.e., assigning such projector object tocells, faces or edges of a coarse mesh. At each refinement cycle, the new meshnodes will be then automatically generated by projecting a midpoint of anexisting object onto the specified geometry. Differently from a spherical or circular boundary, a boundary with a complexgeometry poses problems as to where it is best to place the new nodes createdupon refinement on the prescribed shape. <a class="el" href="classPolarManifold.html">PolarManifold</a>, for example, transformsthe surrounding points to polar coordinates, calculates the average in thatcoordinate system (for each coordinate individually) and finally transformsthe point back to Cartesian coordinates. In the case of an arbitrary and complex shape though, an appropriate choice forthe placement of a new node cannot be identified that easily. The OpenCASCADEwrappers in deal.II provide several projector classes that employ differentprojection strategies. A first projector, implemented in the <a class="el" href="classOpenCASCADE_1_1ArclengthProjectionLineManifold.html">OpenCASCADE::ArclengthProjectionLineManifold</a> class, is to be used only foredge refinement. It is built assigning it a topological shape of dimensionone, either a <code>TopoDS_Edge</code> or a <code>TopoDS_Wire</code> (which isa compound shape, made of several connected <code>TopoDS_Edge</code> s) andrefines a mesh edge finding the new vertex as the point splitting in two evenparts the curvilinear length of the CAD curve portion that lies between thevertices of the original edge. <img src="https://www.dealii.org/images/steps/developer/step-54.CurveSplit.png" alt="" width="500" class="inline"/> <br  />
+</p>
+<p>A different projection strategy has been implemented in the OpenCASCADE::NormalProjectionBoundary class. The <code>TopoDS_Shape</code> assigned at construction time can be arbitrary (a collection of shapes, faces,edges or a single face or edge will all work). The new cell nodes are firstcomputed by averaging the surrounding points in the same way as FlatManifolddoes. In a second step, all the new nodes will be projected onto the <code>TopoDS_Shape</code> along the direction normal to the shape. If nonormal projection is available, the point which is closest to theshape&mdash;typically lying on the shape boundary&mdash;is selected. If the shape iscomposed of several sub-shapes, the projection is carried out onto everysingle sub-shape, and the closest projection point is selected. <img src="https://www.dealii.org/images/steps/developer/step-54.NormalProjectionEdge.png" alt="" width="500" class="inline"/> <img src="https://www.dealii.org/images/steps/developer/step-54.NormalProjection.png" alt="" width="500" class="inline"/> <br  />
+ As we are about to experience, for some shapes, setting the projectiondirection as that normal to the CAD surface will not lead to surface meshelements of suitable quality. This is because the direction normal to the CADsurface has in principle nothing to do with the direction along which the meshneeds the new nodes to be located. The OpenCASCADE::DirectionalProjectionBoundary class, in this case, can help. Thisclass is constructed assigning a <code>TopoDS_Shape</code> (containing atleast a face) and a direction along which all the projections will be carriedout. New points will be computed by first averaging the surrounding points (asin the <a class="el" href="classFlatManifold.html">FlatManifold</a> case), and then taking the closest intersection betweenthe topological shape and the line passing through the resulting point, alongthe direction used at construction time. In this way, the user will have ahigher control on the projection direction to be enforced to ensure good meshquality. <img src="https://www.dealii.org/images/steps/developer/step-54.DirectionalProjection.png" alt="" width="500" class="inline"/> <br  />
+</p>
+<p>Of course the latter approach is effective only when the orientation of thesurface is rather uniform, so that a single projection direction can beidentified. In cases in which the surface direction is approaching theprojection direction, it is even possible that the directional projection isnot found. To overcome these problems, the OpenCASCADE::NormalToMeshProjectionBoundary class implements a thirdprojection algorithm. The OpenCASCADE::NormalToMeshProjectionBoundary class isbuilt assigning a <code>TopoDS_Shape</code> (containing at least one face) tothe constructor, and works exactly like a OpenCASCADE::DirectionalProjection. But, as the name of the class suggests, OpenCASCADE::NormalToMeshProjectionBoundary tries to come up with a suitableestimate of the direction normal to the mesh elements to be refined, and usesit for the projection of the new nodes onto the CAD surface. If we consider amesh edge in a 2D space, the direction of its axis is a direction along whichto split it in order to give rise to two new cells of the same length. We hereextended this concept in 3D, and project all new nodes in a direction thatapproximates the cell normal. In the next figure, which is inspired by the geometry considered in thistutorial, we make an attempt to compare the behavior of the three projectorsconsidered. As can be seen on the left, given the original cell (in blue), thenew point found with the normal projection is in a position which does notallow for the generation of evenly spaced new elements (in red). The situationwill get worse in further refinement steps. Since the geometry we consideredis somehow perpendicular to the horizontal direction, the directionalprojection (central image) defined with horizontal direction as the projectiondirection, does a rather good job in getting the new mesh point. Yet, sincethe surface is almost horizontal at the bottom of the picture, we can expectproblems in those regions when further refinement steps are carriedout. Finally, the picture on the right shows that a node located on the cellaxis will result in two new cells having the same length. Of course thesituation in 3D gets a little more complicated than that described in thissimple 2D case. Nevertheless, the results of this test confirm that the normalto the mesh direction is the best approach among the three tested, whenarbitrarily shaped surfaces are considered, and unless you have a geometry forwhich a more specific approach is known to be appropriate.</p>
+<p><img src="https://www.dealii.org/images/steps/developer/step-54.ProjectionComparisons.png" alt="" width="700" class="inline"/> <br  />
+</p>
+<p><a class="anchor" id="Thetestcase"></a></p><h3>The testcase </h3>
+<p>In this program, we will consider creating a surface mesh for a real geometrydescribing the bow of a ship (this geometry is frequently used in CAD and meshgeneration comparisons and is freely available). The surface mesh we get fromthis could then be used to solve a boundary element equation to simulate theflow of water around the ship (in a way similar to <a class="el" href="step_34.html">step-34</a> ) but we will nottry to do this here. To already give you an idea of the geometry we consider,here is a picture: <img src="https://www.dealii.org/images/steps/developer/step-54.bare.png" alt="" width="500" class="inline"/> <br  />
+ In the program, we read both the geometry and a coarse mesh from files, andthen employ several of the options discussed above to place new vertices for asequence of mesh refinement steps.</p>
+<p><a class="anchor" id="CommProg"></a> </p><h1>The commented program</h1>
+<p><a class="anchor" id="Includefiles"></a> </p><h3>Include files</h3>
+<p>We start with including a bunch of files that we will use in the various parts of the program. Most of them have been discussed in previous tutorials already:</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="grid_2tria_8h.html">deal.II/grid/tria.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="grid_2grid__generator_8h.html">deal.II/grid/grid_generator.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="grid_2grid__in_8h.html">deal.II/grid/grid_in.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="grid_2grid__out_8h.html">deal.II/grid/grid_out.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="numerics_2data__out_8h.html">deal.II/numerics/data_out.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="numerics_2vector__tools_8h.html">deal.II/numerics/vector_tools.h</a>&gt;</span></div>
+</div><!-- fragment --><p>These are the headers of the opencascade support classes and functions. Notice that these will contain sensible data only if you compiled your deal.II library with support for <a class="el" href="namespaceOpenCASCADE.html">OpenCASCADE</a>, i.e., specifying <code>-DDEAL_II_WITH_OPENCASCADE=ON</code> and <code>-DOPENCASCADE_DIR=/path/to/your/opencascade/installation</code> when calling <code>cmake</code> during deal.II configuration.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="opencascade_2manifold__lib_8h.html">deal.II/opencascade/manifold_lib.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="include_2deal_8II_2opencascade_2utilities_8h.html">deal.II/opencascade/utilities.h</a>&gt;</span></div>
+</div><!-- fragment --><p>Finally, a few C++ standard header files</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;fstream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+</div><!-- fragment --><p>We isolate the rest of the program in its own namespace</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span><a class="code" href="namespaceStep54.html">Step54</a></div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">using namespace </span><a class="code" href="namespacedealii.html">dealii</a>;</div>
+</div><!-- fragment --><p><a class="anchor" id="TheTriangulationOnCADclass"></a> </p><h3>The TriangulationOnCAD class</h3>
+<p>This is the main class. All it really does is store names for input and output files, and a triangulation. It then provides a function that generates such a triangulation from a coarse mesh, using one of the strategies discussed in the introduction and listed in the enumeration type at the top of the class. <br  />
+ The member functions of this class are similar to what you can find in most of the other tutorial programs in the setup stage of the grid for the simulations.</p>
+<div class="fragment"><div class="line"><span class="keyword">class </span>TriangulationOnCAD</div>
+<div class="line">{</div>
+<div class="line"><span class="keyword">public</span>:</div>
+<div class="line">  <span class="keyword">enum</span> ProjectionType</div>
+<div class="line">  {</div>
+<div class="line">    NormalProjection       = 0,</div>
+<div class="line">    DirectionalProjection  = 1,</div>
+<div class="line">    NormalToMeshProjection = 2</div>
+<div class="line">  };</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">  TriangulationOnCAD(</div>
+<div class="line">    <span class="keyword">const</span> std::string &amp;  initial_mesh_filename,</div>
+<div class="line">    <span class="keyword">const</span> std::string &amp;  cad_file_name,</div>
+<div class="line">    <span class="keyword">const</span> std::string &amp;  output_filename,</div>
+<div class="line">    <span class="keyword">const</span> ProjectionType surface_projection_kind = NormalProjection);</div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordtype">void</span> <a class="code" href="A-headers_2exceptions__0_8txt.html#a8fba07b9a84b89e6be225f5f95c3e355">run</a>();</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">private</span>:</div>
+<div class="line">  <span class="keywordtype">void</span> read_domain();</div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordtype">void</span> refine_mesh();</div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordtype">void</span> output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>);</div>
+<div class="line"> </div>
+<div class="line">  <a class="code" href="classTriangulation.html">Triangulation&lt;2, 3&gt;</a> tria;</div>
+<div class="line"> </div>
+<div class="line">  <span class="keyword">const</span> std::string initial_mesh_filename;</div>
+<div class="line">  <span class="keyword">const</span> std::string cad_file_name;</div>
+<div class="line">  <span class="keyword">const</span> std::string output_filename;</div>
+<div class="line"> </div>
+<div class="line">  <span class="keyword">const</span> ProjectionType surface_projection_kind;</div>
+<div class="line">};</div>
+</div><!-- fragment --><p><a class="anchor" id="TriangulationOnCADTriangulationOnCAD"></a> </p><h4>TriangulationOnCAD::TriangulationOnCAD</h4>
+<p>The constructor of the TriangulationOnCAD class is very simple. The input arguments are strings for the input and output file names, and the enumeration type that determines which kind of surface projector is used in the mesh refinement cycles (see below for details).</p>
+<div class="fragment"><div class="line">TriangulationOnCAD::TriangulationOnCAD(</div>
+<div class="line">  <span class="keyword">const</span> std::string &amp;  initial_mesh_filename,</div>
+<div class="line">  <span class="keyword">const</span> std::string &amp;  cad_file_name,</div>
+<div class="line">  <span class="keyword">const</span> std::string &amp;  output_filename,</div>
+<div class="line">  <span class="keyword">const</span> ProjectionType surface_projection_kind)</div>
+<div class="line">  : initial_mesh_filename(initial_mesh_filename)</div>
+<div class="line">  , cad_file_name(cad_file_name)</div>
+<div class="line">  , output_filename(output_filename)</div>
+<div class="line">  , surface_projection_kind(surface_projection_kind)</div>
+<div class="line">{}</div>
+</div><!-- fragment --><p><a class="anchor" id="TriangulationOnCADread_domain"></a> </p><h4>TriangulationOnCAD::read_domain</h4>
+<p>The following function represents the core of this program. In this function we import the CAD shape upon which we want to generate and refine our triangulation. We assume that the CAD surface is contained in the <code>cad_file_name</code> file (we provide an example IGES file in the input directory called "input/DTMB-5415_bulbous_bow.iges" that represents the bulbous bow of a ship). The presence of several convex and concave high curvature regions makes the geometry we provided a particularly meaningful example. <br  />
+ After importing the hull bow surface, we extract some of the curves and surfaces composing it, and use them to generate a set of projectors. Such projectors define the rules the <a class="el" href="classTriangulation.html">Triangulation</a> has to follow to position each new node during cell refinement. <br  />
+ To initialize the <a class="el" href="classTriangulation.html">Triangulation</a>, as done in previous tutorial programs, we import a pre-existing grid saved in VTK format. We assume here that the user has generated a coarse mesh externally, which matches the IGES geometry. At the moment of writing this tutorial, the deal.II library does not automatically support generation of such meshes, but there are several tools which can provide you with reasonable initial meshes starting from CAD files. In our example, the imported mesh is composed of a single quadrilateral cell whose vertices have been placed on the CAD shape. <br  />
+ After importing both the IGES geometry and the initial mesh, we assign the projectors previously discussed to each of the edges and cells which will have to be refined on the CAD surface. <br  />
+ In this tutorial, we will test the three different CAD surface projectors described in the introduction, and will analyze the results obtained with each of them. As mentioned, each of these projection strategies has been implemented in a different class, and objects of these types can be assigned to a triangulation using the <a class="el" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">Triangulation::set_manifold</a> method. <br  />
+ The following function then first imports the given CAD file. The function arguments are a string containing the desired file name, and a scale factor. In this example, the scale factor is set to 1e-3, as the original geometry is written in millimeters (which is the typical unit of measure for most IGES files), while we prefer to work in meters. The output of the function is an object of <a class="el" href="namespaceOpenCASCADE.html">OpenCASCADE</a> generic topological shape class, namely a <code>TopoDS_Shape</code>. <br  />
+</p>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> TriangulationOnCAD::read_domain()</div>
+<div class="line">{</div>
+<div class="line">  TopoDS_Shape bow_surface = <a class="code" href="namespaceOpenCASCADE.html#affe07b496f4edf844d5f4e8d7a540295">OpenCASCADE::read_IGES</a>(cad_file_name, 1<a class="code" href="coding__conventions__0_8txt.html#a02f5aa616d7b0799c538fe77d6c6c795">e</a>-3);</div>
+</div><!-- fragment --><p>Each CAD geometrical object is defined along with a tolerance, which indicates possible inaccuracy of its placement. For instance, the tolerance <code>tol</code> of a vertex indicates that it can be located in any point contained in a sphere centered in the nominal position and having radius <code>tol</code>. While projecting a point onto a surface (which will in turn have its tolerance) we must keep in mind that the precision of the projection will be limited by the tolerance with which the surface is built.</p>
+<p>The following method extracts the tolerance of the given shape and makes it a bit bigger to stay our of trouble:</p>
+<div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a> = <a class="code" href="namespaceOpenCASCADE.html#aed838d4999b4707c48781b8d732058fe">OpenCASCADE::get_shape_tolerance</a>(bow_surface) 5;</div>
+</div><!-- fragment --><p>We now want to extract a set of composite sub-shapes from the generic shape. In particular, each face of the CAD file is composed of a trimming curve of type <code>TopoDS_Wire</code>, which is the collection of <code>TopoDS_Edges</code> that compose the boundary of a surface, and a NURBS description of the surface itself. We will use a line projector to associate the boundary of our <a class="el" href="classTriangulation.html">Triangulation</a> to the wire delimiting the surface. To extract all compound sub-shapes, like wires, shells, or solids, we resort to a method of the <a class="el" href="namespaceOpenCASCADE.html">OpenCASCADE</a> namespace. The input of <a class="el" href="namespaceOpenCASCADE.html#a1e49f50433c835c841eed35f40862560">OpenCASCADE::extract_compound_shapes</a> is a shape and a set of empty std::vectors of subshapes, which will be filled with all compound shapes found in the given topological shape:</p>
+<div class="fragment"><div class="line">std::vector&lt;TopoDS_Compound&gt;  compounds;</div>
+<div class="line">std::vector&lt;TopoDS_CompSolid&gt; compsolids;</div>
+<div class="line">std::vector&lt;TopoDS_Solid&gt;     <a class="code" href="opencascade_2utilities__0_8txt.html#ab0e76cd31e0a49ab66372b4c5267d66f">solids</a>;</div>
+<div class="line">std::vector&lt;TopoDS_Shell&gt;     shells;</div>
+<div class="line">std::vector&lt;TopoDS_Wire&gt;      wires;</div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="namespaceOpenCASCADE.html#a1e49f50433c835c841eed35f40862560">OpenCASCADE::extract_compound_shapes</a>(</div>
+<div class="line">  bow_surface, compounds, compsolids, <a class="code" href="opencascade_2utilities__0_8txt.html#ab0e76cd31e0a49ab66372b4c5267d66f">solids</a>, shells, wires);</div>
+</div><!-- fragment --><p>The next few steps are more familiar, and allow us to import an existing mesh from an external VTK file, and convert it to a deal triangulation.</p>
+<div class="fragment"><div class="line">std::ifstream <a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>;</div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>.open(initial_mesh_filename);</div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="classGridIn.html">GridIn&lt;2, 3&gt;</a> gi;</div>
+<div class="line">gi.<a class="code" href="classGridIn.html#a82ac1c03b0efe87204ad45d2f1d87f7e">attach_triangulation</a>(tria);</div>
+<div class="line">gi.<a class="code" href="group__simplex.html#ga058cd187cea704428ac1118410cd0fb8">read_vtk</a>(<a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>);</div>
+</div><!-- fragment --><p>We output this initial mesh saving it as the refinement step 0.</p>
+<div class="fragment"><div class="line">output_results(0);</div>
+</div><!-- fragment --><p>The mesh imported has a single, two-dimensional cell located in three-dimensional space. We now want to ensure that it is refined according to the CAD geometry imported above. This this end, we get an iterator to that cell and assign to it the manifold_id 1 (see <a class="el" href="DEALGlossary.html#GlossManifoldIndicator">this glossary entry</a>). We also get an iterator to its four faces, and assign each of them the manifold_id 2:</p>
+<div class="fragment"><div class="line"><a class="code" href="classTriangulation.html">Triangulation&lt;2, 3&gt;::active_cell_iterator</a> <a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a> = tria.<a class="code" href="classTriangulation.html#a9388e821c728eab8d0e699d0ca112482">begin_active</a>();</div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;set_manifold_id(1);</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a> : <a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;face_iterators())</div>
+<div class="line">  <a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a>-&gt;set_manifold_id(2);</div>
+</div><!-- fragment --><p>Once both the CAD geometry and the initial mesh have been imported and digested, we use the CAD surfaces and curves to define the projectors and assign them to the manifold ids just specified.</p>
+<p>A first projector is defined using the single wire contained in our CAD file. The ArclengthProjectionLineManifold will make sure that every mesh edge located on the wire is refined with a point that lies on the wire and splits it into two equal arcs lying between the edge vertices. We first check that the wires vector contains at least one element and then create a <a class="el" href="classManifold.html">Manifold</a> object for it. <br  />
+ Once the projector is created, we then assign it to all the parts of the triangulation with manifold_id = 2:</p>
+<div class="fragment"><div class="line"><a class="code" href="group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>(</div>
+<div class="line">  wires.size() &gt; 0,</div>
+<div class="line">  <a class="code" href="group__Exceptions.html#gae9a45f517af1401c50811a11083f9114">ExcMessage</a>(</div>
+<div class="line">    <span class="stringliteral">&quot;I could not find any wire in the CAD file you gave me. Bailing out.&quot;</span>));</div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="classOpenCASCADE_1_1ArclengthProjectionLineManifold.html">OpenCASCADE::ArclengthProjectionLineManifold&lt;2, 3&gt;</a> line_projector(</div>
+<div class="line">  wires[0], <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
+<div class="line"> </div>
+<div class="line">tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(2, line_projector);</div>
+</div><!-- fragment --><p>The surface projector is created according to what is specified with the <code>surface_projection_kind</code> option of the constructor. In particular, if the surface_projection_kind value equals <code>NormalProjection</code>, we select the <a class="el" href="classOpenCASCADE_1_1NormalProjectionManifold.html">OpenCASCADE::NormalProjectionManifold</a>. The new mesh points will then initially be generated at the barycenter of the cell/edge considered, and then projected on the CAD surface along its normal direction. The NormalProjectionManifold constructor only needs a shape and a tolerance, and we then assign it to the triangulation for use with all parts that manifold having id 1:</p>
+<div class="fragment"><div class="line"><span class="keywordflow">switch</span> (surface_projection_kind)</div>
+<div class="line">  {</div>
+<div class="line">    <span class="keywordflow">case</span> NormalProjection:</div>
+<div class="line">      {</div>
+<div class="line">        <a class="code" href="classOpenCASCADE_1_1NormalProjectionManifold.html">OpenCASCADE::NormalProjectionManifold&lt;2, 3&gt;</a> normal_projector(</div>
+<div class="line">          bow_surface, <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
+<div class="line">        tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, normal_projector);</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">break</span>;</div>
+<div class="line">      }</div>
+</div><!-- fragment --> <pre class="fragment">@p If   surface_projection_kind value is   @p DirectionalProjection,   we select the   OpenCASCADE::DirectionalProjectionManifold   class. The new mesh points will then initially be generated at the barycenter of the cell/edge considered, and then projected on the CAD surface along a direction that is specified to the   OpenCASCADE::DirectionalProjectionManifold   constructor. In this case, the projection is done along the y-axis.
+</pre><div class="fragment"><div class="line"><span class="keywordflow">case</span> DirectionalProjection:</div>
+<div class="line">  {</div>
+<div class="line">    <a class="code" href="classOpenCASCADE_1_1DirectionalProjectionManifold.html">OpenCASCADE::DirectionalProjectionManifold&lt;2, 3&gt;</a></div>
+<div class="line">      directional_projector(bow_surface,</div>
+<div class="line">                            <a class="code" href="classPoint.html">Point&lt;3&gt;</a>(0.0, 1.0, 0.0),</div>
+<div class="line">                            <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
+<div class="line">    tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, directional_projector);</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">break</span>;</div>
+<div class="line">  }</div>
+</div><!-- fragment --><p>As a third option, if <code>surface_projection_kind</code> value is <code>NormalToMeshProjection</code>, we select the <a class="el" href="classOpenCASCADE_1_1NormalToMeshProjectionManifold.html">OpenCASCADE::NormalToMeshProjectionManifold</a>. The new mesh points will again initially be generated at the barycenter of the cell/edge considered, and then projected on the CAD surface along a direction that is an estimate of the mesh normal direction. The <a class="el" href="classOpenCASCADE_1_1NormalToMeshProjectionManifold.html">OpenCASCADE::NormalToMeshProjectionManifold</a> constructor only requires a shape (containing at least a face) and a tolerance.</p>
+<div class="fragment"><div class="line"><span class="keywordflow">case</span> NormalToMeshProjection:</div>
+<div class="line">  {</div>
+<div class="line">    <a class="code" href="classOpenCASCADE_1_1NormalToMeshProjectionManifold.html">OpenCASCADE::NormalToMeshProjectionManifold&lt;2, 3&gt;</a></div>
+<div class="line">      normal_to_mesh_projector(bow_surface, <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
+<div class="line">    tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, normal_to_mesh_projector);</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">break</span>;</div>
+<div class="line">  }</div>
+</div><!-- fragment --><p>Finally, we use good software cleanliness by ensuring that this really covers all possible options of the <code>case</code> statement. If we get any other value, we simply abort the program:</p>
+<div class="fragment"><div class="line">      <span class="keywordflow">default</span>:</div>
+<div class="line">        <a class="code" href="group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>(<span class="keyword">false</span>, <a class="code" href="group__Exceptions.html#ga31978c026b8b6b5116df30b8e748f6b7">ExcInternalError</a>());</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><a class="anchor" id="TriangulationOnCADrefine_mesh"></a> </p><h4>TriangulationOnCAD::refine_mesh</h4>
+<p>This function globally refines the mesh. In other tutorials, it would typically also distribute degrees of freedom, and resize matrices and vectors. These tasks are not carried out here, since we are not running any simulation on the <a class="el" href="classTriangulation.html">Triangulation</a> produced. <br  />
+ While the function looks innocent, this is where most of the work we are interested in for this tutorial program actually happens. In particular, when refining the quads and lines that define the surface of the ship's hull, the <a class="el" href="classTriangulation.html">Triangulation</a> class will ask the various objects we have assigned to handle individual manifold ids for where the new vertices should lie.</p>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> TriangulationOnCAD::refine_mesh()</div>
+<div class="line">{</div>
+<div class="line">  tria.<a class="code" href="classTriangulation.html#a6ad0b3fb24aae17f4668427a433dea19">refine_global</a>(1);</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><a class="anchor" id="TriangulationOnCADoutput_results"></a> </p><h4>TriangulationOnCAD::output_results</h4>
+<p>Outputting the results of our computations is a rather mechanical task. All the components of this function have been discussed before:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> TriangulationOnCAD::output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>)</div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">const</span> std::string filename =</div>
+<div class="line">    (output_filename + <span class="stringliteral">&quot;_&quot;</span> + <a class="code" href="namespaceUtilities.html#a6195c5f009ea8c7c536c6ffdf108c32f">Utilities::int_to_string</a>(<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>) + <span class="stringliteral">&quot;.vtk&quot;</span>);</div>
+<div class="line">  std::ofstream logfile(filename);</div>
+<div class="line">  <a class="code" href="classGridOut.html">GridOut</a>       grid_out;</div>
+<div class="line">  grid_out.<a class="code" href="classGridOut.html#a6b72484c35abc1f84abb8bf1bc1048dc">write_vtk</a>(tria, logfile);</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><a class="anchor" id="TriangulationOnCADrun"></a> </p><h4>TriangulationOnCAD::run</h4>
+<p>This is the main function. It should be self explanatory in its briefness:</p>
+<div class="fragment"><div class="line">  <span class="keywordtype">void</span> <a class="code" href="A-headers_2exceptions__0_8txt.html#a8fba07b9a84b89e6be225f5f95c3e355">TriangulationOnCAD::run</a>()</div>
+<div class="line">  {</div>
+<div class="line">    read_domain();</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n_cycles = 5;</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> = 0; <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> &lt; n_cycles; ++<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>)</div>
+<div class="line">      {</div>
+<div class="line">        refine_mesh();</div>
+<div class="line">        output_results(<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> + 1);</div>
+<div class="line">      }</div>
+<div class="line">  }</div>
+<div class="line">} <span class="comment">// namespace Step54</span></div>
+</div><!-- fragment --><p><a class="anchor" id="Themainfunction"></a> </p><h3>The <a class="el" href="step-1_8cc.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a> function</h3>
+<p>This is the main function of this program. It is in its basic structure like all previous tutorial programs, but runs the main class through the three possibilities of new vertex placement:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="step-1_8cc.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a>()</div>
+<div class="line">{</div>
+<div class="line">  <span class="keywordflow">try</span></div>
+<div class="line">    {</div>
+<div class="line">      <span class="keyword">using namespace </span><a class="code" href="namespaceStep54.html">Step54</a>;</div>
+<div class="line"> </div>
+<div class="line">      <span class="keyword">const</span> std::string in_mesh_filename = <span class="stringliteral">&quot;input/initial_mesh_3d.vtk&quot;</span>;</div>
+<div class="line">      <span class="keyword">const</span> std::string cad_file_name    = <span class="stringliteral">&quot;input/DTMB-5415_bulbous_bow.iges&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;Testing projection in direction normal to CAD surface&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::string        out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_normal_projection&quot;</span>);</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_norm(in_mesh_filename,</div>
+<div class="line">                                          cad_file_name,</div>
+<div class="line">                                          out_mesh_filename,</div>
+<div class="line">                                          <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081aff7c1480c068c2daa656cff36865da86">TriangulationOnCAD::NormalProjection</a>);</div>
+<div class="line">      tria_on_cad_norm.run();</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line"> </div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;Testing projection in y-axis direction&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_directional_projection&quot;</span>);</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_dir(</div>
+<div class="line">        in_mesh_filename,</div>
+<div class="line">        cad_file_name,</div>
+<div class="line">        out_mesh_filename,</div>
+<div class="line">        <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081a71c32dcebb205e89d710cee701b4410e">TriangulationOnCAD::DirectionalProjection</a>);</div>
+<div class="line">      tria_on_cad_dir.run();</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line"> </div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;Testing projection in direction normal to mesh elements&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_normal_to_mesh_projection&quot;</span>);</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_norm_to_mesh(</div>
+<div class="line">        in_mesh_filename,</div>
+<div class="line">        cad_file_name,</div>
+<div class="line">        out_mesh_filename,</div>
+<div class="line">        <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081a6cd85de9b34d5dea8542043c826934c1">TriangulationOnCAD::NormalToMeshProjection</a>);</div>
+<div class="line">      tria_on_cad_norm_to_mesh.run();</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line">    }</div>
+<div class="line">  <span class="keywordflow">catch</span> (<a class="code" href="parameter__handler__0_8txt.html#ad919e2b915d8e8226aef004c2d8399a8">std::exception</a> &amp;exc)</div>
+<div class="line">    {</div>
+<div class="line">      std::cerr &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cerr &lt;&lt; <span class="stringliteral">&quot;Exception on processing: &quot;</span> &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; exc.what() &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;Aborting!&quot;</span> &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line"> </div>
+<div class="line">      <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line">  <span class="keywordflow">catch</span> (...)</div>
+<div class="line">    {</div>
+<div class="line">      std::cerr &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cerr &lt;&lt; <span class="stringliteral">&quot;Unknown exception!&quot;</span> &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;Aborting!&quot;</span> &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p> <a class="anchor" id="Results"></a></p><h1>Results</h1>
+<p>The program execution produces a series of mesh files <code>3d_mesh_*.vtk</code> that we can visualize with any of the usual visualization programs that can read the VTKfile format. The following table illustrates the results obtained employing the normal projection strategy. The first tworows of the table show side views of the grids obtained for progressive levelsof refinement, overlain on a very fine rendering of the exact geometry. Thedark and light red areas simply indicate whether the current mesh or the finegeometry is closer to the observer; the distinction does not carry anyparticularly deep meaning. The last rowof pictures depict front views (mirrored to both sides of the geometry) of thesame grids shown in the second row.</p>
+<table style="width:90%">
+<tr>
+<td><img src="https://www.dealii.org/images/steps/developer/step-54.common_0.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_1.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_2.png" alt="" width="400" class="inline"/>  </td></tr>
+<tr>
+<td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_3.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_4.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_5.png" alt="" width="400" class="inline"/>  </td></tr>
+<tr>
+<td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_front_3.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_front_4.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_front_5.png" alt="" width="400" class="inline"/>  </td></tr>
+</table>
+<p><br  />
+ As can be seen in the pictures&mdash;and as we anticipated&mdash;the normal refinement strategy is unable to produce nicely shaped elementswhen applied to surfaces with significant curvature changes. This isparticularly apparent at the bulb of the hull where all new points have beenplaced in the upper part of the bulb and the lower part remains completelyunresolved. The following table, which is arranged as the previous one, illustratesthe results obtained adopting the directional projection approach, in which the projection direction selected was the y-axis (whichis indicated with a small yellow arrow at the bottom left of each image).</p>
+<table style="width:90%">
+<tr>
+<td><img src="https://www.dealii.org/images/steps/developer/step-54.common_0.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.directional_1.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.directional_2.png" alt="" width="400" class="inline"/>  </td></tr>
+<tr>
+<td><img src="https://www.dealii.org/images/steps/developer/step-54.directional_3.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.directional_4.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.directional_5.png" alt="" width="400" class="inline"/>  </td></tr>
+<tr>
+<td><img src="https://www.dealii.org/images/steps/developer/step-54.directional_front_3.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.directional_front_4.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.directional_front_5.png" alt="" width="400" class="inline"/>  </td></tr>
+</table>
+<p><br  />
+ The images confirm that the quality of the mesh obtained with a directional projection is sensibly higher than that obtained projecting along thesurface normal. Yet, a number of elements elongated in the y-direction are observed around the bottom of the bulb, where the surface is almost parallel to thedirection chosen for the projection. The final test shows results using instead the projection normal to the faces: </p><table style="width:90%">
+<tr>
+<td><img src="https://www.dealii.org/images/steps/developer/step-54.common_0.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_to_mesh_1.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_to_mesh_2.png" alt="" width="400" class="inline"/>  </td></tr>
+<tr>
+<td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_to_mesh_3.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_to_mesh_4.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_to_mesh_5.png" alt="" width="400" class="inline"/>  </td></tr>
+<tr>
+<td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_to_mesh_front_3.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_to_mesh_front_4.png" alt="" width="400" class="inline"/> </td><td><img src="https://www.dealii.org/images/steps/developer/step-54.normal_to_mesh_front_5.png" alt="" width="400" class="inline"/>  </td></tr>
+</table>
+<p><br  />
+ The pictures confirm that the normal to mesh projection approach leads to grids that remain evenly spacedthroughtout the refinement steps. At the same time, these meshes represent rather well the original geometry even in the bottom regionof the bulb, which is not well recovered employing the directional projector or the normal projector.</p>
+<p><a class="anchor" id="PlainProg"></a></p><h1>The plain program</h1>
+<div class="fragment"><div class="line"><span class="comment">/* ---------------------------------------------------------------------</span></div>
+<div class="line"><span class="comment"> *</span></div>
+<div class="line"><span class="comment"> * Copyright (C) 2009 - 2021 by the deal.II authors</span></div>
+<div class="line"><span class="comment"> *</span></div>
+<div class="line"><span class="comment"> * This file is part of the deal.II library.</span></div>
+<div class="line"><span class="comment"> *</span></div>
+<div class="line"><span class="comment"> * The deal.II library is free software; you can use it, redistribute</span></div>
+<div class="line"><span class="comment"> * it, and/or modify it under the terms of the GNU Lesser General</span></div>
+<div class="line"><span class="comment"> * Public License as published by the Free Software Foundation; either</span></div>
+<div class="line"><span class="comment"> * version 2.1 of the License, or (at your option) any later version.</span></div>
+<div class="line"><span class="comment"> * The full text of the license can be found in the file LICENSE.md at</span></div>
+<div class="line"><span class="comment"> * the top level directory of deal.II.</span></div>
+<div class="line"><span class="comment"> *</span></div>
+<div class="line"><span class="comment"> * ---------------------------------------------------------------------</span></div>
+<div class="line"><span class="comment"> *  Authors: Andrea Mola, Luca Heltai, 2014</span></div>
+<div class="line"><span class="comment"> */</span></div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="grid_2tria_8h.html">deal.II/grid/tria.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="grid_2grid__generator_8h.html">deal.II/grid/grid_generator.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="grid_2grid__in_8h.html">deal.II/grid/grid_in.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="grid_2grid__out_8h.html">deal.II/grid/grid_out.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="numerics_2data__out_8h.html">deal.II/numerics/data_out.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="numerics_2vector__tools_8h.html">deal.II/numerics/vector_tools.h</a>&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="opencascade_2manifold__lib_8h.html">deal.II/opencascade/manifold_lib.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="include_2deal_8II_2opencascade_2utilities_8h.html">deal.II/opencascade/utilities.h</a>&gt;</span></div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;fstream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span><a class="code" href="namespaceStep54.html">Step54</a></div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">using namespace </span><a class="code" href="namespacedealii.html">dealii</a>;</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">  <span class="keyword">class </span><a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a></div>
+<div class="line">  {</div>
+<div class="line">  <span class="keyword">public</span>:</div>
+<div class="line">    <span class="keyword">enum</span> ProjectionType</div>
+<div class="line">    {</div>
+<div class="line">      NormalProjection       = 0,</div>
+<div class="line">      DirectionalProjection  = 1,</div>
+<div class="line">      NormalToMeshProjection = 2</div>
+<div class="line">    };</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">    <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a>(</div>
+<div class="line">      <span class="keyword">const</span> std::string &amp;  initial_mesh_filename,</div>
+<div class="line">      <span class="keyword">const</span> std::string &amp;  cad_file_name,</div>
+<div class="line">      <span class="keyword">const</span> std::string &amp;  output_filename,</div>
+<div class="line">      <span class="keyword">const</span> ProjectionType surface_projection_kind = NormalProjection);</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">void</span> <a class="code" href="A-headers_2exceptions__0_8txt.html#a8fba07b9a84b89e6be225f5f95c3e355">run</a>();</div>
+<div class="line"> </div>
+<div class="line">  <span class="keyword">private</span>:</div>
+<div class="line">    <span class="keywordtype">void</span> read_domain();</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">void</span> refine_mesh();</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">void</span> output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>);</div>
+<div class="line"> </div>
+<div class="line">    <a class="code" href="classTriangulation.html">Triangulation&lt;2, 3&gt;</a> tria;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> std::string initial_mesh_filename;</div>
+<div class="line">    <span class="keyword">const</span> std::string cad_file_name;</div>
+<div class="line">    <span class="keyword">const</span> std::string output_filename;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> ProjectionType surface_projection_kind;</div>
+<div class="line">  };</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">  <a class="code" href="classStep54_1_1TriangulationOnCAD.html#a6776e4b3df1602d7e16f3712b03998c7">TriangulationOnCAD::TriangulationOnCAD</a>(</div>
+<div class="line">    <span class="keyword">const</span> std::string &amp;  initial_mesh_filename,</div>
+<div class="line">    <span class="keyword">const</span> std::string &amp;  cad_file_name,</div>
+<div class="line">    <span class="keyword">const</span> std::string &amp;  output_filename,</div>
+<div class="line">    <span class="keyword">const</span> ProjectionType surface_projection_kind)</div>
+<div class="line">    : initial_mesh_filename(initial_mesh_filename)</div>
+<div class="line">    , cad_file_name(cad_file_name)</div>
+<div class="line">    , output_filename(output_filename)</div>
+<div class="line">    , surface_projection_kind(surface_projection_kind)</div>
+<div class="line">  {}</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordtype">void</span> TriangulationOnCAD::read_domain()</div>
+<div class="line">  {</div>
+<div class="line">    TopoDS_Shape bow_surface = <a class="code" href="namespaceOpenCASCADE.html#affe07b496f4edf844d5f4e8d7a540295">OpenCASCADE::read_IGES</a>(cad_file_name, 1<a class="code" href="coding__conventions__0_8txt.html#a02f5aa616d7b0799c538fe77d6c6c795">e</a>-3);</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a> = <a class="code" href="namespaceOpenCASCADE.html#aed838d4999b4707c48781b8d732058fe">OpenCASCADE::get_shape_tolerance</a>(bow_surface) * 5;</div>
+<div class="line"> </div>
+<div class="line">    std::vector&lt;TopoDS_Compound&gt;  compounds;</div>
+<div class="line">    std::vector&lt;TopoDS_CompSolid&gt; compsolids;</div>
+<div class="line">    std::vector&lt;TopoDS_Solid&gt;     <a class="code" href="opencascade_2utilities__0_8txt.html#ab0e76cd31e0a49ab66372b4c5267d66f">solids</a>;</div>
+<div class="line">    std::vector&lt;TopoDS_Shell&gt;     shells;</div>
+<div class="line">    std::vector&lt;TopoDS_Wire&gt;      wires;</div>
+<div class="line"> </div>
+<div class="line">    <a class="code" href="namespaceOpenCASCADE.html#a1e49f50433c835c841eed35f40862560">OpenCASCADE::extract_compound_shapes</a>(</div>
+<div class="line">      bow_surface, compounds, compsolids, <a class="code" href="opencascade_2utilities__0_8txt.html#ab0e76cd31e0a49ab66372b4c5267d66f">solids</a>, shells, wires);</div>
+<div class="line"> </div>
+<div class="line">    std::ifstream <a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>;</div>
+<div class="line"> </div>
+<div class="line">    <a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>.open(initial_mesh_filename);</div>
+<div class="line"> </div>
+<div class="line">    <a class="code" href="classGridIn.html">GridIn&lt;2, 3&gt;</a> gi;</div>
+<div class="line">    gi.<a class="code" href="classGridIn.html#a82ac1c03b0efe87204ad45d2f1d87f7e">attach_triangulation</a>(tria);</div>
+<div class="line">    gi.<a class="code" href="group__simplex.html#ga058cd187cea704428ac1118410cd0fb8">read_vtk</a>(<a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>);</div>
+<div class="line"> </div>
+<div class="line">    output_results(0);</div>
+<div class="line"> </div>
+<div class="line">    <a class="code" href="classTriangulation.html">Triangulation&lt;2, 3&gt;::active_cell_iterator</a> <a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a> = tria.<a class="code" href="classTriangulation.html#a9388e821c728eab8d0e699d0ca112482">begin_active</a>();</div>
+<div class="line">    <a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;set_manifold_id(1);</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a> : <a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;face_iterators())</div>
+<div class="line">      <a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a>-&gt;set_manifold_id(2);</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">    <a class="code" href="group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>(</div>
+<div class="line">      wires.size() &gt; 0,</div>
+<div class="line">      <a class="code" href="group__Exceptions.html#gae9a45f517af1401c50811a11083f9114">ExcMessage</a>(</div>
+<div class="line">        <span class="stringliteral">&quot;I could not find any wire in the CAD file you gave me. Bailing out.&quot;</span>));</div>
+<div class="line"> </div>
+<div class="line">    <a class="code" href="classOpenCASCADE_1_1ArclengthProjectionLineManifold.html">OpenCASCADE::ArclengthProjectionLineManifold&lt;2, 3&gt;</a> line_projector(</div>
+<div class="line">      wires[0], <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
+<div class="line"> </div>
+<div class="line">    tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(2, line_projector);</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">switch</span> (surface_projection_kind)</div>
+<div class="line">      {</div>
+<div class="line">        <span class="keywordflow">case</span> NormalProjection:</div>
+<div class="line">          {</div>
+<div class="line">            <a class="code" href="classOpenCASCADE_1_1NormalProjectionManifold.html">OpenCASCADE::NormalProjectionManifold&lt;2, 3&gt;</a> normal_projector(</div>
+<div class="line">              bow_surface, <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
+<div class="line">            tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, normal_projector);</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">          }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">case</span> DirectionalProjection:</div>
+<div class="line">          {</div>
+<div class="line">            <a class="code" href="classOpenCASCADE_1_1DirectionalProjectionManifold.html">OpenCASCADE::DirectionalProjectionManifold&lt;2, 3&gt;</a></div>
+<div class="line">              directional_projector(bow_surface,</div>
+<div class="line">                                    <a class="code" href="classPoint.html">Point&lt;3&gt;</a>(0.0, 1.0, 0.0),</div>
+<div class="line">                                    <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
+<div class="line">            tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, directional_projector);</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">          }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">case</span> NormalToMeshProjection:</div>
+<div class="line">          {</div>
+<div class="line">            <a class="code" href="classOpenCASCADE_1_1NormalToMeshProjectionManifold.html">OpenCASCADE::NormalToMeshProjectionManifold&lt;2, 3&gt;</a></div>
+<div class="line">              normal_to_mesh_projector(bow_surface, <a class="code" href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a>);</div>
+<div class="line">            tria.<a class="code" href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">set_manifold</a>(1, normal_to_mesh_projector);</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">          }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">default</span>:</div>
+<div class="line">          <a class="code" href="group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>(<span class="keyword">false</span>, <a class="code" href="group__Exceptions.html#ga31978c026b8b6b5116df30b8e748f6b7">ExcInternalError</a>());</div>
+<div class="line">      }</div>
+<div class="line">  }</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordtype">void</span> TriangulationOnCAD::refine_mesh()</div>
+<div class="line">  {</div>
+<div class="line">    tria.<a class="code" href="classTriangulation.html#a6ad0b3fb24aae17f4668427a433dea19">refine_global</a>(1);</div>
+<div class="line">  }</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordtype">void</span> TriangulationOnCAD::output_results(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>)</div>
+<div class="line">  {</div>
+<div class="line">    <span class="keyword">const</span> std::string filename =</div>
+<div class="line">      (output_filename + <span class="stringliteral">&quot;_&quot;</span> + <a class="code" href="namespaceUtilities.html#a6195c5f009ea8c7c536c6ffdf108c32f">Utilities::int_to_string</a>(<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>) + <span class="stringliteral">&quot;.vtk&quot;</span>);</div>
+<div class="line">    std::ofstream logfile(filename);</div>
+<div class="line">    <a class="code" href="classGridOut.html">GridOut</a>       grid_out;</div>
+<div class="line">    grid_out.<a class="code" href="classGridOut.html#a6b72484c35abc1f84abb8bf1bc1048dc">write_vtk</a>(tria, logfile);</div>
+<div class="line">  }</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordtype">void</span> <a class="code" href="A-headers_2exceptions__0_8txt.html#a8fba07b9a84b89e6be225f5f95c3e355">TriangulationOnCAD::run</a>()</div>
+<div class="line">  {</div>
+<div class="line">    read_domain();</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n_cycles = 5;</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> = 0; <a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> &lt; n_cycles; ++<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a>)</div>
+<div class="line">      {</div>
+<div class="line">        refine_mesh();</div>
+<div class="line">        output_results(<a class="code" href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a> + 1);</div>
+<div class="line">      }</div>
+<div class="line">  }</div>
+<div class="line">} <span class="comment">// namespace Step54</span></div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> <a class="code" href="step-1_8cc.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a>()</div>
+<div class="line">{</div>
+<div class="line">  <span class="keywordflow">try</span></div>
+<div class="line">    {</div>
+<div class="line">      <span class="keyword">using namespace </span><a class="code" href="namespaceStep54.html">Step54</a>;</div>
+<div class="line"> </div>
+<div class="line">      <span class="keyword">const</span> std::string in_mesh_filename = <span class="stringliteral">&quot;input/initial_mesh_3d.vtk&quot;</span>;</div>
+<div class="line">      <span class="keyword">const</span> std::string cad_file_name    = <span class="stringliteral">&quot;input/DTMB-5415_bulbous_bow.iges&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;Testing projection in direction normal to CAD surface&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::string        out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_normal_projection&quot;</span>);</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_norm(in_mesh_filename,</div>
+<div class="line">                                          cad_file_name,</div>
+<div class="line">                                          out_mesh_filename,</div>
+<div class="line">                                          <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081aff7c1480c068c2daa656cff36865da86">TriangulationOnCAD::NormalProjection</a>);</div>
+<div class="line">      tria_on_cad_norm.run();</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line"> </div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;Testing projection in y-axis direction&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_directional_projection&quot;</span>);</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_dir(</div>
+<div class="line">        in_mesh_filename,</div>
+<div class="line">        cad_file_name,</div>
+<div class="line">        out_mesh_filename,</div>
+<div class="line">        <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081a71c32dcebb205e89d710cee701b4410e">TriangulationOnCAD::DirectionalProjection</a>);</div>
+<div class="line">      tria_on_cad_dir.run();</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line"> </div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;Testing projection in direction normal to mesh elements&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      out_mesh_filename = (<span class="stringliteral">&quot;3d_mesh_normal_to_mesh_projection&quot;</span>);</div>
+<div class="line">      <a class="code" href="classStep54_1_1TriangulationOnCAD.html">TriangulationOnCAD</a> tria_on_cad_norm_to_mesh(</div>
+<div class="line">        in_mesh_filename,</div>
+<div class="line">        cad_file_name,</div>
+<div class="line">        out_mesh_filename,</div>
+<div class="line">        <a class="code" href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081a6cd85de9b34d5dea8542043c826934c1">TriangulationOnCAD::NormalToMeshProjection</a>);</div>
+<div class="line">      tria_on_cad_norm_to_mesh.run();</div>
+<div class="line">      std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line">      std::cout &lt;&lt; std::endl;</div>
+<div class="line">    }</div>
+<div class="line">  <span class="keywordflow">catch</span> (<a class="code" href="parameter__handler__0_8txt.html#ad919e2b915d8e8226aef004c2d8399a8">std::exception</a> &amp;exc)</div>
+<div class="line">    {</div>
+<div class="line">      std::cerr &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cerr &lt;&lt; <span class="stringliteral">&quot;Exception on processing: &quot;</span> &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; exc.what() &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;Aborting!&quot;</span> &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line"> </div>
+<div class="line">      <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line">  <span class="keywordflow">catch</span> (...)</div>
+<div class="line">    {</div>
+<div class="line">      std::cerr &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      std::cerr &lt;&lt; <span class="stringliteral">&quot;Unknown exception!&quot;</span> &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;Aborting!&quot;</span> &lt;&lt; std::endl</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;----------------------------------------------------&quot;</span></div>
+<div class="line">                &lt;&lt; std::endl;</div>
+<div class="line">      <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p> <br  />
+ </p>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <div class="ttc" id="agroup__simplex_html_ga058cd187cea704428ac1118410cd0fb8"><div class="ttname"><a href="group__simplex.html#ga058cd187cea704428ac1118410cd0fb8">GridIn::read_vtk</a></div><div class="ttdeci">void read_vtk(std::istream &amp;in)</div><div class="ttdef"><b>Definition:</b> <a href="grid__in_8cc_source.html#l00128">grid_in.cc:128</a></div></div>
-<div class="ttc" id="anamespaceWorkStream_1_1internal_1_1tbb__no__coloring_html_a8673698a405bf47aa24002aeb6d76d70"><div class="ttname"><a href="namespaceWorkStream_1_1internal_1_1tbb__no__coloring.html#a8673698a405bf47aa24002aeb6d76d70">WorkStream::internal::tbb_no_coloring::run</a></div><div class="ttdeci">void run(const Iterator &amp;begin, const typename identity&lt; Iterator &gt;::type &amp;end, Worker worker, Copier copier, const ScratchData &amp;sample_scratch_data, const CopyData &amp;sample_copy_data, const unsigned int queue_length, const unsigned int chunk_size)</div><div class="ttdef"><b>Definition:</b> <a href="base_2work__stream_8h_source.html#l00692">work_stream.h:692</a></div></div>
 <div class="ttc" id="anamespaceOpenCASCADE_html_a1e49f50433c835c841eed35f40862560"><div class="ttname"><a href="namespaceOpenCASCADE.html#a1e49f50433c835c841eed35f40862560">OpenCASCADE::extract_compound_shapes</a></div><div class="ttdeci">void extract_compound_shapes(const TopoDS_Shape &amp;shape, std::vector&lt; TopoDS_Compound &gt; &amp;compounds, std::vector&lt; TopoDS_CompSolid &gt; &amp;compsolids, std::vector&lt; TopoDS_Solid &gt; &amp;solids, std::vector&lt; TopoDS_Shell &gt; &amp;shells, std::vector&lt; TopoDS_Wire &gt; &amp;wires)</div><div class="ttdef"><b>Definition:</b> <a href="opencascade_2utilities_8cc_source.html#l00133">utilities.cc:133</a></div></div>
 <div class="ttc" id="aclassOpenCASCADE_1_1DirectionalProjectionManifold_html"><div class="ttname"><a href="classOpenCASCADE_1_1DirectionalProjectionManifold.html">OpenCASCADE::DirectionalProjectionManifold</a></div><div class="ttdef"><b>Definition:</b> <a href="opencascade_2manifold__lib_8h_source.html#l00133">manifold_lib.h:133</a></div></div>
+<div class="ttc" id="aA-headers_2exceptions__0_8txt_html_a8fba07b9a84b89e6be225f5f95c3e355"><div class="ttname"><a href="A-headers_2exceptions__0_8txt.html#a8fba07b9a84b89e6be225f5f95c3e355">run</a></div><div class="ttdeci">the program is just and one can not intelligently work around that *It is sometimes useful to change the behavior of the[2.x.6] macro from aborting a program to throwing exceptions On the other exceptions are not allowed to propagate out of destructors of classes For this there is a variant of the called[2.x.7] that can be used in destructors These use cases are discussed further down below on this page **Dynamic such as whether an output file can be written to *These are things that shouldn t be checked because it is not guaranteed that a program for which the condition is satisfied in a debug mode run</div><div class="ttdef"><b>Definition:</b> <a href="A-headers_2exceptions__0_8txt_source.html#l00022">exceptions_0.txt:22</a></div></div>
 <div class="ttc" id="anamespaceUtilities_html_a6195c5f009ea8c7c536c6ffdf108c32f"><div class="ttname"><a href="namespaceUtilities.html#a6195c5f009ea8c7c536c6ffdf108c32f">Utilities::int_to_string</a></div><div class="ttdeci">std::string int_to_string(const unsigned int value, const unsigned int digits=numbers::invalid_unsigned_int)</div><div class="ttdef"><b>Definition:</b> <a href="base_2utilities_8cc_source.html#l00473">utilities.cc:473</a></div></div>
-<div class="ttc" id="anamespacedealii_html"><div class="ttname"><a href="namespacedealii.html">dealii</a></div><div class="ttdef"><b>Definition:</b> <a href="doc_2doxygen_2headers_2namespace__dealii_8h_source.html#l00025">namespace_dealii.h:25</a></div></div>
+<div class="ttc" id="anamespacedealii_html"><div class="ttname"><a href="namespacedealii.html">dealii</a></div><div class="ttdef"><b>Definition:</b> <a href="doc_2doxygen_2headers_2namespace__dealii_8h_source.html#l00026">namespace_dealii.h:26</a></div></div>
 <div class="ttc" id="aclassGridIn_html_a82ac1c03b0efe87204ad45d2f1d87f7e"><div class="ttname"><a href="classGridIn.html#a82ac1c03b0efe87204ad45d2f1d87f7e">GridIn::attach_triangulation</a></div><div class="ttdeci">void attach_triangulation(Triangulation&lt; dim, spacedim &gt; &amp;tria)</div><div class="ttdef"><b>Definition:</b> <a href="grid__in_8cc_source.html#l00119">grid_in.cc:119</a></div></div>
-<div class="ttc" id="anamespacePhysics_1_1Elasticity_1_1Kinematics_html_a496b854daac5cca870bc8008f562daad"><div class="ttname"><a href="namespacePhysics_1_1Elasticity_1_1Kinematics.html#a496b854daac5cca870bc8008f562daad">Physics::Elasticity::Kinematics::e</a></div><div class="ttdeci">SymmetricTensor&lt; 2, dim, Number &gt; e(const Tensor&lt; 2, dim, Number &gt; &amp;F)</div></div>
-<div class="ttc" id="aclassTriangulation_html"><div class="ttname"><a href="classTriangulation.html">Triangulation</a></div><div class="ttdef"><b>Definition:</b> <a href="grid_2tria_8h_source.html#l01033">tria.h:1033</a></div></div>
+<div class="ttc" id="astep-1_8cc_html_ae66f6b31b5ad750f1fe042a706a4e3d4"><div class="ttname"><a href="step-1_8cc.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a></div><div class="ttdeci">int main()</div><div class="ttdef"><b>Definition:</b> <a href="step-1_8cc_source.html#l00086">step-1.cc:86</a></div></div>
+<div class="ttc" id="aclassTriangulation_html"><div class="ttname"><a href="classTriangulation.html">Triangulation&lt; 2, 3 &gt;</a></div></div>
 <div class="ttc" id="agrid_2tria_8h_html"><div class="ttname"><a href="grid_2tria_8h.html">tria.h</a></div></div>
 <div class="ttc" id="aclassTriangulation_html_a6ad0b3fb24aae17f4668427a433dea19"><div class="ttname"><a href="classTriangulation.html#a6ad0b3fb24aae17f4668427a433dea19">Triangulation::refine_global</a></div><div class="ttdeci">void refine_global(const unsigned int times=1)</div><div class="ttdef"><b>Definition:</b> <a href="grid_2tria_8cc_source.html#l10781">tria.cc:10781</a></div></div>
 <div class="ttc" id="aclassGridOut_html_a6b72484c35abc1f84abb8bf1bc1048dc"><div class="ttname"><a href="classGridOut.html#a6b72484c35abc1f84abb8bf1bc1048dc">GridOut::write_vtk</a></div><div class="ttdeci">void write_vtk(const Triangulation&lt; dim, spacedim &gt; &amp;tria, std::ostream &amp;out) const</div><div class="ttdef"><b>Definition:</b> <a href="grid__out_8cc_source.html#l03352">grid_out.cc:3352</a></div></div>
+<div class="ttc" id="anamespaceStep54_html"><div class="ttname"><a href="namespaceStep54.html">Step54</a></div><div class="ttdef"><b>Definition:</b> <a href="step-54_8cc_source.html#l00036">step-54.cc:36</a></div></div>
+<div class="ttc" id="aclassStep54_1_1TriangulationOnCAD_html_a6776e4b3df1602d7e16f3712b03998c7"><div class="ttname"><a href="classStep54_1_1TriangulationOnCAD.html#a6776e4b3df1602d7e16f3712b03998c7">Step54::TriangulationOnCAD::TriangulationOnCAD</a></div><div class="ttdeci">TriangulationOnCAD(const std::string &amp;initial_mesh_filename, const std::string &amp;cad_file_name, const std::string &amp;output_filename, const ProjectionType surface_projection_kind=NormalProjection)</div><div class="ttdef"><b>Definition:</b> <a href="step-54_8cc_source.html#l00082">step-54.cc:82</a></div></div>
+<div class="ttc" id="aparameter__handler__0_8txt_html_ad919e2b915d8e8226aef004c2d8399a8"><div class="ttname"><a href="parameter__handler__0_8txt.html#ad919e2b915d8e8226aef004c2d8399a8">exception</a></div><div class="ttdeci">since default values may change in the process of program you cannot know the values of parameters not specified in the input file ****It is often convenient to have something happen as soon as a parameter value is read This could be a check that it is valid that a file that is listed in the parameter file exists **or to initiate something else in such as setting a variable outside the this action could also be initiated once all parameters are read via but it is sometimes[1.x.19] to do it right away *This is facilitated by the and can then do whatever they want with it **e save it somewhere outside the ParameterHandler in C one doesn t usually pass around the address of a but an action can be a function like object(taking a string as argument) that results from calling such as a[1.x.20] that has the form **[1.x.21] *and that is attached to a specific parameter. *A typical example of such an action would be as follows the content of the file equals the default value of the parameter the contents of files are never changed after declaration of a parameter a directory in this file system may not have a file called[2.x.20] in it In that the directory represents a subsection as declared and the directory s name will correspond to the name of the subsection It will then have no files in it at but it may have further directories in the code above will lead to a hierarchical representation of data that looks like this(the content of files is indicated at the right in a different font) this is only used when creating output for exceptions If non empty[2.x.35] is the ParameterHandler object will stop parsing lines after encountering[2.x.36] This is handy when adding extra data that shall be parsed manually If[2.x.37] the parameter handler will skip undefined sections and entries This is useful for partially parsing a parameter for example to obtain only the spatial dimension of the problem By default all entries and subsections are expected to be declared The function sets the value of all parameters it encounters in the input file to the provided value Parameters not explicitly listed in the input file are left at the value they previously which will be the default value provided to and for each parameter all associated actions that may previously have been set by or if an associated action throws an exception</div><div class="ttdef"><b>Definition:</b> <a href="parameter__handler__0_8txt_source.html#l00241">parameter_handler_0.txt:241</a></div></div>
 <div class="ttc" id="aclassOpenCASCADE_1_1NormalToMeshProjectionManifold_html"><div class="ttname"><a href="classOpenCASCADE_1_1NormalToMeshProjectionManifold.html">OpenCASCADE::NormalToMeshProjectionManifold</a></div><div class="ttdef"><b>Definition:</b> <a href="opencascade_2manifold__lib_8h_source.html#l00227">manifold_lib.h:227</a></div></div>
 <div class="ttc" id="anamespaceOpenCASCADE_html_aed838d4999b4707c48781b8d732058fe"><div class="ttname"><a href="namespaceOpenCASCADE.html#aed838d4999b4707c48781b8d732058fe">OpenCASCADE::get_shape_tolerance</a></div><div class="ttdeci">double get_shape_tolerance(const TopoDS_Shape &amp;shape)</div><div class="ttdef"><b>Definition:</b> <a href="opencascade_2utilities_8cc_source.html#l00400">utilities.cc:400</a></div></div>
+<div class="ttc" id="atrilinos__precondition__0_8txt_html_ae2e38e4f182c566122b10d662b9d3f89"><div class="ttname"><a href="trilinos__precondition__0_8txt.html#ae2e38e4f182c566122b10d662b9d3f89">tolerance</a></div><div class="ttdeci">more required fill in elements require this parameter to be set to a higher integer value The AdditionalData data structure allows to set preconditioner options Besides the fill in these options are some options for and a parameter&lt; tt &gt; overlap&lt;/tt &gt; that determines if and how much overlap there should be between the matrix partitions on the various MPI processes The default settings are for the additional fill for the absolute augmentation tolerance</div><div class="ttdef"><b>Definition:</b> <a href="trilinos__precondition__0_8txt_source.html#l00174">trilinos_precondition_0.txt:174</a></div></div>
 <div class="ttc" id="agroup__manifold_html_ga9f9d720f5fbdcdf3dcbb445feefbdb9f"><div class="ttname"><a href="group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">Triangulation::set_manifold</a></div><div class="ttdeci">void set_manifold(const types::manifold_id number, const Manifold&lt; dim, spacedim &gt; &amp;manifold_object)</div><div class="ttdef"><b>Definition:</b> <a href="grid_2tria_8cc_source.html#l10154">tria.cc:10154</a></div></div>
 <div class="ttc" id="anumerics_2vector__tools_8h_html"><div class="ttname"><a href="numerics_2vector__tools_8h.html">vector_tools.h</a></div></div>
 <div class="ttc" id="anamespaceOpenCASCADE_html_affe07b496f4edf844d5f4e8d7a540295"><div class="ttname"><a href="namespaceOpenCASCADE.html#affe07b496f4edf844d5f4e8d7a540295">OpenCASCADE::read_IGES</a></div><div class="ttdeci">TopoDS_Shape read_IGES(const std::string &amp;filename, const double scale_factor=1e-3)</div><div class="ttdef"><b>Definition:</b> <a href="opencascade_2utilities_8cc_source.html#l00238">utilities.cc:238</a></div></div>
@@ -783,18 +1453,27 @@ If you use this program as a basis for your own work, please consider citing it 
 <div class="ttc" id="aclassTriangulation_html_a9388e821c728eab8d0e699d0ca112482"><div class="ttname"><a href="classTriangulation.html#a9388e821c728eab8d0e699d0ca112482">Triangulation::begin_active</a></div><div class="ttdeci">active_cell_iterator begin_active(const unsigned int level=0) const</div><div class="ttdef"><b>Definition:</b> <a href="grid_2tria_8cc_source.html#l11958">tria.cc:11958</a></div></div>
 <div class="ttc" id="aopencascade_2manifold__lib_8h_html"><div class="ttname"><a href="opencascade_2manifold__lib_8h.html">manifold_lib.h</a></div></div>
 <div class="ttc" id="agrid_2grid__out_8h_html"><div class="ttname"><a href="grid_2grid__out_8h.html">grid_out.h</a></div></div>
-<div class="ttc" id="aclassTriaActiveIterator_html"><div class="ttname"><a href="classTriaActiveIterator.html">TriaActiveIterator</a></div><div class="ttdef"><b>Definition:</b> <a href="grid_2tria__iterator_8h_source.html#l00749">tria_iterator.h:749</a></div></div>
+<div class="ttc" id="aclassStep54_1_1TriangulationOnCAD_html"><div class="ttname"><a href="classStep54_1_1TriangulationOnCAD.html">Step54::TriangulationOnCAD</a></div><div class="ttdef"><b>Definition:</b> <a href="step-54_8cc_source.html#l00044">step-54.cc:44</a></div></div>
 <div class="ttc" id="agroup__Exceptions_html_ga31978c026b8b6b5116df30b8e748f6b7"><div class="ttname"><a href="group__Exceptions.html#ga31978c026b8b6b5116df30b8e748f6b7">StandardExceptions::ExcInternalError</a></div><div class="ttdeci">static ::ExceptionBase &amp; ExcInternalError()</div></div>
 <div class="ttc" id="agroup__Exceptions_html_ga70a0bb353656e704acf927945277bbc6"><div class="ttname"><a href="group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a></div><div class="ttdeci">#define Assert(cond, exc)</div><div class="ttdef"><b>Definition:</b> <a href="include_2deal_8II_2base_2exceptions_8h_source.html#l01581">exceptions.h:1581</a></div></div>
+<div class="ttc" id="aopencascade_2utilities__0_8txt_html_ab0e76cd31e0a49ab66372b4c5267d66f"><div class="ttname"><a href="opencascade_2utilities__0_8txt.html#ab0e76cd31e0a49ab66372b4c5267d66f">solids</a></div><div class="ttdeci">namespace all utilities which operate on OpenCASCADE entities OpenCASCADE splits every object into a topological description and a geometrical entity The basic topological description is a TopoDS_Shape TopoDS_Shapes are light objects and can be copied around The closest deal II analog is a TriaIterator *The OpenCASCADE topology is designed with reference to the STEP standard ISO The structure is an oriented one way where parents refer to their and there are no back references Abstract structure is implemented as C classes from the TopoDS package A TopoDS_Shape is manipulated by value and contains orientation and a myTShape myTShape and Location are used to share data between various shapes to save memory For an edge belonging to two faces has equal Locations and myTShape fields but different solids</div><div class="ttdef"><b>Definition:</b> <a href="opencascade_2utilities__0_8txt_source.html#l00004">utilities_0.txt:4</a></div></div>
+<div class="ttc" id="aclassStep54_1_1TriangulationOnCAD_html_afb1fa0d1f30cc719d4c962bcf152e081aff7c1480c068c2daa656cff36865da86"><div class="ttname"><a href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081aff7c1480c068c2daa656cff36865da86">Step54::TriangulationOnCAD::NormalProjection</a></div><div class="ttdeci">@ NormalProjection</div><div class="ttdef"><b>Definition:</b> <a href="step-54_8cc_source.html#l00049">step-54.cc:49</a></div></div>
 <div class="ttc" id="aclassGridIn_html"><div class="ttname"><a href="classGridIn.html">GridIn</a></div><div class="ttdef"><b>Definition:</b> <a href="grid_2grid__in_8h_source.html#l00248">grid_in.h:248</a></div></div>
 <div class="ttc" id="aclassPoint_html"><div class="ttname"><a href="classPoint.html">Point&lt; 3 &gt;</a></div></div>
 <div class="ttc" id="aclassOpenCASCADE_1_1ArclengthProjectionLineManifold_html"><div class="ttname"><a href="classOpenCASCADE_1_1ArclengthProjectionLineManifold.html">OpenCASCADE::ArclengthProjectionLineManifold</a></div><div class="ttdef"><b>Definition:</b> <a href="opencascade_2manifold__lib_8h_source.html#l00292">manifold_lib.h:292</a></div></div>
+<div class="ttc" id="aclassStep54_1_1TriangulationOnCAD_html_afb1fa0d1f30cc719d4c962bcf152e081a6cd85de9b34d5dea8542043c826934c1"><div class="ttname"><a href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081a6cd85de9b34d5dea8542043c826934c1">Step54::TriangulationOnCAD::NormalToMeshProjection</a></div><div class="ttdeci">@ NormalToMeshProjection</div><div class="ttdef"><b>Definition:</b> <a href="step-54_8cc_source.html#l00051">step-54.cc:51</a></div></div>
+<div class="ttc" id="acoding__conventions__0_8txt_html_adad35057b6e70ae37d4abe7878683d90"><div class="ttname"><a href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a></div><div class="ttdeci">functions which clear bits or flags should be named[2.x.15] use[2.x.18] instead of *[2.x.19] In the implementation after each three empty lines are expected to enable better readability One empty line occurs in functions to group blocks of since two empty lines are not enough to visibly distinguish sufficiently that the code belongs to two different functions *[2.x.21] Whenever an integer variable can only assume nonnegative it is marked as unsigned The same applies to functions that can only return positive or zero values it should be marked even if passed by value we mark input parameters as const This aids as an additional documentation tool to clarify the intent of a which is often either involuntarily or poor style *[2.x.25] Whenever a function does not change any of the member variable of the embedding class it should be marked as const  *[2.x.27] Function and variable names may not consist of only one or two unless the variable is a pure counting index *[2.x.29] Type the number of children per the child indices of the child cells adjacent to face</div><div class="ttdef"><b>Definition:</b> <a href="coding__conventions__0_8txt_source.html#l00027">coding_conventions_0.txt:27</a></div></div>
+<div class="ttc" id="acoding__conventions__0_8txt_html_ad83f9d9d8b603ed71c3483de199bc7a7"><div class="ttname"><a href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a></div><div class="ttdeci">their purpose is merely to keepdeal II as uniform as possible Uniformity reduces the number of bugs weproduce because we for always assume that input arguments comebefore output arguments of a function call They also simplify reading codebecause some things become clear already by looking at the style a piece ofcode is without having to look up the exact definition of something **deal II uses[2.x.2] to normalize indentation Astyle file is provided at ***Before a you should run **on each of your files This will make sure indentation is conforming to thestyle guidelines outlined in this page *This is cumbersome and more you can just run **in whatever directory you set up the library to be compiled in</div><div class="ttdef"><b>Definition:</b> <a href="coding__conventions__0_8txt_source.html#l00013">coding_conventions_0.txt:13</a></div></div>
+<div class="ttc" id="acoding__conventions__0_8txt_html_ac639e1db0b03fc797eca55e266afa976"><div class="ttname"><a href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a></div><div class="ttdeci">functions which clear bits or flags should be named[2.x.15] use[2.x.18] instead of *[2.x.19] In the implementation after each three empty lines are expected to enable better readability One empty line occurs in functions to group blocks of since two empty lines are not enough to visibly distinguish sufficiently that the code belongs to two different functions *[2.x.21] Whenever an integer variable can only assume nonnegative it is marked as unsigned The same applies to functions that can only return positive or zero values it should be marked even if passed by value we mark input parameters as const This aids as an additional documentation tool to clarify the intent of a which is often either involuntarily or poor style *[2.x.25] Whenever a function does not change any of the member variable of the embedding class it should be marked as const  *[2.x.27] Function and variable names may not consist of only one or two unless the variable is a pure counting index *[2.x.29] Type the number of children per cell</div><div class="ttdef"><b>Definition:</b> <a href="coding__conventions__0_8txt_source.html#l00027">coding_conventions_0.txt:27</a></div></div>
+<div class="ttc" id="amg__0_8txt_html_a1dadc108ee1520717957789de4b76416"><div class="ttname"><a href="mg__0_8txt.html#a1dadc108ee1520717957789de4b76416">cycle</a></div><div class="ttdeci">****Classes that have to do with multigrid algorithms *The main class with implementation of the multigrid scheme is Multigrid with its function[2.x.1] It uses the abstract following classes in order to perform the multigrid cycle</div><div class="ttdef"><b>Definition:</b> <a href="mg__0_8txt_source.html#l00007">mg_0.txt:7</a></div></div>
 <div class="ttc" id="agrid_2grid__in_8h_html"><div class="ttname"><a href="grid_2grid__in_8h.html">grid_in.h</a></div></div>
 <div class="ttc" id="anumerics_2data__out_8h_html"><div class="ttname"><a href="numerics_2data__out_8h.html">data_out.h</a></div></div>
 <div class="ttc" id="aclassGridOut_html"><div class="ttname"><a href="classGridOut.html">GridOut</a></div><div class="ttdef"><b>Definition:</b> <a href="grid_2grid__out_8h_source.html#l01050">grid_out.h:1050</a></div></div>
+<div class="ttc" id="aclassStep54_1_1TriangulationOnCAD_html_afb1fa0d1f30cc719d4c962bcf152e081a71c32dcebb205e89d710cee701b4410e"><div class="ttname"><a href="classStep54_1_1TriangulationOnCAD.html#afb1fa0d1f30cc719d4c962bcf152e081a71c32dcebb205e89d710cee701b4410e">Step54::TriangulationOnCAD::DirectionalProjection</a></div><div class="ttdeci">@ DirectionalProjection</div><div class="ttdef"><b>Definition:</b> <a href="step-54_8cc_source.html#l00050">step-54.cc:50</a></div></div>
 <div class="ttc" id="agroup__Exceptions_html_gafc0ca7ad85b3ebd64e8e51689ac85caf"><div class="ttname"><a href="group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a></div><div class="ttdeci">#define AssertThrow(cond, exc)</div><div class="ttdef"><b>Definition:</b> <a href="include_2deal_8II_2base_2exceptions_8h_source.html#l01699">exceptions.h:1699</a></div></div>
 <div class="ttc" id="agrid_2grid__generator_8h_html"><div class="ttname"><a href="grid_2grid__generator_8h.html">grid_generator.h</a></div></div>
 <div class="ttc" id="ainclude_2deal_8II_2opencascade_2utilities_8h_html"><div class="ttname"><a href="include_2deal_8II_2opencascade_2utilities_8h.html">utilities.h</a></div></div>
+<div class="ttc" id="acoding__conventions__0_8txt_html_a02f5aa616d7b0799c538fe77d6c6c795"><div class="ttname"><a href="coding__conventions__0_8txt.html#a02f5aa616d7b0799c538fe77d6c6c795">e</a></div><div class="ttdeci">i e</div><div class="ttdef"><b>Definition:</b> <a href="coding__conventions__0_8txt_source.html#l00028">coding_conventions_0.txt:28</a></div></div>
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

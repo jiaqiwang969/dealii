@@ -1,0 +1,71 @@
+[0.x.0]*
+ Implementation of a scalar Lagrange finite element  [2.x.0]  that yields the finite element space of continuous, piecewise polynomials of degree  [2.x.1]  in each coordinate direction. This class is realized using tensor product polynomials based on 1D Lagrange polynomials with equidistant (degree up to 2), Gauss-Lobatto (starting from degree 3), or given support points.
+*  The standard constructor of this class takes the degree  [2.x.2]  of this finite element. Alternatively, it can take a quadrature formula  [2.x.3]  defining the support points of the Lagrange interpolation in one coordinate direction.
+*  For more information about the <tt>spacedim</tt> template parameter check the documentation of FiniteElement or the one of Triangulation.
+*  [1.x.0]
+*  The constructor creates a TensorProductPolynomials object that includes the tensor product of  [2.x.4]  polynomials of degree  [2.x.5]  This  [2.x.6]  object provides all values and derivatives of the shape functions.  In case a quadrature rule is given, the constructor creates a TensorProductPolynomials object that includes the tensor product of  [2.x.7]  polynomials with the support points from  [2.x.8] 
+*  Furthermore the constructor fills the  [2.x.9]  the  [2.x.10]  prolongation (embedding) and the  [2.x.11]  matrices. These are implemented only up to a certain degree and may not be available for very high polynomial degree.
+*  [1.x.1]
+*  When constructing an FE_Q element at polynomial degrees one or two, equidistant support points at 0 and 1 (linear case) or 0, 0.5, and 1 (quadratic case) are used. The unit support or nodal points [1.x.2] are those points where the [1.x.3]th Lagrange polynomial satisfies the  [2.x.12]  property, i.e., where one polynomial is one and all the others are zero.  For higher polynomial degrees, the support points are non-equidistant by default, and chosen to be the support points of the <tt>(degree+1)</tt>-order Gauss-Lobatto quadrature rule. This point distribution yields well-conditioned Lagrange interpolation at arbitrary polynomial degrees. By contrast, polynomials based on equidistant points get increasingly ill-conditioned as the polynomial degree increases. In interpolation, this effect is known as the Runge phenomenon. For Galerkin methods, the Runge phenomenon is typically not visible in the solution quality but rather in the condition number of the associated system matrices. For example, the elemental mass matrix of equidistant points at degree 10 has condition number 2.6e6, whereas the condition number for Gauss-Lobatto points is around 400.
+*  The Gauss-Lobatto points in 1D include the end points 0 and +1 of the unit interval. The interior points are shifted towards the end points, which gives a denser point distribution close to the element boundary.
+*  If combined with Gauss-Lobatto quadrature, FE_Q based on the default support points gives diagonal mass matrices. This case is demonstrated in  [2.x.13] . However, this element can be combined with arbitrary quadrature rules through the usual FEValues approach, including full Gauss quadrature. In the general case, the mass matrix is non-diagonal.
+*  [1.x.4]
+*  The original ordering of the shape functions represented by the TensorProductPolynomials is a tensor product numbering. However, the shape functions on a cell are renumbered beginning with the shape functions whose support points are at the vertices, then on the line, on the quads, and finally (for 3d) on the hexes. To be explicit, these numberings are listed in the following:
+*  [1.x.5]  [2.x.14]   [2.x.15]  1D case:  
+* [1.x.6]
+* 
+*   [2.x.16]  2D case:  
+* [1.x.7]
+* 
+*   [2.x.17]  3D case:  
+* [1.x.8]
+* 
+*  The respective coordinate values of the support points of the shape functions are as follows:  [2.x.18]   [2.x.19]  Shape function 0: <tt>[0, 0, 0]</tt>;  [2.x.20]  Shape function 1: <tt>[1, 0, 0]</tt>;  [2.x.21]  Shape function 2: <tt>[0, 1, 0]</tt>;  [2.x.22]  Shape function 3: <tt>[1, 1, 0]</tt>;  [2.x.23]  Shape function 4: <tt>[0, 0, 1]</tt>;  [2.x.24]  Shape function 5: <tt>[1, 0, 1]</tt>;  [2.x.25]  Shape function 6: <tt>[0, 1, 1]</tt>;  [2.x.26]  Shape function 7: <tt>[1, 1, 1]</tt>;  [2.x.27]   [2.x.28] 
+*  In 2d, these shape functions look as follows:  [2.x.29] 
+* 
+
+*  [1.x.9]  [2.x.30]   [2.x.31]  1D case:  
+* [1.x.10]
+* 
+*   [2.x.32]  2D case:  
+* [1.x.11]
+* 
+*   [2.x.33]  3D case:  
+* [1.x.12]
+*  The center vertex has number 26.
+*  The respective coordinate values of the support points of the shape functions are as follows:  [2.x.34]   [2.x.35]  Shape function 0: <tt>[0, 0, 0]</tt>;  [2.x.36]  Shape function 1: <tt>[1, 0, 0]</tt>;  [2.x.37]  Shape function 2: <tt>[0, 1, 0]</tt>;  [2.x.38]  Shape function 3: <tt>[1, 1, 0]</tt>;  [2.x.39]  Shape function 4: <tt>[0, 0, 1]</tt>;  [2.x.40]  Shape function 5: <tt>[1, 0, 1]</tt>;  [2.x.41]  Shape function 6: <tt>[0, 1, 1]</tt>;  [2.x.42]  Shape function 7: <tt>[1, 1, 1]</tt>;  [2.x.43]  Shape function 8: <tt>[0, 1/2, 0]</tt>;  [2.x.44]  Shape function 9: <tt>[1, 1/2, 0]</tt>;  [2.x.45]  Shape function 10: <tt>[1/2, 0, 0]</tt>;  [2.x.46]  Shape function 11: <tt>[1/2, 1, 0]</tt>;  [2.x.47]  Shape function 12: <tt>[0, 1/2, 1]</tt>;  [2.x.48]  Shape function 13: <tt>[1, 1/2, 1]</tt>;  [2.x.49]  Shape function 14: <tt>[1/2, 0, 1]</tt>;  [2.x.50]  Shape function 15: <tt>[1/2, 1, 1]</tt>;  [2.x.51]  Shape function 16: <tt>[0, 0, 1/2]</tt>;  [2.x.52]  Shape function 17: <tt>[1, 0, 1/2]</tt>;  [2.x.53]  Shape function 18: <tt>[0, 1, 1/2]</tt>;  [2.x.54]  Shape function 19: <tt>[1, 1, 1/2]</tt>;  [2.x.55]  Shape function 20: <tt>[0, 1/2, 1/2]</tt>;  [2.x.56]  Shape function 21: <tt>[1, 1/2, 1/2]</tt>;  [2.x.57]  Shape function 22: <tt>[1/2, 0, 1/2]</tt>;  [2.x.58]  Shape function 23: <tt>[1/2, 1, 1/2]</tt>;  [2.x.59]  Shape function 24: <tt>[1/2, 1/2, 0]</tt>;  [2.x.60]  Shape function 25: <tt>[1/2, 1/2, 1]</tt>;  [2.x.61]  Shape function 26: <tt>[1/2, 1/2, 1/2]</tt>;  [2.x.62]   [2.x.63] 
+* 
+
+*  In 2d, these shape functions look as follows (the black plane corresponds to zero; negative shape function values may not be visible):  [2.x.64] 
+* 
+
+*  [1.x.13]  [2.x.65]   [2.x.66]  1D case:  
+* [1.x.14]
+* 
+*   [2.x.67]  2D case:  
+* [1.x.15]
+*   [2.x.68] 
+*  In 2d, these shape functions look as follows (the black plane corresponds to zero; negative shape function values may not be visible):  [2.x.69] 
+* 
+
+*  [1.x.16]  [2.x.70]   [2.x.71]  1D case:  
+* [1.x.17]
+* 
+*   [2.x.72]  2D case:  
+* [1.x.18]
+*   [2.x.73] 
+*  In 2d, these shape functions look as follows (the black plane corresponds to zero; negative shape function values may not be visible):  [2.x.74] 
+
+* 
+* [0.x.1]*
+   Constructor for tensor product polynomials of degree  [2.x.75]  based on   Gauss-Lobatto support (node) points. For polynomial degrees of one and   two, these are the usual equidistant points.  
+* [0.x.2]*
+   Constructor for tensor product polynomials with support points  [2.x.76]    based on a one-dimensional quadrature formula. The degree of the finite   element is <tt>points.size()-1</tt>. Note that the first point has to be   0 and the last one 1. Constructing   <tt>FE_Q<dim>(QGaussLobatto<1>(fe_degree+1))</tt> is equivalent to the   constructor that specifies the polynomial degree only. For selecting   equidistant nodes at <tt>fe_degree > 2</tt>, construct   <tt>FE_Q<dim>(QIterated<1>(QTrapezoid<1>(),fe_degree))</tt>.     Thespace* created by this constructor is the   same as if you had called `FE_Q<dim>(points.size()-1)`, but whatis*
+   different are the basis functions of this space. This is useful in   contexts where one wants to achieve certain properties of the matrices   that result from integrating bilinear forms of these shape functions.   For example, when computing the mass matrix on cell  [2.x.77] ,   [1.x.19]   one generally applies a quadrature formula and approximates the real   mass matrix by the following:   [1.x.20]   where the locations of the quadrature points  [2.x.78]  and the   weights  [2.x.79]  depend on the cell  [2.x.80] . If the quadrature formula used   to define these points  [2.x.81]  is the same as the one passed   to this constructor (or, in higher dimensions, is generated by a   tensor product of the one used to the constructor), then    [2.x.82] , and the matrix reduces to   [1.x.21]   i.e., a diagonal matrix with the weights  [2.x.83]  on the diagonal. Such   constructions are quite useful when using explicit time stepping   methods because, for example, one then only has to invert a diagonal   mass matrix in each time step when solving the linear system.  
+* [0.x.3]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_Q<dim>(degree)</tt>, with  [2.x.84]  and  [2.x.85]  replaced by   appropriate values.  
+* [0.x.4]*
+   Implementation of the corresponding function in the FiniteElement   class.  Since the current element is interpolatory, the nodal   values are exactly the support point values. Furthermore, since   the current element is scalar, the support point values need to   be vectors of length 1.  
+* [0.x.5]*
+    [2.x.86]   [2.x.87]   
+* [0.x.6]

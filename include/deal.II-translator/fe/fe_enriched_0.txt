@@ -1,0 +1,172 @@
+[0.x.0]*
+ Implementation of a partition of unity finite element method (PUM) by Babuska and Melenk which enriches a standard finite element with an enrichment function multiplied with another (usually linear) finite element: [1.x.0] where  [2.x.0]  and  [2.x.1]  are the underlying finite elements (including the mapping from the isoparametric element to the real element);  [2.x.2]  are the scalar enrichment functions in real space (e.g.  [2.x.3] ,  [2.x.4] , etc);  [2.x.5]  and  [2.x.6]  are the standard and enriched DoFs. This allows to include in the finite element space a priori knowledge about the partial differential equation being solved which in turn improves the local approximation properties of the spaces. This can be useful for highly oscillatory solutions, problems with domain corners or on unbounded domains or sudden changes of boundary conditions. PUM method uses finite element spaces which satisfy the partition of unity property (e.g. FE_Q). Among other properties this makes the resulting space to reproduce enrichment functions exactly.
+*  The simplest constructor of this class takes two finite element objects and an enrichment function to be used. For example
+* 
+
+* 
+* [1.x.1]
+* 
+*  In this case, standard DoFs are distributed by  [2.x.7] , whereas enriched DoFs are coming from a single finite element  [2.x.8]  used with a single enrichment function  [2.x.9] . In this case, the total number of DoFs on the enriched element is the sum of DoFs from  [2.x.10]  and  [2.x.11] .
+*  As an example of an enrichment function, consider  [2.x.12] , which leads to the following shape functions on the unit element:  [2.x.13] 
+*  Note that evaluation of gradients (hessians) of the enriched shape functions or the finite element field requires evaluation of gradients (gradients and hessians) of the enrichment functions:
+
+* 
+* [1.x.2]
+* 
+*  [1.x.3]
+*  In most applications it is beneficial to introduce enrichments only in some part of the domain (e.g. around a crack tip) and use standard FE (e.g. FE_Q) elsewhere. This can be achieved by using the hp-finite element framework in deal.II that allows for the use of different elements on different cells. To make the resulting space  [2.x.14]  continuous, it is then necessary for the DoFHandler class and  [2.x.15]  function to be able to figure out what to do at the interface between enriched and non-enriched cells. Specifically, we want the degrees of freedom corresponding to enriched shape functions to be zero at these interfaces. These classes and functions can not to do this automatically, but the effect can be achieved by using not just a regular FE_Q on cells without enrichment, but to wrap the FE_Q into an FE_Enriched object [1.x.4]. This can be done as follows:
+
+* 
+* [1.x.5]
+*  This constructor is equivalent to calling
+
+* 
+* [1.x.6]
+*  and will result in the correct constraints for enriched DoFs attributed to support points on the interface between the two regions.
+*  [1.x.7]
+*  When using this class, please cite  [2.x.16]  . The PUM was introduced in  [2.x.17]  and  [2.x.18]  .
+*  [1.x.8]
+*  The implementation of the class is based on FESystem which is aggregated as a private member. The simplest constructor <code> FE_Enriched<dim> fe(FE_Q<dim>(2), FE_Q<dim>(1),function)</code> will internally initialize FESystem as
+* 
+
+* 
+* [1.x.9]
+* 
+*  Note that it would not be wise to have this class derived from FESystem as the latter concatenates the given elements into different components of a vector element, whereas the current class combines the given elements into the same components. For instance, if two scalar elements are given, the resulting element will be scalar rather than have two components when doing the same with an FESystem.
+*  The ordering of the shape function,  [2.x.19]  the  [2.x.20]  (embedding) and the  [2.x.21]  matrices are taken from the FESystem class.
+* 
+
+* 
+*  [2.x.22] 
+
+* 
+* [0.x.1]*
+   Constructor which takes base FiniteElement  [2.x.23]  and the enrichment   FiniteElement  [2.x.24]  which will be multiplied by the  [2.x.25]      In case  [2.x.26]  is other than FE_Nothing, the lifetime of the    [2.x.27]  must be at least as long as the FE_Enriched object.  
+* [0.x.2]*
+   Constructor which only wraps the base FE  [2.x.28]    As for the enriched finite element space, FE_Nothing is used.   Continuity constraints will be automatically generated when   this non-enriched element is used in conjunction with enriched finite   element within a DoFHandler with hp-capabilities.     See the discussion in the class documentation on how to use this element   in the context of hp-finite element methods.  
+* [0.x.3]*
+   Constructor which takes pointer to the base FiniteElement  [2.x.29]  and   a vector of enriched FiniteElement's  [2.x.30]  .  [2.x.31]    finite element will be enriched with functions in  [2.x.32]      This is the most general public constructor which also allows to have   different enrichment functions in different disjoint parts of the domain.   To that end the last argument provides an association of cell iterator   to a Function. This is done to simplify the usage of this class when the   number of disjoint domains with different functions is more than a few.   Otherwise one would have to use different instance of this class for each   disjoint enriched domain.     If you don't plan to use this feature, you can utilize C++11 lambdas to   define dummy functions. Below is an example which uses two functions with   the first element to be enriched and a single function with the second one.  
+* [1.x.10]
+*     
+*  [2.x.33]  When using the same finite element for enrichment with N   different functions, it is advised to have the second argument of size 1   and the last argument of size 1 x N. The same can be achieved by providing   N equivalent enrichment elements while keeping the last argument of size   N x 1. However this will be much more computationally expensive.    
+*  [2.x.34]  When using different enrichment functions on disjoint domains, no   checks are done by this class that the domains are actually disjoint.  
+* [0.x.4]*
+   The most general private constructor. The first two input parameters are   consistent with those in FESystem. It is used internally only with    [2.x.35] , which is a logical requirement for this   finite element.  
+* [0.x.5]*
+   Return a string that identifies a finite element.  
+* [0.x.6]*
+   Access to a composing element. The index needs to be smaller than the   number of base elements. In the context of this class, the number of   base elements is always more than one: a non-enriched element plus an   element to be enriched, which could be FE_Nothing.  
+* [0.x.7]*
+   Return the value of the  [2.x.36]  shape function at the point  [2.x.37]   [2.x.38]  is a   point on the reference element.     This function returns meaningful values only for non-enriched element as   real-space enrichment requires evaluation of the function at the point in   real-space.  
+* [0.x.8]*
+    [2.x.39]  Transfer matrices    [2.x.40]   
+* [0.x.9]*
+   Projection from a fine grid space onto a coarse grid space.     This function only makes sense when all child elements are also enriched   using the same function(s) as the parent element.  
+* [0.x.10]*
+   Embedding matrix between grids.     This function only makes sense when all child elements are also enriched   using the same function(s) as the parent element.  
+* [0.x.11]*
+    [2.x.41]  Functions to support hp    [2.x.42]   
+* [0.x.12]*
+   Return whether this element implements hp-constraints.     This function returns  [2.x.43]  if and only if all its base elements return  [2.x.44]    for this function.  
+* [0.x.13]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Base elements of this element will have to implement this function. They   may only provide interpolation matrices for certain source finite   elements, for example those from the same family. If they don't implement   interpolation from a given element, then they must throw an exception of   type  [2.x.45]  which   will get propagated out from this element.  
+* [0.x.14]*
+   Return the matrix interpolating from a face of one element to the   subface of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Base elements of this element will have to implement this function. They   may only provide interpolation matrices for certain source finite   elements, for example those from the same family. If they don't implement   interpolation from a given element, then they must throw an exception of   type  [2.x.46]  which   will get propagated out from this element.  
+* [0.x.15]*
+   If, on a vertex, several finite elements are active, the hp-code first   assigns the degrees of freedom of each of these FEs different global   indices. It then calls this function to find out which of them should get   identical values, and consequently can receive the same global DoF index.   This function therefore returns a list of identities between DoFs of the   present finite element object with the DoFs of  [2.x.47]  which is a   reference to a finite element object representing one of the other finite   elements active on this particular vertex. The function computes which of   the degrees of freedom of the two finite element objects are equivalent,   both numbered between zero and the corresponding value of   n_dofs_per_vertex() of the two finite elements. The first index of each   pair denotes one of the vertex dofs of the present element, whereas the   second is the corresponding index of the other finite element.  
+* [0.x.16]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on lines.  
+* [0.x.17]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on quads.  
+* [0.x.18]*
+    [2.x.48]   [2.x.49]   
+* [0.x.19]*
+   Return enrichment functions  
+* [0.x.20]*
+   Return the underlying FESystem object.  
+* [0.x.21]*
+   A class to hold internal data needed for evaluation of this FE at   quadrature points.  
+* [0.x.22]*
+     For each Finite Element (base number) and each enrichment function     (base_index) this struct will contain values, gradients and hessians of     the enrichment functions.    
+* [0.x.23]*
+     Constructor. Is used inside setup_data to wrap FESystem's internal     data object. The former is called from get_data, get_subface_data and     get_face_data which FE_Enriched has to implement.         Since  [2.x.50]   [2.x.51]  and      [2.x.52]  just create an object and return a pointer     to it (i.e. they don't retain ownership), we store the cast result in a      [2.x.53]  to indicate that InternalData owns the object.    
+* [0.x.24]*
+     Give read-access to the pointer to a  [2.x.54]  of the  [2.x.55]       [2.x.56] th base element of FESystem's data.    
+* [0.x.25]*
+     Give read-access to the pointer to an object into which the      [2.x.57] th base element will write its output when calling      [2.x.58]  and similar functions.    
+* [0.x.26]*
+     Aggregate FESystem's internal data. It is used every time     we call FESystem's fill_fe_values() and alike.    
+* [0.x.27]*
+     For each FE used in enrichment (base number  [2.x.59] ) and each     enrichment function (base multiplicity  [2.x.60] ),      [2.x.61]  will be used to store possibly     requested values, gradients and hessians of enrichment function      [2.x.62] .         The variable is made mutable as InternalData's provided to fill_fe_values     and alike are const.        
+*  [2.x.63]  We do not want to store this information in the finite element object itself,     because this would mean that (i) only one FEValues object could use a     finite element object at a time, and (ii) that these objects could not be     used in a multithreaded context.    
+* [0.x.28]*
+   For each finite element  [2.x.64]  used in enrichment and each enrichment function    [2.x.65]  associated with it (essentially its multiplicity),    [2.x.66]  contains the associated local   DoFs on the FE_Enriched finite element.  
+* [0.x.29]*
+   Enrichment functions.   The size of the first vector is the same as the number of FiniteElement   spaces used with enrichment. Whereas the size of the inner vector   corresponds to the number of enrichment functions associated with a single   FiniteElement.  
+* [0.x.30]*
+   Auxiliary variable used to distinguish between the case when we do   enrichment and when the class simply wraps another FiniteElement.     This variable is initialized in the constructor by looping over a vector of   enrichment elements and checking if all of them are FE_Nothing. If this is   the case, then the value is set to  [2.x.67] , otherwise it is    [2.x.68] .  
+* [0.x.31]*
+   Auxiliary function called from get_data, get_face_data and   get_subface_data. It take internal data of FESystem object in  [2.x.69]    and the quadrature rule  [2.x.70]      This function essentially take the internal data from an instance of   FESystem class and wraps it into our own InternalData class which   additionally has objects to hold values/gradients/hessians of   enrichment functions at each quadrature point depending on  [2.x.71]   
+* [0.x.32]*
+   Prepare internal data structures and fill in values independent of the   cell. Returns a pointer to an object of which the caller of this function   (FEValues) then has to assume ownership (which includes destruction when it   is no more needed).  
+* [0.x.33]*
+   This function sets up the index table for the system as well as  [2.x.72]    restriction and  [2.x.73]  matrices.  
+* [0.x.34]*
+   The underlying FESystem object.  
+* [0.x.35]*
+   After calling fill_fe_(face/subface_)values this function   implements the chain rule to multiply stored shape values/gradient/hessians   by those of enrichment function evaluated at quadrature points.  
+* [0.x.36]*
+ This namespace consists of a class needed to create a collection of FE_Enriched finite elements  [2.x.74]  to be used with DoFHandler in hp-mode on a domain with multiple, possibly overlapping, sub-domains with individual enrichment functions.
+*  To create  [2.x.75]  a graph coloring algorithm is used to assign colors to enrichment functions before creating  [2.x.76]  Hence the name.
+
+* 
+* [0.x.37]*
+   An alias template for predicate function which returns a   boolean for a  [2.x.77]  object.     This is used by helper functions and in the implementation of    [2.x.78]  class.  
+* [0.x.38]*
+     Returns true if there is a connection between subdomains in the mesh     associated with  [2.x.79]  i.e., if the subdomains share at least     a vertex. The two subdomains are defined by predicates provided by      [2.x.80]  and  [2.x.81]  A predicate is a function (or     object of a type with an operator()) which takes in a cell iterator and     gives a boolean. It is said to be active in a cell if it returns true.         An example of a custom predicate is one that checks the distance from a     fixed point. Note that the operator() takes in a cell iterator. Using the     constructor, the fixed point and the distance can be chosen.    
+* [1.x.11]
+*      and then the function can be used as follows to find if the subdomains     are connected.    
+* [1.x.12]
+*           [2.x.82]  dof_handler DoFHandler object      [2.x.83]  predicate_1 A function (or object of a type with an     operator()) defining the subdomain 1. The function takes in a cell and     returns a boolean.      [2.x.84]  predicate_2 Same as  [2.x.85]  but defines subdomain 2.      [2.x.86]  A boolean "true" if the subdomains share at least a vertex.    
+* [0.x.39]*
+     Assign colors to subdomains using Graph coloring algorithm where each     subdomain is considered as a graph node. Subdomains which are     connected i.e share at least a vertex have different color. Each     subdomain     is defined using a predicate function of  [2.x.87]           [2.x.88]  dof_handler a DoFHandler object      [2.x.89]  predicates predicates defining the subdomains      [2.x.90]  predicate_colors Colors (unsigned int) associated with each     subdomain.    
+* [0.x.40]*
+     Used to construct data members  [2.x.91]  and      [2.x.92]  of Helper class. Inputs are DoFHandler object,     vector of predicates and colors associated with them. Before calling     this function, colors can be assigned to predicates (i.e subdomains)     using the function color_predicates.         Each active FE index has a set of colors associated with it.     A cell with an active FE index i has a set of colors given by      [2.x.93] . An active FE index with color {a,b}     means that the cell has two active predicates (i.e they return true     for the cell) of color a and b.         Eg: fe_sets = { {}, {1}, {2}, {1,2} } means     Cells with active FE index 0 have no predicates associated.     Cells with index 1 have a active predicate with color 1.     Cells with index 2 have a active predicate with color 2.     Cells with index 3 have active predicates with color 1 and color 2.         A map of maps cellwise_color_predicate_map is used to associate     predicate colors in cells with predicate ids. For this purpose, each     cell is given a unique id which is stored in material id for now.     When the grid is refined, material id is inherited to the children, so     map which associates material id with color map will still be relevant.         Now the color map can be explained with an example. If the cell with     material id 100 has active predicates 4 (color = 1) and 5 (color = 2),     the map will insert pairs (1, 4) and (2, 5) at key 100 (i.e unique id     of cell is mapped with a map which associates color with predicate id).          [2.x.94]  dof_handler DoFHandler object      [2.x.95]  predicates vector of predicates defining the subdomains.      [2.x.96]  returns true for a cell if it     belongs to subdomain with index i.      [2.x.97]  predicate_colors vector of colors (unsigned int) associated     with each subdomain.      [2.x.98]  cellwise_color_predicate_map A map of maps used to associate     predicate colors in cells with predicate ids.      [2.x.99]  fe_sets a vector of color lists    
+* [0.x.41]*
+     A function that returns a vector of enrichment functions corresponding     to a color. The size of the vector is equal to total number of different     colors associated with predicates (i.e subdomains).         Assume that a cell has a active predicates with ids 4 (color = 1) and     5 (color = 2). cellwise_color_predicate_map has this information     provided we know the material id.         The constructed color_enrichments is such that     color_enrichments[color=1](cell) will return a pointer to     the enrichment function with id=4, i.e. enrichments[4].     In other words, using the previously collected information in     this function we translate a vector of user provided enrichment     functions into a vector of functions suitable for FE_Enriched class.          [2.x.100]  n_colors number of colors for predicates      [2.x.101]  enrichments vector of enrichment functions      [2.x.102]  cellwise_color_predicate_map A map of maps used to associate     predicate colors in cells with predicate ids.      [2.x.103]  color_enrichments A vector of functions that take in cell     and return a function pointer.    
+* [0.x.42]*
+     Creates a  [2.x.104]  object constructed using FE_Enriched     elements which itself is constructed using color enrichment functions     and is of size equal to number of colors.          [2.x.105]  fe_sets a vector of color lists      [2.x.106]  color_enrichments A vector of functions that take in cell     and return a function pointer.      [2.x.107]  fe_base base FiniteElement      [2.x.108]  fe_enriched enriched FiniteElements      [2.x.109]  fe_nothing a finite element with zero degrees of freedom      [2.x.110]  fe_collection a collection of     finite elements    
+* [0.x.43]*
+    [2.x.111]  class creates a collection of FE_Enriched finite   elements  [2.x.112]  to be used with DoFHandler in a domain   with multiple, possibly overlapping, sub-domains with individual   enrichment functions. Note that the overlapping regions may have   multiple enrichment functions associated with them. This is implemented   using a general constructor of FE_Enriched object which allows different   enrichment functions.     Consider a domain with multiple enriched sub-domains   which are disjoint i.e. not connected with each other.   To ensure  [2.x.113]  continuity at the interface between   the enriched sub-domain (characterized by a single enrichment   function) and the non-enriched domain, we can use an FE_Enriched   object in the enriched sub-domain and in the non-enriched domain   a standard finite element (eg: FE_Q) wrapped into an FE_Enriched   object (which internally uses a dominating FE_Nothing object).   Refer to the documentation on FE_Enriched for more   information on this. It is to be noted that an FE_Enriched   object is constructed using a base FE   (FiniteElement objects) and one or more   enriched FEs. FE_Nothing is a dummy enriched FE.     The situation becomes more   complicated when two enriched sub-domains   share an interface. When the number of enrichment functions are   same for the sub-domains, FE_Enriched object of one sub-domain   is constructed such that each enriched FE is paired (figuratively) with a   FE_Nothing in the FE_Enriched object of the other sub-domain.   For example, let the FEs fe_enr1 and fe_enr2, which will be   used with enrichment functions, correspond   to the two sub-domains. Then the FE_Enriched objects of the two   sub-domains are built using   [fe_base, fe_enr1, fe_nothing] and   [fe_base, fe_nothing, fe_enr2] respectively.   Note that the size of the vector of enriched FEs   (used in FE_Enriched constructor) is equal to 2, the   same as the number of enrichment functions. When the number of enrichment   functions is not the same, additional enriched FEs are paired   with FE_Nothing. This ensures that the enriched DOF's at the interface   are set to zero by the  [2.x.114]  function.   Using these two strategies, we construct the appropriate FE_Enriched   using the general constructor. Note that this is   done on a mesh without hanging nodes.     Now consider a domain with multiple sub-domains which may share   an interface with each other. As discussed previously,   the number of enriched FEs in the FE_Enriched object of each   sub-domain needs to be equal to the number of sub-domains. This is because   we are not using the information of how the domains are connected   and any sub-domain may share interface with any other sub-domain (not   considering overlaps for now!). However, in general, a given sub-domain   shares an interface only with a few sub-domains. This warrants   the use of a graph coloring algorithm to reduce   the size of the vector of enriched FEs   (used in the FE_Enriched constructor). By giving the sub-domains   that share no interface the same color, a single  [2.x.115]    that returns different enrichment functions for each   sub-domain can be constructed. Then the size of the vector of enriched   FEs is equal to the number of different colors   used for predicates (or sub-domains).    
+*  [2.x.116]  The graph coloring function,  [2.x.117]    used for assigning colors to the sub-domains   needs MPI (use  [2.x.118]  to initialize MPI   and the necessary Zoltan setup).   The coloring function, based on Zoltan, is a parallel coloring   algorithm but is used in serial by  [2.x.119]      Construction of the Helper class needs a base FiniteElement  [2.x.120]    an enriched FiniteElement  [2.x.121]  (used for all the   enrichment functions), a vector of predicate   functions (used to define sub-domains) as well as the corresponding   enrichment functions. The FECollection object, a collection of FE_Enriched   objects to be used with a DoFHandler object, can be retrieved   using the member function build_fe_collection which also modifies the   active FE indices of the DoFHandler object (provided as an argument   to the build_fe_collection function).     [1.x.13]   Consider a domain with three sub-domains defined by predicate functions.   Different cells are associated with FE indices as shown in the following   image. The three equal-sized square-shaped sub-domains 'a', 'b'   and 'c' can be seen. The predicates associated with these sub-domains   are also labeled 'a', 'b' and 'c'.   The subdomains 'a' and 'b' intersect with cell labeled with FE   index 3. The cells in 'c' are labeled with FE   index 1. As can be seen, connections exist between 'a' and 'b',   'b' and 'c' but 'a' and 'c' are not connected.     \htmlonly <style>div.image   img[src="3source_fe_indices.png"]{width:25%;}</style> \endhtmlonly    [2.x.122]      As discussed before, the colors of predicates are allotted using   the graph coloring algorithm. Each predicate is a node in the graph and if   two sub-domains share an interface, the corresponding predicates   should be given different colors.   (The predicate colors are different from what is shown   in the image. The colors in the image are as per FE indices).   Predicates 'a' and 'c' can be given the same color since they   are not connected but the color given to 'b' has to be different from   'a' and 'c'.     The name of finite element at an index (i) of  [2.x.123]     [2.x.124]  can be obtained by    [2.x.125]  and is   show in the table below. Note that all the FE_Enriched elements   are of the same size and FE_Nothing<2>(dominating) is used as   discussed before.      [2.x.126]      The internal data members used by this class need to be available when the   problem is solved. This can be ensured by declaring the object static,   which is deallocated only when the program terminates. An alternative   would be to use it as a data member of the containing class. Since vector   of predicates and enrichment functions may not be available while   constructing the Helper, a  [2.x.127]  to Helper object can be used   and constructed when the predicates and enrichment functions are   available.      [2.x.128]  The current implementation relies on assigning each cell a   material id, which shall not be modified after the setup   and h-adaptive refinement. For a given cell, the material id is used   to define color predicate map, which doesn't change with refinement.     [1.x.14]  
+* [1.x.15]
+*   
+* [0.x.44]*
+     Constructor for Helper class.          [2.x.129]  fe_base A base FiniteElement      [2.x.130]  fe_enriched An enriched FiniteElement      [2.x.131]  predicates  [2.x.132]  of predicates defining the sub-domains.      [2.x.133]  returns true for a cell if it     belongs to a sub-domain with index (i).      [2.x.134]  enrichments  [2.x.135]  of enrichment functions    
+* [0.x.45]*
+     Prepares a DoFHandler object. The active FE indices of     mesh cells are initialized to work with      [2.x.136]           [2.x.137]  dof_handler a DoFHandler object      [2.x.138]   [2.x.139]  a collection of     finite elements needed by  [2.x.140]     
+* [0.x.46]*
+     Contains a collection of FiniteElement objects needed by a DoFHandler     object.    
+* [0.x.47]*
+     A base FiniteElement used for constructing FE_Enriched     object required by  [2.x.141]     
+* [0.x.48]*
+     An enriched FiniteElement used for constructing FE_Enriched     object required by  [2.x.142]     
+* [0.x.49]*
+     A finite element with zero degrees of freedom used for     constructing FE_Enriched object required by      [2.x.143]     
+* [0.x.50]*
+      [2.x.144]  of predicates defining the sub-domains.      [2.x.145]  returns true for a cell if it     belongs to a sub-domain with index (i).    
+* [0.x.51]*
+      [2.x.146]  of enrichment functions corresponding     to the predicates. These are needed while constructing      [2.x.147]     
+* [0.x.52]*
+     An alias template for any callable target such as functions, lambda     expressions, function objects that take a      [2.x.148]      and return a pointer to Function<dim>. This is used to define      [2.x.149]      which returns an enrichment function     for a cell in Triangulation<dim,spacedim>.    
+* [0.x.53]*
+      [2.x.150]  of functions that take in a cell     and return a function pointer. These are needed while constructing     fe_collection.         color_enrichments[i](cell_iterator) returns a pointer to     the correct enrichment function (i.e. whose corresponding     predicate has the color i) for the cell.    
+* [0.x.54]*
+      [2.x.151]  of colors (unsigned int) associated     with each sub-domain. No two connected sub-domains (i.e. sub-domains that     share a vertex) have the same color.    
+* [0.x.55]*
+     Total number of different colors in predicate_colors    
+* [0.x.56]*
+     A map of maps used to associate     a cell with a map that in turn associates colors of active predicates in     the cell with corresponding predicate ids.    
+* [0.x.57]*
+     A vector of different possible color sets for a given set of     predicates and DoFHandler object    
+* [0.x.58]

@@ -1,9 +1,9 @@
-digraph "Multilevel support"
+digraph "Multilevel support Classes that have to do with multigrid"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
-  Node2 [label="Data storage primitives",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__data.html",tooltip="Here are a few simple classes that help in storage and viewing data. For example, the Table templates..."];
-  Node1 [label="Multilevel support",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Classes that have to do with multigrid algorithms."];
+  Node2 [label="Data storage primitives\l Here are a few simple\l classes that",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__data.html",tooltip="help in storage and viewing data. For example, the Table templates allow to use not only arrays of ob..."];
+  Node1 [label="Multilevel support\l Classes that have to\l do with multigrid",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="algorithms. The main class with implementation of the multigrid scheme is Multigrid with its function..."];
   Node1->Node2 [shape=plaintext, label="MGLevelObject", color="orange", dir="none", style="dashed"];
 }

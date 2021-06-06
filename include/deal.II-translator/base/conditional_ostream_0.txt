@@ -1,0 +1,43 @@
+[0.x.0]*
+ A class that allows printing to an output stream, e.g.  [2.x.0]  depending on the ConditionalOStream object being active (default) or not. The condition of this object can be changed by set_condition() and in the constructor. This class is used in the  [2.x.1] ,  [2.x.2] ,  [2.x.3] ,  [2.x.4] , and  [2.x.5]  tutorial programs.
+*  This class is mostly useful in parallel computations. Ordinarily, you would use  [2.x.6]  to print messages like what the program is presently doing, or the number of degrees of freedom in each step. However, in parallel programs, this means that each of the MPI processes write to the screen, which yields many repetitions of the same text. To avoid it, one would have to have a designated process, say the one with MPI process number zero, do the output, and guard each write statement with an if- condition. This becomes cumbersome and clutters up the code. Rather than doing so, the present class can be used: objects of its type act just like a standard output stream, but they only print something based on a condition that can be set to, for example, <tt>mpi_process==0</tt>, so that only one process has a true condition and in all other processes writes to this object just disappear in nirvana.
+*  The usual usage of this class is as follows:
+* 
+
+* 
+* [1.x.0]
+* 
+*  Here, `Reading parameter file on process xy' is printed by each process separately. In contrast to that, `Solving ...' and `done' is printed to standard output only once, namely by process 0.
+*  This class is not derived from ostream. Therefore
+
+* 
+* [1.x.1]
+*  is  [2.x.7] not [2.x.8]  possible. Instead use the is_active() function for a work- around:
+* 
+
+* 
+* [1.x.2]
+* 
+* 
+
+* 
+*  [2.x.9] 
+
+* 
+* [0.x.1]*
+   Constructor. Set the stream to which we want to write, and the condition   based on which writes are actually forwarded. Per default the condition   of an object is active.  
+* [0.x.2]*
+   Depending on the <tt>active</tt> flag set the condition of this stream to   active (true) or non-active (false). An object of this class prints to   <tt>cout</tt> if and only if its condition is active.  
+* [0.x.3]*
+   Return the condition of the object.  
+* [0.x.4]*
+   Return a reference to the stream currently in use.  
+* [0.x.5]*
+   Output a constant something through this stream. This function must be  [2.x.10]    const so that member objects of this type can also be used from  [2.x.11]    member functions of the surrounding class.  
+* [0.x.6]*
+   Treat ostream manipulators. This function must be  [2.x.12]  so that member   objects of this type can also be used from  [2.x.13]  member functions of   the surrounding class.     Note that compilers want to see this treated differently from the general   template above since functions like  [2.x.14]  are actually overloaded   and can't be bound directly to a template type.  
+* [0.x.7]*
+   Reference to the stream we want to write to.  
+* [0.x.8]*
+   Stores the actual condition the object is in.  
+* [0.x.9]

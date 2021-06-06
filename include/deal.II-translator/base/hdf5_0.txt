@@ -1,0 +1,591 @@
+[0.x.0]*
+ Namespace containing deal.II's HDF5 interface.
+*  The [Hierarchical Data Format (HDF)](https://www.hdfgroup.org/) is a cross platform and a high I/O performance format designed to store large amounts of data. It supports serial and MPI I/O access. This set of classes provides an interface to the [HDF5 library](https://www.hdfgroup.org/downloads/hdf5/).
+*  The tutorial  [2.x.0]  shows how to use deal.II's HDF5 interface.
+*  # Groups, Datasets and attributes An HDF5 file is organized in [groups](https://bitbucket.hdfgroup.org/pages/HDFFV/hdf5doc/master/browse/html/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Groups/HDF5_Groups.htm) and [datasets](https://bitbucket.hdfgroup.org/pages/HDFFV/hdf5doc/master/browse/html/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Datasets/HDF5_Datasets.htm). Groups can contain datasets and other groups. Datasets are objects composed by a collection of data elements. Datasets are equivalent to tensors and matrices. In addition, attributes can be attached to the root file, a group or a dataset. An [HDF5 attribute](https://bitbucket.hdfgroup.org/pages/HDFFV/hdf5doc/master/browse/html/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Attributes/HDF5_Attributes.htm) is a small meta data. The methods  [2.x.1]  and  [2.x.2]  can be used to get and set attributes.
+*  An example is shown below
+
+* 
+* [1.x.0]
+* 
+*  # MPI I/O An HDF5 file can be opened/created with serial (one single process) or MPI support (several processes access the same HDF5 file).  [2.x.3]   [2.x.4]  &, const FileAccessMode) opens/creates an HDF5 file for serial operations.  [2.x.5]   [2.x.6]  &, const FileAccessMode, const MPI_Comm &) creates or opens an HDF5 file in parallel using MPI. The HDF5 calls that modify the structure of the file are always collective, whereas writing and reading raw data in a dataset can be done independently or collectively. [Collective access is usually faster](https://www.hdfgroup.org/2015/08/parallel-io-with-hdf5/) since it allows MPI to do optimizations. In the deal.II's HDF5 interface all the calls are set to collective in order to maximize the performance. This means that all the MPI processes have to contribute to every single call, even if they don't have data to write. MPI HDF5 requires that deal.II and HDF5 have been compiled with MPI support.
+*  ## Write a hyperslab in parallel Hyperslabs are portions of datasets. A hyperslab can be a contiguous collection of points in a dataset, or it can be a regular pattern of points or blocks in a datataset. Hyperslabs are equivalent to python numpy and h5py [slices](http://docs.h5py.org/en/latest/high/dataset.html#reading-writing-data). See the [1.x.1]  section in the HDF5 User's Guide. See as well the [1.x.2].
+*  The example below shows how to write a simple rectangular hyperslab. The offset defines the origin of the hyperslab in the original dataset. The dimensions of the hyperslab are `hyperslab_dimensions = {2, 5}`. Note that each process can write a hyperslab with a different size. If a process does not write any data at all, the process should call the function  [2.x.7]  because the operation iscollective* and all the MPI processes have to contribute to the call, even if they don't have data to write.
+
+* 
+* [1.x.3]
+* 
+*  The function  [2.x.8]  Container &,const  [2.x.9]  &, const  [2.x.10]  &) is used to write simple hyperslabs and the function  [2.x.11]  Container &,const  [2.x.12]  &, const  [2.x.13]  &, const  [2.x.14]  &, const  [2.x.15]  &, const  [2.x.16]  &) is used to write complex hyperslabs.
+*  ## Write unordered data in parallel The example below shows how to write a selection of data. Note that each process can write a different amount of data. If a process does not write any data at all, the process should call the function  [2.x.17]  because the operation iscollective* and all the MPI processes have to contribute to the call, even if they don't have data to write. A more detailed example can be found in  [2.x.18] .
+
+* 
+* [1.x.4]
+* 
+*  ## Query the I/O mode that HDF5 used in the last parallel I/O call The default access mode in the deal.II's HDF5 C++ interface  is collective which is typically faster since it allows MPI to do more optimizations. In some cases, such as when there is type conversion, the HDF5 library can decide to do independent I/O instead of collective I/O, even if the user asks for collective I/O. See the following [article](https://www.hdfgroup.org/2015/08/parallel-io-with-hdf5/). In cases where maximum performance is a requirement, it is important to make sure that all MPI read/write operations are collective. The HDF5 library provides API routines that can be used after the read/write I/O operations to query the I/O mode. If  [2.x.19]  is True, then after every read/write operation the deal.II's HDF5 interface calls the routines [H5Pget_mpio_actual_io_mode()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode) and [H5Pget_mpio_no_collective_cause()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause). The results are stored in  [2.x.20]   [2.x.21]  and  [2.x.22]  We suggest to query the I/O mode only in Debug mode because it requires calling additional HDF5 routines.
+*  The following code can be used to query the I/O method.
+
+* 
+* [1.x.5]
+* 
+*  If the write operation was collective then the output should be
+
+* 
+* [1.x.6]
+*  See  [2.x.23]   [2.x.24]  and  [2.x.25]  for all the possible return codes.
+*  # Rank of HDF5 datasets and hyperslabs The deal.II's HDF5 interface can be used to write/read data to datasets and hyperslabs of any particular rank. `FullMatrix` can only be used to write/read data to datasets and hyperslabs of rank 2. In the other hand,  [2.x.26]  and `Vector` can be used to write/read data to datasets and hyperslabs of rank 1, 2, 3 and higher, the data is organized in [row-major order](https://en.wikipedia.org/wiki/Row-_and_column-major_order) which is commonly used in C and C++ matrices. We can re-write the code from the previous section using  [2.x.27] 
+
+* 
+* [1.x.7]
+*  The previous code writes the following hyperslab matrix
+
+* 
+* [1.x.8]
+* 
+*  # Datatypes Attribute datatypes can be float, `double`,  [2.x.28]   [2.x.29]  `int`, `unsigned int`, `bool` and  [2.x.30]   [2.x.31]  and  [2.x.32]  can be used with all of these datatypes.
+*  Dataset datatypes can be `float`, `double`,  [2.x.33]   [2.x.34]  `int` and `unsigned int`.  [2.x.35]   [2.x.36]   [2.x.37]  etc. can be used with all of these datatypes. Note that the dataset datatype can not be `bool`, the reason is that it can not be assumed that  [2.x.38]  stores the elements in a contiguous way.
+* 
+
+*  ## Complex numbers and HDF5 There is no official HDF5 format to store  [2.x.39]  numbers in a HDF5 file. But thede facto* standard is to store the  [2.x.40]  number in a compound type in which `r` corresponds to the real part and `i` corresponds to the imaginary part. In this interface we define two compound types one for  [2.x.41]  which corresponds to `(double,double)` and another one for  [2.x.42]  which corresponds to `(float,float)`. These two types correspond respectively to the types of python/numpy/h5py: `complex128` and `complex64`. This means that the files generated by this interface will be read correctly by python/numpy/h5py and at the same time this interface is able to read the files generated by python/numpy/h5py.
+*  # Data exchange with python scripts The HDF5 format can be used to exchange data with python scripts. The strings are stored as HDF5 variable-length UTF-8 strings and the complex numbers, as explained above, are stored as HDF5 compound datatypes compatible with [h5py](https://www.h5py.org/) and [numpy](http://www.numpy.org/).
+*  The following python script writes the parameters for a deal.II simulation: ~~~~~~~~~~~~~{.py} h5_file = h5py.File('simulation.hdf5','w') data = h5_file.create_group('data') data.attrs['nb_frequency_points'] = 50 # int data.attrs['rho'] = 2300.5 # double data.attrs['save_vtk_files'] = True # bool data.attrs['simulation_type'] = 'elastic_equation' # utf8 string ~~~~~~~~~~~~~
+*  C++ deal.II simulation with MPI HDF5:
+
+* 
+* [1.x.9]
+* 
+*  Read the simulation results with python: ~~~~~~~~~~~~~{.py} h5_file = h5py.File('simulation.hdf5','r+') data = h5_file['data'] displacement = data['displacement'] # complex128 dtype active_cells = data.attrs['degrees_of_freedom']) ~~~~~~~~~~~~~
+*  # HDF5 and thread safety By default HDF5 is not thread-safe. The HDF5 library can be configured to be thread-safe, see [the HDF5 documentation](https://support.hdfgroup.org/HDF5/faq/threadsafe.html). The thread-safe HDF5 version serializes the API but does not provide any level of concurrency. To achieve high parallel performance with HDF5, we advice to use HDF5 with MPI.
+
+* 
+* [0.x.1]*
+   Base class for the HDF5 objects.  
+* [0.x.2]*
+     Constructor.  [2.x.43]  is the name of the HDF5 Object. If  [2.x.44]  is     True then MPI I/O is used.    
+* [0.x.3]*
+     Reads an attribute.  [2.x.45]  can be `float`, `double`,  [2.x.46]       [2.x.47]  `int`, `unsigned int`, `bool` or  [2.x.48]      Note that the encoding of  [2.x.49]  is UTF8 in order to be compatible     with python3.         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.10]  section in the HDF5     User's Guide.    
+* [0.x.4]*
+     Writes an attribute.  [2.x.50]  can be `float`, `double`,  [2.x.51]       [2.x.52]  `int`, `unsigned int`, `bool` or  [2.x.53]      Note that the encoding of  [2.x.54]  is UTF8 in order to be compatible     with python3.         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.11]  section in the HDF5     User's Guide.    
+* [0.x.5]*
+     Returns the #name of the object. In the case of File, #name corresponds     to the file name. In the case of Group and DataSet, #name corresponds to     the name of the object in the HDF5 file.    
+* [0.x.6]*
+     Name of the HDF5Oject. In the case of File,  [2.x.55]  corresponds to the     file name. In the case of Group and DataSet  [2.x.56]  corresponds to the     name of the object in the HDF5 file.    
+* [0.x.7]*
+     HDF5 identifier for the objects File, Group and DataSet. The      [2.x.57]  pointer allows the object to be copied. For example     several parts of the program can share and access the same group; when     all the functions that access the group are closed, the HDF5 resources of     the group will be automatically released.    
+* [0.x.8]*
+     If true use parallel HDF5, if false use serial HDF5.    
+* [0.x.9]*
+   This class implements an HDF5 DataSet.  
+* [0.x.10]*
+     Open dataset. This is an internal constructor. The function      [2.x.58]  should be used to open a dataset.    
+* [0.x.11]*
+     Create dataset. This is an internal constructor. The function      [2.x.59]  should be used to create a dataset.    
+* [0.x.12]*
+     Reads all the data of the dataset.         Datatype conversion takes place at the time of the read operation and is     automatic. See the [1.x.12]  section in the HDF5     User's Guide.         `Container` can be  [2.x.60]   [2.x.61]       [2.x.62]   [2.x.63]       [2.x.64]   [2.x.65]  int>`, `Vector<float>`,     `Vector<double>`,  [2.x.66]       [2.x.67]  `FullMatrix<float>`,     `FullMatrix<double>`,  [2.x.68]  or      [2.x.69]     
+* [0.x.13]*
+     Reads data of a subset of the dataset.         Datatype conversion takes place at the time of the read operation and is     automatic. See the [1.x.13]  section in the HDF5     User's Guide.         The selected elements can be scattered and take any shape in the dataset.     For example, in the case of a dataset with rank 4 a selection of 3 points     will be described by a 3-by-4 array. Note the indexing is zero-based. To     select the points (1,1,1,1), (14,6,12,18), and (8,22,30,22), the point     selection array would be as follows:        
+* [1.x.14]
+*          [1.x.15]         Datatype conversion takes place at the time of the read operation and is     automatic. See the [1.x.16]  section in the HDF5     User's Guide.    
+* [0.x.14]*
+     Reads a hyperslab from the dataset. The parameters are summarized     below:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.70]  The starting location for the hyperslab.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.71]  The number of elements to select along each dimension.         When reading a hyperslab, HDF5 also allows to provide "stride" and     "block" parameters (see the [HDF5 documentation](https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab)).     These are not used by the current function and set to `nullptr`. However     these parameters can be used with the function     read_hyperslab(const  [2.x.72]  &, const  [2.x.73]  &, const  [2.x.74]  &, const  [2.x.75]  &, const  [2.x.76]  &)         See the [1.x.17]  section in the HDF5 User's Guide. See as well the     [1.x.18].         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.19]  section in the HDF5     User's Guide.         `Container` can be  [2.x.77]   [2.x.78]       [2.x.79]   [2.x.80]       [2.x.81]   [2.x.82]  int>`, `Vector<float>`,     `Vector<double>`,  [2.x.83]       [2.x.84]  `FullMatrix<float>`,     `FullMatrix<double>`,  [2.x.85]  or      [2.x.86]     
+* [0.x.15]*
+     Writes a data hyperslab to the dataset. The parameters are summarized     below:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.87]  the dimensions of the data memory block.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.88]  The starting location for the hyperslab.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.89]  The number of elements to separate each element or block to                   be selected.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.90]  The number of elements or blocks to select along each                  dimension.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.91]  The size of the block selected from the dataspace.         See the [1.x.20]  section in the HDF5 User's Guide. See as well the     [1.x.21].         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.22]  section in the HDF5     User's Guide.         `Container` can be  [2.x.92]   [2.x.93]       [2.x.94]   [2.x.95]       [2.x.96]   [2.x.97]  int>`, `Vector<float>`,     `Vector<double>`,  [2.x.98]       [2.x.99]  `FullMatrix<float>`,     `FullMatrix<double>`,  [2.x.100]  or      [2.x.101]     
+* [0.x.16]*
+     This function does not read any data, but it can contribute to a     collective read call.  [2.x.102]  can be `float`, `double`,      [2.x.103]   [2.x.104]  `int` or `unsigned int`.         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.23]  section in the HDF5     User's Guide.    
+* [0.x.17]*
+     Writes data in the dataset.  [2.x.105]  can be `float`, `double`,      [2.x.106]   [2.x.107]  `int` or `unsigned int`.         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.24]  section in the HDF5     User's Guide.         `Container` can be  [2.x.108]   [2.x.109]       [2.x.110]   [2.x.111]       [2.x.112]   [2.x.113]  int>`, `Vector<float>`,     `Vector<double>`,  [2.x.114]       [2.x.115]  `FullMatrix<float>`,     `FullMatrix<double>`,  [2.x.116]  or      [2.x.117]     
+* [0.x.18]*
+     Writes data to a subset of the dataset.  [2.x.118]  can be `float`, `double`,      [2.x.119]   [2.x.120]  `int` or `unsigned int`.         The selected elements can be scattered and take any shape in the dataset.     For example, in the case of a dataset with rank 4 a selection of 3 points     will be described by a 3-by-4 array. Note the indexing is zero-based. To     select the points (1,1,1,1), (14,6,12,18), and (8,22,30,22), the point     selection array would be as follows:        
+* [1.x.25]
+*          [1.x.26]         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.27]  section in the HDF5     User's Guide.    
+* [0.x.19]*
+     Writes a data hyperslab to the dataset. The parameters are summarized     below:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.121]  The starting location for the hyperslab.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.122]  The number of elements to select along each dimension.         When writing a hyperslab, HDF5 also allows to provide "stride" and     "block" parameters (see the [HDF5 documentation](https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab)).     These are not used by the current function and set to `nullptr`. However     these parameters can be used with the function     write_hyperslab(const Container &data, const  [2.x.123]  &data_dimensions, const  [2.x.124]  &offset, const  [2.x.125]  &stride, const  [2.x.126]  &count, const  [2.x.127]  &block).         See the [1.x.28]  section in the HDF5 User's Guide. See as well the     [1.x.29].         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.30]  section in the HDF5     User's Guide.    
+* [0.x.20]*
+     Writes a data hyperslab to the dataset. The parameters are summarized     below:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.128]  the dimensions of the data memory block.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.129]  The starting location for the hyperslab.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.130]  The number of elements to separate each element or block to be                   selected.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.131]  The number of elements or blocks to select along each                  dimension.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.132]  The size of the block selected from the dataspace.         See the [1.x.31]  section in the HDF5 User's Guide. See as well the     [1.x.32].         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.33]  section in the HDF5     User's Guide.         `Container` can be  [2.x.133]   [2.x.134]       [2.x.135]   [2.x.136]       [2.x.137]   [2.x.138]  int>`, `Vector<float>`,     `Vector<double>`,  [2.x.139]       [2.x.140]  `FullMatrix<float>`,     `FullMatrix<double>`,  [2.x.141]  or      [2.x.142]     
+* [0.x.21]*
+     This function does not write any data, but it can contribute to a     collective write call. In the context of a collective MPI write call,     if a process does not write any data at all, the process should call     this function because the operation iscollective* and all the MPI     processes have to contribute to the call, even if they don't have data     to write.  [2.x.143]  can be `float`, `double`,  [2.x.144]       [2.x.145]  `int` or `unsigned int`.         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.34]  section in the HDF5     User's Guide.         An example of how to use this function can be found in  [2.x.146] .    
+* [0.x.22]*
+     This function returns the boolean query_io_mode.         In cases where maximum performance has to be achieved, it is important to     make sure that all MPI read/write operations are collective. The HDF5     library provides API routines that can be used after the read/write I/O     operations to query the I/O mode. If query_io_mode is set to true, then     after every read/write operation the deal.II's HDF5 interface calls the     routines     [H5Pget_mpio_actual_io_mode()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode)     and     [H5Pget_mpio_no_collective_cause()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause).     The results are stored in io_mode, local_no_collective_cause and     global_no_collective_cause. We suggest to query the I/O mode only in     Debug mode because it requires calling additional HDF5 routines.    
+* [0.x.23]*
+     This function sets the boolean query_io_mode.    
+* [0.x.24]*
+     This function returns the I/O mode that was used on the last     parallel I/O call. See [1.x.35].         The return value is a  [2.x.147]  and can be     Value                          | Meaning
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - ---------------------------- |
+* 
+*  - -----     H5D_MPIO_NO_COLLECTIVE         | No collective I/O was performed. Collective I/O was not requested or collective I/O isn't possible on this dataset.     H5D_MPIO_CHUNK_INDEPENDENT     | HDF5 performed chunk collective optimization schemes and each chunk was accessed independently.     H5D_MPIO_CHUNK_COLLECTIVE      | HDF5 performed chunk collective optimization and each chunk was accessed collectively.     H5D_MPIO_CHUNK_MIXED           | HDF5 performed chunk collective optimization and some chunks were accessed independently, some collectively.     H5D_MPIO_CONTIGUOUS_COLLECTIVE | Collective I/O was performed on a contiguous dataset.    
+* [0.x.25]*
+     This function returns the I/O mode that was used on the last     parallel I/O call. See [1.x.36].     The return type is `H5D_mpio_actual_io_mode_t` which corresponds to the     value returned by H5Pget_mpio_actual_io_mode.         The return value can be     Value                          | Meaning
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - ---------------------------- |
+* 
+*  - -----     H5D_MPIO_NO_COLLECTIVE         | No collective I/O was performed. Collective I/O was not requested or collective I/O isn't possible on this dataset.     H5D_MPIO_CHUNK_INDEPENDENT     | HDF5 performed chunk collective optimization and each chunk was accessed independently.     H5D_MPIO_CHUNK_COLLECTIVE      | HDF5 performed chunk collective optimization and each chunk was accessed collectively.     H5D_MPIO_CHUNK_MIXED           | HDF5 performed chunk collective optimization and some chunks were accessed independently, some collectively.     H5D_MPIO_CONTIGUOUS_COLLECTIVE | Collective I/O was performed on a contiguous dataset.    
+* [0.x.26]*
+     This function returns the local causes that broke collective I/O on the     last parallel I/O call. See [1.x.37].         The return value is a string and can be     Value                                      | Meaning
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - ---------------------------------------- |
+* 
+*  - -----     H5D_MPIO_COLLECTIVE                        | Collective I/O was performed successfully.     H5D_MPIO_SET_INDEPENDENT                   | Collective I/O was not performed because independent I/O was requested.     H5D_MPIO_DATATYPE_CONVERSION               | Collective I/O was not performed because datatype conversions were required.     H5D_MPIO_DATA_TRANSFORMS                   | Collective I/O was not performed because data transforms needed to be applied.     H5D_MPIO_SET_MPIPOSIX                      | Collective I/O was not performed because the selected file driver was MPI-POSIX.     H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES   | Collective I/O was not performed because one of the dataspaces was neither simple nor scalar.     H5D_MPIO_POINT_SELECTIONS                  | Collective I/O was not performed because there were point selections in one of the dataspaces.     H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | Collective I/O was not performed because the dataset was neither contiguous nor chunked.     H5D_MPIO_FILTERS                           | Collective I/O was not performed because filters needed to be applied.    
+* [0.x.27]*
+     This function returns the local causes that broke collective I/O on the     last parallel I/O call. See [1.x.38].     The return type is `uint32_t` and corresponds to the value returned by     [H5Pget_mpio_no_collective_cause](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause).         The return value can be     Value                                      | Meaning
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - ---------------------------------------- |
+* 
+*  - -----     H5D_MPIO_COLLECTIVE                        | Collective I/O was performed successfully.     H5D_MPIO_SET_INDEPENDENT                   | Collective I/O was not performed because independent I/O was requested.     H5D_MPIO_DATATYPE_CONVERSION               | Collective I/O was not performed because datatype conversions were required.     H5D_MPIO_DATA_TRANSFORMS                   | Collective I/O was not performed because data transforms needed to be applied.     H5D_MPIO_SET_MPIPOSIX                      | Collective I/O was not performed because the selected file driver was MPI-POSIX.     H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES   | Collective I/O was not performed because one of the dataspaces was neither simple nor scalar.     H5D_MPIO_POINT_SELECTIONS                  | Collective I/O was not performed because there were point selections in one of the dataspaces.     H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | Collective I/O was not performed because the dataset was neither contiguous nor chunked.     H5D_MPIO_FILTERS                           | Collective I/O was not performed because filters needed to be applied.    
+* [0.x.28]*
+     This function retrieves the global causes that broke collective I/O on     the last parallel I/O call. See [1.x.39].         The return value is a  [2.x.148]  and can be     Value                                      | Meaning
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - ---------------------------------------- |
+* 
+*  - -----     H5D_MPIO_COLLECTIVE                        | Collective I/O was performed successfully.     H5D_MPIO_SET_INDEPENDENT                   | Collective I/O was not performed because independent I/O was requested.     H5D_MPIO_DATATYPE_CONVERSION               | Collective I/O was not performed because datatype conversions were required.     H5D_MPIO_DATA_TRANSFORMS                   | Collective I/O was not performed because data transforms needed to be applied.     H5D_MPIO_SET_MPIPOSIX                      | Collective I/O was not performed because the selected file driver was MPI-POSIX.     H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES   | Collective I/O was not performed because one of the dataspaces was neither simple nor scalar.     H5D_MPIO_POINT_SELECTIONS                  | Collective I/O was not performed because there were point selections in one of the dataspaces.     H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | Collective I/O was not performed because the dataset was neither contiguous nor chunked.     H5D_MPIO_FILTERS                           | Collective I/O was not performed because filters needed to be applied.    
+* [0.x.29]*
+     This function returns the global causes that broke collective I/O on the     last parallel I/O call. See [1.x.40].     The return type is `uint32_t` and corresponds to the value returned by     H5Pget_mpio_no_collective_cause.         The return value can be     Value                                      | Meaning
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - ---------------------------------------- |
+* 
+*  - -----     H5D_MPIO_COLLECTIVE                        | Collective I/O was performed successfully.     H5D_MPIO_SET_INDEPENDENT                   | Collective I/O was not performed because independent I/O was requested.     H5D_MPIO_DATATYPE_CONVERSION               | Collective I/O was not performed because datatype conversions were required.     H5D_MPIO_DATA_TRANSFORMS                   | Collective I/O was not performed because data transforms needed to be applied.     H5D_MPIO_SET_MPIPOSIX                      | Collective I/O was not performed because the selected file driver was MPI-POSIX.     H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES   | Collective I/O was not performed because one of the dataspaces was neither simple nor scalar.     H5D_MPIO_POINT_SELECTIONS                  | Collective I/O was not performed because there were point selections in one of the dataspaces.     H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | Collective I/O was not performed because the dataset was neither contiguous nor chunked.     H5D_MPIO_FILTERS                           | Collective I/O was not performed because filters needed to be applied.    
+* [0.x.30]*
+     This function returns the dimensions of the dataset. The vector     dimensions is a one-dimensional array of size rank specifying the size of     each dimension of the dataset.    
+* [0.x.31]*
+     This function returns the total number of elements in the dataset.    
+* [0.x.32]*
+     This function returns the rank of the dataset.    
+* [0.x.33]*
+     Rank of the DataSet    
+* [0.x.34]*
+     The vector `dimensions` is a one-dimensional array of size rank     specifying the size of each dimension of the dataset.    
+* [0.x.35]*
+     HDF5 dataspace identifier.    
+* [0.x.36]*
+     Total number of elements in the dataset.    
+* [0.x.37]*
+     If query_io_mode is set to true, then after every read/write operation     the deal.II's HDF5 interface calls the routines     [H5Pget_mpio_actual_io_mode()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode)     and     [H5Pget_mpio_no_collective_cause()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause).     The results are stored in io_mode, local_no_collective_cause and     global_no_collective_cause.    
+* [0.x.38]*
+     I/O mode that was performed on the last parallel I/O call.    
+* [0.x.39]*
+     Local causes that broke collective I/O on the     last parallel I/O call. See [1.x.41].    
+* [0.x.40]*
+     Global causes that broke collective I/O on the     last parallel I/O call. See [1.x.42].    
+* [0.x.41]*
+   This class implements an HDF5 Group  
+* [0.x.42]*
+     Group access mode    
+* [0.x.43]*
+       Opens an existing group      
+* [0.x.44]*
+       Creates a new group      
+* [0.x.45]*
+     This constructor creates or opens a group depending on the value of      [2.x.149]  The group will be placed inside the group  [2.x.150]  The     parameter  [2.x.151]  defines if the I/O operations are serial or     parallel. This is an internal constructor, the functions open_group() and     create_group() of the current class should be used to open or create a     group.    
+* [0.x.46]*
+     Internal constructor used by File. The constructor sets the protected     const members of HDF5Group:  [2.x.152]  and  [2.x.153]  It does not create or     open a Group.    
+* [0.x.47]*
+     Opens a sub-group of the current Group or File.    
+* [0.x.48]*
+     Creates a sub-group in the current Group or File.    
+* [0.x.49]*
+     Opens a dataset.    
+* [0.x.50]*
+     Creates a dataset.  [2.x.154]  can be `float`, `double`,      [2.x.155]   [2.x.156]  `int` or `unsigned int`.         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.43]  section in the HDF5     User's Guide.    
+* [0.x.51]*
+     Create and write data to a dataset.  [2.x.157]  can be `float`, `double`,      [2.x.158]   [2.x.159]  `int` or `unsigned int`.         Datatype conversion takes place at the time of a read or write and is     automatic. See the [1.x.44]  section in the HDF5     User's Guide.         `Container` can be  [2.x.160]   [2.x.161]       [2.x.162]   [2.x.163]       [2.x.164]   [2.x.165]  int>`, `Vector<float>`,     `Vector<double>`,  [2.x.166]       [2.x.167]  `FullMatrix<float>`,     `FullMatrix<double>`,  [2.x.168]  or      [2.x.169]     
+* [0.x.52]*
+   This class implements an HDF5 File  
+* [0.x.53]*
+     File access mode    
+* [0.x.54]*
+       Read/write, file must exist      
+* [0.x.55]*
+       Create file, truncate if exists      
+* [0.x.56]*
+     Creates or opens an HDF5 file for serial operations. This call does not     require MPI support. It creates or opens an HDF5 file depending on the     value of  [2.x.170]     
+* [0.x.57]*
+     Creates or opens an HDF5 file in parallel using MPI. This requires that     deal.II and HDF5 were compiled with MPI support. It creates or opens a     HDF5 file depending on the value of  [2.x.171]   [2.x.172]      defines the processes that participate in this call; `MPI_COMM_WORLD` is     a common value for the MPI communicator.    
+* [0.x.58]*
+     Delegation internal constructor.     File(const  [2.x.173]  &, const MPI_Comm &, const Mode);     and     File(const  [2.x.174]  &, const Mode)     should be used to open or create HDF5 files.    
+* [0.x.59]* This function returns the HDF5 datatype corresponding to the C++ type.     In the case of  [2.x.175]  types the HDF5 handlers are automatically     freed using the destructor of  [2.x.176]   [2.x.177]  is     used instead of  [2.x.178]  because the destructor of      [2.x.179]  doesn't have to be defined in the template argument. In     the other hand, the destructor of  [2.x.180]  has to be defined in the     template argument. Native types such as `H5T_NATIVE_DOUBLE` do not     require a destructor, but compound types such as  [2.x.181]      require a destructor to free the HDF5 resources.    
+* [0.x.60]* Return the dimensions of `data`. For a  [2.x.182]  this function returns      [2.x.183]          Several HDF5 functions such as H5Screate_simple() require a     one-dimensional array that specifies the size of each dimension of the     container, see:     https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-CreateSimple    
+* [0.x.61]* Return the dimensions of `data`. For a Vector this function returns      [2.x.184]     
+* [0.x.62]* Return the dimensions of `data`. For a FullMatrix the function returns      [2.x.185]  columns}`.    
+* [0.x.63]* This function returns the total size of the container. For a  [2.x.186]      the function returns `int(vector_size)`.    
+* [0.x.64]* This function returns the total size of the container. For a Vector the     function returns `int(vector_size)`.    
+* [0.x.65]* This function returns the total size of the container. For a FullMatrix     the function returns `int(rows*columns)`.    
+* [0.x.66]* This function initializes and returns a container of type  [2.x.187]      Vector or FullMatrix. The function does not set the values of the     elements of the container. The container can store data of a HDF5 dataset     or a HDF5 selection. The dimensions parameter holds the dimensions of the     HDF5 dataset or selection.         In the case of a  [2.x.188]  the size of the vector will be the total     size given by dimensions. For example in the case of a dataset of rank 3,     the dimensions are  [2.x.189]  The size of     the returned  [2.x.190]  will be `dim_0*dim_1*dim_2`.         In the case of a  [2.x.191]  the size of the returned  [2.x.192]      will be as well `dim_0*dim_1*dim_2`.         A FullMatrix can store only data of HDF5 datasets with rank 2. The size     of the FullMatrix will be FullMatrix(dim_0,dim_2)    
+* [0.x.67]* Same as above.    
+* [0.x.68]* Same as above.    
+* [0.x.69]* This helper function sets the property list of the read and write     operations of DataSet. A property list has to be created for the MPI     driver. For the serial driver the default H5P_DEFAULT can be used. In     addition H5Pset_dxpl_mpio is used to set the MPI mode to collective.    
+* [0.x.70]* This helper function releases the property list handler of the read and     write operations of DataSet. For the serial version there is no need to     release the property list handler because H5P_DEFAULT has been used. If     query_io_mode is True then H5Pget_mpio_actual_io_mode and     H5Pget_mpio_no_collective_cause are used to check if the operation has     been collective.    
+* [0.x.71]* Convert a HDF5 no_collective_cause code to a human readable string.    
+* [0.x.72]     Create scalar attribute.    
+* [0.x.73]     Write scalar attribute.    
+* [0.x.74]     Create scalar attribute.    
+* [0.x.75]     Write scalar attribute.     In most of the cases H5Awrite and H5Dwrite take a pointer to the data.     But in the particular case of a variable length string, H5Awrite takes     the address of the pointer of the string.    
+* [0.x.76]

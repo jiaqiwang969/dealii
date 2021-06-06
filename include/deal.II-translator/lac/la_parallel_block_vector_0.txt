@@ -1,0 +1,146 @@
+[0.x.0]!  [2.x.0]  Vectors     [2.x.1]     
+* [0.x.1]*
+     An implementation of block vectors based on distributed deal.II     vectors. While the base class provides for most of the interface, this     class handles the actual allocation of vectors and provides functions     that are specific to the underlying vector type.        
+*  [2.x.2]  Instantiations for this template are provided for <tt> [2.x.3]      and  [2.x.4]  others can be generated in application programs     (see the section on      [2.x.5]      in the manual).          [2.x.6]       [2.x.7]  "Block (linear algebra)"    
+* [0.x.2]*
+       The chunks size to split communication in update_ghost_values()       and compress() calls.             Most common MPI implementations will get slow when too many       messages/requests are outstanding. Even when messages are small,       say 1 kB only, we should collect enough data with  [2.x.8]        to cover typical infiniband latencies which are around a few       microseconds. Sending 20 kB at a throughput of 5 GB/s takes 4       microseconds, so we should arrive at the bandwidth dominated regime       then which is good enough.      
+* [0.x.3]*
+       Typedef the base class for simpler access to its own alias.      
+* [0.x.4]*
+       Typedef the type of the underlying vector.      
+* [0.x.5]*
+       Import the alias from the base class.      
+* [0.x.6]*
+        [2.x.9]  1: Basic operations      
+* [0.x.7]*
+       Constructor. There are three ways to use this constructor. First,       without any arguments, it generates an object with no blocks. Given       one argument, it initializes <tt>num_blocks</tt> blocks, but these       blocks have size zero. The third variant finally initializes all       blocks to the same size <tt>block_size</tt>.             Confer the other constructor further down if you intend to use blocks       of different sizes.      
+* [0.x.8]*
+       Copy-Constructor. Dimension set to that of V, all components are       copied from V      
+* [0.x.9]*
+       Copy constructor taking a BlockVector of another data type. This will       fail if there is no conversion path from <tt>OtherNumber</tt> to       <tt>Number</tt>. Note that you may lose accuracy when copying to a       BlockVector with data elements with less accuracy.             Older versions of gcc did not honor the  [2.x.10]  keyword on       template constructors. In such cases, it is easy to accidentally       write code that can be very inefficient, since the compiler starts       performing hidden conversions. To avoid this, this function is       disabled if we have detected a broken compiler during configuration.      
+* [0.x.10]*
+       Constructor. Set the number of blocks to <tt>block_sizes.size()</tt>       and initialize each block with <tt>block_sizes[i]</tt> zero elements.      
+* [0.x.11]*
+       Construct a block vector with an IndexSet for the local range and       ghost entries for each block.      
+* [0.x.12]*
+       Same as above but the ghost indices are assumed to be empty.      
+* [0.x.13]*
+       Destructor.            
+*  [2.x.11]  We need to explicitly provide a destructor, otherwise the         linker may think it is unused and discards it, although required         in a different section. The Intel compiler is prone to this         behavior.      
+* [0.x.14]*
+       Copy operator: fill all components of the vector with the given       scalar value.      
+* [0.x.15]*
+       Copy operator for arguments of the same type. Resize the present       vector if necessary.      
+* [0.x.16]*
+       Copy operator for template arguments of different types. Resize the       present vector if necessary.      
+* [0.x.17]*
+       Copy a regular vector into a block vector.      
+* [0.x.18]*
+       Copy the content of a PETSc vector into the calling vector. This       function assumes that the vectors layouts have already been       initialized to match.             This operator is only available if deal.II was configured with PETSc.      
+* [0.x.19]*
+       Copy the content of a Trilinos vector into the calling vector. This       function assumes that the vectors layouts have already been       initialized to match.             This operator is only available if deal.II was configured with       Trilinos.      
+* [0.x.20]*
+       Reinitialize the BlockVector to contain <tt>num_blocks</tt> blocks of       size <tt>block_size</tt> each.             If the second argument is left at its default value, then the block       vector allocates the specified number of blocks but leaves them at       zero size. You then need to later reinitialize the individual blocks,       and call collect_sizes() to update the block system's knowledge of       its individual block's sizes.             If <tt>omit_zeroing_entries==false</tt>, the vector is filled with       zeros.      
+* [0.x.21]*
+       Reinitialize the BlockVector such that it contains       <tt>block_sizes.size()</tt> blocks. Each block is reinitialized to       dimension <tt>block_sizes[i]</tt>.             If the number of blocks is the same as before this function was       called, all vectors remain the same and reinit() is called for each       vector.             If <tt>omit_zeroing_entries==false</tt>, the vector is filled with       zeros.             Note that you must call this (or the other reinit() functions)       function, rather than calling the reinit() functions of an individual       block, to allow the block vector to update its caches of vector       sizes. If you call reinit() on one of the blocks, then subsequent       actions on this object may yield unpredictable results since they may       be routed to the wrong block.      
+* [0.x.22]*
+       Change the dimension to that of the vector <tt>V</tt>. The same       applies as for the other reinit() function.             The elements of <tt>V</tt> are not copied, i.e.  this function is the       same as calling <tt>reinit (V.size(), omit_zeroing_entries)</tt>.             Note that you must call this (or the other reinit() functions)       function, rather than calling the reinit() functions of an individual       block, to allow the block vector to update its caches of vector       sizes. If you call reinit() of one of the blocks, then subsequent       actions of this object may yield unpredictable results since they may       be routed to the wrong block.      
+* [0.x.23]*
+       This function copies the data that has accumulated in the data buffer       for ghost indices to the owning processor. For the meaning of the       argument  [2.x.12]  see the entry on        [2.x.13]  "Compressing distributed vectors and matrices"       in the glossary.             There are two variants for this function. If called with argument  [2.x.14]         [2.x.15]  adds all the data accumulated in ghost elements       to the respective elements on the owning processor and clears the       ghost array afterwards. If called with argument  [2.x.16]         [2.x.17]  a set operation is performed. Since setting       elements in a vector with ghost elements is ambiguous (as one can set       both the element on the ghost site as well as the owning site), this       operation makes the assumption that all data is set correctly on the       owning processor. Upon call of  [2.x.18]  all       ghost entries are therefore simply zeroed out (using       zero_ghost_values()). In debug mode, a check is performed that makes       sure that the data set is actually consistent between processors,       i.e., whenever a non-zero ghost element is found, it is compared to       the value on the owning processor and an exception is thrown if these       elements do not agree.      
+* [0.x.24]*
+       Fills the data field for ghost indices with the values stored in the       respective positions of the owning processor. This function is needed       before reading from ghosts. The function is  [2.x.19]  even though       ghost data is changed. This is needed to allow functions with a  [2.x.20]        const vector to perform the data exchange without creating       temporaries.      
+* [0.x.25]*
+       This method zeros the entries on ghost dofs, but does not touch       locally owned DoFs.             After calling this method, read access to ghost elements of the       vector is forbidden and an exception is thrown. Only write access to       ghost elements is allowed in this state.              [2.x.21]  Use zero_out_ghost_values() instead.      
+* [0.x.26]*
+       This method zeros the entries on ghost dofs, but does not touch       locally owned DoFs.             After calling this method, read access to ghost elements of the       vector is forbidden and an exception is thrown. Only write access to       ghost elements is allowed in this state.      
+* [0.x.27]*
+       Return if this Vector contains ghost elements.      
+* [0.x.28]*
+       This is a collective add operation that adds a whole set of values       stored in  [2.x.22]  to the vector components specified by  [2.x.23]       
+* [0.x.29]*
+       Scaling and simple vector addition, i.e.  <tt>*this =       s*(*this)+V</tt>.      
+* [0.x.30]*
+       Return whether the vector contains only elements with value zero.       This function is mainly for internal consistency checks and should       seldom be used when not in debug mode since it uses quite some time.      
+* [0.x.31]*
+       Compute the mean value of all the entries in the vector.      
+* [0.x.32]*
+        [2.x.24] -norm of the vector. The pth root of the sum of the pth powers       of the absolute values of the elements.      
+* [0.x.33]*
+       Swap the contents of this vector and the other vector <tt>v</tt>. One       could do this operation with a temporary variable and copying over       the data elements, but this function is significantly more efficient       since it only swaps the pointers to the data of the two vectors and       therefore does not need to allocate temporary storage and move data       around.             Limitation: right now this function only works if both vectors have       the same number of blocks. If needed, the numbers of blocks should be       exchanged, too.             This function is analogous to the swap() function of all C++       standard containers. Also, there is a global function swap(u,v) that       simply calls <tt>u.swap(v)</tt>, again in analogy to standard       functions.      
+* [0.x.34]*
+        [2.x.25]  2: Implementation of VectorSpaceVector      
+* [0.x.35]*
+       Change the dimension to that of the vector V. The elements of V are not       copied.      
+* [0.x.36]*
+       Multiply the entire vector by a fixed factor.      
+* [0.x.37]*
+       Divide the entire vector by a fixed factor.      
+* [0.x.38]*
+       Add the vector  [2.x.26]  to the present one.      
+* [0.x.39]*
+       Subtract the vector  [2.x.27]  from the present one.      
+* [0.x.40]*
+       Import all the elements present in the vector's IndexSet from the input       vector  [2.x.28]   [2.x.29]   [2.x.30]  is used to decide if       the elements in  [2.x.31]  should be added to the current vector or replace the       current elements. The last parameter can be used if the same       communication pattern is used multiple times. This can be used to       improve performance.      
+* [0.x.41]*
+       Return the scalar product of two vectors.      
+* [0.x.42]*
+       Calculate the scalar product between each block of this vector and  [2.x.32]        and store the result in a full matrix  [2.x.33]  This function       computes the result by forming  [2.x.34]  where  [2.x.35]        and  [2.x.36]  indicate the  [2.x.37] th block (not element!) of  [2.x.38]  and the        [2.x.39] th block of  [2.x.40] , respectively. If  [2.x.41]  is        [2.x.42] , it is assumed that inner product results in a       square symmetric matrix and almost half of the scalar products can be       avoided.             Obviously, this function can only be used if all blocks of both vectors       are of the same size.            
+*  [2.x.43]  Internally, a single global reduction will be called to       accumulate scalar product between locally owned degrees of freedom.      
+* [0.x.43]*
+       Calculate the scalar product between each block of this vector and  [2.x.44]        using a metric tensor  [2.x.45]  This function       computes the result of  [2.x.46]  where  [2.x.47]        and  [2.x.48]  indicate the  [2.x.49] th block (not element) of  [2.x.50]  and the        [2.x.51] th block of  [2.x.52] , respectively. If  [2.x.53]  is        [2.x.54] , it is assumed that  [2.x.55]  and  [2.x.56]  are       symmetric matrices and almost half of the scalar products can be       avoided.             Obviously, this function can only be used if all blocks of both vectors       are of the same size.            
+*  [2.x.57]  Internally, a single global reduction will be called to       accumulate the scalar product between locally owned degrees of freedom.      
+* [0.x.44]*
+       Set each block of this vector as follows:        [2.x.58]  where  [2.x.59]        and  [2.x.60]  indicate the  [2.x.61] th block (not element) of  [2.x.62]  and the        [2.x.63] th block of  [2.x.64] , respectively.             Obviously, this function can only be used if all blocks of both vectors       are of the same size.      
+* [0.x.45]*
+       Add  [2.x.65]  to all components. Note that  [2.x.66]  is a scalar not a vector.      
+* [0.x.46]*
+       Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.      
+* [0.x.47]*
+       Multiple addition of scaled vectors, i.e. <tt>*this += a*V+b*W</tt>.      
+* [0.x.48]*
+       A collective add operation: This function adds a whole set of values       stored in  [2.x.67]  to the vector components specified by  [2.x.68]       
+* [0.x.49]*
+       Scaling and simple addition of a multiple of a vector, i.e. <tt>*this =       s*(*this)+a*V</tt>.      
+* [0.x.50]*
+       Scale each element of this vector by the corresponding element in the       argument. This function is mostly meant to simulate multiplication (and       immediate re-assignment) by a diagonal scaling matrix.      
+* [0.x.51]*
+       Assignment <tt>*this = a*V</tt>.      
+* [0.x.52]*
+       Return the l<sub>1</sub> norm of the vector (i.e., the sum of the       absolute values of all entries among all processors).      
+* [0.x.53]*
+       Return the  [2.x.69]  norm of the vector (i.e., the square root of       the sum of the square of all entries among all processors).      
+* [0.x.54]*
+       Return the square of the  [2.x.70]  norm of the vector.      
+* [0.x.55]*
+       Return the maximum norm of the vector (i.e., the maximum absolute value       among all entries and among all processors).      
+* [0.x.56]*
+       Perform a combined operation of a vector addition and a subsequent       inner product, returning the value of the inner product. In other       words, the result of this function is the same as if the user called      
+* [1.x.0]
+*              The reason this function exists is that this operation involves less       memory transfer than calling the two functions separately. This method       only needs to load three vectors,  [2.x.71]   [2.x.72]   [2.x.73]  whereas calling       separate methods means to load the calling vector  [2.x.74]  twice. Since       most vector operations are memory transfer limited, this reduces the       time by 25\% (or 50\% if  [2.x.75]  equals  [2.x.76]              For complex-valued vectors, the scalar product in the second step is       implemented as        [2.x.77] .      
+* [0.x.57]*
+       Return the global size of the vector, equal to the sum of the number of       locally owned indices among all processors.      
+* [0.x.58]*
+       Return an index set that describes which elements of this vector are       owned by the current processor. As a consequence, the index sets       returned on different processors if this is a distributed vector will       form disjoint sets that add up to the complete index set. Obviously, if       a vector is created on only one processor, then the result would       satisfy      
+* [1.x.1]
+*       
+* [0.x.59]*
+       Print the vector to the output stream  [2.x.78]       
+* [0.x.60]*
+       Return the memory consumption of this class in bytes.      
+* [0.x.61]*
+        [2.x.79]  Exceptions        [2.x.80]       
+* [0.x.62]*
+       Attempt to perform an operation between two incompatible vector types.            
+*  [2.x.81]       
+* [0.x.63]*
+       Exception      
+* [0.x.64]*
+ Global function which overloads the default implementation of the C++ standard library which uses a temporary object. The function simply exchanges the data of the two vectors.
+*   [2.x.82]  BlockVector
+
+* 
+* [0.x.65]*
+ Declare  [2.x.83]  as distributed vector.
+
+* 
+* [0.x.66]

@@ -1,0 +1,51 @@
+[0.x.0]*
+ Transfer data that is associated with each active cell (like error indicators) while refining and/or coarsening a triangulation.
+*  This class therefore does for cell-related information what SolutionTransfer does for the values of degrees of freedom defined on a Triangulation.
+*  A non-distributed container (like Vector or  [2.x.0]  has to be provided, which holds the cell-wise data in the same order as active cells are traversed. In other words, each entry corresponds to the cell with the same index  [2.x.1]  and the container has to be of size  [2.x.2] 
+*  [1.x.0]
+*  The following code snippet demonstrates how to transfer cell-related data across refinement/coarsening of the registered triangulation.
+* 
+
+* 
+* [1.x.1]
+* 
+*  When using a  [2.x.3]  we need to ensure that we have the global data available in our local vector before refinement happened. We can achieve this as follows:
+* 
+
+* 
+* [1.x.2]
+* 
+*  For the parallel distributed case, a designated class  [2.x.4]  is available. Please refer to this particular class when using a  [2.x.5] 
+* 
+
+* 
+*  [2.x.6]  See the documentation of SolutionTransfer for matching code snippets   for transfer.
+* 
+
+* 
+*  [2.x.7] 
+
+* 
+* [0.x.1]*
+   An alias that defines the data type of provided container template.  
+* [0.x.2]*
+   Constructor.      [2.x.8]  triangulation The triangulation on which all operations will     happen. At the time when this constructor is called, the refinement     in question has not happened yet.    [2.x.9]  refinement_strategy %Function deciding how data will be stored     on refined cells from its parent cell.    [2.x.10]  coarsening_strategy %Function deciding which data to store on     a cell whose children will get coarsened into.  
+* [0.x.3]*
+   Prepare the current object for coarsening and refinement.     Stores the active_cell_indices of all active cells on the associated   triangulation and attribute them to either persisting, refined or coarsened   cells.  
+* [0.x.4]*
+   Transfer the information from the previous mesh to the updated one.     Data from the previous mesh supplied by  [2.x.11]  will be transferred to the updated   mesh and stored in  [2.x.12]   [2.x.13]  has to provide enough space to hold the   transferred data, i.e. has to be of size `triangulation.n_active_cells()`.  
+* [0.x.5]*
+   Pointer to the triangulation to work with.  
+* [0.x.6]*
+   %Function deciding how data will be stored on refined cells from its parent   cell.  
+* [0.x.7]*
+   %Function deciding on how to process data from children to be stored on the   parent cell.  
+* [0.x.8]*
+   Container to temporarily store the iterator and active cell index   of cells that persist.  
+* [0.x.9]*
+   Container to temporarily store the iterator and active cell index   of cells that will be refined.  
+* [0.x.10]*
+   Container to temporarily store the iterator of parent cells that will   remain after coarsening along with the active cell indices of the   corresponding children cells.  
+* [0.x.11]*
+   Number of active cells on the initial triangulation that has not been   refined yet.     It will be set in prepare_for_coarsening_and_refinement() and used to   validate user inputs after refinement happened (only in debug mode).  
+* [0.x.12]

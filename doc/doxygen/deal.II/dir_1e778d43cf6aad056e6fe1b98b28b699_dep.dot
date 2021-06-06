@@ -7,5 +7,5 @@ digraph "include/deal.II-translator/dofs" {
   dir_1e778d43cf6aad056e6fe1b98b28b699 [shape=box, label="dofs", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_1e778d43cf6aad056e6fe1b98b28b699.html"];
   }
   dir_ee90d91a514b839c31faec7a1d916f67 [shape=box label="deal.II" fillcolor="white" style="filled" color="red" URL="dir_ee90d91a514b839c31faec7a1d916f67.html"];
-  dir_1e778d43cf6aad056e6fe1b98b28b699->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="54", labeldistance=1.5 headhref="dir_000096_000009.html"];
+  dir_1e778d43cf6aad056e6fe1b98b28b699->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="54", labeldistance=1.5 headhref="dir_000072_000009.html"];
 }

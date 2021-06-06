@@ -1,0 +1,32 @@
+[0.x.0]*
+ Iterator for constant and non-constant matrices.
+*  This iterator is abstracted from the actual matrix type and can be used for any matrix having the required ACCESSOR type.
+
+* 
+* [0.x.1]*
+   Declare type for container size.  
+* [0.x.2]*
+   Typedef for the matrix type (including constness) we are to operate on.  
+* [0.x.3]*
+   Constructor. Create an iterator into the matrix <tt>matrix</tt> for the   given <tt>row</tt> and the <tt>index</tt> within it.  
+* [0.x.4]*
+   Copy from another matrix iterator. Mostly implemented to allow   initialization of a constant iterator from a non constant, this function   only requires that a conversion from the other iterator's accessor to   this accessor object is possible.  
+* [0.x.5]*
+   Prefix increment.  
+* [0.x.6]*
+   Postfix increment.  
+* [0.x.7]*
+   Dereferencing operator.  
+* [0.x.8]*
+   Dereferencing operator.  
+* [0.x.9]*
+   Comparison. True, if both accessors are equal.  
+* [0.x.10]*
+   Inverse of <tt>==</tt>.  
+* [0.x.11]*
+   Comparison operator. Result is true if either the first row number is   smaller or if the row numbers are equal and the first index is smaller.     This function is only valid if both iterators point into the same matrix.  
+* [0.x.12]*
+   Comparison operator. Works in the same way as above operator, just the   other way round.  
+* [0.x.13]*
+   Store an object of the accessor class.  
+* [0.x.14]

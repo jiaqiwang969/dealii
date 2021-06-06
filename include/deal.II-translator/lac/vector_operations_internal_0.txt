@@ -1,0 +1,30 @@
+[0.x.0]*
+     This struct takes the loop range from the tbb parallel for loop and     translates it to the actual ranges of the for loop within the vector. It     encodes the grain size but might choose larger values of chunks than the     minimum grain size. The minimum grain size given to tbb is then simple     1. For affinity reasons, the layout in this loop must be kept in sync     with the respective class for reductions further down.    
+* [0.x.1]*
+     The minimum number of chunks (each of size 32) to divide the range     [first,last) into two (second part of the if branch in     accumulate_recursive).    
+* [0.x.2]*
+     This struct takes the loop range from the tbb parallel for loop and     translates it to the actual ranges of the reduction loop inside the     vector. It encodes the grain size but might choose larger values of     chunks than the minimum grain size. The minimum grain size given to tbb     is 1. For affinity reasons, the layout in this loop must be kept in sync     with the respective class for plain for loops further up.         Due to this construction, TBB usually only sees a loop of length     4*num_threads with grain size 1. The actual ranges inside the vector are     computed outside of TBB because otherwise TBB would split the ranges in     some unpredictable position which destroys exact bitwise     reproducibility. An important part of this is that inside      [2.x.0]  the recursive calls to accumulate are done     sequentially on one item a time (even though we could directly run it on     the whole range given through the  [2.x.1]  times the chunk size
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - but that would be unpredictable). Thus, the values we cannot control     are the positions in the array that gets filled
+* 
+*  - but up to that point     the algorithm TBB sees is just a parallel for and nothing unpredictable     can happen.         To sum up: Once the number of threads and the vector size are fixed, we     have an exact layout of how the calls into the recursive function will     happen. Inside the recursive function, we again only depend on the     length. Finally, the concurrent threads write into different positions in     a result vector in a thread-safe way and the addition in the short array     is again serial.    
+* [0.x.3]*
+       An operator used by TBB to work on a given  [2.x.2]  of chunks       [range.begin(), range.end()).      
+* [0.x.4]*
+     This is the general caller for parallel reduction operations that work in     parallel.    
+* [0.x.5]

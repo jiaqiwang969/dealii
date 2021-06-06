@@ -1,0 +1,162 @@
+[0.x.0]*
+   A helper class to simplify the parallel assembly of linear and non-linear   problems, and the evaluation of finite element fields.     This class is a drop in ScratchData to use with the  [2.x.0]    function and with the  [2.x.1]  function().     The ScratchData class has three main goals:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - to create FEValues, FEFaceValues, FESubfaceValues, and FEInterfaceValues     for the current cell and for its neighbor cellon demand* (only if they     are necessary for the algorithm provided by the user), and to provide a     uniform interface to access the FEValues objects when assembling cell,     face, or subface contributions
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - to store arbitrary data types (or references to arbitrary data types),     that can be retrieved by name (for example, when the assembly needs to     make reference to other objects such as previous time steps' solution     vectors, previous nonlinear iteration vectors, geometry descriptions,     etc.) in an object of type
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - to provide a reasonable interface for those use cases where the user may     need temporary vectors of data at quadrature points, allowing the     construction of these temporarieson demand*, and easy access to     values, gradients, etc., of already computed solution vectors.     The methods in the section "Methods to work on current cell"   initialize on demand internal FEValues, FEFaceValues, FESubfaceValues, and   FEInterfaceValues objects on the current cell, allowing the use of this   class as a single substitute for four different objects used to integrate   and query finite element values on cells, faces, and subfaces.     Similarly, the methods in the section "Methods to work on neighbor cell"   initialize on demand   (different) internal FEValues, FEFaceValues, and FESubfaceValues, on   neighbor cells, allowing the use of this class also as a single substitute   for the additional three objects you would typically need to integrate on   the neighbor cell, and on its faces and subfaces (for example, in   discontinuous Galerkin methods).     If you need to retrieve values or gradients of finite element solution   vectors, on the cell, face, or subface that has just been initialized   with one of the functions in the section "Methods to work on current cell",   you can use the methods in the section "Evaluation of finite element fields   and their derivatives on the current cell".     An example usage for this class is given by the following snippet of code:    
+* [1.x.0]
+*      The order in which you call functions of this class matters: if you call   the  [2.x.2]  function that takes an active cell iterator,   then subsequent calls to methods that internally need an FEValuesBase   object will use the internal FEValues object initialized with the given   cell to perform their calculations. On the other hand, if you have called   the  [2.x.3]  method that also takes a face index, all   subsequent calls to methods that need an FEValuesBase object, will use an   internally stored FEFaceValues object, initialized with the cell and face   index passed to the  [2.x.4]  function. The same applies for   the  [2.x.5]  method that takes three arguments: the cell, the   face index, and the subface index.     The user code should be structured without interleaving work on cells and   work on faces.     Consider, for example, the following snippet of code:    
+* [1.x.1]
+*      When using this class, please cite  
+* [1.x.2]
+*   
+* [0.x.1]*
+     Create an empty ScratchData object. A SmartPointer pointing to      [2.x.6]  and  [2.x.7]  is stored internally. Make sure they live longer     than this class instance.         The constructor does not initialize any of the internal FEValues objects.     These are initialized the first time one of the reinit() functions is     called, using the arguments passed here.          [2.x.8]  mapping The mapping to use in the internal FEValues objects      [2.x.9]  fe The finite element      [2.x.10]  quadrature The cell quadrature      [2.x.11]  update_flags UpdateFlags for the current cell FEValues and     neighbor cell FEValues      [2.x.12]  face_quadrature Face quadrature, used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell      [2.x.13]  face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell    
+* [0.x.2]*
+     Similar to the other constructor, but this one allows to specify     different flags for neighbor cells and faces.          [2.x.14]  mapping The mapping to use in the internal FEValues objects      [2.x.15]  fe The finite element      [2.x.16]  quadrature The cell quadrature      [2.x.17]  update_flags UpdateFlags for the current cell FEValues      [2.x.18]  neighbor_update_flags UpdateFlags for the neighbor cell FEValues      [2.x.19]  face_quadrature Face quadrature, used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell      [2.x.20]  face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for the current cell      [2.x.21]  neighbor_face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for the neighbor cell    
+* [0.x.3]*
+     Same as the other constructor, using the default MappingQ1.          [2.x.22]  fe The finite element      [2.x.23]  quadrature The cell quadrature      [2.x.24]  update_flags UpdateFlags for the current cell FEValues and     neighbor cell FEValues      [2.x.25]  face_quadrature Face quadrature, used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell      [2.x.26]  face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell    
+* [0.x.4]*
+     Same as the other constructor, using the default MappingQ1.          [2.x.27]  fe The finite element      [2.x.28]  quadrature The cell quadrature      [2.x.29]  update_flags UpdateFlags for the current cell FEValues      [2.x.30]  neighbor_update_flags UpdateFlags for the neighbor cell FEValues      [2.x.31]  face_quadrature Face quadrature, used for FEFaceValues and     FESubfaceValues for both the current cell and the neighbor cell      [2.x.32]  face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for the current cell      [2.x.33]  neighbor_face_update_flags UpdateFlags used for FEFaceValues and     FESubfaceValues for the neighbor cell    
+* [0.x.5]*
+     Deep copy constructor. FEValues objects are not copied.    
+* [0.x.6]*
+      [2.x.34]  Methods to work on current cell    
+* [0.x.7]*
+     Initialize the internal FEValues with the given  [2.x.35]  and return     a reference to it.         After calling this function, get_current_fe_values() will return the     same object of this method, as an FEValuesBase reference.    
+* [0.x.8]*
+     Initialize the internal FEFaceValues to use the given  [2.x.36]  on the given      [2.x.37]  and return a reference to it.         After calling this function, get_current_fe_values() will return the     same object of this method, as an FEValuesBase reference.    
+* [0.x.9]*
+     Initialize the internal FESubfaceValues to use the given  [2.x.38]      on  [2.x.39]  on the given  [2.x.40]  and return a reference to it.         After calling this function, get_current_fe_values() will return the     same object of this method, as an FEValuesBase reference.         If  [2.x.41]  is  [2.x.42]  the reinit() function     that takes only the  [2.x.43]  and the  [2.x.44]  is called.    
+* [0.x.10]*
+     Initialize the internal FEInterfaceValues with the given arguments, and     return a reference to it.         After calling this function, get_local_dof_indices(),     get_quadrature_points(), get_normal_vectors(), and get_JxW_values() will     be forwarded to the local FEInterfaceValues object. The methods     get_current_fe_values() will return the FEValuesBase associated to the     current cell, while get_neighbor_fe_values() will be associated with the     neighbor cell. The method get_local_dof_indices() will return the     same result of  [2.x.45]      while the get_neighbor_dof_indices() will return the local dof indices     of the neighbor cell.    
+* [0.x.11]*
+     Get the currently initialized FEValues.         This function will return the internal FEValues if the     reinit(cell) function was called last. If the reinit(cell, face_no)     function was called, then this function returns the internal     FEFaceValues, and if the reinit(cell, face_no, subface_no) function was     called (with a valid  [2.x.46]  argument), it returns the internal     FESubfaceValues object.    
+* [0.x.12]*
+     Return the quadrature points of the internal FEValues object.    
+* [0.x.13]*
+     Return the JxW values of the internal FEValues object.    
+* [0.x.14]*
+     Return the last computed normal vectors.    
+* [0.x.15]*
+     Return the local dof indices for the cell passed the last time the     reinit() function was called.    
+* [0.x.16]*
+      [2.x.47]  Methods to work on neighbor cell    
+* [0.x.17]*
+     Initialize the internal neighbor FEValues to use the given  [2.x.48]  and     return a reference to it.         After calling this function, get_current_neighbor_fe_values() will return     the same object of this method, as an FEValuesBase reference.    
+* [0.x.18]*
+     Initialize the internal FEFaceValues to use the given  [2.x.49]  on the     given  [2.x.50]  and return a reference to it.         After calling this function, get_current_neighbor_fe_values() will return     the same object of this method, as an FEValuesBase reference.    
+* [0.x.19]*
+     Initialize the internal FESubfaceValues to use the given  [2.x.51]      on  [2.x.52]  on the given  [2.x.53]  and return a reference to it.         After calling this function, get_current_neighbor_fe_values() will return     the same object of this method, as an FEValuesBase reference.         If  [2.x.54]  is  [2.x.55]  the reinit() function     that takes only the  [2.x.56]  and the  [2.x.57]  is called.    
+* [0.x.20]*
+     Get the currently initialized neighbor FEValues.         This function will return the neighbor FEValues if the     reinit_neighbor(cell) function was called last. If the     reinit_neighbor(cell, face_no) function was called, then this function     returns the internal neighbor FEFaceValues, and if the     reinit_neighbor(cell, face_no, subface_no) function was     called (with a valid  [2.x.58]  argument), it returns the internal neighbor     FESubfaceValues object.    
+* [0.x.21]*
+     Return the JxW values of the neighbor FEValues object.    
+* [0.x.22]*
+     Return the last computed normal vectors on the neighbor.    
+* [0.x.23]*
+     Return the local dof indices of the neighbor passed the last time the     reinit_neighbor() function was called.    
+* [0.x.24]*
+     Return a GeneralDataStorage object that can be used to store any amount     of data, of any type, which is then made accessible by an identifier     string.    
+* [0.x.25]*
+     Return a GeneralDataStorage object that can be used to store any amount     of data, of any type, which is then made accessible by an identifier     string.    
+* [0.x.26]*
+      [2.x.59]  Evaluation of finite element fields and their derivatives on the current cell    
+* [0.x.27]*
+     Extract the local dof values associated with the internally initialized     cell.         Before you call this function, you have to make sure you have previously     called one of the reinit() functions.         At every call of this function, a new vector of dof values is generated     and stored internally, unless a previous vector with the same name is     found. If this is the case, the content of that vector is overwritten.         If you give a unique  [2.x.60]  then for each cell you are     guaranteed to get a unique vector of independent dofs of the same type     as the dummy variable. If you use an automatic differentiation number     type (like  [2.x.61]       [2.x.62]  etc.) this method will     also initialize the independent variables internally, allowing you     to perform automatic differentiation.         You can access the extracted local dof values by calling the method     get_local_dof_values() with the same  [2.x.63]  argument     you passed here.         Notice that using this initialization strategy renders the use of this     ScratchData object incompatible with the AD helper classes (since they     do their own data management). In particular, it is necessary for the     user to manage all of the AD data themselves (both before and after this     call).    
+* [0.x.28]*
+     After calling extract_local_dof_values(), you can retrieve the stored     information through this method.         Both the argument  [2.x.64]  and the type of the  [2.x.65]      variable should match the ones you passed to the     extract_local_dof_values() function.    
+* [0.x.29]*
+     For the solution vector identified by  [2.x.66]  compute     the values of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.67]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.68]  string, and the same type for the variable  [2.x.69]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_values flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.30]*
+     For the solution vector identified by  [2.x.70]  compute     the gradients of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.71]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.72]  string, and the same type for the variable  [2.x.73]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_gradients flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.31]*
+     For the solution vector identified by  [2.x.74]  compute     the symmetric gradients of the function at the quadrature points, and     return a vector with the correct type deduced by the Extractor you passed     as the      [2.x.75]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.76]  string, and the same type for the variable  [2.x.77]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_gradients flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.32]*
+     For the solution vector identified by  [2.x.78]  compute     the divergences of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.79]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.80]  string, and the same type for the variable  [2.x.81]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_gradients flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.33]*
+     For the solution vector identified by  [2.x.82]  compute     the curls of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.83]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.84]  string, and the same type for the variable  [2.x.85]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_gradients flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.34]*
+     For the solution vector identified by  [2.x.86]  compute     the hessians of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.87]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.88]  string, and the same type for the variable  [2.x.89]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_hessians flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.35]*
+     For the solution vector identified by  [2.x.90]  compute     the Laplacians of the function at the quadrature points, and return a     vector with the correct type deduced by the Extractor you passed as the      [2.x.91]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.92]  string, and the same type for the variable  [2.x.93]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_hessians flag must be an element of the     list of UpdateFlags that you passed to the constructor of this object.     See "The interplay of UpdateFlags, Mapping, and FiniteElement" in     the documentation of the FEValues class for more information.    
+* [0.x.36]*
+     For the solution vector identified by  [2.x.94]  compute     the third_derivatives of the function at the quadrature points, and     return a vector with the correct type deduced by the Extractor you passed     as the  [2.x.95]  argument.         Before you can call this method, you need to call the     extract_local_dof_values() method at least once, passing the same      [2.x.96]  string, and the same type for the variable  [2.x.97]          If you have not previously called the extract_local_dof_values() method,     this function will throw an exception.         For this function to work properly, the underlying FEValues,     FEFaceValues, or FESubfaceValues object for which you called one of the     reinit() functions, must have computed the information you are     requesting. To do so, the update_3rd_derivatives flag must be an     element of the list of UpdateFlags that you passed to the constructor of     this object. See "The interplay of UpdateFlags, Mapping, and     FiniteElement" in the documentation of the FEValues for more information.    
+* [0.x.37]*
+     Return a reference to the used mapping.    
+* [0.x.38]*
+     Construct a unique name to store vectors of values, gradients,     divergences, etc., in the internal GeneralDataStorage object.    
+* [0.x.39]*
+     Construct a unique name to store local dof values.    
+* [0.x.40]*
+     The mapping used by the internal FEValues. Make sure it lives     longer than this class.    
+* [0.x.41]*
+     The finite element used by the internal FEValues. Make sure it lives     longer than this class.    
+* [0.x.42]*
+     Quadrature formula used to integrate on the current cell, and on its     neighbor.    
+* [0.x.43]*
+     Quadrature formula used to integrate on faces, subfaces, and neighbor     faces and subfaces.    
+* [0.x.44]*
+     UpdateFlags to use when initializing the cell FEValues object.    
+* [0.x.45]*
+     UpdateFlags to use when initializing the neighbor cell FEValues objects.    
+* [0.x.46]*
+     UpdateFlags to use when initializing FEFaceValues and FESubfaceValues     objects.    
+* [0.x.47]*
+     UpdateFlags to use when initializing neighbor FEFaceValues and     FESubfaceValues objects.    
+* [0.x.48]*
+     Finite element values on the current cell.    
+* [0.x.49]*
+     Finite element values on the current face.    
+* [0.x.50]*
+     Finite element values on the current subface.    
+* [0.x.51]*
+     Finite element values on the neighbor cell.    
+* [0.x.52]*
+     Finite element values on the neighbor face.    
+* [0.x.53]*
+     Finite element values on the neighbor subface.    
+* [0.x.54]*
+     Interface values on facets.    
+* [0.x.55]*
+     Dof indices on the current cell.    
+* [0.x.56]*
+     Dof indices on the neighbor cell.    
+* [0.x.57]*
+     User data storage.    
+* [0.x.58]*
+     Internal data storage.    
+* [0.x.59]*
+     A pointer to the last used FEValues/FEFaceValues, or FESubfaceValues     object on this cell.    
+* [0.x.60]*
+     A pointer to the last used FEValues/FEFaceValues, or FESubfaceValues     object on the neighbor cell.    
+* [0.x.61]

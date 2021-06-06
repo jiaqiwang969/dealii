@@ -1,0 +1,235 @@
+[0.x.0]*
+ The transformation kind used for the  [2.x.0]  functions.
+*  Special finite elements may need special Mapping from the reference cell to the actual mesh cell. In order to be most flexible, this enum provides an extensible interface for arbitrary transformations. Nevertheless, these must be implemented in the transform() functions of inheriting classes in order to work.
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+   No mapping, i.e., shape functions are not mapped from a reference cell   but instead are defined right on the real-space cell.  
+* [0.x.2]*
+   Covariant mapping (see  [2.x.2]  for details).  
+* [0.x.3]*
+   Contravariant mapping (see  [2.x.3]  for details).  
+* [0.x.4]*
+   Mapping of the gradient of a covariant vector field (see    [2.x.4]  for details).  
+* [0.x.5]*
+   Mapping of the gradient of a contravariant vector field (see    [2.x.5]  for details).  
+* [0.x.6]*
+   The Piola transform usually used for Hdiv elements. Piola transform is   the standard transformation of vector valued elements in H<sup>div</sup>.   It amounts to a contravariant transformation scaled by the inverse of the   volume element.  
+* [0.x.7]*
+   Transformation for the gradient of a vector field corresponding to a   mapping_piola transformation (see  [2.x.6]  for details).  
+* [0.x.8]*
+   The mapping used for Nedelec elements.     Curl-conforming elements are mapped as covariant vectors. Nevertheless,   we introduce a separate mapping kind, such that we can use the same flag   for the vector and its gradient (see  [2.x.7]  for details).  
+* [0.x.9]*
+   The mapping used for Raviart-Thomas elements.  
+* [0.x.10]*
+   The mapping used for BDM elements.  
+* [0.x.11]*
+   The mappings for 2-forms and third order tensors.     These are mappings typpically applied to hessians transformed to the   reference cell.     Mapping of the hessian of a covariant vector field (see    [2.x.8]  for details).  
+* [0.x.12]*
+   Mapping of the hessian of a contravariant vector field (see    [2.x.9]  for details).  
+* [0.x.13]*
+   Mapping of the hessian of a piola vector field (see  [2.x.10]    for details).  
+* [0.x.14]*
+  [2.x.11]  Abstract base class for mapping classes.
+*  This class declares the interface for the functionality to describe mappings from the reference (unit) cell to a cell in real space, as well as for filling the information necessary to use the FEValues, FEFaceValues, and FESubfaceValues classes. Concrete implementations of these interfaces are provided in derived classes.
+*  [1.x.0]
+*  The mapping is a transformation  [2.x.12]  which maps points  [2.x.13]  in the reference cell  [2.x.14]  to points  [2.x.15]  in the actual grid cell  [2.x.16] . Many of the applications of such mappings require the Jacobian of this mapping,  [2.x.17] . For instance, if dim=spacedim=2, we have [1.x.1]
+*  [1.x.2]
+*  The shape functions of scalar finite elements are typically defined on a reference cell and are then simply mapped according to the rule [1.x.3]
+* 
+
+*  [1.x.4]
+*  Using simply a change of variables, integrals of scalar functions over a cell  [2.x.18]  can be expressed as an integral over the reference cell  [2.x.19] . Specifically, The volume form  [2.x.20]  is transformed so that [1.x.5]
+*  In expressions where such integrals are approximated by quadrature, this then leads to terms of the form [1.x.6] Here, the weights  [2.x.21]  of each quadrature point (where [1.x.7] mnemonically stands for [1.x.8]) take the role of the  [2.x.22]  in the original integral. Consequently, they appear in all code that computes integrals approximated by quadrature, and are accessed by  [2.x.23] 
+*   [2.x.24]  Document what happens in the codimension-1 case.
+* 
+
+*  [1.x.9]
+*  The transformation of vector fields or differential forms (gradients of scalar functions)  [2.x.25] , and gradients of vector fields  [2.x.26]  follows the general form
+*  [1.x.10] The differential forms [1.x.11] and [1.x.12] are determined by the kind of object being transformed. These transformations are performed through the transform() functions, and the type of object being transformed is specified by their MappingKind argument. See the documentation there for possible choices.
+*  [1.x.13]
+*  Some applications require the derivatives of the mapping, of which the first order derivative is the mapping Jacobian,  [2.x.27] , described above. Higher order derivatives of the mapping are similarly defined, for example the Jacobian derivative,  [2.x.28] , and the Jacobian second derivative,  [2.x.29] . It is also useful to define the "pushed-forward" versions of the higher order derivatives: the Jacobian pushed-forward derivative,  [2.x.30] , and the Jacobian pushed-forward second derivative,  [2.x.31] . These pushed-forward versions can be used to compute the higher order derivatives of functions defined on the reference cell with respect to the real cell coordinates. For instance, the Jacobian derivative with respect to the real cell coordinates is given by:
+*  [1.x.14] and the derivative of the Jacobian inverse with respect to the real cell coordinates is similarly given by: [1.x.15]
+*  In a similar fashion, higher order derivatives, with respect to the real cell coordinates, of functions defined on the reference cell can be defined using the Jacobian pushed-forward higher-order derivatives. For example, the derivative, with respect to the real cell coordinates, of the Jacobian pushed-forward derivative is given by:
+*  [1.x.16]
+*  [1.x.17]
+*  A general publication on differential geometry and finite elements is the survey  [2.x.32]   [2.x.33] Douglas N. Arnold, Richard S. Falk, and Ragnar Winther. [1.x.18] Bull. Amer. Math. Soc. (N.S.), 47:281-354, 2010. [1.x.19].  [2.x.34] 
+*  The description of the Piola transform has been taken from the [1.x.20] by Ronald H. W. Hoppe, University of Houston, Chapter 7.
+* 
+
+* 
+*  [2.x.35] 
+
+* 
+* [0.x.15]*
+   Virtual destructor.  
+* [0.x.16]*
+   Return a pointer to a copy of the present object. The caller of this copy   then assumes ownership of it.     The function is declared abstract virtual in this base class, and derived   classes will have to implement it.     This function is mainly used by the  [2.x.36]  class.  
+* [0.x.17]*
+   Return the mapped vertices of a cell.     Most of the time, these values will simply be the coordinates of the   vertices of a cell as returned by  [2.x.37]  for   vertex  [2.x.38] , i.e., information stored by the triangulation.   However, there are also mappings that add displacements or choose   completely different locations, e.g., MappingQEulerian,   MappingQ1Eulerian, or MappingFEField.     The default implementation of this function simply returns the   information stored by the triangulation, i.e.,    [2.x.39] .  
+* [0.x.18]*
+   Return the mapped center of a cell.     If you are using a (bi-,tri-)linear mapping that preserves vertex   locations, this function simply returns the value also produced by   `cell->center()`. However, there are also mappings that add displacements   or choose completely different locations, e.g., MappingQEulerian,   MappingQ1Eulerian, or MappingFEField, and mappings based on high order   polynomials, for which the center may not coincide with the average of   the vertex locations.     By default, this function returns the push forward of the center of the   reference cell. If the parameter    [2.x.40]  is set to false, than the return value   will be the average of the vertex locations, as returned by the   get_vertices() method.      [2.x.41]  cell The cell for which you want to compute the center    [2.x.42]  map_center_of_reference_cell A flag that switches the algorithm   for the computation of the cell center from   transform_unit_to_real_cell() applied to the center of the reference cell   to computing the vertex averages.  
+* [0.x.19]*
+   Return the bounding box of a mapped cell.     If you are using a (bi-,tri-)linear mapping that preserves vertex   locations, this function simply returns the value also produced by   `cell->bounding_box()`. However, there are also mappings that add   displacements or choose completely different locations, e.g.,   MappingQEulerian, MappingQ1Eulerian, or MappingFEField.     For linear mappings, this function returns the bounding box containing all   the vertices of the cell, as returned by the get_vertices() method. For   higher order mappings defined through support points, the bounding box is   only guaranteed to contain all the support points, and it is, in general,   only an approximation of the true bounding box, which may be larger.      [2.x.43]  cell The cell for which you want to compute the bounding box  
+* [0.x.20]*
+   Return whether the mapping preserves vertex locations. In other words,   this function returns whether the mapped location of the reference cell   vertices (given by  [2.x.44]  equals the result of    [2.x.45]  (i.e., information stored by the   triangulation).     For example, implementations in derived classes return  [2.x.46]  for   MappingQ, MappingQGeneric, MappingCartesian, but  [2.x.47]  for   MappingQEulerian, MappingQ1Eulerian, and MappingFEField.  
+* [0.x.21]*
+   Returns if this instance of Mapping is compatible with the type of cell   in  [2.x.48]   
+* [0.x.22]*
+    [2.x.49]  Mapping points between reference and real cells    [2.x.50]   
+* [0.x.23]*
+   Map the point  [2.x.51]  on the unit cell to the corresponding point on the   real cell  [2.x.52]       [2.x.53]  cell Iterator to the cell that will be used to define the mapping.    [2.x.54]  p Location of a point on the reference cell.    [2.x.55]  The location of the reference point mapped to real space using   the mapping defined by the class derived from the current one that   implements the mapping, and the coordinates of the cell identified by the   first argument.  
+* [0.x.24]*
+   Map the point  [2.x.56]  on the real  [2.x.57]  to the corresponding point on the   unit cell, and return its coordinates. This function provides the inverse   of the mapping provided by transform_unit_to_real_cell().     In the codimension one case, this function returns the normal projection   of the real point  [2.x.58]  on the curve or surface identified by the  [2.x.59]     
+*  [2.x.60]  Polynomial mappings from the reference (unit) cell coordinates to   the coordinate system of a real cell are not always invertible if the   point for which the inverse mapping is to be computed lies outside the   cell's boundaries. In such cases, the current function may fail to   compute a point on the reference cell whose image under the mapping   equals the given point  [2.x.61]   If this is the case then this function   throws an exception of type  [2.x.62]  . Whether   the given point  [2.x.63]  lies outside the cell can therefore be determined by   checking whether the returned reference coordinates lie inside or outside   the reference cell (e.g., using  [2.x.64]  or   whether the exception mentioned above has been thrown.      [2.x.65]  cell Iterator to the cell that will be used to define the mapping.    [2.x.66]  p Location of a point on the given cell.    [2.x.67]  The reference cell location of the point that when mapped to real   space equals the coordinates given by the second argument. This mapping   uses the mapping defined by the class derived from the current one that   implements the mapping, and the coordinates of the cell identified by the   first argument.  
+* [0.x.25]*
+   Map multiple points from the real point locations to points in reference   locations. The functionality is essentially the same as looping over all   points and calling the  [2.x.68]  function   for each point individually, but it can be much faster for certain   mappings that implement a more specialized version such as   MappingQGeneric. The only difference in behavior is that this function   will never throw an ExcTransformationFailed() exception. If the   transformation fails for `real_points[i]`, the returned `unit_points[i]`   contains  [2.x.69]  as the first entry.  
+* [0.x.26]*
+   Transform the point  [2.x.70]  on the real  [2.x.71]  to the corresponding point   on the reference cell, and then project this point to a (dim-1)-dimensional   point in the coordinate system of the face with   the given face number  [2.x.72]  Ideally the point  [2.x.73]  is near the face    [2.x.74]  but any point in the cell can technically be projected.     This function does not make physical sense when dim=1, so it throws an   exception in this case.  
+* [0.x.27]*
+    [2.x.75]   
+* [0.x.28]*
+    [2.x.76]  Exceptions    [2.x.77]   
+* [0.x.29]*
+   Exception  
+* [0.x.30]*
+   Computing the mapping between a real space point and a point in reference   space failed, typically because the given point lies outside the cell   where the inverse mapping is not unique.    
+*  [2.x.78]   
+* [0.x.31]*
+   deal.II assumes the Jacobian determinant to be positive. When the cell   geometry is distorted under the image of the mapping, the mapping becomes   invalid and this exception is thrown.    
+*  [2.x.79]   
+* [0.x.32]*
+    [2.x.80]   
+* [0.x.33]*
+    [2.x.81]  Interface with FEValues    [2.x.82]   
+* [0.x.34]*
+   Base class for internal data of mapping objects. The internal mechanism   is that upon construction of a FEValues object, it asks the mapping and   finite element classes that are to be used to allocate memory for their   own purpose in which they may store data that only needs to be computed   once. For example, most finite elements will store the values of the   shape functions at the quadrature points in this object, since they do   not change from cell to cell and only need to be computed once. The same   may be true for Mapping classes that want to only evaluate the shape   functions used for mapping once at the quadrature points.     Since different FEValues objects using different quadrature rules might   access the same mapping object at the same time, it is necessary to   create one such object per FEValues object. FEValues does this by calling    [2.x.83]  or in reality the implementation of the   corresponding function in derived classes. Ownership of the object   created by  [2.x.84]  is then transferred to the FEValues   object, but a reference to this object is passed to the mapping object   every time it is asked to compute information on a concrete cell. This   happens when  [2.x.85]  (or the corresponding classes in   FEFaceValues and FESubfaceValues) call  [2.x.86]  (and   similarly via  [2.x.87]  and    [2.x.88]      The purpose of this class is for mapping objects to store information   that can be computed once at the beginning, on the reference cell, and to   access it later when computing information on a concrete cell. As such,   the object handed to  [2.x.89]  is marked as    [2.x.90] , because the assumption is that at the time this   information is used, it will not need to modified again. However, classes   derived from Mapping can also use such objects for two other purposes:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - To provide scratch space for computations that are done in    [2.x.91]  and similar functions. Some of the derived   classes would like to use scratch arrays and it would be a waste of time   to allocate these arrays every time this function is called, just to de-   allocate it again at the end of the function. Rather, one could allocate   this memory once as a member variable of the current class, and simply   use it in  [2.x.92] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - After calling  [2.x.93]   [2.x.94]    calls  [2.x.95]  where the finite element computes   values, gradients, etc of the shape functions using both information   computed once at the beginning using a mechanism similar to the one   described here (see  [2.x.96]  as well as the data   already computed by  [2.x.97]  As part of its work, some   implementations of  [2.x.98]  need to transform   shape function data, and they do so by calling  [2.x.99]  The   call to the latter function also receives a reference to the    [2.x.100]  object. Since  [2.x.101]  may be   called many times on each cell, it is sometimes worth for derived classes   to compute some information only once in  [2.x.102]  and   reuse it in  [2.x.103]  This information can also be stored in   the classes that derived mapping classes derive from InternalDataBase.     In both of these cases, the InternalDataBase object being passed around   is "morally const", i.e., no external observer can tell whether a scratch   array or some intermediate data for  [2.x.104]  is being   modified by  [2.x.105]  or not. Consequently, the   InternalDataBase objects are always passed around as  [2.x.106]    objects. Derived classes that would like to make use of the two   additional uses outlined above therefore need to mark the member   variables they want to use for these purposes as  [2.x.107]  to   allow for their modification despite the fact that the surrounding object   is marked as  [2.x.108] .  
+* [0.x.35]*
+     Constructor. Sets update_flags to  [2.x.109]  and  [2.x.110]      to  [2.x.111]     
+* [0.x.36]*
+     Copy construction is forbidden.    
+* [0.x.37]*
+     Virtual destructor for derived classes    
+* [0.x.38]*
+     A set of update flags specifying the kind of information that an     implementation of the Mapping interface needs to compute on each cell     or face, i.e., in  [2.x.112]  and friends.         This set of flags is stored here by implementations of      [2.x.113]   [2.x.114]  or      [2.x.115]  and is that subset of the update flags     passed to those functions that require re-computation on every cell.     (The subset of the flags corresponding to information that can be     computed once and for all already at the time of the call to      [2.x.116] 
+* 
+*  -  or an implementation of that interface
+* 
+*  -  need     not be stored here because it has already been taken care of.)    
+* [0.x.39]*
+     Return an estimate (in bytes) for the memory consumption of this object.    
+* [0.x.40]*
+   Given a set of update flags, compute which other quantities [1.x.21]   need to be computed in order to satisfy the request by the given flags.   Then return the combination of the original set of flags and those just   computed.     As an example, if  [2.x.117]  contains update_JxW_values (i.e., the   product of the determinant of the Jacobian and the weights provided by   the quadrature formula), a mapping may require the computation of the   full Jacobian matrix in order to compute its determinant. They would then   return not just update_JxW_values, but also update_jacobians. (This is   not how it is actually done internally in the derived classes that   compute the JxW values
+* 
+*  -  they set update_contravariant_transformation   instead, from which the determinant can also be computed
+* 
+*  -  but this does   not take away from the instructiveness of the example.)     An extensive discussion of the interaction between this function and   FEValues can be found in the    [2.x.118]    documentation module.      [2.x.119]  UpdateFlags  
+* [0.x.41]*
+   Create and return a pointer to an object into which mappings can store   data that only needs to be computed once but that can then be used   whenever the mapping is applied to a concrete cell (e.g., in the various   transform() functions, as well as in the fill_fe_values(),   fill_fe_face_values() and fill_fe_subface_values() that form the   interface of mappings with the FEValues class).     Derived classes will return pointers to objects of a type derived from    [2.x.120]  (see there for more information) and may pre-   compute some information already (in accordance with what will be asked   of the mapping in the future, as specified by the update flags) and for   the given quadrature object. Subsequent calls to transform() or   fill_fe_values() and friends will then receive back the object created   here (with the same set of update flags and for the same quadrature   object). Derived classes can therefore pre-compute some information in   their get_data() function and store it in the internal data object.     The mapping classes do not keep track of the objects created by this   function. Ownership will therefore rest with the caller.     An extensive discussion of the interaction between this function and   FEValues can be found in the    [2.x.121]    documentation module.      [2.x.122]  update_flags A set of flags that define what is expected of the   mapping class in future calls to transform() or the fill_fe_values()   group of functions. This set of flags may contain flags that mappings do   not know how to deal with (e.g., for information that is in fact computed   by the finite element classes, such as  [2.x.123]    Derived classes will need to store these flags, or at least that subset   of flags that will require the mapping to perform any actions in   fill_fe_values(), in  [2.x.124]     [2.x.125]  quadrature The quadrature object for which mapping information   will have to be computed. This includes the locations and weights of   quadrature points.    [2.x.126]  A pointer to a newly created object of type InternalDataBase (or   a derived class). Ownership of this object passes to the calling   function.    
+*  [2.x.127]  C++ allows that virtual functions in derived classes may return   pointers to objects not of type InternalDataBase but in fact pointers to   objects of classes [1.x.22] from InternalDataBase. (This feature is   called "covariant return types".) This is useful in some contexts where   the calling is within the derived class and will immediately make use of   the returned object, knowing its real (derived) type.  
+* [0.x.42]*
+   Like get_data(), but in preparation for later calls to transform() or   fill_fe_face_values() that will need information about mappings from the   reference face to a face of a concrete cell.      [2.x.128]  update_flags A set of flags that define what is expected of the   mapping class in future calls to transform() or the fill_fe_values()   group of functions. This set of flags may contain flags that mappings do   not know how to deal with (e.g., for information that is in fact computed   by the finite element classes, such as  [2.x.129]    Derived classes will need to store these flags, or at least that subset   of flags that will require the mapping to perform any actions in   fill_fe_values(), in  [2.x.130]     [2.x.131]  quadrature The quadrature object for which mapping information   will have to be computed. This includes the locations and weights of   quadrature points.    [2.x.132]  A pointer to a newly created object of type InternalDataBase (or   a derived class). Ownership of this object passes to the calling   function.    
+*  [2.x.133]  C++ allows that virtual functions in derived classes may return   pointers to objects not of type InternalDataBase but in fact pointers to   objects of classes [1.x.23] from InternalDataBase. (This feature is   called "covariant return types".) This is useful in some contexts where   the calling is within the derived class and will immediately make use of   the returned object, knowing its real (derived) type.  
+* [0.x.43]*
+    [2.x.134]  Use the version taking a  [2.x.135]  argument.  
+* [0.x.44]*
+   Like get_data() and get_face_data(), but in preparation for later calls   to transform() or fill_fe_subface_values() that will need information   about mappings from the reference face to a child of a face (i.e.,   subface) of a concrete cell.      [2.x.136]  update_flags A set of flags that define what is expected of the   mapping class in future calls to transform() or the fill_fe_values()   group of functions. This set of flags may contain flags that mappings do   not know how to deal with (e.g., for information that is in fact computed   by the finite element classes, such as  [2.x.137]    Derived classes will need to store these flags, or at least that subset   of flags that will require the mapping to perform any actions in   fill_fe_values(), in  [2.x.138]     [2.x.139]  quadrature The quadrature object for which mapping information   will have to be computed. This includes the locations and weights of   quadrature points.    [2.x.140]  A pointer to a newly created object of type InternalDataBase (or   a derived class). Ownership of this object passes to the calling   function.    
+*  [2.x.141]  C++ allows that virtual functions in derived classes may return   pointers to objects not of type InternalDataBase but in fact pointers to   objects of classes [1.x.24] from InternalDataBase. (This feature is   called "covariant return types".) This is useful in some contexts where   the calling is within the derived class and will immediately make use of   the returned object, knowing its real (derived) type.  
+* [0.x.45]*
+   Compute information about the mapping from the reference cell to the real   cell indicated by the first argument to this function. Derived classes   will have to implement this function based on the kind of mapping they   represent. It is called by  [2.x.142]      Conceptually, this function's represents the application of the mapping    [2.x.143]  from reference coordinates    [2.x.144]  to real space coordinates  [2.x.145]  for a given   cell  [2.x.146] . Its purpose is to compute the following kinds of data:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Data that results from the application of the mapping itself, e.g.,   computing the location  [2.x.147]  of   quadrature points on the real cell, and that is directly useful to users   of FEValues, for example during assembly.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Data that is necessary for finite element implementations to compute   their shape functions on the real cell. To this end, the    [2.x.148]  function calls  [2.x.149]  after   the current function, and the output of this function serves as input to    [2.x.150]  Examples of information that needs to be   computed here for use by the finite element classes is the Jacobian of   the mapping,  [2.x.151]  or its inverse,   for example to transform the gradients of shape functions on the   reference cell to the gradients of shape functions on the real cell.     The information computed by this function is used to fill the various   member variables of the output argument of this function. Which of the   member variables of that structure should be filled is determined by the   update flags stored in the  [2.x.152]  object passed to   this function.     An extensive discussion of the interaction between this function and   FEValues can be found in the    [2.x.153]    documentation module.      [2.x.154]  cell The cell of the triangulation for which this function is   to compute a mapping from the reference cell to.    [2.x.155]  cell_similarity Whether or not the cell given as first   argument is simply a translation, rotation, etc of the cell for which   this function was called the most recent time. This information is   computed simply by matching the vertices (as stored by the Triangulation)   between the previous and the current cell. The value passed here may be   modified by implementations of this function and should then be returned   (see the discussion of the return value of this function).    [2.x.156]  quadrature A reference to the quadrature formula in use for   the current evaluation. This quadrature object is the same as the one   used when creating the  [2.x.157]  object. The object is used both   to map the location of quadrature points, as well as to compute the JxW   values for each quadrature point (which involves the quadrature weights).    [2.x.158]  internal_data A reference to an object previously created by   get_data() and that may be used to store information the mapping can   compute once on the reference cell. See the documentation of the    [2.x.159]  class for an extensive description of the   purpose of these objects.    [2.x.160]  output_data A reference to an object whose member variables   should be computed. Not all of the members of this argument need to be   filled; which ones need to be filled is determined by the update flags   stored inside the  [2.x.161]  object.    [2.x.162]  An updated value of the  [2.x.163]  argument to this   function. The returned value will be used for the corresponding argument   when  [2.x.164]  calls  [2.x.165]  In most   cases, derived classes will simply want to return the value passed for  [2.x.166]    cell_similarity. However, implementations of this function may downgrade   the level of cell similarity. This is, for example, the case for classes   that take not only into account the locations of the vertices of a cell   (as reported by the Triangulation), but also other information specific   to the mapping. The purpose is that  [2.x.167]  can compute   whether a cell is similar to the previous one only based on the cell's   vertices, whereas the mapping may also consider displacement fields   (e.g., in the MappingQ1Eulerian and MappingFEField classes). In such   cases, the mapping may conclude that the previously computed cell   similarity is too optimistic, and invalidate it for subsequent use in    [2.x.168]  by returning a less optimistic cell   similarity value.    
+*  [2.x.169]  FEValues ensures that this function is always called with the same   pair of  [2.x.170]  and  [2.x.171]  objects. In other words, if   an implementation of this function knows that it has written a piece of   data into the output argument in a previous call, then there is no need   to copy it there again in a later call if the implementation knows that   this is the same value.  
+* [0.x.46]*
+   This function is the equivalent to  [2.x.172]  but for   faces of cells. See there for an extensive discussion of its purpose. It   is called by  [2.x.173]       [2.x.174]  cell The cell of the triangulation for which this function is   to compute a mapping from the reference cell to.    [2.x.175]  face_no The number of the face of the given cell for which   information is requested.    [2.x.176]  quadrature A reference to the quadrature formula in use for   the current evaluation. This quadrature object is the same as the one   used when creating the  [2.x.177]  object. The object is used both   to map the location of quadrature points, as well as to compute the JxW   values for each quadrature point (which involves the quadrature weights).    [2.x.178]  internal_data A reference to an object previously created by   get_data() and that may be used to store information the mapping can   compute once on the reference cell. See the documentation of the    [2.x.179]  class for an extensive description of the   purpose of these objects.    [2.x.180]  output_data A reference to an object whose member variables   should be computed. Not all of the members of this argument need to be   filled; which ones need to be filled is determined by the update flags   stored inside the  [2.x.181]  object.  
+* [0.x.47]*
+    [2.x.182]  Use the version taking a  [2.x.183]  argument.  
+* [0.x.48]*
+   This function is the equivalent to  [2.x.184]  but for   subfaces (i.e., children of faces) of cells. See there for an extensive   discussion of its purpose. It is called by  [2.x.185]       [2.x.186]  cell The cell of the triangulation for which this function is   to compute a mapping from the reference cell to.    [2.x.187]  face_no The number of the face of the given cell for which   information is requested.    [2.x.188]  subface_no The number of the child of a face of the given cell   for which information is requested.    [2.x.189]  quadrature A reference to the quadrature formula in use for   the current evaluation. This quadrature object is the same as the one   used when creating the  [2.x.190]  object. The object is used both   to map the location of quadrature points, as well as to compute the JxW   values for each quadrature point (which involves the quadrature weights).    [2.x.191]  internal_data A reference to an object previously created by   get_data() and that may be used to store information the mapping can   compute once on the reference cell. See the documentation of the    [2.x.192]  class for an extensive description of the   purpose of these objects.    [2.x.193]  output_data A reference to an object whose member variables   should be computed. Not all of the members of this argument need to be   filled; which ones need to be filled is determined by the update flags   stored inside the  [2.x.194]  object.  
+* [0.x.49]*
+    [2.x.195]   
+* [0.x.50]*
+    [2.x.196]  Functions to transform tensors from reference to real coordinates    [2.x.197]   
+* [0.x.51]*
+   Transform a field of vectors or 1-differential forms according to the   selected MappingKind.    
+*  [2.x.198]  Normally, this function is called by a finite element, filling   FEValues objects. For this finite element, there should be an alias   MappingKind like  [2.x.199]   [2.x.200]  etc. This alias   should be preferred to using the kinds below.     The mapping kinds currently implemented by derived classes are:    [2.x.201]     [2.x.202]   [2.x.203]  maps a vector field on the reference cell   to the physical cell through the Jacobian:   [1.x.25]   In physics, this is usually referred to as the contravariant   transformation. Mathematically, it is the push forward of a vector field.      [2.x.204]   [2.x.205]  maps a field of one-forms on the reference   cell to a field of one-forms on the physical cell. (Theoretically this   would refer to a DerivativeForm<1,dim,1> but we canonically identify this   type with a Tensor<1,dim>). Mathematically, it is the pull back of the   differential form   [1.x.26]   Gradients of scalar differentiable functions are transformed this way.     In the case when dim=spacedim the previous formula reduces to   [1.x.27]   because we assume that the mapping  [2.x.206]  is always invertible,   and consequently its Jacobian  [2.x.207]  is an invertible matrix.      [2.x.208]   [2.x.209]  A field of [1.x.28]-forms on the reference   cell is also represented by a vector field, but again transforms   differently, namely by the Piola transform   [1.x.29]    [2.x.210]       [2.x.211]  input An array (or part of an array) of input objects that   should be mapped.    [2.x.212]  kind The kind of mapping to be applied.    [2.x.213]  internal A pointer to an object of type    [2.x.214]  that contains information previously stored by   the mapping. The object pointed to was created by the get_data(),   get_face_data(), or get_subface_data() function, and will have been   updated as part of a call to fill_fe_values(), fill_fe_face_values(), or   fill_fe_subface_values() for the current cell, before calling the current   function. In other words, this object also represents with respect to   which cell the transformation should be applied to.    [2.x.215]  output An array (or part of an array) into which the   transformed objects should be placed. (Note that the array view is  [2.x.216]    const, but the tensors it points to are not.)  
+* [0.x.52]*
+   Transform a field of differential forms from the reference cell to the   physical cell.  It is useful to think of  [2.x.217]    and  [2.x.218] , with  [2.x.219]  a   vector field.  The mapping kinds currently implemented by derived classes   are:    [2.x.220]     [2.x.221]   [2.x.222]  maps a field of forms on the reference cell to   a field of forms on the physical cell. Mathematically, it is the pull   back of the differential form   [1.x.30]   Jacobians of spacedim-vector valued differentiable functions are   transformed this way.     In the case when dim=spacedim the previous formula reduces to   [1.x.31]    [2.x.223]     
+*  [2.x.224]  It would have been more reasonable to make this transform a   template function with the rank in <code>DerivativeForm [2.x.225]  dim,   rank [2.x.226]  Unfortunately C++ does not allow templatized virtual   functions. This is why we identify <code>DerivativeForm [2.x.227]  dim,   1 [2.x.228]  with a  [2.x.229]  when using   mapping_covariant() in the function transform() above this one.      [2.x.230]  input An array (or part of an array) of input objects that   should be mapped.    [2.x.231]  kind The kind of mapping to be applied.    [2.x.232]  internal A pointer to an object of type    [2.x.233]  that contains information previously stored by   the mapping. The object pointed to was created by the get_data(),   get_face_data(), or get_subface_data() function, and will have been   updated as part of a call to fill_fe_values(), fill_fe_face_values(), or   fill_fe_subface_values() for the current cell, before calling the current   function. In other words, this object also represents with respect to   which cell the transformation should be applied to.    [2.x.234]  output An array (or part of an array) into which the   transformed objects should be placed. (Note that the array view is  [2.x.235]    const, but the tensors it points to are not.)  
+* [0.x.53]*
+   Transform a tensor field from the reference cell to the physical cell.   These tensors are usually the Jacobians in the reference cell of vector   fields that have been pulled back from the physical cell.  The mapping   kinds currently implemented by derived classes are:    [2.x.236]     [2.x.237]   [2.x.238]  it assumes  [2.x.239]  so that   [1.x.32]    [2.x.240]   [2.x.241]  it assumes  [2.x.242]  so that   [1.x.33]    [2.x.243]   [2.x.244]  it assumes  [2.x.245]  so that   [1.x.34]    [2.x.246]       [2.x.247]  The formulas for mapping_covariant_gradient,   mapping_contravariant_gradient and mapping_piola_gradient are only true   as stated for linear mappings. If, for example, the mapping is bilinear   (or has a higher order polynomial degree) then there is a missing term   associated with the derivative of  [2.x.248] .      [2.x.249]  input An array (or part of an array) of input objects that   should be mapped.    [2.x.250]  kind The kind of mapping to be applied.    [2.x.251]  internal A pointer to an object of type    [2.x.252]  that contains information previously stored by   the mapping. The object pointed to was created by the get_data(),   get_face_data(), or get_subface_data() function, and will have been   updated as part of a call to fill_fe_values(), fill_fe_face_values(), or   fill_fe_subface_values() for the current cell, before calling the current   function. In other words, this object also represents with respect to   which cell the transformation should be applied to.    [2.x.253]  output An array (or part of an array) into which the   transformed objects should be placed. (Note that the array view is  [2.x.254]    const, but the tensors it points to are not.)  
+* [0.x.54]*
+   Transform a tensor field from the reference cell to the physical cell.   This tensors are most of times the hessians in the reference cell of   vector fields that have been pulled back from the physical cell.     The mapping kinds currently implemented by derived classes are:    [2.x.255]     [2.x.256]   [2.x.257]  maps a field of forms on the   reference cell to a field of forms on the physical cell. Mathematically,   it is the pull back of the differential form   [1.x.35],     where [1.x.36]    [2.x.258]      Hessians of spacedim-vector valued differentiable functions are   transformed this way (After subtraction of the product of the derivative   with the Jacobian gradient).     In the case when dim=spacedim the previous formula reduces to   [1.x.37]      [2.x.259]  input An array (or part of an array) of input objects that   should be mapped.    [2.x.260]  kind The kind of mapping to be applied.    [2.x.261]  internal A pointer to an object of type    [2.x.262]  that contains information previously stored by   the mapping. The object pointed to was created by the get_data(),   get_face_data(), or get_subface_data() function, and will have been   updated as part of a call to fill_fe_values(), fill_fe_face_values(), or   fill_fe_subface_values() for the current cell, before calling the current   function. In other words, this object also represents with respect to   which cell the transformation should be applied to.    [2.x.263]  output An array (or part of an array) into which the   transformed objects should be placed. (Note that the array view is  [2.x.264]    const, but the tensors it points to are not.)  
+* [0.x.55]*
+   Transform a field of 3-differential forms from the reference cell to the   physical cell.  It is useful to think of  [2.x.265]  and  [2.x.266] , with  [2.x.267]  a vector field.     The mapping kinds currently implemented by derived classes are:    [2.x.268]     [2.x.269]   [2.x.270]  it assumes  [2.x.271]  so that   [1.x.38]    [2.x.272]   [2.x.273]  it assumes  [2.x.274]  so that   [1.x.39]    [2.x.275]   [2.x.276]  it assumes  [2.x.277]  so that   [1.x.40]    [2.x.278]       [2.x.279]  input An array (or part of an array) of input objects that   should be mapped.    [2.x.280]  kind The kind of mapping to be applied.    [2.x.281]  internal A pointer to an object of type    [2.x.282]  that contains information previously stored by   the mapping. The object pointed to was created by the get_data(),   get_face_data(), or get_subface_data() function, and will have been   updated as part of a call to fill_fe_values(), fill_fe_face_values(), or   fill_fe_subface_values() for the current cell, before calling the current   function. In other words, this object also represents with respect to   which cell the transformation should be applied to.    [2.x.283]  output An array (or part of an array) into which the   transformed objects should be placed.  
+* [0.x.56]*
+    [2.x.284]   
+* [0.x.57]*
+ Return a default linear mapping that works for the given triangulation. Internally, this function calls the function above for the reference cell used by the given triangulation, assuming that the triangulation uses only a single cell type. If the triangulation uses mixed cell types, then this function will trigger an exception.
+
+* 
+* [0.x.58]

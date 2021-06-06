@@ -88,11 +88,11 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
-<div class="title">Linear solver classes<div class="ingroups"><a class="el" href="group__LAC.html">Linear algebra classes</a></div></div>  </div>
+<div class="title">Linear solver classes<div class="ingroups"><a class="el" href="group__LAC.html">Linear algebra classes This module contains classes that</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This module groups iterative and direct solvers, eigenvalue solvers, and some control classes. All these classes operate on objects of the <a class="el" href="group__Matrices.html">matrix</a> and <a class="el" href="group__Vectors.html">vector classes</a> defined in deal.II.  
+<p>In order to work properly, solvers that take matrix and vector classes as template arguments require that these classes satisfy a certain minimal interface that can be used from inside the solver. For iterative solvers, this interface is defined in the Solver class. In addition, solvers are controlled using objects of classes that are derived from the <a class="el" href="classSolverControl.html">SolverControl</a> class (for example its derived class <a class="el" href="classReductionControl.html">ReductionControl</a>), in order to determine the maximal number of iterations or a desired tolerance. If detected during configuration (see the ReadMe file), some sparse direct solvers are also supported.  
 <a href="#details">More...</a></p>
 <div class="dynheader">
 Collaboration diagram for Linear solver classes:</div>
@@ -111,7 +111,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>This module groups iterative and direct solvers, eigenvalue solvers, and some control classes. All these classes operate on objects of the <a class="el" href="group__Matrices.html">matrix</a> and <a class="el" href="group__Vectors.html">vector classes</a> defined in deal.II. </p>
+<p>In order to work properly, solvers that take matrix and vector classes as template arguments require that these classes satisfy a certain minimal interface that can be used from inside the solver. For iterative solvers, this interface is defined in the Solver class. In addition, solvers are controlled using objects of classes that are derived from the <a class="el" href="classSolverControl.html">SolverControl</a> class (for example its derived class <a class="el" href="classReductionControl.html">ReductionControl</a>), in order to determine the maximal number of iterations or a desired tolerance. If detected during configuration (see the ReadMe file), some sparse direct solvers are also supported. </p>
+<p>This module groups iterative and direct solvers, eigenvalue solvers, and some control classes. All these classes operate on objects of the <a class="el" href="group__Matrices.html">matrix</a> and <a class="el" href="group__Vectors.html">vector classes</a> defined in deal.II.</p>
 <p>In order to work properly, solvers that take matrix and vector classes as template arguments require that these classes satisfy a certain minimal interface that can be used from inside the solver. For iterative solvers, this interface is defined in the Solver class. In addition, solvers are controlled using objects of classes that are derived from the <a class="el" href="classSolverControl.html">SolverControl</a> class (for example its derived class <a class="el" href="classReductionControl.html">ReductionControl</a>), in order to determine the maximal number of iterations or a desired tolerance.</p>
 <p>If detected during configuration (see the ReadMe file), some sparse direct solvers are also supported. </p>
 </div><!-- contents -->

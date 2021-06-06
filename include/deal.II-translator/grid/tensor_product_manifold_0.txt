@@ -1,0 +1,30 @@
+[0.x.0]*
+
+
+* 
+*  [2.x.0] 
+*  This manifold will combine the ChartManifolds  [2.x.1]  and  [2.x.2]  given in the constructor to form a new ChartManifold by building the tensor product  [2.x.3] . The first  [2.x.4]  dimensions in the real space and the first  [2.x.5]  dimensions of the chart will be given by manifold  [2.x.6]  while the remaining coordinates are given by  [2.x.7]  The manifold is to be used by a <tt>Triangulation [2.x.8]  space_dim_A+space_dim_B [2.x.9] 
+*  An example usage would be the combination of a SphericalManifold with space dimension 2 and a FlatManifold with space dimension 1 to form a cylindrical manifold.
+*  pull_back(), push_forward(), and push_forward_gradient() are implemented by splitting the input argument into inputs for  [2.x.10]  and  [2.x.11]  according to the given dimensions and applying the corresponding operations before concatenating the result.
+* 
+
+* 
+*  [2.x.12]  The dimension arguments  [2.x.13]  and  [2.x.14]  are not used.
+*   [2.x.15]  dim Dimension of cells (needs to match first template argument of the Triangulation to be attached to.  [2.x.16]  dim_A Dimension of ChartManifold A.  [2.x.17]  spacedim_A Spacial dimension of ChartManifold A.  [2.x.18]  chartdim_A Chart dimension of ChartManifold A.  [2.x.19]  dim_B Dimension of ChartManifold B.  [2.x.20]  spacedim_B Spacial dimension of ChartManifold B.  [2.x.21]  chartdim_B Chart dimension of ChartManifold B.
+
+* 
+* [0.x.1]*
+   The chart dimension is the sum of the chart dimensions of the manifolds    [2.x.22]  and  [2.x.23]   
+* [0.x.2]*
+   The space dimension is the sum of the space dimensions of the manifolds    [2.x.24]  and  [2.x.25]   
+* [0.x.3]*
+   Constructor.  
+* [0.x.4]*
+   Clone this manifold.  
+* [0.x.5]*
+   Pull back operation.  
+* [0.x.6]*
+   Push forward operation.  
+* [0.x.7]*
+   Gradient.  
+* [0.x.8]

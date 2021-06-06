@@ -1,0 +1,42 @@
+[0.x.0]*
+     A derived class for use in the DataOutFaces class. This is a class for     the AdditionalData kind of data structure discussed in the     documentation of the WorkStream context.    
+* [0.x.1]*
+ This class generates output from faces of a triangulation. It might be used to generate output only for the surface of the triangulation (this is the default of this class), or for all faces of active cells, as specified in the constructor. The output of this class is a set of patches (as defined by the class  [2.x.0]  one for each face for which output is to be generated. These patches can then be written in several graphical data formats by the functions of the underlying classes.
+*  [1.x.0]
+*  The interface of this class is copied from the DataOut class. Furthermore, they share the common parent class DataOut_DoFData. See the reference of these two classes for a discussion of the interface.
+* 
+
+*  [1.x.1]
+*  The sequence of faces to generate patches from is generated in the same way as in the DataOut class; see there for a description of the respective interface. The functions generating the sequence of faces which shall be used to generate output, are called first_face() and next_face().
+*  Since we need to initialize objects of type FEValues with the faces generated from these functions, it is not sufficient that they only return face iterators. Rather, we need a pair of cell and the number of the face, as the values of finite element fields need not necessarily be unique on a face (think of discontinuous finite elements, where the value of the finite element field depend on the direction from which you approach a face, thus it is necessary to use a pair of cell and face, rather than only a face iterator). Therefore, this class defines an  [2.x.1]  which creates a type  [2.x.2]  that is an abbreviation for a pair of cell iterator and face number. The functions  [2.x.3]  and  [2.x.4]  operate on objects of this type.
+*  Extending this class might, for example, be useful if you only want output from certain portions of the boundary, e.g. as indicated by the boundary indicator of the respective faces. However, it is also conceivable that one generates patches not from boundary faces, but from interior faces that are selected due to other criteria; one application might be to use only those faces where one component of the solution attains a certain value, in order to display the values of other solution components on these faces. Other applications certainly exist, for which the author is not imaginative enough.
+*   [2.x.5]  Reimplement this whole class using actual FEFaceValues and MeshWorker.
+* 
+
+* 
+*  [2.x.6] 
+
+* 
+* [0.x.2]*
+   Dimension parameters for the patches.  
+* [0.x.3]*
+   Alias to the iterator type of the dof handler class under   consideration.  
+* [0.x.4]*
+   Constructor determining whether a surface mesh (default) or the whole   wire basket is written.  
+* [0.x.5]*
+   This is the central function of this class since it builds the list of   patches to be written by the low-level functions of the base class. A   patch is, in essence, some intermediate representation of the data on   each face of a triangulation and DoFHandler object that can then be used   to write files in some format that is readable by visualization programs.     You can find an overview of the use of this function in the general   documentation of this class. An example is also provided in the   documentation of this class's base class DataOut_DoFData.      [2.x.7]  n_subdivisions See  [2.x.8]  for an extensive   description of this parameter.  
+* [0.x.6]*
+   Same as above, except that the additional first parameter defines a   mapping that is to be used in the generation of output. If   <tt>n_subdivisions>1</tt>, the points interior of subdivided patches   which originate from cells at the boundary of the domain can be computed   using the mapping, i.e. a higher order mapping leads to a representation   of a curved boundary by using more subdivisions.     Even for non-curved cells the mapping argument can be used for the   Eulerian mappings (see class MappingQ1Eulerian) where a mapping is used   not only to determine the position of points interior to a cell, but also   of the vertices.  It offers an opportunity to watch the solution on a   deformed triangulation on which the computation was actually carried out,   even if the mesh is internally stored in its undeformed configuration and   the deformation is only tracked by an additional vector that holds the   deformation of each vertex.      [2.x.9]  The  [2.x.10]  argument should be replaced by a    [2.x.11]  in case of a DoFHandler with hp-capabilities.  
+* [0.x.7]*
+   Declare a way to describe a face which we would like to generate output   for. The usual way would, of course, be to use an object of type    [2.x.12]  but since we have to describe   faces to objects of type FEValues, we can only represent faces by pairs   of a cell and the number of the face. This pair is here aliased to a name   that is better to type.  
+* [0.x.8]*
+   Return the first face which we want output for. The default   implementation returns the first face of a (locally owned) active cell   or, if the  [2.x.13]  option was set in the destructor (as is the   default), the first such face that is located on the boundary.     If you want to use a different logic to determine which faces should   contribute to the creation of graphical output, you can overload this   function in a derived class.  
+* [0.x.9]*
+   Return the next face after which we want output for. If there are no more   faces, <tt>dofs->end()</tt> is returned as the first component of the   return value.     The default implementation returns the next face of a (locally owned)   active cell, or the next such on the boundary (depending on whether the    [2.x.14]  option was provided to the constructor).     This function traverses the mesh active cell by active cell (restricted to   locally owned cells), and then through all faces of the cell. As a result,   interior faces are output twice, a feature that is useful for   discontinuous Galerkin methods or if a DataPostprocessor is used that   might produce results that are discontinuous between cells).     This function can be overloaded in a derived class to select a   different set of faces. Note that the default implementation assumes that   the given  [2.x.15]  is active, which is guaranteed as long as first_face()   is also used from the default implementation. Overloading only one of the   two functions should be done with care.  
+* [0.x.10]*
+   Parameter deciding between surface meshes and full wire basket.  
+* [0.x.11]*
+   Build one patch. This function is called in a WorkStream context.  
+* [0.x.12]*
+    [2.x.16]  Use  [2.x.17]  without the DoFHandlerType template   instead.  
+* [0.x.13]

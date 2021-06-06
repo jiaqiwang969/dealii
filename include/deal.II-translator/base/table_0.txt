@@ -1,0 +1,525 @@
+[0.x.0]*
+    [2.x.0]  Have a namespace in which we declare some classes that are used   to access the elements of tables using the <tt>operator[]</tt>. These are   quite technical, since they have to do their work recursively (due to the   fact that the number of indices is not known, we have to return an   iterator into the next lower dimension object if we access one object,   until we are on the lowest level and can actually return a reference to   the stored data type itself).  This is so technical that you will not   usually want to look at these classes at all, except possibly for   educational reasons.  None of the classes herein has a interface that you   should use explicitly in your programs (except, of course, through access   to the elements of tables with <tt>operator[]</tt>, which generates   temporary objects of the types of this namespace).  
+* [0.x.1]*
+      [2.x.1]  Have a class which declares some nested alias, depending     on its template parameters. The general template declares nothing, but     there are more useful specializations regarding the last parameter     indicating constness of the table for which accessor objects are to be     generated in this namespace.    
+* [0.x.2]*
+      [2.x.2]  Have a class which declares some nested alias, depending     on its template parameters. Specialization for accessors to constant     objects.    
+* [0.x.3]*
+      [2.x.3]  Have a class which declares some nested alias, depending     on its template parameters. Specialization for accessors to non-     constant objects.    
+* [0.x.4]*
+      [2.x.4]  Class that acts as accessor to subobjects of tables of type     <tt>Table<N,T></tt>. The template parameter <tt>C</tt> may be either     true or false, and indicates whether the objects worked on are constant     or not (i.e. write access is only allowed if the value is false).         Since with <tt>N</tt> indices, the effect of applying     <tt>operator[]</tt> is getting access to something with <tt>N-1</tt>     indices, we have to implement these accessor classes recursively, with     stopping when we have only one index left. For the latter case, a     specialization of this class is declared below, where calling     <tt>operator[]</tt> gives you access to the objects actually stored by     the table. In the value given to the index operator needs to be checked     whether it is inside its bounds, for which we need to know which index     of the table we are actually accessing presently. This is done through     the template parameter <tt>P</tt>: it indicates, how many remaining     indices there are. For a vector, <tt>P</tt> may only be one (and then     the specialization below is used). For a table this value may be two,     and when using <tt>operator[]</tt>, an object with <tt>P=1</tt>     emerges.         The value of <tt>P</tt> is also used to determine the stride: this     object stores a pointer indicating the beginning of the range of     objects that it may access. When we apply <tt>operator[]</tt> on this     object, the resulting new accessor may only access a subset of these     elements, and to know which subset we need to know the dimensions of     the table and the present index, which is indicated by <tt>P</tt>.         As stated for the entire namespace, you will not usually have to deal     with these classes directly, and should not try to use their interface     directly as it may change without notice. In fact, since the     constructors are made private, you will not even be able to generate     objects of this class, as they are only thought as temporaries for     access to elements of the table class, not for passing them around as     arguments of functions, etc.    
+* [0.x.5]*
+       Constructor. Take a pointer to the table object to know about the       sizes of the various dimensions, and a pointer to the subset of data       we may access.      
+* [0.x.6]*
+       Copy constructor. This constructor is public so that one can pass       sub-tables to functions as arguments, as in  [2.x.5] .             Using this constructor is risky if accessors are stored longer than       the table it points to. Don't do this.      
+* [0.x.7]*
+       Index operator. Performs a range check.      
+* [0.x.8]*
+       Exception for range check. Do not use global exception since this way       we can output which index is the wrong one.      
+* [0.x.9]*
+       Store the data given to the constructor. There are no non-const       member functions of this class, so there is no reason not to make       these elements constant.      
+* [0.x.10]*
+      [2.x.6]  Accessor class for tables. This is the specialization for the     last index, which actually allows access to the elements of the table,     rather than recursively returning access objects for further subsets.     The same holds for this specialization as for the general template; see     there for more information.    
+* [0.x.11]*
+       Typedef constant and non-constant iterator types to the elements of       this row, as well as all the other types usually required for the       standard library algorithms.      
+* [0.x.12]*
+       Import an alias from the switch class above.      
+* [0.x.13]*
+       Constructor. Take an iterator to the table object to know about the       sizes of the various dimensions, and a iterator to the subset of data       we may access (which in this particular case is only one row).             The constructor is made private in order to prevent you having such       objects around. The only way to create such objects is via the       <tt>Table</tt> class, which only generates them as temporary objects.       This guarantees that the accessor objects go out of scope earlier       than the mother object, avoid problems with data consistency.      
+* [0.x.14]*
+       Copy constructor. This constructor is public so that one can pass       sub-tables to functions as arguments, as in  [2.x.7] .             Using this constructor is risky if accessors are stored longer than       the table it points to. Don't do this.      
+* [0.x.15]*
+       Index operator. Performs a range check.      
+* [0.x.16]*
+       Return the length of one row, i.e. the number of elements       corresponding to the last index of the table object.      
+* [0.x.17]*
+       Return an iterator to the first element of this row.      
+* [0.x.18]*
+       Return an iterator to the element past the end of this row.      
+* [0.x.19]*
+       Store the data given to the constructor. There are no non-const       member functions of this class, so there is no reason not to make       these elements constant.      
+* [0.x.20]*
+ A class holding a multi-dimensional array of objects of templated type. If the template parameter indicating the number of dimensions is one, then this class more or less represents a vector; if it is two then it is a matrix; and so on.
+*  This class specifically replaces attempts at higher-dimensional arrays like  [2.x.8]  or even higher nested constructs. These constructs have the disadvantage that they are hard to initialize, and most importantly that they are very inefficient if all rows of a matrix or higher-dimensional table have the same size (which is the usual case), since then the memory for each row is allocated independently, both wasting time and memory. This can be made more efficient by allocating only one chunk of memory for the entire object, which is what the current class does.
+* 
+
+*  [1.x.0]
+*  In some way, this class is similar to the Tensor class, in that it templatizes on the number of dimensions. However, there are two major differences. The first is that the Tensor class stores only numeric values (as <tt>double</tt>s), while the Table class stores arbitrary objects. The second is that the Tensor class has fixed sizes in each dimension, also given as a template argument, while this class can handle arbitrary and different sizes in each dimension.
+*  This has two consequences. First, since the size is not known at compile time, it has to do explicit memory allocation. Second, the layout of individual elements is not known at compile time, so access is slower than for the Tensor class where the number of elements are their location is known at compile time and the compiler can optimize with this knowledge (for example when unrolling loops). On the other hand, this class is of course more flexible, for example when you want a two-dimensional table with the number of rows equal to the number of degrees of freedom on a cell, and the number of columns equal to the number of quadrature points. Both numbers may only be known at run-time, so a flexible table is needed here. Furthermore, you may want to store, say, the gradients of shape functions, so the data type is not a single scalar value, but a tensor itself.
+* 
+
+*  [1.x.1]
+*  The Table classes (derived from this class) are frequently used to store large data tables. A modest example is given in  [2.x.9]  where we store a  [2.x.10]  table of geographic elevation data for a region of Africa, and this data requires about 670 kB if memory; however, tables that store three- or more-dimensional data (say, information about the density, pressure, and temperature in the earth interior on a regular grid of `(latitude, longitude, depth)` points) can easily run into hundreds of megabytes or more. These tables are then often provided to classes such as InterpolatedTensorProductGridData or InterpolatedUniformGridData.
+*  If you need to load such tables on single-processor (or multi-threaded) jobs, then there is nothing you can do about the size of these tables: The table just has to fit into memory. But, if your program is parallelized via MPI, then a typical first implementation would create a table object on every process and fill it on every MPI process by reading the data from a file. This is inefficient from two perspectives:
+* 
+
+* 
+* 
+*  - You will have a lot of processes that are all trying to read from   the same file at the same time.
+* 
+
+* 
+* 
+*  - In most cases, the data stored on every process is the same, and   while every process needs to be able to read from a table, it is not   necessary that every process stores its own table: All MPI processes   that happen to be located on the same machine might as well store   only one copy and make it available to each other via   [shared memory](https://en.wikipedia.org/wiki/Shared_memory); in   this model, only one MPI process per machine needs to store the data, and   all other processes could then access it.
+*  Both of these use cases are enabled by the  [2.x.11]  function that is internally based on  [2.x.12]  This function allows for workflows like the following where we put that MPI process with rank zero in charge of reading the data (but it could have been any other "root rank" as well):
+
+* 
+* [1.x.2]
+* 
+*  The last call in this code snippet makes sure that the data is made available on all non-root processes, either by re-creating a copy of the table in the other processes' memory space or, if possible, by creating copies in shared memory once for all processes located on each of the machines used by the MPI job.
+* 
+
+* 
+*  [2.x.13] 
+
+* 
+* [0.x.21]*
+   Integer type used to count the number of elements in this container.  
+* [0.x.22]*
+   Default constructor. Set all dimensions to zero.  
+* [0.x.23]*
+   Constructor. Initialize the array with the given dimensions in each index   component.  
+* [0.x.24]*
+   Constructor. Initialize the array with the given dimensions in each index   component, and then initialize the elements of the table using the second   and third argument by calling fill(entries,C_style_indexing).  
+* [0.x.25]*
+   Copy constructor. Performs a deep copy.  
+* [0.x.26]*
+   Copy constructor. Performs a deep copy from a table object storing some   other data type.  
+* [0.x.27]*
+   Move constructor. Transfers the contents of another Table.  
+* [0.x.28]*
+   Destructor. Free allocated memory.  
+* [0.x.29]*
+   Assignment operator. Copy all elements of <tt>src</tt> into the matrix.   The size is adjusted if needed.     We can't use the other, templatized version since if we don't declare   this one, the compiler will happily generate a predefined copy operator   which is not what we want.  
+* [0.x.30]*
+   Copy operator. Copy all elements of <tt>src</tt> into the array. The size   is adjusted if needed.     This function requires that the type <tt>T2</tt> is convertible to   <tt>T</tt>.  
+* [0.x.31]*
+   Move assignment operator. Transfer all elements of <tt>src</tt> into the   table.  
+* [0.x.32]*
+   Test for equality of two tables.  
+* [0.x.33]*
+   Set all entries to their default value (i.e. copy them over with default   constructed objects). Do not change the size of the table, though.  
+* [0.x.34]*
+   Set the dimensions of this object to the sizes given in the first   argument, and allocate the required memory for table entries to   accommodate these sizes. If  [2.x.14]    is set to  [2.x.15]  all elements of the table are set to a   default constructed object for the element type. Otherwise the   memory is left in an uninitialized or otherwise undefined state.  
+* [0.x.35]*
+   Size of the table in direction <tt>i</tt>.  
+* [0.x.36]*
+   Return the sizes of this object in each direction.  
+* [0.x.37]*
+   Return the number of elements stored in this object, which is the product   of the extensions in each dimension.  
+* [0.x.38]*
+   Return whether the object is empty, i.e. one of the directions is zero.   This is equivalent to <tt>n_elements()==0</tt>.  
+* [0.x.39]*
+   Fill this table (which is assumed to already have the correct size) from   a source given by dereferencing the given forward iterator (which could,   for example, be a pointer to the first element of an array, or an   inserting  [2.x.16]  The second argument denotes whether the   elements pointed to are arranged in a way that corresponds to the last   index running fastest or slowest. The default is to use C-style indexing   where the last index runs fastest (as opposed to Fortran-style where the   first index runs fastest when traversing multidimensional arrays. For   example, if you try to fill an object of type Table<2,T>, then calling   this function with the default value for the second argument will result   in the equivalent of doing  
+* [1.x.3]
+*    On the other hand, if the second argument to this function is false, then   this would result in code of the following form:  
+* [1.x.4]
+*    Note the switched order in which we fill the table elements by traversing   the given set of iterators.      [2.x.17]  entries An iterator to a set of elements from which to initialize   this table. It is assumed that iterator can be incremented and   dereferenced a sufficient number of times to fill this table.    [2.x.18]  C_style_indexing If true, run over elements of the table with the   last index changing fastest as we dereference subsequent elements of the   input range. If false, change the first index fastest.  
+* [0.x.40]*
+   Fill all table entries with the same value.  
+* [0.x.41]*
+   Return a read-write reference to the indicated element.  
+* [0.x.42]*
+   Return the value of the indicated element as a read-only reference.     We return the requested value as a constant reference rather than by   value since this object may hold data types that may be large, and we   don't know here whether copying is expensive or not.  
+* [0.x.43]*
+   This function replicates the state found on the process indicated by    [2.x.19]  across all processes of the MPI communicator. The current   state found on any of the processes other than  [2.x.20]  is lost   in this process. One can imagine this operation to act like a call to    [2.x.21]  from the root process to all other processes,   though in practice the function may try to move the data into shared   memory regions on each of the machines that host MPI processes and   let all MPI processes on this machine then access this shared memory   region instead of keeping their own copy. See the general documentation   of this class for a code example.     The intent of this function is to quickly exchange large arrays from   one process to others, rather than having to compute or create it on   all processes. This is specifically the case for data loaded from   disk
+* 
+*  -  say, large data tables
+* 
+*  -  that are more easily dealt with by   reading once and then distributing across all processes in an MPI   universe, than letting each process read the data from disk itself.   Specifically, the use of shared memory regions allows for replicating   the data only once per multicore machine in the MPI universe, rather   than replicating data once for each MPI process. This results in   large memory savings if the data is large on today's machines that   can easily house several dozen MPI processes per shared memory   space.     This function does not imply a model of keeping data on different processes   in sync, as  [2.x.22]  and other vector classes do where   there exists a notion of certain elements of the vector owned by each   process and possibly ghost elements that are mirrored from its owning   process to other processes. Rather, the elements of the current object are   simply copied to the other processes, and it is useful to think of this   operation as creating a set of `const` AlignedVector objects on all   processes that should not be changed any more after the replication   operation, as this is the only way to ensure that the vectors remain the   same on all processes. This is particularly true because of the use of   shared memory regions where any modification of a vector element on one MPI   process may also result in a modification of elements visible on other   processes, assuming they are located within one shared memory node.    
+*  [2.x.23]  The use of shared memory between MPI processes requires     that the detected MPI installation supports the necessary operations.     This is the case for MPI 3.0 and higher.    
+*  [2.x.24]  This function is not cheap. It needs to create sub-communicators     of the provided  [2.x.25]  object, which is generally an expensive     operation. Likewise, the generation of shared memory spaces is not     a cheap operation. As a consequence, this function primarily makes     sense when the goal is to share large read-only data tables among     processes; examples are data tables that are loaded at start-up     time and then used over the course of the run time of the program.     In such cases, the start-up cost of running this function can be     amortized over time, and the potential memory savings from not having to     store the table on each process may be substantial on machines with     large core counts on which many MPI processes run on the same machine.    
+*  [2.x.26]  This function only makes sense if the data type `T` is     "self-contained", i.e., all of its information is stored in its     member variables, and if none of the member variables are pointers     to other parts of the memory. This is because if a type `T` does     have pointers to other parts of memory, then moving `T` into     a shared memory space does not result in the other processes having     access to data that the object points to with its member variable     pointers: These continue to live only on one process, and are     typically in memory areas not accessible to the other processes.     As a consequence, the usual use case for this function is to share     arrays of simple objects such as `double`s or `int`s.    
+*  [2.x.27]  After calling this function, objects on different MPI processes     share a common state. That means that certain operations become     "collective", i.e., they must be called on all participating     processors at the same time. In particular, you can no longer call     resize(), reserve(), or clear() on one MPI process
+* 
+*  -  you have to do     so on all processes at the same time, because they have to communicate     for these operations. If you do not do so, you will likely get     a deadlock that may be difficult to debug. By extension, this rule of     only collectively resizing extends to this function itself: You can     not call it twice in a row because that implies that first all but the     `root_process` throw away their data, which is not a collective     operation. Generally, these restrictions on what can and can not be     done hint at the correctness of the comments above: You should treat     an AlignedVector on which the current function has been called as     `const`, on which no further operations can be performed until     the destructor is called.  
+* [0.x.44]*
+   Swap the contents of this table and the other table  [2.x.28]  One could do   this operation with a temporary variable and copying over the data   elements, but this function is significantly more efficient since it only   swaps the pointers to the data of the two vectors and therefore does not   need to allocate temporary storage and move data around.     This function is analogous to the  [2.x.29]  function of all C++   standard containers. Also, there is a global function <tt>swap(u,v)</tt>   that simply calls <tt>u.swap(v)</tt>, again in analogy to standard   functions.  
+* [0.x.45]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.46]*
+   Write or read the data of this object to or from a stream for the purpose   of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.47]*
+   Return the position of the indicated element within the array of elements   stored one after the other. This function does no index checking.  
+* [0.x.48]*
+   Return a read-write reference to the indicated element.     This function does no bounds checking and is only to be used internally   and in functions already checked.  
+* [0.x.49]*
+   Return the value of the indicated element as a read-only reference.     This function does no bounds checking and is only to be used internally   and in functions already checked.     We return the requested value as a constant reference rather than by   value since this object may hold data types that may be large, and we   don't know here whether copying is expensive or not.  
+* [0.x.50]*
+   Component-array.  
+* [0.x.51]*
+   Size in each direction of the table.  
+* [0.x.52]*
+ A class representing a table with arbitrary but fixed number of indices. This general template implements some additional functions over those provided by the TableBase class, such as indexing functions taking the correct number of arguments, etc.
+*  Rather than this general template, these functions are implemented in partial specializations of this class, with fixed numbers of dimensions. See there, and in the documentation of the base class for more information.
+* 
+
+* 
+*  [2.x.30] 
+
+* 
+* [0.x.53]*
+ A class representing a one-dimensional table, i.e. a vector-like class. The majority of the interface of this class is implemented in the TableBase base class. See there for an outline of the rationale for and interface of this class.
+* 
+
+* 
+*  [2.x.31] 
+
+* 
+* [0.x.54]*
+   Integer type used to count the number of elements in this container.  
+* [0.x.55]*
+   Default constructor. Set all dimensions to zero.  
+* [0.x.56]*
+   Constructor. Pass down the given dimension to the base class.  
+* [0.x.57]*
+   Constructor. Create a table with a given size and initialize it from a   set of iterators.     This function is entirely equivalent to creating a table  [2.x.32]    of the given size and then calling  
+* [1.x.5]
+*    on it, using the  [2.x.33]  function where the arguments are   explained in more detail. The point, however, is that that is only   possible if the table can be changed after running the constructor,   whereas calling the current constructor allows sizing and initializing an   object right away so that it can be marked const.     Using this constructor, you can do things like this:  
+* [1.x.6]
+*    You can also initialize a table right from a file, using input iterators:  
+* [1.x.7]
+*         [2.x.34]  size The size of this one-dimensional table.    [2.x.35]  entries An iterator to a set of elements from which to initialize   this table. It is assumed that iterator can be incremented and   dereferenced a sufficient number of times to fill this table.    [2.x.36]  C_style_indexing If true, run over elements of the table with the   last index changing fastest as we dereference subsequent elements of the   input range. If false, change the first index fastest.  
+* [0.x.58]*
+   Access operator. Since this is a one-dimensional object, this simply   accesses the requested data element. Returns a read-only reference.  
+* [0.x.59]*
+   Access operator. Since this is a one-dimensional object, this simply   accesses the requested data element. Returns a read-write reference.  
+* [0.x.60]*
+   Access operator. Since this is a one-dimensional object, this simply   accesses the requested data element. Returns a read-only reference.  
+* [0.x.61]*
+   Access operator. Since this is a one-dimensional object, this simply   accesses the requested data element. Returns a read-write reference.  
+* [0.x.62]*
+   Make the variations of `operator()` from the base class available.  
+* [0.x.63]*
+ A namespace for iterators and accessors for Table<2, T> and TransposeTable. These classes have special accessors (that is, compared to Table<3, T>) since they have a matrix-like structure; i.e., the accessors also provide row and column information and are designed to be compatible with the SparseMatrix and SparsityPattern iterator classes.
+
+* 
+* [0.x.64]*
+  
+*  [2.x.37]    layout) of a table class.  
+* [0.x.65]*
+     The data are organized in row-major (i.e., C-style) order.    
+* [0.x.66]*
+     The data are organized in column-major (i.e., Fortran-style) order.    
+* [0.x.67]*
+  
+*  [2.x.38]    both values of  [2.x.39] .  
+* [0.x.68]*
+  
+*  [2.x.40]      This class is compatible with the requirements for an %Accessor described   in LinearIndexIterator: See the documentation of that class for a   description of the split between iterators and accessors.      [2.x.41]  TableType the type of the %Table, e.g., Table<2, T> or   TransposeTable.      [2.x.42]  Constness whether or not this object stores a constant pointer   and can modify the provided table object.      [2.x.43]  storage_order The storage scheme of the underlying table, e.g.,    [2.x.44]  for Table<2, T>.  
+* [0.x.69]*
+     Type of the stored pointer to the table.    
+* [0.x.70]*
+     Value type of the underlying container.    
+* [0.x.71]*
+     Numerical type of the row and column indices of the table.    
+* [0.x.72]*
+     Default constructor.    
+* [0.x.73]*
+     Constructor setting up the end iterator.    
+* [0.x.74]*
+     Copy constructor from a non-const Accessor.    
+* [0.x.75]*
+     Constructor taking an array index.    
+* [0.x.76]*
+     Comparison operator.    
+* [0.x.77]*
+     Get a constant reference to the value of the element represented by     this accessor.    
+* [0.x.78]*
+     Conversion operator that returns a constant reference to the element.    
+* [0.x.79]*
+     Return the row of the current entry.    
+* [0.x.80]*
+     Return the column of the current entry.    
+* [0.x.81]*
+     Pointer to the table.    
+* [0.x.82]*
+     Current index.    
+* [0.x.83]*
+     Check that  [2.x.45]  corresponds to an entry that is     actually stored by the table (i.e., assert that      [2.x.46]  is nonnegative and less than      [2.x.47] ).    
+* [0.x.84]*
+  
+*  [2.x.48]    table. This is the same as the base class.  
+* [0.x.85]*
+     Use the base class value type.    
+* [0.x.86]*
+     Use the base class size type.    
+* [0.x.87]*
+     Inherit the base class constructors.    
+* [0.x.88]*
+  
+*  [2.x.49]    a table.  
+* [0.x.89]*
+     Use the base class value type.    
+* [0.x.90]*
+     Use the base class size type.    
+* [0.x.91]*
+     Inherit the base class constructors.    
+* [0.x.92]*
+     Assignment operator. This assigns a new value to the table entry at the     current row and column coordinates.    
+* [0.x.93]*
+     Move assignment operator. This assigns a new value to the table entry at     the current row and column coordinates.    
+* [0.x.94]*
+     Since we overload value() we have to explicitly use the base class     version.    
+* [0.x.95]*
+     Get a reference to the value of the element represented by     this accessor.    
+* [0.x.96]*
+     Conversion operator that returns a reference to the element.    
+* [0.x.97]*
+  
+*  [2.x.50]    TransposeTable.      [2.x.51]  TableType the type of the %Table, e.g., Table<2, T> or   TransposeTable.      [2.x.52]  Constness whether or not this is a constant iterator.      [2.x.53]  storage_order The storage scheme of the underlying table, e.g.,    [2.x.54]  for Table<2, T>.  
+* [0.x.98]*
+     Size type used by the underlying table.    
+* [0.x.99]*
+     Type of the stored pointer to the table.    
+* [0.x.100]*
+     Constructor from an accessor.    
+* [0.x.101]*
+     Constructor. Create the end iterator for a table.    
+* [0.x.102]*
+     Constructor for a particular table entry.    
+* [0.x.103]*
+     Copy constructor from a non-const iterator.    
+* [0.x.104]*
+     Constructor for an entry with a particular linear index.    
+* [0.x.105]*
+ A class representing a two-dimensional table, i.e. a matrix of objects (not necessarily only numbers). The majority of the interface of this class is implemented in the TableBase base class. See there for an outline of the rationale for and interface of this class.
+*  This class also serves as the base class for the FullMatrix class and consequently has a number of functions that are specific to matrices and their needs.
+* 
+
+* 
+*  [2.x.55] 
+
+* 
+* [0.x.106]*
+   Integer type used to count the number of elements in this container.  
+* [0.x.107]*
+   Typedef for the values in the table.  
+* [0.x.108]*
+   Typedef for the references in the table.  
+* [0.x.109]*
+   Typedef for the constant references in the table.  
+* [0.x.110]*
+   Typedef for a constant iterator that traverses the table in column-major   order.  
+* [0.x.111]*
+   Typedef for an iterator that traverses the table in column-major order.  
+* [0.x.112]*
+   Default constructor. Set all dimensions to zero.  
+* [0.x.113]*
+   Constructor. Pass down the given dimensions to the base class.  
+* [0.x.114]*
+   Constructor. Create a table with a given size and initialize it from a   set of iterators.     This function is entirely equivalent to creating a table  [2.x.56]    of the given size and then calling  
+* [1.x.8]
+*    on it, using the  [2.x.57]  function where the arguments are   explained in more detail. The point, however, is that that is only   possible if the table can be changed after running the constructor,   whereas calling the current constructor allows sizing and initializing an   object right away so that it can be marked const.     Using this constructor, you can do things like this:  
+* [1.x.9]
+*    You can also initialize a table right from a file, using input iterators:  
+* [1.x.10]
+*         [2.x.58]  size1 The size of this table in the first dimension.    [2.x.59]  size2 The size of this table in the second dimension.    [2.x.60]  entries An iterator to a set of elements from which to initialize   this table. It is assumed that iterator can be incremented and   dereferenced a sufficient number of times to fill this table.    [2.x.61]  C_style_indexing If true, run over elements of the table with the   last index changing fastest as we dereference subsequent elements of the   input range. If false, change the first index fastest.  
+* [0.x.115]*
+   Reinitialize the object. This function is mostly here for compatibility   with the earlier <tt>vector2d</tt> class. Passes down to the base class   by converting the arguments to the data type requested by the base class.  
+* [0.x.116]*
+   Access operator. Generate an object that accesses the requested row of   this two-dimensional table. Range checks are performed.     This version of the function only allows read access.  
+* [0.x.117]*
+   Access operator. Generate an object that accesses the requested row of   this two-dimensional table. Range checks are performed.     This version of the function allows read-write access.  
+* [0.x.118]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function only allows read access.  
+* [0.x.119]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function allows read-write access.  
+* [0.x.120]*
+   Make the variations of `operator()` from the base class available.  
+* [0.x.121]*
+   Number of rows. This function really makes only sense since we have a   two-dimensional object here.  
+* [0.x.122]*
+   Number of columns. This function really makes only sense since we have a   two-dimensional object here.  
+* [0.x.123]*
+   Return an iterator pointing to the first entry.  
+* [0.x.124]*
+   Return a constant iterator pointing to the first entry.  
+* [0.x.125]*
+   Return an iterator pointing to one past the last entry.  
+* [0.x.126]*
+   Return a constant iterator pointing to one past the last entry.  
+* [0.x.127]*
+   Return a read-write reference to the element <tt>(i,j)</tt>.     This function does no bounds checking and is only to be used internally   and in functions already checked.     These functions are mainly here for compatibility with a former   implementation of these table classes for 2d arrays, then called   <tt>vector2d</tt>.  
+* [0.x.128]*
+   Return the value of the element <tt>(i,j)</tt> as a read-only reference.     This function does no bounds checking and is only to be used internally   and in functions already checked.     We return the requested value as a constant reference rather than by   value since this object may hold data types that may be large, and we   don't know here whether copying is expensive or not.     These functions are mainly here for compatibility with a former   implementation of these table classes for 2d arrays, then called   <tt>vector2d</tt>.  
+* [0.x.129]*
+ A class representing a three-dimensional table of objects (not necessarily only numbers). The majority of the interface of this class is implemented in the TableBase base class.See there for an outline of the rationale for and interface of this class.
+* 
+
+* 
+*  [2.x.62] 
+
+* 
+* [0.x.130]*
+   Integer type used to count the number of elements in this container.  
+* [0.x.131]*
+   Default constructor. Set all dimensions to zero.  
+* [0.x.132]*
+   Constructor. Pass down the given dimensions to the base class.  
+* [0.x.133]*
+   Constructor. Create a table with a given size and initialize it from a   set of iterators.     This function is entirely equivalent to creating a table  [2.x.63]    of the given size and then calling  
+* [1.x.11]
+*    on it, using the  [2.x.64]  function where the arguments are   explained in more detail. The point, however, is that that is only   possible if the table can be changed after running the constructor,   whereas calling the current constructor allows sizing and initializing an   object right away so that it can be marked const.     Using this constructor, you can do things like this (shown here for a   two-dimensional table, but the same works for the current class):  
+* [1.x.12]
+*    You can also initialize a table right from a file, using input iterators:  
+* [1.x.13]
+*         [2.x.65]  size1 The size of this table in the first dimension.    [2.x.66]  size2 The size of this table in the second dimension.    [2.x.67]  size3 The size of this table in the third dimension.    [2.x.68]  entries An iterator to a set of elements from which to initialize   this table. It is assumed that iterator can be incremented and   dereferenced a sufficient number of times to fill this table.    [2.x.69]  C_style_indexing If true, run over elements of the table with the   last index changing fastest as we dereference subsequent elements of the   input range. If false, change the first index fastest.  
+* [0.x.134]*
+   Access operator. Generate an object that accesses the requested two-   dimensional subobject of this three-dimensional table. Range checks are   performed.     This version of the function only allows read access.  
+* [0.x.135]*
+   Access operator. Generate an object that accesses the requested two-   dimensional subobject of this three-dimensional table. Range checks are   performed.     This version of the function allows read-write access.  
+* [0.x.136]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function only allows read access.  
+* [0.x.137]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function allows read-write access.  
+* [0.x.138]*
+   Make the variations of `operator()` from the base class available.  
+* [0.x.139]*
+ A class representing a four-dimensional table of objects (not necessarily only numbers). The majority of the interface of this class is implemented in the TableBase base class. See there for an outline of the rationale for and interface of this class.
+* 
+
+* 
+*  [2.x.70] 
+
+* 
+* [0.x.140]*
+   Integer type used to count the number of elements in this container.  
+* [0.x.141]*
+   Default constructor. Set all dimensions to zero.  
+* [0.x.142]*
+   Constructor. Pass down the given dimensions to the base class.  
+* [0.x.143]*
+   Access operator. Generate an object that accesses the requested three-   dimensional subobject of this four-dimensional table. Range checks are   performed.     This version of the function only allows read access.  
+* [0.x.144]*
+   Access operator. Generate an object that accesses the requested three-   dimensional subobject of this four-dimensional table. Range checks are   performed.     This version of the function allows read-write access.  
+* [0.x.145]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function only allows read access.  
+* [0.x.146]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function allows read-write access.  
+* [0.x.147]*
+   Make the variations of `operator()` from the base class available.  
+* [0.x.148]*
+ A class representing a five-dimensional table of objects (not necessarily only numbers). The majority of the interface of this class is implemented in the TableBase base class. See there for an outline of the rationale for and interface of this class.
+* 
+
+* 
+*  [2.x.71] 
+
+* 
+* [0.x.149]*
+   Integer type used to count the number of elements in this container.  
+* [0.x.150]*
+   Default constructor. Set all dimensions to zero.  
+* [0.x.151]*
+   Constructor. Pass down the given dimensions to the base class.  
+* [0.x.152]*
+   Access operator. Generate an object that accesses the requested four-   dimensional subobject of this five-dimensional table. Range checks are   performed.     This version of the function only allows read access.  
+* [0.x.153]*
+   Access operator. Generate an object that accesses the requested four-   dimensional subobject of this five-dimensional table. Range checks are   performed.     This version of the function allows read-write access.  
+* [0.x.154]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function only allows read access.  
+* [0.x.155]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function allows read-write access.  
+* [0.x.156]*
+   Make the variations of `operator()` from the base class available.  
+* [0.x.157]*
+ A class representing a six-dimensional table of objects (not necessarily only numbers). The majority of the interface of this class is implemented in the TableBase base class. See there for an outline of the rationale for and interface of this class.
+* 
+
+* 
+*  [2.x.72] 
+
+* 
+* [0.x.158]*
+   Integer type used to count the number of elements in this container.  
+* [0.x.159]*
+   Default constructor. Set all dimensions to zero.  
+* [0.x.160]*
+   Constructor. Pass down the given dimensions to the base class.  
+* [0.x.161]*
+   Access operator. Generate an object that accesses the requested five-   dimensional subobject of this six-dimensional table. Range checks are   performed.     This version of the function only allows read access.  
+* [0.x.162]*
+   Access operator. Generate an object that accesses the requested five-   dimensional subobject of this six-dimensional table. Range checks are   performed.     This version of the function allows read-write access.  
+* [0.x.163]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function only allows read access.  
+* [0.x.164]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function allows read-write access.  
+* [0.x.165]*
+   Make the variations of `operator()` from the base class available.  
+* [0.x.166]*
+ A class representing a seven-dimensional table of objects (not necessarily only numbers). The majority of the interface of this class is implemented in the TableBase base class. See there for an outline of the rationale for and interface of this class.
+* 
+
+* 
+*  [2.x.73] 
+
+* 
+* [0.x.167]*
+   Integer type used to count the number of elements in this container.  
+* [0.x.168]*
+   Default constructor. Set all dimensions to zero.  
+* [0.x.169]*
+   Constructor. Pass down the given dimensions to the base class.  
+* [0.x.170]*
+   Access operator. Generate an object that accesses the requested six-   dimensional subobject of this seven-dimensional table. Range checks are   performed.     This version of the function only allows read access.  
+* [0.x.171]*
+   Access operator. Generate an object that accesses the requested six-   dimensional subobject of this seven-dimensional table. Range checks are   performed.     This version of the function allows read-write access.  
+* [0.x.172]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function only allows read access.  
+* [0.x.173]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function allows read-write access.  
+* [0.x.174]*
+   Make the variations of `operator()` from the base class available.  
+* [0.x.175]*
+ A class representing a transpose two-dimensional table, i.e. a matrix of objects (not necessarily only numbers) in column first numbering (FORTRAN convention). The only real difference is therefore really in the storage format.
+*  This class copies the functions of Table<2,T>, but the element access and the dimensions will be for the transpose ordering of the data field in TableBase.
+* 
+
+* 
+*  [2.x.74] 
+
+* 
+* [0.x.176]*
+   Integer type used to count the number of elements in this container.  
+* [0.x.177]*
+   Typedef for the values in the table.  
+* [0.x.178]*
+   Typedef for the references in the table.  
+* [0.x.179]*
+   Typedef for the constant references in the table.  
+* [0.x.180]*
+   Typedef for a constant iterator that traverses the table in column-major   order.  
+* [0.x.181]*
+   Typedef for an iterator that traverses the table in column-major order.  
+* [0.x.182]*
+   Default constructor. Set all dimensions to zero.  
+* [0.x.183]*
+   Constructor. Pass down the given dimensions to the base class.  
+* [0.x.184]*
+   Reinitialize the object. This function is mostly here for compatibility   with the earlier <tt>vector2d</tt> class. Passes down to the base class   by converting the arguments to the data type requested by the base class.  
+* [0.x.185]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function only allows read access.  
+* [0.x.186]*
+   Direct access to one element of the table by specifying all indices at   the same time. Range checks are performed.     This version of the function allows read-write access.  
+* [0.x.187]*
+   Number of rows. This function really makes only sense since we have a   two-dimensional object here.  
+* [0.x.188]*
+   Number of columns. This function really makes only sense since we have a   two-dimensional object here.  
+* [0.x.189]*
+   Return an iterator pointing to the first entry.  
+* [0.x.190]*
+   Return a constant iterator pointing to the first entry.  
+* [0.x.191]*
+   Return an iterator pointing to one past the last entry.  
+* [0.x.192]*
+   Return a constant iterator pointing to one past the last entry.  
+* [0.x.193]*
+   Return a read-write reference to the element <tt>(i,j)</tt>.     This function does no bounds checking and is only to be used internally   and in functions already checked.     These functions are mainly here for compatibility with a former   implementation of these table classes for 2d arrays, then called   <tt>vector2d</tt>.  
+* [0.x.194]*
+   Return the value of the element <tt>(i,j)</tt> as a read-only reference.     This function does no bounds checking and is only to be used internally   and in functions already checked.     We return the requested value as a constant reference rather than by   value since this object may hold data types that may be large, and we   don't know here whether copying is expensive or not.     These functions are mainly here for compatibility with a former   implementation of these table classes for 2d arrays, then called   <tt>vector2d</tt>.  
+* [0.x.195]*
+ Global function  [2.x.75]  which overloads the default implementation of the C++ standard library which uses a temporary object. The function simply exchanges the data of the two tables.
+
+* 
+* [0.x.196]

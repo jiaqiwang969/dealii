@@ -166,9 +166,9 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: While 2d and 3d could mostly be handled with the same code, dimension-independent programming was always a bit different because the faces of 1d cells (i.e. vertices) did not have appropriate iterators defined. This has now been changed: there is now a class <a class="el" href="classTriaAccessor_3_010_00_011_00_01spacedim_01_4.html">TriaAccessor&lt;0,1,spacedim&gt;</a> (and corresponding DoFAccessor&lt;0,DH&gt;) that allows to write things like </p><div class="fragment"><div class="line">cell-&gt;face(0)-&gt;boundary_indicator();</div>
-<div class="line">cell-&gt;face(1)-&gt;at_boundary();</div>
-<div class="line">cell-&gt;face(1)-&gt;get_dof_indices(...);</div>
+<p class="interli">New: While 2d and 3d could mostly be handled with the same code, dimension-independent programming was always a bit different because the faces of 1d cells (i.e. vertices) did not have appropriate iterators defined. This has now been changed: there is now a class <a class="el" href="classTriaAccessor_3_010_00_011_00_01spacedim_01_4.html">TriaAccessor&lt;0,1,spacedim&gt;</a> (and corresponding DoFAccessor&lt;0,DH&gt;) that allows to write things like </p><div class="fragment"><div class="line"><a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;face(0)-&gt;boundary_indicator();</div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;face(1)-&gt;at_boundary();</div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>-&gt;face(1)-&gt;get_dof_indices(...);</div>
 </div><!-- fragment --><p> even if the cell corresponds to a one-dimensional triangulation where this was not previously possible. <br  />
  (WB, 2010/11/11) </p>
 <p class="interli"></p>
@@ -176,7 +176,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: After more than 2 years of work, we have merged a branch on which we have implemented the functionality necessary to distribute meshes on hundreds, thousands, or more processors. An overview of the framework in which this is implemented is presented in the <a class="el" href="group__distributed.html">Parallel computing with multiple processors using distributed memory</a> module, the <a class="el" href="DEALGlossary.html#distributed_paper">distributed_paper</a>, as well as in <a class="el" href="step_40.html">step-40</a>. <br  />
+<p class="interli">New: After more than 2 years of work, we have merged a branch on which we have implemented the functionality necessary to distribute meshes on hundreds, thousands, or more processors. An overview of the framework in which this is implemented is presented in the <a class="el" href="group__distributed.html">Parallel computing with multiple processors using</a> module, the <a class="el" href="DEALGlossary.html#distributed_paper">distributed_paper</a>, as well as in <a class="el" href="step_40.html">step-40</a>. <br  />
  (Timo Heister, Martin Kronbichler, Wolfgang Bangerth 2010/10/23) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -530,7 +530,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: There is now a function <a class="el" href="classCellAccessor.html#a027532e7f473fac2812a92e4066e29f5">CellAccessor::parent</a> so that one can do <code>cell-&gt;parent()</code> <br  />
+<p class="interli">New: There is now a function <a class="el" href="classCellAccessor.html#a174554a23387673fd516cc4efb1b739b">CellAccessor::parent</a> so that one can do <code>cell-&gt;<a class="el" href="mg__transfer__internal__0_8txt.html#ad4c94a46144d1db073f01b58ab20eb70">parent()</a></code> <br  />
  (Markus Buerg 2010/08/26) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -607,6 +607,7 @@ $(function() {
 </ol>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
+<div class="ttc" id="acoding__conventions__0_8txt_html_ac639e1db0b03fc797eca55e266afa976"><div class="ttname"><a href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a></div><div class="ttdeci">functions which clear bits or flags should be named[2.x.15] use[2.x.18] instead of *[2.x.19] In the implementation after each three empty lines are expected to enable better readability One empty line occurs in functions to group blocks of since two empty lines are not enough to visibly distinguish sufficiently that the code belongs to two different functions *[2.x.21] Whenever an integer variable can only assume nonnegative it is marked as unsigned The same applies to functions that can only return positive or zero values it should be marked even if passed by value we mark input parameters as const This aids as an additional documentation tool to clarify the intent of a which is often either involuntarily or poor style *[2.x.25] Whenever a function does not change any of the member variable of the embedding class it should be marked as const  *[2.x.27] Function and variable names may not consist of only one or two unless the variable is a pure counting index *[2.x.29] Type the number of children per cell</div><div class="ttdef"><b>Definition:</b> <a href="coding__conventions__0_8txt_source.html#l00027">coding_conventions_0.txt:27</a></div></div>
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

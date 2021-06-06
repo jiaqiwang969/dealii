@@ -1,0 +1,225 @@
+[0.x.0]*
+  [2.x.0]  Matrix1  [2.x.1] 
+
+* 
+* [0.x.1]*
+ Sparse matrix without sparsity pattern.
+*  Instead of using a pre-assembled sparsity pattern, this matrix builds the pattern on the fly. Filling the matrix may consume more time than for  [2.x.2]  since large memory movements may be involved when new matrix elements are inserted somewhere in the middle of the matrix and no currently unused memory locations are available for the row into which the new entry is to be inserted. To help optimize things, an expected row-length may be provided to the constructor, as well as an increment size for rows.
+*  This class uses a storage structure that, similar to the usual sparse matrix format, only stores non-zero elements. These are stored in a single data array for the entire matrix, and are ordered by row and, within each row, by column number. A separate array describes where in the long data array each row starts and how long it is.
+*  Due to this structure, gaps may occur between rows. Whenever a new entry must be created, an attempt is made to use the gap in its row. If no gap is left, the row must be extended and all subsequent rows must be shifted backwards. This is a very expensive operation and explains the inefficiency of this data structure and why it is useful to pre-allocate a sparsity pattern as the SparseMatrix class does.
+*  This is where the optimization parameters, provided to the constructor or to the reinit() functions come in.  [2.x.3]  is the number of entries that will be allocated for each row on initialization (the actual length of the rows is still zero). This means, that  [2.x.4]  entries can be added to this row without shifting other rows. If fewer entries are added, the additional memory will of course be wasted.
+*  If the space for a row is not sufficient, then it is enlarged by  [2.x.5]  entries. This way, subsequent rows are not shifted by single entries very often.
+*  Finally, the  [2.x.6]  allocates extra space at the end of the data array. This space is used whenever any row must be enlarged. It is important because otherwise not only the following rows must be moved, but in fact [1.x.0] rows after allocating sufficiently much space for the entire data array.
+*  Suggested settings:  [2.x.7]  should be the length of a typical row, for instance the size of the stencil in regular parts of the grid. Then,  [2.x.8]  may be the expected amount of entries added to the row by having one hanging node. This way, a good compromise between memory consumption and speed should be achieved.  [2.x.9]  should then be an estimate for the number of hanging nodes times  [2.x.10]  default_increment.
+*  Letting  [2.x.11]  be zero causes an exception whenever a row overflows.
+*  If the rows are expected to be filled more or less from first to last, using a  [2.x.12]  of zero may not be such a bad idea.
+* 
+
+* 
+*  [2.x.13]  The name of the class makes sense by pronouncing it the American way,   where "EZ" is pronounced the same way as the word "easy".
+
+* 
+* [0.x.2]*
+   Declare type for container size.  
+* [0.x.3]*
+   The class for storing the column number of an entry together with its   value.  
+* [0.x.4]*
+     Standard constructor. Sets  [2.x.14]  to  [2.x.15]     
+* [0.x.5]*
+     Constructor. Fills column and value.    
+* [0.x.6]*
+     The column number.    
+* [0.x.7]*
+     The value there.    
+* [0.x.8]*
+     Non-existent column number.    
+* [0.x.9]*
+   Structure for storing information on a matrix row. One object for each   row will be stored in the matrix.  
+* [0.x.10]*
+     Constructor.    
+* [0.x.11]*
+     Index of first entry of the row in the data field.    
+* [0.x.12]*
+     Number of entries in this row.    
+* [0.x.13]*
+     Position of the diagonal element relative tor the start index.    
+* [0.x.14]*
+     Value for non-existing diagonal.    
+* [0.x.15]*
+   Standard-conforming iterator.  
+* [0.x.16]*
+     Accessor class for iterators    
+* [0.x.17]*
+       Constructor. Since we use accessors only for read access, a const       matrix pointer is sufficient.      
+* [0.x.18]*
+       Row number of the element represented by this object.      
+* [0.x.19]*
+       Index in row of the element represented by this object.      
+* [0.x.20]*
+       Column number of the element represented by this object.      
+* [0.x.21]*
+       Value of this matrix entry.      
+* [0.x.22]*
+       The matrix accessed.      
+* [0.x.23]*
+       Current row number.      
+* [0.x.24]*
+       Current index in row.      
+* [0.x.25]*
+     Constructor.    
+* [0.x.26]*
+     Prefix increment. This always returns a valid entry or <tt>end()</tt>.    
+* [0.x.27]*
+     Dereferencing operator.    
+* [0.x.28]*
+     Dereferencing operator.    
+* [0.x.29]*
+     Comparison. True, if both iterators point to the same matrix position.    
+* [0.x.30]*
+     Inverse of <tt>==</tt>.    
+* [0.x.31]*
+     Comparison operator. Result is true if either the first row number is     smaller or if the row numbers are equal and the first index is smaller.    
+* [0.x.32]*
+     Store an object of the accessor class.    
+* [0.x.33]*
+   Type of matrix entries. This alias is analogous to <tt>value_type</tt>   in the standard library containers.  
+* [0.x.34]*
+    [2.x.16]  Constructors and initialization  
+* [0.x.35]*
+   Constructor. Initializes an empty matrix of dimension zero times zero.  
+* [0.x.36]*
+   Dummy copy constructor. This is here for use in containers. It may only   be called for empty objects.     If you really want to copy a whole matrix, you can do so by using the  [2.x.17]    copy_from function.  
+* [0.x.37]*
+   Constructor. Generates a matrix of the given size, ready to be filled.   The optional parameters  [2.x.18]  and  [2.x.19]    allow for preallocating memory. Providing these properly is essential for   an efficient assembling of the matrix.  
+* [0.x.38]*
+   Destructor. Free all memory.  
+* [0.x.39]*
+   Pseudo operator only copying empty objects.  
+* [0.x.40]*
+   This operator assigns a scalar to a matrix. Since this does usually not   make much sense (should we set all matrix entries to this value? Only the   nonzero entries of the sparsity pattern?), this operation is only allowed   if the actual value to be assigned is zero. This operator only exists to   allow for the obvious notation <tt>matrix=0</tt>, which sets all elements   of the matrix to zero, but keep the sparsity pattern previously used.  
+* [0.x.41]*
+   Reinitialize the sparse matrix to the dimensions provided. The matrix   will have no entries at this point. The optional parameters  [2.x.20]    default_row_length,  [2.x.21]  and  [2.x.22]  allow for   preallocating memory. Providing these properly is essential for an   efficient assembling of the matrix.  
+* [0.x.42]*
+   Release all memory and return to a state just like after having called   the default constructor. It also forgets its sparsity pattern.  
+* [0.x.43]*
+    [2.x.23]  Information on the matrix  
+* [0.x.44]*
+   Return whether the object is empty. It is empty if both dimensions are   zero.  
+* [0.x.45]*
+   Return the dimension of the codomain (or range) space. Note that the   matrix is of dimension  [2.x.24] .  
+* [0.x.46]*
+   Return the dimension of the domain space. Note that the matrix is of   dimension  [2.x.25] .  
+* [0.x.47]*
+   Return the number of entries in a specific row.  
+* [0.x.48]*
+   Return the number of nonzero elements of this matrix.  
+* [0.x.49]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.50]*
+   Print statistics. If  [2.x.26]  is  [2.x.27]  prints a histogram of all   existing row lengths and allocated row lengths. Otherwise, just the   relation of allocated and used entries is shown.  
+* [0.x.51]*
+   Compute numbers of entries.     In the first three arguments, this function returns the number of entries   used, allocated and reserved by this matrix.     If the final argument is true, the number of entries in each line is   printed as well.  
+* [0.x.52]*
+    [2.x.28]  Modifying entries  
+* [0.x.53]*
+   Set the element <tt>(i,j)</tt> to  [2.x.29]      If <tt>value</tt> is not a finite number an exception is thrown.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.     If this function sets the value of an element that does not yet exist,   then it allocates an entry for it. (Unless `elide_zero_values` is `true`   as mentioned above.)    
+*  [2.x.30]  You may need to insert zero elements if you want to keep a symmetric   sparsity pattern for the matrix.  
+* [0.x.54]*
+   Add  [2.x.31]  to the element <tt>(i,j)</tt>.     If this function adds to the value of an element that does not yet exist,   then it allocates an entry for it.     The function filters out zeroes automatically, i.e., it does not create   new entries when adding zero to a matrix element for which no entry   currently exists.  
+* [0.x.55]*
+   Add all elements given in a FullMatrix<double> into sparse matrix   locations given by <tt>indices</tt>. In other words, this function adds   the elements in <tt>full_matrix</tt> to the respective entries in calling   matrix, using the local-to-global indexing specified by <tt>indices</tt>   for both the rows and the columns of the matrix. This function assumes a   quadratic sparse matrix and a quadratic full_matrix, the usual situation   in FE calculations.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.56]*
+   Same function as before, but now including the possibility to use   rectangular full_matrices and different local-to-global indexing on rows   and columns, respectively.  
+* [0.x.57]*
+   Set several elements in the specified row of the matrix with column   indices as given by <tt>col_indices</tt> to the respective value.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.58]*
+   Add an array of values given by <tt>values</tt> in the given global   matrix row at columns specified by col_indices in the sparse matrix.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.59]*
+   Copy the matrix given as argument into the current object.     Copying matrices is an expensive operation that we do not want to happen   by accident through compiler generated code for  [2.x.32] .   (This would happen, for example, if one accidentally declared a function   argument of the current type [1.x.1] rather than [1.x.2].) The functionality of copying matrices is implemented in   this member function instead. All copy operations of objects of this type   therefore require an explicit function call.     The source matrix may be a matrix of arbitrary type, as long as its data   type is convertible to the data type of this matrix.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.     The function returns a reference to  [2.x.33]   
+* [0.x.60]*
+   Add  [2.x.34]  scaled by  [2.x.35]  to this matrix.     The source matrix may be a matrix of arbitrary type, as long as its data   type is convertible to the data type of this matrix and it has the   standard  [2.x.36]   
+* [0.x.61]*
+    [2.x.37]  Entry Access  
+* [0.x.62]*
+   Return the value of the entry (i,j).  This may be an expensive operation   and you should always take care where to call this function.  In order to   avoid abuse, this function throws an exception if the required element   does not exist in the matrix.     In case you want a function that returns zero instead (for entries that   are not in the sparsity pattern of the matrix), use the  [2.x.38]  function.  
+* [0.x.63]*
+   Return the value of the entry (i,j). Returns zero for all non-existing   entries.  
+* [0.x.64]*
+    [2.x.39]  Multiplications  
+* [0.x.65]*
+   Matrix-vector multiplication: let  [2.x.40]  with  [2.x.41]  being this   matrix.  
+* [0.x.66]*
+   Matrix-vector multiplication: let  [2.x.42]  with  [2.x.43]  being this   matrix. This function does the same as  [2.x.44]  but takes the transposed   matrix.  
+* [0.x.67]*
+   Adding Matrix-vector multiplication. Add  [2.x.45]  on  [2.x.46]  with  [2.x.47]  being   this matrix.  
+* [0.x.68]*
+   Adding Matrix-vector multiplication. Add  [2.x.48]  to  [2.x.49]  with  [2.x.50]    being this matrix. This function does the same as  [2.x.51]  but takes   the transposed matrix.  
+* [0.x.69]*
+    [2.x.52]  Matrix norms  
+* [0.x.70]*
+   Frobenius-norm of the matrix.  
+* [0.x.71]*
+    [2.x.53]  Preconditioning methods  
+* [0.x.72]*
+   Apply the Jacobi preconditioner, which multiplies every element of the  [2.x.54]    src vector by the inverse of the respective diagonal element and   multiplies the result with the damping factor  [2.x.55]   
+* [0.x.73]*
+   Apply SSOR preconditioning to  [2.x.56]   
+* [0.x.74]*
+   Apply SOR preconditioning matrix to  [2.x.57]  The result of this method is    [2.x.58] .  
+* [0.x.75]*
+   Apply transpose SOR preconditioning matrix to  [2.x.59]  The result of this   method is  [2.x.60] .  
+* [0.x.76]*
+   Add the matrix  [2.x.61]  conjugated by  [2.x.62]  that is,  [2.x.63]  to this   object. If the parameter  [2.x.64]  is true, compute  [2.x.65] .     This function requires that  [2.x.66]  has a  [2.x.67]  traversing all   matrix entries and that  [2.x.68]  has a function <tt>el(i,j)</tt> for access   to a specific entry.  
+* [0.x.77]*
+    [2.x.69]  Iterators  
+* [0.x.78]*
+   Iterator starting at the first existing entry.  
+* [0.x.79]*
+   Final iterator.  
+* [0.x.80]*
+   Iterator starting at the first entry of row  [2.x.70]  If this row is empty,   the result is <tt>end(r)</tt>, which does NOT point into row  [2.x.71]   
+* [0.x.81]*
+   Final iterator of row  [2.x.72]  The result may be different from   <tt>end()</tt>!  
+* [0.x.82]*
+    [2.x.73]  Input/Output  
+* [0.x.83]*
+   Print the matrix to the given stream, using the format <tt>(line,col)   value</tt>, i.e. one nonzero entry of the matrix per line.  
+* [0.x.84]*
+   Print the matrix in the usual format, i.e. as a matrix and not as a list   of nonzero elements. For better readability, elements not in the matrix   are displayed as empty space, while matrix elements which are explicitly   set to zero are displayed as such.     The parameters allow for a flexible setting of the output format:  [2.x.74]    precision and  [2.x.75]  are used to determine the number format,   where  [2.x.76]  =  [2.x.77]  means fixed point notation.  A zero entry   for  [2.x.78]  makes the function compute a width, but it may be changed to   a positive value, if output is crude.     Additionally, a character for an empty value may be specified.     Finally, the whole matrix can be multiplied with a common denominator to   produce more readable output, even integers.     This function may produce  [2.x.79]  large amounts of output if applied to a   large matrix!  
+* [0.x.85]*
+   Write the data of this object in binary mode to a file.     Note that this binary format is platform dependent.  
+* [0.x.86]*
+   Read data that has previously been written by  [2.x.80]      The object is resized on this operation, and all previous contents are   lost.     A primitive form of error checking is performed which will recognize the   bluntest attempts to interpret some data as a vector stored bitwise to a   file, but not more.  
+* [0.x.87]*
+    [2.x.81]  Exceptions    [2.x.82]   
+* [0.x.88]*
+   Exception for missing diagonal entry.  
+* [0.x.89]*
+   Exception  
+* [0.x.90]*
+   Find an entry and return a const pointer. Return a zero-pointer if the   entry does not exist.  
+* [0.x.91]*
+   Find an entry and return a writable pointer. Return a zero-pointer if the   entry does not exist.  
+* [0.x.92]*
+   Find an entry or generate it.  
+* [0.x.93]*
+   Version of  [2.x.83]  which only performs its actions on the region defined   by <tt>[begin_row,end_row)</tt>. This function is called by  [2.x.84]  in   the case of enabled multithreading.  
+* [0.x.94]*
+   Version of  [2.x.85]  which only performs its actions on the   region defined by <tt>[begin_row,end_row)</tt>. This function is called   by  [2.x.86]  in the case of enabled multithreading.  
+* [0.x.95]*
+   Version of  [2.x.87]  which only performs its actions on   the region defined by <tt>[begin_row,end_row)</tt>. This function is   called by  [2.x.88]  in the case of enabled multithreading.  
+* [0.x.96]*
+   Number of columns. This is used to check vector dimensions only.  
+* [0.x.97]*
+   Info structure for each row.  
+* [0.x.98]*
+   Data storage.  
+* [0.x.99]*
+   Increment when a row grows.  
+* [0.x.100]*
+   Remember the user provided default row length.  
+* [0.x.101]*
+  [2.x.89] 
+
+* 
+* [0.x.102]

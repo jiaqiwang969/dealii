@@ -1,0 +1,23 @@
+[0.x.0]*
+   Wrappers for symbolic differentiation libraries. Currently there is support   for the following libraries:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - SymEngine    
+*  [2.x.0]   
+* [0.x.1]*
+     This namespace defines the classes and functions that help provide a     structured interface to symbolic numbers and operations.    
+* [0.x.2]

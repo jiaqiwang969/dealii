@@ -1,0 +1,909 @@
+[0.x.0]*
+ An iterator for VectorizedArray.
+
+* 
+* [0.x.1]*
+   Constructor.      [2.x.0]  data The actual VectorizedArray.    [2.x.1]  lane A pointer to the current lane.  
+* [0.x.2]*
+   Compare for equality.  
+* [0.x.3]*
+   Compare for inequality.  
+* [0.x.4]*
+   Copy assignment.  
+* [0.x.5]*
+   Dereferencing operator (const version): returns the value of the current   lane.  
+* [0.x.6]*
+   Dereferencing operator (non- [2.x.2]  version): returns the value of the   current lane.  
+* [0.x.7]*
+   Prefix <tt>++</tt> operator: <tt>++iterator</tt>. This operator advances   the iterator to the next lane and returns a reference to   <tt>*this</tt>.  
+* [0.x.8]*
+   This operator advances the iterator by  [2.x.3]  lanes and returns a   reference to <tt>*this</tt>.  
+* [0.x.9]*
+   Prefix <tt>--</tt> operator: <tt>--iterator</tt>. This operator advances   the iterator to the previous lane and returns a reference to   <tt>*this</tt>.  
+* [0.x.10]*
+   Create new iterator, which is shifted by  [2.x.4]   
+* [0.x.11]*
+   Compute distance between this iterator and iterator  [2.x.5]   
+* [0.x.12]*
+   Pointer to the actual VectorizedArray.  
+* [0.x.13]*
+   Pointer to the current lane.  
+* [0.x.14]*
+ A base class for the various VectorizedArray template specializations, containing common functionalities.
+*   [2.x.6]  T Type of the actual vectorized array. We are using the   Couriously Recurring Template Pattern (see   https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern) in this   class to avoid having to resort to `virtual` member functions.
+
+* 
+* [0.x.15]*
+   Return the number of elements in the array.  
+* [0.x.16]*
+    [2.x.7]  An iterator pointing to the beginning of the underlying data.  
+* [0.x.17]*
+    [2.x.8]  An iterator pointing to the beginning of the underlying data (`const`   version).  
+* [0.x.18]*
+    [2.x.9]  An iterator pointing to the end of the underlying data.  
+* [0.x.19]*
+    [2.x.10]  An iterator pointing to the end of the underlying data (`const`   version).  
+* [0.x.20]*
+ This generic class defines a unified interface to a vectorized data type. For general template arguments, this class simply corresponds to the template argument. For example, VectorizedArray<long double> is nothing else but a wrapper around <tt>long double</tt> with exactly one data field of type <tt>long double</tt> and overloaded arithmetic operations. This means that <tt>VectorizedArray<ComplicatedType></tt> has a similar layout as ComplicatedType, provided that ComplicatedType defines basic arithmetic operations. For floats and doubles, an array of numbers are packed together with the goal to be processed in a single-instruction/multiple-data (SIMD) fashion. In the SIMD context, the elements of such a short vector are often called lanes. The number of elements packed together, i.e., the number of lanes, depends on the computer system and compiler flags that are used for compilation of deal.II. The fundamental idea of these packed data types is to use one single CPU instruction to perform arithmetic operations on the whole array using the processor's vector (SIMD) units. Most computer systems by 2010 standards will use an array of two doubles or four floats, respectively (this corresponds to the SSE/SSE2 data sets) when compiling deal.II on 64-bit operating systems. On Intel Sandy Bridge processors and newer or AMD Bulldozer processors and newer, four doubles or eight floats are used when deal.II is configured using gcc with \--with-cpu=native or \--with-cpu=corei7-avx. On compilations with AVX-512 support (e.g., Intel Skylake Server from 2017), eight doubles or sixteen floats are used.
+*  This behavior of this class is made similar to the basic data types double and float. The definition of a vectorized array does not initialize the data field but rather leaves it undefined, as is the case for double and float. However, when calling something like `VectorizedArray<double> a = VectorizedArray<double>()` or `VectorizedArray<double> a = 0.`, it sets all numbers in this field to zero. This class is of standard layout type according to the C++11 standard, which means that there is an equivalent C representation and the class can e.g. be safely copied with  [2.x.11]  (See also https://en.cppreference.com/w/cpp/named_req/StandardLayoutType.) The standard layout is also necessary for ensuring correct alignment of data with address boundaries when collected in a vector (i.e., when the first element in a vector is properly aligned, all subsequent elements will be correctly aligned, too).
+*  Note that for proper functioning of this class, certain data alignment rules must be respected. This is because the computer expects the starting address of a VectorizedArray<double> field at specific addresses in memory (usually, the address of the vectorized array should be a multiple of the length of the array in bytes). Otherwise, a segmentation fault or a severe loss of performance might occur. When creating a single data field on the stack like `VectorizedArray<double> a = 5.;`, the compiler will take care of data alignment automatically. However, when allocating a long vector of VectorizedArray<double> data, one needs to respect these rules. Use the class AlignedVector or data containers based on AlignedVector (such as Table) for this purpose. It is a class very similar to  [2.x.12]  otherwise but always makes sure that data is correctly aligned.
+*  The user can explicitly control the width of a particular instruction set architecture (ISA) extension by specifying the number of lanes via the second template parameter of this wrapper class. For example on Intel Skylake Server, you have the following options for the data type double:
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 1> // no vectorization (auto-optimization)
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 2> // SSE2
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 4> // AVX
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 8> // AVX-512 (default)
+*  and for Intel Sandy Bridge, Haswell, Broadwell, AMD Bulldozer and Zen/Ryzen:
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 1> // no vectorization (auto-optimization)
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 2> // SSE2
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 4> // AVX (default)
+*  and for processors with AltiVec support:
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 1>
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 2>
+*  for older x86 processors or in case no processor-specific compilation flags were added (i.e., without `-D CMAKE_CXX_FLAGS=-march=native` or similar flags):
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 1> // no vectorization (auto-optimization)
+* 
+
+* 
+* 
+
+* 
+* 
+*  - VectorizedArray<double, 2> // SSE2
+*  Similar considerations also apply to the data type `float`.
+*  Wrongly selecting the width, e.g., width=3 or width=8 on a processor which does not support AVX-512 leads to a static assert.
+*   [2.x.13]  Number underlying data type  [2.x.14]  width  vector length (optional; if not set, the maximal width of the                architecture is used)
+
+* 
+* [0.x.21]*
+   This gives the type of the array elements.  
+* [0.x.22]*
+   Default empty constructor, leaving the data in an uninitialized state   similar to float/double.  
+* [0.x.23]*
+   Construct an array with the given scalar broadcast to all lanes.  
+* [0.x.24]*
+   This function assigns a scalar to this class.  
+* [0.x.25]*
+   Access operator (only valid with component 0 in the base class without   specialization).  
+* [0.x.26]*
+   Constant access operator (only valid with component 0 in the base class   without specialization).  
+* [0.x.27]*
+   Addition  
+* [0.x.28]*
+   Subtraction  
+* [0.x.29]*
+   Multiplication  
+* [0.x.30]*
+   Division  
+* [0.x.31]*
+   Load size() data items from memory into the calling class, starting at   the given address. The pointer `ptr` needs not be aligned by the amount   of bytes in the vectorized array, as opposed to casting a double address   to VectorizedArray<double>*.  
+* [0.x.32]*
+   Write the content of the calling class into memory in form of   size() data items to the given address. The pointer `ptr` needs not be   aligned by the amount of bytes in the vectorized array, as opposed to   casting a double address to VectorizedArray<double>*.  
+* [0.x.33]*
+   Write the content of the calling class into memory in form of   size() data items to the given address using non-temporal stores that   bypass the processor's caches, using  [2.x.15]  store intrinsics on   supported CPUs. The destination of the store  [2.x.16]  must be aligned by   the amount of bytes in the vectorized array.     This store operation can be faster than usual store operations in case   the store is streaming because it avoids the read-for-ownership transfer   typically invoked in standard stores. This approximately works as follows   (see the literature on computer architecture for details): When an   algorithm stores some results to a memory address, a processor typically   wants to move it into some of its caches as it expects the data to be   re-used again at some point. Since caches are organized in lines of sizes   either 64 byte or 128 byte but writes are usually smaller, a processor   must first load in the destination cache line upon a write because only   part of the cache line is overwritten initially. If a series of stores   write data in a chunk bigger than any of its caches could handle, the   data finally has to be moved out from the caches to main memory. But   since all addressed have first been read, this doubles the load on main   memory, which can incur a performance penalty. Furthermore, the   organization of caches in a multicore context also requires reading an   address before something can be written to cache to that address, see   e.g. the [1.x.0] for details. The instruction underlying   this function call signals to the processor that these two prerequisites   on a store are relaxed: Firstly, one expects the whole cache line to be   overwritten (meaning that the memory subsystem makes sure that   consecutive stores that together span a cache line are merged, and   appropriately handling the case where only part of a cache line is   written), so there is no need to first read the "remainder" of the cache   line. Secondly, the data behind that particular memory will not be   subject to cache coherency protocol as it will be in main memory both   when the same processor wants to access it again as well as any other   processors in a multicore chip. Due to this particular setup, any   subsequent access to the data written by this function will need to query   main memory, which is slower than an access from a cache both   latency-wise and throughput-wise. Thus, this command should only be used   for storing large arrays that will collectively not fit into caches, as   performance will be degraded otherwise. For a typical use case, see also   [1.x.1].     Note that streaming stores are only available in the specialized SSE/AVX   classes of VectorizedArray of type  [2.x.17]  or  [2.x.18]  not in the   generic base class.  
+* [0.x.34]*
+   Load size() data items from memory into the calling class, starting at   the given address and with given offsets, each entry from the offset   providing one element of the vectorized array.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.2]
+*   
+* [0.x.35]*
+   Write the content of the calling class into memory in form of   size() data items to the given address and the given offsets, filling the   elements of the vectorized array into each offset.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.3]
+*   
+* [0.x.36]*
+   Actual data field. To be consistent with the standard layout type and to   enable interaction with external SIMD functionality, this member is   declared public.  
+* [0.x.37]*
+   Return the square root of this field. Not for use in user code. Use   sqrt(x) instead.  
+* [0.x.38]*
+   Return the absolute value of this field. Not for use in user code. Use   abs(x) instead.  
+* [0.x.39]*
+   Return the component-wise maximum of this field and another one. Not for   use in user code. Use max(x,y) instead.  
+* [0.x.40]*
+   Return the component-wise minimum of this field and another one. Not for   use in user code. Use min(x,y) instead.  
+* [0.x.41]*
+  [2.x.19]  Packing and unpacking of a VectorizedArray
+
+* 
+* [0.x.42]*
+ Create a vectorized array that sets all entries in the array to the given scalar, i.e., broadcasts the scalar to all array elements.
+*   [2.x.20]  VectorizedArray
+
+* 
+* [0.x.43]*
+ Create a vectorized array of given type and broadcast the scalar value to all array elements.
+*    [2.x.21]  VectorizedArray
+
+* 
+* [0.x.44]*
+ Load size() data items from memory into the VectorizedArray  [2.x.22]  starting at the given addresses and with given offset, each entry from the offset providing one element of the vectorized array.
+*  This operation corresponds to the following code:
+
+* 
+* [1.x.4]
+* 
+
+* 
+* [0.x.45]*
+ This method loads  [2.x.23]  data streams from the given array  [2.x.24]  The offsets to the input array are given by the array  [2.x.25]  offsets. From each stream, n_entries are read. The data is then transposed and stored it into an array of VectorizedArray type. The output array  [2.x.26]  out is expected to be an array of size  [2.x.27]  This method operates on plain arrays, so no checks for valid data access are made. It is the user's responsibility to ensure that the given arrays are valid according to the access layout below.
+*  This operation corresponds to a transformation of an array-of-struct (input) into a struct-of-array (output) according to the following formula:
+* 
+
+* 
+* [1.x.5]
+* 
+*  A more optimized version of this code will be used for supported types.
+*  This is the inverse operation to vectorized_transpose_and_store().
+*   [2.x.28]  VectorizedArray
+
+* 
+* [0.x.46]*
+ The same as above with the difference that an array of pointers are passed in as input argument  [2.x.29] 
+*  In analogy to the function above, one can consider that `in+offset[v]` is precomputed and passed as input argument.
+*  However, this function can also be used if some function returns an array of pointers and no assumption can be made that they belong to the same array, i.e., they can have their origin in different memory allocations.
+
+* 
+* [0.x.47]*
+ This method stores the vectorized arrays in transposed form into the given output array  [2.x.30]  with the given offsets  [2.x.31]  This operation corresponds to a transformation of a struct-of-array (input) into an array- of-struct (output). This method operates on plain array, so no checks for valid data access are made. It is the user's responsibility to ensure that the given arrays are valid according to the access layout below.
+*  This method assumes that the specified offsets do not overlap. Otherwise, the behavior is undefined in the vectorized case. It is the user's responsibility to make sure that the access does not overlap and avoid undefined behavior.
+*  The argument  [2.x.32]  selects where the entries should only be written into the output arrays or the result should be added into the existing entries in the output. For  [2.x.33] , the following code is assumed:
+* 
+
+* 
+* [1.x.6]
+* 
+*  For  [2.x.34] , the code implements the following action:
+
+* 
+* [1.x.7]
+* 
+*  A more optimized version of this code will be used for supported types.
+*  This is the inverse operation to vectorized_load_and_transpose().
+*   [2.x.35]  VectorizedArray
+
+* 
+* [0.x.48]*
+ The same as above with the difference that an array of pointers are passed in as input argument  [2.x.36] 
+*  In analogy to the function above, one can consider that `out+offset[v]` is precomputed and passed as input argument.
+*  However, this function can also be used if some function returns an array of pointers and no assumption can be made that they belong to the same array, i.e., they can have their origin in different memory allocations.
+
+* 
+* [0.x.49]*
+ Specialization of VectorizedArray class for double and AVX-512.
+
+* 
+* [0.x.50]*
+   This gives the type of the array elements.  
+* [0.x.51]*
+   Default empty constructor, leaving the data in an uninitialized state   similar to float/double.  
+* [0.x.52]*
+   Construct an array with the given scalar broadcast to all lanes.  
+* [0.x.53]*
+   This function can be used to set all data fields to a given scalar.  
+* [0.x.54]*
+   Access operator.  
+* [0.x.55]*
+   Constant access operator.  
+* [0.x.56]*
+   Addition.  
+* [0.x.57]*
+   Subtraction.  
+* [0.x.58]*
+   Multiplication.  
+* [0.x.59]*
+   Division.  
+* [0.x.60]*
+   Load size() data items from memory into the calling class, starting at   the given address. The memory need not be aligned by 64 bytes, as opposed   to casting a double address to VectorizedArray<double>*.  
+* [0.x.61]*
+   Write the content of the calling class into memory in form of  [2.x.37]    size() to the given address. The memory need not be aligned by   64 bytes, as opposed to casting a double address to   VectorizedArray<double>*.  
+* [0.x.62]*  [2.x.38]   [2.x.39]   
+*  [2.x.40]  Memory must be aligned by 64 bytes.  
+* [0.x.63]*
+   Load  [2.x.41]  from memory into the calling class, starting at   the given address and with given offsets, each entry from the offset   providing one element of the vectorized array.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.8]
+*   
+* [0.x.64]*
+   Write the content of the calling class into memory in form of  [2.x.42]    size() to the given address and the given offsets, filling the   elements of the vectorized array into each offset.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.9]
+*   
+* [0.x.65]*
+   Actual data field. To be consistent with the standard layout type and to   enable interaction with external SIMD functionality, this member is   declared public.  
+* [0.x.66]*
+   Return the square root of this field. Not for use in user code. Use   sqrt(x) instead.  
+* [0.x.67]*
+   Return the absolute value of this field. Not for use in user code. Use   abs(x) instead.  
+* [0.x.68]*
+   Return the component-wise maximum of this field and another one. Not for   use in user code. Use max(x,y) instead.  
+* [0.x.69]*
+   Return the component-wise minimum of this field and another one. Not for   use in user code. Use min(x,y) instead.  
+* [0.x.70]*
+ Specialization for double and AVX-512.
+
+* 
+* [0.x.71]*
+ Specialization for double and AVX-512.
+
+* 
+* [0.x.72]*
+ Specialization for double and AVX-512.
+
+* 
+* [0.x.73]*
+ Specialization for double and AVX-512.
+
+* 
+* [0.x.74]*
+ Specialization for float and AVX512.
+
+* 
+* [0.x.75]*
+   This gives the type of the array elements.  
+* [0.x.76]*
+   Default empty constructor, leaving the data in an uninitialized state   similar to float/double.  
+* [0.x.77]*
+   Construct an array with the given scalar broadcast to all lanes.  
+* [0.x.78]*
+   This function can be used to set all data fields to a given scalar.  
+* [0.x.79]*
+   Access operator.  
+* [0.x.80]*
+   Constant access operator.  
+* [0.x.81]*
+   Addition.  
+* [0.x.82]*
+   Subtraction.  
+* [0.x.83]*
+   Multiplication.  
+* [0.x.84]*
+   Division.  
+* [0.x.85]*
+   Load  [2.x.43]  from memory into the calling class, starting at   the given address. The memory need not be aligned by 64 bytes, as opposed   to casting a float address to VectorizedArray<float>*.  
+* [0.x.86]*
+   Write the content of the calling class into memory in form of  [2.x.44]    size() to the given address. The memory need not be aligned by   64 bytes, as opposed to casting a float address to   VectorizedArray<float>*.  
+* [0.x.87]*  [2.x.45]   [2.x.46]   
+*  [2.x.47]  Memory must be aligned by 64 bytes.  
+* [0.x.88]*
+   Load  [2.x.48]  from memory into the calling class, starting at   the given address and with given offsets, each entry from the offset   providing one element of the vectorized array.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.10]
+*   
+* [0.x.89]*
+   Write the content of the calling class into memory in form of  [2.x.49]    size() to the given address and the given offsets, filling the   elements of the vectorized array into each offset.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.11]
+*   
+* [0.x.90]*
+   Actual data field. To be consistent with the standard layout type and to   enable interaction with external SIMD functionality, this member is   declared public.  
+* [0.x.91]*
+   Return the square root of this field. Not for use in user code. Use   sqrt(x) instead.  
+* [0.x.92]*
+   Return the absolute value of this field. Not for use in user code. Use   abs(x) instead.  
+* [0.x.93]*
+   Return the component-wise maximum of this field and another one. Not for   use in user code. Use max(x,y) instead.  
+* [0.x.94]*
+   Return the component-wise minimum of this field and another one. Not for   use in user code. Use min(x,y) instead.  
+* [0.x.95]*
+ Specialization for float and AVX-512.
+
+* 
+* [0.x.96]*
+ Specialization for float and AVX-512.
+
+* 
+* [0.x.97]*
+ Specialization for float and AVX-512.
+
+* 
+* [0.x.98]*
+ Specialization for float and AVX-512.
+
+* 
+* [0.x.99]*
+ Specialization of VectorizedArray class for double and AVX.
+
+* 
+* [0.x.100]*
+   This gives the type of the array elements.  
+* [0.x.101]*
+   Default empty constructor, leaving the data in an uninitialized state   similar to float/double.  
+* [0.x.102]*
+   Construct an array with the given scalar broadcast to all lanes.  
+* [0.x.103]*
+   This function can be used to set all data fields to a given scalar.  
+* [0.x.104]*
+   Access operator.  
+* [0.x.105]*
+   Constant access operator.  
+* [0.x.106]*
+   Addition.  
+* [0.x.107]*
+   Subtraction.  
+* [0.x.108]*
+   Multiplication.  
+* [0.x.109]*
+   Division.  
+* [0.x.110]*
+   Load  [2.x.50]  from memory into the calling class, starting at   the given address. The memory need not be aligned by 32 bytes, as opposed   to casting a double address to VectorizedArray<double>*.  
+* [0.x.111]*
+   Write the content of the calling class into memory in form of  [2.x.51]    size() to the given address. The memory need not be aligned by   32 bytes, as opposed to casting a double address to   VectorizedArray<double>*.  
+* [0.x.112]*  [2.x.52]   [2.x.53]   
+*  [2.x.54]  Memory must be aligned by 32 bytes.  
+* [0.x.113]*
+   Load  [2.x.55]  from memory into the calling class, starting at   the given address and with given offsets, each entry from the offset   providing one element of the vectorized array.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.12]
+*   
+* [0.x.114]*
+   Write the content of the calling class into memory in form of  [2.x.56]    size() to the given address and the given offsets, filling the   elements of the vectorized array into each offset.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.13]
+*   
+* [0.x.115]*
+   Actual data field. To be consistent with the standard layout type and to   enable interaction with external SIMD functionality, this member is   declared public.  
+* [0.x.116]*
+   Return the square root of this field. Not for use in user code. Use   sqrt(x) instead.  
+* [0.x.117]*
+   Return the absolute value of this field. Not for use in user code. Use   abs(x) instead.  
+* [0.x.118]*
+   Return the component-wise maximum of this field and another one. Not for   use in user code. Use max(x,y) instead.  
+* [0.x.119]*
+   Return the component-wise minimum of this field and another one. Not for   use in user code. Use min(x,y) instead.  
+* [0.x.120]*
+ Specialization for double and AVX.
+
+* 
+* [0.x.121]*
+ Specialization for double and AVX.
+
+* 
+* [0.x.122]*
+ Specialization for double and AVX.
+
+* 
+* [0.x.123]*
+ Specialization for double and AVX.
+
+* 
+* [0.x.124]*
+ Specialization for float and AVX.
+
+* 
+* [0.x.125]*
+   This gives the type of the array elements.  
+* [0.x.126]*
+   Default empty constructor, leaving the data in an uninitialized state   similar to float/double.  
+* [0.x.127]*
+   Construct an array with the given scalar broadcast to all lanes.  
+* [0.x.128]*
+   This function can be used to set all data fields to a given scalar.  
+* [0.x.129]*
+   Access operator.  
+* [0.x.130]*
+   Constant access operator.  
+* [0.x.131]*
+   Addition.  
+* [0.x.132]*
+   Subtraction.  
+* [0.x.133]*
+   Multiplication.  
+* [0.x.134]*
+   Division.  
+* [0.x.135]*
+   Load  [2.x.57]  from memory into the calling class, starting at   the given address. The memory need not be aligned by 32 bytes, as opposed   to casting a float address to VectorizedArray<float>*.  
+* [0.x.136]*
+   Write the content of the calling class into memory in form of  [2.x.58]    size() to the given address. The memory need not be aligned by   32 bytes, as opposed to casting a float address to   VectorizedArray<float>*.  
+* [0.x.137]*  [2.x.59]   [2.x.60]   
+*  [2.x.61]  Memory must be aligned by 32 bytes.  
+* [0.x.138]*
+   Load  [2.x.62]  from memory into the calling class, starting at   the given address and with given offsets, each entry from the offset   providing one element of the vectorized array.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.14]
+*   
+* [0.x.139]*
+   Write the content of the calling class into memory in form of  [2.x.63]    size() to the given address and the given offsets, filling the   elements of the vectorized array into each offset.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.15]
+*   
+* [0.x.140]*
+   Actual data field. To be consistent with the standard layout type and to   enable interaction with external SIMD functionality, this member is   declared public.  
+* [0.x.141]*
+   Return the square root of this field. Not for use in user code. Use   sqrt(x) instead.  
+* [0.x.142]*
+   Return the absolute value of this field. Not for use in user code. Use   abs(x) instead.  
+* [0.x.143]*
+   Return the component-wise maximum of this field and another one. Not for   use in user code. Use max(x,y) instead.  
+* [0.x.144]*
+   Return the component-wise minimum of this field and another one. Not for   use in user code. Use min(x,y) instead.  
+* [0.x.145]*
+ Specialization for float and AVX.
+
+* 
+* [0.x.146]*
+ Specialization for float and AVX.
+
+* 
+* [0.x.147]*
+ Specialization for float and AVX.
+
+* 
+* [0.x.148]*
+ Specialization for float and AVX.
+
+* 
+* [0.x.149]*
+ Specialization for double and SSE2.
+
+* 
+* [0.x.150]*
+   This gives the type of the array elements.  
+* [0.x.151]*
+   Default empty constructor, leaving the data in an uninitialized state   similar to float/double.  
+* [0.x.152]*
+   Construct an array with the given scalar broadcast to all lanes.  
+* [0.x.153]*
+   This function can be used to set all data fields to a given scalar.  
+* [0.x.154]*
+   Access operator.  
+* [0.x.155]*
+   Constant access operator.  
+* [0.x.156]*
+   Addition.  
+* [0.x.157]*
+   Subtraction.  
+* [0.x.158]*
+   Multiplication.  
+* [0.x.159]*
+   Division.  
+* [0.x.160]*
+   Load  [2.x.64]  from memory into the calling class, starting at   the given address. The memory need not be aligned by 16 bytes, as opposed   to casting a double address to VectorizedArray<double>*.  
+* [0.x.161]*
+   Write the content of the calling class into memory in form of  [2.x.65]    size() to the given address. The memory need not be aligned by   16 bytes, as opposed to casting a double address to   VectorizedArray<double>*.  
+* [0.x.162]*  [2.x.66]   [2.x.67]   
+*  [2.x.68]  Memory must be aligned by 16 bytes.  
+* [0.x.163]*
+   Load  [2.x.69]  from memory into the calling class, starting at   the given address and with given offsets, each entry from the offset   providing one element of the vectorized array.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.16]
+*   
+* [0.x.164]*
+   Write the content of the calling class into memory in form of  [2.x.70]    size() to the given address and the given offsets, filling the   elements of the vectorized array into each offset.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.17]
+*   
+* [0.x.165]*
+   Actual data field. To be consistent with the standard layout type and to   enable interaction with external SIMD functionality, this member is   declared public.  
+* [0.x.166]*
+   Return the square root of this field. Not for use in user code. Use   sqrt(x) instead.  
+* [0.x.167]*
+   Return the absolute value of this field. Not for use in user code. Use   abs(x) instead.  
+* [0.x.168]*
+   Return the component-wise maximum of this field and another one. Not for   use in user code. Use max(x,y) instead.  
+* [0.x.169]*
+   Return the component-wise minimum of this field and another one. Not for   use in user code. Use min(x,y) instead.  
+* [0.x.170]*
+ Specialization for double and SSE2.
+
+* 
+* [0.x.171]*
+ Specialization for double and SSE2.
+
+* 
+* [0.x.172]*
+ Specialization for double and SSE2.
+
+* 
+* [0.x.173]*
+ Specialization for double and SSE2.
+
+* 
+* [0.x.174]*
+ Specialization for float and SSE2.
+
+* 
+* [0.x.175]*
+   This gives the type of the array elements.  
+* [0.x.176]*
+   This function can be used to set all data fields to a given scalar.  
+* [0.x.177]*
+   Default empty constructor, leaving the data in an uninitialized state   similar to float/double.  
+* [0.x.178]*
+   Construct an array with the given scalar broadcast to all lanes.  
+* [0.x.179]*
+   Access operator.  
+* [0.x.180]*
+   Constant access operator.  
+* [0.x.181]*
+   Addition.  
+* [0.x.182]*
+   Subtraction.  
+* [0.x.183]*
+   Multiplication.  
+* [0.x.184]*
+   Division.  
+* [0.x.185]*
+   Load  [2.x.71]  from memory into the calling class, starting at   the given address. The memory need not be aligned by 16 bytes, as opposed   to casting a float address to VectorizedArray<float>*.  
+* [0.x.186]*
+   Write the content of the calling class into memory in form of  [2.x.72]    size() to the given address. The memory need not be aligned by   16 bytes, as opposed to casting a float address to   VectorizedArray<float>*.  
+* [0.x.187]*  [2.x.73]   [2.x.74]   
+*  [2.x.75]  Memory must be aligned by 16 bytes.  
+* [0.x.188]*
+   Load  [2.x.76]  from memory into the calling class, starting at   the given address and with given offsets, each entry from the offset   providing one element of the vectorized array.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.18]
+*   
+* [0.x.189]*
+   Write the content of the calling class into memory in form of  [2.x.77]    size() to the given address and the given offsets, filling the   elements of the vectorized array into each offset.     This operation corresponds to the following code (but uses a more   efficient implementation in case the hardware allows for that):  
+* [1.x.19]
+*   
+* [0.x.190]*
+   Actual data field. To be consistent with the standard layout type and to   enable interaction with external SIMD functionality, this member is   declared public.  
+* [0.x.191]*
+   Return the square root of this field. Not for use in user code. Use   sqrt(x) instead.  
+* [0.x.192]*
+   Return the absolute value of this field. Not for use in user code. Use   abs(x) instead.  
+* [0.x.193]*
+   Return the component-wise maximum of this field and another one. Not for   use in user code. Use max(x,y) instead.  
+* [0.x.194]*
+   Return the component-wise minimum of this field and another one. Not for   use in user code. Use min(x,y) instead.  
+* [0.x.195]*
+ Specialization for float and SSE2.
+
+* 
+* [0.x.196]*
+ Specialization for float and SSE2.
+
+* 
+* [0.x.197]*
+ Specialization for float and SSE2.
+
+* 
+* [0.x.198]*
+ Specialization for float and SSE2.
+
+* 
+* [0.x.199]*
+   This gives the type of the array elements.  
+* [0.x.200]*
+   Default empty constructor, leaving the data in an uninitialized state   similar to float/double.  
+* [0.x.201]*
+   Construct an array with the given scalar broadcast to all lanes.  
+* [0.x.202]*
+   This function assigns a scalar to this class.  
+* [0.x.203]*
+   Access operator. The component must be either 0 or 1.  
+* [0.x.204]*
+   Constant access operator.  
+* [0.x.205]*
+   Addition.  
+* [0.x.206]*
+   Subtraction.  
+* [0.x.207]*
+   Multiplication.  
+* [0.x.208]*
+   Division.  
+* [0.x.209]*
+   Load  [2.x.78]  from memory into the calling class, starting at   the given address.  
+* [0.x.210]*
+   Write the content of the calling class into memory in form of  [2.x.79]    size() to the given address.  
+* [0.x.211]*
+   Actual data field. To be consistent with the standard layout type and to   enable interaction with external SIMD functionality, this member is   declared public.  
+* [0.x.212]*
+   Return the square root of this field. Not for use in user code. Use   sqrt(x) instead.  
+* [0.x.213]*
+   Return the absolute value of this field. Not for use in user code. Use   abs(x) instead.  
+* [0.x.214]*
+   Return the component-wise maximum of this field and another one. Not for   use in user code. Use max(x,y) instead.  
+* [0.x.215]*
+   Return the component-wise minimum of this field and another one. Not for   use in user code. Use min(x,y) instead.  
+* [0.x.216]*
+   This gives the type of the array elements.  
+* [0.x.217]*
+   Default empty constructor, leaving the data in an uninitialized state   similar to float/double.  
+* [0.x.218]*
+   Construct an array with the given scalar broadcast to all lanes.  
+* [0.x.219]*
+   This function assigns a scalar to this class.  
+* [0.x.220]*
+   Access operator. The component must be between 0 and 3.  
+* [0.x.221]*
+   Constant access operator.  
+* [0.x.222]*
+   Addition.  
+* [0.x.223]*
+   Subtraction.  
+* [0.x.224]*
+   Multiplication.  
+* [0.x.225]*
+   Division.  
+* [0.x.226]*
+   Load  [2.x.80]  from memory into the calling class, starting at   the given address.  
+* [0.x.227]*
+   Write the content of the calling class into memory in form of  [2.x.81]    size() to the given address.  
+* [0.x.228]*
+   Actual data field. To be consistent with the standard layout type and to   enable interaction with external SIMD functionality, this member is   declared public.  
+* [0.x.229]*
+   Return the square root of this field. Not for use in user code. Use   sqrt(x) instead.  
+* [0.x.230]*
+   Return the absolute value of this field. Not for use in user code. Use   abs(x) instead.  
+* [0.x.231]*
+   Return the component-wise maximum of this field and another one. Not for   use in user code. Use max(x,y) instead.  
+* [0.x.232]*
+   Return the component-wise minimum of this field and another one. Not for   use in user code. Use min(x,y) instead.  
+* [0.x.233]*
+  [2.x.82]  Arithmetic operations with VectorizedArray
+
+* 
+* [0.x.234]*
+ Relational operator == for VectorizedArray
+*   [2.x.83]  VectorizedArray
+
+* 
+* [0.x.235]*
+ Addition of two vectorized arrays with operator +.
+*   [2.x.84]  VectorizedArray
+
+* 
+* [0.x.236]*
+ Subtraction of two vectorized arrays with operator
+* 
+*  - 
+*   [2.x.85]  VectorizedArray
+
+* 
+* [0.x.237]*
+ Multiplication of two vectorized arrays with operator.
+*   [2.x.86]  VectorizedArray
+
+* 
+* [0.x.238]*
+ Division of two vectorized arrays with operator /.
+*   [2.x.87]  VectorizedArray
+
+* 
+* [0.x.239]*
+ Addition of a scalar (expanded to a vectorized array with  [2.x.88]  size() equal entries) and a vectorized array.
+*   [2.x.89]  VectorizedArray
+
+* 
+* [0.x.240]*
+ Addition of a scalar (expanded to a vectorized array with  [2.x.90]  size() equal entries) and a vectorized array in case the scalar is a double (needed in order to be able to write simple code with constants that are usually double numbers).
+*   [2.x.91]  VectorizedArray
+
+* 
+* [0.x.241]*
+ Addition of a vectorized array and a scalar (expanded to a vectorized array with  [2.x.92]  equal entries).
+*   [2.x.93]  VectorizedArray
+
+* 
+* [0.x.242]*
+ Addition of a vectorized array and a scalar (expanded to a vectorized array with  [2.x.94]  equal entries) in case the scalar is a double (needed in order to be able to write simple code with constants that are usually double numbers).
+*   [2.x.95]  VectorizedArray
+
+* 
+* [0.x.243]*
+ Subtraction of a vectorized array from a scalar (expanded to a vectorized array with  [2.x.96]  equal entries).
+*   [2.x.97]  VectorizedArray
+
+* 
+* [0.x.244]*
+ Subtraction of a vectorized array from a scalar (expanded to a vectorized array with  [2.x.98]  equal entries) in case the scalar is a double (needed in order to be able to write simple code with constants that are usually double numbers).
+*   [2.x.99]  VectorizedArray
+
+* 
+* [0.x.245]*
+ Subtraction of a scalar (expanded to a vectorized array with  [2.x.100]  size() equal entries) from a vectorized array.
+*   [2.x.101]  VectorizedArray
+
+* 
+* [0.x.246]*
+ Subtraction of a scalar (expanded to a vectorized array with  [2.x.102]  size() equal entries) from a vectorized array in case the scalar is a double (needed in order to be able to write simple code with constants that are usually double numbers).
+*   [2.x.103]  VectorizedArray
+
+* 
+* [0.x.247]*
+ Multiplication of a scalar (expanded to a vectorized array with  [2.x.104]  size() equal entries) and a vectorized array.
+*   [2.x.105]  VectorizedArray
+
+* 
+* [0.x.248]*
+ Multiplication of a scalar (expanded to a vectorized array with  [2.x.106]  size() equal entries) and a vectorized array in case the scalar is a double (needed in order to be able to write simple code with constants that are usually double numbers).
+*   [2.x.107]  VectorizedArray
+
+* 
+* [0.x.249]*
+ Multiplication of a vectorized array and a scalar (expanded to a vectorized array with  [2.x.108]  equal entries).
+*   [2.x.109]  VectorizedArray
+
+* 
+* [0.x.250]*
+ Multiplication of a vectorized array and a scalar (expanded to a vectorized array with  [2.x.110]  equal entries) in case the scalar is a double (needed in order to be able to write simple code with constants that are usually double numbers).
+*   [2.x.111]  VectorizedArray
+
+* 
+* [0.x.251]*
+ Quotient between a scalar (expanded to a vectorized array with  [2.x.112]  size() equal entries) and a vectorized array.
+*   [2.x.113]  VectorizedArray
+
+* 
+* [0.x.252]*
+ Quotient between a scalar (expanded to a vectorized array with  [2.x.114]  size() equal entries) and a vectorized array in case the scalar is a double (needed in order to be able to write simple code with constants that are usually double numbers).
+*   [2.x.115]  VectorizedArray
+
+* 
+* [0.x.253]*
+ Quotient between a vectorized array and a scalar (expanded to a vectorized array with  [2.x.116]  equal entries).
+*   [2.x.117]  VectorizedArray
+
+* 
+* [0.x.254]*
+ Quotient between a vectorized array and a scalar (expanded to a vectorized array with  [2.x.118]  equal entries) in case the scalar is a double (needed in order to be able to write simple code with constants that are usually double numbers).
+*   [2.x.119]  VectorizedArray
+
+* 
+* [0.x.255]*
+ Unary operator + on a vectorized array.
+*   [2.x.120]  VectorizedArray
+
+* 
+* [0.x.256]*
+ Unary operator
+* 
+*  - on a vectorized array.
+*   [2.x.121]  VectorizedArray
+
+* 
+* [0.x.257]*
+ Output operator for vectorized array.
+*   [2.x.122]  VectorizedArray
+
+* 
+* [0.x.258]*
+  [2.x.123]  Ternary operations on VectorizedArray
+
+* 
+* [0.x.259]*
+ enum class encoding binary operations for a component-wise comparison of VectorizedArray data types.
+* 
+
+* 
+*  [2.x.124]  In case of SIMD vecorization (sse, avx, av512) we select the corresponding ordered, non-signalling ( [2.x.125] ) variants.
+
+* 
+* [0.x.260]*
+ Computes the vectorized equivalent of the following ternary operation:
+
+* 
+* [1.x.20]
+*  where  [2.x.126] ,  [2.x.127] , and  [2.x.128] ).
+*  Such a computational idiom is useful as an alternative to branching whenever the control flow itself would depend on (computed) data. For example, in case of a scalar data type the statement  [2.x.129]  could have been also implemented using an  [2.x.130] -statement:
+
+* 
+* [1.x.21]
+*  This, however, is fundamentally impossible in case of vectorization because different decisions will be necessary on different vector entries (lanes) and the first variant (based on a ternary operator) has to be used instead:
+
+* 
+* [1.x.22]
+*  Some more illustrative examples (that are less efficient than the dedicated  [2.x.131]  overloads):
+
+* 
+* [1.x.23]
+* 
+*  More precisely, this function first computes a (boolean) mask that is the result of a binary operator  [2.x.132]  applied to all elements of the VectorizedArray arguments  [2.x.133]  and  [2.x.134]  The mask is then used to either select the corresponding component of  [2.x.135]  (if the binary operation equates to true), or  [2.x.136]  The binary operator is encoded via the SIMDComparison template argument  [2.x.137] 
+*  In order to ease with generic programming approaches, the function provides overloads for all VectorizedArray<Number> variants as well as generic POD types such as double and float.
+* 
+
+* 
+*  [2.x.138]  For this function to work the binary operation has to be encoded via a SIMDComparison template argument  [2.x.139]  Depending on it appropriate low-level machine instructions are generated replacing the call to compare_and_apply_mask. This also explains why  [2.x.140]  is a compile-time constant template parameter and not a constant function argument. In order to be able to emit the correct low-level instruction, the compiler has to know the comparison at compile time.
+
+* 
+* [0.x.261]*
+ Specialization of above function for the non-vectorized VectorizedArray<Number, 1> variant.
+
+* 
+* [0.x.262]*
+ Implementation of functions from cmath on VectorizedArray. These functions do not reside in the dealii namespace in order to ensure a similar interface as for the respective functions in cmath. Instead, call them using  [2.x.141] 
+
+* 
+* [0.x.263]*
+   Compute the sine of a vectorized data field. The result is returned as   vectorized array in the form <tt>{sin(x[0]), sin(x[1]), ...,    [2.x.142]       [2.x.143]  VectorizedArray  
+* [0.x.264]*
+   Compute the cosine of a vectorized data field. The result is returned as   vectorized array in the form <tt>{cos(x[0]), cos(x[1]), ...,   cos(x[size()-1])}</tt>.      [2.x.144]  VectorizedArray  
+* [0.x.265]*
+   Compute the tangent of a vectorized data field. The result is returned   as vectorized array in the form <tt>{tan(x[0]), tan(x[1]), ...,   tan(x[size()-1])}</tt>.      [2.x.145]  VectorizedArray  
+* [0.x.266]*
+   Compute the exponential of a vectorized data field. The result is   returned as vectorized array in the form <tt>{exp(x[0]), exp(x[1]), ...,   exp(x[size()-1])}</tt>.      [2.x.146]  VectorizedArray  
+* [0.x.267]*
+   Compute the natural logarithm of a vectorized data field. The result is   returned as vectorized array in the form <tt>{log(x[0]), log(x[1]), ...,   log(x[size()-1])}</tt>.      [2.x.147]  VectorizedArray  
+* [0.x.268]*
+   Compute the square root of a vectorized data field. The result is   returned as vectorized array in the form <tt>{sqrt(x[0]), sqrt(x[1]),   ..., sqrt(x[size()-1])}</tt>.      [2.x.148]  VectorizedArray  
+* [0.x.269]*
+   Raises the given number  [2.x.149]  to the power  [2.x.150]  for a vectorized data   field. The result is returned as vectorized array in the form   <tt>{pow(x[0],p), pow(x[1],p), ..., pow(x[size()-1],p)}</tt>.      [2.x.151]  VectorizedArray  
+* [0.x.270]*
+   Raises the given number  [2.x.152]  to the power  [2.x.153]  for a vectorized data   field. The result is returned as vectorized array in the form   <tt>{pow(x[0],p[0]), pow(x[1],p[1]), ...,   pow(x[size()-1],p[size()-1])}</tt>.      [2.x.154]  VectorizedArray  
+* [0.x.271]*
+   Compute the absolute value (modulus) of a vectorized data field. The   result is returned as vectorized array in the form <tt>{abs(x[0]),   abs(x[1]), ..., abs(x[size()-1])}</tt>.      [2.x.155]  VectorizedArray  
+* [0.x.272]*
+   Compute the componentwise maximum of two vectorized data fields. The   result is returned as vectorized array in the form <tt>{max(x[0],y[0]),   max(x[1],y[1]), ...}</tt>.      [2.x.156]  VectorizedArray  
+* [0.x.273]*
+   Compute the componentwise minimum of two vectorized data fields. The   result is returned as vectorized array in the form <tt>{min(x[0],y[0]),   min(x[1],y[1]), ...}</tt>.      [2.x.157]  VectorizedArray  
+* [0.x.274]*
+   Iterator traits for VectorizedArrayIterator.  
+* [0.x.275]

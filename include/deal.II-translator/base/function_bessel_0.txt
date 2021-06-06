@@ -1,0 +1,6 @@
+[0.x.0]*
+   The Bessel functions of first kind or positive integer order.    
+*  [2.x.0]   
+* [0.x.1]*
+     Constructor.  [2.x.1]  must be nonnegative.    
+* [0.x.2]

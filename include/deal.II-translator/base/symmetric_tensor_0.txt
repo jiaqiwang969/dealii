@@ -1,0 +1,516 @@
+[0.x.0]*
+   A namespace for functions and classes that are internal to how the   SymmetricTensor class (and its associate functions) works.  
+* [0.x.1]*
+     Compute the inverse of a symmetric tensor of a     generic  [2.x.0]   [2.x.1]  and  [2.x.2]  type.    
+* [0.x.2]*
+   A namespace for classes that are internal to how the SymmetricTensor   class works.  
+* [0.x.3]*
+     Create a TableIndices<2> object where the first entries up to     <tt>position-1</tt> are taken from previous_indices, and new_index is     put at position <tt>position</tt>. The remaining indices remain in     invalid state.    
+* [0.x.4]*
+     Create a TableIndices<4> object where the first entries up to     <tt>position-1</tt> are taken from previous_indices, and new_index is     put at position <tt>position</tt>. The remaining indices remain in     invalid state.    
+* [0.x.5]*
+     Typedef template magic denoting the result of a double contraction     between two tensors or ranks rank1 and rank2. In general, this is a     tensor of rank <tt>rank1+rank2-4</tt>, but if this is zero it is a     single scalar Number. For this case, we have a specialization.    
+* [0.x.6]*
+     Typedef template magic denoting the result of a double contraction     between two tensors or ranks rank1 and rank2. In general, this is a     tensor of rank <tt>rank1+rank2-4</tt>, but if this is zero it is a     single scalar Number. For this case, we have a specialization.    
+* [0.x.7]*
+     Declaration of alias for the type of data structures which are used     to store symmetric tensors. For example, for rank-2 symmetric tensors,     we use a flat vector to store all the elements. On the other hand,     symmetric rank-4 tensors are mappings from symmetric rank-2 tensors     into symmetric rank-2 tensors, so they can be represented as matrices,     etc.         This information is probably of little interest to all except the     accessor classes that need it. In particular, you shouldn't make any     assumptions about the storage format in your application programs.    
+* [0.x.8]*
+     Specialization of StorageType for rank-2 tensors.    
+* [0.x.9]*
+       Number of independent components of a symmetric tensor of rank 2. We       store only the upper right half of it.      
+* [0.x.10]*
+       Declare the type in which we actually store the data.      
+* [0.x.11]*
+     Specialization of StorageType for rank-4 tensors.    
+* [0.x.12]*
+       Number of independent components of a symmetric tensor of rank 2.       Since rank-4 tensors are mappings between such objects, we need this       information.      
+* [0.x.13]*
+       Number of independent components of a symmetric tensor of rank 4.      
+* [0.x.14]*
+       Declare the type in which we actually store the data. Symmetric       rank-4 tensors are mappings between symmetric rank-2 tensors, so we       can represent the data as a matrix if we represent the rank-2 tensors       as vectors.      
+* [0.x.15]*
+     Switch type to select a tensor of rank 2 and dimension <tt>dim</tt>,     switching on whether the tensor should be constant or not.    
+* [0.x.16]*
+     Switch type to select a tensor of rank 2 and dimension <tt>dim</tt>,     switching on whether the tensor should be constant or not.         Specialization for constant tensors.    
+* [0.x.17]*
+     Switch type to select a tensor of rank 2 and dimension <tt>dim</tt>,     switching on whether the tensor should be constant or not.         Specialization for non-constant tensors.    
+* [0.x.18]*
+      [2.x.3]          Class that acts as accessor to elements of type SymmetricTensor. The     template parameter <tt>constness</tt> may be either true or false, and     indicates whether the objects worked on are constant or not (i.e. write     access is only allowed if the value is false).         Since with <tt>N</tt> indices, the effect of applying     <tt>operator[]</tt> is getting access to something with <tt>N-1</tt>     indices, we have to implement these accessor classes recursively, with     stopping when we have only one index left. For the latter case, a     specialization of this class is declared below, where calling     <tt>operator[]</tt> gives you access to the objects actually stored by     the tensor; the tensor class also makes sure that only those elements     are actually accessed which we actually store, i.e. it reorders indices     if necessary. The template parameter <tt>P</tt> indicates how many     remaining indices there are. For a rank-2 tensor, <tt>P</tt> may be     two, and when using <tt>operator[]</tt>, an object with <tt>P=1</tt>     emerges.         As stated for the entire namespace, you will not usually have to do     with these classes directly, and should not try to use their interface     directly as it may change without notice. In fact, since the     constructors are made private, you will not even be able to generate     objects of this class, as they are only thought as temporaries for     access to elements of the table class, not for passing them around as     arguments of functions, etc.         This class is an adaptation of a similar class used for the Table     class.    
+* [0.x.19]*
+       Import two alias from the switch class above.      
+* [0.x.20]*
+       Constructor. Take a reference to the tensor object which we will       access.             The second argument denotes the values of previous indices into the       tensor. For example, for a rank-4 tensor, if P=2, then we will       already have had two successive element selections (e.g. through       <tt>tensor[1][2]</tt>), and the two index values have to be stored       somewhere. This class therefore only makes use of the first rank-P       elements of this array, but passes it on to the next level with P-1       which fills the next entry, and so on.             The constructor is made private in order to prevent you having such       objects around. The only way to create such objects is via the       <tt>Table</tt> class, which only generates them as temporary objects.       This guarantees that the accessor objects go out of scope earlier       than the mother object, avoid problems with data consistency.      
+* [0.x.21]*
+       Copy constructor.      
+* [0.x.22]*
+       Index operator.      
+* [0.x.23]*
+       Index operator.      
+* [0.x.24]*
+       Store the data given to the constructor.      
+* [0.x.25]*
+      [2.x.4]  Accessor class for SymmetricTensor. This is the     specialization for the last index, which actually allows access to the     elements of the table, rather than recursively returning access objects     for further subsets. The same holds for this specialization as for the     general template; see there for more information.    
+* [0.x.26]*
+       Import two alias from the switch class above.      
+* [0.x.27]*
+       Constructor. Take a reference to the tensor object which we will       access.             The second argument denotes the values of previous indices into the       tensor. For example, for a rank-4 tensor, if P=2, then we will       already have had two successive element selections (e.g. through       <tt>tensor[1][2]</tt>), and the two index values have to be stored       somewhere. This class therefore only makes use of the first rank-P       elements of this array, but passes it on to the next level with P-1       which fills the next entry, and so on.             For this particular specialization, i.e. for P==1, all but the last       index are already filled.             The constructor is made private in order to prevent you having such       objects around. The only way to create such objects is via the       <tt>Table</tt> class, which only generates them as temporary objects.       This guarantees that the accessor objects go out of scope earlier       than the mother object, avoid problems with data consistency.      
+* [0.x.28]*
+       Copy constructor.      
+* [0.x.29]*
+       Index operator.      
+* [0.x.30]*
+       Index operator.      
+* [0.x.31]*
+       Store the data given to the constructor.      
+* [0.x.32]*
+ Provide a class that stores symmetric tensors of rank 2,4,... efficiently, i.e. only store those off-diagonal elements of the full tensor that are not redundant. For example, for symmetric  [2.x.5]  tensors, this would be the elements 11, 22, and 12, while the element 21 is equal to the 12 element. Within this documentation, second order symmetric tensors are denoted as bold-faced upper-case Latin letters such as  [2.x.6]  or bold-faced Greek letters such as  [2.x.7] ,  [2.x.8] . The Cartesian coordinates of a second-order tensor such as  [2.x.9]  are represented as  [2.x.10]  where  [2.x.11]  are indices ranging from 0 to <tt>dim-1</tt>.
+*  Using this class for symmetric tensors of rank 2 has advantages over matrices in many cases since the dimension is known to the compiler as well as the location of the data. It is therefore possible to produce far more efficient code than for matrices with runtime-dependent dimension. It is also more efficient than using the more general <tt>Tensor</tt> class, since fewer elements are stored, and the class automatically makes sure that the tensor represents a symmetric object.
+*  For tensors of higher rank, the savings in storage are even higher. For example for the  [2.x.12]  tensors of rank 4, only 36 instead of the full 81 entries have to be stored. These rank 4 tensors are denoted by blackboard-style upper-case Latin letters such as  [2.x.13]  with components  [2.x.14] .
+*  While the definition of a symmetric rank-2 tensor is obvious, tensors of rank 4 are considered symmetric if they are operators mapping symmetric rank-2 tensors onto symmetric rank-2 tensors. This so-called minor symmetry of the rank 4 tensor requires that for every set of four indices  [2.x.15] , the identity  [2.x.16]  holds. However, it does not imply the relation  [2.x.17] . Consequently, symmetric tensors of rank 4 as understood here are only tensors that map symmetric tensors onto symmetric tensors, but they do not necessarily induce a symmetric scalar product  [2.x.18]  or even a positive (semi-)definite form  [2.x.19] , where  [2.x.20]  are symmetric rank-2 tensors and the colon indicates the common double-index contraction that acts as a scalar product for symmetric tensors.
+*  Symmetric tensors are most often used in structural and fluid mechanics, where strains and stresses are usually symmetric tensors, and the stress-strain relationship is given by a symmetric rank-4 tensor.
+* 
+
+* 
+*  [2.x.21]  Symmetric tensors only exist with even numbers of indices. In other words, the only objects that you can use are <tt>SymmetricTensor<2,dim></tt>, <tt>SymmetricTensor<4,dim></tt>, etc, but <tt>SymmetricTensor<1,dim></tt> and <tt>SymmetricTensor<3,dim></tt> do not exist and their use will most likely lead to compiler errors.
+* 
+
+*  [1.x.0]
+*  The elements of a tensor  [2.x.22]  can be accessed using the bracket operator, i.e. for a tensor of rank 4, <tt>C[0][1][0][1]</tt> accesses the element  [2.x.23] . This access can be used for both reading and writing (if the tensor is non-constant at least). You may also perform other operations on it, although that may lead to confusing situations because several elements of the tensor are stored at the same location. For example, for a rank-2 tensor that is assumed to be zero at the beginning, writing <tt>A[0][1]+=1; A[1][0]+=1;</tt> will lead to the same element being increased by one  [2.x.24] twice [2.x.25] , because even though the accesses use different indices, the elements that are accessed are symmetric and therefore stored at the same location. It may therefore be useful in application programs to restrict operations on individual elements to simple reads or writes.
+* 
+
+* 
+*  [2.x.26] 
+
+* 
+* [0.x.33]*
+   Provide a way to get the dimension of an object without explicit   knowledge of it's data type. Implementation is this way instead of   providing a function <tt>dimension()</tt> because now it is possible to   get the dimension at compile time without the expansion and preevaluation   of an inlined function; the compiler may therefore produce more efficient   code and you may use this value to declare other data types.  
+* [0.x.34]*
+   Publish the rank of this tensor to the outside world.  
+* [0.x.35]*
+   An integer denoting the number of independent components that fully   describe a symmetric tensor. In  [2.x.27]  space dimensions, this number equals    [2.x.28]  for symmetric tensors of rank 2.  
+* [0.x.36]*
+   Default constructor. Creates a tensor with all entries equal to zero.  
+* [0.x.37]*
+   Constructor. Generate a symmetric tensor from a general one. Assumes that    [2.x.29]  is already symmetric, and in debug mode this is in fact checked.   Note that no provision is made to assure that the tensor is symmetric   only up to round-off error: if the incoming tensor is not exactly   symmetric, then an exception is thrown. If you know that incoming tensor   is symmetric only up to round-off, then you may want to call the   <tt>symmetrize()</tt> function first. If you aren't sure, it is good   practice to check before calling <tt>symmetrize()</tt>.     Because we check for symmetry via a non-constexpr function call, you will   have to use the symmetrize() function in constexpr contexts instead.  
+* [0.x.38]*
+   A constructor that creates a symmetric tensor from an array holding its   independent elements. Using this constructor assumes that the caller   knows the order in which elements are stored in symmetric tensors; its   use is therefore discouraged, but if you think you want to use it anyway   you can query the order of elements using the unrolled_index() function.     This constructor is currently only implemented for symmetric tensors of   rank 2.     The size of the array passed is equal to    [2.x.30]  the reason for using   the object from the internal namespace is to work around bugs in some   older compilers.  
+* [0.x.39]*
+   Copy constructor from tensors with different underlying scalar type. This   obviously requires that the  [2.x.31]  type is convertible to  [2.x.32]    Number.  
+* [0.x.40]*
+   Return a pointer to the first element of the underlying storage.  
+* [0.x.41]*
+   Return a const pointer to the first element of the underlying storage.  
+* [0.x.42]*
+   Return a pointer to the element past the end of the underlying storage.  
+* [0.x.43]*
+   Return a const pointer to the element past the end of the underlying   storage.  
+* [0.x.44]*
+   Assignment operator from symmetric tensors with different underlying scalar   type.   This obviously requires that the  [2.x.33]  type is convertible to    [2.x.34]   
+* [0.x.45]*
+   This operator assigns a scalar to a tensor. To avoid confusion with what   exactly it means to assign a scalar value to a tensor, zero is the only   value allowed for <tt>d</tt>, allowing the intuitive notation    [2.x.35]  to reset all elements of the tensor to zero.  
+* [0.x.46]*
+   Convert the present symmetric tensor into a full tensor with the same   elements, but using the different storage scheme of full tensors.  
+* [0.x.47]*
+   Test for equality of two tensors.  
+* [0.x.48]*
+   Test for inequality of two tensors.  
+* [0.x.49]*
+   Add another tensor.  
+* [0.x.50]*
+   Subtract another tensor.  
+* [0.x.51]*
+   Scale the tensor by <tt>factor</tt>, i.e. multiply all components by   <tt>factor</tt>.  
+* [0.x.52]*
+   Scale the tensor by <tt>1/factor</tt>.  
+* [0.x.53]*
+   Unary minus operator. Negate all entries of a tensor.  
+* [0.x.54]*
+   Double contraction product between the present symmetric tensor and a   tensor of rank 2. For example, if the present object is the symmetric   rank-2 tensor  [2.x.36]  and it is multiplied by another symmetric   rank-2 tensor  [2.x.37] , then the result is the scalar-product double   contraction  [2.x.38] .   In this case, the return value evaluates to a single   scalar. While it is possible to define other scalar products (and   associated induced norms), this one seems to be the most appropriate one.     If the present object is a rank-4 tensor such as  [2.x.39] , then the   result is a rank-2 tensor  [2.x.40] , i.e.,   the operation contracts over the last two indices of the present object   and the indices of the argument, and the result is a tensor of rank 2   ( [2.x.41] ).     Note that the multiplication operator for symmetric tensors is defined to   be a double contraction over two indices, while it is defined as a single   contraction over only one index for regular <tt>Tensor</tt> objects. For   symmetric tensors it therefore acts in a way that is commonly denoted by   a "colon multiplication" in the mathematical literature.     There are global functions <tt>double_contract</tt> that do the same work   as this operator, but rather than returning the result as a return value,   they write it into the first argument to the function.  
+* [0.x.55]*
+   Contraction over two indices of the present object with the rank-4   symmetric tensor given as argument.  
+* [0.x.56]*
+   Return a read-write reference to the indicated element.  
+* [0.x.57]*
+   Return a  [2.x.42]  reference to the value referred to by the argument.  
+* [0.x.58]*
+   Access the elements of a row of this symmetric tensor. This function is   called for constant tensors.  
+* [0.x.59]*
+   Access the elements of a row of this symmetric tensor. This function is   called for non-constant tensors.  
+* [0.x.60]*
+   Return a  [2.x.43]  reference to the value referred to by the argument.     Exactly the same as operator().  
+* [0.x.61]*
+   Return a read-write reference to the indicated element.     Exactly the same as operator().  
+* [0.x.62]*
+   Access to an element according to unrolled index. The function   <tt>s.access_raw_entry(unrolled_index)</tt> does the same as   <tt>s[s.unrolled_to_component_indices(unrolled_index)]</tt>, but more   efficiently.  
+* [0.x.63]*
+   Access to an element according to unrolled index. The function   <tt>s.access_raw_entry(unrolled_index)</tt> does the same as   <tt>s[s.unrolled_to_component_indices(unrolled_index)]</tt>, but more   efficiently.  
+* [0.x.64]*
+   Return the Frobenius-norm of a tensor, i.e. the square root of the sum of   squares of all entries. This norm is induced by the scalar product   defined above for two symmetric tensors. Note that it includes [1.x.1]   entries of the tensor, counting symmetry, not only the unique ones (for   example, for rank-2 tensors, this norm includes adding up the squares of   upper right as well as lower left entries, not just one of them, although   they are equal for symmetric tensors).  
+* [0.x.65]*
+   Tensor objects can be unrolled by simply pasting all elements into one   long vector, but for this an order of elements has to be defined. For   symmetric tensors, this function returns which index within the range    [2.x.44]  the given entry in a symmetric   tensor has.  
+* [0.x.66]*
+   The opposite of the previous function: given an index  [2.x.45]  in the unrolled   form of the tensor, return what set of indices  [2.x.46]  (for rank-2   tensors) or  [2.x.47]  (for rank-4 tensors) corresponds to it.  
+* [0.x.67]*
+   Reset all values to zero.     Note that this is partly inconsistent with the semantics of the  [2.x.48]    clear() member functions of the standard library containers and of   several other classes within deal.II, which not only reset the values of   stored elements to zero, but release all memory and return the object   into a virginial state. However, since the size of objects of the present   type is determined by its template parameters, resizing is not an option,   and indeed the state where all elements have a zero value is the state   right after construction of such an object.  
+* [0.x.68]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.69]*
+   Read or write the data of this object to or from a stream for the purpose   of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.70]*
+   A structure that describes properties of the base tensor.  
+* [0.x.71]*
+   Data storage type for a symmetric tensor.  
+* [0.x.72]*
+   The place where we store the data of the tensor.  
+* [0.x.73]*
+ Addition of two symmetric tensors of equal rank. The result is another SymmetricTensor that has a number type that is compatible with the operation.
+*  If possible (e.g. when  [2.x.49]  and  [2.x.50]  are of the same type, or if the result of  [2.x.51]  is another  [2.x.52]  you should use <tt>operator+=</tt> instead since this does not require the creation of a temporary variable.
+*   [2.x.53]  SymmetricTensor
+
+* 
+* [0.x.74]*
+ Subtraction of two symmetric tensors of equal rank. The result is another SymmetricTensor that has a number type that is compatible with the operation.
+*  If possible (e.g. when  [2.x.54]  and  [2.x.55]  are of the same type, or if the result of <code>Number()
+* 
+*  - OtherNumber()</code> is another  [2.x.56]  you should use <tt>operator-=</tt> instead since this does not require the creation of a temporary variable.
+*   [2.x.57]  SymmetricTensor
+
+* 
+* [0.x.75]*
+ Addition of a SymmetricTensor and a general Tensor of equal rank. The result is a general Tensor that has a number type that is compatible with the operation.
+*   [2.x.58]  SymmetricTensor
+
+* 
+* [0.x.76]*
+ Addition of a general Tensor with a SymmetricTensor of equal rank. The result is a general Tensor that has a number type that is compatible with the operation.
+*   [2.x.59]  SymmetricTensor
+
+* 
+* [0.x.77]*
+ Subtraction of a general Tensor from a SymmetricTensor of equal rank. The result is a general Tensor that has a number type that is compatible with the operation.
+*   [2.x.60]  SymmetricTensor
+
+* 
+* [0.x.78]*
+ Subtraction of a SymmetricTensor from a general Tensor of equal rank. The result is a general Tensor that has a number type that is compatible with the operation.
+*   [2.x.61]  SymmetricTensor
+
+* 
+* [0.x.79]*
+ Compute the determinant of a rank 2 symmetric tensor. The determinant is also commonly referred to as the third invariant of rank-2 tensors.
+*  For a one-dimensional tensor, the determinant equals the only element and is therefore equivalent to the trace.
+*  For greater notational simplicity, there is also a <tt>third_invariant()</tt> function that returns the determinant of a tensor.
+*   [2.x.62]  SymmetricTensor
+
+* 
+* [0.x.80]*
+ Compute the determinant of a rank 2 symmetric tensor. This function therefore computes the same value as the <tt>determinant()</tt> functions and is only provided for greater notational simplicity (since there are also functions first_invariant() and second_invariant()). [1.x.2]
+*   [2.x.63]  SymmetricTensor
+
+* 
+* [0.x.81]*
+ Compute and return the trace of a tensor of rank 2, i.e. the sum of its diagonal entries. The trace is the first invariant of a rank-2 tensor. [1.x.3]
+*   [2.x.64]  SymmetricTensor
+
+* 
+* [0.x.82]*
+ Compute the trace of a rank 2 symmetric tensor. This function therefore computes the same value as the <tt>trace()</tt> functions and is only provided for greater notational simplicity (since there are also functions second_invariant() and third_invariant()). [1.x.4]
+*   [2.x.65]  SymmetricTensor
+
+* 
+* [0.x.83]*
+ Compute the second invariant of a tensor of rank 2. The second invariant of a tensor  [2.x.66]  is defined as  [2.x.67] .
+*  For the kind of arguments to this function, i.e., a rank-2 tensor of size 1, the result is simply zero.
+*   [2.x.68]  SymmetricTensor
+
+* 
+* [0.x.84]*
+ Compute the second invariant of a tensor of rank 2. The second invariant of a tensor  [2.x.69]  is defined as  [2.x.70] .
+*  For the kind of arguments to this function, i.e., a symmetric rank-2 tensor of size 2, the result is (counting indices starting at one)  [2.x.71] . As expected, for the  [2.x.72]  symmetric tensors this function handles, this equals the determinant of the tensor. (This is so because for  [2.x.73]  symmetric tensors, there really are only two invariants, so the second and third invariant are the same; the determinant is the third invariant.)
+*   [2.x.74]  SymmetricTensor
+
+* 
+* [0.x.85]*
+ Compute the second invariant of a tensor of rank 2. The second invariant of a tensor  [2.x.75]  is defined as  [2.x.76] .
+*   [2.x.77]  SymmetricTensor
+
+* 
+* [0.x.86]*
+ Return the eigenvalues of a symmetric  [2.x.78]  tensor. The (single) entry of the tensor is, of course, equal to the (single) eigenvalue.
+*   [2.x.79]  SymmetricTensor
+
+* 
+* [0.x.87]*
+ Return the eigenvalues of a symmetric  [2.x.80]  tensor. The array of eigenvalues is sorted in descending order.
+*  For  [2.x.81]  tensors, the eigenvalues of tensor  [2.x.82]  are the roots of [1.x.5]  [2.x.83]  as given by  [2.x.84] .
+*   [2.x.85]  The algorithm employed here determines the eigenvalues by computing the roots of the characteristic polynomial. In the case that there exists a common root (the eigenvalues are equal), the computation is [1.x.6] of order  [2.x.86] . As an alternative, the eigenvectors() function provides a more robust, but costly, method to compute the eigenvalues of a symmetric tensor.
+*   [2.x.87]  SymmetricTensor
+
+* 
+* [0.x.88]*
+ Return the eigenvalues of a symmetric  [2.x.88]  tensor. The array of eigenvalues is sorted in descending order.
+*  For  [2.x.89]  tensors, the eigenvalues of tensor  [2.x.90]  are the roots of [1.x.7]  [2.x.91] .
+*   [2.x.92]  The algorithm employed here determines the eigenvalues by computing the roots of the characteristic polynomial. In the case that there exists a common root (the eigenvalues are equal), the computation is [1.x.8] of order  [2.x.93] . As an alternative, the eigenvectors() function provides a more robust, but costly, method to compute the eigenvalues of a symmetric tensor.
+*   [2.x.94]  SymmetricTensor
+
+* 
+* [0.x.89]*
+     Tridiagonalize a rank-2 symmetric tensor using the Householder method.     The specialized algorithm implemented here is given in    
+* [1.x.9]
+*      and is based off of the generic algorithm presented in section 11.3.2 of    
+* [1.x.10]
+*           [2.x.95]   A This tensor to be tridiagonalized      [2.x.96]  Q The orthogonal matrix effecting the transformation      [2.x.97]  d The diagonal elements of the tridiagonal matrix      [2.x.98]  e The off-diagonal elements of the tridiagonal matrix    
+* [0.x.90]*
+     Compute the eigenvalues and eigenvectors of a real-valued rank-2     symmetric tensor using the QL algorithm with implicit shifts.     The specialized algorithm implemented here is given in    
+* [1.x.11]
+*      and is based off of the generic algorithm presented in section 11.4.3 of    
+* [1.x.12]
+*           [2.x.99]  A The tensor of which the eigenvectors and eigenvalues are     to be computed.          [2.x.100]  An array containing the eigenvectors and the associated eigenvalues.     The array is not sorted in any particular order.    
+* [0.x.91]*
+     Compute the eigenvalues and eigenvectors of a real-valued rank-2     symmetric tensor using the Jacobi algorithm.     The specialized algorithm implemented here is given in    
+* [1.x.13]
+*      and is based off of the generic algorithm presented in section 11.4.3 of    
+* [1.x.14]
+*           [2.x.101]  A The tensor of which the eigenvectors and eigenvalues are     to be computed.          [2.x.102]  An array containing the eigenvectors and the associated eigenvalues.     The array is not sorted in any particular order.    
+* [0.x.92]*
+     Compute the eigenvalues and eigenvectors of a real-valued rank-2     symmetric 2x2 tensor using the characteristic equation to compute     eigenvalues and an analytical approach based on the cross-product for the     eigenvectors. If the computations are deemed too inaccurate then the     method falls back to ql_implicit_shifts.          [2.x.103]  A The tensor of which the eigenvectors and eigenvalues are     to be computed.          [2.x.104]  An array containing the eigenvectors and the associated eigenvalues.     The array is not sorted in any particular order.    
+* [0.x.93]*
+     Compute the eigenvalues and eigenvectors of a real-valued rank-2     symmetric 3x3 tensor using the characteristic equation to compute     eigenvalues and an analytical approach based on the cross-product for the     eigenvectors. If the computations are deemed too inaccurate then the     method falls back to ql_implicit_shifts. The specialized algorithm     implemented here is given in    
+* [1.x.15]
+*           [2.x.105]  A The tensor of which the eigenvectors and eigenvalues are     to be computed.          [2.x.106]  An array containing the eigenvectors and the associated eigenvalues.     The array is not sorted in any particular order.    
+* [0.x.94]*
+     A struct that is used to sort arrays of pairs of eign=envalues and     eigenvectors. Sorting is performed in descending order of eigenvalue.    
+* [0.x.95]*
+ An enumeration for the algorithm to be employed when performing the computation of normalized eigenvectors and their corresponding eigenvalues by the eigenvalues() and eigenvectors() methods operating on SymmetricTensor objects.
+*  The specialized algorithms utilized in computing the eigenvectors are presented in
+
+* 
+* [1.x.16]
+* 
+
+* 
+* [0.x.96]*
+   A hybrid approach that preferentially uses the characteristic equation to   compute eigenvalues and an analytical approach based on the cross-product   for the eigenvectors. If the computations are deemed too inaccurate then   the method falls back to ql_implicit_shifts.     This method potentially offers the quickest computation if the pathological   case is not encountered.  
+* [0.x.97]*
+   The iterative QL algorithm with implicit shifts applied after   tridiagonalization of the tensor using the householder method.     This method offers a compromise between speed of computation and its   robustness. This method is particularly useful when the elements   of  [2.x.107]  have greatly varying magnitudes, which would typically lead to a   loss of accuracy when computing the smaller eigenvalues.  
+* [0.x.98]*
+   The iterative Jacobi algorithm.     This method offers is the most robust of the available options, with   reliable results obtained for even the most pathological cases. It is,   however, the slowest algorithm of all of those implemented.  
+* [0.x.99]*
+ Return the eigenvalues and eigenvectors of a real-valued rank-2 symmetric tensor  [2.x.108] . The array of matched eigenvalue and eigenvector pairs is sorted in descending order (determined by the eigenvalues).
+*  The specialized algorithms utilized in computing the eigenvectors are presented in
+
+* 
+* [1.x.17]
+* 
+*   [2.x.109]  SymmetricTensor
+
+* 
+* [0.x.100]*
+ Return the transpose of the given symmetric tensor. Since we are working with symmetric objects, the transpose is of course the same as the original tensor. This function mainly exists for compatibility with the Tensor class.
+*   [2.x.110]  SymmetricTensor
+
+* 
+* [0.x.101]*
+ Compute the deviator of a symmetric tensor, which is defined as  [2.x.111] , where  [2.x.112]  is the identity operator. This quantity equals the original tensor minus its contractive or dilative component and refers to the shear in, for example, elasticity.
+*   [2.x.113]  SymmetricTensor
+
+* 
+* [0.x.102]*
+ Return a unit symmetric tensor of rank 2, i.e., the  [2.x.114]  identity matrix  [2.x.115] .
+*   [2.x.116]  SymmetricTensor
+
+* 
+* [0.x.103]*
+ unit_symmetric_tensor<dim>() is the specialization of the function unit_symmetric_tensor<dim,Number>() which uses  [2.x.117]  as the data type for the elements.
+*   [2.x.118]  SymmetricTensor
+
+* 
+* [0.x.104]*
+ Return the tensor of rank 4 that, when multiplied by a symmetric rank 2 tensor  [2.x.119]  returns the deviator  [2.x.120] . It is the operator representation of the linear deviator operator  [2.x.121] , also known as the volumetric projection tensor, calculated as: [1.x.18]
+*  For every tensor <tt>T</tt>, there holds the identity <tt>deviator<dim,Number>(T) == deviator_tensor<dim,Number>() T</tt>, up to numerical round-off. [1.x.19]
+* 
+
+* 
+*  [2.x.122]  The reason this operator representation is provided is to simplify taking derivatives of the deviatoric part of tensors: [1.x.20]
+*   [2.x.123]  SymmetricTensor
+
+* 
+* [0.x.105]*
+ This version of the deviator_tensor<dim>() function is a specialization of deviator_tensor<dim,Number>() that uses <tt>double</tt> as the data type for the elements of the tensor.
+*   [2.x.124]  SymmetricTensor
+
+* 
+* [0.x.106]*
+ Return the fourth-order symmetric identity tensor  [2.x.125]  which maps symmetric second-order tensors, such as   [2.x.126] , to themselves. [1.x.21]
+*  Note that this tensor, even though it is the identity, has a somewhat funny form, and in particular does not only consist of zeros and ones. For example, for <tt>dim=2</tt>, the identity tensor has all zero entries except for [1.x.22] [1.x.23] In index notation, we can write the general form [1.x.24] To see why this factor of  [2.x.127]  is necessary, consider computing  [2.x.128] . For the element  [2.x.129]  we have  [2.x.130] . On the other hand, we need to have  [2.x.131] , and symmetry implies  [2.x.132] , leading to  [2.x.133] , or, again by symmetry,  [2.x.134] . Similar considerations hold for the three-dimensional case.
+*  This issue is also explained in the introduction to  [2.x.135] .
+*   [2.x.136]  SymmetricTensor
+
+* 
+* [0.x.107]*
+ This version of the identity_tensor<dim>() function is the specialization of identity_tensor<dim,Number>() which uses <tt>double</tt> as the data type for the elements of the tensor.
+*   [2.x.137]  SymmetricTensor
+
+* 
+* [0.x.108]*
+ Invert a symmetric rank-2 tensor.
+* 
+
+* 
+*  [2.x.138]  If a tensor is not invertible, then the result is unspecified, but will likely contain the results of a division by zero or a very small number at the very least.
+*   [2.x.139]  SymmetricTensor
+
+* 
+* [0.x.109]*
+ Invert a symmetric rank-4 tensor. Since symmetric rank-4 tensors are mappings from and to symmetric rank-2 tensors, they can have an inverse.
+*  If a tensor is not invertible, then the result is unspecified, but will likely contain the results of a division by zero or a very small number at the very least.
+*   [2.x.140]  SymmetricTensor
+
+* 
+* [0.x.110]*
+ Return the tensor of rank 4 that is the outer product of the two tensors given as arguments, i.e. the result  [2.x.141]  satisfies  [2.x.142]  for all symmetric tensors  [2.x.143] . In index notation [1.x.25]
+*  For example, the deviator tensor  [2.x.144]  can be computed as <tt>identity_tensor<dim>()
+* 
+*  - 1/d outer_product (unit_symmetric_tensor<dim>(), unit_symmetric_tensor<dim>())</tt>, since the (double) contraction with the unit tensor yields the trace of a symmetric tensor ( [2.x.145] ).
+*   [2.x.146]  SymmetricTensor
+
+* 
+* [0.x.111]*
+ Return the symmetrized version of a full rank-2 tensor, i.e.  [2.x.147] , as a symmetric rank-2 tensor. This is the version for general dimensions.
+*   [2.x.148]  SymmetricTensor
+
+* 
+* [0.x.112]*
+ Multiplication of a symmetric tensor of general rank with a scalar from the right. This version of the operator is used if the scalar has the same data type as is used to store the elements of the symmetric tensor.
+*   [2.x.149]  SymmetricTensor
+
+* 
+* [0.x.113]*
+ Multiplication of a symmetric tensor of general rank with a scalar from the left. This version of the operator is used if the scalar has the same data type as is used to store the elements of the symmetric tensor.
+*   [2.x.150]  SymmetricTensor
+
+* 
+* [0.x.114]*
+ Multiplication of a symmetric tensor with a scalar number from the right.
+*  The purpose of this operator is to enable only multiplication of a tensor by a scalar number (i.e., a floating point number, a complex floating point number, etc.). The function is written in a way that only allows the compiler to consider the function if the second argument is indeed a scalar number
+* 
+*  -  in other words,  [2.x.151]  will not match, for example  [2.x.152]  as the product of a tensor and a vector clearly would make no sense. The mechanism by which the compiler is prohibited of considering this operator for multiplication with non-scalar types are explained in the documentation of the EnableIfScalar class.
+*  The return type of the function is chosen so that it matches the types of both the tensor and the scalar argument. For example, if you multiply a  [2.x.153]  by  [2.x.154] , then the result will be a  [2.x.155] . In other words, the type with which the returned tensor stores its components equals the type you would get if you multiplied an individual component of the input tensor by the scalar factor.
+*   [2.x.156]  SymmetricTensor  [2.x.157]  EnableIfScalar
+
+* 
+* [0.x.115]*
+ Multiplication of a symmetric tensor with a scalar number from the left. See the discussion with the operator with switched arguments for more information about template arguments and the return type.
+*   [2.x.158]  SymmetricTensor  [2.x.159]  EnableIfScalar
+
+* 
+* [0.x.116]*
+ Division of a symmetric tensor of general rank by a scalar.
+*   [2.x.160]  SymmetricTensor
+
+* 
+* [0.x.117]*
+ Multiplication of a symmetric tensor of general rank with a scalar from the right.
+*   [2.x.161]  SymmetricTensor
+
+* 
+* [0.x.118]*
+ Multiplication of a symmetric tensor of general rank with a scalar from the left.
+*   [2.x.162]  SymmetricTensor
+
+* 
+* [0.x.119]*
+ Division of a symmetric tensor of general rank by a scalar.
+*   [2.x.163]  SymmetricTensor
+
+* 
+* [0.x.120]*
+ Compute the scalar product  [2.x.164]  between two tensors  [2.x.165]  of rank 2. In the current case where both arguments are symmetric tensors, this is equivalent to calling the expression  [2.x.166]  which uses  [2.x.167] .
+*   [2.x.168]  SymmetricTensor
+
+* 
+* [0.x.121]*
+ Compute the scalar product  [2.x.169]  between two tensors  [2.x.170]  of rank 2. We don't use  [2.x.171]  for this operation since the product between two tensors is usually assumed to be the contraction over the last index of the first tensor and the first index of the second tensor. For example, if <tt>B</tt> is a Tensor, calling <tt>A*B</tt> (instead of <tt>scalar_product(A,B)</tt>) provides  [2.x.172] .
+*   [2.x.173]  Tensor  [2.x.174]  SymmetricTensor
+
+* 
+* [0.x.122]*
+ Compute the scalar product  [2.x.175]  between two tensors  [2.x.176]  of rank 2. We don't use  [2.x.177]  for this operation since the product between two tensors is usually assumed to be the contraction over the last index of the first tensor and the first index of the second tensor. For example, if <tt>A</tt> is a Tensor, calling <tt>A*B</tt> (instead of <tt>scalar_product(A,B)</tt>) provides  [2.x.178] .
+*   [2.x.179]  Tensor  [2.x.180]  SymmetricTensor
+
+* 
+* [0.x.123]*
+ Double contraction between a rank-4 and a rank-2 symmetric tensor, resulting in the symmetric tensor of rank 2 that is given as first argument to this function. This operation is the symmetric tensor analogon of a matrix-vector multiplication.
+*  This function does the same as  [2.x.181]  It should not be used, however, since the member operator has knowledge of the actual data storage format and is at least 2 orders of magnitude faster. This function mostly exists for compatibility purposes with the general Tensor class.
+*   [2.x.182]  SymmetricTensor
+
+* 
+* [0.x.124]*
+ Double contraction between a rank-4 and a rank-2 symmetric tensor, resulting in the symmetric tensor of rank 2 that is given as first argument to this function. This operation is the symmetric tensor analogon of a matrix-vector multiplication.
+*  This function does the same as  [2.x.183]  It should not be used, however, since the member operator has knowledge of the actual data storage format and is at least 2 orders of magnitude faster. This function mostly exists for compatibility purposes with the general Tensor class.
+*   [2.x.184]  SymmetricTensor
+
+* 
+* [0.x.125]*
+ Double contraction between a rank-4 and a rank-2 symmetric tensor, resulting in the symmetric tensor of rank 2 that is given as first argument to this function. This operation is the symmetric tensor analogon of a matrix-vector multiplication.
+*  This function does the same as  [2.x.185]  It should not be used, however, since the member operator has knowledge of the actual data storage format and is at least 2 orders of magnitude faster. This function mostly exists for compatibility purposes with the general Tensor class.
+*   [2.x.186]  SymmetricTensor
+
+* 
+* [0.x.126]*
+ Double contraction between a rank-4 and a rank-2 symmetric tensor, resulting in the symmetric tensor of rank 2 that is given as first argument to this function. This operation is the symmetric tensor analogon of a matrix-vector multiplication.
+*  This function does the same as  [2.x.187]  It should not be used, however, since the member operator has knowledge of the actual data storage format and is at least 2 orders of magnitude faster. This function mostly exists for compatibility purposes with the general Tensor class.
+*   [2.x.188]  SymmetricTensor
+
+* 
+* [0.x.127]*
+ Double contraction between a rank-4 and a rank-2 symmetric tensor, resulting in the symmetric tensor of rank 2 that is given as first argument to this function. This operation is the symmetric tensor analogon of a matrix-vector multiplication.
+*  This function does the same as  [2.x.189]  It should not be used, however, since the member operator has knowledge of the actual data storage format and is at least 2 orders of magnitude faster. This function mostly exists for compatibility purposes with the general Tensor class.
+*   [2.x.190]  SymmetricTensor
+
+* 
+* [0.x.128]*
+ Double contraction between a rank-4 and a rank-2 symmetric tensor, resulting in the symmetric tensor of rank 2 that is given as first argument to this function. This operation is the symmetric tensor analogon of a matrix-vector multiplication.
+*  This function does the same as  [2.x.191]  It should not be used, however, since the member operator has knowledge of the actual data storage format and is at least 2 orders of magnitude faster. This function mostly exists for compatibility purposes with the general Tensor class.
+*   [2.x.192]  SymmetricTensor
+
+* 
+* [0.x.129]*
+ Multiply a symmetric rank-2 tensor (i.e., a matrix) by a rank-1 tensor (i.e., a vector). The result is a rank-1 tensor (i.e., a vector).
+*   [2.x.193]  SymmetricTensor
+
+* 
+* [0.x.130]*
+ Multiply a rank-1 tensor (i.e., a vector) by a symmetric rank-2 tensor (i.e., a matrix). The result is a rank-1 tensor (i.e., a vector).
+*   [2.x.194]  SymmetricTensor
+
+* 
+* [0.x.131]*
+ The dot product (single contraction) for tensors: Return a tensor of rank  [2.x.195]  that is the contraction of the last index of a tensor  [2.x.196]  of rank  [2.x.197]  with the first index of a tensor  [2.x.198]  of rank  [2.x.199]  [1.x.26]
+* 
+
+* 
+*  [2.x.200]  As one operand is a Tensor, the multiplication operator only performs a contraction over a single pair of indices. This is in contrast to the multiplication operator for SymmetricTensor, which does the double contraction.
+*   [2.x.201]  SymmetricTensor
+
+* 
+* [0.x.132]*
+ The dot product (single contraction) for tensors: Return a tensor of rank  [2.x.202]  that is the contraction of the last index of a tensor  [2.x.203]  of rank  [2.x.204]  with the first index of a tensor  [2.x.205]  of rank  [2.x.206]  [1.x.27]
+* 
+
+* 
+*  [2.x.207]  As one operand is a Tensor, the multiplication operator only performs a contraction over a single pair of indices. This is in contrast to the multiplication operator for SymmetricTensor, which does the double contraction.
+*   [2.x.208]  SymmetricTensor
+
+* 
+* [0.x.133]*
+ Output operator for symmetric tensors of rank 2. Print the elements consecutively, with a space in between, two spaces between rank 1 subtensors, three between rank 2 and so on. No special amends are made to represents the symmetry in the output, for example by outputting only the unique entries.
+*   [2.x.209]  SymmetricTensor
+
+* 
+* [0.x.134]*
+ Output operator for symmetric tensors of rank 4. Print the elements consecutively, with a space in between, two spaces between rank 1 subtensors, three between rank 2 and so on. No special amends are made to represents the symmetry in the output, for example by outputting only the unique entries.
+*   [2.x.210]  SymmetricTensor
+
+* 
+* [0.x.135]

@@ -1,0 +1,124 @@
+[0.x.0]*
+  [2.x.0]  Use MappingFEField<dim, spacedim, VectorType> instead.
+
+* 
+* [0.x.1]*
+ The MappingFEField is a generalization of the MappingQEulerian class, for arbitrary vector finite elements. The two main differences are that this class uses a vector of absolute positions instead of a vector of displacements, and it allows for arbitrary FiniteElement types, instead of only FE_Q.
+*  This class effectively decouples the topology from the geometry, by relegating all geometrical information to some components of a FiniteElement vector field. The components that are used for the geometry can be arbitrarily selected at construction time.
+*  The idea is to consider the Triangulation as a parameter configuration space, on which we construct an arbitrary geometrical mapping, using the instruments of the deal.II library: a vector of degrees of freedom, a DoFHandler associated to the geometry of the problem and a ComponentMask that tells us which components of the FiniteElement to use for the mapping.
+*  Typically, the DoFHandler operates on a finite element that is constructed as a system element (FESystem()) from continuous FE_Q() (for iso-parametric discretizations) or FE_Bernstein() (for iso-geometric discretizations) objects. An example is shown below:
+* 
+
+* 
+* [1.x.0]
+* 
+
+* 
+* [0.x.2]*
+   Constructor. The first argument is a VectorType that specifies the   transformation of the domain from the reference to the current   configuration.     In general this class decouples geometry from topology, allowing users to   define geometries which are only topologically equivalent to the   underlying Triangulation, but which may otherwise be arbitrary.   Differently from what happens in MappingQEulerian, the FiniteElement   field which is passed to the constructor is interpreted as an absolute   geometrical configuration, therefore one has to make sure that the   euler_vector actually represents a valid geometry (i.e., one with no   inverted cells, or with no zero-volume cells).     If the underlying FiniteElement is a system of FE_Q(), and euler_vector   is initialized using  [2.x.1]  then this class   is in all respects identical to MappingQ().     The optional ComponentMask argument can be used to specify what   components of the FiniteElement to use for the geometrical   transformation. If no mask is specified at construction time, then a   default one is used, which makes this class works in the same way of   MappingQEulerian(), i.e., the first spacedim components of the   FiniteElement are assumed to represent the geometry of the problem.     Notice that if a mask is specified, it has to match in size the   underlying FiniteElement, and it has to have exactly spacedim non-zero   elements, indicating the components (in order) of the FiniteElement which   will be used for the geometry.     If an incompatible mask is passed, an exception is thrown.  
+* [0.x.3]*
+   Constructor taking vectors on the multigrid levels rather than the active   cells only. The vector of vectors is expected to have as many entries as   there are global levels in the triangulation and provide valid data on   each level, i.e., be of compatible length  [2.x.2]  A   prerequisite of this constructor is that  [2.x.3]    has been called. Apart from the level vectors, the same arguments as in   the other constructor need to be provided.  
+* [0.x.4]*
+   Constructor with MGLevelObject instead of  [2.x.4]  otherwise the same   as above. It is required that `euler_vector.max_level()+1` equals the   global number of levels in the triangulation. The minimum level may be   zero or more &mdash; it only needs to be consistent between what is set   here and later used for evaluation of the mapping.  
+* [0.x.5]*
+   Copy constructor.  
+* [0.x.6]*
+   Return a pointer to a copy of the present object. The caller of this copy   then assumes ownership of it.  
+* [0.x.7]*
+   See the documentation of  [2.x.5]    for the purpose of this function. The implementation in this   class always returns  [2.x.6]   
+* [0.x.8]*
+   Return the mapped vertices of a cell.     This mapping ignores the vertices of the Triangulation it is associated to,   and constructs the position of the vertices according to the  [2.x.7]    that was passed at construction time.  
+* [0.x.9]*
+    [2.x.8]  Mapping points between reference and real cells    [2.x.9]   
+* [0.x.10]*
+    [2.x.10]   
+* [0.x.11]*
+    [2.x.11]  Functions to transform tensors from reference to real coordinates    [2.x.12]   
+* [0.x.12]*
+    [2.x.13]   
+* [0.x.13]*
+   Return the degree of the mapping, i.e. the value which was passed to the   constructor.  
+* [0.x.14]*
+   Return the ComponentMask of the mapping, i.e. which components to use for   the mapping.  
+* [0.x.15]*
+   Exception  
+* [0.x.16]*
+    [2.x.14]  Interface with FEValues    [2.x.15]   
+* [0.x.17]*
+   Storage for internal data of this mapping. See  [2.x.16]    for an extensive description.     This includes data that is computed once when the object is created (in   get_data()) as well as data the class wants to store from between the   call to fill_fe_values(), fill_fe_face_values(), or   fill_fe_subface_values() until possible later calls from the finite   element to functions such as transform(). The latter class of member   variables are marked as 'mutable', along with scratch arrays.  
+* [0.x.18]*
+     Constructor.    
+* [0.x.19]*
+     Shape function at quadrature point. Shape functions are in tensor     product order, so vertices must be reordered to obtain transformation.    
+* [0.x.20]*
+     Shape function at quadrature point. See above.    
+* [0.x.21]*
+     Gradient of shape function in quadrature point. See above.    
+* [0.x.22]*
+     Gradient of shape function in quadrature point. See above.    
+* [0.x.23]*
+     Second derivative of shape function in quadrature point. See above.    
+* [0.x.24]*
+     Second derivative of shape function in quadrature point. See above.    
+* [0.x.25]*
+     Third derivative of shape function in quadrature point. See above.    
+* [0.x.26]*
+     Fourth derivative of shape function in quadrature point. See above.    
+* [0.x.27]*
+     Fourth derivative of shape function in quadrature point. See above.    
+* [0.x.28]*
+     Third derivative of shape function in quadrature point. See above.    
+* [0.x.29]*
+     Return an estimate (in bytes) for the memory consumption of this object.    
+* [0.x.30]*
+     Values of shape functions. Access by function  [2.x.17]          Computed once.    
+* [0.x.31]*
+     Values of shape function derivatives. Access by function  [2.x.18]          Computed once.    
+* [0.x.32]*
+     Values of shape function second derivatives. Access by function  [2.x.19]      second_derivative.         Computed once.    
+* [0.x.33]*
+     Values of shape function third derivatives. Access by function  [2.x.20]      third_derivative.         Computed once.    
+* [0.x.34]*
+     Values of shape function fourth derivatives. Access by function  [2.x.21]      fourth_derivative.         Computed once.    
+* [0.x.35]*
+     Unit tangential vectors. Used for the computation of boundary forms and     normal vectors.         This array has  [2.x.22]  entries. The     first  [2.x.23]  contain the vectors in the first     tangential direction for each face; the second set of      [2.x.24]  entries contain the vectors in the second     tangential direction (only in 3d, since there we have 2 tangential     directions per face), etc.         Filled once.    
+* [0.x.36]*
+     Number of shape functions. If this is a Q1 mapping, then it is simply     the number of vertices per cell. However, since also derived classes     use this class (e.g. the Mapping_Q() class), the number of shape     functions may also be different.    
+* [0.x.37]*
+     Stores the mask given at construction time. If no mask was specified at     construction time, then a default one is used, which makes this class     works in the same way of MappingQEulerian(), i.e., the first spacedim     components of the FiniteElement are used for the euler_vector and the     euler_dh.         If a mask is specified, then it has to match the underlying     FiniteElement, and it has to have exactly spacedim non-zero elements,     indicating the components (in order) of the FiniteElement which will be     used for the euler vector and the euler dof handler.    
+* [0.x.38]*
+     Tensors of covariant transformation at each of the quadrature points.     The matrix stored is the Jacobian G^{-1}, where G = Jacobian^{t}     Jacobian, is the first fundamental form of the map; if dim=spacedim     then it reduces to the transpose of the inverse of the Jacobian matrix,     which itself is stored in the  [2.x.25]  field of this structure.         Computed on each cell.    
+* [0.x.39]*
+     Tensors of contravariant transformation at each of the quadrature     points. The contravariant matrix is the Jacobian of the transformation,     i.e.  [2.x.26] .         Computed on each cell.    
+* [0.x.40]*
+     The determinant of the Jacobian in each quadrature point. Filled if     #update_volume_elements.    
+* [0.x.41]*
+     Auxiliary vectors for internal use.    
+* [0.x.42]*
+     Storage for the indices of the local degrees of freedom.    
+* [0.x.43]*
+     Storage for local degrees of freedom.    
+* [0.x.44]*
+    [2.x.27]   
+* [0.x.45]*
+   Specifies whether we access unknowns on the active dofs (with a single   Euler vector) or on the level dofs (via a vector of Euler vectors).  
+* [0.x.46]*
+   Reference to the vector of shifts.  
+* [0.x.47]*
+   Pointer to the DoFHandler to which the mapping vector is associated.  
+* [0.x.48]*
+   Transform a point  [2.x.28]  on the unit cell to the point  [2.x.29]  on the   real cell  [2.x.30]  and returns  [2.x.31]      This function is called by  [2.x.32]  and multiple   times (through the Newton iteration) by  [2.x.33]    transform_real_to_unit_cell_internal.     Takes a reference to an  [2.x.34]  that must already include the   shape values at point  [2.x.35]  and the mapping support points of the cell.     This  [2.x.36]  argument avoids multiple computations of the shape   values at point  [2.x.37]  and especially multiple computations of the mapping   support points.  
+* [0.x.49]*
+   Transform the point  [2.x.38]  on the real cell to the corresponding point on   the unit cell  [2.x.39]  by a Newton iteration.     Takes a reference to an  [2.x.40]  that is assumed to be previously   created by the  [2.x.41]  function with  [2.x.42]  including  [2.x.43]    update_transformation_values and  [2.x.44]  and a   one point Quadrature that includes the given initial guess for the   transformation  [2.x.45]   Hence this function assumes that  [2.x.46]    mdata already includes the transformation shape values and gradients   computed at  [2.x.47]       [2.x.48]  will be changed by this function.  
+* [0.x.50]*
+   Update internal degrees of freedom.  
+* [0.x.51]*
+   See the documentation of the base class for detailed information.  
+* [0.x.52]   Which components to use for the mapping.  
+* [0.x.53]*
+   Mapping between indices in the FE space and the real space. This vector   contains one index for each component of the finite element space. If the   index is one for which the ComponentMask which is used to construct this   element is false, then  [2.x.49]  is returned,   otherwise the component in real space is returned. For example, if we   construct the mapping using ComponentMask(spacedim, true), then this   vector contains {0,1,2} in spacedim = 3.  
+* [0.x.54]*
+   FEValues object used to query the given finite element field at the   support points in the reference configuration.  
+* [0.x.55]*
+   A variable to guard access to the fe_values variable.  
+* [0.x.56]

@@ -135,7 +135,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Removed: For <a class="el" href="classLinearAlgebra_1_1distributed_1_1Vector.html">LinearAlgebra::distributed::Vector</a>, deprecated overloads of the member operator=(), <a class="el" href="group__CUDAWrappers.html#gadd2ad651a84773cd69851f66dea04831">sadd()</a>, <a class="el" href="group__CUDAWrappers.html#ga3cd8b561b058955d0c2b3115570ca1c5">equ()</a>, local_range(), n_ghost_entries(), ghost_elements() and ghost_entries() have been removed. <br  />
+<p class="startli">Removed: For <a class="el" href="classLinearAlgebra_1_1distributed_1_1Vector.html">LinearAlgebra::distributed::Vector</a>, deprecated overloads of the member <a class="el" href="chunk__sparse__matrix__0_8txt.html#aa747ba884f098177e9bf2b2422a461a9">operator=()</a>, <a class="el" href="group__CUDAWrappers.html#gadd2ad651a84773cd69851f66dea04831">sadd()</a>, <a class="el" href="group__CUDAWrappers.html#ga3cd8b561b058955d0c2b3115570ca1c5">equ()</a>, local_range(), n_ghost_entries(), ghost_elements() and ghost_entries() have been removed. <br  />
  (Daniel Arndt, 2020/04/13) </p>
 <p class="endli"></p>
 </li>
@@ -346,7 +346,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Changed: Various classes implementing tensor polynomials had a function <code>compute()</code>. This function has been renamed to <code>evaluate()</code> since this name more adequately represents the fact that the function does not in fact compute the polynomial, but only evaluates it for a given value of the unknown variable. <br  />
+<p class="startli">Changed: Various classes implementing tensor polynomials had a function <code><a class="el" href="fe_2fe__0_8txt.html#a754f79d53a1f0ebfe04ff6b9ff4abb8a">compute()</a></code>. This function has been renamed to <code><a class="el" href="error__estimator__0_8txt.html#a5d6beee22a14f26e31bb055d556b3dad">evaluate()</a></code> since this name more adequately represents the fact that the function does not in fact compute the polynomial, but only evaluates it for a given value of the unknown variable. <br  />
  (Wolfgang Bangerth, 2019/08/21) </p>
 <p class="endli"></p>
 </li>
@@ -469,7 +469,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: Implementation of the IDR(s) Krylov solver for non-symmetric, indefinite linear systems. <br  />
+<p class="startli">New: Implementation of the <a class="el" href="solver__idr__0_8txt.html#a936b12fc6b144d64bfc8bcfe4ee41ea6">IDR(s)</a> Krylov solver for non-symmetric, indefinite linear systems. <br  />
  (Thomas Clevenger, 2019/12/05) </p>
 <p class="endli"></p>
 </li>
@@ -557,7 +557,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Changed: Compute middle vertices during mesh refinement of Triangulation&lt;2,3&gt; using transfinite interpolation to be consistent with what happens to quads for Triangulation&lt;3,3&gt; <br  />
+<p class="startli">Changed: Compute middle vertices during mesh refinement of <a class="el" href="classTriangulation.html">Triangulation&lt;2,3&gt;</a> using transfinite interpolation to be consistent with what happens to quads for Triangulation&lt;3,3&gt; <br  />
  (Sebastian Stark, 2020/05/04) </p>
 <p class="endli"></p>
 </li>
@@ -677,7 +677,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: <a class="el" href="classParameterHandler.html">ParameterHandler</a>: add functionality ensuring that parameters are indeed set in order to avoid errors that remain unrecognized otherwise. By extending the interfaces of declare_entry() and add_parameter(), parameters can be declared as mandatory parameters that must be set when parsing from an input file or by a <a class="el" href="group__CUDAWrappers.html#gabb7130e2cea54654455ca41ef304f939">set()</a> function. <br  />
+<p class="startli">New: <a class="el" href="classParameterHandler.html">ParameterHandler</a>: add functionality ensuring that parameters are indeed set in order to avoid errors that remain unrecognized otherwise. By extending the interfaces of <a class="el" href="parameter__handler__0_8txt.html#a2a41a2b577f96951c64338ecb3166368">declare_entry()</a> and add_parameter(), parameters can be declared as mandatory parameters that must be set when parsing from an input file or by a <a class="el" href="A-headers_2exceptions__0_8txt.html#a602682024ec652b990be121b5665f8ce">set()</a> function. <br  />
  (Niklas Fehn, 2020/03/23) </p>
 <p class="endli"></p>
 </li>
@@ -722,7 +722,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: <a class="el" href="group__Vectors.html#ga42433961867fd78582a867ba7f68bd01">LinearAlgebra::set_zero_mean_value()</a> Add free function that allows to shift a vector by a constant value in a way that its mean value becomes zero. This function only makes use of the pure virtual functions add() and mean_value() of the abstract class VectorSpaceVector. <br  />
+<p class="startli">New: <a class="el" href="group__Vectors.html#ga42433961867fd78582a867ba7f68bd01">LinearAlgebra::set_zero_mean_value()</a> Add free function that allows to shift a vector by a constant value in a way that its mean value becomes zero. This function only makes use of the pure virtual functions <a class="el" href="chunk__sparsity__pattern__0_8txt.html#a5b51102d307d0296227f3b3f5b095be4">add()</a> and mean_value() of the abstract class VectorSpaceVector. <br  />
  (Niklas Fehn, 2020/03/06) </p>
 <p class="endli"></p>
 </li>
@@ -897,7 +897,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: A variant of <a class="el" href="namespacestd__cxx17.html#aa2fc1031c06af4aea4de90c5a1905473">CellwiseInverseMassMatrix::apply()</a> defining the inverse of the diagonal by <a class="el" href="classFEEvaluationBaseData.html#a56ed5a4e84edf92e69f1474d5f035a92">FEEvaluationBase::JxW()</a> from the provided <a class="el" href="classFEEvaluationBase.html">FEEvaluationBase</a> variable has been implemented. <br  />
+<p class="startli">New: A variant of CellwiseInverseMassMatrix::apply() defining the inverse of the diagonal by <a class="el" href="classFEEvaluationBaseData.html#a56ed5a4e84edf92e69f1474d5f035a92">FEEvaluationBase::JxW()</a> from the provided <a class="el" href="classFEEvaluationBase.html">FEEvaluationBase</a> variable has been implemented. <br  />
  (Martin Kronbichler, 2020/01/05) </p>
 <p class="endli"></p>
 </li>
@@ -957,7 +957,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: <a class="el" href="classIndexSet.html#a919aabc634e406438ec287af481aed05">IndexSet::tensor_product()</a> creates a new <a class="el" href="classIndexSet.html">IndexSet</a> with global size equal to this-&gt;size()*other.size(), containing for every element n of this <a class="el" href="classIndexSet.html">IndexSet</a>, the indices of the other <a class="el" href="classIndexSet.html">IndexSet</a>, contained in the interval [n*other.size(), (n+1)*other.size()).;<br  />
+<p class="startli">New: <a class="el" href="classIndexSet.html#a919aabc634e406438ec287af481aed05">IndexSet::tensor_product()</a> creates a new <a class="el" href="classIndexSet.html">IndexSet</a> with global size equal to this-&gt;<a class="el" href="function__0_8txt.html#a4f780342f2d5d632f82cf7fd90158a66">size()</a>*other.<a class="el" href="function__0_8txt.html#a4f780342f2d5d632f82cf7fd90158a66">size()</a>, containing for every element n of this <a class="el" href="classIndexSet.html">IndexSet</a>, the indices of the other <a class="el" href="classIndexSet.html">IndexSet</a>, contained in the interval [n*other.<a class="el" href="function__0_8txt.html#a4f780342f2d5d632f82cf7fd90158a66">size()</a>, (n+1)*other.<a class="el" href="function__0_8txt.html#a4f780342f2d5d632f82cf7fd90158a66">size()</a>).;<br  />
 ;(Luca Heltai, 2019/12/12) </p>
 <p class="endli"></p>
 </li>
@@ -1157,7 +1157,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: The class <a class="el" href="classVectorizedArray.html">VectorizedArray</a> now provides STL-like member functions: <a class="el" href="classVectorizedArrayBase.html#acb35404acc1693aee6e990228924cc09">VectorizedArray::size()</a> returns the number of array elements and <a class="el" href="classVectorizedArray.html">VectorizedArray</a>:<a class="el" href="namespaceTrilinosWrappers_1_1internal.html#ad88a9499e01173b35d78413e5945e020">begin()</a> as well as <a class="el" href="classVectorizedArrayBase.html#a78e62fef92c4dd89eee5bcd616be5ef0">VectorizedArray::end()</a> provide iterators enabling range-based iterations. <br  />
+<p class="startli">New: The class <a class="el" href="classVectorizedArray.html">VectorizedArray</a> now provides STL-like member functions: <a class="el" href="classVectorizedArrayBase.html#acb35404acc1693aee6e990228924cc09">VectorizedArray::size()</a> returns the number of array elements and <a class="el" href="classVectorizedArray.html">VectorizedArray</a>:<a class="el" href="index__set__0_8txt.html#a06c4d20c91ab07a0e74210eb580db6d1">begin()</a> as well as <a class="el" href="classVectorizedArrayBase.html#a78e62fef92c4dd89eee5bcd616be5ef0">VectorizedArray::end()</a> provide iterators enabling range-based iterations. <br  />
  (Martin Kronbichler, Peter Munch, Daniel Arndt, 2019/10/12) </p>
 <p class="endli"></p>
 </li>
@@ -1312,7 +1312,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Bugfix: In <a class="el" href="classPolynomialsBDM.html">PolynomialsBDM</a>, the degree() function is corrected to return a polynomial degree of k+1, instead of its previous value of k. <br  />
+<p class="startli">Bugfix: In <a class="el" href="classPolynomialsBDM.html">PolynomialsBDM</a>, the <a class="el" href="polynomial__space__0_8txt.html#a03a2f48682e29e39f7bccc11a7d1c4d1">degree()</a> function is corrected to return a polynomial degree of k+1, instead of its previous value of k. <br  />
  (Graham Harper, 2019/09/02) </p>
 <p class="endli"></p>
 </li>
@@ -1367,7 +1367,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed: Make sure that <a class="el" href="namespaceTrilinosWrappers_1_1internal.html#ad88a9499e01173b35d78413e5945e020">begin()</a> and <a class="el" href="namespaceTrilinosWrappers_1_1internal.html#aee42c8e3004e2e81eac3c3356d3ec46b">end()</a> of <a class="el" href="classPETScWrappers_1_1MatrixBase.html">PETScWrappers::MatrixBase</a> can only be called on a processor owning all rows of the matrix. Also fix a bug which caused <a class="el" href="namespaceTrilinosWrappers_1_1internal.html#ad88a9499e01173b35d78413e5945e020">begin()</a> to fail when the first row(s) of the matrix is(are) empty. <br  />
+<p class="startli">Fixed: Make sure that <a class="el" href="index__set__0_8txt.html#a06c4d20c91ab07a0e74210eb580db6d1">begin()</a> and <a class="el" href="coding__conventions__0_8txt.html#a177c697348e3052c514824563807ea3b">end()</a> of <a class="el" href="classPETScWrappers_1_1MatrixBase.html">PETScWrappers::MatrixBase</a> can only be called on a processor owning all rows of the matrix. Also fix a bug which caused <a class="el" href="index__set__0_8txt.html#a06c4d20c91ab07a0e74210eb580db6d1">begin()</a> to fail when the first row(s) of the matrix is(are) empty. <br  />
  (Sebastian Stark, 2019/08/19) </p>
 <p class="endli"></p>
 </li>
@@ -1666,7 +1666,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed: <a class="el" href="classFullMatrix.html">FullMatrix</a> can now be packed into std::vector and unpacked from it using std::copy and the <a class="el" href="namespaceTrilinosWrappers_1_1internal.html#ad88a9499e01173b35d78413e5945e020">begin()</a> and <a class="el" href="namespaceTrilinosWrappers_1_1internal.html#aee42c8e3004e2e81eac3c3356d3ec46b">end()</a> iterators. <br  />
+<p class="startli">Fixed: <a class="el" href="classFullMatrix.html">FullMatrix</a> can now be packed into std::vector and unpacked from it using std::copy and the <a class="el" href="index__set__0_8txt.html#a06c4d20c91ab07a0e74210eb580db6d1">begin()</a> and <a class="el" href="coding__conventions__0_8txt.html#a177c697348e3052c514824563807ea3b">end()</a> iterators. <br  />
  (Reza Rastak, 2019/05/24) </p>
 <p class="endli"></p>
 </li>

@@ -1,0 +1,40 @@
+[0.x.0]*
+ This class represents an array with one object for each used level of a multilevel hierarchy, for example for use in the multigrid algorithms. In contrast to just a generic  [2.x.0] , this class allows to store objects only between some minimal and maximal index (=level), as one often wants to run a multilevel algorithm only on a subset of the levels of a mesh (e.g., because the second or third coarsest level is already small enough that it is cheaper to run a direct solver there, rather than recurse to even coarser levels). Despite storing objects only for these "interesting" levels, the class allows indexing simply by level. Internally, this is of course done by simply shifting the given index by the minimum level we have stored.
+*  In a typical use case for this class, the objects stored on each level are either matrices or vectors.
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+*  [2.x.2] 
+
+* 
+* [0.x.1]*
+   Constructor. Create a multilevel object with given minimal and   maximal level, and allocate storage for objects on    [2.x.3]  levels.    
+*  [2.x.4]  Unlike in many other places of the library, the two arguments   here do not denote the first level and last-plus-one level, but indeed   an [1.x.0] range of levels for which to allocate storage   for level objects. Consequently, the defaults for the two arguments   will create an array with one level object, rather than an empty   array.      [2.x.5]  minlevel The lowest level for which to provision memory     for level objects.    [2.x.6]  maxlevel The highest level for which to provision memory     for level objects.    [2.x.7]  args Optional arguments passed to the constructor of the     underlying object.      [2.x.8]  minlevel <= maxlevel  
+* [0.x.2]*
+   Constructor. Same as above but without arguments to be forwarded to the   constructor of the underlying object.  
+* [0.x.3]*
+   Access object on level  [2.x.9]   
+* [0.x.4]*
+   Access object on level  [2.x.10]      This function can be called on a  [2.x.11]  object, and   consequently returns a  [2.x.12]  reference.  
+* [0.x.5]*
+   Delete all previous contents of this object and reset its size according   to the values of  [2.x.13]  and  [2.x.14]       [2.x.15]  new_minlevel The lowest level for which to provision memory     for level objects.    [2.x.16]  new_maxlevel The highest level for which to provision memory     for level objects.    [2.x.17]  args Optional arguments passed to the constructor of the     underlying object.      [2.x.18]  minlevel <= maxlevel  
+* [0.x.6]*
+   Call <tt>operator = (s)</tt> on all objects stored by this object.   This clearly requires that the objects stored on each level allow for   this operation. This is, in particular, true for vectors and matrices   if  [2.x.19]  is zero, thereby zeroing out all vector or matrix entries.  
+* [0.x.7]*
+   Call  [2.x.20]  on all objects stored by this object. This function   is only implemented for some  [2.x.21]  classes, e.g., matrix   types or the PreconditionBlockSOR and similar classes. Using this   function will fail with a compiler error if the  [2.x.22]    template type to this class does not provide a    [2.x.23]  member function.  
+* [0.x.8]*
+   The coarsest level for which this class stores a level object.  
+* [0.x.9]*
+   The highest level for which this class stores a level object.  
+* [0.x.10]*
+   Apply the action  [2.x.24]  to every object stored in here. The   parameter  [2.x.25]  is expected to be a function object that accepts   the syntax   <code>     action(const unsigned int level, Object &object);   </code>   This means this function can accept a lambda, a  [2.x.26]  or a plain   function pointer.  
+* [0.x.11]*
+   Memory used by this object.  
+* [0.x.12]*
+   Level of first component.  
+* [0.x.13]*
+   Array of the objects to be held.  
+* [0.x.14]

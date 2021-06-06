@@ -1,0 +1,57 @@
+[0.x.0]*
+   A class containing information on geometry and degrees of freedom of a   mesh object.     The information in these objects is usually used by one of the Assembler   classes. It is also the kind of information which is needed in mesh based   matrices (often referred to as matrix free methods).     In addition to the information on degrees of freedom stored in this   class, it also provides the local computation space for the worker object   operating on it in LocalResults. This base class will automatically be   reinitialized on each cell, but initial setup is up to the user and   should be done when initialize() for this class is called.     This class operates in two different modes, corresponding to the data   models discussed in the Assembler namespace documentation.     The choice of the local data model is triggered by the vector    [2.x.0]  which in turn is usually filled by    [2.x.1]  If this function has been used, or the   vector has been changed from zero-length, then local dof indices stored   in this object will automatically be renumbered to reflect local block   structure. This means, the first entries in  [2.x.2]  will refer to the   first block of the system, then comes the second block and so on.     The BlockInfo object is stored as a pointer. Therefore, if the block   structure changes, for instance because of mesh refinement, the DoFInfo   class will automatically use the new structures.    
+*  [2.x.3]   
+* [0.x.1]*
+     The number of the current face on the current cell.         This number is  [2.x.4]  if the  [2.x.5]  object was     initialized with a cell.    
+* [0.x.2]*
+     The number of the current subface on the current face         This number is  [2.x.6]  if the  [2.x.7]  object was not     initialized with a subface.    
+* [0.x.3]*
+     The DoF indices of the     current cell    
+* [0.x.4]*
+     The DoF indices on the current cell, organized by local blocks. The     size of this vector is zero, unless local blocks are used.    
+* [0.x.5]*
+     Constructor setting the #block_info pointer.    
+* [0.x.6]*
+     Constructor leaving the #block_info pointer empty, but setting the     #aux_local_indices.    
+* [0.x.7]*
+     Set the current cell and fill  [2.x.8]     
+* [0.x.8]*
+     Set the current face and fill  [2.x.9]  if the #cell changed.    
+* [0.x.9]*
+     Set the current subface and fill  [2.x.10]  if the #cell changed.    
+* [0.x.10]*
+     Switch to a new face of the same cell. Does not change  [2.x.11]  and     does not reset data in LocalResults.    
+* [0.x.11]*
+     Switch to a new subface of the same cell. Does not change  [2.x.12]      and does not reset data in LocalResults.    
+* [0.x.12]*
+     The structure refers to a cell with level data instead of active data.    
+* [0.x.13]*
+     Standard constructor, not setting any block indices. Use of this     constructor is not recommended, but it is needed for the arrays in     DoFInfoBox.    
+* [0.x.14]*
+     An auxiliary local BlockIndices object created if #block_info is not     set. It contains just a single block of the size of degrees of freedom     per cell.    
+* [0.x.15]*
+   A class bundling the  [2.x.13]  objects used on a cell.      [2.x.14]  Currently, we are storing an object for the cells and two for each   face. We could gather all face data pertaining to the cell itself in one   object, saving a bit of memory and a few operations, but sacrificing some   cleanliness.    
+*  [2.x.15]   
+* [0.x.16]*
+     Constructor copying the seed into all other objects.    
+* [0.x.17]*
+     Copy constructor, taking #cell and using it as a seed in the other     constructor.    
+* [0.x.18]*
+     Copy assignment operator, taking another object as seed.    
+* [0.x.19]*
+     Reset all the availability flags.    
+* [0.x.20]*
+     After all DOFINFO objects have been filled appropriately, use the     ASSEMBLER object to assemble them into the global data. See      [2.x.16]  for available classes.    
+* [0.x.21]*
+     The data for the cell.    
+* [0.x.22]*
+     The data for the faces from inside.    
+* [0.x.23]*
+     The data for the faces from outside.    
+* [0.x.24]*
+     A set of flags, indicating whether data on an interior face is     available.    
+* [0.x.25]*
+     A set of flags, indicating whether data on an exterior face is     available.    
+* [0.x.26]*
+     A flag to specify if the current object has been set to a valid cell.    
+* [0.x.27]

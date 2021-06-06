@@ -5,7 +5,5 @@ digraph "TriaActiveIterator&lt; Accessor &gt;"
   node [fontname="Helvetica",fontsize="10",shape=record];
   Node1 [label="TriaActiveIterator\l\< Accessor \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
   Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node2 [label="TriaIterator\< Accessor \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTriaIterator.html",tooltip=" "];
-  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node3 [label="TriaRawIterator\< Accessor \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTriaRawIterator.html",tooltip=" "];
+  Node2 [label="e::g::TriaIterator\l\< Accessor \>",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
 }

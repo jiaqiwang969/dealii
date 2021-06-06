@@ -1,0 +1,154 @@
+[0.x.0]*
+ The enum type given to the constructors of FEValues, FEFaceValues and FESubfaceValues, telling those objects which data will be needed on each mesh cell.
+*  Selecting these flags in a restrictive way is crucial for the efficiency of  [2.x.0]   [2.x.1]  and  [2.x.2]  Therefore, only the flags actually needed should be selected. It is the responsibility of the involved Mapping and FiniteElement to add additional flags according to their own requirements. For instance, most finite elements will add #update_covariant_transformation if #update_gradients is selected.  By default, all flags are off, i.e. no reinitialization will be done.
+*  You can select more than one flag by concatenation using the bitwise or operator|(UpdateFlags,UpdateFlags).
+*  [1.x.0]
+*  More information on the use of this type both in user code as well as internally can be found in the documentation modules on  [2.x.3]  "The interplay of UpdateFlags, Mapping, and FiniteElement in FEValues" and  [2.x.4]  "How Mapping, FiniteElement, and FEValues work together".
+
+* 
+* [0.x.1]*
+   Compute the values of the shape functions at the quadrature points on the   real space cell. For the usual Lagrange elements, these values are equal   to the values of the shape functions at the quadrature points on the unit   cell, but they are different for more complicated elements, such as   FE_RaviartThomas elements.  
+* [0.x.2]*
+   Compute the gradients of the shape functions in coordinates of the real   cell.  
+* [0.x.3]*
+   Compute the second derivatives of the shape functions in coordinates of   the real cell.  
+* [0.x.4]*
+   Compute the third derivatives of the shape functions in coordinates of   the real cell  
+* [0.x.5]*
+   Vector product of tangential vectors, yielding a normal vector with a   length corresponding to the surface element; may be more efficient than   computing both.  
+* [0.x.6]*
+   Compute the quadrature points location in real cell coordinates.     FEValues objects take the quadrature point locations on the   reference cell as an argument of the constructor (via the   Quadrature object). For most finite elements, knowing the   location of quadrature points on the reference cell is all that   is necessary to evaluate shape functions, evaluate the mapping,   and other things. On the other hand, if you want to evaluate a   right hand side function  [2.x.5]  at quadrature point   locations  [2.x.6]  on the real cell, you need to pass this   flag to the FEValues constructor to make sure you can later   access them.     In the context of DataPostprocessor,    [2.x.7]  will be updated.  
+* [0.x.7]*
+   Compute the quadrature weights on the real cell, i.e. the weights of the   quadrature rule multiplied with the determinant of the Jacobian of the   transformation from reference to real cell.  
+* [0.x.8]*
+   Compute the normal vectors, either for a face or for a cell of   codimension one. Setting this flag for any other object will raise an   error.  
+* [0.x.9]*
+   Compute the Jacobian of the transformation from the reference cell to the   real cell.  
+* [0.x.10]*
+   Compute the derivatives of the Jacobian of the transformation.  
+* [0.x.11]*
+   Compute the inverse Jacobian of the transformation from the reference   cell to the real cell.  
+* [0.x.12]*
+   Compute all values the Mapping needs to perform a contravariant   transformation of vectors. For special mappings like MappingCartesian   this may be simpler than #update_inverse_jacobians.  
+* [0.x.13]*
+   Compute all values the Mapping needs to perform a contravariant   transformation of vectors. For special mappings like MappingCartesian   this may be simpler than #update_jacobians.  
+* [0.x.14]*
+   Compute the shape function values of the transformation defined by the   Mapping.  
+* [0.x.15]*
+   Compute the shape function gradients of the transformation defined by the   Mapping.  
+* [0.x.16]*
+   Compute the volume element in each quadrature point.  
+* [0.x.17]*
+   Compute the derivatives of the Jacobian of the transformation pushed   forward to the real cell coordinates.  
+* [0.x.18]*
+   Compute the second derivatives of the Jacobian of the transformation.  
+* [0.x.19]*
+   Compute the second derivatives of the Jacobian of the transformation   pushed forward to the real cell coordinates.  
+* [0.x.20]*
+   Compute the third derivatives of the Jacobian of the transformation.  
+* [0.x.21]*
+   Compute the third derivatives of the Jacobian of the transformation   pushed forward to the real cell coordinates.  
+* [0.x.22]*
+   Combination of the flags needed for Piola transform of Hdiv elements.  
+* [0.x.23]*
+   Combination of the flags that require a mapping calculation  
+* [0.x.24]*
+ Output operator which outputs update flags as a set of or'd text values.
+*   [2.x.8] 
+
+* 
+* [0.x.25]*
+ Global operator which returns an object in which all bits are set which are either set in the first or the second argument. This operator exists since if it did not then the result of the bit-or <tt>operator |</tt> would be an integer which would in turn trigger a compiler warning when we tried to assign it to an object of type UpdateFlags.
+*   [2.x.9] 
+
+* 
+* [0.x.26]*
+ Global operator which sets the bits from the second argument also in the first one.
+*   [2.x.10] 
+
+* 
+* [0.x.27]*
+ Global operator which returns an object in which all bits are set which are set in the first as well as the second argument. This operator exists since if it did not then the result of the bit-and <tt>operator &</tt> would be an integer which would in turn trigger a compiler warning when we tried to assign it to an object of type UpdateFlags.
+*   [2.x.11] 
+
+* 
+* [0.x.28]*
+ Global operator which clears all the bits in the first argument if they are not also set in the second argument.
+*   [2.x.12] 
+
+* 
+* [0.x.29]*
+ This enum definition is used for storing similarities of the current cell to the previously visited cell. This information is used for reusing data when calling the method  [2.x.13]  (like derivatives, which do not change if one cell is just a translation of the previous). Currently, this variable does only recognize a translation and an inverted translation (if dim<spacedim). However, this concept makes it easy to add additional states to be detected in FEValues/FEFaceValues for making use of these similarities as well.
+
+* 
+* [0.x.30]*
+     The cells differ by something besides a translation or inverted     translations.    
+* [0.x.31]*
+     The cells differ by a translation.    
+* [0.x.32]*
+     The cells differ by an inverted translation.    
+* [0.x.33]*
+     The next cell is not valid.    
+* [0.x.34]*
+     A class that stores all of the mapping related data used in      [2.x.14]   [2.x.15]  and  [2.x.16]      objects. Objects of this kind will be given as [1.x.1] argument     when  [2.x.17]  calls  [2.x.18]  for a     given cell, face, or subface.         The data herein will then be provided as [1.x.2] argument in the     following call to  [2.x.19]         
+*  [2.x.20]     
+* [0.x.35]*
+       Initialize all vectors to correct size.      
+* [0.x.36]*
+       Compute and return an estimate for the memory consumption (in bytes)       of this object.      
+* [0.x.37]*
+       Store an array of weights times the Jacobi determinant at the       quadrature points. This function is reset each time reinit() is       called. The Jacobi determinant is actually the reciprocal value of       the Jacobi matrices stored in this class, see the general       documentation of this class for more information.             However, if this object refers to an FEFaceValues or FESubfaceValues       object, then the JxW_values correspond to the Jacobian of the       transformation of the face, not the cell, i.e. the dimensionality is       that of a surface measure, not of a volume measure. In this case, it       is computed from the boundary forms, rather than the Jacobian matrix.      
+* [0.x.38]*
+       Array of the Jacobian matrices at the quadrature points.      
+* [0.x.39]*
+       Array of the derivatives of the Jacobian matrices at the quadrature       points.      
+* [0.x.40]*
+       Array of the inverse Jacobian matrices at the quadrature points.      
+* [0.x.41]*
+       Array of the derivatives of the Jacobian matrices at the quadrature       points, pushed forward to the real cell coordinates.      
+* [0.x.42]*
+       Array of the second derivatives of the Jacobian matrices at the       quadrature points.      
+* [0.x.43]*
+       Array of the  second derivatives of the Jacobian matrices at the       quadrature points, pushed forward to the real cell coordinates.      
+* [0.x.44]*
+       Array of the  third derivatives of the Jacobian matrices at the       quadrature points.      
+* [0.x.45]*
+       Array of the  third derivatives of the Jacobian matrices at the       quadrature points, pushed forward to the real cell coordinates.      
+* [0.x.46]*
+       Array of quadrature points. This array is set up upon calling       reinit() and contains the quadrature points on the real element,       rather than on the reference element.      
+* [0.x.47]*
+       List of outward normal vectors at the quadrature points.      
+* [0.x.48]*
+       List of boundary forms at the quadrature points.      
+* [0.x.49]*
+     A class that stores all of the shape function related data used in      [2.x.21]   [2.x.22]  and  [2.x.23]      objects. Objects of this kind will be given as [1.x.3] argument     when  [2.x.24]  calls  [2.x.25]         
+*  [2.x.26]     
+* [0.x.50]*
+       Initialize all vectors to correct size.      
+* [0.x.51]*
+       Compute and return an estimate for the memory consumption (in bytes)       of this object.      
+* [0.x.52]*
+       Storage type for shape values. Each row in the matrix denotes the       values of a single shape function at the different points, columns       are for a single point with the different shape functions.             If a shape function has more than one non-zero component (in deal.II       diction: it is non-primitive), then we allocate one row per non-zero       component, and shift subsequent rows backward.  Lookup of the correct       row for a shape function is thus simple in case the entire finite       element is primitive (i.e. all shape functions are primitive), since       then the shape function number equals the row number. Otherwise, use       the #shape_function_to_row_table array to get at the first row that       belongs to this particular shape function, and navigate among all the       rows for this shape function using the        [2.x.27]  function which tells us which       components are non-zero and thus have a row in the array presently       under discussion.      
+* [0.x.53]*
+       Storage type for gradients. The layout of data is the same as for the       #ShapeVector data type.      
+* [0.x.54]*
+       Likewise for second order derivatives.      
+* [0.x.55]*
+       And the same also applies to the third order derivatives.      
+* [0.x.56]*
+       Store the values of the shape functions at the quadrature points. See       the description of the data type for the layout of the data in this       field.      
+* [0.x.57]*
+       Store the gradients of the shape functions at the quadrature points.       See the description of the data type for the layout of the data in       this field.      
+* [0.x.58]*
+       Store the 2nd derivatives of the shape functions at the quadrature       points.  See the description of the data type for the layout of the       data in this field.      
+* [0.x.59]*
+       Store the 3rd derivatives of the shape functions at the quadrature       points.  See the description of the data type for the layout of the       data in this field.      
+* [0.x.60]*
+       When asked for the value (or gradient, or Hessian) of shape function       i's c-th vector component, we need to look it up in the       #shape_values, #shape_gradients and #shape_hessians arrays.  The       question is where in this array does the data for shape function i,       component c reside. This is what this table answers.             The format of the table is as follows:
+* 
+*  - It has dofs_per_cell times       n_components entries.
+* 
+*  - The entry that corresponds to shape function       i, component c is  [2.x.28] .
+* 
+*  - The value       stored at this position indicates the row in #shape_values and the       other tables where the corresponding datum is stored for all the       quadrature points.             In the general, vector-valued context, the number of components is       larger than one, but for a given shape function, not all vector       components may be nonzero (e.g., if a shape function is primitive,       then exactly one vector component is non-zero, while the others are       all zero). For such zero components, #shape_values and friends do not       have a row. Consequently, for vector components for which shape       function i is zero, the entry in the current table is        [2.x.29]              On the other hand, the table is guaranteed to have at least one valid       index for each shape function. In particular, for a primitive finite       element, each shape function has exactly one nonzero component and so       for each i, there is exactly one valid index within the range        [2.x.30] .      
+* [0.x.61]

@@ -1,0 +1,16 @@
+[0.x.0]*
+   Local integrators related to the grad-div operator and its boundary   traces    
+*  [2.x.0]   
+* [0.x.1]*
+     The weak form of the grad-div operator penalizing volume changes     [1.x.0]    
+* [0.x.2]*
+     The weak form of the grad-div residual     [1.x.1]    
+* [0.x.3]*
+     The matrix for the weak boundary condition of Nitsche type for linear     elasticity:     [1.x.2]    
+* [0.x.4]*
+     Weak boundary condition for the Laplace operator by Nitsche, vector     valued version, namely on the face [1.x.3] the vector     [1.x.4]         Here, [1.x.5] is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively. [1.x.6] is the inhomogeneous boundary value in the     argument <tt>data</tt>.  [2.x.1]  is the usual penalty parameter.    
+* [0.x.5]*
+     The interior penalty flux for the grad-div operator. See     ip_residual() for details.    
+* [0.x.6]*
+     Grad-div residual term for the symmetric interior penalty method:     [1.x.7]         See for instance Hansbo and Larson, 2002    
+* [0.x.7]

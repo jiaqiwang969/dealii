@@ -1,0 +1,48 @@
+[0.x.0]*
+ Namespace for the CUDA wrappers
+
+* 
+* [0.x.1]*
+     Compute the dof/quad index for a given thread id, dimension, and     number of points in each space dimensions.    
+* [0.x.2]*
+   This class provides all the functions necessary to evaluate functions at   quadrature points and cell integrations. In functionality, this class is   similar to FEValues<dim>.     This class has five template arguments:      [2.x.0]  dim Dimension in which this class is to be used      [2.x.1]  fe_degree Degree of the tensor prodict finite element with fe_degree+1   degrees of freedom per coordinate direction      [2.x.2]  n_q_points_1d Number of points in the quadrature formular in 1D,   defaults to fe_degree+1      [2.x.3]  n_components Number of vector components when solving a system of   PDEs. If the same operation is applied to several components of a PDE (e.g.   a vector Laplace equation), they can be applied simultaneously with one   call (and often more efficiently). Defaults to 1      [2.x.4]  Number Number format,  [2.x.5]  or  [2.x.6]  Defaults to  [2.x.7]    double.    
+*  [2.x.8]   
+* [0.x.3]*
+     An alias for scalar quantities.    
+* [0.x.4]*
+     An alias for vectorial quantities.    
+* [0.x.5]*
+     An alias to kernel specific information.    
+* [0.x.6]*
+     Dimension.    
+* [0.x.7]*
+     Number of components.    
+* [0.x.8]*
+     Number of quadrature points per cell.    
+* [0.x.9]*
+     Number of tensor degrees of freedoms per cell.    
+* [0.x.10]*
+     Constructor.    
+* [0.x.11]*
+     For the vector  [2.x.9]  read out the values on the degrees of freedom of     the current cell, and store them internally. Similar functionality as     the function  [2.x.10]  when no     constraints are present, but it also includes constraints from hanging     nodes, so once can see it as a similar function to      [2.x.11]  as well.    
+* [0.x.12]*
+     Take the value stored internally on dof values of the current cell and     sum them into the vector  [2.x.12]  The function also applies constraints     during the write operation. The functionality is hence similar to the     function  [2.x.13]     
+* [0.x.13]*
+     Evaluate the function values and the gradients of the FE function given     at the DoF values in the input vector at the quadrature points on the     unit cell. The function arguments specify which parts shall actually be     computed. This function needs to be called before the functions      [2.x.14]  or  [2.x.15]  give useful information.    
+* [0.x.14]*
+     This function takes the values and/or gradients that are stored on     quadrature points, tests them by all the basis functions/gradients on     the cell and performs the cell integration. The two function arguments      [2.x.16]  and  [2.x.17]  are used to enable/disable some     of the values or the gradients.    
+* [0.x.15]*
+     Same as above, except that the quadrature point is computed from thread     id.    
+* [0.x.16]*
+     Same as above, except that the local dof index is computed from the     thread id.    
+* [0.x.17]*
+     Same as above, except that the quadrature point is computed from the     thread id.    
+* [0.x.18]*
+     Same as above, except that the local dof index is computed from the     thread id.    
+* [0.x.19]*
+     Same as above, except that the quadrature point is computed from the     thread id.    
+* [0.x.20]*
+     Same as above, except that the quadrature point is computed from the     thread id.    
+* [0.x.21]*
+     Same as above, except that the functor  [2.x.18]  only takes a single input     argument (fe_eval) and computes the quadrature point from the thread id.          [2.x.19]  needs to define     \code     __device__ void operator()(        [2.x.20]  fe_degree, n_q_points_1d, n_components, Number>fe_eval) const;     \endcode    
+* [0.x.22]

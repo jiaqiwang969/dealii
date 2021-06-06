@@ -4,6 +4,6 @@ digraph "Grid reordering and cell orientation"
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
   Node1 [label="Grid reordering and\l cell orientation",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="A module describing how deal.II consistently orients Triangulation objects."];
-  Node2 [label="Grids and Triangulations",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="This module groups functions and classes that have to do with the topology and geometry of meshes...."];
+  Node2 [label="Grids and Triangulations\l This module groups functions and",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="classes that have to do with the topology and geometry of meshes. A mesh can be thought of as a colle..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
 }

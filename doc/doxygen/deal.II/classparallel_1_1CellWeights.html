@@ -97,78 +97,84 @@ $(function() {
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classparallel_1_1CellWeights-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">parallel::CellWeights&lt; dim, spacedim &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__Parallel.html">Parallel computing</a> &raquo; <a class="el" href="group__distributed.html">Parallel computing with multiple processors using distributed memory</a></div></div>  </div>
+<div class="title">parallel::CellWeights&lt; dim, spacedim &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__Parallel.html">Parallel computing</a> &raquo; <a class="el" href="group__distributed.html">Parallel computing with multiple processors using</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="distributed_2cell__weights_8h_source.html">deal.II/distributed/cell_weights.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for parallel::CellWeights&lt; dim, spacedim &gt;:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a802050ef84a321ad53ace8758367be5b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> = std::function&lt; unsigned <a class="el" href="classint.html">int</a>(const typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt;::cell_iterator &amp;, const <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt; dim, spacedim &gt; &amp;)&gt;</td></tr>
+<tr class="memitem:a802050ef84a321ad53ace8758367be5b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> = <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;)&gt;</td></tr>
 <tr class="separator:a802050ef84a321ad53ace8758367be5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a802050ef84a321ad53ace8758367be5b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> = std::function&lt; unsigned <a class="el" href="classint.html">int</a>(const typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt;::cell_iterator &amp;, const <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt; dim, spacedim &gt; &amp;)&gt;</td></tr>
+<tr class="memitem:a802050ef84a321ad53ace8758367be5b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> = <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;)&gt;</td></tr>
 <tr class="separator:a802050ef84a321ad53ace8758367be5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a802050ef84a321ad53ace8758367be5b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> = std::function&lt; unsigned <a class="el" href="classint.html">int</a>(const typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt;::cell_iterator &amp;, const <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt; dim, spacedim &gt; &amp;)&gt;</td></tr>
+<tr class="memitem:a802050ef84a321ad53ace8758367be5b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> = <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;)&gt;</td></tr>
 <tr class="separator:a802050ef84a321ad53ace8758367be5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a96f1ee978c41cb19e0a4a1d59ba0ddab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a96f1ee978c41cb19e0a4a1d59ba0ddab">CellWeights</a> (const ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:a96f1ee978c41cb19e0a4a1d59ba0ddab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a96f1ee978c41cb19e0a4a1d59ba0ddab">CellWeights</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:a96f1ee978c41cb19e0a4a1d59ba0ddab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a061070d393ad32d241ad7352be697975"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a061070d393ad32d241ad7352be697975">~CellWeights</a> ()</td></tr>
 <tr class="separator:a061070d393ad32d241ad7352be697975"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaba125d0e49b21f8b392ff1eb9cfdb21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aaba125d0e49b21f8b392ff1eb9cfdb21">reinit</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:aaba125d0e49b21f8b392ff1eb9cfdb21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aaba125d0e49b21f8b392ff1eb9cfdb21">reinit</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:aaba125d0e49b21f8b392ff1eb9cfdb21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96f1ee978c41cb19e0a4a1d59ba0ddab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a96f1ee978c41cb19e0a4a1d59ba0ddab">CellWeights</a> (const ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:a96f1ee978c41cb19e0a4a1d59ba0ddab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a96f1ee978c41cb19e0a4a1d59ba0ddab">CellWeights</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:a96f1ee978c41cb19e0a4a1d59ba0ddab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a061070d393ad32d241ad7352be697975"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a061070d393ad32d241ad7352be697975">~CellWeights</a> ()</td></tr>
 <tr class="separator:a061070d393ad32d241ad7352be697975"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaba125d0e49b21f8b392ff1eb9cfdb21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aaba125d0e49b21f8b392ff1eb9cfdb21">reinit</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:aaba125d0e49b21f8b392ff1eb9cfdb21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aaba125d0e49b21f8b392ff1eb9cfdb21">reinit</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:aaba125d0e49b21f8b392ff1eb9cfdb21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96f1ee978c41cb19e0a4a1d59ba0ddab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a96f1ee978c41cb19e0a4a1d59ba0ddab">CellWeights</a> (const ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:a96f1ee978c41cb19e0a4a1d59ba0ddab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a96f1ee978c41cb19e0a4a1d59ba0ddab">CellWeights</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:a96f1ee978c41cb19e0a4a1d59ba0ddab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a061070d393ad32d241ad7352be697975"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a061070d393ad32d241ad7352be697975">~CellWeights</a> ()</td></tr>
 <tr class="separator:a061070d393ad32d241ad7352be697975"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaba125d0e49b21f8b392ff1eb9cfdb21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aaba125d0e49b21f8b392ff1eb9cfdb21">reinit</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:aaba125d0e49b21f8b392ff1eb9cfdb21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aaba125d0e49b21f8b392ff1eb9cfdb21">reinit</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:aaba125d0e49b21f8b392ff1eb9cfdb21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a085dfb18360e386d88934950693d070d"><td class="memItemLeft" align="right" valign="top">static std::function&lt; unsigned <a class="el" href="classint.html">int</a>(const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;cell, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::CellStatus status)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a085dfb18360e386d88934950693d070d">make_weighting_callback</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:a085dfb18360e386d88934950693d070d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::CellStatus <a class="el" href="tria__objects__0_8txt.html#a2a2a31a8b067d7c9972c9f03fb7712a1">status</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a085dfb18360e386d88934950693d070d">make_weighting_callback</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:a085dfb18360e386d88934950693d070d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a085dfb18360e386d88934950693d070d"><td class="memItemLeft" align="right" valign="top">static std::function&lt; unsigned <a class="el" href="classint.html">int</a>(const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;cell, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::CellStatus status)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a085dfb18360e386d88934950693d070d">make_weighting_callback</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:a085dfb18360e386d88934950693d070d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::CellStatus <a class="el" href="tria__objects__0_8txt.html#a2a2a31a8b067d7c9972c9f03fb7712a1">status</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a085dfb18360e386d88934950693d070d">make_weighting_callback</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:a085dfb18360e386d88934950693d070d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a085dfb18360e386d88934950693d070d"><td class="memItemLeft" align="right" valign="top">static std::function&lt; unsigned <a class="el" href="classint.html">int</a>(const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;cell, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::CellStatus status)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a085dfb18360e386d88934950693d070d">make_weighting_callback</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:a085dfb18360e386d88934950693d070d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::CellStatus <a class="el" href="tria__objects__0_8txt.html#a2a2a31a8b067d7c9972c9f03fb7712a1">status</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a085dfb18360e386d88934950693d070d">make_weighting_callback</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:a085dfb18360e386d88934950693d070d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Selection of weighting functions @{</div></td></tr>
-<tr class="memitem:a79898055fe6a1d347f361cac223d915e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a79898055fe6a1d347f361cac223d915e">constant_weighting</a> (const unsigned <a class="el" href="classint.html">int</a> factor=1000)</td></tr>
+<tr class="memitem:a79898055fe6a1d347f361cac223d915e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a79898055fe6a1d347f361cac223d915e">constant_weighting</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="sparse__decomposition__0_8txt.html#aa36e69f7b51d00cbf24c899c1490950c">factor</a>=1000)</td></tr>
 <tr class="separator:a79898055fe6a1d347f361cac223d915e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a933329cf29deef345ebc51ed761c7152"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a933329cf29deef345ebc51ed761c7152">ndofs_weighting</a> (const std::pair&lt; float, float &gt; &amp;coefficients)</td></tr>
+<tr class="memitem:a933329cf29deef345ebc51ed761c7152"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a933329cf29deef345ebc51ed761c7152">ndofs_weighting</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::pair&lt; float, float &gt; &amp;<a class="el" href="smoothness__estimator__0_8txt.html#ab004fc5fec709b9ddea94a11f894fe19">coefficients</a>)</td></tr>
 <tr class="separator:a933329cf29deef345ebc51ed761c7152"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae83139224c42deb250c63409d2d6d38d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#ae83139224c42deb250c63409d2d6d38d">ndofs_weighting</a> (const std::vector&lt; std::pair&lt; float, float &gt;&gt; &amp;coefficients)</td></tr>
+<tr class="memitem:ae83139224c42deb250c63409d2d6d38d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#ae83139224c42deb250c63409d2d6d38d">ndofs_weighting</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; float, float &gt;&gt; &amp;<a class="el" href="smoothness__estimator__0_8txt.html#ab004fc5fec709b9ddea94a11f894fe19">coefficients</a>)</td></tr>
 <tr class="separator:ae83139224c42deb250c63409d2d6d38d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bb53fa03d72ef567fb475f8ae19a6bd"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a0bb53fa03d72ef567fb475f8ae19a6bd">constant_weighting</a> (const unsigned <a class="el" href="classint.html">int</a> factor=1000)</td></tr>
+<tr class="memitem:a0bb53fa03d72ef567fb475f8ae19a6bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a0bb53fa03d72ef567fb475f8ae19a6bd">constant_weighting</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="sparse__decomposition__0_8txt.html#aa36e69f7b51d00cbf24c899c1490950c">factor</a>=1000)</td></tr>
 <tr class="separator:a0bb53fa03d72ef567fb475f8ae19a6bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15c1dbd6a453e93af1718cc28eee6a90"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a15c1dbd6a453e93af1718cc28eee6a90">ndofs_weighting</a> (const std::pair&lt; float, float &gt; &amp;coefficients)</td></tr>
+<tr class="memitem:a15c1dbd6a453e93af1718cc28eee6a90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a15c1dbd6a453e93af1718cc28eee6a90">ndofs_weighting</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::pair&lt; float, float &gt; &amp;<a class="el" href="smoothness__estimator__0_8txt.html#ab004fc5fec709b9ddea94a11f894fe19">coefficients</a>)</td></tr>
 <tr class="separator:a15c1dbd6a453e93af1718cc28eee6a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67c85bd5fbacd77d50b432fb61510368"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a67c85bd5fbacd77d50b432fb61510368">ndofs_weighting</a> (const std::vector&lt; std::pair&lt; float, float &gt;&gt; &amp;coefficients)</td></tr>
+<tr class="memitem:a67c85bd5fbacd77d50b432fb61510368"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a67c85bd5fbacd77d50b432fb61510368">ndofs_weighting</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; float, float &gt;&gt; &amp;<a class="el" href="smoothness__estimator__0_8txt.html#ab004fc5fec709b9ddea94a11f894fe19">coefficients</a>)</td></tr>
 <tr class="separator:a67c85bd5fbacd77d50b432fb61510368"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Selection of weighting functions</div></td></tr>
-<tr class="memitem:a0bb53fa03d72ef567fb475f8ae19a6bd"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a0bb53fa03d72ef567fb475f8ae19a6bd">constant_weighting</a> (const unsigned <a class="el" href="classint.html">int</a> factor=1000)</td></tr>
+<tr class="memitem:a0bb53fa03d72ef567fb475f8ae19a6bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a0bb53fa03d72ef567fb475f8ae19a6bd">constant_weighting</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="sparse__decomposition__0_8txt.html#aa36e69f7b51d00cbf24c899c1490950c">factor</a>=1000)</td></tr>
 <tr class="separator:a0bb53fa03d72ef567fb475f8ae19a6bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15c1dbd6a453e93af1718cc28eee6a90"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a15c1dbd6a453e93af1718cc28eee6a90">ndofs_weighting</a> (const std::pair&lt; float, float &gt; &amp;coefficients)</td></tr>
+<tr class="memitem:a15c1dbd6a453e93af1718cc28eee6a90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a15c1dbd6a453e93af1718cc28eee6a90">ndofs_weighting</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::pair&lt; float, float &gt; &amp;<a class="el" href="smoothness__estimator__0_8txt.html#ab004fc5fec709b9ddea94a11f894fe19">coefficients</a>)</td></tr>
 <tr class="separator:a15c1dbd6a453e93af1718cc28eee6a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67c85bd5fbacd77d50b432fb61510368"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a67c85bd5fbacd77d50b432fb61510368">ndofs_weighting</a> (const std::vector&lt; std::pair&lt; float, float &gt;&gt; &amp;coefficients)</td></tr>
+<tr class="memitem:a67c85bd5fbacd77d50b432fb61510368"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#a67c85bd5fbacd77d50b432fb61510368">ndofs_weighting</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; float, float &gt;&gt; &amp;<a class="el" href="smoothness__estimator__0_8txt.html#ab004fc5fec709b9ddea94a11f894fe19">coefficients</a>)</td></tr>
 <tr class="separator:a67c85bd5fbacd77d50b432fb61510368"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-methods"></a>
 Static Private Member Functions</h2></td></tr>
-<tr class="memitem:aafda2bba3d8a8a33e4b6bf4789882f62"><td class="memItemLeft" align="right" valign="top">static unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aafda2bba3d8a8a33e4b6bf4789882f62">weighting_callback</a> (const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;cell, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::CellStatus status, const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; dim, spacedim &gt; &amp;<a class="el" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:aafda2bba3d8a8a33e4b6bf4789882f62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aafda2bba3d8a8a33e4b6bf4789882f62">weighting_callback</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::CellStatus <a class="el" href="tria__objects__0_8txt.html#a2a2a31a8b067d7c9972c9f03fb7712a1">status</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#ac3a8b3e2b8ec4f742c9f1901d79bc7df">triangulation</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:aafda2bba3d8a8a33e4b6bf4789882f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafda2bba3d8a8a33e4b6bf4789882f62"><td class="memItemLeft" align="right" valign="top">static unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aafda2bba3d8a8a33e4b6bf4789882f62">weighting_callback</a> (const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;cell, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::CellStatus status, const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; dim, spacedim &gt; &amp;<a class="el" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:aafda2bba3d8a8a33e4b6bf4789882f62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aafda2bba3d8a8a33e4b6bf4789882f62">weighting_callback</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::CellStatus <a class="el" href="tria__objects__0_8txt.html#a2a2a31a8b067d7c9972c9f03fb7712a1">status</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#ac3a8b3e2b8ec4f742c9f1901d79bc7df">triangulation</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:aafda2bba3d8a8a33e4b6bf4789882f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafda2bba3d8a8a33e4b6bf4789882f62"><td class="memItemLeft" align="right" valign="top">static unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aafda2bba3d8a8a33e4b6bf4789882f62">weighting_callback</a> (const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;cell, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::CellStatus status, const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; dim, spacedim &gt; &amp;<a class="el" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>, const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
+<tr class="memitem:aafda2bba3d8a8a33e4b6bf4789882f62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classparallel_1_1CellWeights.html#aafda2bba3d8a8a33e4b6bf4789882f62">weighting_callback</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::CellStatus <a class="el" href="tria__objects__0_8txt.html#a2a2a31a8b067d7c9972c9f03fb7712a1">status</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#ac3a8b3e2b8ec4f742c9f1901d79bc7df">triangulation</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;weighting_function)</td></tr>
 <tr class="separator:aafda2bba3d8a8a33e4b6bf4789882f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
@@ -220,7 +226,7 @@ Be aware that this class connects the weight function to the <a class="el" href=
 template&lt;int dim, int spacedim = dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> =  std::function&lt; unsigned <a class="el" href="classint.html">int</a>(const typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;dim, spacedim&gt;::cell_iterator &amp;, const <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt;dim, spacedim&gt; &amp;)&gt;</td>
+          <td class="memname">using <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> =  <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;::cell_iterator &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt; &amp;)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -239,7 +245,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 template&lt;int dim, int spacedim = dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> =  std::function&lt; unsigned <a class="el" href="classint.html">int</a>(const typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;dim, spacedim&gt;::cell_iterator &amp;, const <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt;dim, spacedim&gt; &amp;)&gt;</td>
+          <td class="memname">using <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> =  <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;::cell_iterator &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt; &amp;)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -259,7 +265,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 template&lt;int dim, int spacedim = dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> =  std::function&lt; unsigned <a class="el" href="classint.html">int</a>(const typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;dim, spacedim&gt;::cell_iterator &amp;, const <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt;dim, spacedim&gt; &amp;)&gt;</td>
+          <td class="memname">using <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> =  <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;::cell_iterator &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFiniteElement.html">FiniteElement</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt; &amp;)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -279,15 +285,15 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 template&lt;int dim, int spacedim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a> </td>
+          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a> </td>
           <td>(</td>
-          <td class="paramtype">const ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -318,7 +324,7 @@ template&lt;int dim, int spacedim&gt; </div>
 template&lt;int dim, int spacedim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::~<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a></td>
+          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::~<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -337,15 +343,15 @@ template&lt;int dim, int spacedim&gt; </div>
 template&lt;int dim, int spacedim = dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a> </td>
+          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a> </td>
           <td>(</td>
-          <td class="paramtype">const ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -375,7 +381,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 template&lt;int dim, int spacedim = dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::~<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a> </td>
+          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::~<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -396,15 +402,15 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 template&lt;int dim, int spacedim = dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a> </td>
+          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a> </td>
           <td>(</td>
-          <td class="paramtype">const ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -433,7 +439,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 template&lt;int dim, int spacedim = dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::~<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a> </td>
+          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::~<a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -454,15 +460,15 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 template&lt;int dim, int spacedim = dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::reinit </td>
+          <td class="memname">void <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::reinit </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -488,15 +494,15 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static std::function&lt;unsigned <a class="el" href="classint.html">int</a>( const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;dim, spacedim&gt;::cell_iterator &amp;cell, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;dim, spacedim&gt;::CellStatus status)&gt; <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::make_weighting_callback </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt;unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>( <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;::CellStatus <a class="el" href="tria__objects__0_8txt.html#a2a2a31a8b067d7c9972c9f03fb7712a1">status</a>)&gt; <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::make_weighting_callback </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -527,9 +533,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a>&lt; dim, spacedim &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::constant_weighting </td>
+          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::constant_weighting </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>factor</em> = <code>1000</code></td><td>)</td>
           <td></td>
         </tr>
@@ -558,9 +564,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a>&lt; dim, spacedim &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::ndofs_weighting </td>
+          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::ndofs_weighting </td>
           <td>(</td>
-          <td class="paramtype">const std::pair&lt; float, float &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::pair&lt; float, float &gt; &amp;&#160;</td>
           <td class="paramname"><em>coefficients</em></td><td>)</td>
           <td></td>
         </tr>
@@ -592,9 +598,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a>&lt; dim, spacedim &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::ndofs_weighting </td>
+          <td class="memname"><a class="el" href="classparallel_1_1CellWeights.html">CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::ndofs_weighting </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::pair&lt; float, float &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; float, float &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>coefficients</em></td><td>)</td>
           <td></td>
         </tr>
@@ -626,33 +632,33 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::weighting_callback </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::weighting_callback </td>
           <td>(</td>
-          <td class="paramtype">const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::CellStatus&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::CellStatus&#160;</td>
           <td class="paramname"><em>status</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>triangulation</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -680,15 +686,15 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 template&lt;int dim, int spacedim = dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::reinit </td>
+          <td class="memname">void <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::reinit </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -715,15 +721,15 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static std::function&lt;unsigned <a class="el" href="classint.html">int</a>( const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;dim, spacedim&gt;::cell_iterator &amp;cell, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;dim, spacedim&gt;::CellStatus status)&gt; <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::make_weighting_callback </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt;unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>( <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;::CellStatus <a class="el" href="tria__objects__0_8txt.html#a2a2a31a8b067d7c9972c9f03fb7712a1">status</a>)&gt; <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::make_weighting_callback </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -755,9 +761,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::constant_weighting </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::constant_weighting </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>factor</em> = <code>1000</code></td><td>)</td>
           <td></td>
         </tr>
@@ -784,9 +790,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::ndofs_weighting </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::ndofs_weighting </td>
           <td>(</td>
-          <td class="paramtype">const std::pair&lt; float, float &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::pair&lt; float, float &gt; &amp;&#160;</td>
           <td class="paramname"><em>coefficients</em></td><td>)</td>
           <td></td>
         </tr>
@@ -816,9 +822,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::ndofs_weighting </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::ndofs_weighting </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::pair&lt; float, float &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; float, float &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>coefficients</em></td><td>)</td>
           <td></td>
         </tr>
@@ -848,33 +854,33 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::weighting_callback </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::weighting_callback </td>
           <td>(</td>
-          <td class="paramtype">const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::CellStatus&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::CellStatus&#160;</td>
           <td class="paramname"><em>status</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>triangulation</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -902,15 +908,15 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 template&lt;int dim, int spacedim = dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::reinit </td>
+          <td class="memname">void <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::reinit </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -936,15 +942,15 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static std::function&lt;unsigned <a class="el" href="classint.html">int</a>( const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;dim, spacedim&gt;::cell_iterator &amp;cell, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;dim, spacedim&gt;::CellStatus status)&gt; <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::make_weighting_callback </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt;unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>( <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;::CellStatus <a class="el" href="tria__objects__0_8txt.html#a2a2a31a8b067d7c9972c9f03fb7712a1">status</a>)&gt; <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::make_weighting_callback </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -975,9 +981,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::constant_weighting </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::constant_weighting </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>factor</em> = <code>1000</code></td><td>)</td>
           <td></td>
         </tr>
@@ -1004,9 +1010,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::ndofs_weighting </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::ndofs_weighting </td>
           <td>(</td>
-          <td class="paramtype">const std::pair&lt; float, float &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::pair&lt; float, float &gt; &amp;&#160;</td>
           <td class="paramname"><em>coefficients</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1036,9 +1042,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::ndofs_weighting </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::ndofs_weighting </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::pair&lt; float, float &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; float, float &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>coefficients</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1068,33 +1074,33 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::weighting_callback </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::weighting_callback </td>
           <td>(</td>
-          <td class="paramtype">const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::CellStatus&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::CellStatus&#160;</td>
           <td class="paramname"><em>status</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>triangulation</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classparallel_1_1CellWeights.html#a802050ef84a321ad53ace8758367be5b">WeightingFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>weighting_function</em>&#160;</td>
         </tr>
         <tr>
@@ -1126,7 +1132,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">boost::signals2::connection <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; dim, spacedim &gt;::connection</td>
+          <td class="memname">boost::signals2::connection <a class="el" href="classparallel_1_1CellWeights.html">parallel::CellWeights</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::connection</td>
         </tr>
       </table>
   </td>

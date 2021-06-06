@@ -1,0 +1,13 @@
+[0.x.0]*
+     This class implements some types which differ between the dimensions.     These are the declarations for the 1D case only. See the      [2.x.0]      module for more information.         A  [2.x.1]  is aliased to an iterator operating on the  [2.x.2]      lines member variable of a <tt>Triangulation<1></tt> object. An  [2.x.3]      active_line_iterator only operates on the active lines.  [2.x.4]      raw_line_iterator objects operate on all lines, used or not.         Since we are in one dimension, the following identities are declared:     
+* [1.x.0]
+*          To enable the declaration of  [2.x.5]  and the like in     <tt>Triangulation<1></tt>, the  [2.x.6]  are declared as     iterators over InvalidAccessor. Thus these types exist, but are useless     and will certainly make any involuntary use visible. The same holds for     hexahedron iterators.         The same applies for the  [2.x.7]  types, since lines have no     substructures apart from vertices, which are handled in a different     way, however.    
+* [0.x.1]*
+     This class implements some types which differ between the dimensions.     These are the declarations for the 2D case only. See the      [2.x.8]      module for more information.         A  [2.x.9]  is aliased to an iterator operating on the  [2.x.10]      lines member variable of a <tt>Triangulation<2></tt> object. An  [2.x.11]      active_line_iterator only operates on the active lines.  [2.x.12]      raw_line_iterator objects operate on all lines, used or not. Using  [2.x.13]      active_line_iterators may not be particularly in 2D useful since it     only operates on unrefined lines. However, also refined lines may bound     unrefined cells if the neighboring cell is refined once more than the     present one.         Similarly to line iterators,  [2.x.14]   [2.x.15]  and      [2.x.16]  are declared.         To enable the declaration of  [2.x.17]  and the like in     <tt>Triangulation<[12]></tt>, the  [2.x.18]  are declared as     iterators over InvalidAccessor. Thus these types exist, but are useless     and will certainly make any involuntary use visible.         Since we are in two dimension, the following identities are declared:     
+* [1.x.1]
+*     
+* [0.x.2]*
+     This class implements some types which differ between the dimensions.     These are the declarations for the 3D case only. See the      [2.x.19]      module for more information.         For the declarations of the data types, more or less the same holds as     for lower dimensions (see <tt>Iterators<[12]></tt>). The dimension     specific data types are here, since we are in three dimensions:     
+* [1.x.2]
+*     
+* [0.x.3]

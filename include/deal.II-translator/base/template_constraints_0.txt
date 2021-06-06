@@ -1,0 +1,90 @@
+[0.x.0]*
+     A helper class whose `value` member is true or false depending on     whether all of the given boolean template arguments are true.    
+* [0.x.1]*
+ This struct is a generalization of  [2.x.0]  Derived> to template parameter packs and tests if all of the Derived... classes have Base as base class or are Base itself. The result is stored in the member variable value.
+
+* 
+* [0.x.2]*
+ This struct is a generalization of  [2.x.1]  to template parameter packs and tests if all of the types in the `Types...` parameter pack are equal to the `Type` given as first template argument. The result is stored in the member variable value.
+
+* 
+* [0.x.3] A generalization of  [2.x.2]  that only works if [1.x.0] of the given boolean template parameters are true.
+
+* 
+* [0.x.4]*
+ A type trait that checks to see if a class behaves as an iterable container that has a beginning and an end. This implies that the class either defines the `begin()` and `end()` functions, or is a C-style array.
+
+* 
+* [0.x.5]*
+ A template class that simply exports its template argument as a local alias. This class, while at first appearing useless, makes sense in the following context: if you have a function template as follows:
+
+* 
+* [1.x.1]
+*  then it can't be called in an expression like  [2.x.3]  because the type  [2.x.4]  of the template can not be deduced in a unique way from the types of the arguments. However, if the template is written as
+
+* 
+* [1.x.2]
+*  then the call becomes valid: the type  [2.x.5]  is not deducible from the second argument to the function, so only the first argument participates in template type resolution.
+*  The context for this feature is as follows: consider
+
+* 
+* [1.x.3]
+*  This code fails to compile because the compiler can't decide whether the template type  [2.x.6]  (from the signature of the function given as first argument to  [2.x.7]  because the expression  [2.x.8]  has that type. Of course, what we would like the compiler to do is simply cast the  [2.x.9] . We can achieve this by writing the code as follows:
+
+* 
+* [1.x.4]
+* 
+
+* 
+* [0.x.6]*
+ A class that always returns a given value. This is needed as a workaround for lambdas used as default parameters some compilers struggle to deal with.
+
+* 
+* [0.x.7]*
+ A class to perform comparisons of arbitrary pointers for equality. In some circumstances, one would like to make sure that two arguments to a function are not the same object. One would, in this case, make sure that their addresses are not the same. However, sometimes the types of these two arguments may be template types, and they may be the same type or not. In this case, a simple comparison as in <tt>&object1 != &object2</tt> does only work if the types of the two objects are equal, but the compiler will barf if they are not. However, in the latter case, since the types of the two objects are different, we can be sure that the two objects cannot be the same.
+*  This class implements a comparison function that always returns  [2.x.10]  if the types of its two arguments are different, and returns <tt>p1 == p2</tt> otherwise.
+
+* 
+* [0.x.8]*
+   Comparison function for pointers of the same type. Returns  [2.x.11]  if the   two pointers are equal.  
+* [0.x.9]*
+   Comparison function for pointers of different types. The C++ language   does not allow comparing these pointers using <tt>operator==</tt>.   However, since the two pointers have different types, we know that they   can't be the same, so we always return  [2.x.12]   
+* [0.x.10]*
+   A struct that implements the default product type resulting from the   multiplication of two types.    
+*  [2.x.13]  Care should be taken when  [2.x.14]  or  [2.x.15]  have qualifiers ( [2.x.16]  or    [2.x.17]  or are  [2.x.18]  or  [2.x.19]  references! It is recommended   that specialization of this class is only made for unqualified (fully   stripped) types and that the ProductType class be used to determine the   result of operating with (potentially) qualified types.  
+* [0.x.11]*
+ A class with a local alias that represents the type that results from the product of two variables of type  [2.x.20]  and  [2.x.21]  In other words, we would like to infer the type of the  [2.x.22]  variable in code like this:
+
+* 
+* [1.x.5]
+*  The local alias of this structure represents the type the variable  [2.x.23]  would have.
+* 
+
+*  [1.x.6]
+*  The purpose of this class is principally to represent the type one needs to use to represent the values or gradients of finite element fields at quadrature points. For example, assume you are storing the values  [2.x.24]  of unknowns in a Vector<float>, then evaluating  [2.x.25]  at quadrature points results in values  [2.x.26]  that need to be stored as  [2.x.27]  variables because the  [2.x.28]  are  [2.x.29]  values and the  [2.x.30]  are computed as  [2.x.31]  values, and the product are then  [2.x.32]  values. On the other hand, if you store your unknowns  [2.x.33]  as  [2.x.34]  values and you try to evaluate  [2.x.35]  at quadrature points, then the gradients  [2.x.36]  need to be stored as objects of type  [2.x.37]  because that's what you get when you multiply a complex number by a  [2.x.38]  (the type used to represent the gradient of shape functions of scalar finite elements).
+*  Likewise, if you are using a vector valued element (with dim components) and the  [2.x.39]  are stored as  [2.x.40]  variables, then  [2.x.41]  needs to have type  [2.x.42]  (because the shape functions have type  [2.x.43] ). Finally, if you store the  [2.x.44]  as objects of type  [2.x.45]  and you have a vector valued element, then the gradients  [2.x.46]  will result in objects of type  [2.x.47]   [2.x.48] 
+*  In all of these cases, this type is used to identify which type needs to be used for the result of computing the product of unknowns and the values, gradients, or other properties of shape functions.
+
+* 
+* [0.x.12]*
+ This class provides a local alias  [2.x.49]  that is equal to the template argument but only if the template argument corresponds to a scalar type (i.e., one of the floating point types, signed or unsigned integer, or a complex number). If the template type  [2.x.50]  is not a scalar, then no class  [2.x.51]  is declared and, consequently, no local alias is available.
+*  The purpose of the class is to disable certain template functions if one of the arguments is not a scalar number. By way of (nonsensical) example, consider the following function:
+
+* 
+* [1.x.7]
+*  This function can be called with any two arguments of the same type  [2.x.52]  This includes arguments for which this clearly makes no sense. Consequently, one may want to restrict the function to only scalars, and this can be written as
+
+* 
+* [1.x.8]
+*  At a place where you call the function, the compiler will deduce the type  [2.x.53]  from the arguments. For example, in
+
+* 
+* [1.x.9]
+*  it will deduce  [2.x.54]  to be  [2.x.55]  and because  [2.x.56]  equals  [2.x.57]  the compiler will instantiate a function <code>double multiply(const double, const double)</code> from the template above. On the other hand, in a context like
+
+* 
+* [1.x.10]
+*  the compiler will deduce  [2.x.58]  to be  [2.x.59]  but because  [2.x.60]  does not exist the compiler does not consider the template for instantiation. This technique is called "Substitution Failure is not an Error (SFINAE)". It makes sure that the template function can not even be called, rather than leading to a later error about the fact that the operation  [2.x.61]  is not defined (or may lead to some nonsensical result). It also allows the declaration of overloads of a function such as  [2.x.62]  multiply for different types of arguments, without resulting in ambiguous call errors by the compiler.
+
+* 
+* [0.x.13]

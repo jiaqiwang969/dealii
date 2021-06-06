@@ -1,0 +1,25 @@
+[0.x.0]*
+   Direct solvers. These solvers call cuSOLVER underneath.    
+*  [2.x.0]  Instantiations for this template are provided for <tt> [2.x.1]    and <tt> [2.x.2]     
+*  [2.x.3]   
+* [0.x.1]*
+     Struct for additional settings for SolverDirect.    
+* [0.x.2]*
+       Set the additional data field to the desired solver.      
+* [0.x.3]*
+       Set the solver type. Possibilities are:        [2.x.4]         [2.x.5]  "Cholesky" which performs a Cholesky decomposition on the device        [2.x.6]         [2.x.7]  "LU_dense" which converts the sparse matrix to a dense       matrix and uses LU factorization  [2.x.8]         [2.x.9]  "LU_host" which uses LU factorization on the host  [2.x.10]         [2.x.11]       
+* [0.x.4]*
+     Constructor. Takes the solver control object and creates the solver.    
+* [0.x.5]*
+     Destructor.    
+* [0.x.6]*
+     Solve the linear system <tt>Ax=b</tt>.    
+* [0.x.7]*
+     Access to object that controls convergence.    
+* [0.x.8]*
+     Handle    
+* [0.x.9]*
+     Reference to the object that controls convergence of the iterative     solver. In fact, for these CUDA wrappers, cuSOLVER and cuSPARSE do so     themselves, but we copy the data from this object before starting the     solution process, and copy the data back into it afterwards.    
+* [0.x.10]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.11]

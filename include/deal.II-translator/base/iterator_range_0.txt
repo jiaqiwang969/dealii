@@ -1,0 +1,82 @@
+[0.x.0]*
+ A class that is used to denote a collection of iterators that can be expressed in terms of a range of iterators characterized by a begin and an end iterator. As is common in C++, these ranges are specified as half open intervals defined by a begin iterator and a one-past-the-end iterator.
+*  The purpose of this class is so that classes such as Triangulation and DoFHandler can return ranges of cell iterators using an object of the current type from functions such as  [2.x.0]  and that such an object can then be used in a range-based for loop as supported by C++11, see also  [2.x.1]  "C++11 standard".
+*  For example, such a loop could look like this if the goal is to set the user flag on every active cell:
+
+* 
+* [1.x.0]
+*  In other words, the  [2.x.2]  objects are iterators, and the range object returned by  [2.x.3]  and similar functions are conceptually thought of as [1.x.1].
+*  Of course, the class may also be used to denote other iterator ranges using different kinds of iterators into other containers.
+* 
+
+*  [1.x.2]
+*  Informally, the way the C++11 standard describes [1.x.3] works as follows: A [1.x.4] of the form
+
+* 
+* [1.x.5]
+*  where  [2.x.4]  is a container or collection, is equivalent to the following loop:
+
+* 
+* [1.x.6]
+*  (The precise definition can be found here: https://en.cppreference.com/w/cpp/language/range-for .) In other words, the compiler introduces a temporary variable that [1.x.7] over the elements of the container or collection, and the original variable  [2.x.5]  that appeared in the range-based for loop represents the [1.x.8] state of these iterators
+* 
+*  -  namely, the [1.x.9] of the collection.
+*  In the context of loops over cells, we typically want to retain the fact that the loop variable is an iterator, not a value. This is because in deal.II, we never actually use the [1.x.10] of a cell iterator: conceptually, it would represent a cell, and technically it is implemented by classes such as CellAccessor and DoFCellAccessor, but these classes are never used explicitly. Consequently, what we would like is that a call such as  [2.x.6]  returns an object that represents a [1.x.11] of the kind <code>{begin, begin+1, ..., end-1}</code>. This is conveniently expressed as the half open interval  [2.x.7] . The loop variable in the range- based for loop would then take on each of these iterators in turn.
+* 
+
+*  [1.x.12]
+*  To represent the desired semantics as outlined above, this class stores a half-open range of iterators  [2.x.8]  of the given template type. Secondly, the class needs to provide begin() and end() functions in such a way that if you [1.x.13] the result of  [2.x.9]  you get the  [2.x.10]  iterator. Furthermore, you must be able to increment the object returned by  [2.x.11]  so that  [2.x.12] . In other words,  [2.x.13]  must return an iterator that when dereferenced returns an iterator of the template type  [2.x.14] : It is an iterator over iterators in the same sense as if you had a pointer into an array of pointers.
+*  This is implemented in the form of the  [2.x.15]  class.
+* 
+
+* 
+*  [2.x.16] 
+
+* 
+* [0.x.1]*
+   Typedef for the iterator type that iterates over other iterators.  
+* [0.x.2]*
+   Typedef for the iterator type represent by this class.  
+* [0.x.3]*
+   Default constructor. Create a range represented by two default   constructed iterators. This range is likely (depending on the type of the   iterators) empty.  
+* [0.x.4]*
+   Constructor. Constructs a range given the begin and end iterators.      [2.x.17]  begin An iterator pointing to the first element of the range    [2.x.18]  end   An iterator pointing past the last element represented   by this range.  
+* [0.x.5]*
+   Return the iterator pointing to the first element of this range.  
+* [0.x.6]*
+   Return the iterator pointing to the first element of this range.  
+* [0.x.7]*
+   Return the iterator pointing to the element past the last element of this   range.  
+* [0.x.8]*
+   Return the iterator pointing to the element past the last element of this   range.  
+* [0.x.9]*
+   Iterators characterizing the begin and end of the range.  
+* [0.x.10]*
+ A class that implements the semantics of iterators over iterators as discussed in the design sections of the IteratorRange class.
+
+* 
+* [0.x.11]*
+   Typedef the elements of the collection to give them a name that is more   distinct.  
+* [0.x.12]*
+   Constructor. Initialize this iterator-over-iterator in such a way that   it points to the given argument.      [2.x.19]  iterator An iterator to which this object is supposed to point.  
+* [0.x.13]*
+   Dereferencing operator.    [2.x.20]  The iterator within the collection currently pointed to.  
+* [0.x.14]*
+   Dereferencing operator.    [2.x.21]  The iterator within the collection currently pointed to.  
+* [0.x.15]*
+   Prefix increment operator. Move the current iterator to the next   element of the collection and return the new value.  
+* [0.x.16]*
+   Postfix increment operator. Move the current iterator to the next   element of the collection, but return the previous value of the   iterator.  
+* [0.x.17]*
+   Comparison operator    [2.x.22]  i_o_i Another iterator over iterators.    [2.x.23]  Returns whether the current iterator points to a different   object than the iterator represented by the argument.  
+* [0.x.18]*
+   Implicit conversion operator.      [2.x.24]  When you call this conversion operator (i.e., you convert this   iterator-over-iterators to the iterator we are currently pointing to),   you obtain a `const` reference to this underlying iterator. The only   thing you can really do with this result is dereferencing itself: it   presumably points to something useful, but since you don't know where   the pointed to object lives, you shouldn't increment or decrement the   iterator you get from this operator. As a consequence, the returned   iterator is marked as `const`, as this should prevent you from doing   anything other than dereference it.  
+* [0.x.19]*
+   Mark the class as forward iterator and declare some alias which are   standard for iterators and are used by algorithms to enquire about the   specifics of the iterators they work on.  
+* [0.x.20]*
+   The object this iterator currently points to.  
+* [0.x.21]*
+ Create an object of type IteratorRange given the beginning and end iterator.
+
+* 
+* [0.x.22]

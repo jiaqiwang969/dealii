@@ -4,10 +4,10 @@ digraph "Vector classes"
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
   Node1 [label="Vector classes",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Here, we list all the classes that satisfy the VectorType concept and may be used in linear solvers (..."];
-  Node3 [label="Exceptions and assertions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Exceptions.html",tooltip="This module contains classes that are used in the exception mechanism of deal.II."];
-  Node2 [label="Linear algebra classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAC.html",tooltip="This module contains classes that involve linear algebra, i.e., those associated with matrices,..."];
-  Node4 [label="PETScWrappers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__PETScWrappers.html",tooltip="The classes in this module are wrappers around functionality provided by the PETSc library...."];
-  Node5 [label="TrilinosWrappers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__TrilinosWrappers.html",tooltip="The classes in this module are wrappers around functionality provided by the Trilinos library...."];
+  Node3 [label="Exceptions and assertions\l This module contains classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Exceptions.html",tooltip="that are used in the exception mechanism of deal.II."];
+  Node2 [label="Linear algebra classes\l This module contains\l classes that",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAC.html",tooltip="involve linear algebra, i.e., those associated with matrices, vectors, and the solution of linear sys..."];
+  Node4 [label="PETScWrappers The classes\l in this module are",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__PETScWrappers.html",tooltip="wrappers around functionality provided by the PETSc library. They provide a modern object-oriented in..."];
+  Node5 [label="TrilinosWrappers The\l classes in this module are",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__TrilinosWrappers.html",tooltip="wrappers around functionality provided by the Trilinos library. They provide a modern object-oriented..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
   Node1->Node3 [shape=plaintext, dir="back", style="solid"];
   Node1->Node4 [shape=plaintext, label="PETScWrappers::MPI\l::BlockVector\nPETScWrappers::MPI\l::Vector\ninternal::LinearOperator\lImplementation::ReinitHelper", color="orange", dir="none", style="dashed"];

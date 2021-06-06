@@ -1,0 +1,55 @@
+[0.x.0]*
+ A namespace in which we declare alias for types used in deal.II, as well as special values for these types.
+
+* 
+* [0.x.1]*
+   The type used to denote subdomain_ids of cells.     See the    [2.x.0]  "glossary"   for more information.     There is a special value,  [2.x.1]  that is used to   indicate an invalid value of this type.  
+* [0.x.2]*
+   The type used for global indices of vertices.  
+* [0.x.3]*
+   An identifier that denotes the MPI type associated with    [2.x.2]   
+* [0.x.4]*
+   The type used to denote the global index of degrees of freedom. This   type is then also used for querying the globalnumber* of degrees   of freedom, since the number is simply the largest index plus one.     While in sequential computations the 4 billion indices of 32-bit unsigned   integers is plenty, parallel computations using (for example) the    [2.x.3]  class can overflow this number and   consequently, deal.II chooses a larger integer type when   configured to use 64-bit indices.     The data type always corresponds to an unsigned integer type.     See the    [2.x.4]    page for guidance on when this type should or should not be used.  
+* [0.x.5]*
+   An identifier that denotes the MPI type associated with    [2.x.5]   
+* [0.x.6]*
+   The type used to denote the global index of a cell. This type   is then also used for querying the globalnumber* of cells in   a triangulation since the number is simply the largest index plus one.     While in sequential computations the 4 billion indices of 32-bit unsigned   integers is plenty, parallel computations using (for example) the    [2.x.6]  class can overflow this number and   consequently, deal.II chooses a larger integer type when   configured to use 64-bit indices.     The data type always corresponds to an unsigned integer type.  
+* [0.x.7]*
+   The type used for coarse-cell ids. See the glossary   entry on    [2.x.7]  "coarse cell IDs"   for more information.  
+* [0.x.8]*
+   The type used to denote boundary indicators associated with every piece   of the boundary and, in the case of meshes that describe manifolds in   higher dimensions, associated with every cell.     There is a special value,  [2.x.8]  that is used   to indicate an invalid value of this type and that is used as the   boundary indicator for faces that are in the interior of the domain and   therefore not part of any addressable boundary component.      [2.x.9]     [2.x.10]  "Glossary entry on boundary indicators"  
+* [0.x.9]*
+   The type used to denote manifold indicators associated with every object   of the mesh.     There is a special value,  [2.x.11]  that is used to   indicate the standard cartesian manifold.      [2.x.12]     [2.x.13]  "Glossary entry on manifold indicators"  
+* [0.x.10]*
+   The type used to denote material indicators associated with every cell.     There is a special value,  [2.x.14]  that is used to   indicate an invalid value of this type.      [2.x.15]     [2.x.16]  "Glossary entry on material indicators"  
+* [0.x.11]*
+   The type used to denote geometric entity types.  
+* [0.x.12]*
+ Declare type used in Epetra.
+
+* 
+* [0.x.13]*
+     Declare type of integer used in the Epetra package of Trilinos.    
+* [0.x.14]*
+     Declare type of integer used in the Epetra package of Trilinos.    
+* [0.x.15]*
+   Representation of the largest number that can be put into an unsigned   integer. This value is widely used throughout the library as a marker for   an invalid unsigned integer value, such as an invalid array index, an   invalid array size, and the like.  
+* [0.x.16]*
+   Representation of the largest number that can be put into a size_type.   This value is used throughout the library as a marker for an invalid   size_type value, such as an invalid array index, an invalid array size,   and the like. Invalid_size_type is equivalent to invalid_dof_index.  
+* [0.x.17]*
+   An invalid value for indices of degrees of freedom.  
+* [0.x.18]*
+   An invalid value for coarse cell ids. See the glossary   entry on    [2.x.17]  "coarse cell IDs"   for more information.  
+* [0.x.19]*
+   Invalid material_id which we need in several places as a default value.   We assume that all material_ids lie in the range [0,   invalid_material_id).  
+* [0.x.20]*
+   Invalid boundary_id which we need in several places as a default value.   We assume that all valid boundary_ids lie in the range [0,   invalid_boundary_id).      [2.x.18]     [2.x.19]  "Glossary entry on boundary indicators"  
+* [0.x.21]*
+   A boundary indicator number that we reserve for internal faces.  We   assume that all valid boundary_ids lie in the range [0,   internal_face_boundary_id).     This is an indicator that is used internally (by the library) to   differentiate between faces that lie at the boundary of the domain and   faces that lie in the interior of the domain. You should never try to   assign this boundary indicator to anything in user code.      [2.x.20]     [2.x.21]  "Glossary entry on boundary indicators"  
+* [0.x.22]*
+   A manifold_id we reserve for the default flat Cartesian manifold.      [2.x.22]     [2.x.23]  "Glossary entry on manifold indicators"  
+* [0.x.23]*
+   A special id for an invalid subdomain id. This value may not be used as a   valid id but is used, for example, for default arguments to indicate a   subdomain id that is not to be used.     See the    [2.x.24]  "glossary"   for more information.  
+* [0.x.24]*
+   The subdomain id assigned to a cell whose true subdomain id we don't   know, for example because it resides on a different processor on a mesh   that is kept distributed on many processors. Such cells are called   "artificial".     See the glossary entries on    [2.x.25]  "subdomain ids"   and    [2.x.26]  "artificial cells"   as well as the    [2.x.27]    module for more information.  
+* [0.x.25]

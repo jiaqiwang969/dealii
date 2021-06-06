@@ -1,11 +1,11 @@
-digraph "Iterators on mesh-like containers"
+digraph "Iterators on mesh-like containers     @{"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
   Node3 [label="Accessor classes of\l the mesh iterators",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Accessors.html",tooltip=" "];
-  Node1 [label="Iterators on mesh-like\l containers",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="deal.II has several classes which are understood conceptually as meshes. Apart from the obvious Trian..."];
-  Node2 [label="Grids and Triangulations",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="This module groups functions and classes that have to do with the topology and geometry of meshes...."];
+  Node1 [label="Iterators on mesh-like\l containers     @\{",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="deal.II has several classes which are understood conceptually asmeshes. Apart from the obvious Triang..."];
+  Node2 [label="Grids and Triangulations\l This module groups functions and",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="classes that have to do with the topology and geometry of meshes. A mesh can be thought of as a colle..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
   Node1->Node3 [shape=plaintext, dir="back", style="solid"];
   Node1->Node2 [shape=plaintext, label="FilteredIterator\nTriaRawIterator\nTriaIterator\nTriaActiveIterator", color="orange", dir="none", style="dashed"];

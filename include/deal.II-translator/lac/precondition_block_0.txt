@@ -1,0 +1,234 @@
+[0.x.0]!  [2.x.0]  Preconditioners [2.x.1] 
+
+* 
+* [0.x.1]*
+ Base class for actual block preconditioners. This class assumes the <tt>MatrixType</tt> consisting of invertible blocks of  [2.x.2]  on the diagonal and provides the inversion of the diagonal blocks of the matrix. It is not necessary for this class that the matrix be block diagonal; rather, it applies to matrices of arbitrary structure with the minimal property of having invertible blocks on the diagonal. Still the matrix must have access to single matrix entries. Therefore, BlockMatrixArray and similar classes are not a possible matrix class template arguments.
+*  The block matrix structure used by this class is given, e.g., for the DG method for the transport equation. For a downstream numbering the matrices even have got a block lower left matrix structure, i.e. the matrices are empty above the diagonal blocks.
+* 
+
+* 
+*  [2.x.3]  This class is intended to be used for matrices whose structure is given by local contributions from disjoint cells, such as for DG methods. It is not intended for problems where the block structure results from different physical variables such as in the Stokes equations considered in  [2.x.4] .
+*  For all matrices that are empty above and below the diagonal blocks (i.e. for all block diagonal matrices) the  [2.x.5]  preconditioner is a direct solver. For all matrices that are empty only above the diagonal blocks (e.g. the matrices one gets by the DG method with downstream numbering)  [2.x.6]  is a direct solver.
+*  This first implementation of the  [2.x.7]  assumes the matrix has blocks each of the same block size. Varying block sizes within the matrix must still be implemented if needed.
+*  The first template parameter denotes the type of number representation in the sparse matrix, the second denotes the type of number representation in which the inverted diagonal block matrices are stored within this class by <tt>invert_diagblocks()</tt>. If you don't want to use the block inversion as an exact solver, but rather as a preconditioner, you may probably want to store the inverted blocks with less accuracy than the original matrix; for example, <tt>number==double, inverse_type=float</tt> might be a viable choice.
+*   [2.x.8]   [2.x.9]  "Block (linear algebra)"
+
+* 
+* [0.x.2]*
+   Define number type of matrix.  
+* [0.x.3]*
+   Value type for inverse matrices.  
+* [0.x.4]*
+   Declare type for container size.  
+* [0.x.5]*
+   Parameters for block preconditioners.  
+* [0.x.6]*
+     Constructor. Block size must be given since there is no reasonable     default parameter.    
+* [0.x.7]*
+     Relaxation parameter.    
+* [0.x.8]*
+     Block size.    
+* [0.x.9]*
+     Invert diagonal during initialization.    
+* [0.x.10]*
+     Assume all diagonal blocks are equal to save memory.    
+* [0.x.11]*
+     Choose the inversion method for the blocks.    
+* [0.x.12]*
+     The if #inversion is SVD, the threshold below which a singular value     will be considered zero and thus not inverted. This parameter is used     in the call to  [2.x.10]     
+* [0.x.13]*
+   Constructor.  
+* [0.x.14]*
+   Destructor.  
+* [0.x.15]*
+   Initialize matrix and block size.  We store the matrix and the block size   in the preconditioner object. In a second step, the inverses of the   diagonal blocks may be computed.     Additionally, a relaxation parameter for derived classes may be provided.  
+* [0.x.16]*
+   Initialize matrix and block size for permuted preconditioning.   Additionally to the parameters of the other initialize() function, we   hand over two index vectors with the permutation and its inverse. For the   meaning of these vectors see PreconditionBlockSOR.     In a second step, the inverses of the diagonal blocks may be computed.   Make sure you use invert_permuted_diagblocks() to yield consistent data.     Additionally, a relaxation parameter for derived classes may be provided.  
+* [0.x.17]*
+   Set either the permutation of rows or the permutation of blocks,   depending on the size of the vector.     If the size of the permutation vectors is equal to the dimension of the   linear system, it is assumed that rows are permuted individually. In this   case, set_permutation() must be called before initialize(), since the   diagonal blocks are built from the permuted entries of the matrix.     If the size of the permutation vector is not equal to the dimension of   the system, the diagonal blocks are computed from the unpermuted entries.   Instead, the relaxation methods step() and Tstep() are executed applying   the blocks in the order given by the permutation vector. They will throw   an exception if length of this vector is not equal to the number of   blocks.    
+*  [2.x.11]  Permutation of blocks can only be applied to the relaxation   operators step() and Tstep(), not to the preconditioning operators   vmult() and Tvmult().    
+*  [2.x.12]  It is safe to call set_permutation() before initialize(), while the   other order is only admissible for block permutation.  
+* [0.x.18]*
+   Replacement of invert_diagblocks() for permuted preconditioning.  
+* [0.x.19]*
+   Deletes the inverse diagonal block matrices if existent, sets the   blocksize to 0, hence leaves the class in the state that it had directly   after calling the constructor.  
+* [0.x.20]*
+   Check whether the object is empty.  
+* [0.x.21]*
+   Read-only access to entries. This function is only possible if the   inverse diagonal blocks are stored.  
+* [0.x.22]*
+   Stores the inverse of the diagonal blocks in  [2.x.13]  This costs some   additional memory
+* 
+*  - for DG methods about 1/3 (for double inverses) or 1/6   (for float inverses) of that used for the matrix
+* 
+*  - but it makes the   preconditioning much faster.     It is not allowed to call this function twice (will produce an error)   before a call of <tt>clear(...)</tt>  because at the second time there   already exist the inverse matrices.     After this function is called, the lock on the matrix given through the    [2.x.14]  function is released, i.e. you may overwrite of delete it.   You may want to do this in case you use this matrix to precondition   another matrix.  
+* [0.x.23]*
+   Perform one block relaxation step in forward numbering.     Depending on the arguments  [2.x.15]  and  [2.x.16]  this performs an SOR step   (both reference the same vector) of a Jacobi step (both different   vectors). For the Jacobi step, the calling function must copy  [2.x.17]  to    [2.x.18]  after this.    
+*  [2.x.19]  If a permutation is set, it is automatically honored by this   function.  
+* [0.x.24]*
+   Perform one block relaxation step in backward numbering.     Depending on the arguments  [2.x.20]  and  [2.x.21]  this performs an SOR step   (both reference the same vector) of a Jacobi step (both different   vectors). For the Jacobi step, the calling function must copy  [2.x.22]  to    [2.x.23]  after this.    
+*  [2.x.24]  If a permutation is set, it is automatically honored by this   function.  
+* [0.x.25]*
+   Return the size of the blocks.  
+* [0.x.26]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.27]*
+    [2.x.25]  Exceptions    [2.x.26]   
+* [0.x.28]*
+   For non-overlapping block preconditioners, the block size must divide the   matrix size. If not, this exception gets thrown.  
+* [0.x.29]*
+   Exception  
+* [0.x.30]*
+   Size of the blocks. Each diagonal block is assumed to be of the same   size.  
+* [0.x.31]*
+   Pointer to the matrix. Make sure that the matrix exists as long as this   class needs it, i.e. until calling  [2.x.27]  or (if the   inverse matrices should not be stored) until the last call of the   preconditoining  [2.x.28]  function of the derived classes.  
+* [0.x.32]*
+   Relaxation parameter to be used by derived classes.  
+* [0.x.33]*
+   The permutation vector  
+* [0.x.34]*
+   The inverse permutation vector  
+* [0.x.35]*
+ Block Jacobi preconditioning. See PreconditionBlock for requirements on the matrix. This class satisfies the  [2.x.29]  "relaxation concept".
+* 
+
+* 
+*  [2.x.30]  Instantiations for this template are provided for <tt> [2.x.31]  and  [2.x.32]  others can be generated in application programs (see the section on  [2.x.33]  in the manual).
+
+* 
+* [0.x.36]*
+   Define number type of matrix.  
+* [0.x.37]*
+   Declare type for container size.  
+* [0.x.38]*
+   Standard-conforming iterator.  
+* [0.x.39]*
+     Accessor class for iterators    
+* [0.x.40]*
+       Constructor. Since we use accessors only for read access, a const       matrix pointer is sufficient.      
+* [0.x.41]*
+       Row number of the element represented by this object.      
+* [0.x.42]*
+       Column number of the element represented by this object.      
+* [0.x.43]*
+       Value of this matrix entry.      
+* [0.x.44]*
+       The matrix accessed.      
+* [0.x.45]*
+       Save block size here for further reference.      
+* [0.x.46]*
+       Current block number.      
+* [0.x.47]*
+       Iterator inside block.      
+* [0.x.48]*
+       End of current block.      
+* [0.x.49]*
+     Constructor.    
+* [0.x.50]*
+     Prefix increment.    
+* [0.x.51]*
+     Dereferencing operator.    
+* [0.x.52]*
+     Dereferencing operator.    
+* [0.x.53]*
+     Comparison. True, if both iterators point to the same matrix position.    
+* [0.x.54]*
+     Inverse of <tt>==</tt>.    
+* [0.x.55]*
+     Comparison operator. Result is true if either the first row number is     smaller or if the row numbers are equal and the first index is smaller.    
+* [0.x.56]*
+     Store an object of the accessor class.    
+* [0.x.57]*
+   import functions from private base class  
+* [0.x.58]*
+   Execute block Jacobi preconditioning.     This function will automatically use the inverse matrices if they exist,   if not then BlockJacobi will need much time inverting the diagonal block   matrices in each preconditioning step.  
+* [0.x.59]*
+   Same as  [2.x.34]  since Jacobi is symmetric.  
+* [0.x.60]*
+   Execute block Jacobi preconditioning, adding to  [2.x.35]      This function will automatically use the inverse matrices if they exist,   if not then BlockJacobi will need much time inverting the diagonal block   matrices in each preconditioning step.  
+* [0.x.61]*
+   Same as  [2.x.36]  since Jacobi is symmetric.  
+* [0.x.62]*
+   Perform one step of the Jacobi iteration.  
+* [0.x.63]*
+   Perform one step of the Jacobi iteration.  
+* [0.x.64]*
+   Iterator starting at the first entry.  
+* [0.x.65]*
+   Final iterator.  
+* [0.x.66]*
+   Iterator starting at the first entry of row  [2.x.37]   
+* [0.x.67]*
+   Final iterator of row  [2.x.38]   
+* [0.x.68]*
+   Actual implementation of the preconditioner.     Depending on  [2.x.39]  the result of preconditioning is added to the   destination vector.  
+* [0.x.69]*
+ Block SOR preconditioning. This class satisfies the  [2.x.40]  "relaxation concept".
+*  The functions  [2.x.41]  and  [2.x.42]  execute a (transposed) block-SOR step, based on the blocks in PreconditionBlock. The elements outside the diagonal blocks may be distributed arbitrarily.
+*  See PreconditionBlock for requirements on the matrix. The blocks used in this class must be contiguous and non-overlapping. An overlapping Schwarz relaxation method can be found in RelaxationBlockSOR; that class does not offer preconditioning, though.
+*  [1.x.0]
+*  Optionally, the entries of the source vector can be treated in the order of the indices in the permutation vector set by #set_permutation (or the opposite order for Tvmult()). The inverse permutation is used for storing elements back into this vector. This functionality is automatically enabled after a call to set_permutation() with vectors of nonzero size.
+* 
+
+* 
+*  [2.x.43]  The diagonal blocks, like the matrix, are not permuted! Therefore, the permutation vector can only swap whole blocks. It may not change the order inside blocks or swap single indices between blocks.
+*  [1.x.1]
+* 
+
+* 
+*  [2.x.44]  Instantiations for this template are provided for <tt> [2.x.45]  and  [2.x.46]  others can be generated in application programs (see the section on  [2.x.47]  in the manual).
+
+* 
+* [0.x.70]*
+   Declare type for container size.  
+* [0.x.71]*
+   Default constructor.  
+* [0.x.72]*
+   Define number type of matrix.  
+* [0.x.73]*
+   import types and functions from protected base class.  
+* [0.x.74]*
+   Execute block SOR preconditioning.     This function will automatically use the inverse matrices if they exist,   if not then BlockSOR will waste much time inverting the diagonal block   matrices in each preconditioning step.     For matrices which are empty above the diagonal blocks BlockSOR is a   direct solver.  
+* [0.x.75]*
+   Execute block SOR preconditioning.     Warning: this function performs normal  [2.x.48]  without adding. The   reason for its existence is that BlockMatrixArray requires the adding   version by default. On the other hand, adding requires an additional   auxiliary vector, which is not desirable.      [2.x.49]  vmult  
+* [0.x.76]*
+   Backward application of vmult().     In the current implementation, this is not the transpose of vmult(). It   is a transposed Gauss-Seidel algorithm applied to the whole matrix, but   the diagonal blocks being inverted are not transposed. Therefore, it is   the transposed, if the diagonal blocks are symmetric.  
+* [0.x.77]*
+   Execute backward block SOR preconditioning.     Warning: this function performs normal  [2.x.50]  without adding. The   reason for its existence is that BlockMatrixArray requires the adding   version by default. On the other hand, adding requires an additional   auxiliary vector, which is not desirable.      [2.x.51]  vmult  
+* [0.x.78]*
+   Perform one step of the SOR iteration.  
+* [0.x.79]*
+   Perform one step of the transposed SOR iteration.  
+* [0.x.80]*
+   Constructor to be used by PreconditionBlockSSOR.  
+* [0.x.81]*
+   Implementation of the forward substitution loop called by vmult() and   vmult_add().     If a #permutation is set by set_permutation(), it will automatically be   honored by this function.     The parameter  [2.x.52]  does not have any function, yet.  
+* [0.x.82]*
+   Implementation of the backward substitution loop called by Tvmult() and   Tvmult_add().     If a #permutation is set by set_permutation(), it will automatically be   honored by this function.     The parameter  [2.x.53]  does not have any function, yet.  
+* [0.x.83]*
+ Block SSOR preconditioning. This class satisfies the  [2.x.54]  "relaxation concept".
+*  The functions  [2.x.55]  and  [2.x.56]  execute a block-SSOR step, based on the implementation in PreconditionBlockSOR.  This class requires storage of the diagonal blocks and their inverses.
+*  See PreconditionBlock for requirements on the matrix. The blocks used in this class must be contiguous and non-overlapping. An overlapping Schwarz relaxation method can be found in RelaxationBlockSSOR; that class does not offer preconditioning, though.
+* 
+
+* 
+*  [2.x.57]  Instantiations for this template are provided for <tt> [2.x.58]  and  [2.x.59]  others can be generated in application programs (see the section on  [2.x.60]  in the manual).
+
+* 
+* [0.x.84]*
+   Declare type for container size.  
+* [0.x.85]*
+   Define number type of matrix.  
+* [0.x.86]*
+   Constructor.  
+* [0.x.87]*
+   Make initialization function publicly available.  
+* [0.x.88]*
+   Execute block SSOR preconditioning.     This function will automatically use the inverse matrices if they exist,   if not then BlockSOR will waste much time inverting the diagonal block   matrices in each preconditioning step.  
+* [0.x.89]*
+   Same as vmult()  
+* [0.x.90]*
+   Perform one step of the SOR iteration.  
+* [0.x.91]*
+   Perform one step of the transposed SOR iteration.  
+* [0.x.92]

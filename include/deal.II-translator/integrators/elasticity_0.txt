@@ -1,0 +1,23 @@
+[0.x.0]*
+  
+*  [2.x.0]     
+*  [2.x.1]   
+* [0.x.1]*
+     The linear elasticity operator in weak form, namely double contraction     of symmetric gradients.         [1.x.0]    
+* [0.x.2]*
+     Vector-valued residual operator for linear elasticity in weak form         [1.x.1]    
+* [0.x.3]*
+     The matrix for the weak boundary condition of Nitsche type for linear     elasticity:     [1.x.2]    
+* [0.x.4]*
+     The matrix for the weak boundary condition of Nitsche type for the     tangential displacement in linear elasticity:     [1.x.3]    
+* [0.x.5]*
+     Weak boundary condition for the elasticity operator by Nitsche, namely     on the face [1.x.4] the vector     [1.x.5]         Here, [1.x.6] is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively. [1.x.7] is the inhomogeneous boundary value in the     argument <tt>data</tt>.  [2.x.2]  is the outer normal vector and  [2.x.3]  is     the usual penalty parameter.    
+* [0.x.6]*
+     The weak boundary condition of Nitsche type for the tangential     displacement in linear elasticity:     [1.x.8]    
+* [0.x.7]*
+     Homogeneous weak boundary condition for the elasticity operator by     Nitsche, namely on the face [1.x.9] the vector     [1.x.10]         Here, [1.x.11] is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively.  [2.x.4]  is the outer normal vector and  [2.x.5]  is the usual     penalty parameter.    
+* [0.x.8]*
+     The interior penalty flux for symmetric gradients.    
+* [0.x.9]*
+     Elasticity residual term for the symmetric interior penalty method.    
+* [0.x.10]

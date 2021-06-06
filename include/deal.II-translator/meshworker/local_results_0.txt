@@ -1,0 +1,110 @@
+[0.x.0]*
+ A collection of functions and classes for the mesh loops that are an ubiquitous part of each finite element program.
+*  The workhorse of this namespace is the loop() function, which implements a completely generic loop over all mesh cells. Since the calls to loop() are error-prone due to its generality, for many applications it is advisable to derive a class from  [2.x.0]  and use the less general integration_loop() instead.
+*  The loop() depends on certain objects handed to it as arguments. These objects are of two types,  [2.x.1]  objects like DoFInfo and IntegrationInfo and worker objects like LocalWorker and IntegrationWorker.
+*  Worker objects usually do two different jobs: first, they compute the local contribution of a cell or face to the global operation. Second, they assemble this local contribution into the global result, whether a functional, a form or a bilinear form. While the first job is particular to the problem being solved, the second is generic and only depends on the data structures. Therefore, base classes for workers assembling into global data are provided in the namespace Assembler.
+*  [1.x.0]
+*  The functions loop() and cell_action() take some arguments which are template parameters. Let us list the minimum requirements for these classes here and describe their properties.
+*  [1.x.1]
+*  Any object that has an <tt>operator++()</tt> and points to a TriaAccessor or derived class.
+*  [1.x.2]
+*  For an example implementation, refer to the class template DoFInfo. In order to work with cell_action() and loop(), DOFINFO needs to follow the following interface.
+
+* 
+* [1.x.3]
+* 
+*  The three private functions are called by DoFInfoBox and should not be needed elsewhere. Obviously, they can be made public and then the friend declaration at the end may be missing.
+*  Additionally, you will need at least one public constructor. Furthermore DOFINFO is pretty useless yet: functions to interface with INTEGRATIONINFO and ASSEMBLER are needed.
+*  DOFINFO objects are gathered in a DoFInfoBox. In those objects, we store the results of local operations on each cell and its faces. Once all this information has been gathered, an ASSEMBLER is used to assemble it into global data.
+*  [1.x.4]
+*  This type is exemplified in IntegrationInfoBox. It collects the input data for actions on cells and faces in INFO objects (see below). It provides the following interface to loop() and cell_action():
+* 
+
+* 
+* [1.x.5]
+* 
+*  The main purpose of this class is gathering the five INFO objects, which contain the temporary data used on each cell or face. The requirements on these objects are listed below. Here, we only note that there need to be these 5 objects with the names listed above.
+*  The two function templates are call back functions called in cell_action(). The first is called before the faces are worked on, the second after the faces.
+*  [1.x.6]
+*  See IntegrationInfo for an example of these objects. They contain the temporary data needed on each cell or face to compute the result. The MeshWorker only uses the interface
+* 
+
+* 
+* [1.x.7]
+* 
+*  [1.x.8]
+*  Since the loop() is fairly general, a specialization integration_loop() is available, which is a wrapper around loop() with a simplified interface.
+*  The integration_loop() function loop takes most of the information that it needs to pass to loop() from an IntegrationInfoBox object. Its use is explained in  [2.x.2] , but in short it requires functions that do the local integration on a cell, interior or boundary face, and it needs an object (called "assembler") that copies these local contributions into the global matrix and right hand side objects.
+*  Before we can run the integration loop, we have to initialize several data structures in our IntegrationWorker and assembler objects. For instance, we have to decide on the quadrature rule or we may need more than the default update flags.
+* 
+
+* 
+*  [2.x.3] 
+
+* 
+*  [2.x.4] 
+
+* 
+* [0.x.1]*
+   The class providing the scrapbook to fill with results of local   integration. Depending on the task the mesh worker loop is performing,   local results can be of different types: They can be scalars, vectors   of size equal to the number of degrees of freedom used in the integrals,   or square matrices of that same size. All of these have in common that they   are the result of local integration over a cell or face. Which kind of   object is the result of an operation is determined by the Assembler using   them. It is also the assembler that determines [1.x.9] of each   kind of object are produced (for example, an assembler may create   both the local contributions to a mass and a stiffness matrix), and for   setting the arrays of local results to the sizes needed.     The interface of this class allows accessing all of this information   via the following functions:      [2.x.5]     [2.x.6]  Scalars: n_values() returns the number of scalars stored by   an object of this class, and they are accessed via the value() function.      [2.x.7]  Vectors: n_vectors() returns the number of vectors stored by   an object of this class (each vector has length equal to the number of   degrees of freedom on this cell on which the integration happens).   The vectors are accessed by the vector() function.      [2.x.8]  Matrices: n_matrices() returns the number of matrices stored,   each of which is a square matrix of dimension equal to the number of   degrees of freedom per cell. The matrices are   accessed by matrix() with second argument <tt>false</tt>. These are   matrices coupling degrees of freedom in   the same cell. For fluxes across faces, there is an additional set of   matrices of the same size, with the dimension of these matrices being   according to the degrees of freedom on both cells. These are accessed   with matrix(), using the second argument <tt>true</tt>.    [2.x.9]      The local matrices are initialized by reinit() of the  [2.x.10]  object and then   assembled into the global system by Assembler classes.    
+*  [2.x.11]   
+* [0.x.2]*
+     The number of scalar values stored by the current object.         This number is set to a nonzero value by  [2.x.12]     
+* [0.x.3]*
+     The number of vectors stored by the current object.         This number is set to a nonzero value by  [2.x.13]  and      [2.x.14]     
+* [0.x.4]*
+     The number of matrices stored by the current object.    
+* [0.x.5]*
+     The number of quadrature points in quadrature_values().    
+* [0.x.6]*
+     The number of values in each quadrature point in quadrature_values().    
+* [0.x.7]*
+     Read-write access to the `i`th scalar stored by this class.    
+* [0.x.8]*
+     Read access to the `i`th scalar stored by this class.    
+* [0.x.9]*
+     Read-write access to the `i`th vector stored by this class    
+* [0.x.10]*
+     Read-write access to the `i`th vector stored by this class    
+* [0.x.11]*
+     Read-write access to the `i`th matrix stored by this class.         For an explanation of the second argument, see the documentation     of the current class itself.    
+* [0.x.12]*
+     Read access to the `i`th matrix stored by this class.         For an explanation of the second argument, see the documentation     of the current class itself.    
+* [0.x.13]*
+     Access to the vector #quadrature_data of data in quadrature points,     organized such that there is a vector for each point, containing one     entry for each component.    
+* [0.x.14]*
+     Access the [1.x.10]th value at quadrature point [1.x.11]    
+* [0.x.15]*
+     Read the [1.x.12]th value at quadrature point [1.x.13]    
+* [0.x.16]*
+     Initialize the vector with scalar values.        
+*  [2.x.15]  This function is usually only called by the assembler.    
+* [0.x.17]*
+     Initialize the vector with vector values.        
+*  [2.x.16]  This function is usually only called by the assembler.    
+* [0.x.18]*
+     Allocate  [2.x.17]  local matrices. Additionally, set their block row and     column coordinates to zero. The matrices themselves are resized by     reinit().        
+*  [2.x.18]  This function is usually only called by the assembler.    
+* [0.x.19]*
+     Allocate a local matrix for each of the global ones in  [2.x.19]      Additionally, set their block row and column coordinates. The matrices     themselves are resized by reinit().        
+*  [2.x.20]  This function is usually only called by the assembler.    
+* [0.x.20]*
+     Allocate a local matrix for each of the global level objects in  [2.x.21]      matrices. Additionally, set their block row and column coordinates. The     matrices themselves are resized by reinit().        
+*  [2.x.22]  This function is usually only called by the assembler.    
+* [0.x.21]*
+     Initialize quadrature values to <tt>nv</tt> values in <tt>np</tt>     quadrature points.    
+* [0.x.22]*
+     Reinitialize matrices for new cell. Does not resize any of the data     vectors stored in this object, but resizes the vectors in #R and the     matrices in #M1 and #M2 for hp and sets them to zero.    
+* [0.x.23]*
+     The memory used by this object.    
+* [0.x.24]*
+     The local numbers, computed on a cell or on a face.    
+* [0.x.25]*
+     The local vectors. This field is public, so that local integrators can     write to it.    
+* [0.x.26]*
+     The local matrices coupling degrees of freedom in the cell itself or     within the first cell on a face.    
+* [0.x.27]*
+     The local matrices coupling test functions on the cell with trial     functions on the other cell.         Only used on interior faces.    
+* [0.x.28]*
+     Values in quadrature points for writing into patch data.    
+* [0.x.29]

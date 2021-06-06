@@ -1,0 +1,72 @@
+[0.x.0]*
+ This class represents the (tangential) derivatives of a function  [2.x.0] . Such functions are always used to map the reference dim-dimensional cell into spacedim-dimensional space. For such objects, the first derivative of the function is a linear map from  [2.x.1]  to  [2.x.2] , i.e., it can be represented as a matrix in  [2.x.3] . This makes sense since one would represent the first derivative,  [2.x.4]  with  [2.x.5] , in such a way that the directional derivative in direction  [2.x.6]  so that
+
+* 
+* [1.x.0]
+*  i.e., one needs to be able to multiply the matrix  [2.x.7]  by a vector in  [2.x.8] , and the result is a difference of function values, which are in  [2.x.9] . Consequently, the matrix must be of size  [2.x.10] .
+*  Similarly, the second derivative is a bilinear map from   [2.x.11]  to  [2.x.12] , which one can think of a rank-3 object of size  [2.x.13] .
+*  In deal.II we represent these derivatives using objects of type DerivativeForm [2.x.14]  DerivativeForm [2.x.15]  and so on.
+
+* 
+* [0.x.1]*
+   Constructor. Initialize all entries to zero.  
+* [0.x.2]*
+   Constructor from a tensor.  
+* [0.x.3]*
+   Constructor from a tensor.  
+* [0.x.4]*
+   Read-Write access operator.  
+* [0.x.5]*
+   Read-only access operator.  
+* [0.x.6]*
+   Assignment operator.  
+* [0.x.7]*
+   Assignment operator.  
+* [0.x.8]*
+   Assignment operator.  
+* [0.x.9]*
+   Converts a DerivativeForm <order, dim, dim, Number> to Tensor<order+1, dim,   Number>. In particular, if order == 1 and the derivative is the Jacobian of    [2.x.16] , then Tensor[i] =  [2.x.17] .  
+* [0.x.10]*
+   Converts a DerivativeForm<1, dim, 1, Number> to Tensor<1, dim, Number>.  
+* [0.x.11]*
+   Return the transpose of a rectangular DerivativeForm,   viewed as a two dimensional matrix.  
+* [0.x.12]*
+   Compute the Frobenius norm of this form, i.e., the expression    [2.x.18] .  
+* [0.x.13]*
+   Compute the volume element associated with the jacobian of the   transformation  [2.x.19] . That is to say if  [2.x.20]  is square, it computes    [2.x.21] , in case DF is not square returns  [2.x.22] .  
+* [0.x.14]*
+   Assuming that the current object stores the Jacobian of a mapping    [2.x.23] , then the current function computes the [1.x.1] form   of the derivative, namely  [2.x.24] , where    [2.x.25] . If  [2.x.26]  is a square matrix (i.e.,  [2.x.27] ), then this function   simplifies to computing  [2.x.28] .  
+* [0.x.15]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.16]*
+   Exception.  
+* [0.x.17]*
+   Auxiliary function that computes  [2.x.29]  where A represents the current   object.  
+* [0.x.18]*
+   Array of tensors holding the subelements.  
+* [0.x.19]*
+ One of the uses of DerivativeForm is to apply it as a linear transformation. This function returns  [2.x.30] , which approximates the change in  [2.x.31]  when  [2.x.32]  is changed by the amount  [2.x.33]  [1.x.2] The transformation corresponds to [1.x.3] in index notation and corresponds to  [2.x.34]  in matrix notation.
+*   [2.x.35]  DerivativeForm
+
+* 
+* [0.x.20]*
+ Similar to the previous apply_transformation(). Each row of the result corresponds to one of the rows of  [2.x.36]  transformed by  [2.x.37]  equivalent to  [2.x.38]  in matrix notation.
+*   [2.x.39]  DerivativeForm
+
+* 
+* [0.x.21]*
+ Similar to the previous apply_transformation(). Each row of the result corresponds to one of the rows of  [2.x.40]  transformed by  [2.x.41] 
+*   [2.x.42]  DerivativeForm
+
+* 
+* [0.x.22]*
+ Similar to the previous apply_transformation(). In matrix notation, it computes  [2.x.43] . Moreover, the result of this operation  [2.x.44]  can be interpreted as a metric tensor in  [2.x.45]  which corresponds to the Euclidean metric tensor in  [2.x.46] . For every pair of vectors  [2.x.47] , we have: [1.x.4]
+*   [2.x.48]  DerivativeForm
+
+* 
+* [0.x.23]*
+ Transpose of a rectangular DerivativeForm DF, mostly for compatibility reasons.
+*   [2.x.49]  DerivativeForm
+
+* 
+* [0.x.24]

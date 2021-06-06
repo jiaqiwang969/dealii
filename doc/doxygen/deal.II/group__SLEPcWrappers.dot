@@ -1,11 +1,11 @@
-digraph "SLEPcWrappers"
+digraph "SLEPcWrappers The classes in this module are"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
-  Node1 [label="SLEPcWrappers",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="The classes in this module are wrappers around functionality provided by the SLEPc library...."];
-  Node2 [label="Linear algebra classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAC.html",tooltip="This module contains classes that involve linear algebra, i.e., those associated with matrices,..."];
-  Node3 [label="PETScWrappers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__PETScWrappers.html",tooltip="The classes in this module are wrappers around functionality provided by the PETSc library...."];
+  Node1 [label="SLEPcWrappers The classes\l in this module are",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="wrappers around functionality provided by the SLEPc library. All classes and functions in this group ..."];
+  Node2 [label="Linear algebra classes\l This module contains\l classes that",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAC.html",tooltip="involve linear algebra, i.e., those associated with matrices, vectors, and the solution of linear sys..."];
+  Node3 [label="PETScWrappers The classes\l in this module are",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__PETScWrappers.html",tooltip="wrappers around functionality provided by the PETSc library. They provide a modern object-oriented in..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
   Node3->Node1 [shape=plaintext, dir="back", style="solid"];
 }

@@ -1,0 +1,85 @@
+[0.x.0]*
+  [2.x.0]  Use DataOutStack<dim, spacedim> instead.
+
+* 
+* [0.x.1]*
+ This class is used to stack the output from several computations into one output file by stacking the data sets in another coordinate direction orthogonal to the space directions. The most common use is to stack the results of several time steps into one space-time output file, or for example to connect the results of solutions of a parameter dependent equation for several parameter value together into one. The interface is mostly modelled after the DataOut class, see there for some more documentation.
+*  We will explain the concept for a time dependent problem, but instead of the time any parameter can be substituted. In our example, a solution of an equation is computed for each discrete time level. This is then added to an object of the present class and after all time levels are added, a space- time plot will be written in any of the output formats supported by the base class. Upon output, the (spatial) solution on each time level is extended into the time direction by writing it twice, once for the time level itself and once for a time equal to the time level minus a given time step. These two copies are connected, to form a space-time slab, with constant values in time.
+*  Due to the piecewise constant output in time, the written solution will in general be discontinuous at discrete time levels, but the output is still sufficient in most cases. More sophisticated interpolations in time may be added in the future.
+* 
+
+*  [1.x.0]
+*  The following little example shall illustrate the different steps of use of this class. It is assumed that the finite element used is composed of two components,  [2.x.1]  and  [2.x.2]  that the solution vector is named  [2.x.3]  and that a vector  [2.x.4]  is computed which contains an error indicator for each spatial cell.
+*  Note that unlike for the DataOut class it is necessary to first declare data vectors and the names of the components before first use. This is because on all time levels the same data should be present to produce reasonable time-space output. The output is generated with two subdivisions in each space and time direction, which is suitable for quadratic finite elements in space, for example.
+* 
+
+* 
+* [1.x.1]
+* 
+* 
+
+* 
+*  [2.x.5] 
+
+* 
+* [0.x.2]*
+   Dimension parameters for the patches.  
+* [0.x.3]*
+   Data type declaring the two types of vectors which are used in this   class.  
+* [0.x.4]*
+     The data describes one value for each cell.    
+* [0.x.5]*
+     The data describes one value for each DoF.    
+* [0.x.6]*
+   Destructor. Only declared to make it  [2.x.6]   
+* [0.x.7]*
+   Start the next set of data for a specific parameter value. The argument    [2.x.7]  denotes the interval (in backward direction, counted   from  [2.x.8]  with which the output will be extended in   parameter direction, i.e. orthogonal to the space directions.  
+* [0.x.8]*
+   Attach the DoF handler for the grid and data associated with the   parameter previously set by  [2.x.9]      This has to happen before adding data vectors for the present parameter   value.  
+* [0.x.9]*
+   Declare a data vector. The  [2.x.10]  argument determines whether the   data vector will be considered as DoF or cell data.     This version may be called if the finite element presently used by the   DoFHandler (and previously attached to this object) has only one   component and therefore only one name needs to be given.  
+* [0.x.10]*
+   Declare a data vector. The  [2.x.11]  argument determines whether the   data vector will be considered as DoF or cell data.     This version must be called if the finite element presently used by the   DoFHandler (and previously attached to this object) has more than one   component and therefore more than one name needs to be given. However,   you can also call this function with a    [2.x.12]  containing only one element if the   finite element has only one component.  
+* [0.x.11]*
+   Add a data vector for the presently set value of the parameter.     This version may be called if the finite element presently used by the   DoFHandler (and previously attached to this object) has only one   component and therefore only one name needs to be given.     If  [2.x.13]  is a vector with multiple components this function will   generate distinct names for all components by appending an underscore and   the number of each component to  [2.x.14]      The data vector must have been registered using the  [2.x.15]    declare_data_vector function before actually using it the first time.     Note that a copy of this vector is stored until  [2.x.16]    is called the next time, so if you are short of memory you may want to   call this function only after all computations involving large matrices   are already done.  
+* [0.x.12]*
+   Add a data vector for the presently set value of the parameter.     This version must be called if the finite element presently used by the   DoFHandler (and previously attached to this object) has more than one   component and therefore more than one name needs to be given. However,   you can also call this function with a    [2.x.17]  containing only one element if the   finite element has only one component.     The data vector must have been registered using the  [2.x.18]    declare_data_vector function before actually using it the first time.     Note that a copy of this vector is stored until  [2.x.19]    is called the next time, so if you are short of memory you may want to   call this function only after all computations involving large matrices   are already done.  
+* [0.x.13]*
+   This is the central function of this class since it builds the list of   patches to be written by the low-level functions of the base class. A   patch is, in essence, some intermediate representation of the data on   each cell of a triangulation and DoFHandler object that can then be used   to write files in some format that is readable by visualization programs.     You can find an overview of the use of this function in the general   documentation of this class. An example is also provided in the   documentation of this class's base class DataOut_DoFData.      [2.x.20]  n_subdivisions See  [2.x.21]  for an extensive   description of this parameter. The number of subdivisions is always one   in the direction of the time-like parameter used by this class.  
+* [0.x.14]*
+   Release all data that is no more needed once  [2.x.22]  was called   and all other transactions for a given parameter value are done.     Counterpart of  [2.x.23]   
+* [0.x.15]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.16]*
+   Exception  
+* [0.x.17]*
+   Exception  
+* [0.x.18]*
+   Exception  
+* [0.x.19]*
+   Exception  
+* [0.x.20]*
+   Present parameter value.  
+* [0.x.21]*
+   Present parameter step, i.e. length of the parameter interval to be   written next.  
+* [0.x.22]*
+   DoF handler to be used for the data corresponding to the present   parameter value.  
+* [0.x.23]*
+   List of patches of all past and present parameter value data sets.  
+* [0.x.24]*
+   Structure holding data vectors (cell and dof data) for the present   parameter value.  
+* [0.x.25]*
+     Data vector.    
+* [0.x.26]*
+     Names of the different components within each such data set.    
+* [0.x.27]*
+     Determine an estimate for the memory consumption (in bytes) of this     object.    
+* [0.x.28]*
+   List of DoF data vectors.  
+* [0.x.29]*
+   List of cell data vectors.  
+* [0.x.30]*
+   This is the function through which derived classes propagate preprocessed   data in the form of Patch structures (declared in the base class   DataOutBase) to the actual output function.  
+* [0.x.31]*
+   Virtual function through which the names of data sets are obtained by the   output functions of the base class.  
+* [0.x.32]

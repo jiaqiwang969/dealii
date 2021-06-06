@@ -37,11 +37,8 @@ digraph "FEEvaluationBaseData&lt; dim, Number, is_face, VectorizedArrayType &gt;
   Node15 [label="FEEvaluationBase\< dim,\l n_components_, double,\l is_face, VectorizedArray\l\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBase.html",tooltip=" "];
   Node15 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node14 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, 1, Number, is\l_face, VectorizedArrayType \>" ,fontname="Helvetica"];
-  Node14 -> Node16 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, 1, double, false,\l VectorizedArray\< double \> \>" ,fontname="Helvetica"];
-  Node16 [label="FEEvaluationBase\< dim,\l 1, double, false, Vectorized\lArray\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBase.html",tooltip=" "];
   Node14 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim, Number,\l is_face, VectorizedArrayType \>" ,fontname="Helvetica"];
-  Node1 -> Node17 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, double, is_face,\l VectorizedArray\< double \> \>" ,fontname="Helvetica"];
-  Node17 [label="FEEvaluationBaseData\l\< dim, double, is_face,\l VectorizedArray\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBaseData.html",tooltip=" "];
-  Node17 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node17 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node16 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, double, is_face,\l VectorizedArray\< double \> \>" ,fontname="Helvetica"];
+  Node16 [label="FEEvaluationBaseData\l\< dim, double, is_face,\l VectorizedArray\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBaseData.html",tooltip=" "];
+  Node16 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 }

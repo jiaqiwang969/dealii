@@ -1,12 +1,12 @@
-digraph "Graphical output"
+digraph "Graphical output deal.II generates three types of output:"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
-  Node2 [label="Input/Output",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__IO.html",tooltip="This module collects the classes used for reading and writing meshes and data. There are two sub-modu..."];
-  Node1 [label="Graphical output",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="deal.II generates three types of output: it can write triangulations/meshes in formats understood by ..."];
-  Node4 [label="Grids and Triangulations",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="This module groups functions and classes that have to do with the topology and geometry of meshes...."];
-  Node3 [label="Input",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__input.html",tooltip="deal.II can read meshes in a number of different formats. However, all of them are constrained to so-..."];
+  Node2 [label="Input/Output This module\l collects the classes used\l for reading",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__IO.html",tooltip="and writing meshes and data. There are two sub-modules for each of these operations."];
+  Node1 [label="Graphical output deal.II\l generates three types\l of output:",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="it can write triangulations/meshes in formats understood by several mesh readers (including those of ..."];
+  Node4 [label="Grids and Triangulations\l This module groups functions and",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="classes that have to do with the topology and geometry of meshes. A mesh can be thought of as a colle..."];
+  Node3 [label="Input deal.II can read\l meshes in a number of\l different",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__input.html",tooltip="formats. However, all of them are constrained to so-called \"coarse meshes\", i.e. meshes that have no ..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
   Node1->Node3 [shape=plaintext, label="DataOutReader", color="orange", dir="none", style="dashed"];
   Node1->Node4 [shape=plaintext, label="GridOut", color="orange", dir="none", style="dashed"];

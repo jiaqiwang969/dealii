@@ -1,0 +1,17 @@
+[0.x.0]*
+   Data structure  
+* [0.x.1]*
+     Copy the active data (values for Host and values_dev for CUDA) to  [2.x.0]      If the data is on the device it is moved to the host.    
+* [0.x.2]*
+     Copy the data in  [2.x.1]  to the active data of the structure (values for     Host and values_dev for CUDA). The pointer  [2.x.2]  must be on the host.    
+* [0.x.3]*
+     Pointer to data on the host.    
+* [0.x.4]*
+     Pointer to data on the device.    
+* [0.x.5]*
+     Pointers to the data of the processes sharing the same memory.    
+* [0.x.6]*
+   Swap function similar to  [2.x.3]   
+* [0.x.7]*
+     This is currently not used.    
+* [0.x.8]

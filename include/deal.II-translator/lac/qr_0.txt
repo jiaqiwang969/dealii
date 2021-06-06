@@ -1,0 +1,95 @@
+[0.x.0]*
+ A base class for thin QR implementations.
+*  This class and classes derived from it are meant to build  [2.x.0]  and  [2.x.1]  matrices one row/column at a time, i.e., by growing  [2.x.2]  matrix from an empty  [2.x.3]  matrix to  [2.x.4] , where  [2.x.5]  is the number of added column vectors.
+*  As a consequence, matrices which have the same number of rows as each vector (i.e.  [2.x.6]  matrix) is stored as a collection of vectors of `VectorType`.
+
+* 
+* [0.x.1]*
+   Number type for R matrix.  
+* [0.x.2]*
+   Default private constructor.  
+* [0.x.3]*
+   Destructor.  
+* [0.x.4]*
+   Append  [2.x.7]  to the QR factorization.   Returns  [2.x.8]  if the result is successful, i.e.   the columns are linearly independent. Otherwise the  [2.x.9]    is rejected and the return value is  [2.x.10] .  
+* [0.x.5]*
+   Remove a column  [2.x.11]  and update QR factorization.  
+* [0.x.6]*
+   Return size of the subspace.  
+* [0.x.7]*
+   Return the current upper triangular matrix R.  
+* [0.x.8]*
+   Solve  [2.x.12] . Vectors  [2.x.13]  and  [2.x.14]  should be consistent   with the current size of the subspace.   If  [2.x.15]  is  [2.x.16] ,  [2.x.17]  is solved instead.  
+* [0.x.9]*
+   Set  [2.x.18] . The size of  [2.x.19]  should be consistent with the   size of the R matrix.  
+* [0.x.10]*
+   Set  [2.x.20] . The size of  [2.x.21]  should be consistent with the   size of column vectors.  
+* [0.x.11]*
+   Set  [2.x.22] . The size of  [2.x.23]  should be consistent with the   size of the R matrix.  
+* [0.x.12]*
+   Set  [2.x.24] . The size of  [2.x.25]  should be consistent with the   size of column vectors.  
+* [0.x.13]*
+   Connect a slot to retrieve a notification when the Givens rotations   are performed.     The function takes two indices,  [2.x.26]  and  [2.x.27]  describing the plane of   rotation, and a triplet of numbers  [2.x.28]  (cosine, sine and radius, see    [2.x.29]  which represents the rotation   matrix.  
+* [0.x.14]*
+   Compute  [2.x.30]  where  [2.x.31]  is the matrix formed by the column vectors stored   by this object.  
+* [0.x.15]*
+   Multiply with transpose columns stored in the object.  
+* [0.x.16]*
+   A vector of unique pointers to store columns.  
+* [0.x.17]*
+   Matrix to store R.  
+* [0.x.18]*
+   Current size (number of columns in Q).  
+* [0.x.19]*
+   Signal used to retrieve a notification   when Givens rotations are performed in the `(i,j)`-plane.  
+* [0.x.20]*
+ A class to compute and store the QR factorization of a matrix represented by a set of column vectors.
+*  The class is design to update a given (possibly empty) QR factorization of a matrix  [2.x.32]  (constructed incrementally by providing its columns) due to the addition of a new column vector to  [2.x.33] . This is equivalent to constructing an orthonormal basis by the Gram-Schmidt procedure. The class also provides update functionality when the first column is removed.
+*  The `VectorType` template argument may either be a parallel and serial vector, and only need to have basic operations such as additions, scalar product, etc. It also needs to have a copy-constructor.
+*  See sections 6.5.2-6.5.3 on pp. 335-338 in
+
+* 
+* [1.x.0]
+*  as well as
+
+* 
+* [1.x.1]
+* 
+
+* 
+* [0.x.21]*
+   Number type for R matrix.  
+* [0.x.22]*
+   Default constructor.  
+* [0.x.23]*
+   Destructor.  
+* [0.x.24]*
+    [2.x.34]   [2.x.35]     
+*  [2.x.36]  Currently this function always returns  [2.x.37] .  
+* [0.x.25]*
+   Remove first column and update QR factorization.     Starting from the given QR decomposition    [2.x.38]    we aim at computing factorization of    [2.x.39] .     The standard approach is to partition  [2.x.40]  as   [1.x.2]   It then follows that   [1.x.3]   is upper Hessenberg where unwanted sub-diagonal elements can be   zeroed by a sequence of Givens rotations.     Note that  [2.x.41] ,   where the RHS is included in  [2.x.42] . Therefore    [2.x.43]  can be obtained by Cholesky decomposition.  
+* [0.x.26]*
+   Apply givens rotation in the `(i,j)`-plane to  [2.x.44]  and  [2.x.45]  so that    [2.x.46]  is zeroed.     See Chapter 5.1.9 of Golub 2013, Matrix computations.  
+* [0.x.27]*
+   Temporary vector needed to do Givens rotation of Q.  
+* [0.x.28]*
+ A class to obtain the triangular  [2.x.47]  matrix of the  [2.x.48]  factorization together with the matrix  [2.x.49]  itself. The orthonormal matrix  [2.x.50]  is not stored explicitly, the name of the class. The multiplication with  [2.x.51]  can be represented as  [2.x.52] , whereas the multiplication with  [2.x.53]  is given by  [2.x.54] .
+*  The class is designed to update a given (possibly empty) QR factorization due to the addition of a new column vector. This is equivalent to constructing an orthonormal basis by the Gram-Schmidt procedure. The class also provides update functionality when the column is removed.
+*  The `VectorType` template argument may either be a parallel and serial vector, and only need to have basic operations such as additions, scalar product, etc. It also needs to have a copy-constructor.
+
+* 
+* [0.x.29]*
+   Number type for R matrix.  
+* [0.x.30]*
+   Default constructor.  
+* [0.x.31]*
+   Destructor.  
+* [0.x.32]*
+   Remove column and update QR factorization.     Starting from the given QR decomposition    [2.x.55]    we aim at computing factorization of    [2.x.56] .     Note that  [2.x.57] ,   where the RHS is included in  [2.x.58] . Therefore    [2.x.59]  can be obtained by Cholesky decomposition.  
+* [0.x.33]*
+   Connect a slot to implement a custom check of linear dependency   during addition of a column.     Here,  [2.x.60]  is the last column of the to-be R matrix,  [2.x.61]    is its diagonal and  [2.x.62]  is the square of the  [2.x.63]  norm of the column.   The function should return  [2.x.64]  if the new column is   linearly independent.  
+* [0.x.34]*
+   Apply givens rotation in the `(i,k)`-plane to zero out  [2.x.65] .  
+* [0.x.35]*
+   Signal used to decide if the new column is linear dependent.     Here,  [2.x.66]  is the last column of the to-be R matrix,  [2.x.67]    is its diagonal and  [2.x.68]  is the square of the  [2.x.69]  norm of the column.   The function should return  [2.x.70]  if the new column is   linearly independent.  
+* [0.x.36]

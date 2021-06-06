@@ -1,0 +1,49 @@
+[0.x.0]*
+ This namespace provides functions helping to determine the amount of memory used by objects. The goal is not necessarily to give the amount of memory used up to the last bit (what is the memory used by a  [2.x.0]  object?), but rather to aid in the search for memory bottlenecks.
+*  This namespace has a single member function memory_consumption() and a lot of specializations. Depending on the argument type of the function, there are several modes of operation:
+*   [2.x.1]   [2.x.2]  If the argument is a fundamental C++ data type (such as <tt>bool</tt>, <tt>float</tt>, <tt>double</tt> or any of the integer types), then memory_consumption() just returns <tt>sizeof</tt> of its argument. The library also provides an estimate for the amount of memory occupied by a  [2.x.3] 
+*   [2.x.4]  For objects, which are neither standard types, nor vectors, memory_consumption() will simply call the member function of same name. It is up to the implementation of the data type to provide a good estimate of the amount of memory used. Inside this function, the use of  [2.x.5]  for compounds of the class helps to obtain this estimate. Most classes in the deal.II library have such a member function.
+*   [2.x.6]  For vectors and C++ arrays of objects, memory_consumption() recursively calls itself for all entries and adds the results to the size of the object itself. Some optimized specializations for standard data types exist.
+*   [2.x.7]  For vectors of regular pointers, memory_consumption(T*) returns the size of the vector of pointers, ignoring the size of the objects.
+*   [2.x.8] 
+*  [1.x.0]
+*  The function in this namespace and the functionality provided by it relies on the assumption that there is either a function <tt>memory_consumption(T)</tt> in this namespace determining the amount of memory used by objects of type <tt>T</tt> or that the class <tt>T</tt> has a member function of that name. While the latter is true for almost all classes in deal.II, we have only implemented the first kind of functions for the most common data types, such as fundamental types, strings, C++ vectors, C-style arrays, and C++ pairs. These functions therefore do not cover, for example, C++ maps, lists, etc. If you need such functions feel free to implement them and send them to us for inclusion.
+* 
+
+* 
+*  [2.x.9]  Wells
+
+* 
+* [0.x.1]*
+   Calculate the memory consumption of a fundamental type. See   EnableIfScalar for a discussion on how this restriction (SFINAE) is   implemented.  
+* [0.x.2]*
+   Estimate the memory consumption of an object. If no further template   specialization (past this one) is available for the type <tt>T</tt>, then   this function returns the member function   <tt>t.memory_consumption()</tt>'s value.  
+* [0.x.3]*
+   Determine the amount of memory consumed by a C-style string. The returned   value does not include the size of the pointer. This function only   measures up to (and including) the NUL byte; the underlying buffer may be   larger.  
+* [0.x.4]*
+   Determine the amount of memory in bytes consumed by a    [2.x.10]  variable.  
+* [0.x.5]*
+   Determine the amount of memory in bytes consumed by a   <tt>VectorizedArray</tt> variable.  
+* [0.x.6]*
+   Determine an estimate of the amount of memory in bytes consumed by a    [2.x.11]  variable.  
+* [0.x.7]*
+   Determine the amount of memory in bytes consumed by a    [2.x.12]  of elements of type <tt>T</tt> by   calling memory_consumption() for each entry.     This function loops over all entries of the vector and determines their   sizes using memory_consumption() for each <tt>v[i]</tt>. If the entries   are of constant size, there might be another global function   memory_consumption() for this data type or if there is a member function   of that class of that names that returns a constant value and the   compiler will unroll this loop so that the operation is fast. If the size   of the data elements is variable, for example if they do memory   allocation themselves, then the operation will necessarily be more   expensive.     Using the algorithm, in particular the loop over all elements, it is   possible to also compute the memory consumption of vectors of vectors,   vectors of strings, etc, where the individual elements may have vastly   different sizes.     Note that this algorithm also takes into account the size of elements   that are allocated by this vector but not currently used.     For the most commonly used vectors, there are special functions that   compute the size without a loop. This also applies for the special case   of vectors of bools.  
+* [0.x.8]*
+   Determine the amount of memory in bytes consumed by a    [2.x.13]  of <tt>N</tt> elements of type <tt>T</tt> by   calling memory_consumption() for each entry.     This function loops over all entries of the array and determines their   sizes using memory_consumption() for each <tt>v[i]</tt>. If the entries   are of constant size, there might be another global function   memory_consumption() for this data type or if there is a member function   of that class of that names that returns a constant value and the   compiler will unroll this loop so that the operation is fast. If the size   of the data elements is variable, for example if they do memory   allocation themselves, then the operation will necessarily be more   expensive.     Using the algorithm, in particular the loop over all elements, it is   possible to also compute the memory consumption of arrays of vectors,   arrays of strings, etc, where the individual elements may have vastly   different sizes.  
+* [0.x.9]*
+   Estimate the amount of memory (in bytes) occupied by a C-style array.   Since in this library we do not usually store simple data elements like   <tt>double</tt>s in such arrays (but rather use  [2.x.14]  or   deal.II <tt>Vector</tt> objects), we do not provide specializations like   for the  [2.x.15]  arrays, but always use the loop over all   elements.  
+* [0.x.10]*
+   Specialization of the determination of the memory consumption of a   vector, here for a vector of <tt>bool</tt>s.     This is a special case, as the bools are not stored one-by-one, but as a   bit field.  
+* [0.x.11]*
+   Determine an estimate of the amount of memory in bytes consumed by a pair   of values.  
+* [0.x.12]*
+   Calculate the memory consumption of a pointer.    
+*  [2.x.16]  This function is overloaded for C-style strings; see the   documentation of that function for that case.    
+*  [2.x.17]  This returns the size of the pointer, not the size of the object   pointed to.  
+* [0.x.13]*
+   Return the amount of memory used by a shared pointer.    
+*  [2.x.18]  This returns the size of the pointer, not of the object pointed to.  
+* [0.x.14]*
+   Return the amount of memory used by a  [2.x.19]  object.    
+*  [2.x.20]  This returns the size of the pointer, not of the object pointed to.  
+* [0.x.15]

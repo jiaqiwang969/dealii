@@ -1,0 +1,185 @@
+[0.x.0]!  [2.x.0]  Sparsity [2.x.1] 
+
+* 
+* [0.x.1]*
+ Iterators on objects of type DynamicSparsityPattern.
+
+* 
+* [0.x.2]*
+   Declare type for container size.  
+* [0.x.3]*
+   Accessor class for iterators into objects of type DynamicSparsityPattern.     Note that this class only allows read access to elements, providing their   row and column number (or alternatively the index within the complete   sparsity pattern). It does not allow modifying the sparsity pattern   itself.  
+* [0.x.4]*
+     Constructor.    
+* [0.x.5]*
+     Constructor. Construct the end accessor for the given sparsity pattern.    
+* [0.x.6]*
+     Default constructor creating a dummy accessor. This constructor is here     only to be able to store accessors in STL containers such as      [2.x.2]     
+* [0.x.7]*
+     Row number of the element represented by this object.    
+* [0.x.8]*
+     Index within the current row of the element represented by this object.    
+* [0.x.9]*
+     Column number of the element represented by this object.    
+* [0.x.10]*
+     Comparison. True, if both iterators point to the same matrix position.    
+* [0.x.11]*
+     Comparison operator. Result is true if either the first row number is     smaller or if the row numbers are equal and the first index is smaller.         This function is only valid if both iterators point into the same     sparsity pattern.    
+* [0.x.12]*
+     The sparsity pattern we operate on accessed.    
+* [0.x.13]*
+     The row we currently point into.    
+* [0.x.14]*
+     A pointer to the element within the current row that we currently point     to.    
+* [0.x.15]*
+     A pointer to the end of the current row. We store this to make     comparison against the end of line iterator cheaper as it otherwise     needs to do the IndexSet translation from row index to the index within     the 'lines' array of DynamicSparsityPattern.    
+* [0.x.16]*
+     Move the accessor to the next nonzero entry in the matrix.    
+* [0.x.17]*
+   An iterator class for walking over the elements of a sparsity pattern.     The typical use for these iterators is to iterate over the elements of a   sparsity pattern (or, since they also serve as the basis for iterating   over the elements of an associated matrix, over the elements of a sparse   matrix), or over the elements of individual rows. There is no guarantee   that the elements of a row are actually traversed in an order in which   column numbers monotonically increase. See the documentation of the   SparsityPattern class for more information.    
+*  [2.x.3]  This class operates directly on the internal data structures of the   DynamicSparsityPattern class. As a consequence, some operations are cheap   and some are not. In particular, it is cheap to access the column index   of the sparsity pattern entry pointed to. On the other hand, it is   expensive to compute the distance between two iterators. As a   consequence, when you design algorithms that use these iterators, it is   common practice to not loop over [1.x.0] elements of a sparsity   pattern at once, but to have an outer loop over all rows and within this   loop iterate over the elements of this row. This way, you only ever need   to dereference the iterator to obtain the column indices whereas the   (expensive) lookup of the row index can be avoided by using the loop   index instead.  
+* [0.x.18]*
+     Constructor. Create an iterator into the sparsity pattern  [2.x.4]  for the     given global index (i.e., the index of the given element counting from     the zeroth row).    
+* [0.x.19]*
+     Constructor. Create an invalid (end) iterator into the sparsity pattern      [2.x.5]     
+* [0.x.20]*
+     Default constructor creating an invalid iterator. This constructor is     here only to be able to store iterators in STL containers such as      [2.x.6]     
+* [0.x.21]*
+     Prefix increment.    
+* [0.x.22]*
+     Postfix increment.    
+* [0.x.23]*
+     Dereferencing operator.    
+* [0.x.24]*
+     Dereferencing operator.    
+* [0.x.25]*
+     Comparison. True, if both iterators point to the same matrix position.    
+* [0.x.26]*
+     Inverse of <tt>==</tt>.    
+* [0.x.27]*
+     Comparison operator. Result is true if either the first row number is     smaller or if the row numbers are equal and the first index is smaller.         This function is only valid if both iterators point into the same     matrix.    
+* [0.x.28]*
+     Return the distance between the current iterator and the argument. The     distance is given by how many times one has to apply operator++ to the     current iterator to get the argument (for a positive return value), or     operator-- (for a negative return value).    
+* [0.x.29]*
+     Store an object of the accessor class.    
+* [0.x.30]*
+ This class acts as an intermediate form of the SparsityPattern class. From the interface it mostly represents a SparsityPattern object that is kept compressed at all times. However, since the final sparsity pattern is not known while constructing it, keeping the pattern compressed at all times can only be achieved at the expense of either increased memory or run time consumption upon use. The main purpose of this class is to avoid some memory bottlenecks, so we chose to implement it memory conservative. The chosen data format is too unsuited to be used for actual matrices, though. It is therefore necessary to first copy the data of this object over to an object of type SparsityPattern before using it in actual matrices.
+*  Another viewpoint is that this class does not need up front allocation of a certain amount of memory, but grows as necessary.  An extensive description of sparsity patterns can be found in the documentation of the  [2.x.7]  module.
+*  This class is an example of the "dynamic" type of  [2.x.8] . It is used in most tutorial programs in one way or another.
+*  [1.x.1]
+*  Since this class is intended as an intermediate replacement of the SparsityPattern class, it has mostly the same interface, with small changes where necessary. In particular, the add() function, and the functions inquiring properties of the sparsity pattern are the same.
+* 
+
+*  [1.x.2]
+*  Usage of this class is explained in  [2.x.9]  (without constraints) and  [2.x.10]  (with AffineConstraints) and typically looks as follows:
+
+* 
+* [1.x.3]
+* 
+
+* 
+* [0.x.31]*
+   Declare the type for container size.  
+* [0.x.32]*
+   Typedef an for iterator class that allows to walk over all nonzero   elements of a sparsity pattern.     Since the iterator does not allow to modify the sparsity pattern, this   type is the same as that for  [2.x.11]   
+* [0.x.33]*
+   Typedef for an iterator class that allows to walk over all nonzero   elements of a sparsity pattern.  
+* [0.x.34]*
+   Initialize as an empty object. This is useful if you want such objects as   member variables in other classes. You can make the structure usable by   calling the reinit() function.  
+* [0.x.35]*
+   Copy constructor. This constructor is only allowed to be called if the   sparsity structure to be copied is empty. This is so in order to prevent   involuntary copies of objects for temporaries, which can use large   amounts of computing time.  However, copy constructors are needed if you   want to place a DynamicSparsityPattern in a container, e.g. to write such   statements like <tt>v.push_back (DynamicSparsityPattern());</tt>, with  [2.x.12]    v a vector of  [2.x.13]  objects.  
+* [0.x.36]*
+   Initialize a rectangular sparsity pattern with  [2.x.14]  rows and  [2.x.15]    columns. The  [2.x.16]  restricts the storage to elements in rows of this   set.  Adding elements outside of this set has no effect. The default   argument keeps all entries.  
+* [0.x.37]*
+   Create a square SparsityPattern using the given index set. The total size   is given by the size of  [2.x.17]  and only rows corresponding to   indices in  [2.x.18]  are stored on the current processor.  
+* [0.x.38]*
+   Initialize a square pattern of dimension  [2.x.19]   
+* [0.x.39]*
+   Copy operator. For this the same holds as for the copy constructor: it is   declared, defined and fine to be called, but the latter only for empty   objects.  
+* [0.x.40]*
+   Reallocate memory and set up data structures for a new sparsity pattern   with  [2.x.20]  rows and  [2.x.21]  columns. The  [2.x.22]  restricts the storage to   elements in rows of this set.  Adding elements outside of this set has no   effect. The default argument keeps all entries.  
+* [0.x.41]*
+   Since this object is kept compressed at all times anyway, this function   does nothing, but is declared to make the interface of this class as much   alike as that of the SparsityPattern class.  
+* [0.x.42]*
+   Return whether the object is empty. It is empty if no memory is   allocated, which is the same as that both dimensions are zero.  
+* [0.x.43]*
+   Return the maximum number of entries per row. Note that this number may   change as entries are added.  
+* [0.x.44]*
+   Add a nonzero entry. If the entry already exists, this call does nothing.  
+* [0.x.45]*
+   Add several nonzero entries to the specified row. Already existing   entries are ignored.  
+* [0.x.46]*
+   Check if a value at a certain position may be non-zero.  
+* [0.x.47]*
+   Return a view of this sparsity pattern.   That is, for all rows in  [2.x.23]  extract non-empty columns.   The resulting sparsity pattern will have number of rows equal   `rows.n_elements()`.  
+* [0.x.48]*
+   Make the sparsity pattern symmetric by adding the sparsity pattern of the   transpose object.     This function throws an exception if the sparsity pattern does not   represent a square matrix.  
+* [0.x.49]*
+   Construct and store in this object the sparsity pattern corresponding to   the product of  [2.x.24]  and  [2.x.25]  sparsity pattern.  
+* [0.x.50]*
+   Construct and store in this object the sparsity pattern corresponding to   the product of transposed  [2.x.26]  and non-transpose  [2.x.27]  sparsity pattern.  
+* [0.x.51]*
+   Print the sparsity pattern. The output consists of one line per row of   the format <tt>[i,j1,j2,j3,...]</tt>. [1.x.4] is the row number and   [1.x.5] are the allocated columns in this row.  
+* [0.x.52]*
+   Print the sparsity pattern in a format that  [2.x.28]  understands and   which can be used to plot the sparsity pattern in a graphical way. The   format consists of pairs <tt>i j</tt> of nonzero elements, each   representing one entry, one per line of the output file. Indices are   counted from zero on, as usual. Since sparsity patterns are printed in   the same way as matrices are displayed, we print the negative of the   column index, which means that the <tt>(0,0)</tt> element is in the top   left rather than in the bottom left corner.     Print the sparsity pattern in gnuplot by setting the data style to dots   or points and use the  [2.x.29]  command.  
+* [0.x.53]*
+   Return the number of rows, which equals the dimension of the image space.  
+* [0.x.54]*
+   Return the number of columns, which equals the dimension of the range   space.  
+* [0.x.55]*
+   Number of entries in a specific row. This function can only be called if   the given row is a member of the index set of rows that we want to store.  
+* [0.x.56]*
+   Clear all entries stored in a specific row.  
+* [0.x.57]*
+   Access to column number field.  Return the column number of the  [2.x.30]    indexth entry in  [2.x.31]   
+* [0.x.58]*
+   Return index of column  [2.x.32]  in row  [2.x.33]  If the column does not   exist in this sparsity pattern, the returned value will be    [2.x.34]   
+* [0.x.59]*
+    [2.x.35]  Iterators  
+* [0.x.60]*
+   Iterator starting at the first entry of the matrix. The resulting   iterator can be used to walk over all nonzero entries of the sparsity   pattern.     Note the discussion in the general documentation of this class about the   order in which elements are accessed.    
+*  [2.x.36]  If the sparsity pattern has been initialized with an IndexSet that   denotes which rows to store, then iterators will simply skip over rows   that are not stored. In other words, they will look like empty rows, but   no exception will be generated when iterating over such rows.  
+* [0.x.61]*
+   Final iterator.  
+* [0.x.62]*
+   Iterator starting at the first entry of row <tt>r</tt>.     Note that if the given row is empty, i.e. does not contain any nonzero   entries, then the iterator returned by this function equals   <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable in   that case.     Note also the discussion in the general documentation of this class about   the order in which elements are accessed.    
+*  [2.x.37]  If the sparsity pattern has been initialized with an IndexSet that   denotes which rows to store, then iterators will simply skip over rows   that are not stored. In other words, they will look like empty rows, but   no exception will be generated when iterating over such rows.  
+* [0.x.63]*
+   Final iterator of row <tt>r</tt>. It points to the first element past the   end of line  [2.x.38]  or past the end of the entire sparsity pattern.     Note that the end iterator is not necessarily dereferenceable. This is in   particular the case if it is the end iterator for the last row of a   matrix.  
+* [0.x.64]*
+   Compute the bandwidth of the matrix represented by this structure. The   bandwidth is the maximum of  [2.x.39]  for which the index pair  [2.x.40]    represents a nonzero entry of the matrix.  
+* [0.x.65]*
+   Return the number of nonzero elements allocated through this sparsity   pattern.  
+* [0.x.66]*
+   Return the IndexSet that sets which rows are active on the current   processor. It corresponds to the IndexSet given to this class in the   constructor or in the reinit function.  
+* [0.x.67]*
+   Return the IndexSet that contains entries for all columns in which at least   one element exists in this sparsity pattern.    
+*  [2.x.41]  In a parallel context, this only considers the locally stored rows.  
+* [0.x.68]*
+   Return the IndexSet that contains entries for all rows in which at least   one element exists in this sparsity pattern.    
+*  [2.x.42]  In a parallel context, this only considers the locally stored rows.  
+* [0.x.69]*
+   return whether this object stores only those entries that have been added   explicitly, or if the sparsity pattern contains elements that have been   added through other means (implicitly) while building it. For the current   class, the result is always true.     This function mainly serves the purpose of describing the current class   in cases where several kinds of sparsity patterns can be passed as   template arguments.  
+* [0.x.70]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.71]*
+   A flag that stores whether any entries have been added so far.  
+* [0.x.72]*
+   Number of rows that this sparsity structure shall represent.  
+* [0.x.73]*
+   Number of columns that this sparsity structure shall represent.  
+* [0.x.74]*
+   A set that contains the valid rows.  
+* [0.x.75]*
+   Store some data for each row describing which entries of this row are   nonzero. Data is stored sorted in the  [2.x.43]   [2.x.44]   The vector   per row is dynamically growing upon insertion doubling its memory each   time.  
+* [0.x.76]*
+     Storage for the column indices of this row. This array is always kept     sorted.    
+* [0.x.77]*
+     Add the given column number to this line.    
+* [0.x.78]*
+     Add the columns specified by the iterator range to this line.    
+* [0.x.79]*
+     estimates memory consumption.    
+* [0.x.80]*
+   Actual data: store for each row the set of nonzero entries.  
+* [0.x.81]

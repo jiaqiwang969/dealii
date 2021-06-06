@@ -1,0 +1,38 @@
+[0.x.0]*
+ This class implements the [1.x.0]-conforming, vector-valued enhanced Raviart-Thomas polynomials.
+*  Similarly to the classical Raviart-Thomas space, the enhanced Raviart-Thomas polynomials are constructed such that the divergence is in the tensor product polynomial space [1.x.1].
+*  This space is of the form [1.x.2], where [1.x.3] is defined as follows:  [2.x.0]  <dt> In 2D:
+
+* 
+* [1.x.4]
+* 
+*  <dt> In 3D: 
+* [1.x.5]
+*   [2.x.1]  where  [2.x.2] .
+* 
+
+* 
+*  [2.x.3]  Unlike the classical Raviart-Thomas space, the lowest order for the enhanced space is 1, similarly to the Brezzi-Douglas-Marini (BDM) polynomial space.
+*  The total dimension of the space [1.x.6], where [1.x.7] is the space dimension. This allows to associate shape functions with the Gauss-Lobatto quadrature points as shown in the figures below.
+*   [2.x.4] 
+* 
+
+* 
+*  [2.x.5] 
+
+* 
+* [0.x.1]*
+   Constructor. Creates all basis functions for RT_bubbles polynomials of   given degree.  
+* [0.x.2]*
+   Computes the value and the first and second derivatives of each RT_bubbles   polynomial at  [2.x.6]      The size of the vectors must either be zero or equal <tt>n()</tt>.  In   the first case, the function will not compute these values.     If you need values or derivatives of all tensor product polynomials then   use this function, rather than using any of the <tt>compute_value</tt>,   <tt>compute_grad</tt> or <tt>compute_grad_grad</tt> functions, see below,   in a loop over all tensor product polynomials.  
+* [0.x.3]*
+   Return the name of the space, which is <tt>RT_Bubbles</tt>.  
+* [0.x.4]*
+   Return the number of polynomials in the space <tt>RT_Bubbles(degree)</tt>   without requiring to build an object of PolynomialsRT-Bubbles. This is   required by the FiniteElement classes.  
+* [0.x.5]*
+    [2.x.7]   [2.x.8]   
+* [0.x.6]*
+   An object representing the Raviart-Thomas part of the space  
+* [0.x.7]*
+   Storage for monomials, we need all polynomials from degree zero   to [1.x.8].  
+* [0.x.8]

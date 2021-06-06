@@ -1,0 +1,28 @@
+[0.x.0]*
+ This class implements a curl-enhanced Raviart-Thomas elements, conforming with [1.x.0] space. The node functionals are defined as point values in Gauss-Lobatto points. These elements generate vector fields with normal components continuous between mesh cells. The purpose of this finite element is in localizing the interactions between degrees of freedom around the nodes when an appropriate quadrature rule is used, leading to a block-diagonal mass matrix (even with full-tensor coefficient).
+*  The elements are defined through enrichment of classical Raviart-Thomas elements with extra curls, so that the [1.x.1] conformity is preserved, and the total number of degrees of freedom of FE_RT_Bubbles of order k is equal to the number of DoFs in [1.x.2] copies of FE_Q of order [1.x.3].
+* 
+
+* 
+*  [2.x.0]  Unlike Raviart-Thomas, the lowest possible order for this enhanced finite element is 1, i.e.  [2.x.1] .
+*  The matching pressure space for FE_RT_Bubbles of order [1.x.4] is FE_DGQ of order [1.x.5]. With the exact integration, this pair yields  [2.x.2] -st order of convergence in  [2.x.3] -norm for a vector variable and  [2.x.4] -th order in  [2.x.5] -norm for a scalar one (same as  [2.x.6] ).
+*  For this enhanced Raviart-Thomas element, the node values are not cell and face moments with respect to certain polynomials, but the values in Gauss-Lobatto quadrature points. The nodal values on edges (faces in [1.x.6]) are evaluated first, according to the natural ordering of the edges (faces) of a cell. The interior degrees of freedom are evaluated last.
+*  For an RT-Bubbles element of degree [1.x.7], we choose [1.x.8] Gauss-Lobatto points on each face. These points are ordered lexicographically with respect to the orientation of the face. In the interior of the cells, the values are computed using an anisotropic Gauss-Lobatto formula for integration. The mass matrix assembled with the use of this same quadrature rule, is block diagonal with blocks corresponding to quadrature points. See [1.x.9][1.x.10] for more details.
+*  The elements of degree  [2.x.7]  in [1.x.11] and  [2.x.8]  in [1.x.12] are shown in the figures below (filled arrows indicate DoFs for which continuity across the edges (faces in [1.x.13]) is required).
+*   [2.x.9] 
+*   [2.x.10]  Implement restriction matrices
+
+* 
+* [0.x.1]*
+   Constructor for the RT_Bubbles element of degree  [2.x.11]   
+* [0.x.2]*
+   Returns a string that uniquely identifies a finite element. This class   returns <tt>FE_RT_Bubbles<dim>(degree)</tt>, with  [2.x.12]  and  [2.x.13]    degree replaced by appropriate values.  
+* [0.x.3]*
+   Only for internal use. Its full name is  [2.x.14]    function and it creates the  [2.x.15]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.16]    FiniteElementData.  
+* [0.x.4]*
+   Compute the vector used for the  [2.x.17]  field passed   to the base class's constructor.  
+* [0.x.5]*
+   Initialize the  [2.x.18]  and    [2.x.19]  fields. Called from   the constructor.     See the    [2.x.20]  "glossary entry on generalized support points"   for more information.  
+* [0.x.6]*
+   Initialize the permutation pattern and the pattern of sign change.  
+* [0.x.7]

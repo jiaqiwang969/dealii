@@ -1,0 +1,80 @@
+[0.x.0]*
+   Determine how many processes are available and the current process rank.     https://www.ibm.com/support/knowledgecenter/en/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_dbpnf.htm  
+* [0.x.1]*
+   Return internal BLACS value in  [2.x.0]  based on the input  [2.x.1]  and  [2.x.2]    The most common use is in retrieving a default system context ( [2.x.3]  = 0,  [2.x.4]  is ignored)   to be used in BLACS_GRIDINIT or BLACS_GRIDMAP.     https://www.ibm.com/support/knowledgecenter/en/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_dbget.htm  
+* [0.x.2]*
+   Map the processes sequentially in row-major or column-major order   into the process grid. Input arguments must be the same on every process.     On return,  [2.x.5]  is the integer handle to the BLACS context,   whereas on entry it is a system context to be used in creating the   BLACS context.     https://www.ibm.com/support/knowledgecenter/en/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_dbint.htm  
+* [0.x.3]*
+   Return the process row and column index.     https://www.ibm.com/support/knowledgecenter/en/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_dbinfo.htm  
+* [0.x.4]*
+   Given the system process number, return the row and column coordinates in   the BLACS' process grid.  
+* [0.x.5]*
+   Release a BLACS context.  
+* [0.x.6]*
+   This routines holds up execution of all processes within the indicated   scope until they have all called the routine.  
+* [0.x.7]*
+   Free all BLACS contexts and releases all allocated memory.  
+* [0.x.8]*
+   Receives a message from a process  [2.x.6]   [2.x.7]  into a general rectangular matrix.     https://software.intel.com/en-us/mkl-developer-reference-c-gerv2d  
+* [0.x.9]*
+   Sends the general rectangular matrix A to the destination   process  [2.x.8]   [2.x.9]  in the process grid.     https://software.intel.com/en-us/mkl-developer-reference-c-2018-beta-gesd2d  
+* [0.x.10]*
+   Get BLACS context from MPI  [2.x.10]   
+* [0.x.11]*
+   Compute how many rows and columns each process owns (NUMber of Rows Or   Columns).     https://www.ibm.com/support/knowledgecenter/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_dnumy.htm  
+* [0.x.12]*
+   Compute the Cholesky factorization of an N-by-N real   symmetric positive definite distributed matrix sub( A ) denoting   A(IA:IA+N-1, JA:JA+N-1).     http://www.netlib.org/scalapack/explore-html/d5/d9e/pdpotrf_8f_source.html   https://www.ibm.com/support/knowledgecenter/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_lpotrf.htm  
+* [0.x.13]*
+   Computes an LU factorization of a general distributed matrix sub( A )   using partial pivoting with row interchanges.     http://www.netlib.org/scalapack/explore-html/df/dfe/pdgetrf_8f_source.html   https://www.ibm.com/support/knowledgecenter/en/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_lgetrf.htm  
+* [0.x.14]*
+   Compute the inverse of a real symmetric positive definite   distributed matrix sub( A ) = A(IA:IA+N-1,JA:JA+N-1) using the   Cholesky factorization sub( A ) = U**T*U or L*L**T computed by   PDPOTRF.     http://www.netlib.org/scalapack/explore-html/d2/d44/pdpotri_8f_source.html   https://www.ibm.com/support/knowledgecenter/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_lpotri.htm   https://software.intel.com/en-us/mkl-developer-reference-c-p-potri  
+* [0.x.15]*
+   PDGETRI computes the inverse of a distributed matrix using the LU   factorization computed by PDGETRF. This method inverts U and then   computes the inverse of sub( A ) = A(IA:IA+N-1,JA:JA+N-1) denoted   InvA by solving the system InvA*L = inv(U) for InvA.     http://www.netlib.org/scalapack/explore-html/d3/df3/pdgetri_8f_source.html   https://www.ibm.com/support/knowledgecenter/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_lgetri.htm  
+* [0.x.16]*
+   PDTRTRI computes the inverse of a upper or lower triangular   distributed matrix sub( A ) = A(IA:IA+N-1,JA:JA+N-1).     http://www.netlib.org/scalapack/explore-html/d9/dc0/pdtrtri_8f_source.html   https://www.ibm.com/support/knowledgecenter/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_lpdtri.htm   https://software.intel.com/en-us/mkl-developer-reference-c-p-trtri  
+* [0.x.17]*
+   Estimate the reciprocal of the condition number (in the   l1-norm) of a real symmetric positive definite distributed matrix   using the Cholesky factorization.     https://www.ibm.com/support/knowledgecenter/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_lpocon.htm#lpocon   http://www.netlib.org/scalapack/explore-html/d4/df7/pdpocon_8f.html   https://software.intel.com/en-us/mkl-developer-reference-fortran-pocon  
+* [0.x.18]*
+   Norm of a real symmetric matrix     http://www.netlib.org/scalapack/explore-html/dd/d12/pdlansy_8f_source.html   https://www.ibm.com/support/knowledgecenter/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_pdlansy.htm#pdlansy  
+* [0.x.19]*
+   Compute the Least Common Multiple (LCM) of two positive integers  [2.x.11]  and  [2.x.12]    In fact the routine Compute the greatest common divisor (GCD) and   use the fact that M*N = GCD*LCM.     http://www.netlib.org/scalapack/explore-html/d0/d9b/ilcm_8f_source.html  
+* [0.x.20]*
+   Return the ceiling of the division of two integers.     http://www.netlib.org/scalapack/explore-html/df/d07/iceil_8f_source.html  
+* [0.x.21]*
+   Initialize the descriptor vector with the 8 input arguments  
+* [0.x.22]*
+   Compute the global index of a distributed matrix entry   pointed to by the local index  [2.x.13]  of the process indicated by    [2.x.14]       [2.x.15]  indxloc The local index of the distributed matrix entry.    [2.x.16]  nb Block size, size of the blocks the distributed matrix is split   into.    [2.x.17]  iproc The coordinate of the process whose local array row or column   is to be determined    [2.x.18]  isrcproc  The coordinate of the process that possesses the first   row/column of the distributed matrix    [2.x.19]  nprocs The total number processes over which the distributed matrix   is distributed  
+* [0.x.23]*
+   Compute the solution to a real system of linear equations  
+* [0.x.24]*
+   Perform one of the matrix-matrix operations:  
+* [1.x.0]
+*    where    [2.x.20]  denotes C(IC:IC+M-1,JC:JC+N-1),  and,  [2.x.21]  is one of    [2.x.22]  or  [2.x.23] .  
+* [0.x.25]*
+   Return the value of the one norm, or the Frobenius norm, or the infinity   norm, or the element of largest absolute value of a distributed matrix  
+* [0.x.26]*
+   Compute the process coordinate which possesses the entry of a   distributed matrix specified by a global index  
+* [0.x.27]*
+   Compute all eigenvalues and, optionally, eigenvectors of a real symmetric   matrix A by calling the recommended sequence of ScaLAPACK routines. In its   present form, the routine assumes a homogeneous system and makes no checks   for consistency of the eigenvalues or eigenvectors across the different   processes. Because of this, it is possible that a heterogeneous system may   return incorrect results without any error messages.     http://www.netlib.org/scalapack/explore-html/d0/d1a/pdsyev_8f.html   https://www.ibm.com/support/knowledgecenter/SSNR5K_4.2.0/com.ibm.cluster.pessl.v4r2.pssl100.doc/am6gr_lsyev.htm#lsyev  
+* [0.x.28]*
+   Copy all or a part of a distributed matrix A to another distributed matrix   B. No communication is performed, pdlacpy performs a local copy    [2.x.24] , where  [2.x.25]    denotes  [2.x.26]  and  [2.x.27]  denotes    [2.x.28] .  
+* [0.x.29]*
+   Copies the content of a general rectangular distributed matrix  [2.x.29]  to another distributed matrix  [2.x.30]    It is not required that the matrices A and B have the same process grid or   block size, e.g. copying a matrix from a one-dimensional to a   two-dimensional process grid    [2.x.31]  is a context which is at least a union of all processes in context   A and B  
+* [0.x.30]*
+   helper routines determining machine precision  
+* [0.x.31]*
+    psyevx computes selected eigenvalues and, optionally, eigenvectors    of a real symmetric matrix A. Eigenvalues/vectors can be selected by    specifying a range of values or a range of indices for the desired    eigenvalues.  
+* [0.x.32]   PDGESVD computes the singular value decomposition (SVD) of an   M-by-N matrix A, optionally computing the left and/or right   singular vectors  
+* [0.x.33]   P_GELS solves overdetermined or underdetermined real linear   systems involving an M-by-N matrix A, or its transpose,   using a QR or LQ factorization of A.  It is assumed that A has full rank.  
+* [0.x.34]   Perform matrix sum:   [1.x.1]
+*    where  [2.x.32]  denotes either  [2.x.33]  or  [2.x.34] .  
+* [0.x.35]*
+   Routine to transpose a matrix:   C = beta C + alpha A^T  
+* [0.x.36]*
+    psyevr computes selected eigenvalues and, optionally, eigenvectors    of a real symmetric matrix A using a parallel implementation of the MRR   algorithm. Eigenvalues/vectors can be selected by specifying a range of   values or a range of indices for the desired eigenvalues.  
+* [0.x.37] In the following we have template wrappers for the ScaLAPACK routines wrappers for other numeric types can be added in the future
+
+* 
+* [0.x.38]   Netlib ScaLAPACK performs floating point tests (e.g. divide-by-zero) within   the call to pdsyevr causing floating point exceptions to be thrown (at   least in debug mode). Therefore, we wrap the calls to pdsyevr into the   following code to suppress the exception.  
+* [0.x.39]   Netlib ScaLAPACK performs floating point tests (e.g. divide-by-zero) within   the call to pssyevr causing floating point exceptions to be thrown (at   least in debug mode). Therefore, we wrap the calls to pssyevr into the   following code to suppress the exception.  
+* [0.x.40]

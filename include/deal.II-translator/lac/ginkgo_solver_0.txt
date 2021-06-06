@@ -1,0 +1,104 @@
+[0.x.0]*
+   This class forms the base class for all of Ginkgo's iterative solvers.   The various derived classes only take   the additional data that is specific to them and solve the given linear   system. The entire collection of solvers that Ginkgo implements is   available at [1.x.0].    
+*  [2.x.0]   
+* [0.x.1]*
+     Constructor.         The  [2.x.1]  defines the paradigm where the solution is computed.     It is a string and the choices are "omp" , "reference" or "cuda".     The respective strings create the respective executors as given below.         Ginkgo currently supports three different executor types:         +    OmpExecutor specifies that the data should be stored and the     associated operations executed on an OpenMP-supporting device (e.g. host     CPU);     ```     auto omp =  [2.x.2]      ```     +    CudaExecutor specifies that the data should be stored and the          operations executed on the NVIDIA GPU accelerator;     ```      [2.x.3]  > 0 ) {        auto cuda =  [2.x.4]      }     ```     +    ReferenceExecutor executes a non-optimized reference implementation,          which can be used to debug the library.     ```     auto ref =  [2.x.5]      ```         The following code snippet demonstrates the using of the OpenMP executor     to create a solver which would use the OpenMP paradigm to the solve the     system on the CPU.         ```     auto omp =  [2.x.6]      using cg =  [2.x.7]      auto solver_gen =          [2.x.8]               .with_criteria(                   [2.x.9]                    [2.x.10]                       .with_reduction_factor(1e-6)                      .on(omp))              .on(omp);     auto solver = solver_gen->generate(system_matrix);         solver->apply(lend(rhs), lend(solution));     ```             The  [2.x.11]  object is the same as for other     deal.II iterative solvers.    
+* [0.x.2]*
+     Destructor.    
+* [0.x.3]*
+     Initialize the matrix and copy over its data to Ginkgo's data structures.    
+* [0.x.4]*
+     Solve the linear system <tt>Ax=b</tt>. Dependent on the information     provided by derived classes one of Ginkgo's linear solvers is     chosen.    
+* [0.x.5]*
+     Solve the linear system <tt>Ax=b</tt>. Dependent on the information     provided by derived classes one of Ginkgo's linear solvers is     chosen.    
+* [0.x.6]*
+     Access to the object that controls convergence.    
+* [0.x.7]*
+     Reference to the object that controls convergence of the iterative     solvers.    
+* [0.x.8]*
+     The Ginkgo generated solver factory object.    
+* [0.x.9]*
+     The residual criterion object that controls the reduction of the residual     based on the tolerance set in the solver_control member.    
+* [0.x.10]*
+     The Ginkgo convergence logger used to check for convergence and other     solver data if needed.    
+* [0.x.11]*
+     The Ginkgo combined factory object is used to create a combined stopping     criterion to be passed to the solver.    
+* [0.x.12]*
+     The execution paradigm in Ginkgo. The choices are between      [2.x.12]   [2.x.13]  and  [2.x.14]      and more details can be found in Ginkgo's documentation.    
+* [0.x.13]*
+     Initialize the Ginkgo logger object with event masks. Refer to     [1.x.1]    
+* [0.x.14]*
+     Ginkgo matrix data structure. First template parameter is for storing the     array of the non-zeros of the matrix. The second is for the row pointers     and the column indices.          [2.x.15]  Templatize based on Matrix type.    
+* [0.x.15]*
+     The execution paradigm as a string to be set by the user. The choices     are between `omp`, `cuda` and `reference` and more details can be found     in Ginkgo's documentation.    
+* [0.x.16]*
+   An implementation of the solver interface using the Ginkgo CG solver.    
+*  [2.x.16]   
+* [0.x.17]*
+     A standardized data struct to pipe additional data to the solver.    
+* [0.x.18]*
+     Constructor.          [2.x.17]  solver_control The solver control object is then used to     set the parameters and setup the CG solver from the CG factory which     solves the linear system.          [2.x.18]  exec_type The execution paradigm for the CG solver.          [2.x.19]  data The additional data required by the solver.    
+* [0.x.19]*
+     Constructor.          [2.x.20]  solver_control The solver control object is then used to     set the parameters and setup the CG solver from the CG factory which     solves the linear system.          [2.x.21]  exec_type The execution paradigm for the CG solver.          [2.x.22]  preconditioner The preconditioner for the solver.          [2.x.23]  data The additional data required by the solver.    
+* [0.x.20]*
+     Store a copy of the settings for this particular solver.    
+* [0.x.21]*
+   An implementation of the solver interface using the Ginkgo Bicgstab solver.    
+*  [2.x.24]   
+* [0.x.22]*
+     A standardized data struct to pipe additional data to the solver.    
+* [0.x.23]*
+     Constructor.          [2.x.25]  solver_control The solver control object is then used to     set the parameters and setup the Bicgstab solver from the Bicgstab     factory which solves the linear system.          [2.x.26]  exec_type The execution paradigm for the Bicgstab solver.          [2.x.27]  data The additional data required by the solver.    
+* [0.x.24]*
+     Constructor.          [2.x.28]  solver_control The solver control object is then used to     set the parameters and setup the Bicgstab solver from the Bicgstab     factory which solves the linear system.          [2.x.29]  exec_type The execution paradigm for the Bicgstab solver.          [2.x.30]  preconditioner The preconditioner for the solver.          [2.x.31]  data The additional data required by the solver.    
+* [0.x.25]*
+     Store a copy of the settings for this particular solver.    
+* [0.x.26]*
+   An implementation of the solver interface using the Ginkgo CGS solver.     CGS or the conjugate gradient square method is an iterative type Krylov   subspace method which is suitable for general systems.    
+*  [2.x.32]   
+* [0.x.27]*
+     A standardized data struct to pipe additional data to the solver.    
+* [0.x.28]*
+     Constructor.          [2.x.33]  solver_control The solver control object is then used to     set the parameters and setup the CGS solver from the CGS factory which     solves the linear system.          [2.x.34]  exec_type The execution paradigm for the CGS solver.          [2.x.35]  data The additional data required by the solver.    
+* [0.x.29]*
+     Constructor.          [2.x.36]  solver_control The solver control object is then used to     set the parameters and setup the CGS solver from the CGS factory which     solves the linear system.          [2.x.37]  exec_type The execution paradigm for the CGS solver.          [2.x.38]  preconditioner The preconditioner for the solver.          [2.x.39]  data The additional data required by the solver.    
+* [0.x.30]*
+     Store a copy of the settings for this particular solver.    
+* [0.x.31]*
+   An implementation of the solver interface using the Ginkgo FCG solver.     FCG or the flexible conjugate gradient method is an iterative type Krylov   subspace method which is suitable for symmetric positive definite methods.     Though this method performs very well for symmetric positive definite   matrices, it is in general not suitable for general matrices.     In contrast to the standard CG based on the Polack-Ribiere formula, the   flexible CG uses the Fletcher-Reeves formula for creating the orthonormal   vectors spanning the Krylov subspace. This increases the computational cost   of every Krylov solver iteration but allows for non-constant   preconditioners.    
+*  [2.x.40]   
+* [0.x.32]*
+     A standardized data struct to pipe additional data to the solver.    
+* [0.x.33]*
+     Constructor.          [2.x.41]  solver_control The solver control object is then used to     set the parameters and setup the FCG solver from the FCG factory which     solves the linear system.          [2.x.42]  exec_type The execution paradigm for the FCG solver.          [2.x.43]  data The additional data required by the solver.    
+* [0.x.34]*
+     Constructor.          [2.x.44]  solver_control The solver control object is then used to     set the parameters and setup the FCG solver from the FCG factory which     solves the linear system.          [2.x.45]  exec_type The execution paradigm for the FCG solver.          [2.x.46]  preconditioner The preconditioner for the solver.          [2.x.47]  data The additional data required by the solver.    
+* [0.x.35]*
+     Store a copy of the settings for this particular solver.    
+* [0.x.36]*
+   An implementation of the solver interface using the Ginkgo GMRES solver.    
+*  [2.x.48]   
+* [0.x.37]*
+     A standardized data struct to pipe additional data to the solver.    
+* [0.x.38]*
+       Constructor. By default, set the number of temporary vectors to 30,       i.e. do a restart every 30 iterations.      
+* [0.x.39]*
+       Maximum number of tmp vectors.      
+* [0.x.40]*
+     Constructor.          [2.x.49]  solver_control The solver control object is then used to     set the parameters and setup the GMRES solver from the GMRES factory     which solves the linear system.          [2.x.50]  exec_type The execution paradigm for the GMRES solver.          [2.x.51]  data The additional data required by the solver.    
+* [0.x.41]*
+     Constructor.          [2.x.52]  solver_control The solver control object is then used to     set the parameters and setup the GMRES solver from the GMRES factory     which solves the linear system.          [2.x.53]  exec_type The execution paradigm for the GMRES solver.          [2.x.54]  preconditioner The preconditioner for the solver.          [2.x.55]  data The additional data required by the solver.    
+* [0.x.42]*
+     Store a copy of the settings for this particular solver.    
+* [0.x.43]*
+   An implementation of the solver interface using the Ginkgo IR solver.     Iterative refinement (IR) is an iterative method that uses another coarse   method to approximate the error of the current solution via the current   residual.    
+*  [2.x.56]   
+* [0.x.44]*
+     A standardized data struct to pipe additional data to the solver.    
+* [0.x.45]*
+     Constructor.          [2.x.57]  solver_control The solver control object is then used to     set the parameters and setup the IR solver from the IR factory which     solves the linear system.          [2.x.58]  exec_type The execution paradigm for the IR solver.          [2.x.59]  data The additional data required by the solver.    
+* [0.x.46]*
+     Constructor.          [2.x.60]  solver_control The solver control object is then used to     set the parameters and setup the IR solver from the IR factory which     solves the linear system.          [2.x.61]  exec_type The execution paradigm for the IR solver.          [2.x.62]  inner_solver The Inner solver for the IR solver.          [2.x.63]  data The additional data required by the solver.    
+* [0.x.47]*
+     Store a copy of the settings for this particular solver.    
+* [0.x.48]

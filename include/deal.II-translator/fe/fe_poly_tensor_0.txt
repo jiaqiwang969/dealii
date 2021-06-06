@@ -1,0 +1,88 @@
+[0.x.0]*
+ This class provides a unified framework for the implementation of FiniteElement classes based on tensor-valued polynomial spaces like PolynomialsBDM and PolynomialsRaviartThomas. In this, it is the tensor-valued equivalent of the FE_Poly class.
+*  In essence, what this class requires is that a derived class describes to it a (vector-valued) polynomial space in which every polynomial has exactly  [2.x.0]  vector components. The classes that provide such implementations are all derived from the TensorPolynomialsBase class, and an object of one of these derived types needs to be provided to the constructor of this class.
+* 
+
+*  [1.x.0]
+*  This class is not a fully implemented FiniteElement class, but implements some common features of vector valued elements based on vector valued polynomial classes. What's missing here in particular is information on the topological location of the node values (i.e., whether a degree of freedom is logically at a vertex, edge, face, or the interior of a cell
+* 
+*  -  information that determines the continuity properties of the associated shape functions across cell interfaces), and derived classes need to provide this information.
+*  Similarly, in many cases, node functionals depend on the shape of the mesh cell, since they evaluate normal or tangential components on the faces. In order to allow for a set of transformations, the variable #mapping_kind has been introduced. It needs be set in the constructor of a derived class.
+*  Any derived class must decide on the polynomial space to use.  This polynomial space should be implemented simply as a set of vector valued polynomials like PolynomialsBDM and PolynomialsRaviartThomas.  In order to facilitate this implementation, which basis the polynomial space chooses is not of importance to the current class
+* 
+*  -  as described next, this class handles the transformation from the basis chosen by the polynomial space template argument to the basis we want to use for finite element computations internally.
+* 
+
+*  [1.x.1]
+*  In most cases, the basis used by the class that describes the polynomial space,  [2.x.1] , does not match the one we want to use for the finite element description,  [2.x.2] . Rather, we need to express the finite element shape functions as a linear combination of the basis provided by the polynomial space:
+
+* 
+* [1.x.2]
+*  These expansion coefficients  [2.x.3]  are typically computed in the constructors of derived classes. To facilitate this, this class at first (unless told otherwise, see below), assumes that the shape functions should be exactly the ones provided by the polynomial space. In the constructor of the derived class, one then typically has code of the form
+
+* 
+* [1.x.3]
+*  The  [2.x.4]  function explains in more detail what exactly it computes, and how; in any case, the result is that  [2.x.5]  now contains the expansion coefficients  [2.x.6] , and the fact that this block of code now sets the matrix to a non-zero size indicates to the functions of the current class that it should from then on use the expanded basis,  [2.x.7] , and no longer the original, "raw" basis  [2.x.8]  when asked for values or derivatives of shape functions.
+*  In order for this scheme to work, it is important to ensure that the size of the  [2.x.9]  be zero at the time when  [2.x.10]  is called; thus, the call to this function cannot be inlined into the last line
+* 
+*  -  the result of the call really does need to be stored in the temporary object  [2.x.11] 
+* 
+
+*  [1.x.4]
+*  In most cases, vector valued basis functions must be transformed when mapped from the reference cell to the actual grid cell. These transformations can be selected from the set MappingKind and stored in #mapping_kind. Therefore, each constructor should contain a line like:
+
+* 
+* [1.x.5]
+*  (in case no mapping is required) or using whatever value among the ones defined in MappingKind is appropriate for the element you are implementing. If each shape function may be mapped by different mappings, then  [2.x.12]  may be a vector with the same number of elements as there are shape functions.
+*   [2.x.13]  TensorPolynomialsBase
+
+* 
+*  [2.x.14] 
+
+* 
+* [0.x.1]*
+   Constructor. This constructor does a deep copy of the polynomials   object via the  [2.x.15]  function and stores   a pointer to the copy. As a consequence, the calling site can   simply pass a temporary object as the first argument.  
+* [0.x.2]*
+   Copy constructor.  
+* [0.x.3]*
+   Compute the (scalar) value of shape function  [2.x.16]  at the given quadrature   point  [2.x.17]  Since the elements represented by this class are vector   valued, there is no such scalar value and the function therefore throws   an exception.  
+* [0.x.4]*
+   Compute the gradient of (scalar) shape function  [2.x.18]  at the given   quadrature point  [2.x.19]  Since the elements represented by this class are   vector valued, there is no such scalar value and the function therefore   throws an exception.  
+* [0.x.5]*
+   Compute the Hessian of (scalar) shape function  [2.x.20]  at the given   quadrature point  [2.x.21]  Since the elements represented by this class are   vector valued, there is no such scalar value and the function therefore   throws an exception.  
+* [0.x.6]*
+   The mapping type to be used to map shape functions from the reference   cell to the mesh cell. If this vector is length one, the same mapping   will be applied to all shape functions. If the vector size is equal to   the finite element dofs per cell, then each shape function will be mapped   according to the corresponding entry in the vector.  
+* [0.x.7]*
+   Returns a boolean that is true when the finite element uses a single   mapping and false when the finite element uses multiple mappings.  
+* [0.x.8]*
+   For faces with non-standard face_orientation in 3D, the dofs on faces   (quads) have to be permuted in order to be combined with the correct   shape functions and additionally can change the sign. Given a local   dof  [2.x.22]  on a quad, return the   sign of the permuted shape function, if the face has non-standard   face_orientation, face_flip or face_rotation. In 2D and 1D there is no need   for permutation and consequently it does nothing in this case.     The permutation itself is returned by   adjust_quad_dof_index_for_face_orientation implemented in the interface   class FiniteElement<dim>.  
+* [0.x.9]*
+   For faces with non-standard face_orientation in 3D, the dofs on faces   (quads) need not only to be permuted in order to be combined with the   correct shape functions. Additionally they may change their sign.     The constructor of this class fills this table with 'false' values, i.e.,   no sign change at all. Derived finite element classes have to   fill this Table with the correct values, see the documentation in   GeometryInfo<dim> and   this  [2.x.23]  "glossary entry on face orientation".     The table must be filled in finite element classes derived   from FE_PolyTensor in a meaningful way since the permutation   pattern and the pattern of sign changes depends on how the finite element   distributes the local dofs on the faces. An example is the function   `initialize_quad_dof_index_permutation_and_sign_change()` in the   FE_RaviartThomas class that fills this table.  
+* [0.x.10]*
+   Returns MappingKind  [2.x.24]  for the finite element.  
+* [0.x.11] NOTE: The following function has its definition inlined into the class     declaration because we otherwise run into a compiler error with MS Visual     Studio.
+* [0.x.12]*
+   Fields of cell-independent data for FE_PolyTensor. Stores the values of   the shape functions and their derivatives on the reference cell for later   use.     All tables are organized in a way, that the value for shape function   [1.x.6] at quadrature point [1.x.7] is accessed by indices   [1.x.8].  
+* [0.x.13]*
+     Array with shape function values in quadrature points. There is one row     for each shape function, containing values for each quadrature point.    
+* [0.x.14]*
+     Array with shape function gradients in quadrature points. There is one     row for each shape function, containing values for each quadrature     point.    
+* [0.x.15]*
+     Array with shape function hessians in quadrature points. There is one     row for each shape function, containing values for each quadrature     point.    
+* [0.x.16]*
+     Scratch arrays for intermediate computations    
+* [0.x.17]*
+   A copy of the object passed to the constructor that describes the   polynomial space.  
+* [0.x.18]*
+   The inverse of the matrix [1.x.9] of node values   [1.x.10] applied to polynomial [1.x.11]. This   matrix is used to convert polynomials in the "raw" basis provided in   #poly_space to the basis dual to the node functionals on the reference   cell.     This object is not filled by FE_PolyTensor, but is a chance for a derived   class to allow for reorganization of the basis functions. If it is left   empty, the basis in #poly_space is used.  
+* [0.x.19]*
+   A mutex to be used to guard access to the variables below.  
+* [0.x.20]*
+   If a shape function is computed at a single point, we must compute all of   them to apply #inverse_node_matrix. In order to avoid too much overhead,   we cache the point and the function values for the next evaluation.  
+* [0.x.21]*
+   Cached shape function values after call to shape_value_component().  
+* [0.x.22]*
+   Cached shape function gradients after call to shape_grad_component().  
+* [0.x.23]*
+   Cached second derivatives of shape functions after call to   shape_grad_grad_component().  
+* [0.x.24]

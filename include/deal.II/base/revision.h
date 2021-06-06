@@ -24,12 +24,12 @@
 /**
  * Full sha1 revision of the current git HEAD.
  */
-#define DEAL_II_GIT_REVISION "d5ada26dc7547b3c7a9843e043fef51a4512d04d"
+#define DEAL_II_GIT_REVISION "8311ff0c68b3b71d2fe3cfb8950e17e823a18e2d"
 
 /**
  * Short sha1 revision of the current git HEAD.
  */
-#define DEAL_II_GIT_SHORTREV "d5ada26dc7"
+#define DEAL_II_GIT_SHORTREV "8311ff0c68"
 
 #endif
 // ---------------------------------------------------------------------
@@ -58,11 +58,11 @@
 /**
  * Full sha1 revision of the current git HEAD.
  */
-#define DEAL_II_GIT_REVISION "d5ada26dc7547b3c7a9843e043fef51a4512d04d"
+#define DEAL_II_GIT_REVISION "8311ff0c68b3b71d2fe3cfb8950e17e823a18e2d"
 
 /**
  * Short sha1 revision of the current git HEAD.
  */
-#define DEAL_II_GIT_SHORTREV "d5ada26dc7"
+#define DEAL_II_GIT_SHORTREV "8311ff0c68"
 
 #endif

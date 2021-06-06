@@ -365,7 +365,7 @@ PointerMatrix, PointerMatrixAux </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Changed: The deprecated member functions add(), normalize(), conjugate(), <a class="el" href="classVectorizedArray.html#a2be646da1dcbc52f538c49923fb71c50">abs()</a>, <a class="el" href="group__CUDAWrappers.html#gadd2ad651a84773cd69851f66dea04831">sadd()</a>, <a class="el" href="group__CUDAWrappers.html#ga3cd8b561b058955d0c2b3115570ca1c5">equ()</a> and mult() in the vector classes have been removed. <br  />
+<p class="startli">Changed: The deprecated member functions <a class="el" href="chunk__sparsity__pattern__0_8txt.html#a5b51102d307d0296227f3b3f5b095be4">add()</a>, normalize(), conjugate(), <a class="el" href="classVectorizedArray.html#a2be646da1dcbc52f538c49923fb71c50">abs()</a>, <a class="el" href="group__CUDAWrappers.html#gadd2ad651a84773cd69851f66dea04831">sadd()</a>, <a class="el" href="group__CUDAWrappers.html#ga3cd8b561b058955d0c2b3115570ca1c5">equ()</a> and mult() in the vector classes have been removed. <br  />
  (Daniel Arndt, 2017/06/12) </p>
 <p class="endli"></p>
 </li>
@@ -435,7 +435,7 @@ PointerMatrix, PointerMatrixAux </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Changed: The deprecated function <a class="el" href="namespaceparallel.html#acff5a80eecf505943d8abbec0658ae93">FEValuesBase::transform()</a> has been removed. It only forwarded the call to the <a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a> object used by the <a class="el" href="classFEValuesBase.html">FEValuesBase</a> object. Use the corresponding function of the mapping instead. <br  />
+<p class="startli">Changed: The deprecated function FEValuesBase::transform() has been removed. It only forwarded the call to the <a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a> object used by the <a class="el" href="classFEValuesBase.html">FEValuesBase</a> object. Use the corresponding function of the mapping instead. <br  />
  (Wolfgang Bangerth, 2017/05/04) </p>
 <p class="endli"></p>
 </li>
@@ -612,7 +612,7 @@ TransposeMatrix </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: Added support for the Open Asset Import Library (Assimp) (<a href="http://assimp.sourceforge.net/">http://assimp.sourceforge.net/</a>). This library can be used to read about 40 different 3D graphics formats, used in 3D modelers (such as Blender, Maya, etc.). Some of these formats contain mesh information, that in turn can be read into deal.II Triangulation&lt;2,3&gt; objects. <br  />
+<p class="startli">New: Added support for the Open Asset Import Library (Assimp) (<a href="http://assimp.sourceforge.net/">http://assimp.sourceforge.net/</a>). This library can be used to read about 40 different 3D graphics formats, used in 3D modelers (such as Blender, Maya, etc.). Some of these formats contain mesh information, that in turn can be read into deal.II <a class="el" href="classTriangulation.html">Triangulation&lt;2,3&gt;</a> objects. <br  />
  (Luca Heltai, 2017/09/16) </p>
 <p class="endli"></p>
 </li>
@@ -799,7 +799,7 @@ TransposeMatrix </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed: When using diagonal SymmetricTensors with automatic-differentiable numbers, computations using the eigenvalue() and eigenvector() functions would return correct values of the eigenvalues/vectors. However, the derivatives of these values/vectors were incorrect as the sensitivities of the eigenvalues/vectors with respect to one another was not encoded in the returned result. Therefore, under these specific conditions the returned result is now a more coarse approximation for the eigenvalues/vectors but with the trade-off that a meaningful approximation of the derivative of the result can now be computed. <br  />
+<p class="startli">Fixed: When using diagonal SymmetricTensors with automatic-differentiable numbers, computations using the <a class="el" href="eigen__0_8txt.html#ac2ba7711e9a8530d2ed07161a5f2b512">eigenvalue()</a> and <a class="el" href="eigen__0_8txt.html#a31a872680c9082cbe8bf86c82a743059">eigenvector()</a> functions would return correct values of the eigenvalues/vectors. However, the derivatives of these values/vectors were incorrect as the sensitivities of the eigenvalues/vectors with respect to one another was not encoded in the returned result. Therefore, under these specific conditions the returned result is now a more coarse approximation for the eigenvalues/vectors but with the trade-off that a meaningful approximation of the derivative of the result can now be computed. <br  />
  (Jean-Paul Pelteret, 2018/04/12) </p>
 <p class="endli"></p>
 </li>
@@ -922,7 +922,7 @@ TransposeMatrix </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed: Copying a Trilinos::MPI::Vector to a local deal.II <a class="el" href="classVector.html">Vector</a> using operator=() resulted in only a partial copy of data to the local vector. In addition, the copied elements were offset incorrectly on each process. Similar held for copying a Trilinos::MPI::BlockVector to a local deal.II <a class="el" href="classBlockVector.html">BlockVector</a>. This has been fixed and now works as expected. <br  />
+<p class="startli">Fixed: Copying a Trilinos::MPI::Vector to a local deal.II <a class="el" href="classVector.html">Vector</a> using <a class="el" href="chunk__sparse__matrix__0_8txt.html#aa747ba884f098177e9bf2b2422a461a9">operator=()</a> resulted in only a partial copy of data to the local vector. In addition, the copied elements were offset incorrectly on each process. Similar held for copying a Trilinos::MPI::BlockVector to a local deal.II <a class="el" href="classBlockVector.html">BlockVector</a>. This has been fixed and now works as expected. <br  />
  (Jean-Paul Pelteret, 2018/03/07) </p>
 <p class="endli"></p>
 </li>
@@ -1257,7 +1257,7 @@ TransposeMatrix </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: <a class="el" href="classArrayView.html">ArrayView</a> has a data() member function making it more similar to the standard containers. <br  />
+<p class="startli">New: <a class="el" href="classArrayView.html">ArrayView</a> has a <a class="el" href="A-headers_2exceptions__0_8txt.html#af85863b31be0cbd660acba99051e0634">data()</a> member function making it more similar to the standard containers. <br  />
  (Daniel Arndt, 2017/11/17) </p>
 <p class="endli"></p>
 </li>
@@ -1497,7 +1497,7 @@ TransposeMatrix </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: Added two methods to the class <a class="el" href="classBoundingBox.html">BoundingBox</a>. The first, merge_with(BoundingBox) merges the current <a class="el" href="classBoundingBox.html">BoundingBox</a> with BBox. The second, <a class="el" href="namespaceGridTools.html#a9e8169dc4981e90ba5d2386a87efa042">volume()</a>, returns the volume (dim-dimensional measure) of the current <a class="el" href="classBoundingBox.html">BoundingBox</a> <br  />
+<p class="startli">New: Added two methods to the class <a class="el" href="classBoundingBox.html">BoundingBox</a>. The first, merge_with(BoundingBox) merges the current <a class="el" href="classBoundingBox.html">BoundingBox</a> with BBox. The second, <a class="el" href="base_2bounding__box__0_8txt.html#ac479118cc630e4f4c7d594789b4c6dec">volume()</a>, returns the volume (dim-dimensional measure) of the current <a class="el" href="classBoundingBox.html">BoundingBox</a> <br  />
  (Giovanni Alzetta, 2017/09/22) </p>
 <p class="endli"></p>
 </li>
@@ -1645,7 +1645,7 @@ TransposeMatrix </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed: <a class="el" href="classConsecutiveControl.html">ConsecutiveControl</a> now asserts that check() is being called for zeroth iteration. <br  />
+<p class="startli">Fixed: <a class="el" href="classConsecutiveControl.html">ConsecutiveControl</a> now asserts that <a class="el" href="vector__tools__constraints__0_8txt.html#af249473b5ed4c694fce947631b662020">check()</a> is being called for zeroth iteration. <br  />
  (Denis Davydov, 2017/08/16) </p>
 <p class="endli"></p>
 </li>
@@ -1860,7 +1860,7 @@ TransposeMatrix </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed: <a class="el" href="namespacePatterns.html">Patterns</a> derived from PatternBase now return std::unique_ptr&lt;PatternBase&gt; in their clone() and create() functions. <br  />
+<p class="startli">Fixed: <a class="el" href="namespacePatterns.html">Patterns</a> derived from PatternBase now return std::unique_ptr&lt;PatternBase&gt; in their <a class="el" href="scalar__polynomials__base__0_8txt.html#af7375feef211a44a58b4f93a366f864a">clone()</a> and create() functions. <br  />
  (Luca Heltai, 2017/06/12) </p>
 <p class="endli"></p>
 </li>
@@ -1886,7 +1886,7 @@ TransposeMatrix </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Improved: The multigrid smoothers now provide an additional <a class="el" href="namespacestd__cxx17.html#aa2fc1031c06af4aea4de90c5a1905473">apply()</a> method that specializes the smoothing for the case the input vector is set to zero. This method is used in the <a class="el" href="classMultigrid.html">Multigrid</a> class and saves one matrix-vector product, which can speed up the multigrid algorithm by up to 10 percent, depending on the cost of the smoother. <br  />
+<p class="startli">Improved: The multigrid smoothers now provide an additional <a class="el" href="ginkgo__solver__0_8txt.html#a3cb670365d7110cc15bb987ccf4160e6">apply()</a> method that specializes the smoothing for the case the input vector is set to zero. This method is used in the <a class="el" href="classMultigrid.html">Multigrid</a> class and saves one matrix-vector product, which can speed up the multigrid algorithm by up to 10 percent, depending on the cost of the smoother. <br  />
  (Martin Kronbichler, 2017/06/07) </p>
 <p class="endli"></p>
 </li>

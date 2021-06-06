@@ -198,7 +198,7 @@ Changed: The various classes generating graphical output, such as <a class="el" 
 <li>
 FlatManifold&lt;dim,spacedim&gt;: This class replaces the old StraightBoundary&lt;dim,spacedim&gt;, and it adds support for periodic manifolds. This is the simplest class one can use to create new <a class="el" href="classManifold.html">Manifold</a> classes;  </li>
 <li>
-ManifoldChart&lt;dim,spacedim,chartdim&gt;: This is one of the most general <a class="el" href="classManifold.html">Manifold</a> one can think of. The user can overload the functions <a class="el" href="namespacePhysics_1_1Transformations_1_1Contravariant.html#a7c5aa0400236cfe10c6967247d5c6ddb">ManifoldChart::pull_back()</a> and <a class="el" href="namespaceOpenCASCADE.html#a20fe08fce46ef1e86665c9c50cc96684">ManifoldChart::push_forward()</a>, to obtain a very general curved geometry, following concepts typical of elasticity;  </li>
+ManifoldChart&lt;dim,spacedim,chartdim&gt;: This is one of the most general <a class="el" href="classManifold.html">Manifold</a> one can think of. The user can overload the functions ManifoldChart::pull_back() and ManifoldChart::push_forward(), to obtain a very general curved geometry, following concepts typical of elasticity;  </li>
 <li>
 SphericalManifold&lt;dim,spacedim&gt;: A simple implementation of spherical coordinates transformations. This manifold allows hyper shells with curved interior cells which follow the natural shape of the shell;  </li>
 </ul>
@@ -245,12 +245,12 @@ New: deal.II now links with the <a href="http://www.boost.org/doc/libs/1_55_0/li
 <div class="line"> </div>
 <div class="line">...</div>
 <div class="line"> </div>
-<div class="line">boost::iostreams::filtering_istream in;</div>
-<div class="line">in.push(boost::iostreams::basic_gzip_decompressor&lt;&gt;());</div>
-<div class="line">in.push(boost::iostreams::file_source(<span class="stringliteral">&quot;myfile.gz&quot;</span>));</div>
+<div class="line">boost::iostreams::filtering_istream <a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>;</div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>.push(boost::iostreams::basic_gzip_decompressor&lt;&gt;());</div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a>.push(boost::iostreams::file_source(<span class="stringliteral">&quot;myfile.gz&quot;</span>));</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> i;</div>
-<div class="line">in &gt;&gt; i;</div>
+<div class="line"><span class="keywordtype">int</span> <a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>;</div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a> &gt;&gt; <a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>;</div>
 </div><!-- fragment --> More documentation on how to use BOOST Iostream can be found in the documentation link referenced above. <br  />
  (Wolfgang Bangerth, 2013/12/21)  </li>
 </ol>
@@ -297,7 +297,7 @@ New: deal.II now links with the <a href="http://www.boost.org/doc/libs/1_55_0/li
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: <a class="el" href="classTimer.html">Timer</a> now has get_lap_time() which returns the time lapsed between the last start()/stop() cycle. <br  />
+<p class="startli">New: <a class="el" href="classTimer.html">Timer</a> now has get_lap_time() which returns the time lapsed between the last <a class="el" href="timer__0_8txt.html#a48e9e3a8116df3cc4b62db810904e91f">start()</a>/stop() cycle. <br  />
  (Fahad Alrashed, 2014/11/09) </p>
 <p class="endli"></p>
 </li>
@@ -388,7 +388,7 @@ New: deal.II now links with the <a href="http://www.boost.org/doc/libs/1_55_0/li
 </li>
 <li>
 <p class="startli">New: There is now a <a class="el" href="namespaceGridGenerator.html#afe86bf1a4502131ec811a6de41ab41e9">GridGenerator::flatten_triangulation()</a> taking a Triangulation&lt;dim, spacedim_1&gt; as input and returning a Triangulation&lt;dim, spacedim_2&gt; as output. The output triangulation will contain a single level with all active cells of the input triangulation, and will be topologically equivalent to the input triangulation. If the two space dimensions are equal, then this function will copy the triangulation removing all levels, e.g., flattening it. If the two space dimensions are different, then this function will copy the vertices only up to the smallest space dimension parameter. <br  />
- Using this function, you can create a Triangulation&lt;2,3&gt; from a Triangulation&lt;2,2&gt; or project to the plane z=0 your Triangulation&lt;2,3&gt;. No checks are performed on the validity of the resulting <a class="el" href="classTriangulation.html">Triangulation</a>. <br  />
+ Using this function, you can create a <a class="el" href="classTriangulation.html">Triangulation&lt;2,3&gt;</a> from a Triangulation&lt;2,2&gt; or project to the plane z=0 your <a class="el" href="classTriangulation.html">Triangulation&lt;2,3&gt;</a>. No checks are performed on the validity of the resulting <a class="el" href="classTriangulation.html">Triangulation</a>. <br  />
  (Luca Heltai, 2014/08/19) </p>
 <p class="endli"></p>
 </li>
@@ -414,7 +414,7 @@ New: deal.II now links with the <a href="http://www.boost.org/doc/libs/1_55_0/li
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: The new class <a class="el" href="classFunctionManifold.html">FunctionManifold</a> allows arbitrary manifold descriptions, in which you have an explicit Function&lt;chartdim&gt; for the <a class="el" href="namespaceOpenCASCADE.html#a20fe08fce46ef1e86665c9c50cc96684">ManifoldChart::push_forward()</a> method, and an explicit Function&lt;spacedim&gt; for <a class="el" href="namespacePhysics_1_1Transformations_1_1Contravariant.html#a7c5aa0400236cfe10c6967247d5c6ddb">ManifoldChart::pull_back()</a> method (or an expression for both). In these cases, you can construct a <a class="el" href="classManifold.html">Manifold</a> description on the fly. <br  />
+<p class="startli">New: The new class <a class="el" href="classFunctionManifold.html">FunctionManifold</a> allows arbitrary manifold descriptions, in which you have an explicit Function&lt;chartdim&gt; for the ManifoldChart::push_forward() method, and an explicit <a class="el" href="classFunction.html">Function&lt;spacedim&gt;</a> for ManifoldChart::pull_back() method (or an expression for both). In these cases, you can construct a <a class="el" href="classManifold.html">Manifold</a> description on the fly. <br  />
  (Luca Heltai, 2014/08/07) </p>
 <p class="endli"></p>
 </li>
@@ -515,7 +515,7 @@ New: deal.II now links with the <a href="http://www.boost.org/doc/libs/1_55_0/li
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: There are now functions <a class="el" href="classTriangulation.html#af18ca78a1810d5dcdd214a56d9518025">Triangulation::has_hanging_nodes()</a> and <a class="el" href="classTriangulation.html#af18ca78a1810d5dcdd214a56d9518025">parallel::distributed::Triangulation::has_hanging_nodes()</a>. <br  />
+<p class="startli">New: There are now functions <a class="el" href="classTriangulation.html#af18ca78a1810d5dcdd214a56d9518025">Triangulation::has_hanging_nodes()</a> and <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html#a11677987ca8ad5bcc4ab77e8916dcc62">parallel::distributed::Triangulation::has_hanging_nodes()</a>. <br  />
  (Denis Davydov, 2014/06/15) </p>
 <p class="endli"></p>
 </li>
@@ -620,7 +620,7 @@ New: deal.II now links with the <a href="http://www.boost.org/doc/libs/1_55_0/li
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Changed: operator&lt; for cell iterators no longer looks at (level-)subdomain ids but only compares <a class="el" href="grid__out_8cc.html#a9082f945c1d289684d0bcd51ee08e11e">level()</a> and index(). This makes the ordering inconsistent between processes on a <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html">parallel::distributed::Triangulation</a>, but fixes the problem that the ordering of cells changes under mesh refinement or other causes for changing the subdomain id. <br  />
+<p class="startli">Changed: operator&lt; for cell iterators no longer looks at (level-)subdomain ids but only compares <a class="el" href="mg__0_8txt.html#a1f7a91126f3fe8004760adfc52fc5dbe">level()</a> and <a class="el" href="scalapack__0_8txt.html#abc6ecee32660d1fa6d6157325220179a">index()</a>. This makes the ordering inconsistent between processes on a <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html">parallel::distributed::Triangulation</a>, but fixes the problem that the ordering of cells changes under mesh refinement or other causes for changing the subdomain id. <br  />
  (Timo Heister, 2014/04/08) </p>
 <p class="endli"></p>
 </li>
@@ -790,7 +790,7 @@ New: deal.II now links with the <a href="http://www.boost.org/doc/libs/1_55_0/li
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed/new: <a class="el" href="classDoFCellAccessor.html#a75d5a3e00541638a146c531f3c5820f8">DoFCellAccessor::set_dof_values_by_interpolation</a> and <a class="el" href="classDoFCellAccessor.html#acfbcb614074b264694b827d9b6e29cda">DoFCellAccessor::get_interpolated_dof_values</a> could previously be called for <a class="el" href="group__dofs.html#ga768cd565b5c25f1ac235586e36ac94d6">hp::DoFHandler</a> objects on cells that are non-active. This makes no sense since these cells have no associated finite element space. Doing so now raises an exception. <br  />
+<p class="startli">Fixed/new: <a class="el" href="classDoFCellAccessor.html#accf660b09b5b05d80befa10ddfa928fa">DoFCellAccessor::set_dof_values_by_interpolation</a> and <a class="el" href="classDoFCellAccessor.html#a75210f15c0f8f837325de80792660c33">DoFCellAccessor::get_interpolated_dof_values</a> could previously be called for <a class="el" href="group__dofs.html#ga768cd565b5c25f1ac235586e36ac94d6">hp::DoFHandler</a> objects on cells that are non-active. This makes no sense since these cells have no associated finite element space. Doing so now raises an exception. <br  />
  However, there are legitimate cases where one may want to interpolate from children to a parent's finite element space or the other way around. Since in the hp case no finite element space is naturally associated with an inactive cell, it is now possible to pass an explicit finite element index argument to these functions specifying which element of an <a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a> object describes the space onto which you want to interpolate. <br  />
  (Mihai Alexe, Wolfgang Bangerth, 2014/01/18) </p>
 <p class="endli"></p>
@@ -859,6 +859,8 @@ New: deal.II now links with the <a href="http://www.boost.org/doc/libs/1_55_0/li
 </ol>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
+<div class="ttc" id="apolynomial__0_8txt_html_af1258c87f1d73d29bd17331843ac1d25"><div class="ttname"><a href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a></div><div class="ttdeci">namespace in which classes relating to the description of d polynomial spaces are declared ***Base class for all D polynomials A polynomial is represented in this class by its coefficients which are set through the constructor or by derived classes There are two paths for evaluation of polynomials One is based on the coefficients which are evaluated through the Horner scheme which is a robust general purpose scheme An alternative and more stable evaluation of high degree polynomials with roots in the unit interval is provided by a product in terms of the roots This form is available for special polynomials such as Lagrange polynomials or Legendre polynomials and used with the respective constructor To obtain this more stable evaluation form the constructor with the roots in form of a Lagrange polynomial must be used In case a manipulation is done that changes the roots the representation is switched to the coefficient form This class is a typical example of a possible template argument for the TensorProductPolynomials class **Constructor The coefficients of the polynomial are passed as and denote the i e the first element of the array denotes the constant the second the linear and so on The degree of the polynomial represented by this object is thus the number of elements in the&lt; tt &gt; coefficient&lt;/tt &gt; array minus one **Constructor creating a zero polynomial of degree *[2.x.3] *Constructor for a Lagrange polynomial and its point of evaluation The idea is to where j is the evaluation point specified as argument and the support points contain all the evaluation is based on products of the whereas the Horner scheme is used for polynomials in the coefficient form **Return the values and the derivatives of the Polynomial at point&lt; tt &gt; x&lt;/tt &gt;&lt; tt &gt; i</div><div class="ttdef"><b>Definition:</b> <a href="polynomial__0_8txt_source.html#l00024">polynomial_0.txt:24</a></div></div>
+<div class="ttc" id="acoding__conventions__0_8txt_html_ad83f9d9d8b603ed71c3483de199bc7a7"><div class="ttname"><a href="coding__conventions__0_8txt.html#ad83f9d9d8b603ed71c3483de199bc7a7">in</a></div><div class="ttdeci">their purpose is merely to keepdeal II as uniform as possible Uniformity reduces the number of bugs weproduce because we for always assume that input arguments comebefore output arguments of a function call They also simplify reading codebecause some things become clear already by looking at the style a piece ofcode is without having to look up the exact definition of something **deal II uses[2.x.2] to normalize indentation Astyle file is provided at ***Before a you should run **on each of your files This will make sure indentation is conforming to thestyle guidelines outlined in this page *This is cumbersome and more you can just run **in whatever directory you set up the library to be compiled in</div><div class="ttdef"><b>Definition:</b> <a href="coding__conventions__0_8txt_source.html#l00013">coding_conventions_0.txt:13</a></div></div>
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

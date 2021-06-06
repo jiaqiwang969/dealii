@@ -1,0 +1,71 @@
+[0.x.0]*
+ A class that represents a set of iterators each of which are incremented by one at the same time. This is typically used in calls like  [2.x.0]  where we have synchronous iterators marching through the containers  [2.x.1] . If an object of this type represents the end of a range, only the first element is considered (we only have  [2.x.2] , not  [2.x.3] ). An example of how this class is used is given in  [2.x.4] .
+*  The template argument of the current class shall be of type  [2.x.5]  with arguments equal to the iterator types.
+*  The individual iterators can be accessed using  [2.x.6]  where X is the number corresponding to the desired iterator.
+*  This type, and the helper functions associated with it, are used as the Value concept for the blocked_range type of the Threading Building Blocks.
+
+* 
+* [0.x.1]*
+   Constructor.  
+* [0.x.2]*
+   Dereference const operator. Returns a const reference to the iterators   represented by the current class.  
+* [0.x.3]*
+   Dereference operator. Returns a reference to the iterators   represented by the current class.  
+* [0.x.4]*
+   Storage for the iterators represented by the current class.  
+* [0.x.5]*
+ Return whether the first element of the first argument is less than the first element of the second argument. Since the objects compared march forward all elements at the same time, comparing the first element is sufficient.
+*   [2.x.7]  SynchronousIterators
+
+* 
+* [0.x.6]*
+ Return the distance between the first and the second argument. Since the objects compared march forward all elements at the same time, differencing the first element is sufficient.
+*   [2.x.8]  SynchronousIterators
+
+* 
+* [0.x.7]*
+ Advance a tuple of iterators by  [2.x.9] .
+*   [2.x.10]  SynchronousIterators
+
+* 
+* [0.x.8]*
+ Advance a tuple of iterators by  [2.x.11] .
+*   [2.x.12]  SynchronousIterators
+
+* 
+* [0.x.9]*
+ Advance a tuple of iterators by  [2.x.13] .
+*   [2.x.14]  SynchronousIterators
+
+* 
+* [0.x.10]*
+ Advance a tuple of iterators by 1.
+*   [2.x.15]  SynchronousIterators
+
+* 
+* [0.x.11]*
+ Advance a tuple of iterators by 1.
+*   [2.x.16]  SynchronousIterators
+
+* 
+* [0.x.12]*
+ Advance a tuple of iterators by 1.
+*   [2.x.17]  SynchronousIterators
+
+* 
+* [0.x.13]*
+ Advance the elements of this iterator by  [2.x.18] .
+*   [2.x.19]  SynchronousIterators
+
+* 
+* [0.x.14]*
+ Advance the elements of this iterator by 1.
+*   [2.x.20]  SynchronousIterators
+
+* 
+* [0.x.15]*
+ Compare synch iterators for inequality. Since they march in synch, comparing only the first element is sufficient.
+*   [2.x.21]  SynchronousIterators
+
+* 
+* [0.x.16]

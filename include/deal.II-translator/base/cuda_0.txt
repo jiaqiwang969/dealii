@@ -1,0 +1,33 @@
+[0.x.0]*
+   A namespace for utility structures for CUDA.  
+* [0.x.1]*
+     Various CUDA APIs need an object to store internal data. This structure     creates, initializes, stores, and destroys these so-called handles for     the respective CUDA libraries used inside deal.II.    
+* [0.x.2]*
+       Constructor. Initialize the handles for the different libraries.      
+* [0.x.3]*
+       Copy constructor is deleted.      
+* [0.x.4]*
+       Destructor. Destroy the handles.      
+* [0.x.5]*
+       Pointer to an opaque cuSolverDN context.       The handle must be passed to every cuSolverDN library function.      
+* [0.x.6]*
+       Pointer to an opaque cuSolverSP context.       The handle must be passed to every cuSolverSP library function.      
+* [0.x.7]*
+       Pointer to an opaque cuSPARSE context.       The handle must be passed to every cuSPARSE library function.      
+* [0.x.8]*
+     Allocate  [2.x.0]  on the device.    
+* [0.x.9]*
+     Free memory on the device.    
+* [0.x.10]*
+     Allocator to be used for  [2.x.1]  pointing to device memory.    
+* [0.x.11]*
+     Deleter to be used for  [2.x.2]  pointing to device memory.    
+* [0.x.12]*
+     Copy the device ArrayView  [2.x.3]  to the host ArrayView  [2.x.4]     
+* [0.x.13]*
+     Copy the host ArrayView  [2.x.5]  to the device ArrayView  [2.x.6]     
+* [0.x.14]*
+     Copy the elements in  [2.x.7]  to the host in  [2.x.8]     
+* [0.x.15]*
+     Copy the elements in  [2.x.9]  to the device in  [2.x.10]  The     memory needs to be allocate on the device before this function is called.    
+* [0.x.16]

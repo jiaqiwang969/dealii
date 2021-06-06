@@ -1,0 +1,169 @@
+[0.x.0]*
+ Base class for the implementation of overlapping, multiplicative Schwarz relaxation methods and smoothers.
+*  This class uses the infrastructure provided by PreconditionBlockBase. It adds functions to initialize with a block list and to do the relaxation step. The actual relaxation method with the interface expected by SolverRelaxation and MGSmootherRelaxation is in the derived classes.
+*  This class allows for more general relaxation methods than PreconditionBlock, since the index sets may be arbitrary and overlapping, while there only contiguous, disjoint sets of equal size are allowed. As a drawback, this class cannot be used as a preconditioner, since its implementation relies on a straight forward implementation of the Gauss- Seidel process.
+*  Parallel computations require you to specify an initialized ghost vector in  [2.x.0] 
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+   Define number type of matrix.  
+* [0.x.2]*
+   Value type for inverse matrices.  
+* [0.x.3]*
+   Declare type for container size.  
+* [0.x.4]*
+   Parameters for block relaxation methods. In addition to typical control   parameters like #relaxation, this object also contains the block   structure in #block_list and an optional ordering of the blocks in   #order.  
+* [0.x.5]*
+     Constructor.    
+* [0.x.6]*
+     The mapping from indices to blocks. Each row of this pattern enumerates     the indices constituting a diagonal block to be inverted.    
+* [0.x.7]*
+     Relaxation parameter.    
+* [0.x.8]*
+     Invert diagonal during initialization. Alternatively, diagonal blocks     are inverted on the fly, whenever they are used. While inverting blocks     in advance requires more memory, it usually saves a lot of computation.     See #same_diagonal on how you can avoid memory overhead.    
+* [0.x.9]*
+     Assume all diagonal blocks are equal to save memory. If this flag is     true, then only the first diagonal block of the matrix is inverted and     stored. It is then used for all other blocks.         \note Avoid setting this true if your blocks are not equal, in     particular if their sizes differ.    
+* [0.x.10]*
+     Choose the inversion method for the blocks.    
+* [0.x.11]*
+     If #inversion is SVD, we can compute the Penrose-Moore inverse of the     blocks. In order to do so, we can specify here the threshold below     which a singular value will be considered zero and thus not inverted.     Setting this parameter to a value greater than zero takes precedence over     threshold, i.e. kernel_size must be zero if you want to use threshold.     This parameter is used in the call to      [2.x.2]     
+* [0.x.12]*
+     If #inversion is SVD, we can compute the Penrose-Moore inverse of the     blocks. In order to do so, we can specify here the size of the kernel     that will not be inverted but considered zero. Setting this parameter     to a value greater than zero takes precedence over threshold, i.e.     kernel_size must be zero if you want to use threshold.     This parameter is used in the call to      [2.x.3]     
+* [0.x.13]*
+     The order in which blocks should be traversed. This vector can initiate     several modes of execution:          [2.x.4]           [2.x.5] If the length of the vector is zero, then the relaxation method     will be executed from first to last block. [2.x.6]           [2.x.7]  If the length is one, then the inner vector must have the same     size as the number of blocks. The relaxation method is applied in the     order given in this vector. [2.x.8]           [2.x.9]  If the outer vector has length greater one, then the relaxation     method is applied several times, each time in the order given by the     inner vector of the corresponding index. This mode can for instance be     used for ADI methods and similar direction sweeps. [2.x.10]           [2.x.11]     
+* [0.x.14]*
+     Temporary ghost vector that is used in the relaxation method when     performing parallel MPI computations. The user is required to have this     point to an initialized vector that contains all indices     that appear in the  [2.x.12]  sa ghost values. Typically, this the     set of locally active level DoFs. Unused when VectorType is a serial     vector type like Vector<double>.    
+* [0.x.15]*
+     Return the memory allocated in this object.    
+* [0.x.16]*
+   Initialize matrix and additional information. In a second step, the   inverses of the diagonal blocks may be computed.     Note that AdditionalData, different from other preconditioners, defines   quite large objects, and that therefore the object is not copied, but   rather a pointer is stored. Thus, the lifetime of    [2.x.13]  hast to exceed the lifetime of this object.  
+* [0.x.17]*
+   Deletes the inverse diagonal block matrices if existent, sets the   blocksize to 0, hence leaves the class in the state that it had directly   after calling the constructor.  
+* [0.x.18]*
+   Stores the inverse of the diagonal blocks in  [2.x.14]  This costs some   additional memory
+* 
+*  - for DG methods about 1/3 (for double inverses) or 1/6   (for float inverses) of that used for the matrix
+* 
+*  - but it makes the   preconditioning much faster.     It is not allowed to call this function twice (will produce an error)   before a call of <tt>clear(...)</tt> because at the second time there   already exist the inverse matrices.     After this function is called, the lock on the matrix given through the    [2.x.15]  function is released, i.e. you may overwrite of delete it.   You may want to do this in case you use this matrix to precondition   another matrix.  
+* [0.x.19]*
+   Perform one block relaxation step.     Depending on the arguments  [2.x.16]  and  [2.x.17]  this performs an SOR step   (both reference the same vector) or a Jacobi step (both are different   vectors). For the Jacobi step, the calling function must copy  [2.x.18]  to    [2.x.19]  after this.  
+* [0.x.20]*
+   Pointer to the matrix. Make sure that the matrix exists as long as this   class needs it, i.e. until calling  [2.x.20]  or (if the   inverse matrices should not be stored) until the last call of the   preconditioning  [2.x.21]  function of the derived classes.  
+* [0.x.21]*
+   Control information.  
+* [0.x.22]*
+   Computes (the inverse of) a range of blocks.  
+* [0.x.23]*
+ Block Jacobi (additive Schwarz) method with possibly overlapping blocks.
+*  This class implements the step() and Tstep() functions expected by the  [2.x.22]  "relaxation concept". They perform an additive Schwarz method on the blocks provided in the block list of AdditionalData. Differing from PreconditionBlockJacobi, these blocks may be of varying size, non- contiguous, and overlapping. On the other hand, this class does not implement the preconditioner interface expected by Solver objects.
+* 
+
+* 
+*  [2.x.23] 
+
+* 
+* [0.x.24]*
+   Default constructor.  
+* [0.x.25]*
+   Define number type of matrix.  
+* [0.x.26]*
+   Make type publicly available.  
+* [0.x.27]*
+   Make initialization function publicly available.  
+* [0.x.28]*
+   Make function of base class public again.  
+* [0.x.29]*
+   Make function of base class public again.  
+* [0.x.30]*
+   Make function of base class public again.  
+* [0.x.31]*
+   Make function of base class public again.  
+* [0.x.32]*
+   Make function of base class public again.  
+* [0.x.33]*
+   Make function of base class public again.  
+* [0.x.34]*
+   Perform one step of the Jacobi iteration.  
+* [0.x.35]*
+   Perform one step of the Jacobi iteration.  
+* [0.x.36]*
+   Implements a vmult() operation, which for this class first sets the dst()   vector to zero before calling the step() method.  
+* [0.x.37]*
+   Implements a transpose vmult operation, which for this class first sets   the dst() vector to zero before calling the Tstep() method.  
+* [0.x.38]*
+ Block Gauss-Seidel method with possibly overlapping blocks.
+*  This class implements the step() and Tstep() functions expected by the  [2.x.24]  "relaxation concept". They perform a multiplicative Schwarz method on the blocks provided in the block list of AdditionalData.  Differing from PreconditionBlockSOR, these blocks may be of varying size, non-contiguous, and overlapping. On the other hand, this class does not implement the preconditioner interface expected by Solver objects.
+* 
+
+* 
+*  [2.x.25] 
+
+* 
+* [0.x.39]*
+   Default constructor.  
+* [0.x.40]*
+   Define number type of matrix.  
+* [0.x.41]*
+   Make type publicly available.  
+* [0.x.42]*
+   Make initialization function publicly available.  
+* [0.x.43]*
+   Make function of base class public again.  
+* [0.x.44]*
+   Make function of base class public again.  
+* [0.x.45]*
+   Make function of base class public again.  
+* [0.x.46]*
+   Make function of base class public again.  
+* [0.x.47]*
+   Make function of base class public again.  
+* [0.x.48]*
+   Make function of base class public again.  
+* [0.x.49]*
+   Perform one step of the SOR iteration.  
+* [0.x.50]*
+   Perform one step of the transposed SOR iteration.  
+* [0.x.51]*
+   Implements a vmult() operation, which for this class first sets the dst()   vector to zero before calling the step() method.  
+* [0.x.52]*
+   Implements a transpose vmult operation, which for this class first sets   the dst() vector to zero before calling the Tstep() method.  
+* [0.x.53]*
+ Symmetric block Gauss-Seidel method with possibly overlapping blocks.
+*  This class implements the step() and Tstep() functions expected by the  [2.x.26]  "relaxation concept". They perform a multiplicative Schwarz method on the blocks provided in the block list of AdditionalData in symmetric fashion. Differing from PreconditionBlockSSOR, these blocks may be of varying size, non-contiguous, and overlapping. On the other hand, this class does not implement the preconditioner interface expected by Solver objects.
+* 
+
+* 
+*  [2.x.27] 
+
+* 
+* [0.x.54]*
+   Define number type of matrix.  
+* [0.x.55]*
+   Make type publicly available.  
+* [0.x.56]*
+   Make initialization function publicly available.  
+* [0.x.57]*
+   Make function of base class public again.  
+* [0.x.58]*
+   Make function of base class public again.  
+* [0.x.59]*
+   Make function of base class public again.  
+* [0.x.60]*
+   Make function of base class public again.  
+* [0.x.61]*
+   Make function of base class public again.  
+* [0.x.62]*
+   Make function of base class public again.  
+* [0.x.63]*
+   Perform one step of the SSOR iteration.  
+* [0.x.64]*
+   Perform one step of the transposed SSOR iteration.  
+* [0.x.65]*
+   Implements a vmult() operation, which for this class first sets the dst()   vector to zero before calling the step() method.  
+* [0.x.66]*
+   Implements a transpose vmult operation, which for this class first sets   the dst() vector to zero before calling the Tstep() method.  
+* [0.x.67]

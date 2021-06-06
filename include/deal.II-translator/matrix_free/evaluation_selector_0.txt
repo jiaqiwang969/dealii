@@ -1,0 +1,9 @@
+[0.x.0]*
+ This class chooses an appropriate evaluation strategy based on the template parameters and the shape_info variable, providing a short-cut to some internal functions.
+
+* 
+* [0.x.1]*
+   Chooses an appropriate evaluation strategy for the evaluate function, i.e.   this calls  [2.x.0]     [2.x.1]  or    [2.x.2]  with   appropriate template parameters.  
+* [0.x.2]*
+   Chooses an appropriate evaluation strategy for the integrate function, i.e.   this calls  [2.x.3]     [2.x.4]  or    [2.x.5]  with   appropriate template parameters.  
+* [0.x.3]

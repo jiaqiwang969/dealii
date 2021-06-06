@@ -1,0 +1,25 @@
+[0.x.0]*
+   An abstract base class for a scalar-valued function  [2.x.0]    defined in spherical coordinates. This class wraps transformation of   values, gradients and hessians from spherical coordinates to the Cartesian   coordinate system used by the Function base class. Therefore derived   classes only need to implement those functions in spherical coordinates   (specifically svalue(), sgradient() and shessian() ). The convention for   angles is the same as in  [2.x.1]     
+*  [2.x.2]  This function is currently only implemented for dim==3 .    
+*  [2.x.3]   
+* [0.x.1]*
+     Constructor which should be provided with  [2.x.4]  defining the origin     of the coordinate system.         Note that components of this function are treated as entirely separate     quantities
+* 
+*  -  not as the components of a vector that will be     re-interpreted in a different coordinate system.    
+* [0.x.2]*
+     Return the value of the function at the given point.         This function converts the given point to spherical coordinates,     calls svalue() with it, and returns the result.    
+* [0.x.3]*
+     Return the gradient with respect to the Cartesian coordinates at point  [2.x.5]          This function converts the given point to spherical coordinates,     calls sgradient() with it, and converts the result into Cartesian     coordinates.    
+* [0.x.4]*
+     Return the Hessian with respect to the Cartesian coordinates at point  [2.x.6]          This function converts the given point to spherical coordinates,     calls sgradient and shessian() with it, and converts the result into     Cartesian coordinates.    
+* [0.x.5]*
+     Return an estimate for the memory consumption, in bytes, of this object.    
+* [0.x.6]*
+     Return the value at point  [2.x.7]  Here,  [2.x.8]  is provided in spherical     coordinates.    
+* [0.x.7]*
+     Return the gradient in spherical coordinates.         The returned object should contain derivatives in the following order:      [2.x.9] .    
+* [0.x.8]*
+     Return the Hessian in spherical coordinates.         The returned object should contain derivatives in the following order:      [2.x.10] .    
+* [0.x.9]*
+     A vector from the origin to the center of spherical coordinate system.    
+* [0.x.10]

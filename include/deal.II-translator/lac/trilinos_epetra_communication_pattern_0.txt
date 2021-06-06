@@ -1,0 +1,15 @@
+[0.x.0]*
+     This class implements a wrapper to a Trilinos Epetra_Import object,     for use in places where a  [2.x.0]  object     is required.    
+* [0.x.1]*
+       Initialize the communication pattern. The first argument  [2.x.1]        vector_space_vector_index_set is the index set associated to a       VectorSpaceVector object. The second argument  [2.x.2]        read_write_vector_index_set is the index set associated to a       ReadWriteVector object.      
+* [0.x.2]*
+       Reinitialize the object.      
+* [0.x.3]*
+       Return the underlying MPI communicator.      
+* [0.x.4]*
+       Return the underlying Epetra_Import object.      
+* [0.x.5]*
+       Shared pointer to the MPI communicator used.      
+* [0.x.6]*
+       Shared pointer to the Epetra_Import object used.      
+* [0.x.7]

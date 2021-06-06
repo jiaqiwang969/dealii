@@ -1,0 +1,28 @@
+[0.x.0]*
+ A namespace with repartitioning policies. These classes return vectors of of the new owners of the active locally owned and ghost cells of a Triangulation object. The returned vectors can be used, e.g., in  [2.x.0]  to create a  [2.x.1]  based on a given Triangulation and the predescribed partition, which can be used to set up a  [2.x.2]  objects.
+*  These policies can be also used in context of  [2.x.3]  to prescribe arbitrary partitioning in multgrid levels of global coarsening multigrid schmeme.
+
+* 
+* [0.x.1]*
+   A base class of a repartitioning policy.  
+* [0.x.2]*
+     Return a vector of the new owners of the active locally owned and ghost     cells.    
+* [0.x.3]*
+   A dummy policy that simply returns an empty vector, which is interpreted   in  [2.x.4]    in a way that the triangulation is not repartitioned.  
+* [0.x.4]*
+   A policy that partitions coarse grids based on a base triangulation   according to a first-child policy. The triangulation to be partitioned   should be able to be obtained by a sequence of (global) coarsening steps.  
+* [0.x.5]*
+     Constructor taking the base (fine) triangulation.    
+* [0.x.6]*
+     Number of coarse cells.    
+* [0.x.7]*
+     Number of global levels.    
+* [0.x.8]*
+     Index set constructed from the triangulation passed to the constructor.     It contains all the cells that would be owned by the current process     if the levels would be partitioned according to a first-child policy.    
+* [0.x.9]*
+   A policy that allows to specify a minimal number of cells per process. If   a threshold is reached, processes might be left without cells.  
+* [0.x.10]*
+     Constructor taking the minimum number of cells per process.    
+* [0.x.11]*
+     Minimum number of cells per process.    
+* [0.x.12]

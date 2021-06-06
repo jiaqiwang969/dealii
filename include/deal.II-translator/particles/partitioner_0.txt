@@ -1,0 +1,21 @@
+[0.x.0]*
+     Cache structure used to store the elements which are required to     exchange the particle information (location and properties) across     processors in order to update the ghost particles.         This structure should only be used when one wishes to carry out work     using the particles without calling     sort_particles_into_subdomain_and_cells at every iteration. This is     useful when particle-particle interaction occurs at a different time     scale than particle-mesh interaction.    
+* [0.x.1]*
+       A type that can be used to iterate over all particles in the domain.      
+* [0.x.2]*
+       Indicates if the cache has been built to prevent updating particles       with an invalid cache.      
+* [0.x.3]*
+       Vector of the subdomain id of all possible neighbors of the current       subdomain.      
+* [0.x.4]*
+       Vector of size (neighbors.size()+1) used to store the start and the       end point of the data that must go from the current subdomain to the       neighbors. For neighbor i, send_pointers[i] indicates the beginning       and send_pointers[i+1] indicates the end of the data that must be       sent.      
+* [0.x.5]*
+       Set of particles that currently live in the ghost cells of the local       domain, organized by the subdomain_id. These       particles are equivalent to the ghost entries in distributed vectors.      
+* [0.x.6]*
+       Vector of size (neighbors.size()+1) used to store the start and the       end point of the data that must be received from neighbor[i] on       the current subdomain. For neighbor i, recv_pointers[i] indicate the       beginning and recv_pointers[i+1] indicates the end of the data that       must be received.             This structure is similar to        [2.x.0]  when combined with       neighbors.      
+* [0.x.7]*
+       Vector of ghost particles in the order in which they are inserted       in the multimap used to store particles on the triangulation. This       information is used to update the ghost particle information       without clearing the multimap of ghost particles, thus greatly       reducing the cost of exchanging the ghost particles information.      
+* [0.x.8]*
+       Temporary storage that holds the data of the particles to be sent       to other processors to update the ghost particles information       in update_ghost_particles()       send_recv_particles_properties_and_location()      
+* [0.x.9]*
+       Temporary storage that holds the data of the particles to receive       the ghost particles information from other processors in       update_ghost_particles()       send_recv_particles_properties_and_location()      
+* [0.x.10]

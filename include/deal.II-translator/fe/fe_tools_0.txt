@@ -1,0 +1,227 @@
+[0.x.0]*
+ This namespace offers interpolations and extrapolations of discrete functions of one  [2.x.0]   [2.x.1]  to another  [2.x.2]   [2.x.3]  fe2.
+*  It also provides the local interpolation matrices that interpolate on each cell. Furthermore it provides the difference matrix  [2.x.4]  that is needed for evaluating  [2.x.5]  for e.g. the dual solution  [2.x.6] .
+*  For more information about the <tt>spacedim</tt> template parameter check the documentation of FiniteElement or the one of Triangulation.
+
+* 
+* [0.x.1]*
+   A base class for factory objects creating finite elements of a given   degree. Derived classes are called whenever one wants to have a   transparent way to create a finite element object.     This class is used in the  [2.x.7]  and    [2.x.8]  functions.  
+* [0.x.2]*
+     Create a FiniteElement and return a pointer to it.    
+* [0.x.3]*
+     Create a FiniteElement from a quadrature formula (currently only     implemented for FE_Q) and return a pointer to it.    
+* [0.x.4]*
+     Virtual destructor doing nothing but making the compiler happy.    
+* [0.x.5]*
+   A concrete class for factory objects creating finite elements of a given   degree.     The class's get() function generates a finite element object of the type   given as template argument, and with the degree (however the finite   element class wishes to interpret this number) given as argument to   get().  
+* [0.x.6]*
+     Create a FiniteElement and return a pointer to it.    
+* [0.x.7]*
+     Create a FiniteElement from a quadrature formula (currently only     implemented for FE_Q) and return a pointer to it.    
+* [0.x.8]*
+    [2.x.9]  In most cases, you will probably want to use   compute_base_renumbering().     Compute the vector required to renumber the dofs of a cell by component.   Furthermore, compute the vector storing the start indices of each   component in the local block vector.     The second vector is organized such that there is a vector for each base   element containing the start index for each component served by this base   element.     While the first vector is checked to have the correct size, the second   one is reinitialized for convenience.  
+* [0.x.9]*
+   Compute the vector required to renumber the dofs of a cell by block.   Furthermore, compute the vector storing either the start indices or the   size of each local block vector.     If the  [2.x.10]  parameter is true,  [2.x.11]  is filled with the start   indices of each local block. If it is false, then the block sizes are   returned.     The vector <tt>renumbering</tt> will be indexed by the standard numbering   of local degrees of freedom, namely the first vertex, then the second   vertex, after vertices lines, quads, and hexes. For each index, the entry   indicates the index which this degree of freedom receives in a numbering   scheme, where the first block is numbered completely before the second.  
+* [0.x.10]*
+    [2.x.12]  Generation of local matrices    [2.x.13]   
+* [0.x.11]*
+   Compute the interpolation matrix that interpolates a  [2.x.14]  to a    [2.x.15]  on each cell. The interpolation_matrix needs to be of   size <tt>(fe2.n_dofs_per_cell(), fe1.n_dofs_per_cell())</tt>.     Note, that if the finite element space  [2.x.16]  is a subset of the finite   element space  [2.x.17]  then the  [2.x.18]  is an embedding   matrix.  
+* [0.x.12]*
+   Compute the interpolation matrix that interpolates a  [2.x.19]  to a    [2.x.20]  and interpolates this to a second  [2.x.21]  on   each cell. The interpolation_matrix needs to be of size   <tt>(fe1.n_dofs_per_cell(), fe1.n_dofs_per_cell())</tt>.     Note, that this function only makes sense if the finite element space due   to  [2.x.22]  is not a subset of the finite element space due to  [2.x.23]  as   if it were a subset then the  [2.x.24]  would be only the   unit matrix.  
+* [0.x.13]*
+   Compute the identity matrix minus the back interpolation matrix.   The  [2.x.25]  will be of size <tt>(fe1.n_dofs_per_cell(),   fe1.n_dofs_per_cell())</tt> after this function. Previous content   of the argument will be overwritten.     This function computes the matrix that transforms a  [2.x.26]  function  [2.x.27]  to    [2.x.28]  where  [2.x.29]  denotes the interpolation operator from the  [2.x.30]    space to the  [2.x.31]  space. This matrix hence is useful to evaluate   error-representations where  [2.x.32]  denotes the dual solution.  
+* [0.x.14]*
+   Compute the local  [2.x.33] -projection matrix from fe1 to fe2.  
+* [0.x.15]*
+   This is a rather specialized function used during the construction of   finite element objects. It is used to build the basis of shape functions   for an element, given a set of polynomials and interpolation points. The   function is only implemented for finite elements with exactly  [2.x.34]    vector components. In particular, this applies to classes derived from   the FE_PolyTensor class.     Specifically, the purpose of this function is as follows: FE_PolyTensor   receives, from its derived classes, an argument that describes a polynomial   space. This space may be parameterized in terms of monomials, or in some   other way, but is in general not in the form that we use for finite   elements where we typically want to use a basis that is derived from   some kind of node functional (e.g., the interpolation at specific points).   Concretely, assume that the basis used by the polynomial space is    [2.x.35] , and that the node functionals   of the finite element are  [2.x.36] . We then want to compute a   basis  [2.x.37]  for the finite element space so   that  [2.x.38] . To do this, we can set    [2.x.39]    where we need to determine the expansion coefficients  [2.x.40] . We do this   by applying  [2.x.41]  to both sides of the equation, to obtain  
+* [1.x.0]
+*    and we know that the left hand side equals  [2.x.42] .   If you think of this as a system of  [2.x.43]  equations for the   elements of a matrix on the left and on the right, then this can be   written as  
+* [1.x.1]
+*    where  [2.x.44]  is the matrix of coefficients  [2.x.45]  and    [2.x.46] . Consequently, in order to compute   the expansion coefficients  [2.x.47] , we need to apply the node   functionals to all functions of the "raw" basis of the polynomial space.     Until the finite element receives this matrix  [2.x.48]  back, it describes its   shape functions (e.g., in  [2.x.49]  in the form    [2.x.50] . After it calls this function, it has the expansion   coefficients and can describe its shape functions as  [2.x.51] .     This function therefore computes this matrix  [2.x.52] , for the following   specific circumstances:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - That the node functionals  [2.x.53]  are point evaluations at points      [2.x.54]  that the finite element in question describes via its     "generalized" support points (through      [2.x.55]  see also      [2.x.56]  "this glossary entry"). These point     evaluations need to necessarily evaluate the [1.x.2] of a shape     function at that point (the shape function may be vector-valued, and     so the functional may be a linear combination of the individual     components of the values); but, in particular, the nodal functions may     not be [1.x.3] over entire edges or faces,     or other non-local functionals. In other words, we assume that      [2.x.57]      where  [2.x.58]  is a function of the (possibly vector-valued) argument     that returns a scalar.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - That the finite element has exactly  [2.x.59]  vector components.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - That the function  [2.x.60]  is given by whatever the element implements     through the    [2.x.61]      function.      [2.x.62]  fe The finite element for which the operations above are to be          performed.    [2.x.63]  The matrix  [2.x.64]  as discussed above.  
+* [0.x.16]*
+   For all possible (isotropic and anisotropic) refinement cases compute the   embedding matrices from a coarse cell to the child cells. Each column of   the resulting matrices contains the representation of a coarse grid basis   function by the fine grid basis; the matrices are split such that there   is one matrix for every child.     This function computes the coarse grid function in a sufficiently large   number of quadrature points and fits the fine grid functions using least   squares approximation. Therefore, the use of this function is restricted   to the case that the finite element spaces are actually nested.     Note, that  [2.x.65]  includes the   embedding (or prolongation) matrix of child  [2.x.66]  for the   RefinementCase  [2.x.67] . Here, we use    [2.x.68]  as   for  [2.x.69]  there are no prolongation matrices   available.     Typically this function is called by the various implementations of   FiniteElement classes in order to fill the respective    [2.x.70]  matrices.      [2.x.71]  fe The finite element class for which we compute the embedding   matrices.      [2.x.72]  matrices A reference to  [2.x.73]    vectors of FullMatrix objects. Each vector corresponds to one   RefinementCase  [2.x.74]  and is of the vector size    [2.x.75]  This is the format used   in FiniteElement, where we want to use this function mostly.      [2.x.76]  isotropic_only Set to  [2.x.77]  if you only want to   compute matrices for isotropic refinement.      [2.x.78]  threshold is the gap allowed in the least squares algorithm   computing the embedding.  
+* [0.x.17]*
+   Compute the embedding matrices on faces needed for constraint matrices.      [2.x.79]  fe The finite element for which to compute these matrices.      [2.x.80]  matrices An array of [1.x.4] FullMatrix objects,holding the embedding matrix for   each subface.      [2.x.81]  face_coarse The number of the face on the coarse side of the face   for which this is computed.      [2.x.82]  face_fine The number of the face on the refined side of the face   for which this is computed.      [2.x.83]  threshold is the gap allowed in the least squares algorithm   computing the embedding.      [2.x.84]  This function will be used in computing constraint matrices. It   is not sufficiently tested yet.  
+* [0.x.18]*
+   For all possible (isotropic and anisotropic) refinement cases compute the   [1.x.5]-projection matrices from the children to a coarse   cell.     Note, that  [2.x.85]  includes the   projection (or restriction) matrix of child  [2.x.86]  for the   RefinementCase  [2.x.87] . Here, we use    [2.x.88]  as   for  [2.x.89]  there are no projection matrices   available.     Typically this function is called by the various implementations of   FiniteElement classes in order to fill the respective    [2.x.90]  matrices.      [2.x.91]  fe The finite element class for which we compute the projection     matrices.      [2.x.92]  matrices A reference to a set of      [2.x.93]  vectors of FullMatrix     objects. Each vector corresponds to one RefinementCase  [2.x.94]      and is of the vector size      [2.x.95]  This is the     format used in FiniteElement, where we want to use this function mostly.      [2.x.96]  isotropic_only If set to  [2.x.97] , then this     function only computes data for the isotropic refinement case. The     other elements of the output vector are left untouched (but still     exist).  
+* [0.x.19]*
+   Project scalar data defined in quadrature points to a finite element   space on a single cell.     What this function does is the following: assume that there is scalar   data <tt>u<sub>q</sub>, 0 <= q < Q:=quadrature.size()</tt> defined at the   quadrature points of a cell, with the points defined by the given   <tt>rhs_quadrature</tt> object. We may then want to ask for that finite   element function (on a single cell) <tt>v<sub>h</sub></tt> in the finite-   dimensional space defined by the given FE object that is the projection   of <tt>u</tt> in the following sense:     Usually, the projection <tt>v<sub>h</sub></tt> is that function that   satisfies <tt>(v<sub>h</sub>,w)=(u,w)</tt> for all discrete test   functions <tt>w</tt>. In the present case, we can't evaluate the right   hand side, since <tt>u</tt> is only defined in the quadrature points   given by <tt>rhs_quadrature</tt>, so we replace it by a quadrature   approximation. Likewise, the left hand side is approximated using the   <tt>lhs_quadrature</tt> object; if this quadrature object is chosen   appropriately, then the integration of the left hand side can be done   exactly, without any approximation. The use of different quadrature   objects is necessary if the quadrature object for the right hand side has   too few quadrature points
+* 
+*  -  for example, if data <tt>q</tt> is only   defined at the cell center, then the corresponding one-point quadrature   formula is obviously insufficient to approximate the scalar product on   the left hand side by a definite form.     After these quadrature approximations, we end up with a nodal   representation <tt>V<sub>h</sub></tt> of <tt>v<sub>h</sub></tt> that   satisfies the following system of linear equations: <tt>M V<sub>h</sub> =   Q U</tt>, where <tt>M<sub>ij</sub>=(phi_i,phi_j)</tt> is the mass matrix   approximated by <tt>lhs_quadrature</tt>, and <tt>Q</tt> is the matrix   <tt>Q<sub>iq</sub>=phi<sub>i</sub>(x<sub>q</sub>) w<sub>q</sub></tt>   where <tt>w<sub>q</sub></tt> are quadrature weights; <tt>U</tt> is the   vector of quadrature point data <tt>u<sub>q</sub></tt>.     In order to then get the nodal representation <tt>V<sub>h</sub></tt> of   the projection of <tt>U</tt>, one computes <tt>V<sub>h</sub> = X U,   X=M<sup>-1</sup> Q</tt>. The purpose of this function is to compute the   matrix <tt>X</tt> and return it through the last argument of this   function.     Note that this function presently only supports scalar data. An extension   of the mass matrix is of course trivial, but one has to define the order   of data in the vector <tt>U</tt> if it contains vector valued data in all   quadrature points.     A use for this function is described in the introduction to the  [2.x.98]    example program.     The opposite of this function, interpolation of a finite element function   onto quadrature points is essentially what the    [2.x.99]  functions do; to make things a   little simpler, the    [2.x.100]    provides the matrix form of this.     Note that this function works on a single cell, rather than an entire   triangulation. In effect, it therefore doesn't matter if you use a   continuous or discontinuous version of the finite element.     It is worth noting that there are a few confusing cases of this function.   The first one is that it really only makes sense to project onto a finite   element that has at most as many degrees of freedom per cell as there are   quadrature points; the projection of N quadrature point data into a space   with M>N unknowns is well-defined, but often yields funny and non-   intuitive results. Secondly, one would think that if the quadrature point   data is defined in the support points of the finite element, i.e. the   quadrature points of <tt>ths_quadrature</tt> equal   <tt>fe.get_unit_support_points()</tt>, then the projection should be the   identity, i.e. each degree of freedom of the finite element equals the   value of the given data in the support point of the corresponding shape   function. However, this is not generally the case: while the matrix   <tt>Q</tt> in that case is the identity matrix, the mass matrix   <tt>M</tt> is not equal to the identity matrix, except for the special   case that the quadrature formula <tt>lhs_quadrature</tt> also has its   quadrature points in the support points of the finite element.     Finally, this function only defines a cell wise projection, while one   frequently wants to apply it to all cells in a triangulation. However, if   it is applied to one cell after the other, the results from later cells   may overwrite nodal values computed already from previous cells if   degrees of freedom live on the interfaces between cells. The function is   therefore most useful for discontinuous elements.  
+* [0.x.20]*
+   Given a (scalar) local finite element function, compute the matrix that   maps the vector of nodal values onto the vector of values of this   function at quadrature points as given by the second argument. In a   sense, this function does the opposite of the    [2.x.101]  function.  
+* [0.x.21]*
+   Compute the projection of tensorial (first-order tensor) data stored at   the quadrature points  [2.x.102]  to data  [2.x.103]    vector_of_tensors_at_nodes at the support points of the cell.  The data   in  [2.x.104]  is ordered sequentially following the   quadrature point numbering.  The size of  [2.x.105]  must   correspond to the number of columns of  [2.x.106]   The size of    [2.x.107]  must correspond to the number of rows of  [2.x.108]    vector_of_tensors_at_nodes .  The projection matrix  [2.x.109]    describes the projection of scalar data from the quadrature points and   can be obtained from the    [2.x.110]  function.  
+* [0.x.22]*
+   same as last function but for a  [2.x.111]  .  
+* [0.x.23]*
+   This method implements the    [2.x.112]  method for   faces of a mesh.  The matrix that it returns, X, is face specific and its   size is fe.n_dofs_per_cell() by rhs_quadrature.size().  The dimension, dim   must be larger than 1 for this class, since Quadrature<dim-1> objects are   required. See the documentation on the Quadrature class for more   information.  
+* [0.x.24]*
+   Wrapper around    [2.x.113]    that works with arbitrary number types.      [2.x.114]  finite_element The FiniteElement to compute dof values for.    [2.x.115]  support_point_values An array of size  [2.x.116]      (which equals the number of points the get_generalized_support_points()     function will return) where each element is a vector with as many entries     as the element has vector components. This array should contain     the values of a function at the generalized support points of the     finite element.    [2.x.117]  dof_values An array of size  [2.x.118]  that contains     the node functionals of the element applied to the given function.  
+* [0.x.25]*
+    [2.x.119]  Functions which should be in DoFTools  
+* [0.x.26]*
+   Compute the interpolation of a the  [2.x.120]   [2.x.121]  to a  [2.x.122]    dof2-function  [2.x.123]   [2.x.124]  and  [2.x.125]  need to be DoFHandlers based on   the same triangulation.     If the elements  [2.x.126]  and  [2.x.127]  are either both continuous or both   discontinuous then this interpolation is the usual point interpolation.   The same is true if  [2.x.128]  is a continuous and  [2.x.129]  is a discontinuous   finite element. For the case that  [2.x.130]  is a discontinuous and  [2.x.131]  is   a continuous finite element there is no point interpolation defined at   the discontinuities.  Therefore the mean value is taken at the DoF values   on the discontinuities.     Note that for continuous elements on grids with hanging nodes (i.e.   locally refined grids) this function does not give the expected output.   Indeed, the resulting output vector does not necessarily respect   continuity requirements at hanging nodes: if, for example, you are   interpolating a Q2 field to a Q1 field, then at hanging nodes the output   field will have the function value of the input field, which however is   not usually the mean value of the two adjacent nodes. It is thus not part   of the Q1 function space on the whole triangulation, although it is of   course Q1 on each cell.     For this case (continuous elements on grids with hanging nodes), please   use the  [2.x.132]  function with an additional AffineConstraints   object as argument, see below, or make the field conforming yourself   by calling the  [2.x.133]  function of your hanging node constraints   object.  
+* [0.x.27]*
+   Compute the interpolation of a the  [2.x.134]   [2.x.135]  to a  [2.x.136]    dof2-function  [2.x.137]   [2.x.138]  and  [2.x.139]  need to be DoFHandlers based on   the same triangulation.  [2.x.140]  is a hanging node constraints object   corresponding to  [2.x.141]  This object is particular important when   interpolating onto continuous elements on grids with hanging nodes (locally   refined grids).     If the elements  [2.x.142]  and  [2.x.143]  are either both continuous or both   discontinuous then this interpolation is the usual point interpolation.   The same is true if  [2.x.144]  is a continuous and  [2.x.145]  is a discontinuous   finite element. For the case that  [2.x.146]  is a discontinuous and  [2.x.147]  is   a continuous finite element there is no point interpolation defined at   the discontinuities.  Therefore the mean value is taken at the DoF values   at the discontinuities.  
+* [0.x.28]*
+   Compute the interpolation of the  [2.x.148]   [2.x.149]  to a  [2.x.150]    fe2-function, and interpolates this to a second  [2.x.151]  named  [2.x.152]    u1_interpolated.     Note, that this function does not work on continuous elements at hanging   nodes. For that case use the  [2.x.153]  function, below, that   takes an additional  [2.x.154]  object.     Furthermore note, that for the specific case when the finite element   space corresponding to  [2.x.155]  is a subset of the finite element space   corresponding to  [2.x.156]  this function is simply an identity mapping.  
+* [0.x.29]*
+   Compute the interpolation of the  [2.x.157]   [2.x.158]  to a  [2.x.159]    dof2-function, and interpolates this to a second  [2.x.160]  named    [2.x.161]    [2.x.162]  and  [2.x.163]  are the hanging   node constraints corresponding to  [2.x.164]  and  [2.x.165]  respectively.   These objects are particular important when continuous elements on grids   with hanging nodes (locally refined grids) are involved.     Furthermore note, that for the specific case when the finite element   space corresponding to  [2.x.166]  is a subset of the finite element space   corresponding to  [2.x.167]  this function is simply an identity mapping.  
+* [0.x.30]*
+   Compute  [2.x.168]  for a given  [2.x.169]   [2.x.170] , where  [2.x.171]  is   the interpolation from  [2.x.172]  to  [2.x.173]  The result  [2.x.174]  is   written into  [2.x.175]      Note, that this function does not work for continuous elements at hanging   nodes. For that case use the  [2.x.176]  function, below,   that takes an additional  [2.x.177]  object.  
+* [0.x.31]*
+   Compute  [2.x.178]  for a given  [2.x.179]   [2.x.180] , where  [2.x.181]  is   the interpolation from  [2.x.182]  to  [2.x.183]  The result  [2.x.184]  is   written into  [2.x.185]    [2.x.186]  and  [2.x.187]  are   the hanging node constraints corresponding to  [2.x.188]  and  [2.x.189]    respectively. These objects are particular important when continuous   elements on grids with hanging nodes (locally refined grids) are   involved.     For parallel computations, supply  [2.x.190]  with ghost elements and  [2.x.191]    z1_difference without ghost elements.  
+* [0.x.32]*
+    [2.x.192]  projection for discontinuous elements. Operates the same direction   as interpolate.     The global projection can be computed by local matrices if the finite   element spaces are discontinuous. With continuous elements, this is   impossible, since a global mass matrix must be inverted.  
+* [0.x.33]*
+   Compute the patchwise extrapolation of a  [2.x.193]  function  [2.x.194]  to a  [2.x.195]    dof2 function  [2.x.196]    [2.x.197]  and  [2.x.198]  need to be DoFHandler objects   based on the same triangulation. This function is used, for example, for   extrapolating patchwise a piecewise linear solution to a piecewise   quadratic solution.     The function's name is historical and probably not particularly well   chosen. The function performs the following operations, one after the   other:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - It interpolates directly from every cell of  [2.x.199]  to the   corresponding cell of `dof2` using the interpolation matrix of the finite   element spaces used on these cells and provided by the finite element   objects involved. This step is done using the  [2.x.200]    function.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - It then performs a loop over all non-active cells of `dof2`.   If such a non-active cell has at least one active child, then we call the   children of this cell a "patch". We then interpolate from the children of   this patch to the patch, using the finite element space associated with   `dof2` and immediately interpolate back to the children. In essence, this   information throws away all information in the solution vector that lives   on a scale smaller than the patch cell.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Since we traverse non-active cells from the coarsest to the finest   levels, we may find patches that correspond to child cells of previously   treated patches if the mesh had been refined adaptively (this cannot   happen if the  mesh has been refined globally because there the children   of a patch are all active). We also perform the operation described above   on these patches, but it is easy to see that on patches that are children   of previously treated patches, the operation is now the identity operation   (since it interpolates from the children of the current patch a function   that had previously been interpolated to these children from an even   coarser patch). Consequently, this does not alter the solution vector any   more.     The name of the function originates from the fact that it can be used to   construct a representation of a function of higher polynomial degree on a   once coarser mesh. For example, if you imagine that you start with a    [2.x.201]  function on a globally refined mesh, and that  [2.x.202]  is associated   with a  [2.x.203]  element, then this function computes the equivalent of the   operator  [2.x.204]  interpolating the original piecewise linear   function onto a quadratic function on a once coarser mesh with mesh size    [2.x.205]  (but representing this function on the original mesh with size  [2.x.206] ).   If the exact solution is sufficiently smooth, then    [2.x.207]  is typically a better approximation to the exact   solution  [2.x.208]  of the PDE than  [2.x.209]  is. In other words, this function   provides a postprocessing step that improves the solution in a similar   way one often obtains by extrapolating a sequence of solutions,   explaining the origin of the function's name.    
+*  [2.x.210]  The resulting field does not satisfy continuity requirements of the   given finite elements if the algorithm outlined above is used. When you   use continuous elements on grids with hanging nodes, please use the  [2.x.211]    extrapolate function with an additional AffineConstraints argument, see   below.    
+*  [2.x.212]  Since this function operates on patches of cells, it requires that   the underlying grid is refined at least once for every coarse grid cell.   If this is not the case, an exception will be raised.  
+* [0.x.34]*
+   Compute the patchwise extrapolation of a  [2.x.213]  function  [2.x.214]  to a  [2.x.215]    dof2 function  [2.x.216]    [2.x.217]  and  [2.x.218]  need to be DoFHandler objects   based on the same triangulation.   [2.x.219]  is a hanging node   constraints object corresponding to  [2.x.220]  This object is necessary   when interpolating onto continuous elements on grids with hanging nodes   (locally refined grids).     Otherwise, the function does the same as the other  [2.x.221]    function above (for which the documentation provides an extensive   description of its operation).  
+* [0.x.35]*
+   The numbering of the degrees of freedom in continuous finite elements is   hierarchic, i.e. in such a way that we first number the vertex dofs, in   the order of the vertices as defined by the triangulation, then the line   dofs in the order and respecting the direction of the lines, then the   dofs on quads, etc. However, we could have, as well, numbered them in a   lexicographic way, i.e. with indices first running in x-direction, then   in y-direction and finally in z-direction. Discontinuous elements of   class FE_DGQ() are numbered in this way, for example.     This function returns a vector containing information about the   lexicographic index each degree of freedom in the hierarchic numbering   would have to a given degree of a continuous finite element.  
+* [0.x.36]*
+   This is the reverse function to the above one, generating the map from   the lexicographic to the hierarchical numbering for a given polynomial   degree of a continuous finite element. All the remarks made about the   above function are also valid here.  
+* [0.x.37]*
+   A namespace that contains functions that help setting up internal   data structures when implementing FiniteElement which are build   from simpler ("base") elements, for example FESystem. The things   computed by these functions typically serve as constructor   arguments to the FiniteElement base class of the derived finite   element object being constructed.     There are generally two ways in which one can build more complex   elements, and this is reflected by several of the functions in   this namespace having arguments called    [2.x.222] :      [2.x.223]     [2.x.224]  Tensor product construction ( [2.x.225] ):   The tensor product construction, in the simplest case, builds a   vector-valued element from scalar elements (see    [2.x.226]  "this documentation module" and    [2.x.227]  "this glossary entry" for more information).   To give an example, consider creating a vector-valued element with   two vector components, where the first should have linear shape   functions and the second quadratic shape functions. In 1d, the   shape functions (on the reference cell) of the base elements are then  
+* [1.x.6]
+*    where shape functions are ordered in the usual way (first on the   first vertex, then on the second vertex, then in the interior of   the cell). The tensor product construction will create an element with   the following shape functions:  
+* [1.x.7]
+*    The list here is again in standard order.     Of course, the procedure also works if the base elements are   already vector valued themselves: in that case, the composed   element simply has as many vector components as the base elements   taken together.      [2.x.228]  Combining shape functions   ( [2.x.229] ): In contrast to the   previous strategy, combining shape functions simply takes   [1.x.8] of the shape functions together. In the case above,   this would yield the following element:  
+* [1.x.9]
+*    In other words, if the base elements are scalar, the resulting   element will also be. In general, the base elements all will   have to have the same number of vector components.     The element constructed above of course no longer has a linearly   independent set of shape functions. As a consequence, any matrix   one creates by treating all shape functions of the composed   element in the same way will be singular. In practice, this   strategy is therefore typically used in situations where one   explicitly makes sure that certain shape functions are treated   differently (e.g., by multiplying them with weight functions), or   in cases where the shape functions one combines are not linearly   dependent.      [2.x.230]   
+* [0.x.38]*
+     Take vectors of finite elements and multiplicities and multiply out     how many degrees of freedom the composed element has per vertex,     line, etc.         If  [2.x.231]  is true, the number of components     returned in the FiniteElementData object is the sum over the     product of the number of components in each of the finite     elements times the corresponding multiplicity.  Otherwise the     number of components is taken from the first finite element with     non-zero multiplicity, and all other elements with non-zero     multiplicities need to have the same number of vector components.         See the documentation of namespace  [2.x.232]  for more     information about the  [2.x.233]  argument.    
+* [0.x.39]*
+     Same as above for an arbitrary number of parameters of type      [2.x.234]  spacedim>>, unsigned     int></code> and  [2.x.235] .    
+* [0.x.40]*
+     Same as above but for a specific number of sub-elements.    
+* [0.x.41]*
+     Compute the "restriction is additive" flags (see the     documentation of the FiniteElement class) for a list of finite     elements with multiplicities given in the second argument.         The "restriction is additive" flags are properties of     individual shape functions that do not depend on whether the     composed element uses the tensor product or combination     strategy outlined in the documentation of the      [2.x.236]  namespace. Consequently, this function     does not have a  [2.x.237]  argument.    
+* [0.x.42]*
+     Same as above for an arbitrary number of parameters of type      [2.x.238]  spacedim>>, unsigned     int></code>.    
+* [0.x.43]*
+     Take a  [2.x.239]  object and return a boolean vector     describing the  [2.x.240]  (see the     documentation of the FiniteElement class) for each shape function     of the mixed element consisting of  [2.x.241]   [2.x.242]  ... copies of     the sub-elements  [2.x.243]   [2.x.244]  ...         The "restriction is additive" flags are properties of     individual shape functions that do not depend on whether the     composed element uses the tensor product or combination     strategy outlined in the documentation of the      [2.x.245]  namespace. Consequently, this function     does not have a  [2.x.246]  argument.    
+* [0.x.44]*
+     Compute the nonzero components for each shape function of a     composed finite element described by a list of finite elements     with multiplicities given in the second argument.         If  [2.x.247]  is true, the number of components (and     thus the size of the ComponentMask objects) is the sum over the     product of the number of components in each of the finite     elements times the corresponding multiplicity.  Otherwise the     number of components is taken from the first finite element with     non-zero multiplicity, and all other elements with non-zero     multiplicities need to have the same number of vector components.         See the documentation of namespace  [2.x.248]  for more     information about the  [2.x.249]  argument.    
+* [0.x.45]*
+     Same as above for an arbitrary number of parameters of type      [2.x.250]  spacedim>>, unsigned     int></code> and  [2.x.251] .    
+* [0.x.46]*
+     Compute the non-zero vector components of a composed finite     element. This function is similar to the previous one, except     that the pointers indicate the elements to be composed, and the     arguments  [2.x.252]   [2.x.253]  ... the multiplicities. Null pointers     indicate that an argument is to be skipped.         If  [2.x.254]  is true, the number of components (and     thus the size of the ComponentMask objects) is the sum over the     product of the number of components in each of the finite     elements times the corresponding multiplicity.  Otherwise the     number of components is taken from the first finite element with     non-zero multiplicity, and all other elements with non-zero     multiplicities need to have the same number of vector components.         See the documentation of namespace  [2.x.255]  for more     information about the  [2.x.256]  argument.    
+* [0.x.47]*
+     For a given (composite)  [2.x.257]  build  [2.x.258]      system_to_component_table,  [2.x.259]  and  [2.x.260]      component_to_base_table.         If  [2.x.261]  is true, the number of components     used for the composite element is the sum over the     product of the number of components in each of the finite     elements times the corresponding multiplicity.  Otherwise the     number of components is taken from the first finite element with     non-zero multiplicity, and all other elements with non-zero     multiplicities need to have the same number of vector components.         See the documentation of namespace  [2.x.262]  for more     information about the  [2.x.263]  argument.    
+* [0.x.48]*
+     For a given (composite)  [2.x.264]  build  [2.x.265]      and  [2.x.266]          If  [2.x.267]  is true, the number of components     used for the composite element is the sum over the     product of the number of components in each of the finite     elements times the corresponding multiplicity.  Otherwise the     number of components is taken from the first finite element with     non-zero multiplicity, and all other elements with non-zero     multiplicities need to have the same number of vector components.         See the documentation of namespace  [2.x.268]  for more     information about the  [2.x.269]  argument.    
+* [0.x.49]*
+   Parse the name of a finite element and generate a finite element object   accordingly. The parser ignores space characters between words (things   matching the regular expression [A-Za-z0-9_]).     The name must be in the form which is returned by the    [2.x.270]  function, where dimension template parameters   &lt;2&gt; etc. can be omitted. Alternatively, the explicit number can be   replaced by <tt>dim</tt> or <tt>d</tt>. If a number is given, it   [1.x.10] match the template parameter of this function.     The names of FESystem elements follow the pattern    [2.x.271]    etc. may either be numbers or can be replaced by <tt>dim</tt> or   <tt>d</tt>.       If no finite element can be reconstructed from this string, an exception   of type  [2.x.272]  is thrown.     The function returns a  [2.x.273]  to a newly created finite element   meaning the caller obtains ownership over the returned object.     Since the value of the template argument can't be deduced from the   (string) argument given to this function, you have to explicitly specify   it when you call this function.     This function knows about all the standard elements defined in the   library. However, it doesn't by default know about elements that you may   have defined in your program. To make your own elements known to this   function, use the add_fe_name() function.  This function does not work if   one wants to get a codimension 1 finite element.  
+* [0.x.50]*
+   Extend the list of finite elements that can be generated by   get_fe_by_name() by the one given as  [2.x.274]  If get_fe_by_name() is   later called with this name, it will use the object given as second   argument to create a finite element object.     The format of the  [2.x.275]  parameter should include the name of a finite   element. However, it is safe to use either the class name alone or to use   the result of  [2.x.276]  (which includes the space dimension   as well as the polynomial degree), since everything after the first non-   name character will be ignored.     The FEFactory object should be an object newly created with <tt>new</tt>.   FETools will take ownership of this object and delete it once it is not   used anymore.     In most cases, if you want objects of type  [2.x.277]  be created   whenever the name  [2.x.278]  is given to get_fe_by_name, you   will want the second argument to this function be of type   FEFactory [2.x.279]  but you can of course create your custom finite   element factory class.     This function takes over ownership of the object given as second   argument, i.e. you should never attempt to destroy it later on. The   object will be deleted at the end of the program's lifetime.     If the name of the element is already in use, an exception is thrown.   Thus, functionality of get_fe_by_name() can only be added, not changed.    
+*  [2.x.280]  This function manipulates a global table (one table for each space   dimension). It is thread safe in the sense that every access to this   table is secured by a lock. Nevertheless, since each name can be added   only once, user code has to make sure that only one thread adds a new   element.     Note also that this table exists once for each space dimension. If you   have a program that works with finite elements in different space   dimensions (for example,    [2.x.281]  " [2.x.282] "   does something like this), then you should call this function for each   space dimension for which you want your finite element added to the map.  
+* [0.x.51]*
+   The string used for get_fe_by_name() cannot be translated to a finite   element.     Either the string is badly formatted or you are using a custom element   that must be added using add_fe_name() first.    
+*  [2.x.283]   
+* [0.x.52]*
+   The string used for get_fe_by_name() cannot be translated to a finite   element.     Dimension arguments in finite element names should be avoided. If they   are there, the dimension should be <tt>dim</tt> or <tt>d</tt>. Here, you   gave a numeric dimension argument, which does not match the template   dimension of the finite element class.    
+*  [2.x.284]   
+* [0.x.53]*
+   Exception    
+*  [2.x.285]   
+* [0.x.54]*
+   The finite element must be    [2.x.286]  "primitive".    
+*  [2.x.287]   
+* [0.x.55]*
+   Exception    
+*  [2.x.288]   
+* [0.x.56]*
+   A continuous element is used on a mesh with hanging nodes, but the   constraint matrices are missing.    
+*  [2.x.289]   
+* [0.x.57]*
+   You need at least two grid levels.    
+*  [2.x.290]   
+* [0.x.58]*
+   The dimensions of the matrix used did not match the expected dimensions.    
+*  [2.x.291]   
+* [0.x.59]*
+   Exception thrown if an embedding matrix was computed inaccurately.    
+*  [2.x.292]   
+* [0.x.60]*
+   Exception thrown if one variable may not be greater than another.    
+*  [2.x.293]   
+* [0.x.61]

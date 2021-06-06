@@ -1,0 +1,80 @@
+[0.x.0]*
+ Implementation of Raviart-Thomas (RT) elements. The Raviart-Thomas space is designed to solve problems in which the solution only lives in the space  [2.x.0] , rather than in the more commonly used space  [2.x.1] . In other words, the solution must be a vector field whose divergence is square integrable, but for which the gradient may not be square integrable. The typical application for this space (and these elements) is to the mixed formulation of the Laplace equation and related situations, see for example  [2.x.2] . The defining characteristic of functions in  [2.x.3]  is that they are in general discontinuous
+* 
+*  -  but that if you draw a line in 2d (or a surface in 3d), then the [1.x.0] component of the vector field must be continuous across the line (or surface) even though the tangential component may not be. As a consequence, the Raviart-Thomas element is constructed in such a way that (i) it is  [2.x.4]  "vector-valued", (ii) the shape functions are discontinuous, but (iii) the normal component of the vector field represented by each shape function is continuous across the faces of cells.
+*  Other properties of the Raviart-Thomas element are that (i) it is  [2.x.5]  "not a primitive element"; (ii) the shape functions are defined so that certain integrals over the faces are either zero or one, rather than the common case of certain point values being either zero or one. (There is, however, the FE_RaviartThomasNodal element that uses point values.)
+*  We follow the commonly used
+* 
+*  -  though confusing
+* 
+*  -  definition of the "degree" of RT elements. Specifically, the "degree" of the element denotes the polynomial degree of the [1.x.1] contained in the finite element space, even if the space may contain shape functions of higher polynomial degree. The lowest order element is consequently FE_RaviartThomas(0), i.e., the Raviart-Thomas element "of degree zero", even though the functions of this space are in general polynomials of degree one in each variable. This choice of "degree" implies that the approximation order of the function itself is [1.x.2], as with usual polynomial spaces. The numbering so chosen implies the sequence [1.x.3]
+*  This class is not implemented for the codimension one case (<tt>spacedim != dim</tt>).
+* 
+
+*  [1.x.4]
+*  The  [2.x.6]  "interpolation" operators associated with the RT element are constructed such that interpolation and computing the divergence are commuting operations. We require this from interpolating arbitrary functions as well as the #restriction matrices.  It can be achieved by two interpolation schemes, the simplified one in FE_RaviartThomasNodal and the original one here:
+*  [1.x.5]
+*  On edges or faces, the  [2.x.7]  "node values" are the moments of the normal component of the interpolated function with respect to the traces of the RT polynomials. Since the normal trace of the RT space of degree [1.x.6] on an edge/face is the space [1.x.7], the moments are taken with respect to this space.
+*  [1.x.8]
+*  Higher order RT spaces have interior nodes. These are moments taken with respect to the gradient of functions in [1.x.9] on the cell (this space is the matching space for RT<sub>k</sub> in a mixed formulation).
+*  [1.x.10]
+*  The node values above rely on integrals, which will be computed by quadrature rules themselves. The generalized support points are a set of points such that this quadrature can be performed with sufficient accuracy. The points needed are those of QGauss<sub>k+1</sub> on each face as well as QGauss<sub>k+1</sub> in the interior of the cell (or none for RT<sub>0</sub>).
+
+* 
+* [0.x.1]*
+   Constructor for the Raviart-Thomas element of degree  [2.x.8]   
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_RaviartThomas<dim>(degree)</tt>, with  [2.x.9]  and  [2.x.10]    replaced by appropriate values.  
+* [0.x.3]*
+   This function returns  [2.x.11]  if the shape function  [2.x.12]  has   non-zero function values somewhere on the face  [2.x.13]      Right now, this is only implemented for RT0 in 1D. Otherwise, returns   always  [2.x.14]   
+* [0.x.4]*
+   Return a list of constant modes of the element. This method is currently   not correctly implemented because it returns ones for all components.  
+* [0.x.5]*
+   Only for internal use. Its full name is  [2.x.15]    function and it creates the  [2.x.16]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.17]    FiniteElementData.  
+* [0.x.6]*
+   Initialize the  [2.x.18]  field of the FiniteElement   class and fill the tables with interpolation weights (#boundary_weights   and #interior_weights). Called from the constructor.  
+* [0.x.7]*
+   Initialize the interpolation from functions on refined mesh cells onto   the father cell. According to the philosophy of the Raviart-Thomas   element, this restriction operator preserves the divergence of a function   weakly.  
+* [0.x.8]*
+   These are the factors multiplied to a function in the   #generalized_face_support_points when computing the integration. They are   organized such that there is one row for each generalized face support   point and one column for each degree of freedom on the face.     See the    [2.x.19]  "glossary entry on generalized support points"   for more information.  
+* [0.x.9]*
+   Precomputed factors for interpolation of interior degrees of freedom. The   rationale for this Table is the same as for #boundary_weights. Only, this   table has a third coordinate for the space direction of the component   evaluated.  
+* [0.x.10]*
+   Fill the necessary tables defined in base classes such as    [2.x.20]  declared in   fe.cc. We need to fill it with the correct values in case of non-standard,   flipped (rotated by +180 degrees) or rotated (rotated by +90 degrees)  faces. These are given in the form three flags (face_orientation, face_flip,   face_rotation), see the documentation in GeometryInfo<dim> and   this  [2.x.21]  "glossary entry on face orientation".     [1.x.11]     The dofs on a face are connected to a  [2.x.22]    matrix where here  [2.x.23] . In our example we can imagine the   following dofs on a quad (face):    
+* [1.x.12]
+*      We have for a local  [2.x.24]  with index    [2.x.25]  in y-direction   running from 0 to  [2.x.26]  and    [2.x.27]  and <code>j =   dof_index / n</code> (integer division). The indices  [2.x.28]  and    [2.x.29]  can then be used to compute the offset.     For our example of Raviart-Thomas elements this means if the   switches are  [2.x.30]  that means we rotate the   face first by + 90 degree(counterclockwise) then by another +180   degrees but we do not flip it since the face has standard   orientation. The flip axis is the diagonal from the lower left to the upper   right corner of the face. With these flags the configuration above becomes:   
+* [1.x.13]
+*      Note that the necessity of a permutation depends on the combination of the   three flags.     There is also a pattern for the sign change of the permuted shape functions   that depends on the combination of the switches. In the above example it   would be    
+* [1.x.14]
+*      The relevant table for the sign changes is declared in FE_PolyTensor.  
+* [0.x.11]*
+ The Raviart-Thomas elements with node functionals defined as point values in Gauss points.
+*  [1.x.15]
+*  For this Raviart-Thomas element, the node values are not cell and face moments with respect to certain polynomials, but the values in quadrature points. Following the general scheme for numbering degrees of freedom, the node values on edges are first, edge by edge, according to the natural ordering of the edges of a cell. The interior degrees of freedom are last.
+*  For an RT-element of degree [1.x.16], we choose [1.x.17] Gauss points on each face. These points are ordered lexicographically with respect to the orientation of the face. This way, the normal component which is in [1.x.18] is uniquely determined. Furthermore, since this Gauss-formula is exact on [1.x.19], these node values correspond to the exact integration of the moments of the RT-space.
+*  In the interior of the cells, the moments are with respect to an anisotropic [1.x.20] space, where the test functions are one degree lower in the direction corresponding to the vector component under consideration. This is emulated by using an anisotropic Gauss formula for integration.
+*   [2.x.31]  The current implementation is for Cartesian meshes only. You must use MappingCartesian.
+*   [2.x.32]  Even if this element is implemented for two and three space dimensions, the definition of the node values relies on consistently oriented faces in 3D. Therefore, care should be taken on complicated meshes.
+* 
+
+* 
+*  [2.x.33]  The degree stored in the member variable  [2.x.34]  is higher by one than the constructor argument!
+
+* 
+* [0.x.12]*
+   Constructor for the Raviart-Thomas element of degree  [2.x.35]   
+* [0.x.13]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_RaviartThomasNodal<dim>(degree)</tt>, with  [2.x.36]  and  [2.x.37]    degree replaced by appropriate values.  
+* [0.x.14]*
+    [2.x.38]   [2.x.39]   
+* [0.x.15]*
+   Only for internal use. Its full name is  [2.x.40]    function and it creates the  [2.x.41]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.42]    FiniteElementData.  
+* [0.x.16]*
+   Compute the vector used for the  [2.x.43]  field passed   to the base class's constructor.  
+* [0.x.17]*
+   This function returns  [2.x.44]  if the shape function  [2.x.45]  has   non-zero function values somewhere on the face  [2.x.46]      Right now, this is only implemented for RT0 in 1D. Otherwise, returns   always  [2.x.47]   
+* [0.x.18]*
+   Initialize the  [2.x.48]  and    [2.x.49]  fields. Called from   the constructor.     See the    [2.x.50]  "glossary entry on generalized support points"   for more information.  
+* [0.x.19]*
+   Initialize the permutation pattern and the pattern of sign change.  
+* [0.x.20]

@@ -1,0 +1,29 @@
+[0.x.0]*
+  
+*  [2.x.0]     
+*  [2.x.1]   
+* [0.x.1]*
+     Laplacian in weak form, namely on the cell [1.x.0] the matrix [1.x.1]         The FiniteElement in <tt>fe</tt> may be scalar or vector valued. In the     latter case, the Laplacian is applied to each component separately.    
+* [0.x.2]*
+     Laplacian residual operator in weak form         [1.x.2]    
+* [0.x.3]*
+     Vector-valued Laplacian residual operator in weak form         [1.x.3]    
+* [0.x.4]*
+     Weak boundary condition of Nitsche type for the Laplacian, namely on     the face [1.x.4] the matrix     [1.x.5]         Here,  [2.x.2]  is the <tt>penalty</tt> parameter suitably computed with     compute_penalty().    
+* [0.x.5]*
+     Weak boundary condition of Nitsche type for the Laplacian applied to the     tangential component only, namely on     the face [1.x.6] the matrix     [1.x.7]         Here,  [2.x.3]  is the <tt>penalty</tt> parameter suitably computed with     compute_penalty().    
+* [0.x.6]*
+     Weak boundary condition for the Laplace operator by Nitsche, scalar     version, namely on the face [1.x.8] the vector     [1.x.9]         Here, [1.x.10] is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively. [1.x.11] is the inhomogeneous boundary value in the     argument <tt>data</tt>.  [2.x.4]  is the usual penalty parameter.    
+* [0.x.7]*
+     Weak boundary condition for the Laplace operator by Nitsche, vector     valued version, namely on the face [1.x.12] the vector     [1.x.13]         Here, [1.x.14] is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively. [1.x.15] is the inhomogeneous boundary value in the     argument <tt>data</tt>.  [2.x.5]  is the usual penalty parameter.    
+* [0.x.8]*
+     Flux for the interior penalty method for the Laplacian, namely on the     face [1.x.16] the matrices associated with the bilinear form     [1.x.17]         The penalty parameter should always be the mean value of the penalties     needed for stability on each side. In the case of constant     coefficients, it can be computed using compute_penalty().         If <tt>factor2</tt> is missing or negative, the factor is assumed the     same on both sides. If factors differ, note that the penalty parameter     has to be computed accordingly.    
+* [0.x.9]*
+     Flux for the interior penalty method for the Laplacian applied to the     tangential components of a vector field, namely on the face [1.x.18]     the matrices associated with the bilinear form     [1.x.19]          [2.x.6]  This function is still under development!    
+* [0.x.10]*
+     Residual term for the symmetric interior penalty method:     [1.x.20]    
+* [0.x.11]*
+     Vector-valued residual term for the symmetric interior penalty method:     [1.x.21]    
+* [0.x.12]*
+     Auxiliary function computing the penalty parameter for interior penalty     methods on rectangles.         Computation is done in two steps: first, we compute on each cell     [1.x.22] the value [1.x.23], where     [1.x.24] is the polynomial degree on cell     [1.x.25] and [1.x.26] is the length of     [1.x.27] orthogonal to the current face.    
+* [0.x.13]

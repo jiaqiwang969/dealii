@@ -1,0 +1,37 @@
+[0.x.0]*
+     A structure used by the DoFHandler classes to store information about     the degrees of freedom they deal with.    
+* [0.x.1]*
+       Default constructor.      
+* [0.x.2]*
+       Copy constructor. Simply copy all members of the referenced       object to the current object.      
+* [0.x.3]*
+       Move constructor. Simply move all members of the referenced       object to the current object.      
+* [0.x.4]*
+       Create a NumberCache object that corresponds to a sequential       DoFHandler object in which a single processor stores all       degrees of freedom. (Here, "sequential" means that either       the whole program does not use MPI, or that it uses MPI       but only uses a single MPI process, or that there are multiple MPI       processes but the Triangulation on which this DoFHandler builds       works only on one MPI process.)      
+* [0.x.5]*
+       Create a NumberCache object that corresponds to a parallel       DoFHandler object with as many processors as the size of the       given argument, in which each processor stores the degrees       of freedom indicated in the corresponding element of the       vector passed as first argument. The second argument indicates       the rank among all participating processors the current       processor has, so that we can set the  [2.x.0]        and  [2.x.1]  fields.             All other fields stored by the current object can be and are computed       from the argument.      
+* [0.x.6]*
+       Copy operator. Simply copy all members of the referenced       object to the current object.      
+* [0.x.7]*
+       Move assignment operator. Simply move all members of the referenced       object to the current object.      
+* [0.x.8]*
+       Determine an estimate for the memory consumption (in bytes) of this       object.      
+* [0.x.9]*
+       This function resets all the stored information.      
+* [0.x.10]*
+       Return a representation of  [2.x.2]  both       in case it was set up (directly returning the array) or in case we       need to accumulate some information over all processors. The latter       case involves global communication and is typically expensive to set       up because it invokes MPI_Allgather.      
+* [0.x.11]*
+       Return a representation of  [2.x.3]  both       in case it was set up (directly returning the array of IndexSet       fields) or in case we need to accumulate some information over all       processors. The latter case involves global communication and is       typically expensive to set up because it invokes MPI_Allgather.      
+* [0.x.12]*
+       Total number of dofs, accumulated over all processors that may       participate on this mesh.      
+* [0.x.13]*
+       Number of dofs owned by this MPI process. If this is a sequential       computation, then this equals n_global_dofs. (Here, "sequential" means       that either the whole program does not use MPI, or that it uses MPI but       only uses a single MPI process, or that there are multiple MPI       processes but the Triangulation on which this DoFHandler builds       works only on one MPI process.)      
+* [0.x.14]*
+       An index set denoting the set of locally owned dofs. If this is a       sequential computation, then it contains the entire range       [0,n_global_dofs). (Here, "sequential" means that either       the whole program does not use MPI, or that it uses MPI       but only uses a single MPI process, or that there are multiple MPI       processes but the Triangulation on which this DoFHandler builds       works only on one MPI process.)      
+* [0.x.15]*
+       The number of dofs owned by each of the various MPI processes. If       this is a sequential computation, then the vector contains a single       element equal to n_global_dofs. (Here, "sequential" means that either       the whole program does not use MPI, or that it uses MPI       but only uses a single MPI process, or that there are multiple MPI       processes but the Triangulation on which this DoFHandler builds       works only on one MPI process.)      
+* [0.x.16]*
+       The dofs owned by each of the various MPI processes. If this is a       sequential DoFHandler, then the vector has a single element equal to       locally_owned_dofs. (Here, "sequential" means that either       the whole program does not use MPI, or that it uses MPI       but only uses a single MPI process, or that there are multiple MPI       processes but the Triangulation on which this DoFHandler builds       works only on one MPI process.)      
+* [0.x.17]*
+       Read or write the data of this object to or from a stream for the       purpose of serialization using the [BOOST serialization       library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).      
+* [0.x.18]

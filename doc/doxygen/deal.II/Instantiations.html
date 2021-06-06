@@ -89,52 +89,20 @@ $(function() {
 <div class="title">Template instantiations </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Instantiation of complex class and function templates is expensive both in terms of compile time and disk space. Therefore, we try to separate declaration and implementation of templates as far as possible, and make sure that implementations are read by the compiler only when necessary.</p>
-<p>Template classes in <code>deal.II</code> can be grouped into three categories, depending on the number of probable different instantiations. These three groups are discussed in the following.</p>
+<div class="textblock"><p>Instantiation of complex class and function templates is expensive both in terms of compile time and disk space. Therefore, we try to separate declaration and implementation of templates as far as possible, and make sure that implementations are read by the compiler only when necessary. Template classes in <code>deal.II</code> can be grouped into three categories, depending on the number of probable different instantiations. These three groups are discussed in the following.</p>
 <h1><a class="anchor" id="Inst1"></a>
-Known and fixed number of instantiations</h1>
-<p>These are the classes having template parameters with very predictable values. The typical prototype is </p><div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keywordtype">int</span> dim&gt; <span class="keyword">class </span><a class="code" href="classFunction.html">Function</a>;</div>
-</div><!-- fragment --><p>Here, we have a small number of instantiations (<code>dim = 1,2,3</code>) known at the time of design of the library. Therefore, member functions of this class are defined in a <code>.cc</code> file in the source directory and we instantiate the template for these known values explicitly in the source file.</p>
-<p>From an application viewpoint, all you actually get to see then is the declaration of the template. Actual instantiations of member functions happens inside the library and is done when you compile the library, not when you compile your application code.</p>
-<p>For these classes, adding instantiations for new parameters involves changing the library. However, this is rarely needed, of course, unless you are not content with computing only in 1d, 2d, or 3d.</p>
-<h2><a class="anchor" id="Inst1a"></a>
-Available instances</h2>
-<p>If the template parameter is <code>dim</code>, the available instances are for <code>dim=1,2,3</code>, if there is no other information.</p>
-<p>There are other cases of classes (not depending on the spatial dimension) for which only a certain, small number of template arguments is supported and explicit instantiations are provided in the library. In particular, this includes all the linear algebra classes that are templatized on the type of the scalar underlying stored values: we only support <code>double</code>, <code>float</code>, and in some cases <code>std::complex&lt;double&gt;</code> and <code>std::complex&lt;float&gt;</code>.</p>
-<h1><a class="anchor" id="Inst2"></a>
-A few instantiations, most of which are known</h1>
-<p>These are class templates usually having a small number of instantiations, but additional instantiations may be necessary. Therefore, a set of instantiations for the most likely parameters is provided precompiled in the libraries, but the implementation of the templates are provided in a special header file so that it is accessible in case someone wants to instantiate it for an unforeseen argument.</p>
-<p>Typical examples for this would be some of the linear algebra classes that take a vector type as template argument. They would be instantiated within the library for <code><a class="el" href="classVector.html">Vector</a>&lt;double&gt;</code>, <code><a class="el" href="classVector.html">Vector</a>&lt;float&gt;</code>, <code><a class="el" href="classBlockVector.html">BlockVector</a>&lt;double&gt;</code>, and <code><a class="el" href="classBlockVector.html">BlockVector</a>&lt;float&gt;</code>, for example. However, they may also be used with other vector types, such as <code>long double</code> and <code>std::complex&lt;long double&gt;</code>, as long as they satisfy certain interfaces, including vector types that are not part of the library but possibly defined in an application program. In such a case, applications can instantiate these templates by hand as described in the next section.</p>
-<h2><a class="anchor" id="Inst2c"></a>
-Creating new instances</h2>
-<p>Choose one of your source files to provide the required instantiations. Say that you want the class template <code>XXXX</code>, defined in the header file <code>xxxx.h</code>, instantiated with the template parameter <code>long double</code>. Then, your file should contain the lines </p><div class="fragment"><div class="line">                  <span class="comment">// Include class template declaration</span></div>
-<div class="line"><span class="preprocessor">#include &lt;xxxx.h&gt;</span></div>
-<div class="line">                  <span class="comment">// Include member definitions</span></div>
-<div class="line"><span class="preprocessor">#include &lt;xxxx.templates.h&gt;</span></div>
-<div class="line"> </div>
-<div class="line">...</div>
-<div class="line"> </div>
-<div class="line">template <span class="keyword">class </span>XXXX&lt;long <a class="code" href="classdouble.html">double</a>&gt;;</div>
-</div><!-- fragment --><h2><a class="anchor" id="Inst2p"></a>
-Provided instances</h2>
-<p>Like with the classes in section <a class="el" href="Instantiations.html#Inst1">Known and fixed number of instantiations</a>, the instances provided in the library are often listed in the documentation of that class in a form similar to this: </p><pre class="fragment">Template Instantiations: some  (&lt;p1&gt;a,b,c&lt;p2&gt;)
-</pre><h1><a class="anchor" id="Inst3"></a>
-Many unknown instantiations</h1>
-<p>These are the classes, where no reasonable predetermined set of instances exists. Therefore, all member definitions are included in the header file and are instantiated wherever needed. An example would be the <a class="el" href="classSmartPointer.html">SmartPointer</a> class template that can be used with virtually any template argument.</p>
-<p>Instantiation of complex class and function templates is expensive both in terms of compile time and disk space. Therefore, we try to separate declaration and implementation of templates as far as possible, and make sure that implementations are read by the compiler only when necessary. Template classes in <code>deal.II</code> can be grouped into three categories, depending on the number of probable different instantiations. These three groups are discussed in the following.</p>
-<h1><a class="anchor" id="Inst1"></a>
-Known and fixed number of instantiations</h1>
+Known and fixed number of instantiations These are the</h1>
 <p>classes having template parameters with very predictable values. The typical prototype is</p>
 <div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keywordtype">int</span> dim&gt; <span class="keyword">class </span><a class="code" href="classFunction.html">Function</a>;</div>
 </div><!-- fragment --><p>Here, we have a small number of instantiations ( <code>dim = 1,2,3</code> ) known at the time of design of the library. Therefore, member functions of this class are defined in a <code>.cc</code> file in the source directory and we instantiate the template for these known values explicitly in the source file. From an application viewpoint, all you actually get to see then is the declaration of the template. Actual instantiations of member functions happens inside the library and is done when you compile the library, not when you compile your application code. For these classes, adding instantiations for new parameters involves changing the library. However, this is rarely needed, of course, unless you are not content with computing only in 1d, 2d, or 3d.</p>
 <h2><a class="anchor" id="Inst1a"></a>
-Available instances</h2>
+Available instances If the template parameter is</h2>
 <p><code>dim</code>, the available instances are for <code>dim=1,2,3</code>, if there is no other information. There are other cases of classes (not depending on the spatial dimension) for which only a certain, small number of template arguments is supported and explicit instantiations are provided in the library. In particular, this includes all the linear algebra classes that are templatized on the type of the scalar underlying stored values: we only support <code>double</code>, <code>float</code> , and in some cases <code>std::complex&lt;double&gt;</code> and <code>std::complex&lt;float&gt;</code> .</p>
 <h1><a class="anchor" id="Inst2"></a>
-A few instantiations, most of which are known</h1>
+A few instantiations, most of which are known These are</h1>
 <p>class templates usually having a small number of instantiations, but additional instantiations may be necessary. Therefore, a set of instantiations for the most likely parameters is provided precompiled in the libraries, but the implementation of the templates are provided in a special header file so that it is accessible in case someone wants to instantiate it for an unforeseen argument. Typical examples for this would be some of the linear algebra classes that take a vector type as template argument. They would be instantiated within the library for <code><a class="el" href="classVector.html">Vector</a>&lt;double&gt;</code> , <code><a class="el" href="classVector.html">Vector</a>&lt;float&gt;</code>, <code><a class="el" href="classBlockVector.html">BlockVector</a>&lt;double&gt;</code> , and <code><a class="el" href="classBlockVector.html">BlockVector</a>&lt;float&gt;</code> , for example. However, they may also be used with other vector types, such as <code>long double</code> and <code>std::complex&lt;long double&gt;</code> , as long as they satisfy certain interfaces, including vector types that are not part of the library but possibly defined in an application program. In such a case, applications can instantiate these templates by hand as described in the next section.</p>
 <h2><a class="anchor" id="Inst2c"></a>
-Creating new instances</h2>
+Creating new instances Choose one of your source files</h2>
 <p>to provide the required instantiations. Say that you want the class template <code>XXXX</code>, defined in the header file <code>xxxx.h</code>, instantiated with the template parameter <code>long double</code>. Then, your file should contain the lines</p>
 <div class="fragment"><div class="line">                <span class="comment">// Include class template declaration</span></div>
 <div class="line"><span class="preprocessor">#include &lt;xxxx.h&gt;</span></div>
@@ -143,17 +111,49 @@ Creating new instances</h2>
 <div class="line"> </div>
 <div class="line">...</div>
 <div class="line"> </div>
-<div class="line">template <span class="keyword">class </span>XXXX&lt;long <a class="code" href="classdouble.html">double</a>&gt;;</div>
+<div class="line">template <span class="keyword">class </span>XXXX&lt;long <a class="code" href="hdf5__0_8txt.html#aae153b86de45d3354cd3edd5b992435e">double</a>&gt;;</div>
 </div><!-- fragment --><h2><a class="anchor" id="Inst2p"></a>
 Provided instances</h2>
-<p>Like with the classes in section <a class="el" href="Instantiations.html#Inst1">Known and fixed number of instantiations</a> , the instances provided in the library are often listed in the documentation of that class in a form similar to this:</p>
+<p>Like with the classes in section <a class="el" href="Instantiations.html#Inst1">Known and fixed number of instantiations These are the</a> , the instances provided in the library are often listed in the documentation of that class in a form similar to this:</p>
 <pre class="fragment">* Template Instantiations: some  (&lt;p1&gt;a,b,c&lt;p2&gt;)
 * </pre><h1><a class="anchor" id="Inst3"></a>
-Many unknown instantiations</h1>
-<p>no reasonable predetermined set of instances exists. Therefore, all member definitions are included in the header file and are instantiated wherever needed. An example would be the <a class="el" href="classSmartPointer.html">SmartPointer</a> class template that can be used with virtually any template argument. </p>
+Many unknown instantiations These are the classes, where</h1>
+<p>no reasonable predetermined set of instances exists. Therefore, all member definitions are included in the header file and are instantiated wherever needed. An example would be the <a class="el" href="classSmartPointer.html">SmartPointer</a> class template that can be used with virtually any template argument.</p>
+<p>Instantiation of complex class and function templates is expensive both in terms of compile time and disk space. Therefore, we try to separate declaration and implementation of templates as far as possible, and make sure that implementations are read by the compiler only when necessary.</p>
+<p>Template classes in <code>deal.II</code> can be grouped into three categories, depending on the number of probable different instantiations. These three groups are discussed in the following.</p>
+<h1><a class="anchor" id="Inst1"></a>
+Known and fixed number of instantiations These are the</h1>
+<p>These are the classes having template parameters with very predictable values. The typical prototype is </p><div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keywordtype">int</span> dim&gt; <span class="keyword">class </span><a class="code" href="classFunction.html">Function</a>;</div>
+</div><!-- fragment --><p>Here, we have a small number of instantiations (<code>dim = 1,2,3</code>) known at the time of design of the library. Therefore, member functions of this class are defined in a <code>.cc</code> file in the source directory and we instantiate the template for these known values explicitly in the source file.</p>
+<p>From an application viewpoint, all you actually get to see then is the declaration of the template. Actual instantiations of member functions happens inside the library and is done when you compile the library, not when you compile your application code.</p>
+<p>For these classes, adding instantiations for new parameters involves changing the library. However, this is rarely needed, of course, unless you are not content with computing only in 1d, 2d, or 3d.</p>
+<h2><a class="anchor" id="Inst1a"></a>
+Available instances If the template parameter is</h2>
+<p>If the template parameter is <code>dim</code>, the available instances are for <code>dim=1,2,3</code>, if there is no other information.</p>
+<p>There are other cases of classes (not depending on the spatial dimension) for which only a certain, small number of template arguments is supported and explicit instantiations are provided in the library. In particular, this includes all the linear algebra classes that are templatized on the type of the scalar underlying stored values: we only support <code>double</code>, <code>float</code>, and in some cases <code>std::complex&lt;double&gt;</code> and <code>std::complex&lt;float&gt;</code>.</p>
+<h1><a class="anchor" id="Inst2"></a>
+A few instantiations, most of which are known These are</h1>
+<p>These are class templates usually having a small number of instantiations, but additional instantiations may be necessary. Therefore, a set of instantiations for the most likely parameters is provided precompiled in the libraries, but the implementation of the templates are provided in a special header file so that it is accessible in case someone wants to instantiate it for an unforeseen argument.</p>
+<p>Typical examples for this would be some of the linear algebra classes that take a vector type as template argument. They would be instantiated within the library for <code><a class="el" href="classVector.html">Vector</a>&lt;double&gt;</code>, <code><a class="el" href="classVector.html">Vector</a>&lt;float&gt;</code>, <code><a class="el" href="classBlockVector.html">BlockVector</a>&lt;double&gt;</code>, and <code><a class="el" href="classBlockVector.html">BlockVector</a>&lt;float&gt;</code>, for example. However, they may also be used with other vector types, such as <code>long double</code> and <code>std::complex&lt;long double&gt;</code>, as long as they satisfy certain interfaces, including vector types that are not part of the library but possibly defined in an application program. In such a case, applications can instantiate these templates by hand as described in the next section.</p>
+<h2><a class="anchor" id="Inst2c"></a>
+Creating new instances Choose one of your source files</h2>
+<p>Choose one of your source files to provide the required instantiations. Say that you want the class template <code>XXXX</code>, defined in the header file <code>xxxx.h</code>, instantiated with the template parameter <code>long double</code>. Then, your file should contain the lines </p><div class="fragment"><div class="line">                  <span class="comment">// Include class template declaration</span></div>
+<div class="line"><span class="preprocessor">#include &lt;xxxx.h&gt;</span></div>
+<div class="line">                  <span class="comment">// Include member definitions</span></div>
+<div class="line"><span class="preprocessor">#include &lt;xxxx.templates.h&gt;</span></div>
+<div class="line"> </div>
+<div class="line">...</div>
+<div class="line"> </div>
+<div class="line">template <span class="keyword">class </span>XXXX&lt;long <a class="code" href="hdf5__0_8txt.html#aae153b86de45d3354cd3edd5b992435e">double</a>&gt;;</div>
+</div><!-- fragment --><h2><a class="anchor" id="Inst2p"></a>
+Provided instances</h2>
+<p>Like with the classes in section <a class="el" href="Instantiations.html#Inst1">Known and fixed number of instantiations These are the</a>, the instances provided in the library are often listed in the documentation of that class in a form similar to this: </p><pre class="fragment">Template Instantiations: some  (&lt;p1&gt;a,b,c&lt;p2&gt;)
+</pre><h1><a class="anchor" id="Inst3"></a>
+Many unknown instantiations These are the classes, where</h1>
+<p>These are the classes, where no reasonable predetermined set of instances exists. Therefore, all member definitions are included in the header file and are instantiated wherever needed. An example would be the <a class="el" href="classSmartPointer.html">SmartPointer</a> class template that can be used with virtually any template argument. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
-<div class="ttc" id="aclassdouble_html"><div class="ttname"><a href="classdouble.html">double</a></div></div>
+<div class="ttc" id="ahdf5__0_8txt_html_aae153b86de45d3354cd3edd5b992435e"><div class="ttname"><a href="hdf5__0_8txt.html#aae153b86de45d3354cd3edd5b992435e">double</a></div><div class="ttdeci">*Namespace containing deal II s HDF5 interface whereas writing and reading raw data in a dataset can be done independently or double</div><div class="ttdef"><b>Definition:</b> <a href="hdf5__0_8txt_source.html#l00045">hdf5_0.txt:45</a></div></div>
 <div class="ttc" id="aclassFunction_html"><div class="ttname"><a href="classFunction.html">Function</a></div><div class="ttdef"><b>Definition:</b> <a href="base_2function_8h_source.html#l00140">function.h:140</a></div></div>
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->

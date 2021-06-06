@@ -14,4 +14,6 @@ digraph "Differentiation::AD::ScalarFunction&lt; dim, ADNumberTypeCode, ScalarTy
   Node5 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, ADNumberTypeCode,\l double \>" ,fontname="Helvetica"];
   Node5 [label="Differentiation::AD\l::PointLevelFunctionsBase\l\< dim, ADNumberTypeCode,\l ScalarType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDifferentiation_1_1AD_1_1PointLevelFunctionsBase.html",tooltip=" "];
   Node3 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, ADTypeCode,\l double \>" ,fontname="Helvetica"];
+  Node6 [label="Differentiation::AD\l::ScalarFunction\< dim,\l ADTypeCode, double \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDifferentiation_1_1AD_1_1ScalarFunction.html",tooltip=" "];
 }

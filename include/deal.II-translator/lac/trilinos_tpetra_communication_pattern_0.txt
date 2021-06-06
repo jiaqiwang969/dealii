@@ -1,0 +1,19 @@
+[0.x.0]*
+     This class implements a wrapper to  [2.x.0]  and  [2.x.1]     
+* [0.x.1]*
+       Reinitialize the communication pattern. The first argument  [2.x.2]        vector_space_vector_index_set is the index set associated to a       VectorSpaceVector object. The second argument  [2.x.3]        read_write_vector_index_set is the index set associated to a       ReadWriteVector object.      
+* [0.x.2]*
+       Reinitialize the object.      
+* [0.x.3]*
+       Return the underlying MPI communicator.      
+* [0.x.4]*
+       Return the underlying  [2.x.4]  object.      
+* [0.x.5]*
+       Return the underlying  [2.x.5]  object.      
+* [0.x.6]*
+       Shared pointer to the MPI communicator used.      
+* [0.x.7]*
+       Shared pointer to the  [2.x.6]  object used.      
+* [0.x.8]*
+       Shared pointer to the  [2.x.7]  object used.      
+* [0.x.9]

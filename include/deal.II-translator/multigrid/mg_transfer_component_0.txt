@@ -1,0 +1,81 @@
+[0.x.0] MGTransferBase is defined in mg_base.h
+
+* 
+* [0.x.1]*
+ Implementation of matrix generation for component wise multigrid transfer.
+* 
+
+* 
+*  [2.x.0]  MGTransferBlockBase is probably the more logical class. Still eventually, a class should be developed allowing to select multiple components.
+
+* 
+* [0.x.2]*
+   Memory used by this object.  
+* [0.x.3]*
+   Actually build the prolongation matrices for each level.     This function is only called by derived classes. These can also set the   member variables  [2.x.1]  and    [2.x.2]  member variables to restrict the   transfer matrices to certain components. Furthermore, they use    [2.x.3]  for   re-ordering and grouping of components.  
+* [0.x.4]*
+   Flag of selected components.     The transfer operators only act on the components having a <tt>true</tt>   entry here. If renumbering by #target_component is used, this refers to   the [1.x.0] components.  
+* [0.x.5]*
+   Flag of selected components.     The transfer operators only act on the components having a <tt>true</tt>   entry here. If renumbering by #mg_target_component is used, this refers   to the [1.x.1] components.  
+* [0.x.6]*
+   Target component of the fine-level vector if renumbering is required.  
+* [0.x.7]*
+   Target component if renumbering of level vectors is required.  
+* [0.x.8]*
+   Sizes of the multi-level vectors.  
+* [0.x.9]*
+   Start index of each component.  
+* [0.x.10]*
+   Start index of each component on all levels.  
+* [0.x.11]*
+   Call build() function first.  
+* [0.x.12]*
+   The actual prolongation matrix. column indices belong to the dof indices   of the mother cell, i.e. the coarse level. while row indices belong to   the child cell, i.e. the fine level.  
+* [0.x.13]*
+   This variable holds the mapping for the <tt>copy_to/from_mg</tt>-functions.   The data is first the global index, then the level index.  
+* [0.x.14]*
+   Store the boundary_indices. These are needed for the boundary values in   the restriction matrix.  
+* [0.x.15]*
+ Implementation of the MGTransferBase interface for block matrices and simple vectors. This class uses MGTransferComponentBase selecting a single component or grouping several components into a single block. The transfer operators themselves are implemented for Vector and BlockVector objects.
+*  See MGTransferBase to find out which of the transfer classes is best for your needs.
+
+* 
+* [0.x.16]*
+   Constructor without constraint matrices. Use this constructor only with   discontinuous finite elements or with no local refinement.  
+* [0.x.17]*
+   Constructor with constraint matrices.  
+* [0.x.18]*
+   Destructor.  
+* [0.x.19]*
+   Actually build the prolongation matrices for grouped components.     This function is a front-end for the same function in   MGTransferComponentBase.      [2.x.4]  selected Number of the block of the global vector to be copied from   and to the multilevel vector. This number refers to the renumbering by   <tt>target_component</tt>.      [2.x.5]  mg_selected Number of the block for which the transfer matrices   should be built.     If <tt>mg_target_component</tt> is present, this refers to the renumbered   components.      [2.x.6]  target_component this argument allows grouping and renumbering of   components in the fine-level vector (see  [2.x.7]       [2.x.8]  mg_target_component this argument allows grouping and renumbering   of components in the level vectors (see  [2.x.9]    It also affects the behavior of the <tt>selected</tt> argument      [2.x.10]  boundary_indices holds the boundary indices on each level.  
+* [0.x.20]*
+   Change selected component. Handle with care!  
+* [0.x.21]*
+   Transfer from a vector on the global grid to a multilevel vector for the   active degrees of freedom. In particular, for a globally refined mesh only   the finest level in  [2.x.11]  is filled as a plain copy of  [2.x.12]  All the   other level objects are left untouched.  
+* [0.x.22]*
+   Transfer from multilevel vector to normal vector.     Copies data from active portions of an multilevel vector into the   respective positions of a Vector.  
+* [0.x.23]*
+   Add a multi-level vector to a normal vector.     Works as the previous function, but probably not for continuous elements.  
+* [0.x.24]*
+   Transfer from a vector on the global grid to a multilevel vector for the   active degrees of freedom. In particular, for a globally refined mesh only   the finest level in  [2.x.13]  is filled as a plain copy of  [2.x.14]  All the   other level objects are left untouched.  
+* [0.x.25]*
+   Transfer from multilevel vector to normal vector.     Copies data from active portions of a multilevel vector into the   respective positions of a global BlockVector.  
+* [0.x.26]*
+   Add a multi-level vector to a normal vector.     Works as the previous function, but probably not for continuous elements.  
+* [0.x.27]*
+   Memory used by this object.  
+* [0.x.28]*
+   Implementation of the public function.  
+* [0.x.29]*
+   Implementation of the public function.  
+* [0.x.30]*
+   Actual implementation of copy_to_mg().  
+* [0.x.31]*
+   Selected component of global vector.  
+* [0.x.32]*
+   Selected component inside multigrid.  
+* [0.x.33]*
+   The degrees of freedom on the refinement edges. For each level the index   set denotes which level degrees of freedom are on the refinement edge   towards the lower level, excluding boundary dofs.  
+* [0.x.34]*
+   The constraints of the global system.  
+* [0.x.35]

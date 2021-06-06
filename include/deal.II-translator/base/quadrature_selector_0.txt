@@ -1,0 +1,24 @@
+[0.x.0]*
+ This class implements the quadrature rule passed to its constructor as a string. Supported quadratures are QGauss (of all orders), QMidpoint, QMilne, QSimpson, QTrapezoid and QWeddle.
+*  This class is useful if you want to use flexible quadrature rules, that are read from a parameter file (see ParameterHandler for this).
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   Constructor. Takes the name of the quadrature rule (one of "gauss",   "milne", "weddle", etc) and, if it is "gauss", the number of quadrature   points in each coordinate direction.  
+* [0.x.2]*
+   This function returns all possible names for quadratures as a list   separated by <tt>|</tt>, so that you can use it for the definition of   parameter files (see ParameterHandler for details).  
+* [0.x.3]*
+    [2.x.1]  Exceptions    [2.x.2]   
+* [0.x.4]*
+   Exception  
+* [0.x.5]*
+   Exception  
+* [0.x.6]*
+   Exception  
+* [0.x.7]*
+   This static function creates a quadrature object according to the name   given as a string, and the appropriate order (if the name is "gauss"). It   is called from the constructor.  
+* [0.x.8]

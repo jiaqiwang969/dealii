@@ -1,0 +1,28 @@
+[0.x.0]*
+ A namespace for various algorithms related to minimization a over line.
+
+* 
+* [0.x.1]*
+   Given  [2.x.0]  and  [2.x.1]  together with values of function    [2.x.2]  and  [2.x.3]  and the gradient  [2.x.4] , return the local   minimizer of the quadratic interpolation function.     The return type is optional to fit with similar functions that may   not have a solution for given parameters.  
+* [0.x.2]*
+   Given  [2.x.5]  and  [2.x.6]  together with values of function    [2.x.7]  and  [2.x.8]  and its gradients ( [2.x.9] ) at   those points, return the local minimizer of the cubic interpolation   function (that is, the location where the cubic interpolation function   attains its minimum value).     The return type is optional as the real-valued solution might not exist.  
+* [0.x.3]*
+   Find the minimizer of a cubic polynomial that goes through the   points  [2.x.10] ,  [2.x.11]  and  [2.x.12]    and has derivatve  [2.x.13]  at  [2.x.14] .     The return type is optional as the real-valued solution might not exist.  
+* [0.x.4]*
+   Return the minimizer of a polynomial using function values  [2.x.15]  ,    [2.x.16]  , and  [2.x.17]  at three points  [2.x.18]  ,  [2.x.19]  , and    [2.x.20]  as well as the derivatives at two points  [2.x.21]  and  [2.x.22]    The returned point should be within the bounds  [2.x.23]  .     This function will first try to perform a cubic_fit(). If its unsuccessful,   or if the minimum is not within the provided  [2.x.24]  a quadratic_fit()   will be performed. The function will fallback to a bisection method if   quadratic_fit() fails as well.  
+* [0.x.5]*
+   Same as poly_fit(), but performing a cubic fit with three points (see   cubic_fit_three_points() ).  
+* [0.x.6]*
+   Perform a line search in  [2.x.25]  with strong Wolfe conditions   [1.x.0]   using the one dimensional function  [2.x.26]  in conjunction with a function  [2.x.27]    to choose a new point from the interval based on the function values and   derivatives at its ends.   The parameter  [2.x.28]  is a trial estimate of the first step.   Interpolation can be done using either poly_fit() or   poly_fit_three_points(), or any other function that has a similar   signature.     The function implements Algorithms 2.6.2 and 2.6.4 on pages 34-35 in  
+* [1.x.1]
+*    These are minor variations of  Algorithms 3.5 and 3.6 on pages 60-61 in  
+* [1.x.2]
+*    It consists of a bracketing phase and a zoom phase, where  [2.x.29]  is used.     Two examples of use might be as follows:   In the first example, we wish to find the minimum of the function    [2.x.30] . To find the approximate solution using line search   with a polynomial fit to the curve one would perform the following steps:    
+* [1.x.3]
+*      In the second example, we wish to perform line search in the context of a   non-linear finite element problem. What follows below is a non-optimized   implementation of the back-tracking algorithm, which may be useful when   the load-step size is too large. The following illustrates the basic steps   necessary to utilize the scheme within the context of a global nonlinear   solver:    
+* [1.x.4]
+*         [2.x.31]  func A one dimensional function which returns value and derivative   at the given point.    [2.x.32]  f0 The function value at the origin.    [2.x.33]  g0 The function derivative at the origin.    [2.x.34]  interpolate A function which determines how interpolation is done   during the zoom phase. It takes values and derivatives at the current   interval/bracket ( [2.x.35] ,  [2.x.36] ) as well as up to 5 values and   derivatives at previous steps. The returned value is to be provided within   the given bounds.    [2.x.37]  a1 Initial trial step for the bracketing phase.    [2.x.38]  eta A parameter in the second Wolfe condition (curvature condition).    [2.x.39]  mu A parameter in the first Wolfe condition (sufficient decrease).    [2.x.40]  a_max The maximum allowed step size.    [2.x.41]  max_evaluations The maximum allowed number of function evaluations.    [2.x.42]  debug_output A flag to output extra debug information into the    [2.x.43]  static object.    [2.x.44]  The function returns the step size and the number of times function    [2.x.45]  was called.  
+* [0.x.7]    Assert((f_lo < f_hi) && w1(a_lo, f_lo), ExcInternalError());    Assert(((a_hi
+* 
+*  - a_lo) g_lo < 0) && !w2(g_lo), ExcInternalError());    Assert((w1(a_hi, f_hi) || f_hi >= f_lo), ExcInternalError());   
+* [0.x.8]

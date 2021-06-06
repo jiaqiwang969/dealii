@@ -1,0 +1,19 @@
+[0.x.0]*
+     A structure whose explicit specializations contain alias to the     relevant p4est_* and p8est_* types. Using this structure, for example     by saying  [2.x.0]  we can write code in a     dimension independent way, either referring to p4est_connectivity_t or     p8est_connectivity_t, depending on template argument.    
+* [0.x.1]*
+     A structure whose explicit specializations contain pointers to the     relevant p4est_* and p8est_* functions. Using this structure, for     example by saying  [2.x.1]  we can write code     in a dimension independent way, either calling p4est_quadrant_compare     or p8est_quadrant_compare, depending on template argument.    
+* [0.x.2]*
+     This struct templatizes the p4est iterate structs and function     prototypes, which are used to execute callback functions for faces,     edges, and corners that require local neighborhood information, i.e.     the neighboring cells    
+* [0.x.3]*
+     Initialize the  [2.x.2]  children of the     cell p4est_cell.    
+* [0.x.4]*
+     Initialize quadrant to represent a coarse cell.    
+* [0.x.5]*
+     Return whether q1 and q2 are equal    
+* [0.x.6]*
+     Return whether q1 is an ancestor of q2    
+* [0.x.7]*
+     Return whether the children of a coarse cell are stored locally    
+* [0.x.8]*
+     Deep copy a p4est connectivity object.    
+* [0.x.9]

@@ -1,0 +1,111 @@
+[0.x.0]*
+ A class that represents a point in a Cartesian space of dimension  [2.x.0]  .
+*  Objects of this class are used to represent points (i.e., vectors anchored at the origin) of a vector space equipped with a [1.x.0]. They are, among other uses, passed to functions that operate on points in spaces of a priori fixed dimension: rather than using functions like <code>double f(const double x)</code> and <code>double f(const double x, const double y)</code>, you can use  [2.x.1]  instead as it allows writing dimension independent code.
+*  deal.II specifically uses Point objects as indicating points that are represented by Cartesian coordinates, i.e., where a point in  [2.x.2]  dim space dimensions is characterized by signed distances along the axes of a coordinate system spanned by  [2.x.3]  mutually orthogonal unit vectors (called the "coordinate axes"). This choice of representing a vector makes addition and scaling of vectors particularly simple: one only has to add or multiply each coordinate value. On the other hand, adding or scaling vectors is not nearly as simple when a vector is represented in other kinds of coordinate systems (e.g., [1.x.1]).
+* 
+
+*  [1.x.2]
+*  The Point class is derived from Tensor [2.x.4]  and consequently shares the latter's member functions and other attributes. In fact, it has relatively few additional functions itself (the most notable exception being the distance() function to compute the Euclidean distance between two points in space), and these two classes can therefore often be used interchangeably.
+*  Nonetheless, there are semantic differences that make us use these classes in different and well-defined contexts. Within deal.II, we use the <tt>Point</tt> class to denote points in space, i.e., for vectors (rank-1 tensors) that are  [2.x.5] anchored at the origin [2.x.6] . On the other hand, vectors that are anchored elsewhere (and consequently do not represent  [2.x.7] points [2.x.8]  in the common usage of the word) are represented by objects of type Tensor [2.x.9]  In particular, this is the case for direction vectors, normal vectors, gradients, and the differences between two points (i.e., what you get when you subtract one point from another): all of these are represented by Tensor [2.x.10]  objects rather than Point [2.x.11] 
+*  Furthermore, the Point class is only used where the coordinates of an object can be thought to possess the dimension of a length. An object that represents the weight, height, and cost of an object is neither a point nor a tensor (because it lacks the transformation properties under rotation of the coordinate system) and should consequently not be represented by either of these classes. Use an array of size 3 in this case, or the  [2.x.12]  class. Alternatively, as in the case of vector-valued functions, you can use objects of type Vector or  [2.x.13] .
+* 
+
+*   [2.x.14]  dim An integer that denotes the dimension of the space in which a point lies. This of course equals the number of coordinates that identify a point.  [2.x.15]  Number The data type in which the coordinates values are to be stored. This will, in almost all cases, simply be the default  [2.x.16]  but there are cases where one may want to store coordinates in a different (and always scalar) type. An example would be an interval type that can store the value of a coordinate as well as its uncertainty. Another example would be a type that allows for Automatic Differentiation (see, for example, the Sacado type used in  [2.x.17] ) and thereby can generate analytic (spatial) derivatives of a function when passed a Point object whose coordinates are stored in such a type.
+* 
+
+* 
+
+* 
+*  [2.x.18] 
+
+* 
+* [0.x.1]*
+   Standard constructor. Creates an object that corresponds to the origin,   i.e., all coordinates are set to zero.    
+*  [2.x.19]  This function can also be used in CUDA device code.  
+* [0.x.2]*
+   Convert a tensor to a point.  
+* [0.x.3]*
+   Constructor for one dimensional points. This function is only implemented   for <tt>dim==1</tt> since the usage is considered unsafe for points with   <tt>dim!=1</tt> as it would leave some components of the point   coordinates uninitialized.    
+*  [2.x.20]  This function can also be used in CUDA device code.  
+* [0.x.4]*
+   Constructor for two dimensional points. This function is only implemented   for <tt>dim==2</tt> since the usage is considered unsafe for points with   <tt>dim!=2</tt> as it would leave some components of the point   coordinates uninitialized (if dim>2) or would not use some arguments (if   dim<2).    
+*  [2.x.21]  This function can also be used in CUDA device code.  
+* [0.x.5]*
+   Constructor for three dimensional points. This function is only   implemented for <tt>dim==3</tt> since the usage is considered unsafe for   points with <tt>dim!=3</tt> as it would leave some components of the   point coordinates uninitialized (if dim>3) or would not use some   arguments (if dim<3).    
+*  [2.x.22]  This function can also be used in CUDA device code.  
+* [0.x.6]*
+   Convert a  [2.x.23]  to a  [2.x.24]   
+* [0.x.7]*
+   Return a unit vector in coordinate direction <tt>i</tt>, i.e., a vector   that is zero in all coordinates except for a single 1 in the <tt>i</tt>th   coordinate.    
+*  [2.x.25]  This function can also be used in CUDA device code.  
+* [0.x.8]*
+   Read access to the <tt>index</tt>th coordinate.    
+*  [2.x.26]  This function can also be used in CUDA device code.  
+* [0.x.9]*
+   Read and write access to the <tt>index</tt>th coordinate.    
+*  [2.x.27]  This function can also be used in CUDA device code.  
+* [0.x.10]*
+   Assignment operator from Tensor<1, dim, Number> with different underlying   scalar type. This obviously requires that the  [2.x.28]  type is   convertible to  [2.x.29]   
+* [0.x.11]*
+    [2.x.30]  Addition and subtraction of points.    [2.x.31]   
+* [0.x.12]*
+   Add an offset given as Tensor<1,dim,Number> to a point.    
+*  [2.x.32]  This function can also be used in CUDA device code.  
+* [0.x.13]*
+   Subtract two points, i.e., obtain the vector that connects the two. As   discussed in the documentation of this class, subtracting two points   results in a vector anchored at one of the two points (rather than at the   origin) and, consequently, the result is returned as a Tensor [2.x.33]    rather than as a Point [2.x.34]     
+*  [2.x.35]  This function can also be used in CUDA device code.  
+* [0.x.14]*
+   Subtract a difference vector (represented by a Tensor [2.x.36]  from the   current point. This results in another point and, as discussed in the   documentation of this class, the result is then naturally returned as a   Point [2.x.37]  object rather than as a Tensor [2.x.38]     
+*  [2.x.39]  This function can also be used in CUDA device code.  
+* [0.x.15]*
+   The opposite vector.    
+*  [2.x.40]  This function can also be used in CUDA device code.  
+* [0.x.16]*
+    [2.x.41]   
+* [0.x.17]*
+    [2.x.42]  Multiplication and scaling of points. Dot products. Norms.    [2.x.43]   
+* [0.x.18]*
+   Multiply the current point by a factor.    
+*  [2.x.44]  This function can also be used in CUDA device code.      [2.x.45]  EnableIfScalar  
+* [0.x.19]*
+   Divide the current point by a factor.    
+*  [2.x.46]  This function can also be used in CUDA device code.  
+* [0.x.20]*
+   Return the scalar product of the vectors representing two points.    
+*  [2.x.47]  This function can also be used in CUDA device code.  
+* [0.x.21]*
+   Return the scalar product of this point vector with itself, i.e. the   square, or the square of the norm. In case of a complex number type it is   equivalent to the contraction of this point vector with a complex   conjugate of itself.    
+*  [2.x.48]  This function is equivalent to    [2.x.49]  which returns the square of the   Frobenius norm.    
+*  [2.x.50]  This function can also be used in CUDA device code.  
+* [0.x.22]*
+   Return the Euclidean distance of <tt>this</tt> point to the point   <tt>p</tt>, i.e. the  [2.x.51]  norm of the difference between the   vectors representing the two points.    
+*  [2.x.52]  This function can also be used in CUDA device code.  
+* [0.x.23]*
+   Return the squared Euclidean distance of <tt>this</tt> point to the point   <tt>p</tt>.    
+*  [2.x.53]  This function can also be used in CUDA device code.  
+* [0.x.24]*
+    [2.x.54]   
+* [0.x.25]*
+   Read or write the data of this object to or from a stream for the purpose   of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.26]*
+ Global operator scaling a point vector by a scalar.
+* 
+
+* 
+*  [2.x.55]  This function can also be used in CUDA device code.
+*   [2.x.56]  Point  [2.x.57]  EnableIfScalar
+
+* 
+* [0.x.27]*
+ Output operator for points. Print the elements consecutively, with a space in between.  [2.x.58]  Point
+
+* 
+* [0.x.28]*
+ Input operator for points. Inputs the elements consecutively.  [2.x.59]  Point
+
+* 
+* [0.x.29]*
+ Output operator for points of dimension 1. This is implemented specialized from the general template in order to avoid a compiler warning that the loop is empty.
+
+* 
+* [0.x.30]

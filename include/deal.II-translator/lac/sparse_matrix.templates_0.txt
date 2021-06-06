@@ -1,0 +1,9 @@
+[0.x.0]*
+     Perform a vmult using the SparseMatrix data structures, but only using     a subinterval for the row indices.         In the sequential case, this function is called on all rows, in the     parallel case it may be called on a subrange, at the discretion of the     task scheduler.    
+* [0.x.1]*
+     Perform a vmult using the SparseMatrix data structures, but only using     a subinterval for the row indices.         In the sequential case, this function is called on all rows, in the     parallel case it may be called on a subrange, at the discretion of the     task scheduler.    
+* [0.x.2]*
+     Perform a vmult using the SparseMatrix data structures, but only using     a subinterval for the row indices.         In the sequential case, this function is called on all rows, in the     parallel case it may be called on a subrange, at the discretion of the     task scheduler.    
+* [0.x.3]*
+     Perform a vmult using the SparseMatrix data structures, but only using     a subinterval for the row indices.         In the sequential case, this function is called on all rows, in the     parallel case it may be called on a subrange, at the discretion of the     task scheduler.    
+* [0.x.4]

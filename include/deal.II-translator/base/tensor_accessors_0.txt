@@ -1,0 +1,173 @@
+[0.x.0]*
+ This namespace is a collection of algorithms working on generic tensorial objects (of arbitrary rank).
+*  The rationale to implement such functionality in a generic fashion in a separate namespace is
+* 
+
+* 
+* 
+
+* 
+* 
+*  - to easy code reusability and therefore avoid code duplication.
+* 
+
+* 
+* 
+
+* 
+* 
+*  - to have a well-defined interface that allows to exchange the low level implementation.
+* 
+
+*  A tensorial object has the notion of a rank and allows a rank-times recursive application of the index operator, e.g., if  [2.x.0]  is a tensorial object of rank 4, the following access is valid:
+
+* 
+* [1.x.0]
+* 
+*  deal.II has its own implementation for tensorial objects such as  [2.x.1]  dim, Number> and  [2.x.2]  dim, Number>
+*  The methods and algorithms implemented in this namespace, however, are fully generic. More precisely, it can operate on nested c-style arrays, or on class types  [2.x.3]  with a minimal interface that provides a local alias  [2.x.4]  and an index operator  [2.x.5]  that returns a (const or non-const) reference of  [2.x.6] :
+
+* 
+* [1.x.1]
+* 
+*  This namespace provides primitives for access, reordering and contraction of such objects.
+* 
+
+* 
+*  [2.x.7] 
+
+* 
+* [0.x.1]*
+   This class provides a local alias  [2.x.8]  denoting the resulting   type of an access with operator[](unsigned int). More precisely,  [2.x.9]    value_type will be
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.10]  if T is a tensorial class providing an   alias  [2.x.11]  and does not have a const qualifier.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.12]  if T is a tensorial class   providing an alias  [2.x.13]  and does have a const   qualifier.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.14]  if T is a tensorial class   providing an alias  [2.x.15]  and does have a const   qualifier.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.16] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.17]  and   does have a const qualifier.  
+* [0.x.2]*
+   This class provides a local alias  [2.x.18]  that is equal to the   alias  [2.x.19]  after  [2.x.20]  recursive   dereferences via ```operator[](unsigned int)```. Further, constness is   preserved via the ValueType type trait, i.e., if T is const,   ReturnType<rank,  [2.x.21]  will also be const.  
+* [0.x.3]*
+   Provide a "tensorial view" to a reference  [2.x.22]  of a tensor object of rank    [2.x.23]  in which the index  [2.x.24]  is shifted to the end. As an example   consider a tensor of 5th order in dim=5 space dimensions that can be   accessed through 5 recursive  [2.x.25]  invocations:  
+* [1.x.2]
+*    Index 1 (the 2nd index, count starts at 0) can now be shifted to the end   via  
+* [1.x.3]
+*    The usage of the  [2.x.26]  type was solely for the sake of an   example. The mechanism implemented by this function is available for   fairly general tensorial types  [2.x.27]      The purpose of this reordering facility is to be able to contract over an   arbitrary index of two (or more) tensors:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - reorder the indices in mind to the end of the tensors
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - use the contract function below that contracts the _last_ elements of   tensors.    
+*  [2.x.28]  This function returns an internal class object consisting of an   array subscript operator  [2.x.29]  and an   alias  [2.x.30]  describing its return value.      [2.x.31]  index The index to be shifted to the end. Indices are counted   from 0, thus the valid range is  [2.x.32] .    [2.x.33]  rank Rank of the tensorial object  [2.x.34]     [2.x.35]  T A tensorial object of rank  [2.x.36]   [2.x.37]  must provide a local   alias  [2.x.38]  and an index operator    [2.x.39]  that returns a (const or non-const) reference   of  [2.x.40] .  
+* [0.x.4]*
+   Return a reference (const or non-const) to a subobject of a tensorial   object  [2.x.41]  of type  [2.x.42]  as described by an array type  [2.x.43]    object  [2.x.44]  For example:  
+* [1.x.4]
+*    This is equivalent to  [2.x.45] .      [2.x.46]  T A tensorial object of rank  [2.x.47]   [2.x.48]  must provide a local   alias  [2.x.49]  and an index operator    [2.x.50]  that returns a (const or non-const) reference   of  [2.x.51] . Further, its tensorial rank must be equal or   greater than  [2.x.52]       [2.x.53]  ArrayType An array like object, such as  [2.x.54]  or    [2.x.55]   that stores at least  [2.x.56]  indices that can be   accessed via operator[]().  
+* [0.x.5]*
+   This function contracts two tensorial objects  [2.x.57]  and  [2.x.58]  and   stores the result in  [2.x.59]  The contraction is done over the _last_    [2.x.60]  indices of both tensorial objects:     [1.x.5]     Calling this function is equivalent of writing the following low level   code:  
+* [1.x.6]
+*    with r = rank_1 + rank_2
+* 
+*  - 2 no_contr, l = rank_1
+* 
+*  - no_contr, l1 =   rank_1, and c = no_contr.    
+*  [2.x.61]  The Types  [2.x.62]   [2.x.63]  and  [2.x.64]  must have rank rank_1 + rank_2
+* 
+*  -   2 no_contr, rank_1, or rank_2, respectively. Obviously, no_contr must   be less or equal than rank_1 and rank_2.  
+* [0.x.6]*
+   Full contraction of three tensorial objects:     [1.x.7]     Calling this function is equivalent of writing the following low level   code:  
+* [1.x.8]
+*     
+*  [2.x.65]  The Types  [2.x.66]   [2.x.67]  and  [2.x.68]  must have rank rank_1, rank_1 +   rank_2, and rank_3, respectively.  [2.x.69]  must be a scalar type.  
+* [0.x.7]*
+     An internally used type trait to allow nested application of the     function reordered_index_view(T &t).         The problem is that when working with the actual tensorial types, we     have to return subtensors by reference
+* 
+*  - but sometimes, especially for     StoreIndex and ReorderedIndexView that return rvalues, we have to     return by value.    
+* [0.x.8]

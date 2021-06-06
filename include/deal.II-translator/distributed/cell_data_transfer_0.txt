@@ -1,0 +1,50 @@
+[0.x.0]*
+     Transfer data that is associated with each active cell (like error     indicators) while refining and/or coarsening a distributed triangulation     and handle the necessary communication.         This class therefore does for cell-related information what      [2.x.0]  does for the values of degrees of     freedom defined on a  [2.x.1]          This class has been designed to operate on any kind of datatype that is     serializable. A non-distributed container (like Vector or  [2.x.2]      has to be provided, which holds the cell-wise data in the same order as     active cells are traversed. In other words, each entry corresponds to the     cell with the same index  [2.x.3]  and the     container has to be of size  [2.x.4]          [1.x.0]         The following code snippet demonstrates how to transfer cell-related data     across refinement/coarsening of the registered triangulation.        
+* [1.x.1]
+*              [1.x.2]         This class can be used to serialize and later deserialize a distributed     mesh with attached data to separate files.         For serialization, the following code snippet saves not only the     triangulation itself, but also the cell-wise data attached:    
+* [1.x.3]
+*          Later, during deserialization, both triangulation and data can be     restored as follows:    
+* [1.x.4]
+*         
+*  [2.x.5]  If you use more than one object to transfer data via the      [2.x.6]  and      [2.x.7]  interface     with the aim of serialization, the calls to the corresponding     prepare_for_serialization() and deserialize() functions need to happen in     the same order, respectively. Classes relying on this interface are e.g.      [2.x.8]       [2.x.9]  and  [2.x.10]         
+*  [2.x.11]  See the documentation of  [2.x.12]  for     matching code snippets for both transfer and serialization.        
+*  [2.x.13]     
+* [0.x.1]*
+       An alias that defines the data type of provided container template.      
+* [0.x.2]*
+       Constructor.              [2.x.14]  triangulation The triangulation on which all operations will         happen. At the time when this constructor is called, the refinement         in question has not happened yet.        [2.x.15]  transfer_variable_size_data Specify whether your VectorType         container stores values that differ in size. A varying amount of data         may be packed per cell, if for example the underlying ValueType of         the VectorType container is a container itself.        [2.x.16]  refinement_strategy %Function deciding how data will be         stored on refined cells from its parent cell.        [2.x.17]  coarsening_strategy %Function deciding which data to store         on a cell whose children will get coarsened into.      
+* [0.x.3]*
+       Prepare the current object for coarsening and refinement.             It registers the data transfer of  [2.x.18]  on the underlying triangulation.        [2.x.19]  includes data to be interpolated onto the new (refined and/or       coarsened) grid. See documentation of this class for more information       on how to use this functionality.             This function can be called only once for the specified container       until data transfer has been completed. If multiple vectors shall be       transferred via this class, use the function below.      
+* [0.x.4]*
+       Same as the function above, only for a list of vectors.      
+* [0.x.5]*
+       Prepare the serialization of the given vector.             The serialization is done by  [2.x.20]  See documentation       of this class for more information on how to use this functionality.             This function can be called only once for the specified container       until data transfer has been completed. If multiple vectors shall be       transferred via this class, use the function below.      
+* [0.x.6]*
+       Same as the function above, only for a list of vectors.      
+* [0.x.7]*
+       Unpack the information previously stored in this object before       the mesh was refined or coarsened onto the current set of cells.      
+* [0.x.8]*
+       Same as the function above, only for a list of vectors.      
+* [0.x.9]*
+       Execute the deserialization of the stored information.       This needs to be done after calling  [2.x.21]       
+* [0.x.10]*
+       Same as the function above, only for a list of vectors.      
+* [0.x.11]*
+       Pointer to the triangulation to work with.      
+* [0.x.12]*
+       Specifies if size of data to transfer varies from cell to cell.      
+* [0.x.13]*
+       %Function deciding how data will be stored on refined cells from its       parent cell.      
+* [0.x.14]*
+       %Function deciding on how to process data from children to be stored on       the parent cell.      
+* [0.x.15]*
+       A vector that stores pointers to all the vectors we are supposed to       copy over from the old to the new mesh.      
+* [0.x.16]*
+       The handle that triangulation has assigned to this object       with which we can access our memory offset and our pack function.      
+* [0.x.17]*
+       Registers the pack_callback() function to the triangulation       and stores the returning handle.      
+* [0.x.18]*
+       A callback function used to pack the data on the current mesh into       objects that can later be retrieved after refinement, coarsening and       repartitioning.      
+* [0.x.19]*
+       A callback function used to unpack the data on the current mesh that       has been packed up previously on the mesh before refinement,       coarsening and repartitioning.      
+* [0.x.20]

@@ -1,0 +1,118 @@
+[0.x.0]*
+ A class for storing at each cell represented by iterators of type  [2.x.0]  a vector of data  [2.x.1]  . The underlying structure and the initialize() method of this class are designed in such a way that one could use different child classes derived from the base DataType class to store data on a given cell. This implies the usage of pointers, in our case
+* 
+*  -   [2.x.2] 
+*  The type  [2.x.3]  is arbitrary, but when using a class derived from TransferableQuadraturePointData one can use the facilities of  [2.x.4] 
+* 
+
+* 
+*  [2.x.5]  The data type stored on each cell can be different. However, within the cell this class stores a vector of objects of a single data type. For this reason, this class may not be sufficiently flexible when, for example, adopting a level-set approach to describe material behavior.
+
+* 
+* [0.x.1]*
+   Default constructor.  
+* [0.x.2]*
+   Default destructor.  
+* [0.x.3]*
+   Initialize data on the  [2.x.6]  to store  [2.x.7]  of objects of type  [2.x.8]  .   The typename  [2.x.9]  is possibly another class which is derived from the   base  [2.x.10]  class. In order to initialize the vector of objects   we have to assume that the class  [2.x.11]  has a default constructor.   This function has to be called on every cell where data is to be stored.     After the data is initialized, it can be modified using the get_data()   function.    
+*  [2.x.12]  Subsequent calls of this function with the same  [2.x.13]  will not   alter the objects associated with it. In order to remove the stored data,   use the erase() function.    
+*  [2.x.14]  It is possible to use different types  [2.x.15]  for different cells which   may reflect, for example, different constitutive models of continuum   mechanics in different parts of the domain.    
+*  [2.x.16]  The first time this method is called, it stores a SmartPointer to the   Triangulation object that owns the cell. The future invocations of this   method expects the cell to be from the same stored triangulation.      [2.x.17]  The type  [2.x.18]  needs to either equal  [2.x.19]  or be a class derived   from  [2.x.20]   [2.x.21]  needs to be default constructible.  
+* [0.x.4]*
+   Same as above but for a range of iterators starting at  [2.x.22]    until, but not including,  [2.x.23]  for all locally owned cells, i.e.   for which `cell->is_locally_owned()==true` .  
+* [0.x.5]*
+   Removes data stored at the  [2.x.24]  Returns true if the data was removed.   If no data is attached to the  [2.x.25]  this function will not do anything   and returns false.    
+*  [2.x.26]  This function will also check that there are no   outstanding references to the data stored on this cell. That is to say,   that the only references to the stored data are that made by this class.  
+* [0.x.6]*
+   Clear all the data stored in this object.  
+* [0.x.7]*
+   Get a vector of the data located at  [2.x.27]  .   A possible additional typename  [2.x.28]  is the class to which the base class   DataType could be cast. Since  [2.x.29]  is stored as shared pointers,   there is minimal overhead in returning a vector by value instead of by   reference.   This allows flexibility if class  [2.x.30]  is not the same as  [2.x.31]  on a   cell-by-cell basis.      [2.x.32]  The type  [2.x.33]  needs to match the class provided to initialize() .      [2.x.34]   [2.x.35]  must be from the same Triangulation that is used to   initialize() the cell data.  
+* [0.x.8]*
+   Get a vector of constant pointers to data located at  [2.x.36]  .   A possible additional typename  [2.x.37]  is the class to which the base class   DataType could be cast. Since  [2.x.38]  is stored as shared pointers,   there is minimal overhead in returning a vector by value instead of by   reference.   This allows flexibility if class  [2.x.39]  is not the same as  [2.x.40]  on a   cell-by-cell basis.      [2.x.41]  The type  [2.x.42]  needs to match the class provided to initialize() .      [2.x.43]   [2.x.44]  must be from the same Triangulation that is used to   initialize() the cell data.  
+* [0.x.9]*
+   Returns a  [2.x.45]  indicating whether  [2.x.46]  contains an   associated data or not. If data is available, dereferencing the    [2.x.47]  reveals a vector of pointers to the underlying data   at the quadrature points.   A possible additional typename  [2.x.48]  is the class to which the base class   DataType could be cast. Since  [2.x.49]  is stored as shared pointers,   there is minimal overhead in returning a vector by value instead of by   reference.   This allows flexibility if class  [2.x.50]  is not the same as  [2.x.51]  on a   cell-by-cell basis.      [2.x.52]  The type  [2.x.53]  needs to match the class provided to initialize().    [2.x.54]   [2.x.55]  must be from the same Triangulation that is used to   initialize() the cell data.  
+* [0.x.10]*
+   Returns a  [2.x.56]  indicating whether  [2.x.57]  contains an   associated data or not. If data is available, dereferencing the    [2.x.58]  reveals a vector of constant pointers to the   underlying data at the quadrature points.   A possible additional typename  [2.x.59]  is the class to which the base class   DataType could be cast. Since  [2.x.60]  is stored as shared pointers,   there is minimal overhead in returning a vector by value instead of by   reference.   This allows flexibility if class  [2.x.61]  is not the same as  [2.x.62]  on a   cell-by-cell basis.      [2.x.63]  The type  [2.x.64]  needs to match the class provided to initialize().    [2.x.65]   [2.x.66]  must be from the same Triangulation that is used to   initialize() the cell data.  
+* [0.x.11]*
+   Number of dimensions  
+* [0.x.12]*
+   Number of space dimensions  
+* [0.x.13]*
+   To ensure that all the cells in the CellDataStorage come from the same   Triangulation, we need to store a reference to that Triangulation within   the class.  
+* [0.x.14]*
+   A map to store a vector of data on each cell.   We need to use CellId as the key because it remains unique during   adaptive refinement.  
+* [0.x.15]*
+    [2.x.67]  Exceptions  
+* [0.x.16]*
+    [2.x.68]  Exceptions  
+* [0.x.17]*
+ An abstract class which specifies requirements for data on a single quadrature point to be transferable during refinement or repartitioning.
+*  This class provides a framework by which derived classes representing data at quadrature points can declare how many scalar values they store, and then implement functions that pack and unpack these scalars into arrays. These arrays are used to transfer data from quadrature points of one cell to quadrature points of another cell as well as between processors upon mesh refinement and repartitioning. The transfer of quadrature point data between parent and child cells requires some kind of projection and/or interpolation. One possible implementation is via the L2 projection and prolongation matrices as implemented in  [2.x.69]  class.
+*  To store and access instances of classes derived from this class, see the CellDataStorage class.
+
+* 
+* [0.x.18]*
+   Default constructor.  
+* [0.x.19]*
+   Default virtual destructor.  
+* [0.x.20]*
+   Return the total number of values which will be   packed/unpacked from the user's DataType class. Consequently it is also   the size of the vectors in pack_values() and unpack_values() .  
+* [0.x.21]*
+   A virtual function that have to be implemented in derived classes to   pack all data stored in the derived class into a vector  [2.x.70]  .   This vector will contain all scalar and/or Tensorial data local to each   quadrature point.    
+*  [2.x.71]   The function will be called with  [2.x.72]  of size number_of_values().   The implementation may still have an assert to check that it is indeed the   case.  
+* [0.x.22]*
+   The opposite of the above, namely   unpack a vector  [2.x.73]  into the data stored in this class.    
+*  [2.x.74]   The function will be called with  [2.x.75]  of size number_of_values().   The implementation may still have an assert to check that it is indeed the   case.  
+* [0.x.23]*
+     A class for the transfer of continuous data stored at quadrature points     when performing h-adaptive refinement of      [2.x.76]  .         [1.x.0]         This class implements the transfer of the quadrature point data between     cells in case of adaptive refinement using L2 projection. That also     includes automatic shipping of information between different processors.         To that end, the constructor of the class is provided with three main     objects:     scalar FiniteElement  [2.x.77]   [2.x.78]  and  [2.x.79]      Quadrature rules.     First, the data located at  [2.x.80]  of each cell is L2-projected     to the continuous space defined by a single FiniteElement  [2.x.81]  .     This is achieved using      [2.x.82]  In  doing so     the mass matrix of this element is required, which will be calculated     with the  [2.x.83]  rule . Should the cell now belong to another processor,     the data is then sent to this processor. The class makes use of a feature     of p4est (and  [2.x.84]  that allows one to     attach information to cells during mesh refinement and rebalancing. On     receiving information on the target cell, the data is projected back to     the quadrature points using the matrix calculated by      [2.x.85]  .     In the case that local refinement is performed, this class first     project local DoF values of the parent element to each child.             This class is templated by  [2.x.86]  type, however the user's  [2.x.87]  class     has to be derived from the TransferableQuadraturePointData class. In     practice that amounts to implementing the following three functions shown     below for a quadrature point data with 2 scalars:    
+* [1.x.1]
+*      Note that the order of packing and unpacking has to be the same.         This class can then be use with CellDataStorage in the following way:    
+* [1.x.2]
+*      This approach can be extended to quadrature point data with Tensor     objects of arbitrary order, although with a little bit more work in     packing and unpacking of data inside MyQData class.        
+*  [2.x.88]  Currently coarsening is not supported.        
+*  [2.x.89]  The functionality provided by this class can alternatively be achieved     using  [2.x.90]  However, that would     require the following steps: (i) create an auxiliary DoFHandler with a     (discontinuous Galerkin) FiniteElement which has enough components to     represent all data stored at the quadrature points; (ii) project the data     to the FiniteElement space and thereby store results in global vectors;     (iii) use  [2.x.91]  to project FE vectors     to the new mesh; and (iv) finally project the data back to the quadrature     points on the new mesh via FEValues class. The     ContinuousQuadratureDataTransfer class aims at simplifying the whole     process by only requiring that the quadrature point data class is derived     from the TransferableQuadraturePointData. Everything else will be done     automatically.        
+*  [2.x.92]  This class is not well suited to situations where the values stored     at quadrature points represent samples from a discontinuous field. An     example for such a situation would be where the data stored at the     quadrature points represents the elastic or plastic state of a material,     i.e., a property that varies discontinuously within a solid. In such     cases, trying to transfer data from the quadrature points to a finite     element field that is continuous (at least within one cell) will likely     yield over and undershoots that, once evaluated at a different set of     quadrature points (on child or parent cells) results in values that will     not make much sense.    
+* [0.x.24]*
+       An alias for a cell.      
+* [0.x.25]*
+       Constructor which takes the FiniteElement  [2.x.93]  , the quadrature       rule  [2.x.94]  used to integrate its local mass matrix and       finally the quadrature rule  [2.x.95]  which is used to store  [2.x.96]               [2.x.97]   [2.x.98]  has to be scalar-valued.            
+*  [2.x.99]  Since this class does projection on cell-by-cell basis,        [2.x.100]  is only required to be continuous within the cell.      
+* [0.x.26]*
+       Prepare for coarsening and refinement of a triangulation  [2.x.101]  .        [2.x.102]  represents the cell data which should be transferred       and it should be initialized for each locally owned active cell.            
+*  [2.x.103]  Although CellDataStorage class allows storing on different cells       different objects derived from the base class, here we assume that        [2.x.104]  contains objects of the same type, more specifically       they pack/unpack the same data.      
+* [0.x.27]*
+       Interpolate the data previously stored in this object before the mesh       was refined or coarsened onto the quadrature points of the currently       active set of cells.            
+*  [2.x.105]  Before calling this function the user is expected to populate the       data stored in the  [2.x.106]  object provided to prepare_for_coarsening_and_refinement()       at new cells using  [2.x.107]  If that is not the       case, an exception will be thrown in debug mode.      
+* [0.x.28]*
+       A callback function used to pack the data on the current mesh into       objects that can later be retrieved after refinement, coarsening and       repartitioning.      
+* [0.x.29]*
+       A callback function used to unpack the data on the current mesh that       has been packed up previously on the mesh before refinement,       coarsening and repartitioning.      
+* [0.x.30]*
+       FiniteElement used to project data from and to quadrature points.      
+* [0.x.31]*
+       The size of the data that will be sent, which depends on the DataType       class.      
+* [0.x.32]*
+       Number of quadrature points at which DataType is stored.      
+* [0.x.33]*
+       Projection matrix from the quadrature points to local DoFs for a single       scalar.      
+* [0.x.34]*
+       Projection matrix from the local DoFs to quadrature points for a single       scalar.      
+* [0.x.35]*
+       Auxiliary matrix which represents projection of each internal value       stored       at the quadrature point (second index) to the local DoFs of the  [2.x.108]        (first index).      
+* [0.x.36]*
+       Projection of  [2.x.109]  to each child cell in case of adaptive refinement.      
+* [0.x.37]*
+       Auxiliary matrix which represents data (second index) stored at each       quadrature point (first index).      
+* [0.x.38]*
+       The handle that the  [2.x.110]  has assigned       to this object while registering the pack_callback function.      
+* [0.x.39]*
+       A pointer to the CellDataStorage class whose data will be transferred.      
+* [0.x.40]*
+       A pointer to the distributed triangulation to which cell data is       attached.      
+* [0.x.41] Pack cell data of type  [2.x.111]  stored using  [2.x.112]  in  [2.x.113]  at each quadrature point to  [2.x.114]  Here  [2.x.115]  is a matrix whose first index corresponds to different quadrature points on the cell whereas the second index represents different values stored at each quadrature point in the DataType class.
+
+* 
+* [0.x.42] the opposite of the pack function above.
+
+* 
+* [0.x.43]

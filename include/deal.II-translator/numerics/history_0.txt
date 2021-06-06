@@ -1,0 +1,29 @@
+[0.x.0]*
+ A helper class to store a finite-size collection of objects of type `T`. If the number of elements exceeds the specified maximum size of the container, the oldest element is removed. Additionally, random access and removal of elements is implemented. Indexing is done relative to the last added element.
+*  In order to optimize the container for usage with memory-demanding objects (i.e. linear algebra vectors), the removal of an element does not free the memory. Instead the element is being kept in a separate cache so that subsequent addition does not require re-allocation of memory.
+*  The primary usage of this class is in solvers to store a history of vectors. That is, if at the iteration  [2.x.0]  we store  [2.x.1]  vectors from previous iterations  [2.x.2] , then addition of the new element will make the object contain elements from iterations  [2.x.3] .
+
+* 
+* [0.x.1]*
+   Constructor.      [2.x.4]  max_elements maximum number of elements to be stored in the   history.  
+* [0.x.2]*
+   Add new object by copying.   If the maximum number of elements is reached, the oldest element is   removed.  
+* [0.x.3]*
+   Remove an element with index  [2.x.5]    counting from the last added element.   `index==0` therefore corresponds to removing   the newset element.  
+* [0.x.4]*
+   Read/write access to an element with index  [2.x.6]    counting from the last added element.   `index==0` therefore corresponds to the newset element.  
+* [0.x.5]*
+   Read access to an element with index  [2.x.7]    counting from the last added element.   `index==0` therefore corresponds to the newset element.  
+* [0.x.6]*
+   Return the current size of the history.  
+* [0.x.7]*
+   Return the maximum allowed size of the history.  
+* [0.x.8]*
+   Clear the contents, including the cache.  
+* [0.x.9]*
+   Maximum number of elements to be stored.  
+* [0.x.10]*
+   A deque which stores the data.  
+* [0.x.11]*
+   A deque to cache data, in particular for the case when   removal is followed by addition.  
+* [0.x.12]

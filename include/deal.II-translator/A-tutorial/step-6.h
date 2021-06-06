@@ -981,8 +981,10 @@ O}(N^{3/2})$   (for the few smallest meshes, the CPU time is so smallthat it doe
 * In the code above, we already do this for faces that sit at the boundary: thishappens automatically since we use   GridGenerator::hyper_ball,   which attaches aSphericalManifold to the boundary of the domain. To make the mesh<i>interior</i> also track a circular domain, we need to work a bit harder,though. First, recall that our coarse mesh consists of a central squarecell and four cells around it. Now first consider what would happen if wealso attached the SphericalManifold object not only to the four exterior facesbut also the four cells at the perimeter as well as all of their faces. We cando this by adding the following snippet (testing that the center of a cell islarger than a small multiple, say one tenth, of the cell diameter away fromcenter of the mesh only fails for the central square of the mesh):
 * @code
 GridGenerator::hyper_ball(triangulation);
-// after GridGenerator::hyper_ball is called the Triangulation has
-// a SphericalManifold with id 0. We can use it again on the interior.
+* 
+
+
+* 
 const Point<dim> mesh_center;
 for (const auto &cell : triangulation.active_cell_iterators())
   if (mesh_center.distance (cell->center()) > cell->diameter()/10)
@@ -1022,17 +1024,29 @@ const Point<dim> mesh_center;
 const double core_radius  = 1.0/5.0,
              inner_radius = 1.0/3.0;
 * 
-// Step 1: Shrink the inner cell
-//
-// We cannot get a circle out of the inner cell because of
-// the degeneration problem mentioned above. Rather, shrink
-// the inner cell to a core radius of 1/5 that stays
-// sufficiently far away from the place where the
-// coefficient will have a discontinuity and where we want
-// to have cell interfaces that actually lie on a circle.
-// We do this shrinking by just scaling the location of each
-// of the vertices, given that the center of the circle is
-// simply the origin of the coordinate system.
+
+
+* 
+* 
+
+
+* 
+* 
+
+
+* 
+* 
+
+
+* 
+* 
+
+
+* 
+* 
+
+
+* 
 for (const auto &cell : triangulation.active_cell_iterators())
   if (mesh_center.distance(cell->center()) < 1e-5)
     {
@@ -1040,20 +1054,30 @@ for (const auto &cell : triangulation.active_cell_iterators())
         cell->vertex(v)= core_radius/mesh_center.distance(cell->vertex(v));
     }
 * 
-// Step 2: Refine all cells except the central one
+
+
+* 
 for (const auto &cell : triangulation.active_cell_iterators())
   if (mesh_center.distance(cell->center()) >= 1e-5)
     cell->set_refine_flag();
 triangulation.execute_coarsening_and_refinement();
 * 
-// Step 3: Resize the inner children of the outer cells
-//
-// The previous step replaced each of the four outer cells
-// by its four children, but the radial distance at which we
-// have intersected is not what we want to later refinement
-// steps. Consequently, move the vertices that were just
-// created in radial direction to a place where we need
-// them.
+
+
+* 
+* 
+
+
+* 
+* 
+
+
+* 
+* 
+
+
+* 
+* 
 for (const auto &cell : triangulation.active_cell_iterators())
   for (const auto v : cell->vertex_indices())
     {
@@ -1062,17 +1086,29 @@ for (const auto &cell : triangulation.active_cell_iterators())
         cell->vertex(v)= inner_radius/dist;
     }
 * 
-// Step 4: Apply curved manifold description
-//
-// As discussed above, we can not expect to subdivide the
-// inner four cells (or their faces) onto concentric rings,
-// but we can do so for all other cells that are located
-// outside the inner radius. To this end, we loop over all
-// cells and determine whether it is in this zone. If it
-// isn't, then we set the manifold description of the cell
-// and all of its bounding faces to the one that describes
-// the spherical manifold already introduced above and that
-// will be used for all further mesh refinement.
+
+
+* 
+* 
+
+
+* 
+* 
+
+
+* 
+* 
+
+
+* 
+* 
+
+
+* 
+* 
+
+
+* 
 for (const auto &cell : triangulation.active_cell_iterators())
   {
     bool is_in_inner_circle = false;

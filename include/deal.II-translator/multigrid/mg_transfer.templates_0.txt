@@ -1,0 +1,9 @@
+[0.x.0]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.0]  each level     vector to this length. For compatibility reasons with the next function     the target_component is added here but is not used.    
+* [0.x.1]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.1]  each level     vector to this length. The target_component is handed to      [2.x.2]  See for documentation there.    
+* [0.x.2]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.3]  each level     vector to this length.    
+* [0.x.3]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.4]  each level     vector to this length.    
+* [0.x.4]

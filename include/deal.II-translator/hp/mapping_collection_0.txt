@@ -1,0 +1,18 @@
+[0.x.0]*
+   This class implements a collection of mapping objects in the same way as   the  [2.x.0]  implements a collection of finite element classes.     It implements the concepts stated in the    [2.x.1]    module described in the doxygen documentation.     Although it is recommended to supply an appropriate mapping for each   finite element kind used in a hp-computation, the MappingCollection class   implements a conversion constructor from a single mapping.  Therefore it   is possible to offer only a single mapping to the  [2.x.2]  class   instead of a  [2.x.3]  This is for the convenience of the   user, as many simple geometries do not require different mappings along   the boundary to achieve optimal convergence rates.  Hence providing a   single mapping object will usually suffice. See the  [2.x.4]  class   for the rules which mapping will be selected for a given cell.    
+*  [2.x.5]   
+* [0.x.1]*
+     Default constructor. Leads to an empty collection that can later be     filled using push_back().    
+* [0.x.2]*
+     Conversion constructor. This constructor creates a MappingCollection     from a single mapping. More mappings can be added with push_back(), if     desired, though it would probably be clearer to add all mappings the     same way.    
+* [0.x.3]*
+     Copy constructor.    
+* [0.x.4]*
+     Constructor. This constructor creates a MappingCollection from one or     more mapping objects passed to the constructor. For this     call to be valid, all arguments need to be of types derived     from class Mapping<dim,spacedim>.    
+* [0.x.5]*
+     Add a new mapping to the MappingCollection. Generally, you will     want to use the same order for mappings as for the elements of     the  [2.x.6]  object you use. However, the same     considerations as discussed with the  [2.x.7]      function also apply in the current context.         This class creates a copy of the given mapping object, i.e., you can     do things like <tt>push_back(MappingQ<dim>(3));</tt>. The internal copy     is later destroyed by this object upon destruction of the entire     collection.    
+* [0.x.6]*
+   Many places in the library by default use (bi-,tri-)linear mappings   unless users explicitly provide a different mapping to use. In these   cases, the called function has to create a  [2.x.8]  mapping object, i.e., an   object of kind MappingQGeneric(1). This is costly. It would also be   costly to create such objects as static objects in the affected   functions, because static objects are never destroyed throughout the   lifetime of a program, even though they only have to be created once the   first time code runs through a particular function.     In order to avoid creation of (static or dynamic)  [2.x.9]  mapping objects   in these contexts throughout the library, this class defines a static   collection of mappings with a single  [2.x.10]  mapping object. This   collection can then be used in all of those places where such a   collection is needed.  
+* [0.x.7]*
+     The publicly available static  [2.x.11]  mapping collection object.    
+* [0.x.8]

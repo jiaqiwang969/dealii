@@ -1,0 +1,45 @@
+[0.x.0]!  [2.x.0]  Preconditioners [2.x.1] 
+
+* 
+* [0.x.1]*
+ Selects the preconditioner. The constructor of this class takes the name of the preconditioning and the damping parameter  [2.x.2]  of the preconditioning and the  [2.x.3]  function takes the matrix that is used by the matrix-builtin precondition functions. Each time, the <tt>operator()</tt> function is called, this preselected preconditioner, this matrix and this  [2.x.4]  is used for the preconditioning. This class is designed for being used as argument of the  [2.x.5]  function of a  [2.x.6]  Solver and it covers the selection of all matrix-builtin precondition functions. The selection of other preconditioners, like BlockSOR or ILU should be handled in derived classes by the user.
+*  [1.x.0] The simplest use of this class is the following:
+
+* 
+* [1.x.1]
+*  The same example where also the  [2.x.7]  class is used reads
+
+* 
+* [1.x.2]
+*  Now the use of the  [2.x.8]  in combination with the  [2.x.9]  PreconditionSelector allows the user to select both, the solver and the preconditioner, at the beginning of their program and each time the solver is started (that is several times e.g. in a nonlinear iteration) this preselected solver and preconditioner is called.
+
+* 
+* [0.x.2]*
+   Declare type for container size.  
+* [0.x.3]*
+   Constructor.  [2.x.10]  denotes the damping parameter of the   preconditioning.  
+* [0.x.4]*
+   Destructor.  
+* [0.x.5]*
+   Takes the matrix that is needed for preconditionings that involves a   matrix. e.g. for  [2.x.11]  <tt>~_sor</tt>, <tt>~_ssor</tt>.  
+* [0.x.6]*
+   Return the dimension of the codomain (or range) space. Note that the   matrix is of dimension  [2.x.12] .  
+* [0.x.7]*
+   Return the dimension of the domain space. Note that the matrix is of   dimension  [2.x.13] .  
+* [0.x.8]*
+   Precondition procedure. Calls the preconditioning that was specified in   the constructor.  
+* [0.x.9]*
+   Transpose precondition procedure. Calls the preconditioning that was   specified in the constructor.  
+* [0.x.10]*
+   Get the names of all implemented preconditionings. The list of possible   options includes:    [2.x.14]     [2.x.15]   "none"  [2.x.16]     [2.x.17]   "jacobi"  [2.x.18]     [2.x.19]   "sor"  [2.x.20]     [2.x.21]   "ssor"  [2.x.22]     [2.x.23]   
+* [0.x.11]*
+    [2.x.24]  Exceptions    [2.x.25]   
+* [0.x.12]*
+   Exception.  
+* [0.x.13]*
+   Stores the name of the preconditioning.  
+* [0.x.14]*
+   Matrix that is used for the matrix-builtin preconditioning function. cf.   also  [2.x.26]   
+* [0.x.15]*
+   Stores the damping parameter of the preconditioner.  
+* [0.x.16]

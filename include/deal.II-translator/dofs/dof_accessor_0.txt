@@ -1,0 +1,453 @@
+[0.x.0]*
+     This is a switch class which only declares an  [2.x.0]  It is meant to     determine which class a DoFAccessor class is to be derived from. By     default, <tt>DoFAccessor [2.x.1]  derives from     the alias in the general     <tt>Inheritance [2.x.2]  class, which is     <tt>TriaAccessor [2.x.3]  but if     <tt>structdim==dim</tt>, then the specialization     <tt>Inheritance [2.x.4]  is used which declares its     local type to be <tt>CellAccessor [2.x.5]  Therefore, the     inheritance is automatically chosen to be from CellAccessor if the     object under consideration has full dimension, i.e. constitutes a cell.        
+*  [2.x.6]     
+*  [2.x.7]     
+* [0.x.1]*
+       Declaration of the  [2.x.8]  See the full documentation for more       information.      
+* [0.x.2]*
+     This is the specialization of the general template used for the case     where an object has full dimension, i.e. is a cell. See the general     template for more details.    
+* [0.x.3]*
+       Declaration of the  [2.x.9]  See the full documentation for more       information.      
+* [0.x.4]*
+ A class that gives access to the degrees of freedom stored in a DoFHandler object. Accessors are used to access the data that pertains to edges, faces, and cells of a triangulation. The concept is explained in more detail in connection to  [2.x.10] .
+*  This class follows mainly the route laid out by the accessor library declared in the triangulation library (TriaAccessor). It enables the user to access the degrees of freedom on lines, quads, or hexes. The first template argument of this class determines the dimensionality of the object under consideration: 1 for lines, 2 for quads, and 3 for hexes. The second argument denotes the type of DoFHandler we should work on. From the second template argument we also deduce the dimension of the Triangulation this object refers to as well as the dimension of the space into which it is embedded. Finally, the template argument  [2.x.11]  governs the behavior of the function get_active_or_mg_dof_indices(). See the section on Generic loops below.
+*  [1.x.0]
+*  Usage is best to happen through the alias to the various kinds of iterators provided by the DoFHandler class, since they are more secure to changes in the class naming and template interface as well as providing easier typing (much less complicated names!).
+*  [1.x.1]
+*  Many loops look very similar, whether they operate on the active dofs of the active cells of the Triangulation or on the level dofs of a single level or the whole grid hierarchy. In order to use polymorphism in such loops, they access degrees of freedom through the function get_active_or_mg_dof_indices(), which changes behavior according to the third template argument.  If the argument is false, then the active dofs of active cells are accessed. If it is true, the level dofs are used. DoFHandler has functions, for instance begin() and begin_mg(), which return either type or the other. Additionally, they can be cast into each other, in case this is needed, since they access the same data.
+*  It is recommended to use the function get_active_or_mg_dof_indices() in generic loops in lieu of get_dof_indices() or get_mg_dof_indices().
+*  [1.x.2]
+*  If the structural dimension given by the first template argument equals the dimension of the DoFHandler (given as the second template argument), then we are obviously dealing with cells, rather than lower-dimensional objects. In that case, inheritance is from CellAccessor, to provide access to all the cell specific information afforded by that class. Otherwise, i.e. for lower-dimensional objects, inheritance is from TriaAccessor.
+*  There is a DoFCellAccessor class that provides the equivalent to the CellAccessor class.
+*   [2.x.12]  structdim The dimensionality of the objects the accessor   represents. For example, points have  [2.x.13]  equal to zero,   edges have  [2.x.14]  equal to one, etc.  [2.x.15]  dim Dimension of the underlying DoFHandler.  [2.x.16]  spacedim Space dimension of the underlying DoFHandler.  [2.x.17]  level_dof_access If  [2.x.18]  then the accessor simply represents   a cell, face, or edge in a DoFHandler for which degrees of freedom only   exist on the finest level. Some operations are not allowed in this case,   such as asking for DoF indices on non-active cells. On the other hand,   if this template argument is  [2.x.19]  then the accessor represents an   object in a multilevel hierarchy of degrees of freedom. In this case,   accessing DoF indices of [1.x.3] cell is possible, and will return   the [1.x.4] indices (which, for active cells, may be different   from the [1.x.5] indices).
+* 
+
+* 
+*  [2.x.20] 
+
+* 
+*  [2.x.21] 
+
+* 
+* [0.x.5]*
+   A static variable that allows users of this class to discover the value   of the second template argument.  
+* [0.x.6]*
+   A static variable that allows users of this class to discover the value   of the third template argument.  
+* [0.x.7]*
+   Declare an alias to the base class to make accessing some of the   exception classes simpler.  
+* [0.x.8]*
+   Data type passed by the iterator class.  
+* [0.x.9]*
+    [2.x.22]  Constructors  
+* [0.x.10]*
+    [2.x.23]   
+* [0.x.11]*
+   Default constructor. Provides an accessor that can't be used.  
+* [0.x.12]*
+   Constructor that generates an access that points to a particular cell or   face or edge in a DoFHandler.      [2.x.24]  tria The triangulation into which this accessor points.    [2.x.25]  level The level within the mesh hierarchy of the object pointed     to. For example, coarse mesh cells will have level zero, their children     level one, and so on. This argument is ignored for faces and edges     which do not have a level.    [2.x.26]  index The index of the object pointed to within the specified     refinement level.    [2.x.27]  dof_handler A pointer to the DoFHandler object to which the     accessor shall refer. This DoFHandler object must of course be built on     the same triangulation as the one specified in the first argument.  
+* [0.x.13]*
+   Copy constructor.  
+* [0.x.14]*
+   Move constructor.  
+* [0.x.15]*
+   Destructor.  
+* [0.x.16]*
+   Conversion constructor. This constructor exists to make certain   constructs simpler to write in dimension independent code. For example,   it allows assigning a face iterator to a line iterator, an operation that   is useful in 2d but doesn't make any sense in 3d. The constructor here   exists for the purpose of making the code conform to C++ but it will   unconditionally abort; in other words, assigning a face iterator to a   line iterator is better put into an if-statement that checks that the   dimension is two, and assign to a quad iterator in 3d (an operator that,   without this constructor would be illegal if we happen to compile for   2d).  
+* [0.x.17]*
+   Another conversion operator between objects that don't make sense, just   like the previous one.  
+* [0.x.18]*
+   Copy constructor allowing to switch level access and active access.  
+* [0.x.19]*
+   Copy operator. These operators are usually used in a context like   <tt>iterator a,b;a=*b;</tt>. Presumably, the intent here is to copy the   object pointed to   by  [2.x.28]  to the object pointed to by  [2.x.29]  However, the result of   dereferencing an iterator is not an object but an accessor; consequently,   this operation is not useful for iterators on DoF handler objects.   Consequently, this operator is declared as deleted and can not be used.  
+* [0.x.20]*
+   Move assignment operator.  
+* [0.x.21]*
+    [2.x.30]   
+* [0.x.22]*
+   Return a handle on the DoFHandler object which we are using.  
+* [0.x.23]*
+   Implement the copy operator needed for the iterator classes.  
+* [0.x.24]*
+   Copy operator used by the iterator class. Keeps the previously set dof   handler, but sets the object coordinates of the TriaAccessor.  
+* [0.x.25]*
+   Tell the caller whether get_active_or_mg_dof_indices() accesses active or   level dofs.  
+* [0.x.26]*
+    [2.x.31]  Accessing sub-objects  
+* [0.x.27]*
+    [2.x.32]   
+* [0.x.28]*
+   Return an iterator pointing to the  [2.x.33]  child.  
+* [0.x.29]*
+   Pointer to the  [2.x.34]  line bounding this object. If the current object is   a line itself, then the only valid index is  [2.x.35]  equals to zero, and the   function returns an iterator to itself.  
+* [0.x.30]*
+   Pointer to the  [2.x.36]  quad bounding this object. If the current object is   a quad itself, then the only valid index is  [2.x.37]  equals to zero, and the   function returns an iterator to itself.  
+* [0.x.31]*
+    [2.x.38]   
+* [0.x.32]*
+    [2.x.39]  Accessing the DoF indices of this object  
+* [0.x.33]*
+    [2.x.40]   
+* [0.x.34]*
+   Return the [1.x.6] indices of the degrees of freedom located on   this object in the standard ordering defined by the finite element (i.e.,   dofs on vertex 0, dofs on vertex 1, etc, dofs on line 0, dofs on line 1,   etc, dofs on quad 0, etc.) This function is only available on   [1.x.7] objects (see    [2.x.41]  "this glossary entry").     The cells needs to be an active cell (and not artificial in a parallel   distributed computation).     The vector has to have the right size before being passed to this   function.     The last argument denotes the finite element index. For the standard   ::DoFHandler class, this value must be equal to its default value since   that class only supports the same finite element on all cells anyway.     However, when the relevant DoFHandler object has hp-capabilities enabled,   different finite element objects may be used on different cells. On faces   between two cells, as well as vertices, there may therefore be two sets   of degrees of freedom, one for each of the finite elements used on the   adjacent cells. In order to specify which set of degrees of freedom to   work on, the last argument is used to disambiguate. Finally, if this   function is called for a cell object, there can only be a single set of   degrees of freedom, and fe_index has to match the result of   active_fe_index().     For cells, there is only a single possible finite element index (namely   the one for that cell, returned by  [2.x.42] .   Consequently, the derived DoFCellAccessor class has an overloaded version   of this function that calls the present function with    [2.x.43]  as last argument.  
+* [0.x.35]*
+   Return the global multilevel indices of the degrees of freedom that live   on the current object with respect to the given level within the   multigrid hierarchy. The indices refer to the local numbering for the   level this line lives on.  
+* [0.x.36]*
+   Set the level DoF indices that are returned by get_mg_dof_indices.  
+* [0.x.37]*
+   Global DoF index of the [1.x.8] degree associated with the  [2.x.44]    vertex of the present cell.     The last argument denotes the finite element index. For the standard   ::DoFHandler class, this value must be equal to its default value since   that class only supports the same finite element on all cells anyway.     However, when hp-capabilities are enabled, different finite element   objects may be used on different cells. On faces between two cells, as   well as vertices, there may therefore be two sets of degrees of freedom,   one for each of the finite elements used on the adjacent cells.  In order   to specify which set of degrees of freedom to work on, the last argument   is used to disambiguate. Finally, if this function is called for a cell   object, there can only be a single set of degrees of freedom, and   fe_index has to match the result of active_fe_index().  
+* [0.x.38]*
+   Return the global DoF index of the  [2.x.45] th degree of freedom   associated with the  [2.x.46] th vertex on level  [2.x.47]  Also   see vertex_dof_index().  
+* [0.x.39]*
+   Index of the [1.x.9]th degree of freedom of this object.     The last argument denotes the finite element index. For the standard   ::DoFHandler class, this value must be equal to its default value since   that class only supports the same finite element on all cells anyway.     However, when hp-capabilities are enabled, different finite element   objects may be used on different cells. On faces between two cells, as   well as vertices, there may therefore be two sets of degrees of freedom,   one for each of the finite elements used on the adjacent cells.  In order   to specify which set of degrees of freedom to work on, the last argument   is used to disambiguate. Finally, if this function is called for a cell   object, there can only be a single set of degrees of freedom, and   fe_index has to match the result of active_fe_index().    
+*  [2.x.48]  While the get_dof_indices() function returns an array that contains   the indices of all degrees of freedom that somehow live on this object   (i.e. on the vertices, edges or interior of this object), the current   dof_index() function only considers the DoFs that really belong to this   particular object's interior. In other words, as an example, if the   current object refers to a quad (a cell in 2d, a face in 3d) and the   finite element associated with it is a bilinear one, then the   get_dof_indices() will return an array of size 4 while dof_index() will   produce an exception because no degrees are defined in the interior of   the face.  
+* [0.x.40]*
+   Return the dof_index on the given level. Also see dof_index.  
+* [0.x.41]*
+    [2.x.49]   
+* [0.x.42]*
+    [2.x.50]  Accessing the finite element associated with this object  
+* [0.x.43]*
+    [2.x.51]   
+* [0.x.44]*
+   Return the number of finite elements that are active on a given object.     When hp-capabilities are disabled the answer is, of course, always one.   However, when hp-capabilities are enabled, this isn't the case: If this   is a cell, the answer is of course one. If it is a face, the answer may   be one or two, depending on whether the two adjacent cells use the same   finite element or not. If it is an edge in 3d, the possible return value   may be one or any other value larger than that.  
+* [0.x.45]*
+   Return the  [2.x.52]  active FE index on this object. For cells and all non-   hp-objects, there is only a single active FE index, so the argument must   be equal to zero. For lower-dimensional hp-objects, there are   n_active_fe_indices() active finite elements, and this function can be   queried for their indices.  
+* [0.x.46]*
+   Returns all active FE indices on this object.     The size of the returned set equals the number of finite elements that   are active on this object.  
+* [0.x.47]*
+   Return true if the finite element with given index is active on the   present object. When the current DoFHandler does not have hp-   capabilities, this is of course the case only if  [2.x.53]  equals   zero. For cells, it is the case if  [2.x.54]  equals active_fe_index()   of this cell. For faces and other lower- dimensional objects, there may   be more than one  [2.x.55]  that are active on any given object (see   n_active_fe_indices()).  
+* [0.x.48]*
+   Return a reference to the finite element used on this object with the   given  [2.x.56]   [2.x.57]  must be used on this object, i.e.    [2.x.58]  must return true.  
+* [0.x.49]*
+    [2.x.59]   
+* [0.x.50]*
+   Exceptions for child classes    
+*  [2.x.60]   
+* [0.x.51]*
+   Exception    
+*  [2.x.61]   
+* [0.x.52]*
+   Exception    
+*  [2.x.62]   
+* [0.x.53]*
+   Exception    
+*  [2.x.63]   
+* [0.x.54]*
+   A function has been called for a cell which should be    [2.x.64]  "active",   but is refined.    
+*  [2.x.65]   
+* [0.x.55]*
+   Exception    
+*  [2.x.66]   
+* [0.x.56]*
+   Store the address of the DoFHandler object to be accessed.  
+* [0.x.57]*
+   Compare for equality. Return <tt>true</tt> if the two accessors refer to   the same object.     The template parameters of this function allow for a comparison of very   different objects. Therefore, some of them are disabled. Namely, if the   dimension, or the dof handler of the two objects differ, an exception is   generated. It can be expected that this is an unwanted comparison.     The template parameter <tt>level_dof_access2</tt> is ignored, such that   an iterator with level access can be equal to one with access to the   active degrees of freedom.  
+* [0.x.58]*
+   Compare for inequality. The boolean not of operator==().  
+* [0.x.59]*
+   Reset the DoF handler pointer.  
+* [0.x.60]*
+   Set the index of the [1.x.10]th degree of freedom of this object to  [2.x.67]    index.     The last argument denotes the finite element index. For the standard   ::DoFHandler class, this value must be equal to its default value since   that class only supports the same finite element on all cells anyway.     However, when the relevant DoFHandler has hp-capabilities, different   finite element objects may be used on different cells. On faces between   two cells, as well as vertices, there may therefore be two sets of   degrees of freedom, one for each of the finite elements used on the   adjacent cells.  In order to specify which set of degrees of freedom to   work on, the last argument is used to disambiguate. Finally, if this   function is called for a cell object, there can only be a single set of   degrees of freedom, and fe_index has to match the result of   active_fe_index().  
+* [0.x.61]*
+   Set the global index of the [1.x.11] degree on the  [2.x.68]  vertex of   the present cell to  [2.x.69]      The last argument denotes the finite element index. For the standard   ::DoFHandler class, this value must be equal to its default value since   that class only supports the same finite element on all cells anyway.     However, when the relevant DoFHandler has hp-capabilities, different   finite element objects may be used on different cells. On faces between   two cells, as well as vertices, there may therefore be two sets of   degrees of freedom, one for each of the finite elements used on the   adjacent cells.  In order to specify which set of degrees of freedom to   work on, the last argument is used to disambiguate. Finally, if this   function is called for a cell object, there can only be a single set of   degrees of freedom, and fe_index has to match the result of   active_fe_index().  
+* [0.x.62]*
+ Specialization of the general DoFAccessor class template for the case of zero-dimensional objects (a vertex) that are the face of a one-dimensional cell in spacedim space dimensions. Since vertices function differently than general faces, this class does a few things differently than the general template, but the interface should look the same.
+
+* 
+* [0.x.63]*
+   A static variable that allows users of this class to discover the value   of the second template argument.  
+* [0.x.64]*
+   A static variable that allows users of this class to discover the value   of the third template argument.  
+* [0.x.65]*
+   Declare an alias to the base class to make accessing some of the   exception classes simpler.  
+* [0.x.66]*
+   Data type passed by the iterator class.  
+* [0.x.67]*
+    [2.x.70]  Constructors  
+* [0.x.68]*
+    [2.x.71]   
+* [0.x.69]*
+   Default constructor. Provides an accessor that can't be used.  
+* [0.x.70]*
+   Constructor to be used if the object here refers to a vertex of a one-   dimensional triangulation, i.e. a face of the triangulation.     Since there is no mapping from vertices to cells, an accessor object for   a point has no way to figure out whether it is at the boundary of the   domain or not. Consequently, the second argument must be passed by the   object that generates this accessor
+* 
+*  -  e.g. a 1d cell that can figure out   whether its left or right vertex are at the boundary.     The third argument is the global index of the vertex we point to.     The fourth argument is a pointer to the DoFHandler object.     This iterator can only be called for one-dimensional triangulations.  
+* [0.x.71]*
+   Constructor. This constructor exists in order to maintain interface   compatibility with the other accessor classes. However, it doesn't do   anything useful here and so may not actually be called.  
+* [0.x.72]*
+   Conversion constructor. This constructor exists to make certain   constructs simpler to write in dimension independent code. For example,   it allows assigning a face iterator to a line iterator, an operation that   is useful in 2d but doesn't make any sense in 3d. The constructor here   exists for the purpose of making the code conform to C++ but it will   unconditionally abort; in other words, assigning a face iterator to a   line iterator is better put into an if-statement that checks that the   dimension is two, and assign to a quad iterator in 3d (an operator that,   without this constructor would be illegal if we happen to compile for   2d).  
+* [0.x.73]*
+   Another conversion operator between objects that don't make sense, just   like the previous one.  
+* [0.x.74]*
+   Copy constructor.  
+* [0.x.75]*
+   Move constructor.  
+* [0.x.76]*
+   Destructor.  
+* [0.x.77]*
+   Copy operator. These operators are usually used in a context like   <tt>iterator a,b;a=*b;</tt>. Presumably, the intent here is to copy the   object pointed to   by  [2.x.72]  to the object pointed to by  [2.x.73]  However, the result of   dereferencing an iterator is not an object but an accessor; consequently,   this operation is not useful for iterators on DoF handler objects.   Consequently, this operator is declared as deleted and can not be used.  
+* [0.x.78]*
+   Move assignment operator.  
+* [0.x.79]*
+    [2.x.74]   
+* [0.x.80]*
+   Return a handle on the DoFHandler object which we are using.  
+* [0.x.81]*
+   Implement the copy operator needed for the iterator classes.  
+* [0.x.82]*
+   Copy operator used by the iterator class. Keeps the previously set dof   handler, but sets the object coordinates of the TriaAccessor.  
+* [0.x.83]*
+    [2.x.75]  Accessing sub-objects  
+* [0.x.84]*
+    [2.x.76]   
+* [0.x.85]*
+   Return an invalid iterator of a type that represents pointing to a child   of the current object. The object is invalid because points (as   represented by the current class) do not have children.  
+* [0.x.86]*
+   Pointer to the  [2.x.77]  line bounding this object.     Since meshes with dimension 1 do not have quads this method just throws   an exception.  
+* [0.x.87]*
+   Pointer to the  [2.x.78]  quad bounding this object.     Since meshes with dimension 1 do not have quads this method just throws   an exception.  
+* [0.x.88]*
+    [2.x.79]   
+* [0.x.89]*
+    [2.x.80]  Accessing the DoF indices of this object  
+* [0.x.90]*
+    [2.x.81]   
+* [0.x.91]*
+   Return the [1.x.12] indices of the degrees of freedom located on   this object in the standard ordering defined by the finite element. This   function is only available on [1.x.13] objects (see    [2.x.82]  "this glossary entry").     The present vertex must belong to an active cell (and not artificial in a   parallel distributed computation).     The vector has to have the right size before being passed to this   function.     The last argument denotes the finite element index. For the standard   ::DoFHandler class, this value must be equal to its default value since   that class only supports the same finite element on all cells anyway.     However, when the relevant DoFHandler has hp-capabilities, different   finite element objects may be used on different cells. On faces between   two cells, as well as vertices, there may therefore be two sets of   degrees of freedom, one for each of the finite elements used on the   adjacent cells.  In order to specify which set of degrees of freedom to   work on, the last argument is used to disambiguate. Finally, if this   function is called for a cell object, there can only be a single set of   degrees of freedom, and fe_index has to match the result of   active_fe_index().     For cells, there is only a single possible finite element index (namely   the one for that cell, returned by  [2.x.83] .   Consequently, the derived DoFCellAccessor class has an overloaded version   of this function that calls the present function with    [2.x.84]  as last argument.  
+* [0.x.92]*
+   Return the global multilevel indices of the degrees of freedom that live   on the current object with respect to the given level within the   multigrid hierarchy. The indices refer to the local numbering for the   level this line lives on.  
+* [0.x.93]*
+   Global DoF index of the [1.x.14] degree associated with the  [2.x.85]    vertex of the present cell.     The last argument denotes the finite element index. For the standard   ::DoFHandler class, this value must be equal to its default value since   that class only supports the same finite element on all cells anyway.     However, when the relevant DoFHandler has hp-capabilities, different   finite element objects may be used on different cells. On faces between   two cells, as well as vertices, there may therefore be two sets of   degrees of freedom, one for each of the finite elements used on the   adjacent cells.  In order to specify which set of degrees of freedom to   work on, the last argument is used to disambiguate. Finally, if this   function is called for a cell object, there can only be a single set of   degrees of freedom, and fe_index has to match the result of   active_fe_index().  
+* [0.x.94]*
+   Index of the [1.x.15]th degree of freedom of this object.     The last argument denotes the finite element index. For the standard   ::DoFHandler class, this value must be equal to its default value since   that class only supports the same finite element on all cells anyway.     However, when the relevant DoFHandler has hp-capabilities, different   finite element objects may be used on different cells. On faces between   two cells, as well as vertices, there may therefore be two sets of   degrees of freedom, one for each of the finite elements used on the   adjacent cells.  In order to specify which set of degrees of freedom to   work on, the last argument is used to disambiguate. Finally, if this   function is called for a cell object, there can only be a single set of   degrees of freedom, and fe_index has to match the result of   active_fe_index().  
+* [0.x.95]*
+    [2.x.86]   
+* [0.x.96]*
+    [2.x.87]  Accessing the finite element associated with this object  
+* [0.x.97]*
+    [2.x.88]   
+* [0.x.98]*
+   Return the number of finite elements that are active on a given object.     Since vertices do not store the information necessary for this to be   calculated, this method just raises an exception and only exists to   enable dimension-independent programming.  
+* [0.x.99]*
+   Return the  [2.x.89]  active FE index on this object.     Since vertices do not store the information necessary for this to be   calculated, this method just raises an exception and only exists to   enable dimension-independent programming.  
+* [0.x.100]*
+   Return true if the finite element with given index is active on the   present object.     Since vertices do not store the information necessary for this to be   calculated, this method just raises an exception and only exists to   enable dimension-independent programming.  
+* [0.x.101]*
+   Return a reference to the finite element used on this object with the   given  [2.x.90]   [2.x.91]  must be used on this object, i.e.    [2.x.92]  must return true.  
+* [0.x.102]*
+    [2.x.93]   
+* [0.x.103]*
+   Exceptions for child classes    
+*  [2.x.94]   
+* [0.x.104]*
+   Exception    
+*  [2.x.95]   
+* [0.x.105]*
+   Exception    
+*  [2.x.96]   
+* [0.x.106]*
+   Exception    
+*  [2.x.97]   
+* [0.x.107]*
+   A function has been called for a cell which should be    [2.x.98]  "active",   but is refined.    
+*  [2.x.99]   
+* [0.x.108]*
+   Exception    
+*  [2.x.100]   
+* [0.x.109]*
+   Store the address of the DoFHandler object to be accessed.  
+* [0.x.110]*
+   Compare for equality.  
+* [0.x.111]*
+   Compare for inequality.  
+* [0.x.112]*
+   Reset the DoF handler pointer.  
+* [0.x.113]*
+   Set the index of the [1.x.16]th degree of freedom of this object to  [2.x.101]    index.     The last argument denotes the finite element index. For the standard   ::DoFHandler class, this value must be equal to its default value since   that class only supports the same finite element on all cells anyway.     However, when the relevant DoFHandler has hp-capabilities, different   finite element objects may be used on different cells. On faces between   two cells, as well as vertices, there may therefore be two sets of   degrees of freedom, one for each of the finite elements used on the   adjacent cells.  In order to specify which set of degrees of freedom to   work on, the last argument is used to disambiguate. Finally, if this   function is called for a cell object, there can only be a single set of   degrees of freedom, and fe_index has to match the result of   active_fe_index().  
+* [0.x.114]*
+   Set the global index of the [1.x.17] degree on the  [2.x.102]  vertex of   the present cell to  [2.x.103]      The last argument denotes the finite element index. For the standard   ::DoFHandler class, this value must be equal to its default value since   that class only supports the same finite element on all cells anyway.     However, when the relevant DoFHandler has hp-capabilities, different   finite element objects may be used on different cells. On faces between   two cells, as well as vertices, there may therefore be two sets of   degrees of freedom, one for each of the finite elements used on the   adjacent cells.  In order to specify which set of degrees of freedom to   work on, the last argument is used to disambiguate. Finally, if this   function is called for a cell object, there can only be a single set of   degrees of freedom, and fe_index has to match the result of   active_fe_index().  
+* [0.x.115]*
+ A class that represents DoF accessor objects to iterators that don't make sense such as quad iterators in on 1d meshes.  This class can not be used to create objects (it will in fact throw an exception if this should ever be attempted but it sometimes allows code to be written in a simpler way in a dimension independent way. For example, it allows to write code that works on quad iterators that is dimension independent
+* 
+*  -  i.e., also compiles in 1d
+* 
+*  -  because quad iterators (via the current class) exist and are syntactically correct. You can not expect, however, to ever create an actual object of one of these iterators in 1d, meaning you need to expect to wrap the code block in which you use quad iterators into something like  [2.x.104] 
+* 
+*  -  which makes eminent sense anyway.
+*  This class provides the minimal interface necessary for Accessor classes to interact with Iterator classes. However, this is only for syntactic correctness, none of the functions do anything but generate errors.
+* 
+
+* 
+*  [2.x.105] 
+
+* 
+* [0.x.116]*
+   Propagate alias from base class to this class.  
+* [0.x.117]*
+   Constructor.  This class is used for iterators that do not make   sense in a given dimension, for example quads for 1d meshes. Consequently,   while the creation of such objects is syntactically valid, they make no   semantic sense, and we generate an exception when such an object is   actually generated.  
+* [0.x.118]*
+   Copy constructor.  This class is used for iterators that do not make   sense in a given dimension, for example quads for 1d meshes. Consequently,   while the creation of such objects is syntactically valid, they make no   semantic sense, and we generate an exception when such an object is   actually generated.  
+* [0.x.119]*
+   Conversion from other accessors to the current invalid one. This of   course also leads to a run-time error.  
+* [0.x.120]*
+   Return the index of the [1.x.18]th degree of freedom of this object to    [2.x.106]  Since the current object doesn't point to anything useful, like   all other functions in this class this function only throws an exception.  
+* [0.x.121]*
+   Set the index of the [1.x.19]th degree of freedom of this object to  [2.x.107]    index. Since the current object doesn't point to anything useful, like   all other functions in this class this function only throws an exception.  
+* [0.x.122]*
+ Grant access to the degrees of freedom on a cell.
+*  Note that since for the class we derive from, i.e. <tt>DoFAccessor<dim></tt>, the two template parameters are equal, the base class is actually derived from CellAccessor, which makes the functions of this class available to the DoFCellAccessor class as well.
+* 
+
+* 
+*  [2.x.108] 
+
+* 
+*  [2.x.109] 
+
+* 
+* [0.x.123]*
+   Extract dimension from DoFHandler.  
+* [0.x.124]*
+   Extract space dimension from DoFHandler.  
+* [0.x.125]*
+   Data type passed by the iterator class.  
+* [0.x.126]*
+   Declare an alias to the base class to make accessing some of the   exception classes simpler.  
+* [0.x.127]*
+   Define the type of the container this is part of.  
+* [0.x.128]*
+   A type for an iterator over the faces of a cell. This is what the face()   function returns.  
+* [0.x.129]*
+    [2.x.110]  Constructors and initialization  
+* [0.x.130]*
+    [2.x.111]   
+* [0.x.131]*
+   Constructor  
+* [0.x.132]*
+   Conversion constructor. This constructor exists to make certain   constructs simpler to write in dimension independent code. For example,   it allows assigning a face iterator to a line iterator, an operation that   is useful in 2d but doesn't make any sense in 3d. The constructor here   exists for the purpose of making the code conform to C++ but it will   unconditionally abort; in other words, assigning a face iterator to a   line iterator is better put into an if-statement that checks that the   dimension is two, and assign to a quad iterator in 3d (an operator that,   without this constructor would be illegal if we happen to compile for   2d).  
+* [0.x.133]*
+   Another conversion operator between objects that don't make sense, just   like the previous one.  
+* [0.x.134]*
+   Copy constructor.  
+* [0.x.135]*
+   Move constructor.  
+* [0.x.136]*
+   Destructor  
+* [0.x.137]*
+   Copy operator. These operators are usually used in a context like   <tt>iterator a,b;a=*b;</tt>. Presumably, the intent here is to copy the   object pointed to   by  [2.x.112]  to the object pointed to by  [2.x.113]  However, the result of   dereferencing an iterator is not an object but an accessor; consequently,   this operation is not useful for iterators on DoF handler objects.   Consequently, this operator is declared as deleted and can not be used.  
+* [0.x.138]*
+   Move assignment operator.  
+* [0.x.139]*
+    [2.x.114]   
+* [0.x.140]*
+   Return the parent of this cell as a DoF cell iterator. If the parent does   not exist (i.e., if the object is at the coarsest level of the mesh   hierarchy), an exception is generated.     This function is needed since the parent function of the base class   CellAccessor returns a triangulation cell accessor without access to the   DoF data.  
+* [0.x.141]*
+    [2.x.115]  Accessing sub-objects and neighbors  
+* [0.x.142]*
+    [2.x.116]   
+* [0.x.143]*
+   Return the  [2.x.117]  neighbor as a DoF cell iterator. This function is   needed since the neighbor function of the base class returns a cell   accessor without access to the DoF data.  
+* [0.x.144]*
+   Return the  [2.x.118]  periodic neighbor as a DoF cell iterator. This function   is needed since the neighbor function of the base class returns a cell   accessor without access to the DoF data.  
+* [0.x.145]*
+   Return the  [2.x.119]  neighbor or periodic neighbor as a DoF cell iterator.   This function is needed since the neighbor function of the base class   returns a cell accessor without access to the DoF data.  
+* [0.x.146]*
+   Return the  [2.x.120]  child as a DoF cell iterator. This function is needed   since the child function of the base class returns a cell accessor   without access to the DoF data.  
+* [0.x.147]*
+   Return an array of iterators to all children of this cell.  
+* [0.x.148]*
+   Return an iterator to the  [2.x.121]  face of this cell.     This function returns a DoFAccessor with  [2.x.122]  in   1D, a  [2.x.123]  in 2D, and a  [2.x.124]  in 3d.  
+* [0.x.149]*
+   Return an array of iterators to all faces of this cell.  
+* [0.x.150]*
+   Return the result of the  [2.x.125]  function of the   base class, but convert it so that one can also access the DoF data (the   function in the base class only returns an iterator with access to the   triangulation data).  
+* [0.x.151]*
+   Return the result of the  [2.x.126]  function   of the base class, but convert it so that one can also access the DoF   data (the function in the base class only returns an iterator with access   to the triangulation data).  
+* [0.x.152]*
+    [2.x.127]   
+* [0.x.153]*
+    [2.x.128]  Extracting values from global vectors  
+* [0.x.154]*
+    [2.x.129]   
+* [0.x.155]*
+   Collect the values of the given vector restricted to the dofs of this cell   in the standard ordering: dofs on vertex 0, dofs on vertex 1, etc, dofs   on line 0, dofs on line 1, etc, dofs on quad 0, etc. In other   words, this function implements a   [gather   operation](https://en.wikipedia.org/wiki/Gather-scatter_(vector_addressing)).     The vector has to have the right size before being passed to this   function. This function is only callable for active cells.     The input vector may be either a <tt>Vector<float></tt>, Vector<double>,   or a BlockVector<double>, or a PETSc or Trilinos vector if deal.II is   compiled to support these libraries. It is in the responsibility of the   caller to assure that the types of the numbers stored in input and output   vectors are compatible and with similar accuracy.  
+* [0.x.156]*
+   Collect the values of the given vector restricted to the dofs of this cell   in the standard ordering: dofs on vertex 0, dofs on vertex 1, etc, dofs   on line 0, dofs on line 1, etc, dofs on quad 0, etc. In other   words, this function implements a   [gather   operation](https://en.wikipedia.org/wiki/Gather-scatter_(vector_addressing)).     The vector has to have the right size before being passed to this   function. This function is only callable for active cells.     The input vector may be either a <tt>Vector<float></tt>, Vector<double>,   or a BlockVector<double>, or a PETSc or Trilinos vector if deal.II is   compiled to support these libraries. It is in the responsibility of the   caller to assure that the types of the numbers stored in input and output   vectors are compatible and with similar accuracy.  
+* [0.x.157]*
+   Collect the values of the given vector restricted to the dofs of this cell   in the standard ordering: dofs on vertex 0, dofs on vertex 1, etc, dofs   on line 0, dofs on line 1, etc, dofs on quad 0, etc. In other   words, this function implements a   [gather   operation](https://en.wikipedia.org/wiki/Gather-scatter_(vector_addressing)).     The vector has to have the right size before being passed to this   function. This function is only callable for active cells.     The input vector may be either a <tt>Vector<float></tt>, Vector<double>,   or a BlockVector<double>, or a PETSc or Trilinos vector if deal.II is   compiled to support these libraries. It is in the responsibility of the   caller to assure that the types of the numbers stored in input and output   vectors are compatible and with similar accuracy. The   AffineConstraints object passed as an argument to this function makes   sure that constraints are correctly distributed when the dof values   are calculated.  
+* [0.x.158]*
+   This function is the counterpart to get_dof_values(): it takes a vector   of values for the degrees of freedom of the cell pointed to by this   iterator and writes these values into the global data vector  [2.x.130]    In other words, this function implements a   [scatter   operation](https://en.wikipedia.org/wiki/Gather-scatter_(vector_addressing)).   This function is only callable for active cells.     Note that for continuous finite elements, calling this function affects   the dof values on neighboring cells as well. It may also violate   continuity requirements for hanging nodes, if neighboring cells are less   refined than the present one. These requirements are not taken care of   and must be enforced by the user afterwards.     The vector has to have the right size before being passed to this   function.     The output vector may be either a Vector<float>, Vector<double>, or a   BlockVector<double>, or a PETSc vector if deal.II is compiled to support   these libraries. It is in the responsibility of the caller to assure that   the types of the numbers stored in input and output vectors are   compatible and with similar accuracy.  
+* [0.x.159]*
+   Return the interpolation of the given finite element function to the   present cell. In the simplest case, the cell is a terminal one, i.e., it   has no children; then, the returned value is the vector of nodal values   on that cell. You could as well get the desired values through the  [2.x.131]    get_dof_values function. In the other case, when the cell has children,   we use the restriction matrices provided by the finite element class to   compute the interpolation from the children to the present cell.     If the cell is part of a DoFHandler with hp-capabilities, cells only have   an associated finite element space if they are active. However, this   function is supposed to also provide information on inactive cells with   children. Consequently, it carries a third argument that can be used in   the hp-context that denotes the finite element space we are supposed to   interpolate onto. If the cell is active, this function then obtains the   finite element function from the  [2.x.132]  vector on this cell   and interpolates it onto the space described by the    [2.x.133] th element of the  [2.x.134]  associated with   the DoFHandler of which this cell is a part of. If the cell is not   active, then we first perform this interpolation on all of its terminal   children and then interpolate this function down to the cell requested   keeping the function space the same.     It is assumed that both input vectors already have the right size   beforehand.    
+*  [2.x.135]  Unlike the get_dof_values() function, this function is only   available on cells, rather than on lines, quads, and hexes, since   interpolation is presently only provided for cells by the finite element   classes.  
+* [0.x.160]*
+   This function is the counterpart to get_interpolated_dof_values(): you   specify the dof values on a cell and these are interpolated to the   children of the present cell and set on the terminal cells.     In principle, it works as follows: if the cell pointed to by this object   is terminal (i.e., has no children), then the dof values are set in the   global data vector by calling the set_dof_values() function; otherwise,   the values are prolonged to each of the children and this function is   called for each of them.     Using the get_interpolated_dof_values() and this function, you can   compute the interpolation of a finite element function to a coarser grid   by first getting the interpolated solution on a cell of the coarse grid   and afterwards redistributing it using this function.     Note that for continuous finite elements, calling this function affects   the dof values on neighboring cells as well. It may also violate   continuity requirements for hanging nodes, if neighboring cells are less   refined than the present one, or if their children are less refined than   the children of this cell. These requirements are not taken care of and   must be enforced by the user afterward.     If the cell is part of a DoFHandler with hp-capabilities, cells only have   an associated finite element space if they are active. However, this   function is supposed to also work on inactive cells with children.   Consequently, it carries a third argument that can be used in the hp-   context that denotes the finite element space we are supposed to   interpret the input vector of this function in. If the cell is active,   this function then interpolates the input vector interpreted as an   element of the space described by the  [2.x.136] th element of   the  [2.x.137]  associated with the DoFHandler of which this   cell is a part of, and interpolates it into the space that is associated   with this cell. On the other hand, if the cell is not active, then we   first perform this interpolation from this cell to its children using the   given  [2.x.138]  until we end up on an active cell, at which   point we follow the procedure outlined at the beginning of the paragraph.     It is assumed that both vectors already have the right size beforehand.   This function relies on the existence of a natural interpolation property   of finite element spaces of a cell to its children, denoted by the   prolongation matrices of finite element classes. For some elements, the   spaces on coarse and fine grids are not nested, in which case the   interpolation to a child is not the identity; refer to the documentation   of the respective finite element class for a description of what the   prolongation matrices represent in this case.    
+*  [2.x.139]  Unlike the get_dof_values() function, this function is only   available on cells, rather than on lines, quads, and hexes, since   interpolation is presently only provided for cells by the finite element   classes.  
+* [0.x.161]*
+   Distribute a local (cell based) vector to a global one by mapping the   local numbering of the degrees of freedom to the global one and entering   the local values into the global vector. In other words, this function   implements a   [scatter   operation](https://en.wikipedia.org/wiki/Gather-scatter_(vector_addressing)).     The elements are  [2.x.140] added [2.x.141]  to the existing elements in the global   vector, rather than just set, since this is usually what one wants. You may   also want to take a look at the    [2.x.142]  function if you need to   deal with constraints.  
+* [0.x.162]*
+   Distribute a local (cell based) vector in iterator format to a global one   by mapping the local numbering of the degrees of freedom to the global   one and entering the local values into the global vector.   In other words, this function implements a   [scatter   operation](https://en.wikipedia.org/wiki/Gather-scatter_(vector_addressing)).     The elements are  [2.x.143] added [2.x.144]  to the existing elements in the global   vector, rather than just set, since this is usually what one wants. You may   also want to take a look at the    [2.x.145]  function if you need to   deal with constraints.  
+* [0.x.163]*
+   Distribute a local (cell based) vector in iterator format to a global one   by mapping the local numbering of the degrees of freedom to the global   one and entering the local values into the global vector.   In other words, this function implements a   [scatter   operation](https://en.wikipedia.org/wiki/Gather-scatter_(vector_addressing)).     The elements are  [2.x.146] added [2.x.147]  up to the elements in the global vector,   rather than just set, since this is usually what one wants. Moreover, the   AffineConstraints object passed to this function makes sure that also   constraints are eliminated in this process.  
+* [0.x.164]*
+   This function does much the same as the   <tt>distribute_local_to_global(Vector,Vector)</tt> function, but operates   on matrices instead of vectors. If the matrix type is a sparse matrix   then it is supposed to have non-zero entry slots where required.  
+* [0.x.165]*
+   This function does what the two <tt>distribute_local_to_global</tt>   functions with vector and matrix argument do, but all at once.  
+* [0.x.166]*
+    [2.x.148]   
+* [0.x.167]*
+    [2.x.149]  Accessing the DoF indices of this object  
+* [0.x.168]*
+    [2.x.150]   
+* [0.x.169]*
+   Obtain the global indices of the local degrees of freedom on this cell.     If this object accesses a level cell (indicated by the third template   argument or #is_level_cell), then return the result of   get_mg_dof_indices(), else return get_dof_indices().     You will get a level_cell_iterator when calling begin_mg() and a normal   one otherwise.     Examples for this use are in the implementation of DoFRenumbering.  
+* [0.x.170]*
+   Return the [1.x.20] indices of the degrees of freedom located on   this object in the standard ordering defined by the finite element (i.e.,   dofs on vertex 0, dofs on vertex 1, etc, dofs on line 0, dofs on line 1,   etc, dofs on quad 0, etc.) This function is only available on   [1.x.21] objects (see    [2.x.151]  "this glossary entry").      [2.x.152]  dof_indices The vector into which the indices will be   written. It has to have the right size (namely,    [2.x.153] , or    [2.x.154] , depending on which kind of object this   function is called) before being passed to this function.     This function reimplements the same function in the base class. In   contrast to the function in the base class, we do not need the    [2.x.155]  here because there is always a unique finite   element index on cells.     This is a function which requires that the cell is active.     Also see get_active_or_mg_dof_indices().    
+*  [2.x.156]  In many places in the tutorial and elsewhere in the library, the   argument to this function is called  [2.x.157]  by   convention. The name is not meant to indicate the [1.x.22] numbers of   degrees of freedom (which are always between zero and    [2.x.158] ) but instead that the returned values are   the [1.x.23] indices of those degrees of freedom that are located   locally on the current cell.  
+* [0.x.171]*
+   Retrieve the global indices of the degrees of freedom on this cell in the   level vector associated to the level of the cell.  
+* [0.x.172]*
+    [2.x.159]   
+* [0.x.173]*
+    [2.x.160]  Accessing the finite element associated with this object  
+* [0.x.174]*
+    [2.x.161]   
+* [0.x.175]*
+   Return the finite element that is used on the cell pointed to by this   iterator. For DoFHandler objects without hp-capabilities, this is of   course always the same element, independent of the cell we are presently   on, but for hp-DoFHandler objects this may change from cell to cell.    
+*  [2.x.162]  Since degrees of freedom only exist on active cells for DoFHandler   objects with hp-capabilities (i.e., there is currently no implementation   of multilevel such objects), it does not make sense to query the finite   element on non-active cells since they do not have finite element spaces   associated with them without having any degrees of freedom. Consequently,   this function will produce an exception when called on non-active cells.  
+* [0.x.176]*
+   Return the index inside the  [2.x.163]  of the FiniteElement used   for this cell. This function is only useful if the DoFHandler object   associated with the current cell has hp-capabilities enabled.    
+*  [2.x.164]  Since degrees of freedom only exist on active cells for DoFHandler   objects with hp-capabilities (i.e., there is currently no implementation   of multilevel such objects), it does not make sense to query the finite   element on non-active cells since they do not have finite element spaces   associated with them without having any degrees of freedom. Consequently,   this function will produce an exception when called on non-active cells.    
+*  [2.x.165]  When using parallel meshes, either through the    [2.x.166]  or  [2.x.167]    classes, it is only allowed to call this function on locally   owned or ghost cells. No information is available on artificial cells.   Furthermore,  [2.x.168]  information is only exchanged from locally   owned cells on one processor to other processors where they may be   ghost cells, during the call to  [2.x.169]  and    [2.x.170]  Be aware that if you call   set_active_fe_index() on a cell after calling one of these functions, then   this information will not be propagated to other processors who may have   this cell as a ghost cell. See the documentation of DoFHandler for more   information.  
+* [0.x.177]*
+   Set the index of the FiniteElement used for this cell. This determines   which element in an  [2.x.171]  to use. This function is only useful   if the DoF handler object associated with the current cell has hp-   capabilities enabled.    
+*  [2.x.172]  Since degrees of freedom only exist on active cells for DoFHandler   objects with hp-capabilities (i.e., there is currently no implementation   of multilevel such objects), it does not make sense to query the finite   element on non-active cells since they do not have finite element spaces   associated with them without having any degrees of freedom. Consequently,   this function will produce an exception when called on non-active cells.    
+*  [2.x.173]  When using parallel meshes, either through the    [2.x.174]  or  [2.x.175]    classes, it is only allowed to call this function on locally   owned or ghost cells. No information is available on artificial cells.   Furthermore,  [2.x.176]  information is only exchanged from locally   owned cells on one processor to other processors where they may be   ghost cells, during the call to  [2.x.177]  and    [2.x.178]  Be aware that if you call   set_active_fe_index() on a cell after calling one of these functions, then   this information will not be propagated to other processors who may have   this cell as a ghost cell. See the documentation of DoFHandler for more   information.  
+* [0.x.178]*
+    [2.x.179]   
+* [0.x.179]*
+   Set the DoF indices of this cell to the given values. This function   bypasses the DoF cache, if one exists for the given DoF handler class.  
+* [0.x.180]*
+   Set the Level DoF indices of this cell to the given values.  
+* [0.x.181]*
+   Update the cache in which we store the dof indices of this cell.  
+* [0.x.182]*
+    [2.x.180]  Dealing with refinement indicators  
+* [0.x.183]*
+    [2.x.181]   
+* [0.x.184]*
+   Return the finite element that will be assigned to this cell next time the   triangulation gets refined and coarsened. If no future finite element has   been specified for this cell via the set_future_fe_index() function, the   active one will remain unchanged, in which case the active finite element   will be returned.     For DoFHandlers without hp-capabilities enabled, this is of course always   the same element, independent of the cell we are presently on, but for hp-   DoFHandler objects this may change from cell to cell.    
+*  [2.x.182]  Since degrees of freedom only exist on active cells for DoFHandler   objects with hp-capabilities (i.e., there is currently no implementation   of multilevel such objects), it does not make sense to query the finite   element on non-active cells since they do not have finite element spaces   associated with them without having any degrees of freedom. Consequently,   this function will produce an exception when called on non-active cells.  
+* [0.x.185]*
+   Return the fe_index of the finite element that will be assigned to this   cell next time the triangulation gets refined and coarsened. If no future   finite element has been specified for this cell via the   set_future_fe_index() function, the active one will remain unchanged, in   which case the fe_index of the active finite element will be returned.    
+*  [2.x.183]  Since degrees of freedom only exist on active cells for DoFHandler   objects with hp-capabilities (i.e., there is currently no implementation   of multilevel such objects), it does not make sense to query the finite   element on non-active cells since they do not have finite element spaces   associated with them without having any degrees of freedom. Consequently,   this function will produce an exception when called on non-active cells.    
+*  [2.x.184]  When using parallel meshes, either through the    [2.x.185]  or  [2.x.186]    classes, it is only allowed to call this function on locally owned cells.  
+* [0.x.186]*
+   Set the fe_index of the finite element that will be assigned to this   cell next time the triangulation gets refined and coarsened. A previously   assigned future finite element will be overwritten.     See notes of future_fe_index() for information about restrictions on this   functionality.  
+* [0.x.187]*
+   Return whether a future finite element has been set.     See notes of future_fe_index() for information about restrictions on this   functionality.  
+* [0.x.188]*
+   Revoke the future finite element assigned. Thus, the active finite element   will remain unchanged next time the triangulation gets refined and   coarsened.     See notes on future_fe_index() for information about restrictions on this   functionality.  
+* [0.x.189]*
+    [2.x.187]   
+* [0.x.190]

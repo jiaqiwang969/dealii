@@ -1,0 +1,109 @@
+[0.x.0]*
+ A wrapper for the  [2.x.0]  class, implementing a self-balancing spatial index (the R-tree) capable of storing various types of values, using different balancing algorithms.
+*  From [Wikipedia](https://en.wikipedia.org/wiki/R-tree): <blockquote> R-trees are tree data structures used for spatial access methods, i.e., for indexing multi-dimensional information such as geographical coordinates, rectangles or polygons. The R-tree was proposed by Antonin Guttman in 1984 and has found significant use in both theoretical and applied contexts. A common real-world usage for an R-tree might be to store spatial objects such as restaurant locations or the polygons that typical maps are made of: streets, buildings, outlines of lakes, coastlines, etc. and then find answers quickly to queries such as "Find all museums within 2 km of my current location", "retrieve all road segments within 2 km of my location" (to display them in a navigation system) or "find the nearest gas station" (although not taking roads into account). The R-tree can also accelerate nearest neighbor search for various distance metrics, including great-circle distance.
+*  The key idea of the data structure is to group nearby objects and represent them with their minimum bounding rectangle in the next higher level of the tree; the "R" in R-tree is for rectangle. Since all objects lie within this bounding rectangle, a query that does not intersect the bounding rectangle also cannot intersect any of the contained objects. At the leaf level, each rectangle describes a single object; at higher levels the aggregation of an increasing number of objects. This can also be seen as an increasingly coarse approximation of the data set.
+*  The key difficulty of R-tree is to build an efficient tree that on one hand is balanced (so the leaf nodes are at the same height) on the other hand the rectangles do not cover too much empty space and do not overlap too much (so that during search, fewer subtrees need to be processed). For example, the original idea for inserting elements to obtain an efficient tree is to always insert into the subtree that requires least enlargement of its bounding box. Once that page is full, the data is split into two sets that should cover the minimal area each. Most of the research and improvements for R-trees aims at improving the way the tree is built and can be grouped into two objectives: building an efficient tree from scratch (known as bulk-loading) and performing changes on an existing tree (insertion and deletion). </blockquote>
+*  An RTree may store any type of  [2.x.1]  as long as it is possible to extract an  [2.x.2]  that the RTree can handle and compare values. An  [2.x.3]  is a type adapted to the Point, BoundingBox or Segment concept, for which distance and equality comparison are implemented. The deal.II Point, Segment, and BoundingBox classes satisfy this requirement, but you can mix in any geometry object that  [2.x.4]  accepts as indexable.
+*  In particular, given an  [2.x.5]  type (for example a Point,  a BoundingBox, or a Segment),  [2.x.6]  can by any of  [2.x.7]   [2.x.8]  T>`,  [2.x.9]  ...>` or  [2.x.10]  ...>`.
+*  The optional argument  [2.x.11]  is used only when adding elements to the tree one by one. If a range insertion is used, then the tree is built using the packing algorithm.
+*  Linear, quadratic, and rstar algorithms are available if one wants to construct the tree sequentially. However, none of these is very efficient, and users should use the packing algorithm when possible.
+*  The packing algorithm constructs the tree all at once, and may be used when you have all the leaves at your disposal.
+*  This class is usually used in combination with one of the two helper functions pack_rtree(), that takes a container or a range of iterators to construct the RTree using the packing algorithm.
+*  An example usage is the following:
+* 
+
+* 
+* [1.x.0]
+* 
+*  The tree is accessed by using  [2.x.12]  queries](https://www.boost.org/doc/libs/1_68_0/libs/geometry/doc/html/geometry/spatial_indexes/queries.html). For example, after constructing the tree with the snippet above, one can ask for the closest points to a segment in the following way:
+* 
+
+* 
+* [1.x.1]
+* 
+*  In general, a tree does not need to store the actual objects, as long as it knows how to access a const reference to an indexable type. This is achieved by passing the optional template argument  [2.x.13]  that extracts a const reference to one of the possible indexable types given an object of type  [2.x.14]  As an example, one may store points in a container, and only create a tree of the indices within the container, using the IndexableGetterFromIndices class defined below, and the function pack_rtree_of_indices().
+
+* 
+* [0.x.1]*
+ Construct the correct RTree object by passing an iterator range.
+*  Notice that the order of the parameters is the opposite with respect to the RTree class, since we can automatically infer the  [2.x.15]  from the arguments.
+
+* 
+* [0.x.2]*
+ Construct an RTree object by passing an STL container type. This function is used in  [2.x.16] .
+*  Notice that the order of the template parameters is the opposite with respect to the RTree class, since we can automatically infer the  [2.x.17]  from the arguments, and we only need to specify the  [2.x.18]  if the default is not adequate.
+
+* 
+* [0.x.3]*
+ A class that may be used as an  [2.x.19]  template argument for an RTree that stores indices to entries in a  [2.x.20]  type.
+*  This class may be used as a proxy to extract an indexable type from compatible containers. For example:
+
+* 
+* [1.x.2]
+* 
+*  This class is used by the pack_rtree_of_indices() function to construct an RTree where the leaves are indices pointing to the entries of the container passed to this class.
+
+* 
+* [0.x.4]*
+   An alias for the boost type that is used to extract a Point, Segment, or   BoundingBox from compatible types (pairs, tuples, etc.).  
+* [0.x.5]*
+   An alias to the actual geometrical type.  
+* [0.x.6]*
+   An alias to the index type.  
+* [0.x.7]*
+   Constructor. Store a const reference to a container.  
+* [0.x.8]*
+   Implements the  [2.x.21]  requirements of the rtree class.  
+* [0.x.9]*
+   A const reference to the container.  
+* [0.x.10]*
+   An instantiation of the getter that allows easy translation from the   container  [2.x.22]  and the actual indexable type.  
+* [0.x.11]*
+ Construct a RTree object that stores the indices of an existing container of indexable types. The only requirement on the container is that it supports operator[] for any index between 0 and the size of the container (i.e., a  [2.x.23]  or an  [2.x.24]  will do, however an  [2.x.25]  won't).
+*  Differently from the object created by the pack_rtree() function, in this case we don't store the actual geometrical types, but just their indices:
+* 
+
+* 
+* [1.x.3]
+* 
+*  The leaves stored in the tree are the indices of the corresponding entry in the container. A reference to the external container is stored internally, but keep in mind that if you change the container, you should rebuild the tree.
+
+* 
+* [0.x.12]*
+ Helper structure that allows one to extract a level from an RTree as a vector of BoundingBox objects.
+*  This structure implements a  [2.x.26]  object, allowing one to visit any existing RTree object, and return the vector of bounding boxes associated to a specific target level of the tree.
+*  Although possible, direct usage of this structure is cumbersome. The suggested usage of this class is through the helper function extract_rtree_level().
+
+* 
+* [0.x.13]*
+   Construct a vector  [2.x.27]  of BoundingBox objects corresponding to the    [2.x.28]  of the tree.  
+* [0.x.14]*
+   An alias that identifies an InternalNode of the tree.  
+* [0.x.15]*
+   An alias that identifies a Leaf of the tree.  
+* [0.x.16]*
+   Implements the visitor interface for InternalNode objects. If the node   belongs to the  [2.x.29]  then fill the bounding box vector.  
+* [0.x.17]*
+   Implements the visitor interface for Leaf objects.  
+* [0.x.18]*
+   Translator interface, required by the boost implementation of the rtree.  
+* [0.x.19]*
+   Store the level we are currently visiting.  
+* [0.x.20]*
+   The level we want to extract from the RTree object.  
+* [0.x.21]*
+   A reference to the input vector of BoundingBox objects.  
+* [0.x.22]*
+ Given a RTree object  [2.x.30]  and a target level  [2.x.31]  return a vector of BoundingBox objects containing all the bounding boxes that make the given  [2.x.32]  of the  [2.x.33]  This function is a convenient wrapper around the ExtractLevelVisitor class. It is used in  [2.x.34] .
+*  Since an RTree object is a balanced tree, you can expect each entry of the resulting vector to contain roughly the same number of children, and ultimately, the same number of leaf objects. If you request for a level that is not present in the RTree, the last level is returned.
+*  A typical usage of this function is in the context of  [2.x.35]  objects, where one would like to construct a rough representation of the area which is covered by the locally owned cells of the active process, and exchange this information with other processes. The finest level of information is given by the leaves, which in this context would be the collection of all the bounding boxes associated to the locally owned cells of the triangulation. Exchanging this information with all participating processes would defeat the purpuse of parallel computations. If however one constructs an RTree containing these bounding boxes (for example, by calling  [2.x.36]  and then extracts one of the first levels of the RTree, only a handful of BoundingBox objects would be returned, allowing the user to have a very efficient description of the geometry of the domain, and of its distribution among processes.
+*  An example usage is given by the following snippet of code:
+
+* 
+* [1.x.4]
+* 
+*  When run on three processes, the complete set of the BoundingBox objects surrounding only the locally owned cells and the second level of the rtree constructed with those boxes would look like in the following pictures (one image per process):
+*   [2.x.37]   [2.x.38]   [2.x.39] 
+
+* 
+* [0.x.23]

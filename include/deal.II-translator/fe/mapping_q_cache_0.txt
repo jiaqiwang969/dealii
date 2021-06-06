@@ -1,0 +1,47 @@
+[0.x.0]*
+ This class implements a caching strategy for objects of the MappingQ family in terms of the  [2.x.0]  function, which is used in all operations of MappingQGeneric. The information of the mapping is pre-computed by the  [2.x.1]  function.
+*  The use of this class is discussed extensively in  [2.x.2] .
+
+* 
+* [0.x.1]*
+   Constructor.  [2.x.3]  denotes the polynomial degree of the   polynomials that are used to map cells from the reference to the real   cell.  
+* [0.x.2]*
+   Copy constructor.  
+* [0.x.3]*
+   Destructor.  
+* [0.x.4]*
+   clone() functionality. For documentation, see  [2.x.4]   
+* [0.x.5]*
+   Returns  [2.x.5]  because the preservation of vertex locations depends on   the mapping handed to the reinit() function.  
+* [0.x.6]*
+   Initialize the data cache by computing the mapping support points for all   cells (on all levels) of the given triangulation.    
+*  [2.x.6]  The cache is invalidated upon the signal    [2.x.7]  of the underlying triangulation.  
+* [0.x.7]*
+   Initialize the data cache by computing the mapping support points for all   cells (on all levels) of the given triangulation.    
+*  [2.x.8]  The cache is invalidated upon the signal    [2.x.9]  of the underlying triangulation.      [2.x.10]  Use initialize() version above instead.  
+* [0.x.8]*
+   Initialize the data cache by letting the function given as an argument   provide the mapping support points for all cells (on all levels) of the   given triangulation. The function must return a vector of   `Point<spacedim>` whose length is the same as the size of the polynomial   space,  [2.x.11] , where  [2.x.12]  is the polynomial degree of the   mapping, and it must be in the order the mapping or FE_Q sort their   points, i.e., all  [2.x.13]  vertex points first, then the points on   the lines, quads, and hexes according to the usual hierarchical   numbering. No attempt is made to validate these points internally, except   for the number of given points.    
+*  [2.x.14]  If multiple threads are enabled, this function will run in   parallel, invoking the function passed in several times. Thus, in case    [2.x.15]  the user code must make sure that the   function, typically a lambda, does not write into data shared with other   threads.    
+*  [2.x.16]  The cache is invalidated upon the signal    [2.x.17]  of the underlying triangulation.  
+* [0.x.9]*
+   Initialize the data cache by computing the mapping support points for all   cells (on all levels) of the given triangulation and a given  [2.x.18]    and transforming these points via the function  [2.x.19]      The bool  [2.x.20]  indicates that   the function  [2.x.21]  maps to absolute coordinates.   If the parameter is set to true, the return value of the function is   interpreted as relative deformation and the result is eventually added   to the original point for the support points eventually used by this class.     This function calls the previous function so the comments regarding   threading listed above apply also here.    
+*  [2.x.22]  The cache is invalidated upon the signal    [2.x.23]  of the underlying triangulation.  
+* [0.x.10]*
+   The same as above but taking a  [2.x.24]  object.  
+* [0.x.11]*
+   Initialize the data cache of the active cells by a discrete field   (specified   by  [2.x.25]  and  [2.x.26]  that describes the absolute or   relative position of each support point.    
+*  [2.x.27]  By using this function for reinitialization, this class behaves like     MappingFEField (vector_describes_relative_displacement == false) or     MappingQEulerian (vector_describes_relative_displacement == true), but     with much more efficient operations internally.  
+* [0.x.12]*
+   Initialize the data cache of all non-artificial cells by a solution   (specified by  [2.x.28]  and a set of  [2.x.29]  on all levels of the   triangulation) that describes the absolute or relative position of each   support point.    
+*  [2.x.30]  By using this function for reinitialization, this class behaves like     MappingFEField (vector_describes_relative_displacement == false) or     MappingQEulerian (vector_describes_relative_displacement == true), but     with much more efficient operations internally.  
+* [0.x.13]*
+   Return the memory consumption (in bytes) of the cache.  
+* [0.x.14]*
+   This is the main function overridden from the base class MappingQGeneric.  
+* [0.x.15]*
+   The point cache filled upon calling initialize(). It is made a shared   pointer to allow several instances (created via clone()) to share this   cache.  
+* [0.x.16]*
+   The connection to  [2.x.31]  that must be reset once   this class goes out of scope.  
+* [0.x.17]*
+   Specifies if support_point_cache has been set up for the cells on the   levels.  
+* [0.x.18]

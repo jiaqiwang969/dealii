@@ -99,7 +99,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a6d4cae48b07e9e7141af385567c3d18a"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a6d4cae48b07e9e7141af385567c3d18a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDoFRenumbering_1_1boost_1_1internal.html#a6d4cae48b07e9e7141af385567c3d18a">create_graph</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;dof_handler, const <a class="el" href="classbool.html">bool</a> use_constraints, <a class="el" href="namespaceDoFRenumbering_1_1boost_1_1boosttypes.html#acaee4366d1567663daae1e81b7716233">boosttypes::Graph</a> &amp;graph, boosttypes::property_map&lt; <a class="el" href="namespaceDoFRenumbering_1_1boost_1_1boosttypes.html#acaee4366d1567663daae1e81b7716233">boosttypes::Graph</a>, boosttypes::vertex_degree_t &gt;::type &amp;graph_degree)</td></tr>
+<tr class="memitem:a6d4cae48b07e9e7141af385567c3d18a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDoFRenumbering_1_1boost_1_1internal.html#a6d4cae48b07e9e7141af385567c3d18a">create_graph</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_handler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> use_constraints, <a class="el" href="namespaceDoFRenumbering_1_1boost_1_1boosttypes.html#acaee4366d1567663daae1e81b7716233">boosttypes::Graph</a> &amp;<a class="el" href="automatic__and__symbolic__differentiation__0_8txt.html#af53cdbd16e9a5482d556f78918f2f33c">graph</a>, boosttypes::property_map&lt; <a class="el" href="namespaceDoFRenumbering_1_1boost_1_1boosttypes.html#acaee4366d1567663daae1e81b7716233">boosttypes::Graph</a>, boosttypes::vertex_degree_t &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;graph_degree)</td></tr>
 <tr class="separator:a6d4cae48b07e9e7141af385567c3d18a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -114,13 +114,13 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DoFRenumbering::boost::internal::create_graph </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classbool.html">bool</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>&#160;</td>
           <td class="paramname"><em>use_constraints</em>, </td>
         </tr>
         <tr>
@@ -132,7 +132,7 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">boosttypes::property_map&lt; <a class="el" href="namespaceDoFRenumbering_1_1boost_1_1boosttypes.html#acaee4366d1567663daae1e81b7716233">boosttypes::Graph</a>, boosttypes::vertex_degree_t &gt;::type &amp;&#160;</td>
+          <td class="paramtype">boosttypes::property_map&lt; <a class="el" href="namespaceDoFRenumbering_1_1boost_1_1boosttypes.html#acaee4366d1567663daae1e81b7716233">boosttypes::Graph</a>, boosttypes::vertex_degree_t &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;&#160;</td>
           <td class="paramname"><em>graph_degree</em>&#160;</td>
         </tr>
         <tr>

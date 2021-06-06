@@ -102,12 +102,19 @@ $(function() {
 , <a class="el" href="group__Preconditioners.html#gab027309b2f3093851e4d068a46555ad7">PreconditionRelaxation&lt; MatrixType &gt;</a>
 , <a class="el" href="group__Exceptions.html#ga2b7c487250b6d2186f5779ca9284c246">PreconditionSelector&lt; MatrixType, VectorType &gt;</a>
 , <a class="el" href="classRelaxationBlock.html#a6fada87ed62e9b8c0957d8703b3ef103">RelaxationBlock&lt; MatrixType, InverseNumberType, VectorType &gt;</a>
+, <a class="el" href="structStep44_1_1Solid_1_1PerTaskData__SC.html#a6dd28a9a64ebc5f83848af479cc692ad">Step44::Solid&lt; dim &gt;::PerTaskData_SC</a>
 </li>
 <li>a
 : <a class="el" href="classTimeStepping_1_1RungeKutta.html#a390b08ee6f42438ef4792addfc491401">TimeStepping::RungeKutta&lt; VectorType &gt;</a>
 </li>
 <li>a_block
 : <a class="el" href="group__Exceptions.html#gacba308ba569c2ab2495cf3dc61291b89">PreconditionBlockJacobi&lt; MatrixType, inverse_type &gt;::const_iterator::Accessor</a>
+</li>
+<li>a_coeff_x
+: <a class="el" href="classstep62_1_1PML.html#ac0e6905f232b0d7c4ba76226979582a3">step62::PML&lt; dim &gt;</a>
+</li>
+<li>a_coeff_y
+: <a class="el" href="classstep62_1_1PML.html#a64be26f4af12ce01454e86813cbb45d0">step62::PML&lt; dim &gt;</a>
 </li>
 <li>A_data
 : <a class="el" href="structSUNDIALS_1_1internal_1_1LinearSolverContent.html#a67e052d8b9166dd483f4e9f4399d9aaf">SUNDIALS::internal::LinearSolverContent&lt; VectorType &gt;</a>
@@ -118,6 +125,22 @@ $(function() {
 , <a class="el" href="group__Exceptions.html#ga0a73a186cc11726a71b33d3114093743">SparseMatrixEZ&lt; number &gt;::const_iterator::Accessor</a>
 , <a class="el" href="classTrilinosWrappers_1_1SparseMatrixIterators_1_1AccessorBase.html#aaf1bb8f6f9ffd8eb3e52caeee34bc4fc">TrilinosWrappers::SparseMatrixIterators::AccessorBase</a>
 , <a class="el" href="classTrilinosWrappers_1_1SparsityPatternIterators_1_1Accessor.html#ac28c0e0d8e95a8e8d1fea2d33986f1dd">TrilinosWrappers::SparsityPatternIterators::Accessor</a>
+</li>
+<li>A_inverse
+: <a class="el" href="classStep22_1_1SchurComplement.html#a9f6a8c4900ab055010cc3cfbc9cdb13b">Step22::SchurComplement&lt; PreconditionerType &gt;</a>
+, <a class="el" href="classStep45_1_1SchurComplement.html#a2a405cd9abe3e444bafe49aebb66d3f5">Step45::SchurComplement&lt; PreconditionerType &gt;</a>
+, <a class="el" href="classStep57_1_1BlockSchurPreconditioner.html#aecf0519cc6c4d88f946fba256550fbfa">Step57::BlockSchurPreconditioner&lt; PreconditionerMp &gt;</a>
+</li>
+<li>a_matrix
+: <a class="el" href="classBlackScholesSolver_1_1BlackScholes.html#aa4a3ac0906b61d425045cfe459fddd51">BlackScholesSolver::BlackScholes&lt; dim &gt;</a>
+</li>
+<li>A_preconditioner
+: <a class="el" href="classStep22_1_1StokesProblem.html#a0bf33e81a8cf705d2c7df964448b987b">Step22::StokesProblem&lt; dim &gt;</a>
+</li>
+<li>a_preconditioner
+: <a class="el" href="classStep31_1_1LinearSolvers_1_1BlockSchurPreconditioner.html#aa350cee4bdfb71e4b0c9b35a9cb24ffb">Step31::LinearSolvers::BlockSchurPreconditioner&lt; PreconditionerTypeA, PreconditionerTypeMp &gt;</a>
+, <a class="el" href="classStep32_1_1LinearSolvers_1_1BlockSchurPreconditioner.html#a805f7632d9f45592db4620099874bf6b">Step32::LinearSolvers::BlockSchurPreconditioner&lt; PreconditionerTypeA, PreconditionerTypeMp &gt;</a>
+, <a class="el" href="classStep43_1_1LinearSolvers_1_1BlockSchurPreconditioner.html#abe6c2b13c323f1e531245efcbe0ecddf">Step43::LinearSolvers::BlockSchurPreconditioner&lt; PreconditionerTypeA, PreconditionerTypeMp &gt;</a>
 </li>
 <li>a_row
 : <a class="el" href="classPETScWrappers_1_1MatrixIterators_1_1const__iterator_1_1Accessor.html#ad748969a3589cea6739cc7534cfdca03">PETScWrappers::MatrixIterators::const_iterator::Accessor</a>
@@ -136,8 +159,8 @@ $(function() {
 : <a class="el" href="classGridIn.html#a017db4751bafb6b297fc3c96494133aaac43b54263be1f1997bbeb2e30a12369e">GridIn&lt; dim, spacedim &gt;</a>
 </li>
 <li>abs()
-: <a class="el" href="structnumbers_1_1NumberTraits.html#acaf270c66fded440bb73cbdb2f335a83">numbers::NumberTraits&lt; number &gt;</a>
-, <a class="el" href="structnumbers_1_1NumberTraits_3_01std_1_1complex_3_01number_01_4_01_4.html#a9c6cdc044ecd0022477c5071e929b068">numbers::NumberTraits&lt; std::complex&lt; number &gt; &gt;</a>
+: <a class="el" href="structnumbers_1_1NumberTraits.html#a97d3b3684048afb5d049c1d02f4d977a">numbers::NumberTraits&lt; number &gt;</a>
+, <a class="el" href="structnumbers_1_1NumberTraits_3_01std_1_1complex_3_01number_01_4_01_4.html#aa1858700b5dea9ce9dd0d1e3351524e7">numbers::NumberTraits&lt; std::complex&lt; number &gt; &gt;</a>
 , <a class="el" href="classVectorizedArray.html#a2be646da1dcbc52f538c49923fb71c50">VectorizedArray&lt; Number, width &gt;</a>
 </li>
 <li>abs_square()
@@ -147,6 +170,12 @@ $(function() {
 <li>absolute_tolerance
 : <a class="el" href="classSUNDIALS_1_1ARKode_1_1AdditionalData.html#a08456ab88a4eb5f5281e53b6d1aaa736">SUNDIALS::ARKode&lt; VectorType &gt;::AdditionalData</a>
 , <a class="el" href="classSUNDIALS_1_1IDA_1_1AdditionalData.html#afc022714e6504a7f3ccaf0871a203f49">SUNDIALS::IDA&lt; VectorType &gt;::AdditionalData</a>
+</li>
+<li>absorption_cross_section
+: <a class="el" href="classStep52_1_1Diffusion.html#a59a020ba14c7082735db671999771c8d">Step52::Diffusion</a>
+</li>
+<li>abstol
+: <a class="el" href="structStep75_1_1MultigridParameters.html#a4ae345dcb48712b5a03627399e0da9f8">Step75::MultigridParameters</a>
 </li>
 <li>acc
 : <a class="el" href="classFunctions_1_1CSpline.html#a45caf70af154ca5b8d94c3c1aa5bdc61">Functions::CSpline&lt; dim &gt;</a>
@@ -161,7 +190,7 @@ $(function() {
 : <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a3dd886950d9c29df11b0bf69431e257f">internal::FEPointEvaluation::EvaluatorTypeTraits&lt; dim, n_components, Number &gt;</a>
 , <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits_3_011_00_011_00_01Number_01_4.html#a04b36b381a7e208385299e9fbfd77cbe">internal::FEPointEvaluation::EvaluatorTypeTraits&lt; 1, 1, Number &gt;</a>
 , <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits_3_01dim_00_011_00_01Number_01_4.html#a2be0fbc6b40c57902f6bcb7f3841fa80">internal::FEPointEvaluation::EvaluatorTypeTraits&lt; dim, 1, Number &gt;</a>
-, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits_3_01dim_00_01dim_00_01Number_01_4.html#a18fd16f6bab343bfcae34218b62ec276">internal::FEPointEvaluation::EvaluatorTypeTraits&lt; dim, dim, Number &gt;</a>
+, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits_3_01dim_00_01dim_00_01Number_01_4.html#aedc4510f44783f34a41c3d603881de81">internal::FEPointEvaluation::EvaluatorTypeTraits&lt; dim, dim, Number &gt;</a>
 </li>
 <li>access_any()
 : <a class="el" href="classTriaRawIterator.html#ac40639c4e1cc268842303189b6351656">TriaRawIterator&lt; Accessor &gt;</a>
@@ -170,27 +199,27 @@ $(function() {
 : <a class="el" href="classSymmetricTensor.html#a39ac3cd29bc0649f96ccf3841a4d819e">SymmetricTensor&lt; rank_, dim, Number &gt;</a>
 </li>
 <li>Accessor()
-: <a class="el" href="group__Matrix1.html#ga5953ceb7d6400b8a2c44f0bcf178f492">BlockMatrixIterators::Accessor&lt; BlockMatrixType, false &gt;</a>
-, <a class="el" href="group__Matrix1.html#gae2cd050c5713557967a7e6f0c8d1945b">BlockMatrixIterators::Accessor&lt; BlockMatrixType, true &gt;</a>
-, <a class="el" href="group__Matrix1.html#gade1ee66ab9bc34c43219201c6e806a0a">ChunkSparseMatrixIterators::Accessor&lt; number, false &gt;</a>
+: <a class="el" href="classBlockMatrixIterators_1_1Accessor_3_01BlockMatrixType_00_01false_01_4.html#a5953ceb7d6400b8a2c44f0bcf178f492">BlockMatrixIterators::Accessor&lt; BlockMatrixType, false &gt;</a>
+, <a class="el" href="classBlockMatrixIterators_1_1Accessor_3_01BlockMatrixType_00_01true_01_4.html#ae2cd050c5713557967a7e6f0c8d1945b">BlockMatrixIterators::Accessor&lt; BlockMatrixType, true &gt;</a>
+, <a class="el" href="classChunkSparseMatrixIterators_1_1Accessor_3_01number_00_01false_01_4.html#ade1ee66ab9bc34c43219201c6e806a0a">ChunkSparseMatrixIterators::Accessor&lt; number, false &gt;</a>
 </li>
 <li>accessor
 : <a class="el" href="group__Matrix1.html#gaee580f9127d55f058bae9267cd290bd8">ChunkSparseMatrixIterators::Accessor&lt; number, false &gt;::Reference</a>
 </li>
 <li>Accessor()
-: <a class="el" href="group__Matrix1.html#ga0a39ebc1af394e715ba46a40a793f0ad">ChunkSparseMatrixIterators::Accessor&lt; number, true &gt;</a>
+: <a class="el" href="classChunkSparseMatrixIterators_1_1Accessor_3_01number_00_01true_01_4.html#a0a39ebc1af394e715ba46a40a793f0ad">ChunkSparseMatrixIterators::Accessor&lt; number, true &gt;</a>
 </li>
 <li>accessor
 : <a class="el" href="group__Matrix1.html#ga6369a296c6604a3dd08d650c19672f2f">ChunkSparseMatrixIterators::Iterator&lt; number, Constness &gt;</a>
 </li>
 <li>Accessor()
-: <a class="el" href="group__Sparsity.html#ga3407a956c25fecbf04972d10cfc04fa2">ChunkSparsityPatternIterators::Accessor</a>
+: <a class="el" href="classChunkSparsityPatternIterators_1_1Accessor.html#a3407a956c25fecbf04972d10cfc04fa2">ChunkSparsityPatternIterators::Accessor</a>
 </li>
 <li>accessor
 : <a class="el" href="group__Sparsity.html#ga084938eb3e5871f67ecc0ef712ecb365">ChunkSparsityPatternIterators::Iterator</a>
 </li>
 <li>Accessor()
-: <a class="el" href="classDynamicSparsityPatternIterators_1_1Accessor.html#ga473e1cb731c7116964874b024cfeb901">DynamicSparsityPatternIterators::Accessor</a>
+: <a class="el" href="classDynamicSparsityPatternIterators_1_1Accessor.html#ga189c8ede77d4ec29676b3639ba522682">DynamicSparsityPatternIterators::Accessor</a>
 </li>
 <li>accessor
 : <a class="el" href="group__Sparsity.html#ga69b11c7e62ae37df8940661610d63b8f">DynamicSparsityPatternIterators::Iterator</a>
@@ -341,14 +370,15 @@ $(function() {
 , <a class="el" href="group__Iterators.html#gaa80b689a21d72f777095aa12bbe01afa">parallel::distributed::Triangulation&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classparallel_1_1fullydistributed_1_1Triangulation.html#a1146b56f8c84da24d1c9a68e61182406">parallel::fullydistributed::Triangulation&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classparallel_1_1shared_1_1Triangulation.html#a242e1cd50b22c43e1b637946bc08712e">parallel::shared::Triangulation&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classStep14_1_1LaplaceSolver_1_1WeightedResidual.html#ac5e622d6be3c42ce56fd89a9d3f8de44">Step14::LaplaceSolver::WeightedResidual&lt; dim &gt;</a>
 , <a class="el" href="group__Iterators.html#ga08c836c1e503743e8073eb615603aab9">Triangulation&lt; dim, spacedim &gt;</a>
 </li>
 <li>active_cell_iterators()
-: <a class="el" href="group__CPP11.html#gacdb6d3adec96a13a7079f6c893e1d3ff">DoFHandler&lt; dim, spacedim &gt;</a>
+: <a class="el" href="group__CPP11.html#gaace8c98aca00e7e48a619bb5e08084aa">DoFHandler&lt; dim, spacedim &gt;</a>
 , <a class="el" href="group__CPP11.html#ga4288670ae5bd80367e24918d542cb2d8">Triangulation&lt; dim, spacedim &gt;</a>
 </li>
 <li>active_cell_iterators_on_level()
-: <a class="el" href="group__CPP11.html#ga47b267dbf912ec4d8227070cf0ccac13">DoFHandler&lt; dim, spacedim &gt;</a>
+: <a class="el" href="group__CPP11.html#ga55c642c76c5a4b5140269d7a2538d0f7">DoFHandler&lt; dim, spacedim &gt;</a>
 , <a class="el" href="group__CPP11.html#gac10cd3fe6ef8360e2599d3cff58e13e8">Triangulation&lt; dim, spacedim &gt;</a>
 </li>
 <li>active_face_iterator
@@ -401,6 +431,9 @@ $(function() {
 , <a class="el" href="structinternal_1_1TriangulationImplementation_1_1Iterators_3_013_00_01spacedim_01_4.html#a27541d3677fb168ed32fb0a1c1e22f20">internal::TriangulationImplementation::Iterators&lt; 3, spacedim &gt;</a>
 , <a class="el" href="group__Iterators.html#gabfba44e3df01252843f37ee1f8e6df58">Triangulation&lt; dim, spacedim &gt;</a>
 </li>
+<li>active_neighbors
+: <a class="el" href="structStep9_1_1GradientEstimation_1_1EstimateScratchData.html#a2b97d91e3f607fe9b2b5b90a4f8f5c05">Step9::GradientEstimation::EstimateScratchData&lt; dim &gt;</a>
+</li>
 <li>active_quad_index
 : <a class="el" href="classFEEvaluationBaseData.html#a15d55c8a88a0a393b7eec7a2843cc9bd">FEEvaluationBaseData&lt; dim, Number, is_face, VectorizedArrayType &gt;</a>
 </li>
@@ -416,6 +449,10 @@ $(function() {
 </li>
 <li>active_sections
 : <a class="el" href="classTimerOutput.html#ac22236ae9d091672861ac51fc7ee4a01">TimerOutput</a>
+</li>
+<li>active_set
+: <a class="el" href="classStep41_1_1ObstacleProblem.html#a97135222f041f4102ead434769ee8adc">Step41::ObstacleProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep42_1_1PlasticityContactProblem.html#a38989a0e44b2b979001153ad350aac10">Step42::PlasticityContactProblem&lt; dim &gt;</a>
 </li>
 <li>active_tape_index()
 : <a class="el" href="classDifferentiation_1_1AD_1_1HelperBase.html#aac1c73d88db220159b3c976d7ea84f81">Differentiation::AD::HelperBase&lt; ADNumberTypeCode, ScalarType &gt;</a>
@@ -444,6 +481,9 @@ $(function() {
 : <a class="el" href="structUtilities_1_1MPI_1_1internal_1_1ComputeIndexOwner_1_1Dictionary.html#a73ac1470bc750900b915d0f58bd66105">Utilities::MPI::internal::ComputeIndexOwner::Dictionary</a>
 , <a class="el" href="classUtilities_1_1MPI_1_1internal_1_1ComputeIndexOwner_1_1DictionaryPayLoad.html#aef82a8cfe160e2b07bbe399bfb03d342">Utilities::MPI::internal::ComputeIndexOwner::DictionaryPayLoad</a>
 </li>
+<li>ad_helper
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoelastic__Constitutive__Law__AD.html#a159742ff000a5e8db1dd8dcd50637aef">Step71::CoupledConstitutiveLaws::Magnetoelastic_Constitutive_Law_AD&lt; dim, ADTypeCode &gt;</a>
+</li>
 <li>ad_type
 : <a class="el" href="classDifferentiation_1_1AD_1_1CellLevelBase.html#a34d6d4f04ed538e2b819a4b6f5517e6d">Differentiation::AD::CellLevelBase&lt; ADNumberTypeCode, ScalarType &gt;</a>
 , <a class="el" href="classDifferentiation_1_1AD_1_1EnergyFunctional.html#a42f160f1adb6ff28102ec101e42f3a42">Differentiation::AD::EnergyFunctional&lt; ADNumberTypeCode, ScalarType &gt;</a>
@@ -456,9 +496,19 @@ $(function() {
 <li>adapt_grids
 : <a class="el" href="structTimeStepBase__Tria__Flags_1_1RefinementFlags.html#aa049504b1587c52556b3dafe2ada50b8">TimeStepBase_Tria_Flags::RefinementFlags&lt; dim &gt;</a>
 </li>
+<li>adapt_resolution()
+: <a class="el" href="classStep75_1_1LaplaceProblem.html#a56ab8a166468b066545391b2cb6814f2">Step75::LaplaceProblem&lt; dim &gt;</a>
+</li>
 <li>adaptive
 : <a class="el" href="classAlgorithms_1_1ThetaTimestepping.html#abd370fac0ee95f74128a12c5328fdf42">Algorithms::ThetaTimestepping&lt; VectorType &gt;</a>
 , <a class="el" href="group__Preconditioners.html#gabb5808d854335ef644940e5925bdc9f0a108a1af6c504d8dfaf5ed256f3a85ccf">SparseBlockVanka&lt; number &gt;</a>
+</li>
+<li>adaptive_refinement
+: <a class="el" href="classStep51_1_1HDG.html#a847fe390cfbd4e3eb3a180d0010a0030a4586222c6543c5ccea103e883bc0f252">Step51::HDG&lt; dim &gt;</a>
+, <a class="el" href="classStep7_1_1HelmholtzProblem.html#add6962ec696a8278e760164658bf5f56afbb071eaf491869ce3b893db4bf9e236">Step7::HelmholtzProblem&lt; dim &gt;</a>
+</li>
+<li>adaptive_refinement_interval
+: <a class="el" href="structStep32_1_1BoussinesqFlowProblem_1_1Parameters.html#a3148b44dd86940b5995403419b8d1f6b">Step32::BoussinesqFlowProblem&lt; dim &gt;::Parameters</a>
 </li>
 <li>add()
 : <a class="el" href="classAnyData.html#a5949f684f8ce7ccce9d45e65af32580c">AnyData</a>
@@ -567,7 +617,7 @@ $(function() {
 , <a class="el" href="classTrilinosWrappers_1_1SparsityPattern.html#a90cfaf7a56fb9c2c012e0cf692f57e41">TrilinosWrappers::SparsityPattern</a>
 </li>
 <li>add_entries_local_to_global()
-: <a class="el" href="classAffineConstraints.html#ad210f57f792afd7f51c72c546f22e298">AffineConstraints&lt; number &gt;</a>
+: <a class="el" href="classAffineConstraints.html#a678f690dd91f1b86c24562816b7266d7">AffineConstraints&lt; number &gt;</a>
 </li>
 <li>add_entry()
 : <a class="el" href="classAffineConstraints.html#a2b7756e9cb8e53553211add5426f8e50">AffineConstraints&lt; number &gt;</a>
@@ -631,7 +681,7 @@ $(function() {
 </li>
 <li>add_periodicity()
 : <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html#aa7b797070e5443a18f03a4a7f0267453">parallel::distributed::Triangulation&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classTriangulation.html#a7117ea716b516ef11a205a5d0020fe40">Triangulation&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classTriangulation.html#adbf04756b28dae69194870812acaf941">Triangulation&lt; dim, spacedim &gt;</a>
 </li>
 <li>add_point()
 : <a class="el" href="classPointValueHistory.html#a0a3b629b8c92b7e3e0f76a8b07321b66">PointValueHistory&lt; dim &gt;</a>
@@ -645,6 +695,9 @@ $(function() {
 </li>
 <li>add_range()
 : <a class="el" href="classIndexSet.html#adf69c0bec3f1e748fec802e0dc0d2dd0">IndexSet</a>
+</li>
+<li>add_results_for_output()
+: <a class="el" href="classBlackScholesSolver_1_1BlackScholes.html#a9c89e9fff62e829ca14f606ecd0e3ee1">BlackScholesSolver::BlackScholes&lt; dim &gt;</a>
 </li>
 <li>add_row()
 : <a class="el" href="classFullMatrix.html#a1b59247b8ddc428a47342525152691b2">FullMatrix&lt; number &gt;</a>
@@ -771,7 +824,7 @@ $(function() {
 , <a class="el" href="structEigenPower_1_1AdditionalData.html#aa35354ba66b32b4ac1b286f9b3b8ed54">EigenPower&lt; VectorType &gt;::AdditionalData</a>
 , <a class="el" href="structGinkgoWrappers_1_1SolverGMRES_1_1AdditionalData.html#a26ef7494eb5831cc22bca370e650f1e5">GinkgoWrappers::SolverGMRES&lt; ValueType, IndexType &gt;::AdditionalData</a>
 , <a class="el" href="structGridGenerator_1_1Airfoil_1_1AdditionalData.html#ad6a94b2b41bdeae8061260dba220cb49">GridGenerator::Airfoil::AdditionalData</a>
-, <a class="el" href="structMatrixFree_1_1AdditionalData.html#ac037fdc683a9da457f2b2795009cb6ab">MatrixFree&lt; dim, Number, VectorizedArrayType &gt;::AdditionalData</a>
+, <a class="el" href="structMatrixFree_1_1AdditionalData.html#a827a27f5d5fb34e0289f86f25a069ad4">MatrixFree&lt; dim, Number, VectorizedArrayType &gt;::AdditionalData</a>
 , <a class="el" href="structPArpackSolver_1_1AdditionalData.html#a328da528d1b175d17097d1a5636f2173">PArpackSolver&lt; VectorType &gt;::AdditionalData</a>
 , <a class="el" href="structPETScWrappers_1_1PreconditionBoomerAMG_1_1AdditionalData.html#aa54e64a7754461b518848acc98a37d6d">PETScWrappers::PreconditionBoomerAMG::AdditionalData</a>
 , <a class="el" href="structPETScWrappers_1_1PreconditionEisenstat_1_1AdditionalData.html#a9be8c753dd404be90be489d7634e242b">PETScWrappers::PreconditionEisenstat::AdditionalData</a>
@@ -788,8 +841,8 @@ $(function() {
 , <a class="el" href="structPreconditionIdentity_1_1AdditionalData.html#a742c672b292e76b91441109ff0fe659a">PreconditionIdentity::AdditionalData</a>
 , <a class="el" href="classPreconditionJacobi.html#a73b7dcfde80fe27eadf329f8b1f20c45">PreconditionJacobi&lt; MatrixType &gt;</a>
 , <a class="el" href="classPreconditionPSOR_1_1AdditionalData.html#a86b998692073cae24199e5e56cfc204b">PreconditionPSOR&lt; MatrixType &gt;::AdditionalData</a>
-, <a class="el" href="group__Preconditioners.html#gad1dccae94d0d9594a369867f98ab87fa">PreconditionRelaxation&lt; MatrixType &gt;::AdditionalData</a>
-, <a class="el" href="group__Preconditioners.html#ga9e73e8ed08c3ccd6b7a9b8813ac1ae92">PreconditionRichardson::AdditionalData</a>
+, <a class="el" href="classPreconditionRelaxation_1_1AdditionalData.html#ad1dccae94d0d9594a369867f98ab87fa">PreconditionRelaxation&lt; MatrixType &gt;::AdditionalData</a>
+, <a class="el" href="classPreconditionRichardson_1_1AdditionalData.html#a9e73e8ed08c3ccd6b7a9b8813ac1ae92">PreconditionRichardson::AdditionalData</a>
 , <a class="el" href="classPreconditionSOR.html#a8c1bf40b897f5403d9915de02fb72caa">PreconditionSOR&lt; MatrixType &gt;</a>
 , <a class="el" href="classPreconditionSSOR.html#a4a2e178f13ff6d7550025041ad29434f">PreconditionSSOR&lt; MatrixType &gt;</a>
 , <a class="el" href="classRelaxationBlock_1_1AdditionalData.html#a1637a25e20a7ea78bb31191b94c206d8">RelaxationBlock&lt; MatrixType, InverseNumberType, VectorType &gt;::AdditionalData</a>
@@ -808,7 +861,7 @@ $(function() {
 , <a class="el" href="structSolverIDR_1_1AdditionalData.html#a78efc9d99ec4a3976b2806c77620fd48">SolverIDR&lt; VectorType &gt;::AdditionalData</a>
 , <a class="el" href="structSolverQMRS_1_1AdditionalData.html#ac8fe31d204e1c14285bcd857ecc5681e">SolverQMRS&lt; VectorType &gt;::AdditionalData</a>
 , <a class="el" href="structSolverRichardson_1_1AdditionalData.html#ae2401c061366568de37f69008984896a">SolverRichardson&lt; VectorType &gt;::AdditionalData</a>
-, <a class="el" href="group__Preconditioners.html#gae21347f3202a1186060eac36dcb45817">SparseILU&lt; number &gt;</a>
+, <a class="el" href="classSparseILU.html#ae21347f3202a1186060eac36dcb45817">SparseILU&lt; number &gt;</a>
 , <a class="el" href="classSparseLUDecomposition_1_1AdditionalData.html#ab505ed31d53b3b3e5ed22976e31a4d8b">SparseLUDecomposition&lt; number &gt;::AdditionalData</a>
 , <a class="el" href="classSparseMIC.html#a4a620a3f4f3555a211bbea3be4443939">SparseMIC&lt; number &gt;</a>
 , <a class="el" href="classSparseVanka_1_1AdditionalData.html#a36673af439c4f6796434f9296b55abd9">SparseVanka&lt; number &gt;::AdditionalData</a>
@@ -821,7 +874,7 @@ $(function() {
 , <a class="el" href="structTrilinosWrappers_1_1PreconditionBlockSOR_1_1AdditionalData.html#a58f4391bc5337d56ac3bd9171f4661ee">TrilinosWrappers::PreconditionBlockSOR::AdditionalData</a>
 , <a class="el" href="structTrilinosWrappers_1_1PreconditionBlockSSOR_1_1AdditionalData.html#a2fd6cc5a68e62ea44875566b94e2caad">TrilinosWrappers::PreconditionBlockSSOR::AdditionalData</a>
 , <a class="el" href="structTrilinosWrappers_1_1PreconditionBlockwiseDirect_1_1AdditionalData.html#a9234374a9fb00a8a75bf16c49dfbfddd">TrilinosWrappers::PreconditionBlockwiseDirect::AdditionalData</a>
-, <a class="el" href="structTrilinosWrappers_1_1PreconditionChebyshev_1_1AdditionalData.html#aa43d37a3ba2fd282ab461f77a5986984">TrilinosWrappers::PreconditionChebyshev::AdditionalData</a>
+, <a class="el" href="group__TrilinosWrappers.html#ga2bef46f06d2377a049e78b84cdbdcf72">TrilinosWrappers::PreconditionChebyshev::AdditionalData</a>
 , <a class="el" href="structTrilinosWrappers_1_1PreconditionIC_1_1AdditionalData.html#a7b5fc7869822105896bddc6b0af4c7e0">TrilinosWrappers::PreconditionIC::AdditionalData</a>
 , <a class="el" href="structTrilinosWrappers_1_1PreconditionILU_1_1AdditionalData.html#a5bdb89fcbc03621c0612f866816ab67a">TrilinosWrappers::PreconditionILU::AdditionalData</a>
 , <a class="el" href="structTrilinosWrappers_1_1PreconditionILUT_1_1AdditionalData.html#a535dcdeb1572edb50250817bf833499b">TrilinosWrappers::PreconditionILUT::AdditionalData</a>
@@ -833,11 +886,14 @@ $(function() {
 , <a class="el" href="structTrilinosWrappers_1_1SolverCG_1_1AdditionalData.html#ae2c101cb8d69a62febf8a0fe92ea5bb0">TrilinosWrappers::SolverCG::AdditionalData</a>
 , <a class="el" href="structTrilinosWrappers_1_1SolverCGS_1_1AdditionalData.html#ad76d9e6330e1e6519499d2c615d4f991">TrilinosWrappers::SolverCGS::AdditionalData</a>
 , <a class="el" href="structTrilinosWrappers_1_1SolverDirect_1_1AdditionalData.html#aa09b2ed18fdf9e31e25436bb077b751c">TrilinosWrappers::SolverDirect::AdditionalData</a>
-, <a class="el" href="structTrilinosWrappers_1_1SolverGMRES_1_1AdditionalData.html#a50c84de674b9a52bfba7f854ae0f3d53">TrilinosWrappers::SolverGMRES::AdditionalData</a>
+, <a class="el" href="structTrilinosWrappers_1_1SolverGMRES_1_1AdditionalData.html#abb139678d10f0d06dffe1754cbc60fe7">TrilinosWrappers::SolverGMRES::AdditionalData</a>
 , <a class="el" href="structTrilinosWrappers_1_1SolverTFQMR_1_1AdditionalData.html#abfbe5452a8d22a46a3bf2f31e5b47b5f">TrilinosWrappers::SolverTFQMR::AdditionalData</a>
 </li>
 <li>AdditionalParameters()
 : <a class="el" href="classGmsh_1_1AdditionalParameters.html#a3d6a9d0d688bcf7315650636487800cd">Gmsh::AdditionalParameters</a>
+</li>
+<li>ADHelper
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoelastic__Constitutive__Law__AD.html#a91018040303e7f0d81251e5291483fb0">Step71::CoupledConstitutiveLaws::Magnetoelastic_Constitutive_Law_AD&lt; dim, ADTypeCode &gt;</a>
 </li>
 <li>adjugate()
 : <a class="el" href="classTensor.html#a1403b17edbfb509662833ac8f5213f20">Tensor&lt; rank_, dim, Number &gt;</a>
@@ -863,16 +919,19 @@ $(function() {
 <li>adjust_quad_dof_sign_for_face_orientation_table
 : <a class="el" href="classFE__PolyTensor.html#aff906effc3490a071e20495d8a5f1dbb">FE_PolyTensor&lt; dim, spacedim &gt;</a>
 </li>
+<li>ADNumberType
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoelastic__Constitutive__Law__AD.html#ac985f2c2c59a8984f81f2be1b7011d38">Step71::CoupledConstitutiveLaws::Magnetoelastic_Constitutive_Law_AD&lt; dim, ADTypeCode &gt;</a>
+</li>
 <li>advance()
-: <a class="el" href="classAlgorithms_1_1TimestepControl.html#aaffbb9f371ceb736dece7219102cedd4">Algorithms::TimestepControl</a>
+: <a class="el" href="classAlgorithms_1_1TimestepControl.html#ae7430957134cb3dffa002f66a1267070">Algorithms::TimestepControl</a>
 , <a class="el" href="classBlockMatrixIterators_1_1Accessor_3_01BlockMatrixType_00_01false_01_4.html#a4c787213442566633d8cbc9ce27fcc73">BlockMatrixIterators::Accessor&lt; BlockMatrixType, false &gt;</a>
 , <a class="el" href="classBlockMatrixIterators_1_1Accessor_3_01BlockMatrixType_00_01true_01_4.html#ac967a299b989419a2a31c6abfc18fe44">BlockMatrixIterators::Accessor&lt; BlockMatrixType, true &gt;</a>
-, <a class="el" href="group__Sparsity.html#ga6e967d6d0efc7e686eea475e2dff796a">ChunkSparsityPatternIterators::Accessor</a>
-, <a class="el" href="classDynamicSparsityPatternIterators_1_1Accessor.html#ga123bb3c168fb1d5cdbf3fb95de4f48e4">DynamicSparsityPatternIterators::Accessor</a>
+, <a class="el" href="classChunkSparsityPatternIterators_1_1Accessor.html#a6e967d6d0efc7e686eea475e2dff796a">ChunkSparsityPatternIterators::Accessor</a>
+, <a class="el" href="group__Sparsity.html#ga123bb3c168fb1d5cdbf3fb95de4f48e4">DynamicSparsityPatternIterators::Accessor</a>
 , <a class="el" href="classIndexSet_1_1ElementIterator.html#acf3673db1afb45679d41cf0d272abac1">IndexSet::ElementIterator</a>
 , <a class="el" href="classIndexSet_1_1IntervalAccessor.html#ac9e61411d6a845234d9746d6157907e9">IndexSet::IntervalAccessor</a>
 , <a class="el" href="classSparsityPatternIterators_1_1Accessor.html#afe0d7a91819f5077c4b25abb0ef74a76">SparsityPatternIterators::Accessor</a>
-, <a class="el" href="structSynchronousIterators.html#a774f38127f805e23a2445a0496a23931">SynchronousIterators&lt; Iterators &gt;</a>
+, <a class="el" href="structSynchronousIterators.html#a87f3dd5cb08309004f33c455d144bec1">SynchronousIterators&lt; Iterators &gt;</a>
 </li>
 <li>advance_by_one()
 : <a class="el" href="structSynchronousIterators.html#a8f0f9f9344a6a8d541b261c534b815d5">SynchronousIterators&lt; Iterators &gt;</a>
@@ -881,8 +940,31 @@ $(function() {
 : <a class="el" href="classDiscreteTime.html#aa10f7326a1a864ba38e28c86624fdd51">DiscreteTime</a>
 , <a class="el" href="classFunctionTime.html#aeb592482f587dc3f0ee6e2267215a772">FunctionTime&lt; Number &gt;</a>
 </li>
-<li>AffineConstraints()
-: <a class="el" href="classAffineConstraints.html#acb4411cdf760ae46c8ab8bf9d8302af0">AffineConstraints&lt; number &gt;</a>
+<li>advection_direction
+: <a class="el" href="classStep63_1_1AdvectionProblem.html#aca96a6a57707db1e4256ff5c7cdd09cf">Step63::AdvectionProblem&lt; dim &gt;</a>
+</li>
+<li>advection_directions
+: <a class="el" href="structStep9_1_1AdvectionProblem_1_1AssemblyScratchData.html#a5fd5bc09768112d234eb57b8a74ef8b0">Step9::AdvectionProblem&lt; dim &gt;::AssemblyScratchData</a>
+</li>
+<li>advection_field
+: <a class="el" href="structStep9_1_1AdvectionProblem_1_1AssemblyScratchData.html#a21dbb806d1541a194acf8a27cb61848f">Step9::AdvectionProblem&lt; dim &gt;::AssemblyScratchData</a>
+</li>
+<li>AdvectionPerTaskData()
+: <a class="el" href="structStep35_1_1NavierStokesProjection_1_1AdvectionPerTaskData.html#aef1154b95017b49c103c7f18bbd48ac1">Step35::NavierStokesProjection&lt; dim &gt;::AdvectionPerTaskData</a>
+</li>
+<li>AdvectionProblem()
+: <a class="el" href="classStep12_1_1AdvectionProblem.html#a2d4ee8d240e9318952a80a520a4ba550">Step12::AdvectionProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep63_1_1AdvectionProblem.html#a20cff1646814eaae513b4a304d4dde33">Step63::AdvectionProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep9_1_1AdvectionProblem.html#a5017ba1fbe60688e39b8a6760ba7a265">Step9::AdvectionProblem&lt; dim &gt;</a>
+</li>
+<li>AdvectionScratchData()
+: <a class="el" href="structStep35_1_1NavierStokesProjection_1_1AdvectionScratchData.html#a4f6f3549c78d592669ce23ae01c3f808">Step35::NavierStokesProjection&lt; dim &gt;::AdvectionScratchData</a>
+</li>
+<li>AffineConstraints
+: <a class="el" href="classAffineConstraints.html#a83c2706a2e9eee6f0bdd9d08e8554cab">AffineConstraints&lt; number &gt;</a>
+</li>
+<li>AfricaTopography()
+: <a class="el" href="classStep53_1_1AfricaTopography.html#a046a8c13f892af3d1d59f13b06cfeed1">Step53::AfricaTopography</a>
 </li>
 <li>after_none
 : <a class="el" href="classPathSearch.html#ac7e770dd03b7d4228e840625e2f3dfb2ae25a532d2aa5284e62ccb242d5e2aeee">PathSearch</a>
@@ -893,6 +975,9 @@ $(function() {
 </li>
 <li>aggressive_coarsening_num_levels
 : <a class="el" href="structPETScWrappers_1_1PreconditionBoomerAMG_1_1AdditionalData.html#ab2e268144bf7b94fd248c862ab725d2f">PETScWrappers::PreconditionBoomerAMG::AdditionalData</a>
+</li>
+<li>ai
+: <a class="el" href="classEuler__DG_1_1LowStorageRungeKuttaIntegrator.html#a556333c53b1aee15a5dc50b99cc233e1">Euler_DG::LowStorageRungeKuttaIntegrator</a>
 </li>
 <li>Ai
 : <a class="el" href="classSparseDirectUMFPACK.html#a07f9932e6e2052193efd9dc593cbbd6a">SparseDirectUMFPACK</a>
@@ -915,7 +1000,7 @@ $(function() {
 , <a class="el" href="classPArpackSolver.html#a61e6ecc371924100bc132fba84bc9b67ace5415e51b391c6b8997ab4041efc805">PArpackSolver&lt; VectorType &gt;</a>
 </li>
 <li>AlignedVector()
-: <a class="el" href="classAlignedVector.html#aa7471090217ad0df74031a7fbb4e3457">AlignedVector&lt; T &gt;</a>
+: <a class="el" href="classAlignedVector.html#ae0c7b2f2bf51aa54825ad6565e8413e8">AlignedVector&lt; T &gt;</a>
 </li>
 <li>AlignedVectorCopyConstruct()
 : <a class="el" href="classinternal_1_1AlignedVectorCopyConstruct.html#a42e2d5241a5621ca3088b8371671b93b">internal::AlignedVectorCopyConstruct&lt; T &gt;</a>
@@ -936,6 +1021,9 @@ $(function() {
 : <a class="el" href="classSolverCG.html#adf3b47ec0599d09d1fdd3d4e9b080aa0">SolverCG&lt; VectorType &gt;</a>
 , <a class="el" href="classSolverGMRES.html#a80036cdfac8b6b2735320100a5e71fdc">SolverGMRES&lt; VectorType &gt;</a>
 </li>
+<li>all_constraints
+: <a class="el" href="classStep42_1_1PlasticityContactProblem.html#a26f1378018290eb66149be17191e2ce3">Step42::PlasticityContactProblem&lt; dim &gt;</a>
+</li>
 <li>all_eigenvalues_signal
 : <a class="el" href="classSolverCG.html#abdc3e4d57500378748efee562693c3b6">SolverCG&lt; VectorType &gt;</a>
 , <a class="el" href="classSolverGMRES.html#aaaf671919b3400e91a5999a45c5cdb34">SolverGMRES&lt; VectorType &gt;</a>
@@ -950,19 +1038,19 @@ $(function() {
 : <a class="el" href="classAlgorithms_1_1Event.html#a4a441e0b928daf5ca5eb5105c8e5e453">Algorithms::Event</a>
 </li>
 <li>all_zero()
-: <a class="el" href="group__Exceptions.html#ga63d78bf129e22b4bfd4994e06ac1e6f0">BlockVectorBase&lt; VectorType &gt;</a>
+: <a class="el" href="classBlockVectorBase.html#a63d78bf129e22b4bfd4994e06ac1e6f0">BlockVectorBase&lt; VectorType &gt;</a>
 , <a class="el" href="classFullMatrix.html#a677adb3e579c61c2710470d71aee0515">FullMatrix&lt; number &gt;</a>
 , <a class="el" href="classLinearAlgebra_1_1CUDAWrappers_1_1Vector.html#a671f76de4c475a3ae5efde6913a5a7e6">LinearAlgebra::CUDAWrappers::Vector&lt; Number &gt;</a>
-, <a class="el" href="group__Vectors.html#ga809ec1490fd39c130932290aae65355c">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
+, <a class="el" href="classLinearAlgebra_1_1distributed_1_1BlockVector.html#a809ec1490fd39c130932290aae65355c">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
 , <a class="el" href="classLinearAlgebra_1_1distributed_1_1Vector.html#a5ed7dc1d792f9344f1c8720e5f639351">LinearAlgebra::distributed::Vector&lt; Number, MemorySpace &gt;</a>
 , <a class="el" href="classLinearAlgebra_1_1EpetraWrappers_1_1Vector.html#ac116900124527ac3cdb1911bdb0297dc">LinearAlgebra::EpetraWrappers::Vector</a>
 , <a class="el" href="classLinearAlgebra_1_1TpetraWrappers_1_1Vector.html#af45803c1836996d6f5f5c7c1f91f7ca6">LinearAlgebra::TpetraWrappers::Vector&lt; Number &gt;</a>
 , <a class="el" href="classLinearAlgebra_1_1Vector.html#a98de521b6d2dab1cf767b6abb2ca9c17">LinearAlgebra::Vector&lt; Number &gt;</a>
-, <a class="el" href="group__Vectors.html#ga8c03a20480770e68f0d4e1e6456e78eb">LinearAlgebra::VectorSpaceVector&lt; Number &gt;</a>
+, <a class="el" href="classLinearAlgebra_1_1VectorSpaceVector.html#a8c03a20480770e68f0d4e1e6456e78eb">LinearAlgebra::VectorSpaceVector&lt; Number &gt;</a>
 , <a class="el" href="classPETScWrappers_1_1MPI_1_1Vector.html#ae72a04de37cc5ba8f0263809a59ec99e">PETScWrappers::MPI::Vector</a>
 , <a class="el" href="classPETScWrappers_1_1VectorBase.html#afec2cdeb7089bd58e911d1f3f24d633a">PETScWrappers::VectorBase</a>
 , <a class="el" href="classTridiagonalMatrix.html#a993dc623461d0f5bafcdff042c472a50">TridiagonalMatrix&lt; number &gt;</a>
-, <a class="el" href="classTrilinosWrappers_1_1MPI_1_1Vector.html#ac6e30c7f52efbb163c5ba074df71353b">TrilinosWrappers::MPI::Vector</a>
+, <a class="el" href="group__TrilinosWrappers.html#gac6e30c7f52efbb163c5ba074df71353b">TrilinosWrappers::MPI::Vector</a>
 , <a class="el" href="group__Vectors.html#gae72a04de37cc5ba8f0263809a59ec99e">Vector&lt; Number &gt;</a>
 </li>
 <li>alloc()
@@ -988,11 +1076,27 @@ $(function() {
 <li>allow_dependent_variable_marking()
 : <a class="el" href="structDifferentiation_1_1AD_1_1TapelessDrivers.html#a281172f9615641b24e77d550b84c139d">Differentiation::AD::TapelessDrivers&lt; ADNumberType, ScalarType, T &gt;</a>
 </li>
+<li>AllParameters()
+: <a class="el" href="structStep33_1_1Parameters_1_1AllParameters.html#a3594496b292825d5a57927cf8a1dffa0">Step33::Parameters::AllParameters&lt; dim &gt;</a>
+, <a class="el" href="structStep44_1_1Parameters_1_1AllParameters.html#af130f49c136c191696729b6a12cd4e7a">Step44::Parameters::AllParameters</a>
+</li>
 <li>alpha
 : <a class="el" href="classinternal_1_1SolverBicgstabData.html#ad9b9c67a04ce09b6db9d2b86239c221f">internal::SolverBicgstabData</a>
+, <a class="el" href="classStep34_1_1BEMProblem.html#ad7f807af7d12c431d58839a1aca170ff">Step34::BEMProblem&lt; dim &gt;</a>
 </li>
 <li>alternating_form_at_vertices()
 : <a class="el" href="structGeometryInfo.html#a30e2624b030000cae19e37d74d71f302">GeometryInfo&lt; dim &gt;</a>
+</li>
+<li>amg
+: <a class="el" href="structSettings.html#a62013cfd1aa44980df91d2cc5ea9a2d2abb2f8825863e3d97cc8f089d56f150ca">Settings</a>
+</li>
+<li>Amg_preconditioner
+: <a class="el" href="classStep31_1_1BoussinesqFlowProblem.html#a7019654bfb5e83617881c85445ce788b">Step31::BoussinesqFlowProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep32_1_1BoussinesqFlowProblem.html#a0520fe44b268af5bdd67b4084bf9f681">Step32::BoussinesqFlowProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep43_1_1TwoPhaseFlowProblem.html#aa1846116a4ff605de39d0a4dc1375c26">Step43::TwoPhaseFlowProblem&lt; dim &gt;</a>
+</li>
+<li>analyze_results()
+: <a class="el" href="classStep59_1_1LaplaceProblem.html#a991170f9b04a19ebd893dca6a37307a0">Step59::LaplaceProblem&lt; dim, fe_degree &gt;</a>
 </li>
 <li>anderson_acceleration_subspace
 : <a class="el" href="classSUNDIALS_1_1ARKode_1_1AdditionalData.html#aa0eb3660c2cd7ac8c3c21b3f8b47f59e">SUNDIALS::ARKode&lt; VectorType &gt;::AdditionalData</a>
@@ -1004,8 +1108,19 @@ $(function() {
 : <a class="el" href="classFunctions_1_1JumpFunction.html#a00f136bb78f8142dc1d3e3e1c1ef3f31">Functions::JumpFunction&lt; dim &gt;</a>
 , <a class="el" href="classGridTools_1_1internal_1_1Rotate3d.html#a1e47b3210f996c84ba5062cb525eff51">GridTools::internal::Rotate3d</a>
 </li>
+<li>angular_velocity
+: <a class="el" href="classStep70_1_1SolidPosition.html#a2091b6e63d04ac344d49374c64cba99b">Step70::SolidPosition&lt; spacedim &gt;</a>
+, <a class="el" href="classStep70_1_1SolidVelocity.html#ae3ced8cae81b1008a52ae3ee4ea807a3">Step70::SolidVelocity&lt; spacedim &gt;</a>
+, <a class="el" href="classStep70_1_1StokesImmersedProblemParameters.html#a964e83b3393dd6cb1ee8c31872593faf">Step70::StokesImmersedProblemParameters&lt; dim, spacedim &gt;</a>
+</li>
+<li>anisotropic
+: <a class="el" href="classStep30_1_1DGMethod.html#ac6ee8d43eff09631f03e69ec9211d1a1">Step30::DGMethod&lt; dim &gt;</a>
+</li>
 <li>anisotropic_refinement
 : <a class="el" href="classTriangulation.html#a12dc6feb50966969856aa359f6fa316a">Triangulation&lt; dim, spacedim &gt;</a>
+</li>
+<li>anisotropic_threshold_ratio
+: <a class="el" href="classStep30_1_1DGMethod.html#aa15d730f527c17432e5825e5288cf4e3">Step30::DGMethod&lt; dim &gt;</a>
 </li>
 <li>AnisotropicPolynomials()
 : <a class="el" href="classAnisotropicPolynomials.html#a62731cdc55ede0f95fd0a9a9491e6113">AnisotropicPolynomials&lt; dim &gt;</a>
@@ -1042,6 +1157,9 @@ $(function() {
 <li>Anything()
 : <a class="el" href="classPatterns_1_1Anything.html#aa7f1721b716ed5d70a9a121e8891bd82">Patterns::Anything</a>
 </li>
+<li>AOS_threshold
+: <a class="el" href="classStep43_1_1TwoPhaseFlowProblem.html#added0c82be1002806d3e6806a077cea9">Step43::TwoPhaseFlowProblem&lt; dim &gt;</a>
+</li>
 <li>Ap
 : <a class="el" href="classSparseDirectUMFPACK.html#a10322d92c136c17eb56259a7a747b72a">SparseDirectUMFPACK</a>
 </li>
@@ -1055,9 +1173,10 @@ $(function() {
 </li>
 <li>apply()
 : <a class="el" href="structCUDAWrappers_1_1internal_1_1EvaluatorTensorProduct_3_01evaluate__general_00_01dim_00_01fe_d78a335d1170b2c4b306f6fce968a00e.html#aa5977f004a83ccb99979a2df5f1a5fd7">CUDAWrappers::internal::EvaluatorTensorProduct&lt; evaluate_general, dim, fe_degree, n_q_points_1d, Number &gt;</a>
+, <a class="el" href="classEuler__DG_1_1EulerOperator.html#acab9326826ce30b15f31ede8600ef203">Euler_DG::EulerOperator&lt; dim, degree, n_points_1d &gt;</a>
 , <a class="el" href="classGinkgoWrappers_1_1SolverBase.html#a6c0cb2909c2fa8dc2f22874aa38b79ad">GinkgoWrappers::SolverBase&lt; ValueType, IndexType &gt;</a>
 , <a class="el" href="structinternal_1_1CellwiseInverseMassFactory.html#aa8d3465f542cac2183863f340232672e">internal::CellwiseInverseMassFactory&lt; dim, Number, VectorizedArrayType &gt;</a>
-, <a class="el" href="structinternal_1_1EvaluatorTensorProduct_3_01evaluate__evenodd_00_01dim_00_01n__rows_00_01n__col18a610eafe2a5b8d6bb220ce6d41b2a8.html#acc312e352675fb4d631eabd5e73603a4">internal::EvaluatorTensorProduct&lt; evaluate_evenodd, dim, n_rows, n_columns, Number, Number2 &gt;</a>
+, <a class="el" href="structinternal_1_1EvaluatorTensorProduct_3_01evaluate__evenodd_00_01dim_00_01n__rows_00_01n__col18a610eafe2a5b8d6bb220ce6d41b2a8.html#a847a433cf59b087d5ce0a575b2c7568f">internal::EvaluatorTensorProduct&lt; evaluate_evenodd, dim, n_rows, n_columns, Number, Number2 &gt;</a>
 , <a class="el" href="structinternal_1_1EvaluatorTensorProduct_3_01evaluate__general_00_01dim_00_010_00_010_00_01Number_00_01Number2_01_4.html#a4349d19627d6c22467c24464b13e0c95">internal::EvaluatorTensorProduct&lt; evaluate_general, dim, 0, 0, Number, Number2 &gt;</a>
 , <a class="el" href="structinternal_1_1EvaluatorTensorProduct_3_01evaluate__general_00_01dim_00_01n__rows_00_01n__colc1f9f6fc409053d6ee6425bb379be4d8.html#a30b31cdd536976ceae6f88f7af54f2f4">internal::EvaluatorTensorProduct&lt; evaluate_general, dim, n_rows, n_columns, Number, Number2 &gt;</a>
 , <a class="el" href="structinternal_1_1EvaluatorTensorProduct_3_01evaluate__symmetric__hierarchical_00_01dim_00_01n__5c93d52c8f7d55f8ac09b232754f65fd.html#ab3cafa025ee0b408e12dab628cf0de6e">internal::EvaluatorTensorProduct&lt; evaluate_symmetric_hierarchical, dim, n_rows, n_columns, Number, Number2 &gt;</a>
@@ -1065,11 +1184,12 @@ $(function() {
 , <a class="el" href="classMatrixFreeOperators_1_1CellwiseInverseMassMatrix.html#ad95f3fe70acdb466d92d50be823e9dd4">MatrixFreeOperators::CellwiseInverseMassMatrix&lt; dim, fe_degree, n_components, Number, VectorizedArrayType &gt;</a>
 , <a class="el" href="classmg_1_1SmootherRelaxation.html#ab1e246c00c2ce3072678b4b66b382e41">mg::SmootherRelaxation&lt; RelaxationType, VectorType &gt;</a>
 , <a class="el" href="classMGLevelObject.html#aef44b7700b3b99384bd5c5533e284e65">MGLevelObject&lt; Object &gt;</a>
-, <a class="el" href="classMGSmootherBase.html#a9d9c2f6038a6fae990a9ef03991b071a">MGSmootherBase&lt; VectorType &gt;</a>
+, <a class="el" href="classMGSmootherBase.html#aa20f49b4893fd1469c521d1b54df47b4">MGSmootherBase&lt; VectorType &gt;</a>
 , <a class="el" href="classMGSmootherPrecondition.html#a4868818d20c5a8a1a908f4174e3c202c">MGSmootherPrecondition&lt; MatrixType, PreconditionerType, VectorType &gt;</a>
 , <a class="el" href="classMGSmootherRelaxation.html#a511031441207c397fa59e23ad3181b29">MGSmootherRelaxation&lt; MatrixType, RelaxationType, VectorType &gt;</a>
 , <a class="el" href="classPackagedOperation.html#aada742cd2c05687f460a4831bfbee022">PackagedOperation&lt; Range &gt;</a>
 , <a class="el" href="structparallel_1_1internal_1_1Body.html#ab1a9102aadd86eded8446bfb80b2203c">parallel::internal::Body&lt; F &gt;</a>
+, <a class="el" href="classStep48_1_1SineGordonOperation.html#a73f4a634827cd56bac4f92f98136ce59">Step48::SineGordonOperation&lt; dim, fe_degree &gt;</a>
 , <a class="el" href="classTensorAccessors_1_1internal_1_1Identity.html#a5345340d3b0d2f7eb90772f0e68a692d">TensorAccessors::internal::Identity&lt; T &gt;</a>
 , <a class="el" href="classTensorAccessors_1_1internal_1_1StoreIndex.html#a1ce9931f2cca10cc7cb79c46233d4ab8">TensorAccessors::internal::StoreIndex&lt; rank, S &gt;</a>
 </li>
@@ -1081,13 +1201,22 @@ $(function() {
 , <a class="el" href="classMatrixFreeOperators_1_1LaplaceOperator.html#aa296fc90d2d504f3c5b66426fc3cce51">MatrixFreeOperators::LaplaceOperator&lt; dim, fe_degree, n_q_points_1d, n_components, VectorType, VectorizedArrayType &gt;</a>
 , <a class="el" href="classMatrixFreeOperators_1_1MassOperator.html#a2e0a334b60ae285bf43c86e4ae6e833c">MatrixFreeOperators::MassOperator&lt; dim, fe_degree, n_q_points_1d, n_components, VectorType, VectorizedArrayType &gt;</a>
 , <a class="el" href="classPackagedOperation.html#acd622ded71f5e0c50affcc46fa5e4384">PackagedOperation&lt; Range &gt;</a>
+, <a class="el" href="classStep37_1_1LaplaceOperator.html#a9f7c80d08a6ade576072d44194d25fea">Step37::LaplaceOperator&lt; dim, fe_degree, number &gt;</a>
+, <a class="el" href="classStep66_1_1JacobianOperator.html#a3df2ebce4b10447dd5bb2de63b5ebad3">Step66::JacobianOperator&lt; dim, fe_degree, number &gt;</a>
+</li>
+<li>apply_boundary()
+: <a class="el" href="classStep59_1_1LaplaceOperator.html#ae3b3bdaadaf9adb1a4465e98c743b1e7">Step59::LaplaceOperator&lt; dim, fe_degree, number &gt;</a>
+</li>
+<li>apply_cell()
+: <a class="el" href="classStep59_1_1LaplaceOperator.html#a7ebe42f78e7dbb685f66a62e3ed19815">Step59::LaplaceOperator&lt; dim, fe_degree, number &gt;</a>
 </li>
 <li>apply_face()
 : <a class="el" href="structinternal_1_1EvaluatorTensorProduct_3_01evaluate__general_00_01dim_00_010_00_010_00_01Number_00_01Number2_01_4.html#af57a66b96a8071ad53711ad0428f89de">internal::EvaluatorTensorProduct&lt; evaluate_general, dim, 0, 0, Number, Number2 &gt;</a>
 , <a class="el" href="structinternal_1_1EvaluatorTensorProduct_3_01evaluate__general_00_01dim_00_01n__rows_00_01n__colc1f9f6fc409053d6ee6425bb379be4d8.html#a8b2677463b070c20fc3e3edab15c53be">internal::EvaluatorTensorProduct&lt; evaluate_general, dim, n_rows, n_columns, Number, Number2 &gt;</a>
+, <a class="el" href="classStep59_1_1LaplaceOperator.html#a34f8a5aa4f3df61ad68034cd2301bbe6">Step59::LaplaceOperator&lt; dim, fe_degree, number &gt;</a>
 </li>
 <li>apply_for_each_quad_point()
-: <a class="el" href="classCUDAWrappers_1_1FEEvaluation.html#af54da23ff99a33dcd23ddccf52dee2f5">CUDAWrappers::FEEvaluation&lt; dim, fe_degree, n_q_points_1d, n_components_, Number &gt;</a>
+: <a class="el" href="classCUDAWrappers_1_1FEEvaluation.html#aabd7e048203ec4adb36e92d19104b8ba">CUDAWrappers::FEEvaluation&lt; dim, fe_degree, n_q_points_1d, n_components_, Number &gt;</a>
 </li>
 <li>apply_givens_rotation()
 : <a class="el" href="classImplicitQR.html#af6872049f7cc598c25fb8f6d4795b27a">ImplicitQR&lt; VectorType &gt;</a>
@@ -1112,7 +1241,7 @@ $(function() {
 , <a class="el" href="structparallel_1_1ParallelForInteger.html#a9062243da34778f88bc0e1e12b4a4140">parallel::ParallelForInteger</a>
 </li>
 <li>apply_transformation()
-: <a class="el" href="classDerivativeForm.html#a9dc99a17bb93e2bcfde973c95c141a88">DerivativeForm&lt; order, dim, spacedim, Number &gt;</a>
+: <a class="el" href="classDerivativeForm.html#a538bbbcdff5d58832f7c456b40394824">DerivativeForm&lt; order, dim, spacedim, Number &gt;</a>
 </li>
 <li>applyBinary()
 : <a class="el" href="classRol_1_1VectorAdaptor.html#a12538034e18783c11edd4a549560ba5c">Rol::VectorAdaptor&lt; VectorType &gt;</a>
@@ -1122,6 +1251,9 @@ $(function() {
 </li>
 <li>applyUnary()
 : <a class="el" href="classRol_1_1VectorAdaptor.html#a61fc2569c9aa788cdd7a39070bce07a6">Rol::VectorAdaptor&lt; VectorType &gt;</a>
+</li>
+<li>ApproximateSchurComplement()
+: <a class="el" href="classStep21_1_1ApproximateSchurComplement.html#a1ac391988d82dd973af9e4896a0c48b4">Step21::ApproximateSchurComplement</a>
 </li>
 <li>approximation_degree
 : <a class="el" href="classFE__SimplexP__Bubbles.html#a7092dfad8b98379016c97b122d77aab4">FE_SimplexP_Bubbles&lt; dim, spacedim &gt;</a>
@@ -1134,6 +1266,15 @@ $(function() {
 </li>
 <li>arguments
 : <a class="el" href="classUtilities_1_1MutableBind.html#ac35eb72f97066fb0958a08729e503d8b">Utilities::MutableBind&lt; ReturnType, FunctionArgs &gt;</a>
+</li>
+<li>arguments_for_fluid_grid
+: <a class="el" href="classStep70_1_1StokesImmersedProblemParameters.html#ad241420c85e9a458bc3919511120cde4">Step70::StokesImmersedProblemParameters&lt; dim, spacedim &gt;</a>
+</li>
+<li>arguments_for_particle_grid
+: <a class="el" href="classStep70_1_1StokesImmersedProblemParameters.html#a9582c172d88e6a6075d5df8e3e0df3db">Step70::StokesImmersedProblemParameters&lt; dim, spacedim &gt;</a>
+</li>
+<li>arguments_for_solid_grid
+: <a class="el" href="classStep70_1_1StokesImmersedProblemParameters.html#a21f6cfc44eb620a58ab86a90b4be9fa9">Step70::StokesImmersedProblemParameters&lt; dim, spacedim &gt;</a>
 </li>
 <li>ARKode()
 : <a class="el" href="classSUNDIALS_1_1ARKode.html#a4e3be1d10f890e6d84ce77031c94c4e2">SUNDIALS::ARKode&lt; VectorType &gt;</a>
@@ -1155,7 +1296,7 @@ $(function() {
 , <a class="el" href="classTensor_3_010_00_01dim_00_01Number_01_4.html#a979231ed6a43e266b80bafbbcf30dcf1">Tensor&lt; 0, dim, Number &gt;</a>
 </li>
 <li>ArrayView()
-: <a class="el" href="classArrayView.html#a8bc5a526ce93ff3c8c5673135c154428">ArrayView&lt; ElementType, MemorySpaceType &gt;</a>
+: <a class="el" href="classArrayView.html#a843d8f1b1bf7f85262bd36955e34fcfc">ArrayView&lt; ElementType, MemorySpaceType &gt;</a>
 </li>
 <li>ArrayView&lt; const ElementType, MemorySpaceType &gt;
 : <a class="el" href="classArrayView.html#a89c23a608dc2c0abcd54cce91e7cc58d">ArrayView&lt; ElementType, MemorySpaceType &gt;</a>
@@ -1163,19 +1304,53 @@ $(function() {
 <li>assemble()
 : <a class="el" href="classMeshWorker_1_1Assembler_1_1CellsAndFaces.html#a4b213f22de7fb5fef52c781cb65d024d">MeshWorker::Assembler::CellsAndFaces&lt; number &gt;</a>
 , <a class="el" href="classMeshWorker_1_1Assembler_1_1Functional.html#ae9cc6f97f28e886281a2ee308d2d835d">MeshWorker::Assembler::Functional&lt; number &gt;</a>
-, <a class="el" href="classMeshWorker_1_1Assembler_1_1GnuplotPatch.html#a17cbe9ed9dfa1499c392427e5c705ca2">MeshWorker::Assembler::GnuplotPatch</a>
-, <a class="el" href="classMeshWorker_1_1Assembler_1_1MatrixLocalBlocksToGlobalBlocks.html#a8d80e6348c3a58c69e0706cd464dd62f">MeshWorker::Assembler::MatrixLocalBlocksToGlobalBlocks&lt; MatrixType, number &gt;</a>
-, <a class="el" href="classMeshWorker_1_1Assembler_1_1MatrixSimple.html#a0c3ae11a24a7b7d28b12599b45018329">MeshWorker::Assembler::MatrixSimple&lt; MatrixType &gt;</a>
-, <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixLocalBlocksToGlobalBlocks.html#a285744dce3048bea08a76d31895f6903">MeshWorker::Assembler::MGMatrixLocalBlocksToGlobalBlocks&lt; MatrixType, number &gt;</a>
+, <a class="el" href="classMeshWorker_1_1Assembler_1_1GnuplotPatch.html#a7cbcf6671806c2b443e111b86fe5b305">MeshWorker::Assembler::GnuplotPatch</a>
+, <a class="el" href="classMeshWorker_1_1Assembler_1_1MatrixLocalBlocksToGlobalBlocks.html#a940d1780006ea35a48a55f1a464cd147">MeshWorker::Assembler::MatrixLocalBlocksToGlobalBlocks&lt; MatrixType, number &gt;</a>
+, <a class="el" href="classMeshWorker_1_1Assembler_1_1MatrixSimple.html#a695b589f6a3ba4eb421e9497da77ad04">MeshWorker::Assembler::MatrixSimple&lt; MatrixType &gt;</a>
+, <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixLocalBlocksToGlobalBlocks.html#a6c3cdd3b7dcd93224e03223c91b0ad30">MeshWorker::Assembler::MGMatrixLocalBlocksToGlobalBlocks&lt; MatrixType, number &gt;</a>
 , <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixSimple.html#a8668598d8d05857dd3b66338fcc35594">MeshWorker::Assembler::MGMatrixSimple&lt; MatrixType &gt;</a>
-, <a class="el" href="classMeshWorker_1_1Assembler_1_1ResidualLocalBlocksToGlobalBlocks.html#a648a74827a70b12d9f8ae136ae686745">MeshWorker::Assembler::ResidualLocalBlocksToGlobalBlocks&lt; VectorType &gt;</a>
-, <a class="el" href="classMeshWorker_1_1Assembler_1_1ResidualSimple.html#a2adbb3b28350e234eaac0029d1c14f3d">MeshWorker::Assembler::ResidualSimple&lt; VectorType &gt;</a>
-, <a class="el" href="classMeshWorker_1_1Assembler_1_1SystemSimple.html#a1b4379170de645a57d16dc89990ed9c1">MeshWorker::Assembler::SystemSimple&lt; MatrixType, VectorType &gt;</a>
+, <a class="el" href="classMeshWorker_1_1Assembler_1_1ResidualLocalBlocksToGlobalBlocks.html#adf544640a27edf80d20cb8d5c02a4ccc">MeshWorker::Assembler::ResidualLocalBlocksToGlobalBlocks&lt; VectorType &gt;</a>
+, <a class="el" href="classMeshWorker_1_1Assembler_1_1ResidualSimple.html#a8670c6c75aadf81697191654c074e406">MeshWorker::Assembler::ResidualSimple&lt; VectorType &gt;</a>
+, <a class="el" href="classMeshWorker_1_1Assembler_1_1SystemSimple.html#ad42c194156cd9690c2b29e058fd1ddd4">MeshWorker::Assembler::SystemSimple&lt; MatrixType, VectorType &gt;</a>
 , <a class="el" href="classMeshWorker_1_1DoFInfoBox.html#a91374da63609baa05d9532a4c0cb7e3a">MeshWorker::DoFInfoBox&lt; dim, DOFINFO &gt;</a>
+, <a class="el" href="classStep57_1_1StationaryNavierStokes.html#a0201cb39a28f689bf319735f28f6f5ee">Step57::StationaryNavierStokes&lt; dim &gt;</a>
+, <a class="el" href="classStep69_1_1OfflineData.html#aabc039e13600ddcf150143402efa262a">Step69::OfflineData&lt; dim &gt;</a>
+</li>
+<li>assemble_advection_term()
+: <a class="el" href="classStep35_1_1NavierStokesProjection.html#ab3743ba4827aec75d613941bf2fba120">Step35::NavierStokesProjection&lt; dim &gt;</a>
+</li>
+<li>assemble_and_solve()
+: <a class="el" href="classStep11_1_1LaplaceProblem.html#adb8490e84e2ed273d2ee6a69135a7d0c">Step11::LaplaceProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_boundary_term()
+: <a class="el" href="classStep30_1_1DGTransportEquation.html#a139af74fd68192bc7b01a2f34d2f4c98">Step30::DGTransportEquation&lt; dim &gt;</a>
+</li>
+<li>assemble_cell()
+: <a class="el" href="classStep63_1_1AdvectionProblem.html#a2eeb9c2f1634ef9e4edd62acc56c318a">Step63::AdvectionProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_cell_term()
+: <a class="el" href="classStep30_1_1DGTransportEquation.html#aab5678b17c0a2177e650f14ece90379b">Step30::DGTransportEquation&lt; dim &gt;</a>
+, <a class="el" href="classStep33_1_1ConservationLaw.html#a15d488d2dd62d731f9ea53e337942f97">Step33::ConservationLaw&lt; dim &gt;</a>
+</li>
+<li>assemble_cross_group_rhs()
+: <a class="el" href="classStep28_1_1EnergyGroup.html#af8d13df212f20ca96b157a7867bea100">Step28::EnergyGroup&lt; dim &gt;</a>
+</li>
+<li>assemble_cross_group_rhs_recursive()
+: <a class="el" href="classStep28_1_1EnergyGroup.html#adbddf2119aba2be9b65260c1e3f96300">Step28::EnergyGroup&lt; dim &gt;</a>
+</li>
+<li>assemble_darcy_preconditioner()
+: <a class="el" href="classStep43_1_1TwoPhaseFlowProblem.html#ae242b70162f3d5a06b4773b68abadbb3">Step43::TwoPhaseFlowProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_darcy_system()
+: <a class="el" href="classStep43_1_1TwoPhaseFlowProblem.html#a4b87e33d10db843b8a3723082462cbdb">Step43::TwoPhaseFlowProblem&lt; dim &gt;</a>
 </li>
 <li>assemble_down()
 : <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixLocalBlocksToGlobalBlocks.html#a0891eba4b6a711aad12e80e9bdf7bb41">MeshWorker::Assembler::MGMatrixLocalBlocksToGlobalBlocks&lt; MatrixType, number &gt;</a>
 , <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixSimple.html#ad2399628ab31a1fc04a8febf90927e3d">MeshWorker::Assembler::MGMatrixSimple&lt; MatrixType &gt;</a>
+</li>
+<li>assemble_face_term()
+: <a class="el" href="classStep30_1_1DGTransportEquation.html#a12f36315611facb555d656f3d25df58d">Step30::DGTransportEquation&lt; dim &gt;</a>
+, <a class="el" href="classStep33_1_1ConservationLaw.html#ad39ed414b1a1953243e98955e47faa95">Step33::ConservationLaw&lt; dim &gt;</a>
 </li>
 <li>assemble_fluxes()
 : <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixLocalBlocksToGlobalBlocks.html#abb05dfc1ab79f9a70754fa159b25373b">MeshWorker::Assembler::MGMatrixLocalBlocksToGlobalBlocks&lt; MatrixType, number &gt;</a>
@@ -1184,12 +1359,173 @@ $(function() {
 : <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixLocalBlocksToGlobalBlocks.html#a1734b225bdcdeaee8e81b8b0f6f609d7">MeshWorker::Assembler::MGMatrixLocalBlocksToGlobalBlocks&lt; MatrixType, number &gt;</a>
 , <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixSimple.html#a5fb69b5252e8b12721ae709b1ef3a8a8">MeshWorker::Assembler::MGMatrixSimple&lt; MatrixType &gt;</a>
 </li>
+<li>assemble_ingroup_rhs()
+: <a class="el" href="classStep28_1_1EnergyGroup.html#a613a9239736f807faf87077f62d5a0c4">Step28::EnergyGroup&lt; dim &gt;</a>
+</li>
+<li>assemble_interface_term()
+: <a class="el" href="classStep46_1_1FluidStructureProblem.html#a3cb544b635968cb12ab5c31311d218a5">Step46::FluidStructureProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_linear_system()
+: <a class="el" href="classStep13_1_1LaplaceSolver_1_1Solver.html#ab57077cdea58388f6df6dbe169bc665f">Step13::LaplaceSolver::Solver&lt; dim &gt;</a>
+, <a class="el" href="classStep14_1_1LaplaceSolver_1_1Solver.html#ac56d2fbbb05e6b4eb0cfdd7e2527c57e">Step14::LaplaceSolver::Solver&lt; dim &gt;</a>
+</li>
+<li>assemble_mass_matrix_diagonal()
+: <a class="el" href="classStep41_1_1ObstacleProblem.html#a300ad3de03d6b41d0b5fb91b19d3842c">Step41::ObstacleProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep42_1_1PlasticityContactProblem.html#a4a7778a313e8d40c35da080394fc005c">Step42::PlasticityContactProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_matrices()
+: <a class="el" href="classStep58_1_1NonlinearSchroedingerEquation.html#a884d0ae6cca939c98a79a3a99770e384">Step58::NonlinearSchroedingerEquation&lt; dim &gt;</a>
+</li>
+<li>assemble_matrix()
+: <a class="el" href="classStep39_1_1InteriorPenaltyProblem.html#a013fe43540bfd312d448b4bebd6bc840">Step39::InteriorPenaltyProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_mg_matrix()
+: <a class="el" href="classStep39_1_1InteriorPenaltyProblem.html#ab8a2b5f2345d5dfdf932990fb5539c29">Step39::InteriorPenaltyProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_multigrid()
+: <a class="el" href="classLaplaceProblem.html#a101cec2c5731e6a3050f0cbe51ba73d9">LaplaceProblem&lt; dim, degree &gt;</a>
+, <a class="el" href="classStep16_1_1LaplaceProblem.html#aa11cdfe0272541e31e6fd2704e1b073c">Step16::LaplaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep56_1_1StokesProblem.html#af653058e65308c56d297135f8c78f3b9">Step56::StokesProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_newton_system()
+: <a class="el" href="classStep42_1_1PlasticityContactProblem.html#ada6e145185b27543a9de44267c85347f">Step42::PlasticityContactProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_nitsche_restriction()
+: <a class="el" href="classStep70_1_1StokesImmersedProblem.html#abaf520c2b6391ef81f4e064e0772afa3">Step70::StokesImmersedProblem&lt; dim, spacedim &gt;</a>
+</li>
 <li>assemble_now
 : <a class="el" href="classAlgorithms_1_1Newton.html#ae91c8a11627ae006d27f1cace7e24ab1">Algorithms::Newton&lt; VectorType &gt;</a>
+</li>
+<li>assemble_one_cell_of_advection()
+: <a class="el" href="classStep35_1_1NavierStokesProjection.html#afbd2b7481dfc0919c2f79229f3a71d81">Step35::NavierStokesProjection&lt; dim &gt;</a>
+</li>
+<li>assemble_one_cell_of_gradient()
+: <a class="el" href="classStep35_1_1NavierStokesProjection.html#a90d193635ab8aeeccca65a61b4362649">Step35::NavierStokesProjection&lt; dim &gt;</a>
 </li>
 <li>assemble_out()
 : <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixLocalBlocksToGlobalBlocks.html#a9251327791fe4ab54d623f0c0be262c5">MeshWorker::Assembler::MGMatrixLocalBlocksToGlobalBlocks&lt; MatrixType, number &gt;</a>
 , <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixSimple.html#a18e3e4a90f54712fcbd52c234785cbba">MeshWorker::Assembler::MGMatrixSimple&lt; MatrixType &gt;</a>
+</li>
+<li>assemble_rhs()
+: <a class="el" href="classLaplaceProblem.html#a670e053832d79fe34335dfa8d00c893c">LaplaceProblem&lt; dim, degree &gt;</a>
+, <a class="el" href="classStep13_1_1LaplaceSolver_1_1PrimalSolver.html#a3cb7361b669ab76e421d5e5f824e3c72">Step13::LaplaceSolver::PrimalSolver&lt; dim &gt;</a>
+, <a class="el" href="classStep13_1_1LaplaceSolver_1_1Solver.html#a9268dc9c93d700d9bd6cfbad34622268">Step13::LaplaceSolver::Solver&lt; dim &gt;</a>
+, <a class="el" href="classStep14_1_1DualFunctional_1_1DualFunctionalBase.html#a0cb098a5f6fa81a9d1b43c043efb62cc">Step14::DualFunctional::DualFunctionalBase&lt; dim &gt;</a>
+, <a class="el" href="classStep14_1_1DualFunctional_1_1PointValueEvaluation.html#af645b0b6cd93bec3f8a960491bca8b2e">Step14::DualFunctional::PointValueEvaluation&lt; dim &gt;</a>
+, <a class="el" href="classStep14_1_1DualFunctional_1_1PointXDerivativeEvaluation.html#a0f9d50b06eed9e696923cbfa3f4b199e">Step14::DualFunctional::PointXDerivativeEvaluation&lt; dim &gt;</a>
+, <a class="el" href="classStep14_1_1LaplaceSolver_1_1DualSolver.html#aabe535f8e88abe2554c5eec5d0e0bf5f">Step14::LaplaceSolver::DualSolver&lt; dim &gt;</a>
+, <a class="el" href="classStep14_1_1LaplaceSolver_1_1PrimalSolver.html#ac49a6377d76af171f5dd20ea58cfda42">Step14::LaplaceSolver::PrimalSolver&lt; dim &gt;</a>
+, <a class="el" href="classStep14_1_1LaplaceSolver_1_1Solver.html#a0ace6d1a2f4b2ea260069b3c0c983302">Step14::LaplaceSolver::Solver&lt; dim &gt;</a>
+, <a class="el" href="classStep37_1_1LaplaceProblem.html#a8ab9380c968e9eae76b0b0f41e610115">Step37::LaplaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep57_1_1StationaryNavierStokes.html#a7623669af40f0df73c3511378d97ce9d">Step57::StationaryNavierStokes&lt; dim &gt;</a>
+, <a class="el" href="classStep66_1_1GelfandProblem.html#a2a92f5279730a39cf80ad6d75e95a150">Step66::GelfandProblem&lt; dim, fe_degree &gt;</a>
+</li>
+<li>assemble_rhs_S()
+: <a class="el" href="classStep21_1_1TwoPhaseFlowProblem.html#a1f748327d4a2c29ae18be4748c5f431d">Step21::TwoPhaseFlowProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_right_hand_side()
+: <a class="el" href="classStep39_1_1InteriorPenaltyProblem.html#a425696ba2b84b58ac9a43d3a25199acd">Step39::InteriorPenaltyProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_saturation_matrix()
+: <a class="el" href="classStep43_1_1TwoPhaseFlowProblem.html#a93bf30b2d56144c82a4b629329342d93">Step43::TwoPhaseFlowProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_saturation_rhs()
+: <a class="el" href="classStep43_1_1TwoPhaseFlowProblem.html#ad5bec0237ccf984a35b8a5693e5f9829">Step43::TwoPhaseFlowProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_saturation_rhs_boundary_term()
+: <a class="el" href="classStep43_1_1TwoPhaseFlowProblem.html#a3abe2a1f30d34616572404a93191bb3a">Step43::TwoPhaseFlowProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_saturation_rhs_cell_term()
+: <a class="el" href="classStep43_1_1TwoPhaseFlowProblem.html#a08f76f057eb78838d37dfe19d0f1e710">Step43::TwoPhaseFlowProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_saturation_system()
+: <a class="el" href="classStep43_1_1TwoPhaseFlowProblem.html#a2b7357e2791c51bc3e645933e918cf98">Step43::TwoPhaseFlowProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_sc()
+: <a class="el" href="classStep44_1_1Solid.html#aa3086dc551437f0f1949d3fe7931b437">Step44::Solid&lt; dim &gt;</a>
+</li>
+<li>assemble_sc_one_cell()
+: <a class="el" href="classStep44_1_1Solid.html#aedbb4139b19f4317b8802b6631149f31">Step44::Solid&lt; dim &gt;</a>
+</li>
+<li>assemble_stokes_preconditioner()
+: <a class="el" href="classStep31_1_1BoussinesqFlowProblem.html#a220425e753daba644770703321f25021">Step31::BoussinesqFlowProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep32_1_1BoussinesqFlowProblem.html#a89d1d2e492e05303f129b42a20ae83e4">Step32::BoussinesqFlowProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_stokes_system()
+: <a class="el" href="classStep31_1_1BoussinesqFlowProblem.html#a987de564e2939e86eec8d961afa9deea">Step31::BoussinesqFlowProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep32_1_1BoussinesqFlowProblem.html#ab391796c4dc016dad1b5dbd21f9c9ecc">Step32::BoussinesqFlowProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep70_1_1StokesImmersedProblem.html#a8ecb048802dcfa77b60711cb51787563">Step70::StokesImmersedProblem&lt; dim, spacedim &gt;</a>
+</li>
+<li>assemble_system()
+: <a class="el" href="classLaplaceProblem.html#aff61b855ec389b04419e490f82043ad8">LaplaceProblem&lt; dim, degree &gt;</a>
+, <a class="el" href="classSAND_1_1SANDTopOpt.html#a082c42a6fd934848a810513e3a598234">SAND::SANDTopOpt&lt; dim &gt;</a>
+, <a class="el" href="classStep12_1_1AdvectionProblem.html#a9e54d5e45862a1f62642ccf2d6dce44f">Step12::AdvectionProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep15_1_1MinimalSurfaceProblem.html#a7c22e2d05e370be36180df3a11167042">Step15::MinimalSurfaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep16_1_1LaplaceProblem.html#abebb56312208edbe6b1141ef2e219875">Step16::LaplaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep17_1_1ElasticProblem.html#a3e4df7913d653370efb501e05e8f194a">Step17::ElasticProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep18_1_1TopLevel.html#a54f6c12692142ee2c4adc611bdc2981a">Step18::TopLevel&lt; dim &gt;</a>
+, <a class="el" href="classStep19_1_1CathodeRaySimulator.html#aea8c11671d9d932882ca942faa156801">Step19::CathodeRaySimulator&lt; dim &gt;</a>
+, <a class="el" href="classStep20_1_1MixedLaplaceProblem.html#aebd6c6dfaba5e46289fcedc568426b0c">Step20::MixedLaplaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep21_1_1TwoPhaseFlowProblem.html#a434802bc168adce84ff192ae00380fc4">Step21::TwoPhaseFlowProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep22_1_1StokesProblem.html#a674559ca15fffd8f70424d4f8fb1f898">Step22::StokesProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep25_1_1SineGordonProblem.html#a704c8229761951438160af993226280d">Step25::SineGordonProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep27_1_1LaplaceProblem.html#a8cb9ff33986739565f5b1f46fb99954d">Step27::LaplaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep29_1_1UltrasoundProblem.html#ac48df08b67d947a680820e9b0ea80fec">Step29::UltrasoundProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep30_1_1DGMethod.html#a1aad071038616c5c9dce5ff945882055">Step30::DGMethod&lt; dim &gt;</a>
+, <a class="el" href="classStep33_1_1ConservationLaw.html#a82a6e593d35b84c3f8e7a496c9369d05">Step33::ConservationLaw&lt; dim &gt;</a>
+, <a class="el" href="classStep34_1_1BEMProblem.html#a5a2db528bb07229dcd1ca491c6a3aea8">Step34::BEMProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep36_1_1EigenvalueProblem.html#a938c9ccc11b1a5ed19a852c9356c8ee9">Step36::EigenvalueProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep38_1_1LaplaceBeltramiProblem.html#af469b99988294fb2608ef54f22c94956">Step38::LaplaceBeltramiProblem&lt; spacedim &gt;</a>
+, <a class="el" href="classStep3.html#a47e7599e09f64fe047adfd79688cda7d">Step3</a>
+, <a class="el" href="classStep40_1_1LaplaceProblem.html#a8cb9ff33986739565f5b1f46fb99954d">Step40::LaplaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep41_1_1ObstacleProblem.html#afbcb72b3e351f0d46d4b36351931caa9">Step41::ObstacleProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep44_1_1Solid.html#a8dee2389e1874c732930deffe0f8ef44">Step44::Solid&lt; dim &gt;</a>
+, <a class="el" href="classStep45_1_1StokesProblem.html#a278e104e6c605988185a765224b20ac1">Step45::StokesProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep46_1_1FluidStructureProblem.html#a42f8ac80bdc018634c0abe36cccfc0fa">Step46::FluidStructureProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep47_1_1BiharmonicProblem.html#a4b8df2eee77f174792c7b3c295714824">Step47::BiharmonicProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep4.html#aa92cd9e6a650b411940d2aaae1ef3c27">Step4&lt; dim &gt;</a>
+, <a class="el" href="classStep51_1_1HDG.html#ac626c69ee2325bd66e0808fe7f25409c">Step51::HDG&lt; dim &gt;</a>
+, <a class="el" href="classStep52_1_1Diffusion.html#a26e38d7332d8fe4b795745b6b5070f95">Step52::Diffusion</a>
+, <a class="el" href="classStep55_1_1StokesProblem.html#a40b5f7a158c49e101f5ca2d93b1b9499">Step55::StokesProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep56_1_1StokesProblem.html#a1f7cabd4120673aba035604bf73e662f">Step56::StokesProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep57_1_1StationaryNavierStokes.html#ad94e967af4300c51373221ea2e5ccdc8">Step57::StationaryNavierStokes&lt; dim &gt;</a>
+, <a class="el" href="classStep5.html#a3fa0d8dc9ae163c7d3d6c2685e8f4551">Step5&lt; dim &gt;</a>
+, <a class="el" href="classStep60_1_1DistributedLagrangeProblem.html#ab244a76b9b0d5c190ed671902b8bb66f">Step60::DistributedLagrangeProblem&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classStep61_1_1WGDarcyEquation.html#acb9f1d3875f9917691647a4fa0dc5df3">Step61::WGDarcyEquation&lt; dim &gt;</a>
+, <a class="el" href="classstep62_1_1ElasticWave.html#aabbb3d5a0361c775fdeebe6a8047179f">step62::ElasticWave&lt; dim &gt;</a>
+, <a class="el" href="classStep65_1_1PoissonProblem.html#a2bc543182e9eb52ae3eb671f92c2d68d">Step65::PoissonProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep6.html#a44ea33ead970136d513a9abdf41ebd0c">Step6&lt; dim &gt;</a>
+, <a class="el" href="classStep74_1_1SIPGLaplace.html#a11d1b575eeae4f971261ae85790efba5">Step74::SIPGLaplace&lt; dim &gt;</a>
+, <a class="el" href="classStep7_1_1HelmholtzProblem.html#a26dc6f3375307ea4bc49c8fefb71dcc8">Step7::HelmholtzProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep8_1_1ElasticProblem.html#a610c8ce3f234060d6e79bece23a0930a">Step8::ElasticProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep9_1_1AdvectionProblem.html#a1fcb29b1db7ceaa7a9f9810df44bb2a0">Step9::AdvectionProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_system_and_multigrid()
+: <a class="el" href="classStep63_1_1AdvectionProblem.html#a5e186f8837ce8ef799177cc658b0d7b4">Step63::AdvectionProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_system_matrix()
+: <a class="el" href="classStep28_1_1EnergyGroup.html#a5225da0c6f236ab7cfa1b9a97aa27bef">Step28::EnergyGroup&lt; dim &gt;</a>
+</li>
+<li>assemble_system_one_cell()
+: <a class="el" href="classStep44_1_1Solid.html#a034a8d67faf87e8b9069b67cb0a57282">Step44::Solid&lt; dim &gt;</a>
+, <a class="el" href="classStep51_1_1HDG.html#af837ec5985c50d4ad00d325a46547bda">Step51::HDG&lt; dim &gt;</a>
+</li>
+<li>assemble_system_unassisted()
+: <a class="el" href="classStep72_1_1MinimalSurfaceProblem.html#a52b95e8bd076cad6444024a0746a13bd">Step72::MinimalSurfaceProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_system_using_energy_functional()
+: <a class="el" href="classStep72_1_1MinimalSurfaceProblem.html#a42a09b022d8610d22e2d21648708b2d0">Step72::MinimalSurfaceProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_system_with_residual_linearization()
+: <a class="el" href="classStep72_1_1MinimalSurfaceProblem.html#ac86bec7dc022f3e0d5dd2f467dd9c8ed">Step72::MinimalSurfaceProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_temperature_matrix()
+: <a class="el" href="classStep31_1_1BoussinesqFlowProblem.html#afa88b9c55012ac25e958e3bd44a5f923">Step31::BoussinesqFlowProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep32_1_1BoussinesqFlowProblem.html#a208e80cfc8c7d665c775d22eac5c0b31">Step32::BoussinesqFlowProblem&lt; dim &gt;</a>
+</li>
+<li>assemble_temperature_system()
+: <a class="el" href="classStep31_1_1BoussinesqFlowProblem.html#ac728423cbc89914db822f0212f31f668">Step31::BoussinesqFlowProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep32_1_1BoussinesqFlowProblem.html#a764c008f5c3477da328617314643be1b">Step32::BoussinesqFlowProblem&lt; dim &gt;</a>
 </li>
 <li>assemble_threshold
 : <a class="el" href="classAlgorithms_1_1Newton.html#a300f447dd1bb07540e03b3de6ac47291">Algorithms::Newton&lt; VectorType &gt;</a>
@@ -1197,6 +1533,14 @@ $(function() {
 <li>assemble_up()
 : <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixLocalBlocksToGlobalBlocks.html#a8a592a7ca0441385f8423a526e19e429">MeshWorker::Assembler::MGMatrixLocalBlocksToGlobalBlocks&lt; MatrixType, number &gt;</a>
 , <a class="el" href="classMeshWorker_1_1Assembler_1_1MGMatrixSimple.html#ad854b648b394a116f6e0a6f9cf712a9b">MeshWorker::Assembler::MGMatrixSimple&lt; MatrixType &gt;</a>
+</li>
+<li>assemble_vorticity()
+: <a class="el" href="classStep35_1_1NavierStokesProjection.html#a240ac9e3c64fbf22f6c121864845a487">Step35::NavierStokesProjection&lt; dim &gt;</a>
+</li>
+<li>AssemblyScratchData()
+: <a class="el" href="structStep13_1_1LaplaceSolver_1_1Solver_1_1AssemblyScratchData.html#a89c289cf6d6fda3582c3a18ed596453e">Step13::LaplaceSolver::Solver&lt; dim &gt;::AssemblyScratchData</a>
+, <a class="el" href="structStep14_1_1LaplaceSolver_1_1Solver_1_1AssemblyScratchData.html#a36740fb8dfcd6401ba7fbf3b753d210d">Step14::LaplaceSolver::Solver&lt; dim &gt;::AssemblyScratchData</a>
+, <a class="el" href="structStep9_1_1AdvectionProblem_1_1AssemblyScratchData.html#a723ba602f628130efa41170cb0b7967b">Step9::AdvectionProblem&lt; dim &gt;::AssemblyScratchData</a>
 </li>
 <li>assert_built()
 : <a class="el" href="classMGLevelGlobalTransfer.html#a2805d8afb53a578e2af05f32feb2e4de">MGLevelGlobalTransfer&lt; VectorType &gt;</a>
@@ -1211,6 +1555,10 @@ $(function() {
 <li>assert_valid_linear_index()
 : <a class="el" href="classMatrixTableIterators_1_1AccessorBase.html#a426f7a2bf7dde153120ec05a06a9a8a4">MatrixTableIterators::AccessorBase&lt; TableType, Constness, storage_order &gt;</a>
 </li>
+<li>asset_volatility
+: <a class="el" href="classBlackScholesSolver_1_1BlackScholes.html#a7bea9acbdfc58b8adf64ae3b1925e90c">BlackScholesSolver::BlackScholes&lt; dim &gt;</a>
+, <a class="el" href="classBlackScholesSolver_1_1RightHandSide.html#ae9bdcfb6445bce89f6c25eca82b2eecf">BlackScholesSolver::RightHandSide&lt; dim &gt;</a>
+</li>
 <li>assign()
 : <a class="el" href="classAlgorithms_1_1Event.html#ac11cf8f0d2e7c672a402a3a6284ce0e4">Algorithms::Event</a>
 </li>
@@ -1219,6 +1567,9 @@ $(function() {
 </li>
 <li>assimp
 : <a class="el" href="classGridIn.html#a017db4751bafb6b297fc3c96494133aaa44884a6e9b4f3f85d0aed21cc380b414">GridIn&lt; dim, spacedim &gt;</a>
+</li>
+<li>asynchronous_writeback
+: <a class="el" href="classStep69_1_1MainLoop.html#a5c880e0c992e8d96bcbffdaf6e08721a">Step69::MainLoop&lt; dim &gt;</a>
 </li>
 <li>at()
 : <a class="el" href="classIndexSet.html#a7ab4d30eafe14bb2981667959e7bff8a">IndexSet</a>
@@ -1305,6 +1656,12 @@ $(function() {
 </li>
 <li>average_reduction()
 : <a class="el" href="classSolverControl.html#a1a85836808387a141cee9b9a25fc4217">SolverControl</a>
+</li>
+<li>average_rho_width
+: <a class="el" href="classstep62_1_1Rho.html#a3a61156886243dff5ae4ca3d226eb0a3">step62::Rho&lt; dim &gt;</a>
+</li>
+<li>average_value()
+: <a class="el" href="classCoefficient.html#a9ed75ae048e2e10a134c03b0119571ae">Coefficient&lt; dim &gt;</a>
 </li>
 <li>avg
 : <a class="el" href="structUtilities_1_1MPI_1_1MinMaxAvg.html#a31071978a72624d059c345f3aa935593">Utilities::MPI::MinMaxAvg</a>

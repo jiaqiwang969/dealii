@@ -1,0 +1,14 @@
+[0.x.0]*
+ Type trait for a serial vector, i.e. a vector class for which storage is not supported to be distributed over processes.
+*  The specialization
+
+* 
+* [1.x.0]
+*  for a serial vector type, respectively,
+
+* 
+* [1.x.1]
+*  for a vector type with support of distributed storage, must be done in a header file of a vector declaration.
+
+* 
+* [0.x.1]

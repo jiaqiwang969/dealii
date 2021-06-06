@@ -1,0 +1,48 @@
+[0.x.0]*
+ Implementation of Arnold-Boffi-Falk (ABF) elements, conforming with the space H<sup>div</sup>. These elements generate vector fields with normal components continuous between mesh cells.
+*  These elements are based on an article from Arnold, Boffi and Falk: Quadrilateral H(div) finite elements, SIAM J. Numer. Anal. Vol.42, No.6, pp.2429-2451
+*  In this article, the authors demonstrate that the usual RT elements and also BDM and other proposed finite dimensional subspaces of H(div) do not work properly on arbitrary FE grids. I.e. the convergence rates deteriorate on these meshes. As a solution the authors propose the ABF elements, which are implemented in this module.
+*  This class is not implemented for the codimension one case (<tt>spacedim != dim</tt>).
+*   [2.x.0]  Even if this element is implemented for two and three space dimensions, the definition of the node values relies on consistently oriented faces in 3D. Therefore, care should be taken on complicated meshes.
+*  [1.x.0]
+*  The  [2.x.1]  "interpolation" operators associated with the RT element are constructed such that interpolation and computing the divergence are commuting operations. We require this from interpolating arbitrary functions as well as the #restriction matrices.  It can be achieved by two interpolation schemes, the simplified one in FE_RaviartThomasNodal and the original one here:
+*  [1.x.1]
+*  On edges or faces, the  [2.x.2]  "node values" are the moments of the normal component of the interpolated function with respect to the traces of the RT polynomials. Since the normal trace of the RT space of degree [1.x.2] on an edge/face is the space [1.x.3], the moments are taken with respect to this space.
+*  [1.x.4]
+*  Higher order RT spaces have interior nodes. These are moments taken with respect to the gradient of functions in [1.x.5] on the cell (this space is the matching space for RT<sub>k</sub> in a mixed formulation).
+*  [1.x.6]
+*  The node values above rely on integrals, which will be computed by quadrature rules themselves. The generalized support points are a set of points such that this quadrature can be performed with sufficient accuracy. The points needed are those of QGauss<sub>k+1</sub> on each face as well as QGauss<sub>k</sub> in the interior of the cell (or none for RT<sub>0</sub>). See the  [2.x.3]  "glossary entry on generalized support points" for more information.
+
+* 
+* [0.x.1]*
+   Constructor for the ABF element of degree  [2.x.4]   
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_ABF<dim>(degree)</tt>, with  [2.x.5]  and  [2.x.6]  replaced   by appropriate values.  
+* [0.x.3]*
+   This function returns  [2.x.7]  if the shape function  [2.x.8]  has   non-zero function values somewhere on the face  [2.x.9]      Right now, this is only implemented for RT0 in 1D. Otherwise, returns   always  [2.x.10]   
+* [0.x.4]*
+   The order of the ABF element. The lowest order elements are usually   referred to as RT0, even though their shape functions are piecewise   quadratics.  
+* [0.x.5]*
+   Only for internal use. Its full name is  [2.x.11]    function and it creates the  [2.x.12]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.13]    FiniteElementData.  
+* [0.x.6]*
+   Initialize the  [2.x.14]  field of the FiniteElement   class and fill the tables with interpolation weights (#boundary_weights   and #interior_weights). Called from the constructor.     See the    [2.x.15]  "glossary entry on generalized support points"   for more information.  
+* [0.x.7]*
+   Initialize the interpolation from functions on refined mesh cells onto   the father cell. According to the philosophy of the Raviart-Thomas   element, this restriction operator preserves the divergence of a function   weakly.  
+* [0.x.8]*
+   Fields of cell-independent data.     For information about the general purpose of this class, see the   documentation of the base class.  
+* [0.x.9]*
+     Array with shape function values in quadrature points. There is one row     for each shape function, containing values for each quadrature point.     Since the shape functions are vector-valued (with as many components as     there are space dimensions), the value is a tensor.         In this array, we store the values of the shape function in the     quadrature points on the unit cell. The transformation to the real     space cell is then simply done by multiplication with the Jacobian of     the mapping.    
+* [0.x.10]*
+     Array with shape function gradients in quadrature points. There is one     row for each shape function, containing values for each quadrature     point.         We store the gradients in the quadrature points on the unit cell. We     then only have to apply the transformation (which is a matrix-vector     multiplication) when visiting an actual cell.    
+* [0.x.11]*
+   These are the factors multiplied to a function in the   #generalized_face_support_points when computing the integration. They are   organized such that there is one row for each generalized face support   point and one column for each degree of freedom on the face.  
+* [0.x.12]*
+   Precomputed factors for interpolation of interior degrees of freedom. The   rationale for this Table is the same as for #boundary_weights. Only, this   table has a third coordinate for the space direction of the component   evaluated.  
+* [0.x.13]*
+   These are the factors multiplied to a function in the   #generalized_face_support_points when computing the integration. They are   organized such that there is one row for each generalized face support   point and one column for each degree of freedom on the face.  
+* [0.x.14]*
+   Precomputed factors for interpolation of interior degrees of freedom. The   rationale for this Table is the same as for #boundary_weights. Only, this   table has a third coordinate for the space direction of the component   evaluated.  
+* [0.x.15]*
+   Initialize the permutation pattern and the pattern of sign change.    
+*  [2.x.16]  This function is not fully filled with the correct implementation   yet. It needs to be consistently implemented in a future release to work   on meshes that contain cells with flipped faces.  
+* [0.x.16]

@@ -24,4 +24,6 @@ digraph "FE_DGQHermite&lt; dim, spacedim &gt;"
   Node9 [label="FE_Poly\< dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__Poly.html",tooltip=" "];
   Node7 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node3 -> Node9 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
+  Node1 -> Node10 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
+  Node10 [label="FE_DGQHermite\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGQHermite.html",tooltip=" "];
 }

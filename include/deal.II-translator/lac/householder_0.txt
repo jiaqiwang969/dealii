@@ -1,0 +1,38 @@
+[0.x.0]!  [2.x.0]  Matrix2 [2.x.1] 
+
+* 
+* [0.x.1]*
+ QR-decomposition of a full matrix.
+*  This class computes the QR-decomposition of given matrix by the Householder algorithm. Then, the function least_squares() can be used to compute the vector  [2.x.2]  minimizing  [2.x.3]  for a given vector  [2.x.4] . The QR decomposition of  [2.x.5]  is useful for this purpose because the minimizer is given by the equation  [2.x.6]  which is easy to compute because  [2.x.7]  is an orthogonal matrix, and consequently  [2.x.8] . Thus,  [2.x.9] . Furthermore,  [2.x.10]  is triangular, so applying  [2.x.11]  to a vector only involves a backward or forward solve.
+* 
+
+*  [1.x.0]
+*  The class does not in fact store the  [2.x.12]  and  [2.x.13]  factors explicitly as matrices. It does store  [2.x.14] , but the  [2.x.15]  factor is stored as the product of Householder reflections of the form  [2.x.16]  where the vectors  [2.x.17]  are so that they can be stored in the lower-triangular part of an underlying matrix object, whereas  [2.x.18]  is stored in the upper triangular part.
+*  The  [2.x.19]  vectors and the  [2.x.20]  matrix now are in conflict because they both want to use the diagonal entry of the matrix, but we can only store one in these positions, of course. Consequently, the entries  [2.x.21]  are stored separately in the `diagonal` member variable.
+* 
+
+* 
+*  [2.x.22]  Instantiations for this template are provided for <tt> [2.x.23]  and  [2.x.24]  others can be generated in application programs (see the section on  [2.x.25]  in the manual).
+
+* 
+* [0.x.2]*
+   Declare type of container size type.  
+* [0.x.3]*
+   Create an empty object.  
+* [0.x.4]*
+   Create an object holding the QR-decomposition of the matrix  [2.x.26] .  
+* [0.x.5]*
+   Compute the QR-decomposition of the given matrix  [2.x.27] .     This overwrites any previously computed QR decomposition.  
+* [0.x.6]*
+   Solve the least-squares problem for the right hand side <tt>src</tt>. The   returned scalar value is the Euclidean norm of the approximation error.      [2.x.28]   [2.x.29]  dst contains the solution of the least squares problem on return.      [2.x.30]   [2.x.31]  src contains the right hand side [1.x.1] of the least squares   problem. It will be changed during the algorithm and is unusable on   return.  
+* [0.x.7]*
+   This function does the same as the previous one, but for BlockVectors.  
+* [0.x.8]*
+   A wrapper to least_squares(), implementing the standard MatrixType   interface.  
+* [0.x.9]*
+   A wrapper to least_squares() that implements multiplication with   the transpose matrix.  
+* [0.x.10]*
+   Storage for the diagonal elements of the orthogonal   transformation. See the class documentation for more information.  
+* [0.x.11]*
+   Storage that is internally used for the Householder transformation.  
+* [0.x.12]

@@ -1,0 +1,26 @@
+[0.x.0]*
+ Implementation of a scalar Lagrange finite element  [2.x.0]  that defines the finite element space of continuous, piecewise linear elements with  [2.x.1]  subdivisions in each coordinate direction. It yields an element with the same number of degrees of freedom as the  [2.x.2]  elements but using linear interpolation instead of higher order one. This type of element is also called macro element in the literature as it really consists of several smaller elements, namely [1.x.0]<tt><sup>dim</sup></tt> such sub-cells.
+*  The numbering of degrees of freedom is done in exactly the same way as in FE_Q of degree  [2.x.3]  See there for a detailed description on how degrees of freedom are numbered within one element.
+*  This element represents a Q-linear finite element space on a reduced mesh size [1.x.1]. Its effect is equivalent to using FE_Q of degree one on a finer mesh by a factor  [2.x.4]  if an equivalent quadrature is used. However, this element reduces the flexibility in the choice of (adaptive) mesh size by exactly this factor  [2.x.5]  which typically reduces efficiency. On the other hand, comparing this element with  [2.x.6]  subdivisions to the FE_Q element of degree  [2.x.7]  on the same mesh shows that the convergence is typically much worse for smooth problems. In particular,  [2.x.8]  elements achieve interpolation orders of [1.x.2] in the L2 norm, whereas these elements reach only [1.x.3]. For these two reasons, this element is usually not very useful as a standalone. In addition, any evaluation of face terms on the boundaries within the elements becomes impossible with this element because deal.II does not have the equivalent of FEFaceValues for lower-dimensional integrals in the interior of cells.
+*  Nonetheless, there are a few use cases where this element actually is useful:  [2.x.9] 
+*   [2.x.10]  Systems of PDEs where certain variables demand for higher resolutions than the others and the additional degrees of freedom should be spent on increasing the resolution of linears instead of higher order polynomials, and you do not want to use two different meshes for the different components. This can be the case when irregularities (shocks) appear in the solution and stabilization techniques are used that work for linears but not higher order elements.  [2.x.11] 
+*   [2.x.12]  Stokes/Navier Stokes systems such as the one discussed in  [2.x.13]  could be solved with Q2-iso-Q1 elements for velocities instead of Q2 elements. Combined with Q1 pressures they give a stable mixed element pair. However, they perform worse than the standard (Taylor-Hood  [2.x.14] ) approach in most situations.   [2.x.15] 
+*   [2.x.16]  Preconditioning systems of FE_Q systems of higher order  [2.x.17]  with a preconditioner based on  [2.x.18]  elements: Some preconditioners like algebraic multigrid perform much better with linear elements than with higher order elements because they often implicitly assume a sparse connectivity between entries. Then, creating a preconditioner matrix based on these elements yields the same number of degrees of freedom (and a spectrally equivalent linear system), which can be combined with a (high order) system matrix in an iterative solver like CG.   [2.x.19]   [2.x.20] 
+*  [1.x.4]
+*  Due to the nature of these elements as a concatenation of linears, care must be taken when selecting quadrature formulas for this element. The standard choice for an element of  [2.x.21]  subelements is a formula <tt>QIterated<dim>(QGauss<1>(2), p)</tt>, which corresponds to the formula that would be used for integrating functions on a finer mesh. This is in contrast with FE_Q(p) where QGauss<dim>(p+1) is the default choice. In particular, care must be taken to not use a quadrature formula that evaluates the basis functions (and their derivatives) on sub-element boundaries as the gradients of piecewiese functions on internal boundaries are set to zero. No checks are performed internally to ensure that this is not the case
+* 
+*  - it is the user's responsibility to avoid these situations.
+*  Also note that the usual deal.II routines for setting up sparsity patterns and assembling matrices do not make use of the increased sparsity in this element compared to FE_Q. This is because  [2.x.22]  assumes coupling between all degrees of freedom within the element, whereas FE_Q_iso_Q1 with more than one subdivision does have less coupling.
+
+* 
+* [0.x.1]*
+   Construct a FE_Q_iso_Q1 element with a given number of subdivisions. The   number of subdivision is similar to the degree in FE_Q in the sense that   both elements produce the same number of degrees of freedom.  
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_Q_iso_q1<dim>(equivalent_degree)</tt>, with  [2.x.23]  and  [2.x.24]    equivalent_degree replaced by appropriate values.  
+* [0.x.3]*
+   Implementation of the corresponding function in the FiniteElement   class.  Since the current element is interpolatory, the nodal   values are exactly the support point values. Furthermore, since   the current element is scalar, the support point values need to   be vectors of length 1.  
+* [0.x.4]*
+    [2.x.25]  Functions to support hp    [2.x.26]   
+* [0.x.5]*
+    [2.x.27]   [2.x.28]   
+* [0.x.6]

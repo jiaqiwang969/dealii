@@ -105,93 +105,115 @@ Inheritance diagram for ScalarLagrangePolynomialWedge&lt; dim &gt;:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a52555565a9518330be36b28e836b1d2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a52555565a9518330be36b28e836b1d2e">ScalarLagrangePolynomialWedge</a> (const unsigned <a class="el" href="classint.html">int</a> degree)</td></tr>
+<tr class="memitem:a52555565a9518330be36b28e836b1d2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a52555565a9518330be36b28e836b1d2e">ScalarLagrangePolynomialWedge</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html#aa12f9f2846545743319be8b6d584250d">degree</a>)</td></tr>
 <tr class="separator:a52555565a9518330be36b28e836b1d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86d854c4c903315fab717a2c31befaf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate</a> (const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;unit_point, std::vector&lt; <a class="el" href="classdouble.html">double</a> &gt; &amp;values, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&gt; &amp;grads, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&gt; &amp;grad_grads, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, dim &gt;&gt; &amp;third_derivatives, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim &gt;&gt; &amp;fourth_derivatives) const override</td></tr>
+<tr class="memitem:a86d854c4c903315fab717a2c31befaf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;unit_point, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> &gt; &amp;<a class="el" href="vector__tools__0_8txt.html#a2eab42f23d29c952a751bc76e5e109ee">values</a>, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;grads, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;grad_grads, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;third_derivatives, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;fourth_derivatives) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a86d854c4c903315fab717a2c31befaf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa85dda5a168f005bd63f328ce834a73c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdouble.html">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#aa85dda5a168f005bd63f328ce834a73c">compute_value</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:aa85dda5a168f005bd63f328ce834a73c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#aa85dda5a168f005bd63f328ce834a73c">compute_value</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:aa85dda5a168f005bd63f328ce834a73c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a587fdedd24c9b1634a13857fe1f6ade4"><td class="memTemplParams" colspan="2">template&lt;int order&gt; </td></tr>
-<tr class="memitem:a587fdedd24c9b1634a13857fe1f6ade4"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; order, dim &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a587fdedd24c9b1634a13857fe1f6ade4">compute_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const</td></tr>
+<tr class="memitem:a587fdedd24c9b1634a13857fe1f6ade4"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="grid__generator__0_8txt.html#a4669279d9409e7c6a8e5e4f8adc77d0f">order</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a587fdedd24c9b1634a13857fe1f6ade4">compute_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a587fdedd24c9b1634a13857fe1f6ade4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13fd5dc8a7817d52f2d76dafe40bc3b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a13fd5dc8a7817d52f2d76dafe40bc3b0">compute_1st_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a13fd5dc8a7817d52f2d76dafe40bc3b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a13fd5dc8a7817d52f2d76dafe40bc3b0">compute_1st_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a13fd5dc8a7817d52f2d76dafe40bc3b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3aedfa5a96701e8f671492c435e9524d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a3aedfa5a96701e8f671492c435e9524d">compute_2nd_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a3aedfa5a96701e8f671492c435e9524d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a3aedfa5a96701e8f671492c435e9524d">compute_2nd_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a3aedfa5a96701e8f671492c435e9524d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ab3f34c305dbc9958b82cc6d21046bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 3, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a3ab3f34c305dbc9958b82cc6d21046bb">compute_3rd_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a3ab3f34c305dbc9958b82cc6d21046bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a3ab3f34c305dbc9958b82cc6d21046bb">compute_3rd_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a3ab3f34c305dbc9958b82cc6d21046bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f8f511806c1fa29c8c9fdba8cab1449"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a1f8f511806c1fa29c8c9fdba8cab1449">compute_4th_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a1f8f511806c1fa29c8c9fdba8cab1449"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a1f8f511806c1fa29c8c9fdba8cab1449">compute_4th_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a1f8f511806c1fa29c8c9fdba8cab1449"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a095a0430820db7ec301e721a2dbdc4df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a095a0430820db7ec301e721a2dbdc4df">compute_grad</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a095a0430820db7ec301e721a2dbdc4df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a095a0430820db7ec301e721a2dbdc4df">compute_grad</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a095a0430820db7ec301e721a2dbdc4df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc380d1429722f96144f48c597087bdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#afc380d1429722f96144f48c597087bdc">compute_grad_grad</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:afc380d1429722f96144f48c597087bdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#afc380d1429722f96144f48c597087bdc">compute_grad_grad</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:afc380d1429722f96144f48c597087bdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d0aa12a51ade3fa98e4f1a6a709b22e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a2d0aa12a51ade3fa98e4f1a6a709b22e">name</a> () const override</td></tr>
+<tr class="memitem:a2d0aa12a51ade3fa98e4f1a6a709b22e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a2d0aa12a51ade3fa98e4f1a6a709b22e">name</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a2d0aa12a51ade3fa98e4f1a6a709b22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5dd334e61b8c0908f4fcb0193ada5c68"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; dim &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a5dd334e61b8c0908f4fcb0193ada5c68">clone</a> () const override</td></tr>
+<tr class="memitem:a5dd334e61b8c0908f4fcb0193ada5c68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> std::unique_ptr&lt; <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a5dd334e61b8c0908f4fcb0193ada5c68">clone</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a5dd334e61b8c0908f4fcb0193ada5c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52555565a9518330be36b28e836b1d2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a52555565a9518330be36b28e836b1d2e">ScalarLagrangePolynomialWedge</a> (const unsigned <a class="el" href="classint.html">int</a> degree)</td></tr>
+<tr class="memitem:a52555565a9518330be36b28e836b1d2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a52555565a9518330be36b28e836b1d2e">ScalarLagrangePolynomialWedge</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html#aa12f9f2846545743319be8b6d584250d">degree</a>)</td></tr>
 <tr class="separator:a52555565a9518330be36b28e836b1d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86d854c4c903315fab717a2c31befaf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate</a> (const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;unit_point, std::vector&lt; <a class="el" href="classdouble.html">double</a> &gt; &amp;values, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&gt; &amp;grads, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&gt; &amp;grad_grads, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, dim &gt;&gt; &amp;third_derivatives, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim &gt;&gt; &amp;fourth_derivatives) const override</td></tr>
+<tr class="memitem:a86d854c4c903315fab717a2c31befaf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;unit_point, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> &gt; &amp;<a class="el" href="vector__tools__0_8txt.html#a2eab42f23d29c952a751bc76e5e109ee">values</a>, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;grads, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;grad_grads, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;third_derivatives, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;fourth_derivatives) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a86d854c4c903315fab717a2c31befaf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa85dda5a168f005bd63f328ce834a73c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdouble.html">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#aa85dda5a168f005bd63f328ce834a73c">compute_value</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:aa85dda5a168f005bd63f328ce834a73c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#aa85dda5a168f005bd63f328ce834a73c">compute_value</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:aa85dda5a168f005bd63f328ce834a73c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2624fbe1c31a9858cf783f14daf23d00"><td class="memTemplParams" colspan="2">template&lt;int order&gt; </td></tr>
-<tr class="memitem:a2624fbe1c31a9858cf783f14daf23d00"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; order, dim &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a2624fbe1c31a9858cf783f14daf23d00">compute_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const</td></tr>
+<tr class="memitem:a2624fbe1c31a9858cf783f14daf23d00"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="grid__generator__0_8txt.html#a4669279d9409e7c6a8e5e4f8adc77d0f">order</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a2624fbe1c31a9858cf783f14daf23d00">compute_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a2624fbe1c31a9858cf783f14daf23d00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac140a79b32aa9835118a96949160e865"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#ac140a79b32aa9835118a96949160e865">compute_1st_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:ac140a79b32aa9835118a96949160e865"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#ac140a79b32aa9835118a96949160e865">compute_1st_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:ac140a79b32aa9835118a96949160e865"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae739c1e7cb4ad01e4c6a4e09b5f2c39b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#ae739c1e7cb4ad01e4c6a4e09b5f2c39b">compute_2nd_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:ae739c1e7cb4ad01e4c6a4e09b5f2c39b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#ae739c1e7cb4ad01e4c6a4e09b5f2c39b">compute_2nd_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:ae739c1e7cb4ad01e4c6a4e09b5f2c39b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c5b152e707bd23066dd4d7ab29d8959"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 3, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a0c5b152e707bd23066dd4d7ab29d8959">compute_3rd_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a0c5b152e707bd23066dd4d7ab29d8959"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a0c5b152e707bd23066dd4d7ab29d8959">compute_3rd_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a0c5b152e707bd23066dd4d7ab29d8959"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a581cce4f8506e259966a4e68a6065da2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a581cce4f8506e259966a4e68a6065da2">compute_4th_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a581cce4f8506e259966a4e68a6065da2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a581cce4f8506e259966a4e68a6065da2">compute_4th_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a581cce4f8506e259966a4e68a6065da2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adfbfd1f224021905b0046775566017ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#adfbfd1f224021905b0046775566017ef">compute_grad</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:adfbfd1f224021905b0046775566017ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#adfbfd1f224021905b0046775566017ef">compute_grad</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:adfbfd1f224021905b0046775566017ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ecbd7e71f194806abb4ebaf8e3cea54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a7ecbd7e71f194806abb4ebaf8e3cea54">compute_grad_grad</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a7ecbd7e71f194806abb4ebaf8e3cea54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a7ecbd7e71f194806abb4ebaf8e3cea54">compute_grad_grad</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a7ecbd7e71f194806abb4ebaf8e3cea54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d0aa12a51ade3fa98e4f1a6a709b22e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a2d0aa12a51ade3fa98e4f1a6a709b22e">name</a> () const override</td></tr>
+<tr class="memitem:a2d0aa12a51ade3fa98e4f1a6a709b22e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a2d0aa12a51ade3fa98e4f1a6a709b22e">name</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a2d0aa12a51ade3fa98e4f1a6a709b22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1174f48a64e4e9393375ed92be4403ee"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; dim &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a1174f48a64e4e9393375ed92be4403ee">clone</a> () const override</td></tr>
+<tr class="memitem:a1174f48a64e4e9393375ed92be4403ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> std::unique_ptr&lt; <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a1174f48a64e4e9393375ed92be4403ee">clone</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a1174f48a64e4e9393375ed92be4403ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52555565a9518330be36b28e836b1d2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a52555565a9518330be36b28e836b1d2e">ScalarLagrangePolynomialWedge</a> (const unsigned <a class="el" href="classint.html">int</a> degree)</td></tr>
+<tr class="memitem:a52555565a9518330be36b28e836b1d2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a52555565a9518330be36b28e836b1d2e">ScalarLagrangePolynomialWedge</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html#aa12f9f2846545743319be8b6d584250d">degree</a>)</td></tr>
 <tr class="separator:a52555565a9518330be36b28e836b1d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86d854c4c903315fab717a2c31befaf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate</a> (const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;unit_point, std::vector&lt; <a class="el" href="classdouble.html">double</a> &gt; &amp;values, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&gt; &amp;grads, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&gt; &amp;grad_grads, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, dim &gt;&gt; &amp;third_derivatives, std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim &gt;&gt; &amp;fourth_derivatives) const override</td></tr>
+<tr class="memitem:a86d854c4c903315fab717a2c31befaf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;unit_point, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> &gt; &amp;<a class="el" href="vector__tools__0_8txt.html#a2eab42f23d29c952a751bc76e5e109ee">values</a>, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;grads, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;grad_grads, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;third_derivatives, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;fourth_derivatives) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a86d854c4c903315fab717a2c31befaf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa85dda5a168f005bd63f328ce834a73c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdouble.html">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#aa85dda5a168f005bd63f328ce834a73c">compute_value</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:aa85dda5a168f005bd63f328ce834a73c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#aa85dda5a168f005bd63f328ce834a73c">compute_value</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:aa85dda5a168f005bd63f328ce834a73c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2624fbe1c31a9858cf783f14daf23d00"><td class="memTemplParams" colspan="2">template&lt;int order&gt; </td></tr>
-<tr class="memitem:a2624fbe1c31a9858cf783f14daf23d00"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; order, dim &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a2624fbe1c31a9858cf783f14daf23d00">compute_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const</td></tr>
+<tr class="memitem:a2624fbe1c31a9858cf783f14daf23d00"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="grid__generator__0_8txt.html#a4669279d9409e7c6a8e5e4f8adc77d0f">order</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a2624fbe1c31a9858cf783f14daf23d00">compute_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a2624fbe1c31a9858cf783f14daf23d00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac140a79b32aa9835118a96949160e865"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#ac140a79b32aa9835118a96949160e865">compute_1st_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:ac140a79b32aa9835118a96949160e865"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#ac140a79b32aa9835118a96949160e865">compute_1st_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:ac140a79b32aa9835118a96949160e865"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae739c1e7cb4ad01e4c6a4e09b5f2c39b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#ae739c1e7cb4ad01e4c6a4e09b5f2c39b">compute_2nd_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:ae739c1e7cb4ad01e4c6a4e09b5f2c39b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#ae739c1e7cb4ad01e4c6a4e09b5f2c39b">compute_2nd_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:ae739c1e7cb4ad01e4c6a4e09b5f2c39b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c5b152e707bd23066dd4d7ab29d8959"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 3, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a0c5b152e707bd23066dd4d7ab29d8959">compute_3rd_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a0c5b152e707bd23066dd4d7ab29d8959"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a0c5b152e707bd23066dd4d7ab29d8959">compute_3rd_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a0c5b152e707bd23066dd4d7ab29d8959"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a581cce4f8506e259966a4e68a6065da2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a581cce4f8506e259966a4e68a6065da2">compute_4th_derivative</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a581cce4f8506e259966a4e68a6065da2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a581cce4f8506e259966a4e68a6065da2">compute_4th_derivative</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a581cce4f8506e259966a4e68a6065da2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adfbfd1f224021905b0046775566017ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#adfbfd1f224021905b0046775566017ef">compute_grad</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:adfbfd1f224021905b0046775566017ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#adfbfd1f224021905b0046775566017ef">compute_grad</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:adfbfd1f224021905b0046775566017ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ecbd7e71f194806abb4ebaf8e3cea54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a7ecbd7e71f194806abb4ebaf8e3cea54">compute_grad_grad</a> (const unsigned <a class="el" href="classint.html">int</a> i, const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;p) const override</td></tr>
+<tr class="memitem:a7ecbd7e71f194806abb4ebaf8e3cea54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a7ecbd7e71f194806abb4ebaf8e3cea54">compute_grad_grad</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a7ecbd7e71f194806abb4ebaf8e3cea54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d0aa12a51ade3fa98e4f1a6a709b22e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a2d0aa12a51ade3fa98e4f1a6a709b22e">name</a> () const override</td></tr>
+<tr class="memitem:a2d0aa12a51ade3fa98e4f1a6a709b22e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a2d0aa12a51ade3fa98e4f1a6a709b22e">name</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a2d0aa12a51ade3fa98e4f1a6a709b22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1174f48a64e4e9393375ed92be4403ee"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; dim &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a1174f48a64e4e9393375ed92be4403ee">clone</a> () const override</td></tr>
+<tr class="memitem:a1174f48a64e4e9393375ed92be4403ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> std::unique_ptr&lt; <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a1174f48a64e4e9393375ed92be4403ee">clone</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a1174f48a64e4e9393375ed92be4403ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f249ec13923bf17eac6469d92804ec8"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#a1f249ec13923bf17eac6469d92804ec8">n</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
+<tr class="separator:a1f249ec13923bf17eac6469d92804ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f249ec13923bf17eac6469d92804ec8"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#a1f249ec13923bf17eac6469d92804ec8">n</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
+<tr class="separator:a1f249ec13923bf17eac6469d92804ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f249ec13923bf17eac6469d92804ec8"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#a1f249ec13923bf17eac6469d92804ec8">n</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
+<tr class="separator:a1f249ec13923bf17eac6469d92804ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa12f9f2846545743319be8b6d584250d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#aa12f9f2846545743319be8b6d584250d">degree</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
+<tr class="separator:aa12f9f2846545743319be8b6d584250d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ece4cda1f9b61913037d6a8e4c28ef1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#a9ece4cda1f9b61913037d6a8e4c28ef1">degree</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
+<tr class="separator:a9ece4cda1f9b61913037d6a8e4c28ef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ece4cda1f9b61913037d6a8e4c28ef1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#a9ece4cda1f9b61913037d6a8e4c28ef1">degree</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
+<tr class="separator:a9ece4cda1f9b61913037d6a8e4c28ef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea426c67195b05f20be188da176be01f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#aea426c67195b05f20be188da176be01f">memory_consumption</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
+<tr class="separator:aea426c67195b05f20be188da176be01f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83d83860258d48923a9cbb55c39850ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#a83d83860258d48923a9cbb55c39850ad">memory_consumption</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
+<tr class="separator:a83d83860258d48923a9cbb55c39850ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83d83860258d48923a9cbb55c39850ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#a83d83860258d48923a9cbb55c39850ad">memory_consumption</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
+<tr class="separator:a83d83860258d48923a9cbb55c39850ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a68456074e2d03f9048993222e71f401c"><td class="memItemLeft" align="right" valign="top">static const unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a68456074e2d03f9048993222e71f401c">dimension</a> = dim</td></tr>
+<tr class="memitem:a68456074e2d03f9048993222e71f401c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a68456074e2d03f9048993222e71f401c">dimension</a> = <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a></td></tr>
 <tr class="separator:a68456074e2d03f9048993222e71f401c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:add7303fd375e5b7578192e1f5daade2a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBarycentricPolynomials.html">BarycentricPolynomials</a>&lt; 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#add7303fd375e5b7578192e1f5daade2a">poly_tri</a></td></tr>
+<tr class="memitem:add7303fd375e5b7578192e1f5daade2a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBarycentricPolynomials.html">BarycentricPolynomials</a>&lt; 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#add7303fd375e5b7578192e1f5daade2a">poly_tri</a></td></tr>
 <tr class="separator:add7303fd375e5b7578192e1f5daade2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9110a2923c5bbea99b479c5329e5c3b0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBarycentricPolynomials.html">BarycentricPolynomials</a>&lt; 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a9110a2923c5bbea99b479c5329e5c3b0">poly_line</a></td></tr>
+<tr class="memitem:a9110a2923c5bbea99b479c5329e5c3b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBarycentricPolynomials.html">BarycentricPolynomials</a>&lt; 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarLagrangePolynomialWedge.html#a9110a2923c5bbea99b479c5329e5c3b0">poly_line</a></td></tr>
 <tr class="separator:a9110a2923c5bbea99b479c5329e5c3b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad428c274ecb6ef8ebb1f0fe56758e2fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#ad428c274ecb6ef8ebb1f0fe56758e2fd">polynomial_degree</a></td></tr>
+<tr class="separator:ad428c274ecb6ef8ebb1f0fe56758e2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a459e13c37c99b0a3e6a1272fd259eeeb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScalarPolynomialsBase.html#a459e13c37c99b0a3e6a1272fd259eeeb">n_pols</a></td></tr>
+<tr class="separator:a459e13c37c99b0a3e6a1272fd259eeeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;int dim&gt;<br />
@@ -210,9 +232,9 @@ class ScalarLagrangePolynomialWedge&lt; dim &gt;</h3>
 template&lt;int dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::<a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a> </td>
+          <td class="memname"><a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a> </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>degree</em></td><td>)</td>
           <td></td>
         </tr>
@@ -232,9 +254,9 @@ template&lt;int dim&gt; </div>
 template&lt;int dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::<a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a> </td>
+          <td class="memname"><a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a> </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>degree</em></td><td>)</td>
           <td></td>
         </tr>
@@ -252,9 +274,9 @@ template&lt;int dim&gt; </div>
 template&lt;int dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::<a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a> </td>
+          <td class="memname"><a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a> </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>degree</em></td><td>)</td>
           <td></td>
         </tr>
@@ -276,39 +298,39 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::evaluate </td>
+          <td class="memname">void <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::evaluate </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>unit_point</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classdouble.html">double</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>values</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>grads</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>grad_grads</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>third_derivatives</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>fourth_derivatives</em>&#160;</td>
         </tr>
         <tr>
@@ -319,13 +341,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
-<p>Compute the value and the derivatives of the polynomials at <code>unit_point</code>. The size of the vectors must either be zero or equal <code>n()</code>. In the first case, the function will not compute these values. If you need values or derivatives of all polynomials then use this function, rather than using any of the <code>compute_value</code>, <code>compute_grad</code> or <code>compute_grad_grad</code> functions, see below, in a loop over all tensor product polynomials. </p><dl class="section note"><dt>Note</dt><dd>Currently, only the vectors <code>values</code> and <code>grads</code> are filled. </dd></dl>
+<p>Compute the value and the derivatives of the polynomials at <code>unit_point</code>. The size of the vectors must either be zero or equal <code><a class="el" href="classScalarPolynomialsBase.html#a1f249ec13923bf17eac6469d92804ec8">n()</a></code>. In the first case, the function will not compute these values. If you need values or derivatives of all polynomials then use this function, rather than using any of the <code>compute_value</code>, <code>compute_grad</code> or <code>compute_grad_grad</code> functions, see below, in a loop over all tensor product polynomials. </p><dl class="section note"><dt>Note</dt><dd>Currently, only the vectors <code>values</code> and <code>grads</code> are filled. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#adbabc4cd58cc8bfd805876b02f162f9a">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="polynomials__wedge_8cc_source.html#l00149">149</a> of file <a class="el" href="polynomials__wedge_8cc_source.html">polynomials_wedge.cc</a>.</p>
 
@@ -343,15 +367,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdouble.html">double</a> <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_value </td>
+          <td class="memname"><a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_value </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -362,10 +386,13 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Compute the value of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#add5e49e9731615f9a4dc3dc0cf9d437c">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="polynomials__wedge_8cc_source.html#l00092">92</a> of file <a class="el" href="polynomials__wedge_8cc_source.html">polynomials_wedge.cc</a>.</p>
 
@@ -382,15 +409,15 @@ template&lt;int dim&gt; </div>
 template&lt;int order&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; order, dim &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="grid__generator__0_8txt.html#a4669279d9409e7c6a8e5e4f8adc77d0f">order</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -426,15 +453,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_1st_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_1st_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -445,10 +472,13 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Compute the first derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#ab05bb5ca102985698f85f674b0d3874d">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="polynomials__wedge_8cc_source.html#l00175">175</a> of file <a class="el" href="polynomials__wedge_8cc_source.html">polynomials_wedge.cc</a>.</p>
 
@@ -466,15 +496,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_2nd_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_2nd_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -485,13 +515,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
 <p>Compute the second derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p><dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#acac7ccede438cb0347cad4360b89b4da">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="polynomials__wedge_8cc_source.html#l00186">186</a> of file <a class="el" href="polynomials__wedge_8cc_source.html">polynomials_wedge.cc</a>.</p>
 
@@ -509,15 +541,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 3, dim &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_3rd_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_3rd_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -528,13 +560,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
 <p>Compute the third derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p><dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a932e23352500d96631363bee64992b75">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="polynomials__wedge_8cc_source.html#l00202">202</a> of file <a class="el" href="polynomials__wedge_8cc_source.html">polynomials_wedge.cc</a>.</p>
 
@@ -552,15 +586,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_4th_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_4th_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -571,13 +605,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
 <p>Compute the fourth derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p><dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#afd36f013f40d53e9f2f2eb32096153c3">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="polynomials__wedge_8cc_source.html#l00218">218</a> of file <a class="el" href="polynomials__wedge_8cc_source.html">polynomials_wedge.cc</a>.</p>
 
@@ -595,15 +631,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_grad </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_grad </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -614,13 +650,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
 <p>Compute the gradient of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p><dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#aa8d20e67a0dfa3741eb9416c63c67a4c">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="polynomials__wedge_8cc_source.html#l00110">110</a> of file <a class="el" href="polynomials__wedge_8cc_source.html">polynomials_wedge.cc</a>.</p>
 
@@ -638,15 +676,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_grad_grad </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_grad_grad </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -657,13 +695,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
 <p>Compute the second derivative (grad_grad) of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p><dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a30eb5647cb755df7738e2a84316f9c74">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="polynomials__wedge_8cc_source.html#l00135">135</a> of file <a class="el" href="polynomials__wedge_8cc_source.html">polynomials_wedge.cc</a>.</p>
 
@@ -681,15 +721,21 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::name</td>
+          <td class="memname">std::string <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return the name of the space. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a705b101fc9de572b29968adfd541ac2b">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="polynomials__wedge_8cc_source.html#l00234">234</a> of file <a class="el" href="polynomials__wedge_8cc_source.html">polynomials_wedge.cc</a>.</p>
 
@@ -707,7 +753,10 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt; <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; dim &gt; &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::clone</td>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -716,6 +765,9 @@ template&lt;int dim&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>A sort of virtual copy constructor, this function returns a copy of the polynomial space object. Derived classes need to override the function here in this base class and return an object of the same type as the derived class. Some places in the library, for example the constructors of <a class="el" href="classFE__Poly.html">FE_Poly</a>, need to make copies of polynomial spaces without knowing their exact type. They do so through this function. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a6ca7965b671ce976157653f9af2e2c83">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="polynomials__wedge_8cc_source.html#l00243">243</a> of file <a class="el" href="polynomials__wedge_8cc_source.html">polynomials_wedge.cc</a>.</p>
 
@@ -733,39 +785,39 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::evaluate </td>
+          <td class="memname">void <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::evaluate </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>unit_point</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classdouble.html">double</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>values</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>grads</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>grad_grads</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>third_derivatives</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>fourth_derivatives</em>&#160;</td>
         </tr>
         <tr>
@@ -776,14 +828,16 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
-<p>Compute the value and the derivatives of the polynomials at <code>unit_point</code>. The size of the vectors must either be zero or equal <code>n()</code>. In the first case, the function will not compute these values. If you need values or derivatives of all polynomials then use this function, rather than using any of the <code>compute_value</code>, <code>compute_grad</code> or <code>compute_grad_grad</code> functions, see below, in a loop over all tensor product polynomials.</p>
+<p>Compute the value and the derivatives of the polynomials at <code>unit_point</code>. The size of the vectors must either be zero or equal <code><a class="el" href="classScalarPolynomialsBase.html#a1f249ec13923bf17eac6469d92804ec8">n()</a></code>. In the first case, the function will not compute these values. If you need values or derivatives of all polynomials then use this function, rather than using any of the <code>compute_value</code>, <code>compute_grad</code> or <code>compute_grad_grad</code> functions, see below, in a loop over all tensor product polynomials.</p>
 <dl class="section note"><dt>Note</dt><dd>Currently, only the vectors <code>values</code> and <code>grads</code> are filled. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#adbabc4cd58cc8bfd805876b02f162f9a">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -799,15 +853,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdouble.html">double</a> <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_value </td>
+          <td class="memname"><a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_value </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -818,10 +872,13 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Compute the value of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#add5e49e9731615f9a4dc3dc0cf9d437c">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -836,15 +893,15 @@ template&lt;int dim&gt; </div>
 template&lt;int order&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;order, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;<a class="el" href="grid__generator__0_8txt.html#a4669279d9409e7c6a8e5e4f8adc77d0f">order</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -878,15 +935,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;1, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_1st_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_1st_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -897,10 +954,13 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Compute the first derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#ab05bb5ca102985698f85f674b0d3874d">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -916,15 +976,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;2, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_2nd_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_2nd_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -935,7 +995,7 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -943,6 +1003,8 @@ template&lt;int dim&gt; </div>
 <p></p>
 <p>Compute the second derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead.</p>
 <dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#acac7ccede438cb0347cad4360b89b4da">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -958,15 +1020,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;3, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_3rd_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_3rd_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -977,7 +1039,7 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -985,6 +1047,8 @@ template&lt;int dim&gt; </div>
 <p></p>
 <p>Compute the third derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead.</p>
 <dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a932e23352500d96631363bee64992b75">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1000,15 +1064,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;4, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_4th_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_4th_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1019,7 +1083,7 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1027,6 +1091,8 @@ template&lt;int dim&gt; </div>
 <p></p>
 <p>Compute the fourth derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead.</p>
 <dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#afd36f013f40d53e9f2f2eb32096153c3">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1042,15 +1108,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;1, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_grad </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_grad </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1061,7 +1127,7 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1069,6 +1135,8 @@ template&lt;int dim&gt; </div>
 <p></p>
 <p>Compute the gradient of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead.</p>
 <dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#aa8d20e67a0dfa3741eb9416c63c67a4c">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1084,15 +1152,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;2, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_grad_grad </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_grad_grad </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1103,7 +1171,7 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1111,6 +1179,8 @@ template&lt;int dim&gt; </div>
 <p></p>
 <p>Compute the second derivative (grad_grad) of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead.</p>
 <dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a30eb5647cb755df7738e2a84316f9c74">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1126,7 +1196,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::name </td>
+          <td class="memname">std::string <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::name </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1134,10 +1204,13 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return the name of the space. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a705b101fc9de572b29968adfd541ac2b">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1153,7 +1226,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::unique_ptr&lt;<a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt;dim&gt; &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::clone </td>
+          <td class="memname"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> std::unique_ptr&lt;<a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::clone </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1165,6 +1238,9 @@ template&lt;int dim&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>A sort of virtual copy constructor, this function returns a copy of the polynomial space object. Derived classes need to override the function here in this base class and return an object of the same type as the derived class. Some places in the library, for example the constructors of <a class="el" href="classFE__Poly.html">FE_Poly</a>, need to make copies of polynomial spaces without knowing their exact type. They do so through this function. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a6ca7965b671ce976157653f9af2e2c83">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1180,39 +1256,39 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::evaluate </td>
+          <td class="memname">void <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::evaluate </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>unit_point</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classdouble.html">double</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>values</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>grads</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>grad_grads</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>third_derivatives</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>fourth_derivatives</em>&#160;</td>
         </tr>
         <tr>
@@ -1223,13 +1299,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
-<p>Compute the value and the derivatives of the polynomials at <code>unit_point</code>. The size of the vectors must either be zero or equal <code>n()</code>. In the first case, the function will not compute these values. If you need values or derivatives of all polynomials then use this function, rather than using any of the <code>compute_value</code>, <code>compute_grad</code> or <code>compute_grad_grad</code> functions, see below, in a loop over all tensor product polynomials. </p><dl class="section note"><dt>Note</dt><dd>Currently, only the vectors <code>values</code> and <code>grads</code> are filled. </dd></dl>
+<p>Compute the value and the derivatives of the polynomials at <code>unit_point</code>. The size of the vectors must either be zero or equal <code><a class="el" href="classScalarPolynomialsBase.html#a1f249ec13923bf17eac6469d92804ec8">n()</a></code>. In the first case, the function will not compute these values. If you need values or derivatives of all polynomials then use this function, rather than using any of the <code>compute_value</code>, <code>compute_grad</code> or <code>compute_grad_grad</code> functions, see below, in a loop over all tensor product polynomials. </p><dl class="section note"><dt>Note</dt><dd>Currently, only the vectors <code>values</code> and <code>grads</code> are filled. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#adbabc4cd58cc8bfd805876b02f162f9a">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1245,15 +1323,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdouble.html">double</a> <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_value </td>
+          <td class="memname"><a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_value </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1264,10 +1342,13 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Compute the value of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#add5e49e9731615f9a4dc3dc0cf9d437c">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1282,15 +1363,15 @@ template&lt;int dim&gt; </div>
 template&lt;int order&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;order, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;<a class="el" href="grid__generator__0_8txt.html#a4669279d9409e7c6a8e5e4f8adc77d0f">order</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1324,15 +1405,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;1, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_1st_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_1st_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1343,10 +1424,13 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Compute the first derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#ab05bb5ca102985698f85f674b0d3874d">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1362,15 +1446,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;2, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_2nd_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_2nd_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1381,13 +1465,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
 <p>Compute the second derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p><dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#acac7ccede438cb0347cad4360b89b4da">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1403,15 +1489,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;3, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_3rd_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;3, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_3rd_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1422,13 +1508,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
 <p>Compute the third derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p><dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a932e23352500d96631363bee64992b75">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1444,15 +1532,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;4, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_4th_derivative </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_4th_derivative </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1463,13 +1551,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
 <p>Compute the fourth derivative of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p><dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#afd36f013f40d53e9f2f2eb32096153c3">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1485,15 +1575,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;1, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_grad </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_grad </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1504,13 +1594,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
 <p>Compute the gradient of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p><dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#aa8d20e67a0dfa3741eb9416c63c67a4c">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1526,15 +1618,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;2, dim&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::compute_grad_grad </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::compute_grad_grad </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classPoint.html">Point</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -1545,13 +1637,15 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p></p>
 <p>Compute the second derivative (grad_grad) of the <code>i</code>th polynomial at unit point <code>p</code>. Consider using <a class="el" href="classScalarLagrangePolynomialWedge.html#a86d854c4c903315fab717a2c31befaf0">evaluate()</a> instead. </p><dl class="section note"><dt>Note</dt><dd>Not implemented yet. </dd></dl>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a30eb5647cb755df7738e2a84316f9c74">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1567,7 +1661,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::name </td>
+          <td class="memname">std::string <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::name </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1575,10 +1669,13 @@ template&lt;int dim&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return the name of the space. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a705b101fc9de572b29968adfd541ac2b">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
 
 </div>
 </div>
@@ -1594,7 +1691,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::unique_ptr&lt;<a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt;dim&gt; &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::clone </td>
+          <td class="memname"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> std::unique_ptr&lt;<a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt; &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::clone </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1606,6 +1703,270 @@ template&lt;int dim&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>A sort of virtual copy constructor, this function returns a copy of the polynomial space object. Derived classes need to override the function here in this base class and return an object of the same type as the derived class. Some places in the library, for example the constructors of <a class="el" href="classFE__Poly.html">FE_Poly</a>, need to make copies of polynomial spaces without knowing their exact type. They do so through this function. </p>
+
+<p>Implements <a class="el" href="classScalarPolynomialsBase.html#a6ca7965b671ce976157653f9af2e2c83">ScalarPolynomialsBase&lt; dim &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a1f249ec13923bf17eac6469d92804ec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f249ec13923bf17eac6469d92804ec8">&#9670;&nbsp;</a></span>n() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="petsc__matrix__base__0_8txt.html#a5a1b8b75c93e6ea5e27829c4fe862a8e">n</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the number of polynomials. </p>
+
+<p class="definition">Definition at line <a class="el" href="base_2scalar__polynomials__base_8h_source.html#l00227">227</a> of file <a class="el" href="base_2scalar__polynomials__base_8h_source.html">scalar_polynomials_base.h</a>.</p>
+
+</div>
+</div>
+<a id="a1f249ec13923bf17eac6469d92804ec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f249ec13923bf17eac6469d92804ec8">&#9670;&nbsp;</a></span>n() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="petsc__matrix__base__0_8txt.html#a5a1b8b75c93e6ea5e27829c4fe862a8e">n</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the number of polynomials. </p>
+
+</div>
+</div>
+<a id="a1f249ec13923bf17eac6469d92804ec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f249ec13923bf17eac6469d92804ec8">&#9670;&nbsp;</a></span>n() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="petsc__matrix__base__0_8txt.html#a5a1b8b75c93e6ea5e27829c4fe862a8e">n</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the number of polynomials. </p>
+
+</div>
+</div>
+<a id="aa12f9f2846545743319be8b6d584250d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa12f9f2846545743319be8b6d584250d">&#9670;&nbsp;</a></span>degree() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::degree</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the highest polynomial degree of polynomials represented by this class. A derived class may override this if its value is different from <code>my_degree</code>. </p>
+
+<p>Reimplemented in <a class="el" href="classPolynomialsP.html#aa776bdf4125eb86118cccf5471c798b5">PolynomialsP&lt; dim &gt;</a>, <a class="el" href="classPolynomialsP.html#a2f0d9ef65bf54efa29b4375b8c247277">PolynomialsP&lt; dim &gt;</a>, and <a class="el" href="classPolynomialsP.html#a2f0d9ef65bf54efa29b4375b8c247277">PolynomialsP&lt; dim &gt;</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="base_2scalar__polynomials__base_8h_source.html#l00236">236</a> of file <a class="el" href="base_2scalar__polynomials__base_8h_source.html">scalar_polynomials_base.h</a>.</p>
+
+</div>
+</div>
+<a id="a9ece4cda1f9b61913037d6a8e4c28ef1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ece4cda1f9b61913037d6a8e4c28ef1">&#9670;&nbsp;</a></span>degree() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::degree </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the highest polynomial degree of polynomials represented by this class. A derived class may override this if its value is different from <code>my_degree</code>. </p>
+
+<p>Reimplemented in <a class="el" href="classPolynomialsP.html#aa776bdf4125eb86118cccf5471c798b5">PolynomialsP&lt; dim &gt;</a>, <a class="el" href="classPolynomialsP.html#a2f0d9ef65bf54efa29b4375b8c247277">PolynomialsP&lt; dim &gt;</a>, and <a class="el" href="classPolynomialsP.html#a2f0d9ef65bf54efa29b4375b8c247277">PolynomialsP&lt; dim &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a9ece4cda1f9b61913037d6a8e4c28ef1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ece4cda1f9b61913037d6a8e4c28ef1">&#9670;&nbsp;</a></span>degree() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::degree </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the highest polynomial degree of polynomials represented by this class. A derived class may override this if its value is different from <code>my_degree</code>. </p>
+
+<p>Reimplemented in <a class="el" href="classPolynomialsP.html#aa776bdf4125eb86118cccf5471c798b5">PolynomialsP&lt; dim &gt;</a>, <a class="el" href="classPolynomialsP.html#a2f0d9ef65bf54efa29b4375b8c247277">PolynomialsP&lt; dim &gt;</a>, and <a class="el" href="classPolynomialsP.html#a2f0d9ef65bf54efa29b4375b8c247277">PolynomialsP&lt; dim &gt;</a>.</p>
+
+</div>
+</div>
+<a id="aea426c67195b05f20be188da176be01f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea426c67195b05f20be188da176be01f">&#9670;&nbsp;</a></span>memory_consumption() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::memory_consumption</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return an estimate (in bytes) for the memory consumption of this object. </p>
+
+<p>Reimplemented in <a class="el" href="classBarycentricPolynomials.html#a22606fbf9575fc965f782fba91d05f78">BarycentricPolynomials&lt; dim &gt;</a>, <a class="el" href="classBarycentricPolynomials.html#ae4573b20ef1e9e1c94e00c84660c66e4">BarycentricPolynomials&lt; dim &gt;</a>, <a class="el" href="classBarycentricPolynomials.html#ae4573b20ef1e9e1c94e00c84660c66e4">BarycentricPolynomials&lt; dim &gt;</a>, <a class="el" href="classTensorProductPolynomials.html#a15d0a5bf5b373b508703f802b8ecc2ef">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>, <a class="el" href="classTensorProductPolynomials.html#a795944fd345cbe8d4e01c01fc9e92f39">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>, and <a class="el" href="classTensorProductPolynomials.html#a795944fd345cbe8d4e01c01fc9e92f39">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="scalar__polynomials__base_8cc_source.html#l00039">39</a> of file <a class="el" href="scalar__polynomials__base_8cc_source.html">scalar_polynomials_base.cc</a>.</p>
+
+</div>
+</div>
+<a id="a83d83860258d48923a9cbb55c39850ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83d83860258d48923a9cbb55c39850ad">&#9670;&nbsp;</a></span>memory_consumption() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> std::size_t <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::memory_consumption </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return an estimate (in bytes) for the memory consumption of this object. </p>
+
+<p>Reimplemented in <a class="el" href="classBarycentricPolynomials.html#a22606fbf9575fc965f782fba91d05f78">BarycentricPolynomials&lt; dim &gt;</a>, <a class="el" href="classBarycentricPolynomials.html#ae4573b20ef1e9e1c94e00c84660c66e4">BarycentricPolynomials&lt; dim &gt;</a>, <a class="el" href="classBarycentricPolynomials.html#ae4573b20ef1e9e1c94e00c84660c66e4">BarycentricPolynomials&lt; dim &gt;</a>, <a class="el" href="classTensorProductPolynomials.html#a15d0a5bf5b373b508703f802b8ecc2ef">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>, <a class="el" href="classTensorProductPolynomials.html#a795944fd345cbe8d4e01c01fc9e92f39">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>, and <a class="el" href="classTensorProductPolynomials.html#a795944fd345cbe8d4e01c01fc9e92f39">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a83d83860258d48923a9cbb55c39850ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83d83860258d48923a9cbb55c39850ad">&#9670;&nbsp;</a></span>memory_consumption() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> std::size_t <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::memory_consumption </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return an estimate (in bytes) for the memory consumption of this object. </p>
+
+<p>Reimplemented in <a class="el" href="classBarycentricPolynomials.html#a22606fbf9575fc965f782fba91d05f78">BarycentricPolynomials&lt; dim &gt;</a>, <a class="el" href="classBarycentricPolynomials.html#ae4573b20ef1e9e1c94e00c84660c66e4">BarycentricPolynomials&lt; dim &gt;</a>, <a class="el" href="classBarycentricPolynomials.html#ae4573b20ef1e9e1c94e00c84660c66e4">BarycentricPolynomials&lt; dim &gt;</a>, <a class="el" href="classTensorProductPolynomials.html#a15d0a5bf5b373b508703f802b8ecc2ef">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>, <a class="el" href="classTensorProductPolynomials.html#a795944fd345cbe8d4e01c01fc9e92f39">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>, and <a class="el" href="classTensorProductPolynomials.html#a795944fd345cbe8d4e01c01fc9e92f39">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>.</p>
 
 </div>
 </div>
@@ -1622,7 +1983,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::dimension = dim</td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::dimension = <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a></td>
         </tr>
       </table>
   </td>
@@ -1649,7 +2010,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBarycentricPolynomials.html">BarycentricPolynomials</a>&lt; 2 &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::poly_tri</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBarycentricPolynomials.html">BarycentricPolynomials</a>&lt; 2 &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::poly_tri</td>
         </tr>
       </table>
   </td>
@@ -1676,7 +2037,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBarycentricPolynomials.html">BarycentricPolynomials</a>&lt; 1 &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; dim &gt;::poly_line</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBarycentricPolynomials.html">BarycentricPolynomials</a>&lt; 1 &gt; <a class="el" href="classScalarLagrangePolynomialWedge.html">ScalarLagrangePolynomialWedge</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::poly_line</td>
         </tr>
       </table>
   </td>
@@ -1688,6 +2049,60 @@ template&lt;int dim&gt; </div>
 <p>Scalar polynomials defined on a line. </p>
 
 <p class="definition">Definition at line <a class="el" href="base_2polynomials__wedge_8h_source.html#l00141">141</a> of file <a class="el" href="base_2polynomials__wedge_8h_source.html">polynomials_wedge.h</a>.</p>
+
+</div>
+</div>
+<a id="ad428c274ecb6ef8ebb1f0fe56758e2fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad428c274ecb6ef8ebb1f0fe56758e2fd">&#9670;&nbsp;</a></span>polynomial_degree</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::polynomial_degree</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The highest polynomial degree of this functions represented by this object. </p>
+
+<p class="definition">Definition at line <a class="el" href="base_2scalar__polynomials__base_8h_source.html#l00214">214</a> of file <a class="el" href="base_2scalar__polynomials__base_8h_source.html">scalar_polynomials_base.h</a>.</p>
+
+</div>
+</div>
+<a id="a459e13c37c99b0a3e6a1272fd259eeeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a459e13c37c99b0a3e6a1272fd259eeeb">&#9670;&nbsp;</a></span>n_pols</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classScalarPolynomialsBase.html">ScalarPolynomialsBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::n_pols</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The number of polynomials represented by this object. </p>
+
+<p class="definition">Definition at line <a class="el" href="base_2scalar__polynomials__base_8h_source.html#l00220">220</a> of file <a class="el" href="base_2scalar__polynomials__base_8h_source.html">scalar_polynomials_base.h</a>.</p>
 
 </div>
 </div>

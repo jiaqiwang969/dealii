@@ -3,9 +3,9 @@ digraph "Linear solver classes"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
-  Node2 [label="Linear algebra classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAC.html",tooltip="This module contains classes that involve linear algebra, i.e., those associated with matrices,..."];
+  Node2 [label="Linear algebra classes\l This module contains\l classes that",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__LAC.html",tooltip="involve linear algebra, i.e., those associated with matrices, vectors, and the solution of linear sys..."];
   Node3 [label="Preconditioners and\l Relaxation Operators",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Preconditioners.html",tooltip=" "];
-  Node1 [label="Linear solver classes",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="This module groups iterative and direct solvers, eigenvalue solvers, and some control classes...."];
+  Node1 [label="Linear solver classes",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="In order to work properly, solvers that take matrix and vector classes as template arguments require ..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
   Node1->Node3 [shape=plaintext, label="SparseDirectUMFPACK", color="orange", dir="none", style="dashed"];
 }

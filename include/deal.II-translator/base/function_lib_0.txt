@@ -1,0 +1,339 @@
+[0.x.0]*
+ Namespace implementing some concrete classes derived from the Function class that describe actual functions. This is rather a collection of classes that we have needed for our own programs once and thought might be useful to others as well at some point.
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   The distance to the origin squared.     This function returns the square norm of the radius vector of a point.     Together with the function, its derivatives and Laplacian are defined.    
+*  [2.x.1]   
+* [0.x.2]*
+   The function <tt>xy</tt> in 2d and 3d, not implemented in 1d. This   function serves as an example for a vanishing Laplacian.    
+*  [2.x.2]   
+* [0.x.3]*
+     Laplacian of the function at one point.    
+* [0.x.4]*
+     Laplacian of the function at multiple points.    
+* [0.x.5]*
+   d-quadratic pillow on the unit hypercube.     This is a function for testing the implementation. It has zero Dirichlet   boundary values on the domain  [2.x.3] . In the inside, it is the   product of  [2.x.4]  over all space dimensions.     Providing a non-zero argument to the constructor, the whole function can   be offset by a constant.     Together with the function, its derivatives and Laplacian are defined.    
+*  [2.x.5]   
+* [0.x.6]*
+     Constructor. Provide a constant that will be added to each function     value.    
+* [0.x.7]*
+     The value at a single point.    
+* [0.x.8]*
+     Values at multiple points.    
+* [0.x.9]*
+     Gradient at a single point.    
+* [0.x.10]*
+     Gradients at multiple points.    
+* [0.x.11]*
+     Laplacian at a single point.    
+* [0.x.12]*
+     Laplacian at multiple points.    
+* [0.x.13]*
+   Cosine-shaped pillow function. This is another function with zero   boundary values on  [2.x.6] . In the interior it is the product of    [2.x.7] .    
+*  [2.x.8]   
+* [0.x.14]*
+     Constructor which allows to optionally generate a vector valued cosine     function with the same value in each component.    
+* [0.x.15]*
+     Second derivatives at a single point.    
+* [0.x.16]*
+     Second derivatives at multiple points.    
+* [0.x.17]*
+   Gradient of the cosine-shaped pillow function.     This is a vector-valued function with  [2.x.9]  components, the gradient of   CosineFunction. On the square [-1,1], it has tangential boundary   conditions zero. Thus, it can be used to test implementations of Maxwell   operators without bothering about boundary terms.    
+*  [2.x.10]   
+* [0.x.18]*
+     Constructor, creating a function with  [2.x.11]  components.    
+* [0.x.19]*
+   Product of exponential functions in each coordinate direction.    
+*  [2.x.12]   
+* [0.x.20]*
+     The value at a single point.    
+* [0.x.21]*
+     Values at multiple points.    
+* [0.x.22]*
+     Gradient at a single point.    
+* [0.x.23]*
+     Gradients at multiple points.    
+* [0.x.24]*
+     Laplacian at a single point.    
+* [0.x.25]*
+     Laplacian at multiple points.    
+* [0.x.26]*
+   A function that solves the Laplace equation (with specific   boundary values but zero right hand side) and that has a   singularity at the center of the L-shaped domain in 2D (i.e.,   at the location of the re-entrant corner of this non-convex   domain).     The function is given in polar coordinates by  [2.x.13]  with a singularity at the origin and   should be used with  [2.x.14]  Here,  [2.x.15]  is   defined as theclockwise* angle against the positive  [2.x.16] -axis.     This function is often used to illustrate that the solutions of the Laplace   equation   [1.x.0]   can be singular even if the boundary values are smooth. (Here, if the   domain is the L-shaped domain  [2.x.17] , the   boundary values for  [2.x.18]  are zero on the two line segments adjacent to the   origin, and equal to  [2.x.19]  on the   remaining parts of the boundary.) The function itself remains bounded on   the domain, but its gradient is of the form  [2.x.20]  in the vicinity of   the origin and consequently diverges as one approaches the origin.    
+*  [2.x.21]   
+* [0.x.27]*
+   Gradient of the harmonic singularity on the L-shaped domain in 2D.     The gradient of LSingularityFunction, which is a vector valued function   with vanishing curl and divergence.    
+*  [2.x.22]   
+* [0.x.28]*
+     Default constructor setting the dimension to 2.    
+* [0.x.29]*
+   Singularity on the slit domain in 2D and 3D.    
+*  [2.x.23]   
+* [0.x.30]*
+   Singularity on the slit domain with one Neumann boundary in 2D.    
+*  [2.x.24]   
+* [0.x.31]*
+   A jump in x-direction transported into some direction.     If the advection is parallel to the y-axis, the function is   <tt>-atan(sx)</tt>, where <tt>s</tt> is the steepness parameter provided   in the constructor.     For different advection directions, this function will be turned in the   parameter space.     Together with the function, its derivatives and Laplacian are defined.    
+*  [2.x.25]   
+* [0.x.32]*
+     Constructor. Provide the advection direction here and the steepness of     the slope.    
+* [0.x.33]*
+     Function value at one point.    
+* [0.x.34]*
+     Function values at multiple points.    
+* [0.x.35]*
+     Gradient at one point.    
+* [0.x.36]*
+     Gradients at multiple points.    
+* [0.x.37]*
+     Laplacian of the function at one point.    
+* [0.x.38]*
+     Laplacian of the function at multiple points.    
+* [0.x.39]*
+     Return an estimate for the memory consumption, in bytes, of this     object. This is not exact (but will usually be close) because     calculating the memory usage of trees (e.g.,  [2.x.26]  is     difficult.    
+* [0.x.40]*
+     Advection vector.    
+* [0.x.41]*
+     Steepness (maximal derivative) of the slope.    
+* [0.x.42]*
+     Advection angle.    
+* [0.x.43]*
+     Sine of <tt>angle</tt>.    
+* [0.x.44]*
+     Cosine of <tt>angle</tt>.    
+* [0.x.45]*
+   Given a wavenumber vector generate a cosine function. The wavenumber   coefficient is given as a  [2.x.27] -dimensional point  [2.x.28]  in Fourier space, and   the function is then recovered as  [2.x.29] .     The class has its name from the fact that it resembles one component of a   Fourier cosine decomposition.    
+*  [2.x.30]   
+* [0.x.46]*
+     Constructor. Take the Fourier coefficients in each space direction as     argument.    
+* [0.x.47]*
+     Return the value of the function at the given point. Unless there is     only one component (i.e. the function is scalar), you should state the     component you want to have evaluated; it defaults to zero, i.e. the     first component.    
+* [0.x.48]*
+     Return the gradient of the specified component of the function at the     given point.    
+* [0.x.49]*
+     Compute the Laplacian of a given component at point <tt>p</tt>.    
+* [0.x.50]*
+     Stored Fourier coefficients.    
+* [0.x.51]*
+   Given a wavenumber vector generate a sine function. The wavenumber   coefficient is given as a  [2.x.31] -dimensional point  [2.x.32]  in Fourier space, and   the function is then recovered as  [2.x.33] .     The class has its name from the fact that it resembles one component of a   Fourier sine decomposition.    
+*  [2.x.34]   
+* [0.x.52]*
+     Constructor. Take the Fourier coefficients in each space direction as     argument.    
+* [0.x.53]*
+     Return the value of the function at the given point. Unless there is     only one component (i.e. the function is scalar), you should state the     component you want to have evaluated; it defaults to zero, i.e. the     first component.    
+* [0.x.54]*
+     Return the gradient of the specified component of the function at the     given point.    
+* [0.x.55]*
+     Compute the Laplacian of a given component at point <tt>p</tt>.    
+* [0.x.56]*
+     Stored Fourier coefficients.    
+* [0.x.57]*
+   Given a sequence of wavenumber vectors and weights generate a sum of sine   functions. Each wavenumber coefficient is given as a  [2.x.35] -dimensional   point  [2.x.36]  in Fourier space, and the entire function is then recovered as    [2.x.37] .    
+*  [2.x.38]   
+* [0.x.58]*
+     Constructor. Take the Fourier coefficients in each space direction as     argument.    
+* [0.x.59]*
+     Return the value of the function at the given point. Unless there is     only one component (i.e. the function is scalar), you should state the     component you want to have evaluated; it defaults to zero, i.e. the     first component.    
+* [0.x.60]*
+     Return the gradient of the specified component of the function at the     given point.    
+* [0.x.61]*
+     Compute the Laplacian of a given component at point <tt>p</tt>.    
+* [0.x.62]*
+     Stored Fourier coefficients and weights.    
+* [0.x.63]*
+   Given a sequence of wavenumber vectors and weights generate a sum of   cosine functions. Each wavenumber coefficient is given as a    [2.x.39] -dimensional point  [2.x.40]  in Fourier space, and the entire function is   then recovered as  [2.x.41] .    
+*  [2.x.42]   
+* [0.x.64]*
+     Constructor. Take the Fourier coefficients in each space direction as     argument.    
+* [0.x.65]*
+     Return the value of the function at the given point. Unless there is     only one component (i.e. the function is scalar), you should state the     component you want to have evaluated; it defaults to zero, i.e. the     first component.    
+* [0.x.66]*
+     Return the gradient of the specified component of the function at the     given point.    
+* [0.x.67]*
+     Compute the Laplacian of a given component at point <tt>p</tt>.    
+* [0.x.68]*
+     Stored Fourier coefficients and weights.    
+* [0.x.69]*
+   Base function for cut-off function. This class stores the center and the   radius of the supporting ball of a cut-off function. It also stores the   number of the non-zero component, if the function is vector-valued.     This class can also be used for approximated Dirac delta functions. These   are special cut-off functions whose integral is always equal to one,   independently of the radius of the supporting ball.    
+*  [2.x.43]   
+* [0.x.70]*
+     Value used in the constructor of this and derived classes to denote     that no component is selected.    
+* [0.x.71]*
+     Constructor.          [2.x.44]  radius Radius of the ball      [2.x.45]  center Center of the ball      [2.x.46]  n_components Number of components of this function object      [2.x.47]  select If this is different from      [2.x.48]  then the function will be non-zero     for this component only      [2.x.49]  integrate_to_one Rescale the value of the function whenever a     new radius is set, to guarantee that the integral is equal to one      [2.x.50]  unitary_integral_value Value of the integral when the radius     is equal to 1.0. Derived classes will need to supply this value, to     guarantee that the rescaling is performed correctly.    
+* [0.x.72]*
+     Virtual destructor.    
+* [0.x.73]*
+     Set the center of the ball to the point  [2.x.51]     
+* [0.x.74]*
+     Set the radius of the ball to  [2.x.52]     
+* [0.x.75]*
+     Return the center stored in this object.    
+* [0.x.76]*
+     Return the radius stored in this object.    
+* [0.x.77]*
+     Return a boolean indicating whether this function integrates to one.    
+* [0.x.78]*
+     Center of the integration ball.    
+* [0.x.79]*
+     Radius of the ball.    
+* [0.x.80]*
+     Component selected. If <tt>no_component</tt>, the function is the same     in all components.    
+* [0.x.81]*
+     Flag that controls whether we rescale the value when the radius changes.    
+* [0.x.82]*
+     The reference integral value. Derived classes should specify what their     integral is when  [2.x.53]  = 1.0.    
+* [0.x.83]*
+     Current rescaling to apply the cut-off function.    
+* [0.x.84]*
+   Tensor product of CutOffFunctionBase objects.     Instead of using the distance to compute the cut-off function, this class   performs a tensor product of the same CutOffFunctionBase object in each   coordinate direction.    
+*  [2.x.54]   
+* [0.x.85]*
+     Construct an empty CutOffFunctionTensorProduct object.         Before you can use this class, you have to call the set_base() method     with a class derived from the CutOffFunctionBase object.         If you try to use this class before you call the set_base() method,     and exception will be triggered.    
+* [0.x.86]*
+     Initialize the class with an object of type      [2.x.55]  CutOffFunctionBaseType<1>.    
+* [0.x.87]*
+     Set the new center.    
+* [0.x.88]*
+     Set the new radius.    
+* [0.x.89]*
+     Function value at one point.    
+* [0.x.90]*
+     Function gradient at one point.    
+* [0.x.91]*
+   Cut-off function in L-infinity for an arbitrary ball.  This function is   the characteristic function of a ball around <tt>center</tt> with a   specified <tt>radius</tt>, that is, [1.x.1] If vector   valued, it can be restricted to a single component.    
+*  [2.x.56]   
+* [0.x.92]*
+     Constructor. Arguments are the center of the ball and its radius.         If an argument <tt>select</tt> is given and not
+* 
+*  - , the cut-off     function will be non-zero for this component only.    
+* [0.x.93]*
+     Function value at one point.    
+* [0.x.94]*
+     Function values at multiple points.    
+* [0.x.95]*
+     Function values at multiple points.    
+* [0.x.96]*
+   Cut-off function for an arbitrary ball. This function is a cone with   support in a ball of certain <tt>radius</tt> around <tt>center</tt>. The   maximum value is 1. If vector valued, it can be restricted to a single   component.    
+*  [2.x.57]   
+* [0.x.97]*
+     Constructor. Arguments are the center of the ball and its radius.         If an argument <tt>select</tt> is given, the cut-off function will be     non-zero for this component only.    
+* [0.x.98]*
+     Function value at one point.    
+* [0.x.99]*
+     Function values at multiple points.    
+* [0.x.100]*
+     Function values at multiple points.    
+* [0.x.101]*
+   A cut-off function for an arbitrarily-sized ball that is in the space  [2.x.58]    (i.e., continuously differentiable). This is a cut-off function that is   often used in the literature of the Immersed Boundary Method.     The expression of the function in radial coordinates is given by    [2.x.59]  where  [2.x.60]  is the distance to the center, and    [2.x.61]  is the radius of the sphere. If vector valued, it can be restricted to   a single component.    
+*  [2.x.62]   
+* [0.x.102]*
+     Constructor.    
+* [0.x.103]*
+     Function value at one point.    
+* [0.x.104]*
+     Function values at multiple points.    
+* [0.x.105]*
+     Function values at multiple points.    
+* [0.x.106]*
+     Function gradient at one point.    
+* [0.x.107]*
+   Cut-off function for an arbitrary ball. This is the traditional cut-off   function in C-infinity for a ball of certain <tt>radius</tt> around   <tt>center</tt>,  [2.x.63] , where  [2.x.64]  is the distance   to the center, and  [2.x.65]  is the radius of the sphere. If vector valued, it   can be restricted to a single component.    
+*  [2.x.66]   
+* [0.x.108]*
+     Constructor. Arguments are the center of the ball and its radius.         If an argument <tt>select</tt> is given, the cut-off function will be     non-zero for this component only.    
+* [0.x.109]*
+     Function value at one point.    
+* [0.x.110]*
+     Function values at multiple points.    
+* [0.x.111]*
+     Function values at multiple points.    
+* [0.x.112]*
+     Function gradient at one point.    
+* [0.x.113]*
+   A class that represents a function object for a monomial. Monomials are   polynomials with only a single term, i.e. in 1-d they have the form    [2.x.67] , in 2-d the form  [2.x.68] , and in 3-d    [2.x.69] . Monomials are therefore   described by a  [2.x.70] -tuple of exponents. Consequently, the class's   constructor takes a Tensor<1,dim> to describe the set of exponents. Most   of the time these exponents will of course be integers, but real   exponents are of course equally valid. Exponents can't be real when the   bases are negative numbers.    
+*  [2.x.71]   
+* [0.x.114]*
+     Constructor. The first argument is explained in the general description     of the class. The second argument denotes the number of vector     components this object shall represent. All vector components will have     the same value.    
+* [0.x.115]*
+     Function value at one point.    
+* [0.x.116]*
+     Return all components of a vector-valued function at a given point.         <tt>values</tt> shall have the right size beforehand, i.e.     #n_components.    
+* [0.x.117]*
+     Function values at multiple points.    
+* [0.x.118]*
+     Function gradient at one point.    
+* [0.x.119]*
+     The set of exponents.    
+* [0.x.120]*
+   A scalar function that computes its values by (bi-, tri-)linear   interpolation from a set of point data that are arranged on a possibly   non-uniform tensor product mesh. In other words, considering the three-   dimensional case, let there be points  [2.x.72] ,    [2.x.73] ,  [2.x.74] , and data  [2.x.75]  defined at   point  [2.x.76] , then evaluating the function at a point  [2.x.77]  will find the box so that  [2.x.78] , and do a trilinear interpolation of the   data on this cell. Similar operations are done in lower dimensions.     This class is most often used for either evaluating coefficients or right   hand sides that are provided experimentally at a number of points inside   the domain, or for comparing outputs of a solution on a finite element   mesh against previously obtained data defined on a grid.    
+*  [2.x.79]  If the points  [2.x.80]  are actually equally spaced on an interval    [2.x.81]  and the same is true for the other data points in higher   dimensions, you should use the InterpolatedUniformGridData class instead.     If a point is requested outside the box defined by the end points of the   coordinate arrays, then the function is assumed to simply extend by   constant values beyond the last data point in each coordinate direction.   (The class does not throw an error if a point lies outside the box since   it frequently happens that a point lies just outside the box by an amount   on the order of numerical roundoff.)    
+*  [2.x.82]  The use of the related class InterpolatedUniformGridData is   discussed in  [2.x.83] .       [1.x.2]     This class is often used to interpolate data provided by fairly   large data tables that are expensive to read from disk, and that take   a large amount of memory when replicated on every process of parallel   (MPI) programs.     The Table class can help with amortizing this cost by using   shared memory to store the data only as often as necessary
+* 
+*  -  see the   documentation of the TableBase class. Once one has obtained such a   Table object that uses shared memory to store the data only as often   as is necessary, one has to avoid that the current classcopies*
+   the table into its own member variable. Rather, it is necessary to   use themove* constructor of this class to take over ownership of   the table and its shared memory space. This can be achieved using   the following extension of the code snippet shown in the   documentation of the TableBase class:  
+* [1.x.3]
+*       
+*  [2.x.84]   
+* [0.x.121]*
+     Constructor to initialize this class instance with the data given in  [2.x.85]      data_values.          [2.x.86]  coordinate_values An array of dim arrays. Each of the inner     arrays contains the coordinate values  [2.x.87]  and     similarly for the other coordinate directions. These arrays need not     have the same size. Obviously, we need dim such arrays for a dim-     dimensional function object. The coordinate values within this array     are assumed to be strictly ascending to allow for efficient lookup.          [2.x.88]  data_values A dim-dimensional table of data at each of the mesh     points defined by the coordinate arrays above. The data passed in is     copied into internal data structures. Note that the Table     class has a number of conversion constructors that allow converting     other data types into a table where you specify this argument.    
+* [0.x.122]*
+     Like the previous constructor, but take the arguments as rvalue     references andmove*, instead ofcopy* the data. This is often useful     in cases where the data stored in these tables is large and the     information used to initialize the current object is no longer needed     separately. In other words, there is no need to keep the original object     from which this object could copy its information, but it might as well     take over ("move") the data.    
+* [0.x.123]*
+     Compute the value of the function set by bilinear interpolation of the     given data set.          [2.x.89]  p The point at which the function is to be evaluated.      [2.x.90]  component The vector component. Since this function is scalar,     only zero is a valid argument here.      [2.x.91]  The interpolated value at this point. If the point lies outside     the set of coordinates, the function is extended by a constant.    
+* [0.x.124]*
+     Compute the gradient of the function defined by bilinear interpolation     of the given data set.          [2.x.92]  p The point at which the function gradient is to be evaluated.      [2.x.93]  component The vector component. Since this function is scalar,     only zero is a valid argument here.      [2.x.94]  The value of the gradient of the interpolated function at this     point. If the point lies outside the set of coordinates, the function     is extended by a constant and so its gradient is extended by 0.    
+* [0.x.125]*
+     Return an estimate for the memory consumption, in bytes, of this object.    
+* [0.x.126]*
+     Return a reference to the internally stored data.    
+* [0.x.127]*
+     Find the index in the table of the rectangle containing an input point    
+* [0.x.128]*
+     The set of coordinate values in each of the coordinate directions.    
+* [0.x.129]*
+     The data that is to be interpolated.    
+* [0.x.130]*
+   A scalar function that computes its values by (bi-, tri-)linear   interpolation from a set of point data that are arranged on a uniformly   spaced tensor product mesh. In other words, considering the three-   dimensional case, let there be points  [2.x.95]  that result   from a uniform subdivision of the interval  [2.x.96]  into  [2.x.97]    sub-intervals of size  [2.x.98] , and similarly    [2.x.99] ,  [2.x.100] . Also consider data  [2.x.101]    defined at point  [2.x.102] , then evaluating the function at a   point  [2.x.103]  will find the box so that  [2.x.104] , and do a trilinear   interpolation of the data on this cell. Similar operations are done in   lower dimensions.     This class is most often used for either evaluating coefficients or right   hand sides that are provided experimentally at a number of points inside   the domain, or for comparing outputs of a solution on a finite element   mesh against previously obtained data defined on a grid.    
+*  [2.x.105]  If you have a problem where the points  [2.x.106]  are not equally spaced   (e.g., they result from a computation on a graded mesh that is denser   closer to one boundary), then use the InterpolatedTensorProductGridData   class instead.     If a point is requested outside the box defined by the end points of the   coordinate arrays, then the function is assumed to simply extend by   constant values beyond the last data point in each coordinate direction.   (The class does not throw an error if a point lies outside the box since   it frequently happens that a point lies just outside the box by an amount   on the order of numerical roundoff.)    
+*  [2.x.107]  The use of this class is discussed in  [2.x.108] .       [1.x.4]     This class supports the same facilities for dealing with large data sets   as the InterpolatedTensorProductGridData class. See there for more   information and example codes.      
+*  [2.x.109]   
+* [0.x.131]*
+     Constructor      [2.x.110]  interval_endpoints The left and right end points of the     (uniformly subdivided) intervals in each of the coordinate directions.      [2.x.111]  n_subintervals The number of subintervals in each coordinate     direction. A value of one for a coordinate means that the interval is     considered as one subinterval consisting of the entire range. A value     of two means that there are two subintervals each with one half of the     range, etc.      [2.x.112]  data_values A dim-dimensional table of data at each of the mesh     points defined by the coordinate arrays above. Note that the Table     class has a number of conversion constructors that allow converting     other data types into a table where you specify this argument.    
+* [0.x.132]*
+     Like the previous constructor, but take the arguments as rvalue     references andmove*, instead ofcopy* the data. This is often useful     in cases where the data stored in these tables is large and the     information used to initialize the current object is no longer needed     separately. In other words, there is no need to keep the original object     from which this object could copy its information, but it might as well     take over ("move") the data.    
+* [0.x.133]*
+     Compute the value of the function set by bilinear interpolation of the     given data set.          [2.x.113]  p The point at which the function is to be evaluated.      [2.x.114]  component The vector component. Since this function is scalar,     only zero is a valid argument here.      [2.x.115]  The interpolated value at this point. If the point lies outside     the set of coordinates, the function is extended by a constant.    
+* [0.x.134]*
+     Compute the gradient of the function set by bilinear interpolation of the     given data set.          [2.x.116]  p The point at which the function is to be evaluated.      [2.x.117]  component The vector component. Since this function is scalar,       only zero is a valid argument here.      [2.x.118]  The gradient of the interpolated function at this point. If the       point lies outside the set of coordinates, the function is extended       by a constant whose gradient is then of course zero.    
+* [0.x.135]*
+     Return an estimate for the memory consumption, in bytes, of this object.    
+* [0.x.136]*
+     Return a reference to the internally stored data.    
+* [0.x.137]*
+     The set of interval endpoints in each of the coordinate directions.    
+* [0.x.138]*
+     The number of subintervals in each of the coordinate directions.    
+* [0.x.139]*
+     The data that is to be interpolated.    
+* [0.x.140]*
+   A class that represents a function object for a polynomial. A polynomial   is composed by the summation of multiple monomials. If the polynomial has   n monomials and the dimension is equal to dim, the polynomial can be   written as  [2.x.119] , where  [2.x.120]  are the coefficients of the   monomials and  [2.x.121]  are their exponents. The class's constructor   takes a Table<2,double> to describe the set of exponents and a   Vector<double> to describe the set of coefficients.    
+*  [2.x.122]   
+* [0.x.141]*
+     Constructor. The coefficients and the exponents of the polynomial are     passed as arguments. The Table<2, double> exponents has a number of     rows equal to the number of monomials of the polynomial and a number of     columns equal to dim. The i-th row of the exponents table contains the      [2.x.123]  exponents of the i-th monomial  [2.x.124] . The i-th element of the coefficients vector     contains the coefficient  [2.x.125]  for the i-th monomial.    
+* [0.x.142]*
+     Function value at one point.    
+* [0.x.143]*
+     Function values at multiple points.    
+* [0.x.144]*
+     Function gradient at one point.    
+* [0.x.145]*
+     Return an estimate for the memory consumption, in bytes, of this object.    
+* [0.x.146]*
+     The set of exponents.    
+* [0.x.147]*
+     The set of coefficients.    
+* [0.x.148]

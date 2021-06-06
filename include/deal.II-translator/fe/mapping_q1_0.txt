@@ -1,0 +1,24 @@
+[0.x.0]*
+ Implementation of a  [2.x.0] -linear mapping from the reference cell to a general quadrilateral/hexahedron.
+*  The mapping implemented by this class maps the reference (unit) cell to a general grid cell with straight lines in  [2.x.1]  dimensions. (Note, however, that in 3D the [1.x.0] of a general, trilinearly mapped cell may be curved, even if the edges are not). This is the standard mapping used for polyhedral domains. It is also the mapping used throughout deal.II for many functions that come in two variants, one that allows to pass a mapping argument explicitly and one that simply falls back to the MappingQ1 class declared here. (Or, in fact, to an object of kind MappingQGeneric(1), which implements exactly the functionality of this class.)
+*  The shape functions for this mapping are the same as for the finite element FE_Q of polynomial degree 1. Therefore, coupling these two yields an isoparametric element.
+* 
+
+* 
+*  [2.x.2]  This class is, in all reality, nothing more than a different name for calling MappingQGeneric with a polynomial degree of one as argument.
+
+* 
+* [0.x.1]*
+   Default constructor.  
+* [0.x.2]*
+ Many places in the library by default use (bi-,tri-)linear mappings unless users explicitly provide a different mapping to use. In these cases, the called function has to create a  [2.x.3]  mapping object, i.e., an object of kind MappingQGeneric(1). This is costly. It would also be costly to create such objects as static objects in the affected functions, because static objects are never destroyed throughout the lifetime of a program, even though they only have to be created once the first time code runs through a particular function.
+*  In order to avoid creation of (static or dynamic)  [2.x.4]  mapping objects in these contexts throughout the library, this class defines a static  [2.x.5]  mapping object. This object can then be used in all of those places where such an object is needed.
+* 
+
+* 
+*  [2.x.6]  The use of this object should be avoided since it is only applicable   in cases where a mesh consists exclusively of quadrilaterals or hexahedra.   Use  [2.x.7]    instead.
+
+* 
+* [0.x.3]*
+   The static  [2.x.8]  mapping object discussed in the documentation of this   class.  
+* [0.x.4]

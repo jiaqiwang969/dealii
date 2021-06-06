@@ -1,0 +1,249 @@
+[0.x.0]*
+ This class implements an iterator, analogous to those used in the standard library. It fulfills the requirements of a bidirectional iterator. See the C++ documentation for further details of iterator specification and usage.
+* 
+
+*  In addition to the standard interface, an iterator of this class provides a <tt>- [2.x.0]  operator, i.e. you can write statements like
+
+* 
+* [1.x.0]
+* 
+*  Iterators are used whenever a loop over all lines, quads, cells etc. is to be performed. These loops can then be coded like this:
+
+* 
+* [1.x.1]
+* 
+*  Note the usage of <tt>++cell</tt> instead of <tt>cell++</tt> since this does not involve temporaries and copying. It is recommended to use a fixed value <tt>end</tt> inside the loop instead of <tt>tria.end()</tt>, since the creation and copying of these iterators is rather expensive compared to normal pointers.
+*  The objects pointed to are accessors, derived from TriaAccessorBase. Which kind of accessor is determined by the template argument  [2.x.1] Accessor [2.x.2] . These accessors are not so much data structures as they are a collection of functions providing access to the data stored in Triangulation or DoFHandler objects. Using these accessors, the structure of these classes is hidden from the application program.
+*  [1.x.2]
+*   [2.x.3]  Application programs will rarely use TriaRawIterator, but rather one of the derived classes TriaIterator or TriaActiveIterator.
+*   [2.x.4]   [2.x.5]  TriaRawIterator objects point to lines, cells, etc in the lists whether they are used or not (in the vectors, also [1.x.3] objects are stored, since deletion in vectors is expensive and we also do not want to destroy the ordering induced by the numbering in the vectors). Therefore not all raw iterators point to valid objects.
+*   [2.x.6]  The derived class TriaIterator selects the valid cells, that is, cells used somewhere in the triangulation hierarchy.
+*   [2.x.7]  TriaActiveIterator objects which only loop over active cells.  [2.x.8] 
+*  [1.x.4]
+*  Iterators are not much slower than operating directly on the data structures, since they perform the loops that you had to handcode yourself anyway. Most iterator and accessor functions are inlined.
+*  The main functionality of iterators, resides in the <tt>++</tt> and <tt>\--</tt> operators. These move the iterator forward or backward just as if it were a pointer into an array. Here, this operation is not so easy, since it may include skipping some elements and the transition between the triangulation levels. This is completely hidden from the user, though you can still create an iterator pointing to an arbitrary element.  Actually, the operation of moving iterators back and forth is not done in the iterator classes, but rather in the accessor classes. Since these are passed as template arguments, you can write your own versions here to add more functionality.
+*  Furthermore, the iterators described here satisfy the requirement of input and bidirectional iterators as stated by the C++ standard. It is therefore possible to use the functions from the algorithm section of the C++ standard, e.g.,  [2.x.9] count_if [2.x.10]  (see the documentation for Triangulation for an example) and several others.
+*  [1.x.5]
+*  The iterator class itself does not have much functionality. It only becomes useful when assigned an Accessor (the second template parameter), which really does the access to data. An Accessor has to fulfill some requirements:
+*   [2.x.11]   [2.x.12]  It must have two members named <tt>present_level</tt> and <tt>present_index</tt> storing the address of the element in the triangulation presently pointed to. These data have to be accessible by all triangulation iterators listed above.
+*   [2.x.13]  It must have a constructor which takes a Triangulation* and two unsigned integers, denoting the initial level and index, as well as a data object depending on its type.
+*   [2.x.14]  For the TriaIterator and the TriaActiveIterator class, it must have a member function <tt>bool used()</tt>, for the latter a member function <tt>bool active()</tt>.
+*   [2.x.15]  It must have void operators <tt>++</tt> and <tt>\--</tt>.
+*   [2.x.16]  It must declare a local alias <tt>AccessorData</tt> which states the data type the accessor expects to get passed as fourth constructor argument. By declaring a local data type, the respective iterator class may type-safely enforce that data type to be one of its own constructor argument types. If an accessor class does not need additional data, this type shall be <tt>void</tt>.  [2.x.17] 
+*  Then the iterator is able to do what it is supposed to. All of the necessary functions are implemented in the <tt>Accessor</tt> base class, but you may write your own version (non-virtual, since we use templates) to add functionality.
+*  The accessors provided by the library consist of two groups, determined by whether they access the data of Triangulation objects or DoFHandler objects. They are derived from TriaAccessor and DoFAccessor, respectively. Each group also has specialized accessors for cells (as opposed to faces and lines) that offer more functionality such as accessing neighbors.
+*   [2.x.18]  It seems impossible to preserve constness of a triangulation through iterator usage. Thus, if you declare pointers to a <tt>const</tt> triangulation object, you should be well aware that you might involuntarily alter the data stored in the triangulation.
+* 
+
+* 
+*  [2.x.19]  More information on valid and invalid iterators can be found in the documentation of TriaAccessorBase, where the iterator states are checked and implemented.
+* 
+
+*  [1.x.6]
+*  There is a representation of past-the-end-pointers, denoted by special values of the member variables  [2.x.20]  and  [2.x.21]  If <tt>present_level>=0</tt> and <tt>present_index>=0</tt>, then the object is valid (there is no check whether the triangulation really has that many levels or that many cells on the present level when we investigate the state of an iterator; however, in many places where an iterator is dereferenced we make this check); if <tt>present_level==-1</tt> and <tt>present_index==-1</tt>, then the iterator points past the end; in all other cases, the iterator is considered invalid. You can check this by calling the <tt>state()</tt> function.
+*  An iterator is also invalid, if the pointer pointing to the Triangulation object is invalid or zero.
+*  Finally, an iterator is invalid, if the element pointed to by  [2.x.22]  present_level and  [2.x.23]  is not used, i.e. if the  [2.x.24]  flag is set to false.
+*  The last two checks are not made in <tt>state()</tt> since both cases should only occur upon uninitialized construction through  [2.x.25]  and the like (the parent triangulation can only be set upon construction). If an iterator is constructed empty through the empty constructor, <tt>present_level==-2</tt> and <tt>present_index==-2</tt>. Thus, the iterator is invalid anyway, regardless of the state of the triangulation pointer and the state of the element pointed to.
+*  Past-the-end iterators may also be used to compare an iterator with the [1.x.7] value, when running backwards. There is no distinction between the iterators pointing past the two ends of a vector.
+*  By defining only one value to be past-the-end and making all other values invalid provides a second track of security: if we should have forgotten a check in the library when an iterator is incremented or decremented, we automatically convert the iterator from the allowed state "past-the-end" to the disallowed state "invalid" which increases the chance that some time earlier than for past-the-end iterators an exception is raised.
+*   [2.x.26] 
+
+* 
+*  [2.x.27] 
+
+* 
+*  [2.x.28] 
+
+* 
+* [0.x.1]*
+   Declare the type of the Accessor for use in the outside world. This way   other functions can use the Accessor's type without knowledge of how the   exact implementation actually is.  
+* [0.x.2]*
+   Default constructor. This constructor creates an iterator pointing   to an invalid object. The iterator is consequently not usable.  
+* [0.x.3]*
+   Copy constructor.  
+* [0.x.4]*
+   Construct an iterator from the given accessor; the given accessor needs   not be of the same type as the accessor of this class is, but it needs to   be convertible.     Through this constructor, it is also possible to construct objects for   derived iterators:  
+* [1.x.8]
+*   
+* [0.x.5]*
+   Constructor. Assumes that the other accessor type is convertible to the   current one.  
+* [0.x.6]*
+   Proper constructor, initialized with the triangulation, the level and   index of the object pointed to. The last parameter is of a type declared   by the accessor class.  
+* [0.x.7]*
+   This is a conversion operator (constructor) which takes another iterator   type and copies the data; this conversion works, if there is a conversion   path from the  [2.x.29]  class to the  [2.x.30]  class of this   object. One such path would be derived class to base class, which for   example may be used to get a  [2.x.31]  from a    [2.x.32]  since the DoFAccessor class is derived   from the TriaAccessorBase class.  
+* [0.x.8]*
+   Another conversion operator, where we use the pointers to the   Triangulation from a TriaAccessorBase object, while the additional data   is used according to the actual type of Accessor.  
+* [0.x.9]*
+   Conversion constructor. Same as above with the difference that it   converts from TriaIterator classes (not TriaRawIterator).  
+* [0.x.10]*
+   Conversion constructor. Same as above with the difference that it   converts from TriaActiveIterator classes (not TriaRawIterator).  
+* [0.x.11]*
+    [2.x.33]  Dereferencing  
+* [0.x.12]*
+   Dereferencing operator, returns a reference to an accessor. Usage is thus   like <tt>(*i).index ();</tt>     This function has to be specialized explicitly for the different  [2.x.34]    Pointees, to allow an    [2.x.35]  to point to   <tt>tria->lines.cells[index]</tt> while for one dimension higher it has   to point to <tt>tria->quads.cells[index]</tt>.     You must not dereference invalid or past the end iterators.  
+* [0.x.13]*
+   Dereferencing operator, non- [2.x.36]  version.  
+* [0.x.14]*
+   Dereferencing operator, returns a reference of the cell pointed to. Usage   is thus like <tt>i->index ();</tt>     There is a  [2.x.37]  and a non- [2.x.38]  version.  
+* [0.x.15]*
+   Dereferencing operator, non- [2.x.39]  version.  
+* [0.x.16]*
+   In order be able to assign end-iterators for different accessors to each   other, we need an access function which returns the accessor regardless   of its state.      [2.x.40]  This function should not be used in application programs. It is   only intended for limited purposes inside the library and it makes   debugging much harder.  
+* [0.x.17]*
+   Assignment operator.  
+* [0.x.18]*
+   Compare for equality.  
+* [0.x.19]*
+   Compare for inequality.  
+* [0.x.20]*
+   Ordering relation for iterators.     This relation attempts a total ordering of cells.     The relation is defined as follows:     For objects of  [2.x.41]  <    [2.x.42]  we simply compare the index of such an object.   The ordering is lexicographic according to the following hierarchy (in   the sense, that the next test is only applied if the previous was   inconclusive):      [2.x.43]     [2.x.44]  The past-the-end iterator is always ordered last. Two past-the-end   iterators rank the same, thus false is returned in that case. [2.x.45]       [2.x.46]  The level of the cell. [2.x.47]     [2.x.48]  The index of a cell inside the level. [2.x.49]     [2.x.50]     
+*  [2.x.51]  The ordering is not consistent between different processor in a    [2.x.52]  because we rely on index(), which is   likely not the same.  
+* [0.x.21]*
+   Another comparison operator, implementing with the same ordering as   #operator<.  
+* [0.x.22]*
+    [2.x.53]  Advancement of iterators  
+* [0.x.23]*
+   Prefix <tt>++</tt> operator: <tt>++iterator</tt>. This operator advances   the iterator to the next element and returns a reference to   <tt>*this</tt>.  
+* [0.x.24]*
+   Postfix <tt>++</tt> operator: <tt>iterator++</tt>. This operator advances   the iterator to the next element, but returns an iterator to the element   previously pointed to.     Since this operation involves a temporary and a copy operation and since   an  [2.x.54]  is quite a large object for a pointer, use the prefix   operator <tt>++iterator</tt> whenever possible, especially in the header   of for loops (<tt>for (; iterator!=end; ++iterator)</tt>) since there you   normally never need the returned value.  
+* [0.x.25]*
+   Prefix  [2.x.55]  operator:  [2.x.56]  This operator moves the iterator to   the previous element and returns a reference to <tt>*this</tt>.  
+* [0.x.26]*
+   Postfix  [2.x.57]  operator:  [2.x.58]  This operator moves the iterator   to the previous element, but returns an iterator to the element   previously pointed to.     The same applies as for the postfix operator++: If possible, avoid it by   using the prefix operator form to avoid the use of a temporary variable.  
+* [0.x.27]*
+   Return the state of the iterator.  
+* [0.x.28]*
+   Print the iterator to a stream  [2.x.59] . The format is   <tt>level.index</tt>.  
+* [0.x.29]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.30]*
+   Mark the class as bidirectional iterator and declare some alias which   are standard for iterators and are used by algorithms to enquire about the   specifics of the iterators they work on.  
+* [0.x.31]*
+    [2.x.60]  Exceptions  
+* [0.x.32]*
+   Exception for TriaObjects with level, i.e. cells.  
+* [0.x.33]*
+   Exception.  
+* [0.x.34]*
+   Exception  
+* [0.x.35]*
+   Exception  
+* [0.x.36]*
+   Object holding the real data.  
+* [0.x.37]*
+ This specialization of TriaRawIterator provides access only to the  [2.x.61] used [2.x.62]  lines, quads, cells, etc.
+* 
+
+* 
+*  [2.x.63] 
+
+* 
+*  [2.x.64] 
+
+* 
+* [0.x.38]*
+   Default constructor. This constructor creates an iterator pointing   to an invalid object. The iterator is consequently not usable.  
+* [0.x.39]*
+   Copy constructor.  
+* [0.x.40]*
+   Conversion constructor from iterators potentially pointing to non-active   objects (i.e., for objects for which we can't tell that the object is   used just by looking at its type).      [2.x.65]  The argument passed to this constructor must either be     (i) a past-the-end iterator; or (ii) it must point to     a used object. All other cases will result in an exception.  
+* [0.x.41]*
+   Constructor, initialized with the triangulation, the level and   index of the object pointed to. The last parameter is of a type declared   by the accessor class.      [2.x.66]  The argument passed to this constructor must either be     (i) a past-the-end iterator; or (ii) it must point to     a used object. All other cases will result in an exception.  
+* [0.x.42]*
+   Construct from an accessor of type OtherAccessor that is convertible to   the type Accessor.  
+* [0.x.43]*
+   This is a conversion operator (constructor) which takes another iterator   type and copies the data; this conversion works, if there is a conversion   path from the  [2.x.67]  class to the  [2.x.68]  class of this   object. One such path would be derived class to base class, which for   example may be used to get a  [2.x.69]  from a    [2.x.70]  since the DoFAccessor class is derived from   the TriaAccessorBase class.  
+* [0.x.44]*
+   Another conversion operator, where we use the pointers to the   Triangulation from a TriaAccessorBase object, while the additional data   is used according to the actual type of Accessor.  
+* [0.x.45]*
+   Similar conversion operator to the above one, but does a check whether   the iterator points to a used element, which is necessary for raw   iterators.  
+* [0.x.46]*
+   Similar conversion operator to the above one, but for conversion from   active iterators.  
+* [0.x.47]*
+   Assignment operator.  
+* [0.x.48]*
+   Cross assignment operator. This assignment is only valid if the given   iterator points to a used element.  
+* [0.x.49]*
+   Assignment operator. Requires, that Accessor can be copied from   OtherAccessor.  
+* [0.x.50]*
+   Cross assignment operator. This assignment is only valid if the given   iterator points to a used element. Requires, that Accessor can be copied   from OtherAccessor.  
+* [0.x.51]*
+    [2.x.71]  Advancement of iterators  
+* [0.x.52]*
+   Prefix <tt>++</tt> operator: <tt>++i</tt>. This operator advances the   iterator to the next used element and returns a reference to   <tt>*this</tt>.  
+* [0.x.53]*
+   Postfix <tt>++</tt> operator: <tt>i++</tt>. This operator advances the   iterator to the next used element, but returns an iterator to the element   previously pointed to. Since this involves a temporary and a copy   operation and since an  [2.x.72]  is quite a large object for a   pointer, use the prefix operator <tt>++i</tt> whenever possible,   especially in the head of for loops (<tt>for (; i!=end; ++i)</tt>) since   there you normally never need the returned value.  
+* [0.x.54]*
+   Prefix  [2.x.73]  operator:  [2.x.74]  This operator advances the iterator to the   previous used element and returns a reference to <tt>*this</tt>.  
+* [0.x.55]*
+   Postfix  [2.x.75]  operator:  [2.x.76]   
+* [0.x.56]*
+   Declare some aliases which are standard for iterators and are used   by algorithms to enquire about the specifics of the iterators they   work on.  
+* [0.x.57]*
+   Exception  
+* [0.x.58]*
+ This specialization of TriaIterator provides access only to the  [2.x.77] active [2.x.78]  lines, quads, cells, etc. An active cell is a cell which is not refined and thus a cell on which calculations on the finest level are done.
+* 
+
+* 
+*  [2.x.79] 
+
+* 
+*  [2.x.80] 
+
+* 
+* [0.x.59]*
+   Default constructor. This constructor creates an iterator pointing   to an invalid object. The iterator is consequently not usable.  
+* [0.x.60]*
+   Copy constructor.  
+* [0.x.61]*
+   Conversion constructor creating an active iterator from an iterators   pointing to a potentially non-active object (or at least from which   it is not apparent from the type alone that it is active).      [2.x.81]  The argument passed to this constructor must either be     (i) a past-the-end iterator; or (ii) it must point to     an active object. All other cases will result in an exception.  
+* [0.x.62]*
+   Conversion constructor creating an active iterator from an iterators   pointing to a potentially non-active object (or at least from which   it is not apparent from the type alone that it is active).      [2.x.82]  The argument passed to this constructor must either be     (i) a past-the-end iterator; or (ii) it must point to     an active object. All other cases will result in an exception.  
+* [0.x.63]*
+   Constructor, initialized with the triangulation, the level and   index of the object pointed to. The last parameter is of a type declared   by the accessor class used by the current iterator.      [2.x.83]  The argument passed to this constructor must either be     (i) a past-the-end iterator; or (ii) it must point to     an active object. All other cases will result in an exception.  
+* [0.x.64]*
+   This is a conversion operator (constructor) which takes another iterator   type and copies the data; this conversion works, if there is a conversion   path from the  [2.x.84]  class to the  [2.x.85]  class of this   object. One such path would be derived class to base class, which for   example may be used to get a  [2.x.86]  from a    [2.x.87]  since the DoFAccessor class is derived   from the TriaAccessorBase class.  
+* [0.x.65]*
+   Another conversion operator, where we use the pointers to the   Triangulation from a TriaAccessorBase object, while the additional data   is used according to the actual type of Accessor.  
+* [0.x.66]*
+   Similar conversion operator to the above one, but does a check whether   the iterator points to a used element, and is active, which is necessary   for raw iterators. Since usual iterators are also raw iterators, this   constructor works also for parameters of type   <tt>TriaIterator<OtherAccessor></tt>.      [2.x.88]  The argument passed to this constructor must either be     (i) a past-the-end iterator; or (ii) it must point to     an active object. All other cases will result in an exception.  
+* [0.x.67]*
+   Assignment operator.  
+* [0.x.68]*
+   Cross assignment operator. This assignment is only valid if the given   iterator points to an active element.  
+* [0.x.69]*
+   Cross assignment operator. This assignment is only valid if the given   iterator points to an active element or past the end.  
+* [0.x.70]*
+   Assignment operator. Requires, that Accessor can be copied from   OtherAccessor.  
+* [0.x.71]*
+   Cross assignment operator. This assignment is only valid if the given   iterator points to an active element or past the end. Requires, that   Accessor can be copied from OtherAccessor.  
+* [0.x.72]*
+   Cross assignment operator. This assignment is only valid if the given   iterator points to an active element. Requires, that Accessor can be   copied from OtherAccessor.  
+* [0.x.73]*
+   Prefix <tt>++</tt> operator: <tt>++i</tt>. This operator advances the   iterator to the next active element and returns a reference to   <tt>*this</tt>.  
+* [0.x.74]*
+    [2.x.89]  Advancement of iterators  
+* [0.x.75]*
+   Postfix <tt>++</tt> operator: <tt>i++</tt>. This operator advances the   iterator to the next active element, but returns an iterator to the   element previously pointed to. Since this involves a temporary and a copy   operation and since an  [2.x.90]  is quite a large object for a   pointer, use the prefix operator <tt>++i</tt> whenever possible,   especially in the head of for loops (<tt>for (; i!=end; ++i)</tt>) since   there you normally never need the returned value.  
+* [0.x.76]*
+   Prefix  [2.x.91]  operator:  [2.x.92]  This operator advances the iterator to the   previous active element and returns a reference to <tt>*this</tt>.  
+* [0.x.77]*
+   Postfix  [2.x.93]  operator:  [2.x.94]   
+* [0.x.78]*
+   Declare some alias which are standard for iterators and are used   by algorithms to enquire about the specifics of the iterators they   work on.  
+* [0.x.79]*
+   Exception  
+* [0.x.80]*
+ Print the address to which this iterator points to  [2.x.95]  The address is given by the pair <tt>(level,index)</tt>, where  [2.x.96]  is an index relative to the level in which the object is that is pointed to.
+
+* 
+* [0.x.81]*
+ Print the address to which this iterator points to  [2.x.97]  The address is given by the pair <tt>(level,index)</tt>, where  [2.x.98]  is an index relative to the level in which the object is that is pointed to.
+
+* 
+* [0.x.82]*
+ Print the address to which this iterator points to  [2.x.99]  The address is given by the pair <tt>(level,index)</tt>, where  [2.x.100]  is an index relative to the level in which the object is that is pointed to.
+
+* 
+* [0.x.83]

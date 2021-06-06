@@ -1,0 +1,688 @@
+[0.x.0]*
+ This is a base class for output of data on meshes of very general form. Output data is expected as a set of <tt>patches</tt> and written to the output stream in the format expected by the visualization tool. For a list of output formats, check the enumeration #OutputFormat. For each format listed there, this class contains a function <tt>write_format</tt>, writing the output. Refer to the documentation of those functions for details on a certain format.
+*  [1.x.0]
+*  Data is not written with the deal.II mesh structure. Instead, it relies on a set of <tt>patches</tt> created by a derived class (for example the DataOut, DataOutStack, DataOutFaces, DataOutRotation, or MatrixOut classes).  Each Patch describes a single logical cell of a mesh, possibly subdivided a number of times to represent higher order polynomials defined on this cell. To this end, a patch consists of a <tt>dim</tt>-dimensional regular grid with the same number of grid points in each direction. In the simplest case it may consist of the corner points of a single mesh cell. For each point of this local grid, the Patch contains an arbitrary number of data values, though the number of data sets must be the same for each point on each patch.
+*  By offering this interface to the different output formats, it is simple to extend this class to new formats without depending on such things as actual triangulations and handling of data vectors. These things shall be provided by derived class which have a user callable interface then.
+*  Inside each patch, the data is organized in the usual lexicographical order, [1.x.1] running fastest, then [1.x.2] and [1.x.3]. Nodes are stored in this order and cells as well. Each cell in 3D is stored such that the front face is in the [1.x.4]-plane. In order to enhance intelligibility of this concept, the following two sections are kept from a previous version of this documentation.
+* 
+
+*  [1.x.5]
+*  Grids can be thought of as a collection of cells; if you want to write out data on such a grid, you can do so by writing them one cell at a time. The functions in this class therefore take a list of objects describing the data on one cell each. This data for each cell usually consists of a list of vertices for this cell, and a list of data values (for example solution data, error information, etc) at each of these vertices.
+*  In some cases, this interface to a cell is too restricted, however. For example, you may have higher order elements and printing the values at the vertices only is not enough. For this reason, we not only provide writing the data on the vertices only, but the data is organizes as a tensor product grid on each cell. The parameter <tt>n_subdivisions</tt>, which is given for each patch separately, denotes how often the cell is to be divided for output; for example, <tt>n_subdivisions==1</tt> yields no subdivision of the cell, <tt>n_subdivisions==2</tt> will produce a grid of 3 times 3 points in two spatial dimensions and 3 times 3 times 3 points in three dimensions, <tt>n_subdivisions==3</tt> will yield 4 times 4 (times 4) points, etc. The actual location of these points on the patch will be computed by a multilinear transformation from the vertices given for this patch.  For cells at the boundary, a mapping might be used to calculate the position of the inner points. In that case the coordinates are stored inside the Patch, as they cannot be easily recovered otherwise.
+*  Given these comments, the actual data to be printed on this patch of points consists of several data sets each of which has a value at each of the patch points. For example with <tt>n_subdivisions==2</tt> in two space dimensions, each data set has to provide nine values, and since the patch is to be printed as a tensor product (or its transformation to the real space cell), its values are to be ordered like [1.x.6], i.e. the z-coordinate runs fastest, then the y-coordinate, then x (if there are that many space directions).
+* 
+
+*  [1.x.7]
+*  In general, the patches as explained above might be too restricted. For example, one might want to draw only the outer faces of a domain in a three-dimensional computation, if one is not interested in what happens inside. Then, the objects that should be drawn are two-dimensional in a three-dimensional world. The Patch class and associated output functions handle these cases. The Patch class therefore takes two template parameters, the first, named <tt>dim</tt> denoting the dimension of the object (in the above example, this would be two), while the second, named <tt>spacedim</tt>, denotes the dimension of the embedding space (this would be three). The corner points of a patch have the dimension of the space, while their number is determined by the dimension of the patch. By default, the second template parameter has the same value as the first, which would correspond to outputting a cell, rather than a face or something else.
+*  [1.x.8]
+*  The members of this namespace are not usually called from user code directly. Rather, classes that use the functions declared here are typically derived from DataOutInterface.
+*  The interface of this class basically consists of the declaration of a data type describing a patch and a bunch of functions taking a list of patches and writing them in one format or other to the stream. It is in the responsibility of the derived classes to provide this list of patches. In addition to the list of patches, a name for each data set may be given.
+* 
+
+*  [1.x.9]
+*  This class also provides a few functions (parse_output_format(), get_output_format_names(), default_suffix()) that can be used to query which output formats this class supports. The provide a list of names for all the formats we can output, parse a string and return an enum indicating each format, and provide a way to convert a value of this enum into the usual suffix used for files of that name. Using these functions, one can entirely free applications from knowledge which formats the library presently allows to output; several of the example programs show how to do this.
+*  [1.x.10]
+*  All functions take a parameter which is a structure of type <tt>XFlags</tt>, where <tt>X</tt> is the name of the output format. To find out what flags are presently supported, read the documentation of the different structures.
+*  Note that usually the output formats used for scientific visualization programs have no or very few parameters (apart from some compatibility flags) because there the actual appearance of output is determined using the visualization program and the files produced by this class store more or less only raw data.
+*  The direct output formats, like Postscript or Povray need to be given a lot more parameters, though, since there the output file has to contain all details of the viewpoint, light source, etc.
+*  [1.x.11]
+*  An abstraction layer has been introduced to facilitate coding backends for additional visualization tools. It is applicable for data formats separating the information into a field of vertices, a field of connection information for the grid cells and data fields.
+*  For each of these fields, output functions are implemented, namely write_nodes(), write_cells() and write_data(). In order to use these functions, a format specific output stream must be written, following the examples of DXStream, GmvStream, VtkStream and so on, implemented in the .cc file.
+*  In this framework, the implementation of a new output format is reduced to writing the section headers and the new output stream class for writing a single mesh object.
+*  [1.x.12]  [2.x.0] 
+*   [2.x.1] EPS output based on an earlier implementation by Stefan Nauber for the old DataOut class
+*   [2.x.2] Povray output by Thomas Richter
+*   [2.x.3] Tecplot output by Benjamin Shelton Kirk
+*   [2.x.4] Lagrange VTK output by Alexander Grayver
+*   [2.x.5] 
+* 
+
+* 
+*  [2.x.6] 
+
+* 
+* [0.x.1]*
+   Data structure describing a patch of data in <tt>dim</tt> space   dimensions.     A patch consists of the following data:    [2.x.7]     [2.x.8]  the corner #vertices,    [2.x.9]  the number #n_subdivisions of the number of cells the Patch has in   each space direction,    [2.x.10]  the #data attached to each vertex, in the usual lexicographic   ordering,    [2.x.11]  information on #neighbors.    [2.x.12]      See the general documentation of the DataOutBase class for more   information on its contents and purposes.  In the case of two dimensions,   the next picture is an example of <tt>n_subdivisions</tt> = 4 because the   number of (sub)cells within each patch is equal to   <tt>2<sup>dim</sup></tt>.    
+*  [2.x.13]   
+* [0.x.2]*
+     Make the <tt>spacedim</tt> template parameter available.    
+* [0.x.3]*
+     Corner points of a patch.  Interior points are computed by a multilinear     transformation of the unit cell to the cell specified by these corner     points, if  [2.x.14] .         On the other hand, if  [2.x.15] , then     the coordinates of the points at which output is to be generated     is attached in additional rows to the  [2.x.16]  table.         The order of points is the same as for cells in the     triangulation.    
+* [0.x.4]*
+     Patch indices of neighbors of the current patch. This is made available     for the OpenDX format that requires neighbor     information for advanced output.    
+* [0.x.5]*
+     Number of this patch. Since we are not sure patches are always     handled in the same order, we better store this.    
+* [0.x.6]*
+     Number of subdivisions with which this patch is to be written.     <tt>1</tt> means no subdivision, <tt>2</tt> means bisection, <tt>3</tt>     trisection, etc.    
+* [0.x.7]*
+     Data vectors. The format is as follows: <tt>data(i,.)</tt> denotes the     data belonging to the <tt>i</tt>th data vector. <tt>data.n_cols()</tt>     therefore equals the number of output points; this number is     <tt>(subdivisions+1)^{dim}</tt>. <tt>data.n_rows()</tt> equals the number     of data vectors. For the current purpose, a data vector equals one     scalar, even if multiple scalars may later be interpreted as vectors.         Within each column, <tt>data(.,j)</tt> are the data values at the     output point <tt>j</tt>, where <tt>j</tt> denotes the usual     lexicographic ordering in deal.II. This is also the order of points as     provided by the <tt>QIterated</tt> class when used with the     <tt>QTrapezoid</tt> class as subquadrature.         Since the number of data vectors is usually the same for all patches to     be printed, <tt>data.size()</tt> should yield the same value for all     patches provided. The exception are patches for which     points_are_available are set, where the actual coordinates of the point     are appended to the 'data' field, see the documentation of the     points_are_available flag.    
+* [0.x.8]*
+     A flag indicating whether the coordinates of the interior patch points     (assuming that the patch is supposed to be subdivided further) are     appended to the  [2.x.17]  table ( [2.x.18]  or not ( [2.x.19]  The latter     is the default and in this case the locations of the points interior to     this patch are computed by (bi-, tri-)linear interpolation from the     vertices of the patch.         This option exists since patch points may be evaluated using a Mapping     (rather than by a linear interpolation) and therefore have to be stored     in the Patch structure.    
+* [0.x.9]*
+     Reference-cell type of the underlying cell of this patch.    
+* [0.x.10]*
+     Default constructor. Sets #n_subdivisions to one, #points_are_available     to false, and #patch_index to #no_neighbor.    
+* [0.x.11]*
+     Compare the present patch for equality with another one. This is used     in a few of the automated tests in our testsuite.    
+* [0.x.12]*
+     Return an estimate for the memory consumption, in bytes, of this     object. This is not exact (but will usually be close) because     calculating the memory usage of trees (e.g.,  [2.x.20]  is     difficult.    
+* [0.x.13]*
+     Swap the current object's contents with those of the given argument.    
+* [0.x.14]*
+     Value to be used if this patch has no neighbor on one side.    
+* [0.x.15]*
+      [2.x.21]  Exceptions      [2.x.22]     
+* [0.x.16]*
+     Exception    
+* [0.x.17]*
+   A specialization of the general Patch<dim,spacedim> template that is   tailored to the case of points, i.e., zero-dimensional objects embedded   in  [2.x.23]  dimensional space.     The current class is compatible with the general template to allow for   using the same functions accessing patches of arbitrary dimensionality   in a generic way. However, it makes some variables that are nonsensical   for zero-dimensional patches into  [2.x.24]  variables that exist only   once in the entire program, as opposed to once per patch. Specifically,   this is the case for the  [2.x.25]  array and the  [2.x.26]    member variable that make no sense for zero-dimensional patches because   points have no natural neighbors across their non-existent faces, nor   can they reasonably be subdivided.  
+* [0.x.18]*
+     Make the <tt>spacedim</tt> template parameter available.    
+* [0.x.19]*
+     Corner points of a patch.  For the current class of zero-dimensional     patches, there is of course only a single vertex.         If  [2.x.27] , then     the coordinates of the point at which output is to be generated     is attached as an additional row to the  [2.x.28]  table.    
+* [0.x.20]*
+     An unused,  [2.x.29]  variable that exists only to allow access     from general code in a generic fashion.    
+* [0.x.21]*
+     Number of this patch. Since we are not sure patches are always     handled in the same order, we better store this.    
+* [0.x.22]*
+     Number of subdivisions with which this patch is to be written.     <tt>1</tt> means no subdivision, <tt>2</tt> means bisection, <tt>3</tt>     trisection, etc.         Since subdivision makes no sense for zero-dimensional patches,     this variable is not used but exists only to allow access     from general code in a generic fashion.    
+* [0.x.23]*
+     Data vectors. The format is as follows: <tt>data(i,.)</tt> denotes the     data belonging to the <tt>i</tt>th data vector. <tt>data.n_cols()</tt>     therefore equals the number of output points; this number is     of course one for the current class, given that we produce output on     points. <tt>data.n_rows()</tt> equals the number of     data vectors. For the current purpose, a data vector equals one scalar,     even if multiple scalars may later be interpreted as vectors.         Within each column, <tt>data(.,j)</tt> are the data values at the     output point <tt>j</tt>; for the current class,  [2.x.30]  can only     be zero.         Since the number of data vectors is usually the same for all patches to     be printed, <tt>data.size()</tt> should yield the same value for all     patches provided. The exception are patches for which     points_are_available are set, where the actual coordinates of the point     are appended to the 'data' field, see the documentation of the     points_are_available flag.    
+* [0.x.24]*
+     A flag indicating whether the coordinates of the interior patch points     (assuming that the patch is supposed to be subdivided further) are     appended to the  [2.x.31]  table ( [2.x.32]  or not ( [2.x.33]  The latter     is the default and in this case the locations of the points interior to     this patch are computed by (bi-, tri-)linear interpolation from the     vertices of the patch.         This option exists since patch points may be evaluated using a Mapping     (rather than by a linear interpolation) and therefore have to be stored     in the Patch structure.    
+* [0.x.25]*
+     Reference-cell type of the underlying cell of this patch.    
+* [0.x.26]*
+     Default constructor. Sets #points_are_available     to false, and #patch_index to #no_neighbor.    
+* [0.x.27]*
+     Compare the present patch for equality with another one. This is used     in a few of the automated tests in our testsuite.    
+* [0.x.28]*
+     Return an estimate for the memory consumption, in bytes, of this     object. This is not exact (but will usually be close) because     calculating the memory usage of trees (e.g.,  [2.x.34]  is     difficult.    
+* [0.x.29]*
+     Swap the current object's contents with those of the given argument.    
+* [0.x.30]*
+     Value to be used if this patch has no neighbor on one side.    
+* [0.x.31]*
+      [2.x.35]  Exceptions      [2.x.36]     
+* [0.x.32]*
+     Exception    
+* [0.x.33]*
+   Base class describing common functionality between different output   flags.     This is implemented with the "Curiously Recurring Template Pattern";   derived classes use their own type to fill in the typename so that   <tt>memory_consumption</tt> works correctly. See the Wikipedia page on   the pattern for more information.    
+*  [2.x.37]   
+* [0.x.34]*
+     Declare all flags with name and type as offered by this class, for use     in input files.         This method does nothing, but child classes may override this method to     add fields to <tt>prm</tt>.    
+* [0.x.35]*
+     Read the parameters declared in declare_parameters() and set the flags     for this output format accordingly.         This method does nothing, but child classes may override this method to     add fields to <tt>prm</tt>.    
+* [0.x.36]*
+     Return an estimate for the memory consumption, in bytes, of this     object. This is not exact (but will usually be close) because     calculating the memory usage of trees (e.g.,  [2.x.38]  is     difficult.    
+* [0.x.37]*
+   Flags controlling the details of output in OpenDX format.    
+*  [2.x.39]   
+* [0.x.38]*
+     Write neighbor information. This information is necessary for instance,     if OpenDX is supposed to compute integral curves (streamlines). If it     is not present, streamlines end at cell boundaries.    
+* [0.x.39]*
+     Write integer values of the Triangulation in binary format.    
+* [0.x.40]*
+     Write coordinate vectors in binary format.    
+* [0.x.41]*
+     Write data vectors in binary format.    
+* [0.x.42]*
+     Write binary coordinate vectors as double (64 bit) numbers instead of     float (32 bit).    
+* [0.x.43]*
+     Constructor.    
+* [0.x.44]*
+     Declare all flags with name and type as offered by this class, for use     in input files.    
+* [0.x.45]*
+     Read the parameters declared in declare_parameters() and set the flags     for this output format accordingly.         The flags thus obtained overwrite all previous contents of this object.    
+* [0.x.46]*
+   Flags controlling the details of output in UCD format for AVS.    
+*  [2.x.40]   
+* [0.x.47]*
+     Write a comment at the beginning of the file stating the date of     creation and some other data.  While this is supported by the UCD     format and AVS, some other programs get confused by this, so the     default is to not write a preamble. However, a preamble can be written     using this flag.         Default:  [2.x.41] .    
+* [0.x.48]*
+     Constructor.    
+* [0.x.49]*
+     Declare all flags with name and type as offered by this class, for use     in input files.    
+* [0.x.50]*
+     Read the parameters declared in declare_parameters() and set the flags     for this output format accordingly.         The flags thus obtained overwrite all previous contents of this object.    
+* [0.x.51]*
+   Flags controlling the details of output in Gnuplot format.    
+*  [2.x.42]   
+* [0.x.52]*
+     Default constructor. Sets up the dimension labels with the default values     of <tt>"x"</tt>, <tt>"y"</tt>, and <tt>"z"</tt>.    
+* [0.x.53]*
+     Constructor which sets up non-default values for the dimension labels.    
+* [0.x.54]*
+     Labels to use in each spatial dimension. These default to <tt>"x"</tt>,     <tt>"y"</tt>, and <tt>"z"</tt>. Labels are printed to the Gnuplot file     surrounded by angle brackets: For example, if the space dimension is 2     and the labels are <tt>"x"</tt> and <tt>"t"</tt>, then the relevant     line will start with    
+* [1.x.13]
+*      Any extra labels will be ignored.         If you specify these labels yourself then there should be at least     <tt>spacedim</tt> labels, where <tt>spacedim</tt> is the spatial     dimension of the output data.    
+* [0.x.55]*
+     Return an estimate for the memory consumption, in bytes, of this     object.    
+* [0.x.56]*
+     Exception to raise when there are not enough specified dimension     labels.    
+* [0.x.57]*
+   Flags controlling the details of output in Povray format. Several flags   are implemented, see their respective documentation.    
+*  [2.x.43]   
+* [0.x.58]*
+     Normal vector interpolation, if set to true         default = false    
+* [0.x.59]*
+     Use bicubic patches (b-splines) instead of triangles.         default = false    
+* [0.x.60]*
+     include external "data.inc" with camera, light and texture definition     for the scene.         default = false    
+* [0.x.61]*
+     Constructor.    
+* [0.x.62]*
+     Declare all flags with name and type as offered by this class, for use     in input files.    
+* [0.x.63]*
+     Read the parameters declared in declare_parameters() and set the flags     for this output format accordingly.         The flags thus obtained overwrite all previous contents of this object.    
+* [0.x.64]*
+   Flags controlling the details of output in encapsulated postscript   format.    
+*  [2.x.44]   
+* [0.x.65]*
+     This denotes the number of the data vector which shall be used for     generating the height information. By default, the first data vector is     taken, i.e. <tt>height_vector==0</tt>, if there is any data vector. If     there is no data vector, no height information is generated.    
+* [0.x.66]*
+     Number of the vector which is to be taken to colorize cells. The same     applies as for #height_vector.    
+* [0.x.67]*
+     Enum denoting the possibilities whether the scaling should be done such     that the given <tt>size</tt> equals the width or the height of the     resulting picture.    
+* [0.x.68]*
+     See above. Default is <tt>width</tt>.    
+* [0.x.69]*
+     Width or height of the output as given in postscript units This usually     is given by the strange unit 1/72 inch. Whether this is height or width     is specified by the flag <tt>size_type</tt>.         Default is 300, which represents a size of roughly 10 cm.    
+* [0.x.70]*
+     Width of a line in postscript units. Default is 0.5.    
+* [0.x.71]*
+     Angle of the line origin-viewer against the z-axis in degrees.         Default is the Gnuplot-default of 60.    
+* [0.x.72]*
+     Angle by which the viewers position projected onto the x-y-plane is     rotated around the z-axis, in positive sense when viewed from above.     The unit are degrees, and zero equals a position above or below the     negative y-axis.         Default is the Gnuplot-default of 30.  An example of a Gnuplot-default     of 0 is the following:        
+* [1.x.14]
+*     
+* [0.x.73]*
+     Factor by which the z-axis is to be stretched as compared to the x- and     y-axes. This is to compensate for the different sizes that coordinate     and solution values may have and to prevent that the plot looks to much     out-of-place (no elevation at all if solution values are much smaller     than coordinate values, or the common "extremely mountainous area" in     the opposite case.         Default is <tt>1.0</tt>.    
+* [0.x.74]*
+     Flag the determines whether the lines bounding the cells (or the parts     of each patch) are to be plotted.         Default: <tt>true</tt>.    
+* [0.x.75]*
+     Flag whether to fill the regions between the lines bounding the cells     or not. If not, no hidden line removal is performed, which in this     crude implementation is done through writing the cells in a back-to-     front order, thereby hiding the cells in the background by cells in the     foreground.         If this flag is <tt>false</tt> and #draw_mesh is <tt>false</tt> as     well, nothing will be printed.         If this flag is <tt>true</tt>, then the cells will be drawn either     colored by one of the data sets (if #shade_cells is <tt>true</tt>), or     pure white (if #shade_cells is false or if there are no data sets).         Default is <tt>true</tt>.    
+* [0.x.76]*
+     Flag to determine whether the cells shall be colorized by the data set     denoted by #color_vector, or simply be painted in white. This flag only     makes sense if <tt>#draw_cells==true</tt>. Colorization is done through     #color_function.         Default is <tt>true</tt>.    
+* [0.x.77]*
+     Structure keeping the three color values in the RGB system.    
+* [0.x.78]*
+       Return <tt>true</tt> if the color represented by the three color       values is a grey scale, i.e. all components are equal.      
+* [0.x.79]*
+     Definition of a function pointer type taking a value and returning a     triple of color values in RGB values.         Besides the actual value by which the color is to be computed, min and     max values of the data to be colorized are given as well.    
+* [0.x.80]*
+     This is a pointer to the function which is used to colorize the cells.     By default, it points to the static function default_color_function()     which is a member of this class.    
+* [0.x.81]*
+     Default colorization function. This one does what one usually wants: It     shifts colors from black (lowest value) through blue, green and red to     white (highest value). For the exact definition of the color scale     refer to the implementation.         This function was originally written by Stefan Nauber.    
+* [0.x.82]*
+     This is an alternative color function producing a grey scale between     black (lowest values) and white (highest values). You may use it by     setting the #color_function variable to the address of this function.    
+* [0.x.83]*
+     This is one more alternative color function producing a grey scale     between white (lowest values) and black (highest values), i.e. the     scale is reversed to the previous one. You may use it by setting the     #color_function variable to the address of this function.    
+* [0.x.84]*
+     Constructor.    
+* [0.x.85]*
+     Declare all flags with name and type as offered by this class, for use     in input files.         For coloring, only the color functions declared in this class are     offered.    
+* [0.x.86]*
+     Read the parameters declared in declare_parameters() and set the flags     for this output format accordingly.         The flags thus obtained overwrite all previous contents of this object.    
+* [0.x.87]*
+   Flags controlling the details of output in GMV format. At present no   flags are implemented.    
+*  [2.x.45]   
+* [0.x.88]*
+   Flags controlling the details of output in Tecplot format.    
+*  [2.x.46]   
+* [0.x.89]*
+     Tecplot allows to assign names to zones. This variable stores this     name.    
+* [0.x.90]*
+     Solution time for each zone in a strand. This value must be non-     negative, otherwise it will not be written to file. Do not assign any     value for this in case of a static zone.    
+* [0.x.91]*
+     Constructor.    
+* [0.x.92]*
+     Return an estimate for the memory consumption, in bytes, of this     object.    
+* [0.x.93]*
+   Flags controlling the details of output in VTK format.    
+*  [2.x.47]   
+* [0.x.94]*
+     The time of the time step if this file is part of a time dependent     simulation.         The value of this variable is written into the output file according to     the instructions provided in     http://www.visitusers.org/index.php?title=Time_and_Cycle_in_VTK_files     unless it is at its default value of    
+* [1.x.15].    
+* [0.x.95]*
+     The number of the time step if this file is part of a time dependent     simulation, or the cycle within a nonlinear or other iteration.         The value of this variable is written into the output file according to     the instructions provided in     http://www.visitusers.org/index.php?title=Time_and_Cycle_in_VTK_files     unless it is at its default value of    
+* [1.x.16].    
+* [0.x.96]*
+     Flag to determine whether the current date and time shall be printed as     a comment in the file's second line.         Default is <tt>true</tt>.    
+* [0.x.97]*
+     A data type providing the different possible zlib compression     levels. These map directly to constants defined by zlib.    
+* [0.x.98]*
+       Do not use any compression.      
+* [0.x.99]*
+       Use the fastest available compression algorithm.      
+* [0.x.100]*
+       Use the algorithm which results in the smallest compressed       files. This is the default flag.      
+* [0.x.101]*
+       Use the default compression algorithm. This is a compromise between       speed and file size.      
+* [0.x.102]*
+     Flag determining the compression level at which zlib, if available, is     run. The default is <tt>best_compression</tt>.    
+* [0.x.103]*
+     Flag determining whether to write patches as linear cells     or as a high-order Lagrange cell.         Default is <tt>false</tt>.        
+*  [2.x.48]  The ability to write data that corresponds to higher order     polynomials rather than simply linear or bilinear is a feature that was     only introduced in VTK 8.1.0 in December 2017. You will need at least     Paraview version 5.5.0 released in April 2018 or a similarly recent     version of VisIt for this feature to work (for example, VisIt 3.1.1,     released in February 2020, does not yet support this feature). Older     versions of these programs are likely going to result in errors when     trying to read files generated with this flag set to true. Experience     with these programs shows that these error messages are likely going to     be rather less descriptive and more obscure.    
+* [0.x.104]*
+     Constructor.    
+* [0.x.105]*
+   Flags for SVG output.    
+*  [2.x.49]   
+* [0.x.106]*
+     Height of the image in SVG units. Default value is 4000.    
+* [0.x.107]*
+     Width of the image in SVG units. If left zero, the width is computed     from the height.    
+* [0.x.108]*
+     This denotes the number of the data vector which shall be used for     generating the height information. By default, the first data vector is     taken, i.e. <tt>#height_vector==0</tt>, if there is any data vector. If     there is no data vector, no height information is generated.    
+* [0.x.109]*
+     Angles for the perspective view    
+* [0.x.110]*
+     Draw a margin of 5% around the plotted area    
+* [0.x.111]*
+     Draw a colorbar encoding the cell coloring    
+* [0.x.112]*
+     Constructor.    
+* [0.x.113]*
+   Flags controlling the details of output in deal.II intermediate format.   At present no flags are implemented.    
+*  [2.x.50]   
+* [0.x.114]*
+     An indicator of the current file format version used to write     intermediate format. We do not attempt to be backward compatible, so     this number is used only to verify that the format we are writing is     what the current readers and writers understand.    
+* [0.x.115]*
+   Flags controlling the DataOutFilter.    
+*  [2.x.51]   
+* [0.x.116]*
+     Filter duplicate vertices and associated values. This will drastically     reduce the output data size but will result in an output file that     does not faithfully represent the actual data if the data corresponds     to discontinuous fields. In particular, along subdomain boundaries     the data will still be discontinuous, while it will look like a     continuous field inside of the subdomain.    
+* [0.x.117]*
+     Whether the XDMF output refers to HDF5 files. This affects how output     is structured.    
+* [0.x.118]*
+     Constructor.    
+* [0.x.119]*
+     Declare all flags with name and type as offered by this class, for use     in input files.    
+* [0.x.120]*
+     Read the parameters declared in <tt>declare_parameters</tt> and set the     flags for this output format accordingly.         The flags thus obtained overwrite all previous contents of this object.    
+* [0.x.121]*
+     Determine an estimate for the memory consumption (in bytes) of this     object.    
+* [0.x.122]*
+   DataOutFilter provides a way to remove redundant vertices and values   generated by the deal.II output. By default, DataOutBase and the classes   that build on it output data at each corner of each cell. This means that   data is output multiple times for each vertex of the mesh. The purpose of   this scheme is to support output of discontinuous quantities, either   because the finite element space is discontinuous or because the quantity   that is output is computed from a solution field and is discontinuous   across faces.     This class is an attempt to rein in the amount of data that is written.   If the fields that are written to files are indeed discontinuous, the   only way to faithfully represent them is indeed to write multiple values   for each vertex (this is typically done by writing multiple node   locations for the same vertex and defining data at these nodes). However,   for fine meshes, one may not necessarily be interested in an exact   representation of output fields that will likely only have small   discontinuities. Rather, it may be sufficient to just output one value   per vertex, which may be chosen arbitrarily from among those that are   defined at this vertex from any of the adjacent cells.  
+* [0.x.123]*
+     Default constructor.    
+* [0.x.124]*
+     Destructor with a given set of flags. See DataOutFilterFlags for     possible flags.    
+* [0.x.125]*
+     Write a point with the specified index into the filtered data set. If     the point already exists and we are filtering redundant values, the     provided index will internally refer to another recorded point.    
+* [0.x.126]*
+     Record a deal.II cell in the internal reordered format.    
+* [0.x.127]*
+     Record a single deal.II cell without subdivisions (e.g. simplex) in the     internal reordered format.    
+* [0.x.128]*
+     Filter and record a data set. If there are multiple values at a given     vertex and redundant values are being removed, one is arbitrarily     chosen as the recorded value. In the future this can be expanded to     average/min/max multiple values at a given vertex.    
+* [0.x.129]*
+     Resize and fill a vector with all the filtered node vertex points, for     output to a file.    
+* [0.x.130]*
+     Resize and fill a vector with all the filtered cell vertex indices, for     output to a file.    
+* [0.x.131]*
+     Get the name of the data set indicated by the set number.    
+* [0.x.132]*
+     Get the dimensionality of the data set indicated by the set number.    
+* [0.x.133]*
+     Get the raw double valued data of the data set indicated by the set     number.    
+* [0.x.134]*
+     Return the number of nodes in this DataOutFilter. This may be smaller     than the original number of nodes if filtering is enabled.    
+* [0.x.135]*
+     Return the number of filtered cells in this DataOutFilter. Cells are     not filtered so this will be the original number of cells.    
+* [0.x.136]*
+     Return the number of filtered data sets in this DataOutFilter. Data     sets are not filtered so this will be the original number of data sets.    
+* [0.x.137]*
+     Empty functions to do base class inheritance.    
+* [0.x.138]*
+     Empty functions to do base class inheritance.    
+* [0.x.139]*
+     Empty class to provide comparison function for Map3DPoint.    
+* [0.x.140]         The return statement below is an optimized version of the following         code:                 for (unsigned int d=0; d<3; ++d)         {           if (one(d) < two(d))             return true;           else if (one(d) > two(d))             return false;         }         return false;        
+* [0.x.141]*
+     Flags used to specify filtering behavior.    
+* [0.x.142]*
+     The number of space dimensions in which the vertices represented     by the current object live. This corresponds to the usual      [2.x.52]  argument, but since this class is not templated on the     dimension, we need to store it here.    
+* [0.x.143]*
+     The number of cells stored in  [2.x.53] .    
+* [0.x.144]*
+     Map of points to an internal index.    
+* [0.x.145]*
+     Map of actual point index to internal point index.    
+* [0.x.146]*
+     Map of cells to the filtered points.    
+* [0.x.147]*
+     Data set names.    
+* [0.x.148]*
+     Data set dimensions.    
+* [0.x.149]*
+     Data set data.    
+* [0.x.150]*
+     Record a cell vertex index based on the internal reordering.    
+* [0.x.151]*
+   Provide a data type specifying the presently supported output formats.  
+* [0.x.152]*
+     Use the format already stored in the object.    
+* [0.x.153]*
+     Do not write any output.    
+* [0.x.154]*
+     Output for OpenDX.    
+* [0.x.155]*
+     Output in the UCD format for AVS.    
+* [0.x.156]*
+     Output for the Gnuplot tool.    
+* [0.x.157]*
+     Output for the Povray raytracer.    
+* [0.x.158]*
+     Output in encapsulated PostScript.    
+* [0.x.159]*
+     Output for GMV.    
+* [0.x.160]*
+     Output for Tecplot in text format.    
+* [0.x.161]*
+     Output for Tecplot in binary format. Faster and smaller than text     format.          [2.x.54]  Using Tecplot binary output is deprecated.    
+* [0.x.162]*
+     Output in VTK format.    
+* [0.x.163]*
+     Output in VTK format.    
+* [0.x.164]*
+     Output in SVG format.    
+* [0.x.165]*
+     Output in deal.II intermediate format.    
+* [0.x.166]*
+     Output in HDF5 format.    
+* [0.x.167]*
+   Write the given list of patches to the output stream in OpenDX format.  
+* [0.x.168]*
+   Write the given list of patches to the output stream in eps format.     Output in this format circumvents the use of auxiliary graphic programs   converting some output format into a graphics format. This has the   advantage that output is easy and fast, and the disadvantage that you   have to give a whole bunch of parameters which determine the direction of   sight, the mode of colorization, the scaling of the height axis, etc. (Of   course, all these parameters have reasonable default values, which you   may want to change.)     This function only supports output for two-dimensional domains (i.e.,   with dim==2), with values in the vertical direction taken from a data   vector.     Basically, output consists of the mesh and the cells in between them. You   can draw either of these, or both, or none if you are really interested   in an empty picture. If written, the mesh uses black lines. The cells in   between the mesh are either not printed (this will result in a loss of   hidden line removal, i.e.  you can "see through" the cells to lines   behind), printed in white (which does nothing apart from the hidden line   removal), or colorized using one of the data vectors (which need not be   the same as the one used for computing the height information) and a   customizable color function. The default color functions chooses the   color between black, blue, green, red and white, with growing values of   the data field chosen for colorization. At present, cells are displayed   with one color per cell only, which is taken from the value of the data   field at the center of the cell; bilinear interpolation of the color on a   cell is not used.     By default, the viewpoint is chosen like the default viewpoint in   GNUPLOT, i.e.  with an angle of 60 degrees with respect to the positive   z-axis and rotated 30 degrees in positive sense (as seen from above) away   from the negative y-axis.  Of course you can change these settings.     EPS output is written without a border around the picture, i.e. the   bounding box is close to the output on all four sides. Coordinates are   written using at most five digits, to keep picture size at a reasonable   size.     All parameters along with their default values are listed in the   documentation of the <tt>EpsFlags</tt> member class of this class. See   there for more and detailed information.  
+* [0.x.169]*
+   This is the same function as above except for domains that are not two-   dimensional. This function is not implemented (and will throw an error if   called) but is declared to allow for dimension-independent programs.  
+* [0.x.170]*
+   Write the given list of patches to the output stream in GMV format.     Data is written in the following format: nodes are considered the points   of the patches. In spatial dimensions less than three, zeroes are   inserted for the missing coordinates. The data vectors are written as   node or cell data, where for the first the data space is interpolated to   (bi-,tri-)linear elements.  
+* [0.x.171]*
+   Write the given list of patches to the output stream in gnuplot format.   Visualization of two-dimensional data can then be achieved by starting   <tt>gnuplot</tt> and entering the commands    
+* [1.x.17]
+*    This example assumes that the number of the data vector displayed is   [1.x.18].     The GNUPLOT format is not able to handle data on unstructured grids   directly. Directly would mean that you only give the vertices and the   solution values thereon and the program constructs its own grid to   represent the data. This is only possible for a structured tensor product   grid in two dimensions. However, it is possible to give several such   patches within one file, which is exactly what the respective function of   this class does: writing each cell's data as a patch of data, at least if   the patches as passed from derived classes represent cells. Note that the   functions on patches need not be continuous at interfaces between   patches, so this method also works for discontinuous elements. Note also,   that GNUPLOT can do hidden line removal for patched data.     While this discussion applies to two spatial dimensions, it is more   complicated in 3d. The reason is that we could still use patches, but it   is difficult when trying to visualize them, since if we use a cut through   the data (by, for example, using x- and z-coordinates, a fixed y-value   and plot function values in z-direction, then the patched data is not a   patch in the sense GNUPLOT wants it any more. Therefore, we use another   approach, namely writing the data on the 3d grid as a sequence of lines,   i.e. two points each associated with one or more data sets.  There are   therefore 12 lines for each subcells of a patch.     Given the lines as described above, a cut through this data in Gnuplot   can then be achieved like this:  
+* [1.x.19]
+*      This command plots data in  [2.x.55] - and  [2.x.56] -direction unbounded, but in    [2.x.57] -direction only those data points which are above the  [2.x.58] - [2.x.59] -plane (we   assume here a positive solution, if it has negative values, you might   want to decrease the lower bound). Furthermore, it only takes the data   points with z-values (<tt>&3</tt>) equal to 0.5, i.e. a cut through the   domain at <tt>z=0.5</tt>. For the data points on this plane, the data   values of the first data set (<tt>&4</tt>) are raised in z-direction   above the x-y-plane; all other points are denoted the value <tt>-1</tt>   instead of the value of the data vector and are not plotted due to the   lower bound in z plotting direction, given in the third pair of brackets.     More complex cuts are possible, including nonlinear ones. Note however,   that only those points which are actually on the cut-surface are plotted.  
+* [0.x.172]*
+   Write the given list of patches to the output stream for the Povray   raytracer.     Output in this format creates a povray source file, include standard   camera and light source definition for rendering with povray 3.1 At   present, this format only supports output for two-dimensional data, with   values in the third direction taken from a data vector.     The output uses two different povray-objects:      [2.x.60]     [2.x.61]  <tt>BICUBIC_PATCH</tt> A <tt>bicubic_patch</tt> is a 3-dimensional   Bezier patch. It consists of 16 Points describing the surface. The 4   corner points are touched by the object, while the other 12 points pull   and stretch the patch into shape. One <tt>bicubic_patch</tt> is generated   on each patch. Therefore the number of subdivisions has to be 3 to provide   the patch with 16 points. A bicubic patch is not exact but generates very   smooth images.      [2.x.62]  <tt>MESH</tt> The mesh object is used to store large number of   triangles. Every square of the patch data is split into one upper-left   and one lower-right triangle. If the number of subdivisions is three, 32   triangle are generated for every patch.     Using the smooth flag povray interpolates the normals on the triangles,   imitating a curved surface    [2.x.63]      All objects get one texture definition called Tex. This texture has to be   declared somewhere before the object data. This may be in an external   data file or at the beginning of the output file. Setting the   <tt>external_data</tt> flag to false, an standard camera, light and   texture (scaled to fit the scene) is added to the output file. Set to   true an include file "data.inc" is included. This file is not generated   by deal and has to include camera, light and the texture definition Tex.     You need povray (>=3.0) to render the scene. The minimum options for   povray are:  
+* [1.x.20]
+*    If the external file "data.inc" is used, the path to this file has to be   included in the povray options.  
+* [0.x.173]*
+   Write the given list of patches to the output stream in Tecplot ASCII   format (FEBLOCK).     For more information consult the Tecplot Users and Reference manuals.  
+* [0.x.174]*
+   Write the given list of patches to the output stream in UCD format   described in the AVS developer's guide (now AVS). Due to limitations in   the present format, only node based data can be output, which in one   reason why we invented the patch concept. In order to write higher order   elements, you may split them up into several subdivisions of each cell.   These subcells will then, however, also appear as different cells by   programs which understand the UCD format.     No use is made of the possibility to give model data since these are not   supported by all UCD aware programs. You may give cell data in derived   classes by setting all values of a given data set on a patch to the same   value.  
+* [0.x.175]*
+   Write the given list of patches to the output stream in VTK format. The   data is written in the traditional VTK format as opposed to the XML-based   format that write_vtu() produces.     The nonscalar_data_ranges argument denotes ranges of components in the   output that are considered a vector, rather than simply a collection of   scalar fields. The VTK output format has special provisions that allow   these components to be output by a single name rather than having to   group several scalar fields into a vector later on in the visualization   program.    
+*  [2.x.64]  VTK is a legacy format and has largely been supplanted by the VTU   format (an XML-structured version of VTK). In particular, VTU allows for   the compression of data and consequently leads to much smaller file sizes   that equivalent VTK files for large files. Since all visualization   programs that support VTK also support VTU, you should consider using the   latter file format instead, by using the write_vtu() function.  
+* [0.x.176]*
+   Write the given list of patches to the output stream in VTU format. The   data is written in the XML-based VTK format as opposed to the traditional   format that write_vtk() produces.     The nonscalar_data_ranges argument denotes ranges of components in the   output that are considered a vector, rather than simply a collection of   scalar fields. The VTK output format has special provisions that allow   these components to be output by a single name rather than having to   group several scalar fields into a vector later on in the visualization   program.     Some visualization programs, such as ParaView, can read several separate   VTU files to parallelize visualization. In that case, you need a    [2.x.65]  file that describes which VTU files form a group. The    [2.x.66]  function can generate such a   centralized record. Likewise,  [2.x.67]  does   the same for VisIt (although VisIt can also read  [2.x.68]  records   since version 2.5.1). Finally, for time dependent problems, you may also   want to look at  [2.x.69]      The use of this function is explained in  [2.x.70] .  
+* [0.x.177]*
+   This writes the header for the xml based vtu file format. This routine is   used internally together with  [2.x.71]  and    [2.x.72]  by  [2.x.73]   
+* [0.x.178]*
+   This function writes the footer for the xml based vtu file format. This   routine is used internally together with    [2.x.74]  and  [2.x.75]    by  [2.x.76]   
+* [0.x.179]*
+   This function writes the main part for the xml based vtu file format. This   routine is used internally together with    [2.x.77]  and    [2.x.78]  by  [2.x.79]   
+* [0.x.180]*
+   Some visualization programs, such as ParaView, can read several separate   VTU files that all form part of the same simulation, in order to   parallelize visualization. In that case, you need a    [2.x.80]  file that describes which VTU files (written, for   example, through the  [2.x.81]  function) form a group.   The current function can generate such a centralized record.     This function is typically not called by itself from user space, but   you may want to call it through  [2.x.82]    since the DataOutInterface class has access to information that you   would have to provide to the current function by hand.     In any case, whether this function is called directly or via    [2.x.83]  the central record file so   written contains a list of (scalar or vector) fields that describes which   fields can actually be found in the individual files that comprise the set   of parallel VTU files along with the names of these files. This function   gets the names and types of fields through the third and fourth   argument; you can determine these by hand, but in practice, this function   is most easily called by calling  [2.x.84]    which determines the last two arguments by calling    [2.x.85]  and    [2.x.86]  functions. The second   argument to this function specifies the names of the files that form the   parallel set.    
+*  [2.x.87]  Use  [2.x.88]  and  [2.x.89]    for writing each piece. Also note that   only one parallel process needs to call the current function, listing the   names of the files written by all parallel processes.    
+*  [2.x.90]  In order to tell Paraview to group together multiple    [2.x.91]  files that each describe one time step of a time   dependent simulation, see the  [2.x.92]    function.    
+*  [2.x.93]  Older versions of VisIt (before 2.5.1), can not read    [2.x.94]  records. However, it can read visit records as written   by the write_visit_record() function.  
+* [0.x.181]*
+   In ParaView it is possible to visualize time-dependent data tagged with   the current integration time of a time dependent simulation. To use this   feature you need a  [2.x.95]  file that describes which VTU or   PVTU file belongs to which timestep. This function writes a file that   provides this mapping, i.e., it takes a list of pairs each of which   indicates a particular time instant and the corresponding file that   contains the graphical data for this time instant.     A typical use case, in program that computes a time dependent solution,   would be the following ( [2.x.96]  are   member variables of the class with types  [2.x.97]  and    [2.x.98] , respectively; the variable    [2.x.99]  is of type    [2.x.100] ):    
+* [1.x.21]
+*     
+*  [2.x.101]  See  [2.x.102]   [2.x.103]    and  [2.x.104]    for writing solutions at each timestep.    
+*  [2.x.105]  The second element of each pair, i.e., the file in which the   graphical data for each time is stored, may itself be again a file that   references other files. For example, it could be the name for a    [2.x.106]  file that references multiple parts of a parallel   computation.  
+* [0.x.182]*
+   This function is the exact equivalent of the write_pvtu_record() function   but for older versions of the VisIt visualization program and for one   visualization graph (or one time step only). See there for the purpose of   this function.     This function is documented in the "Creating a master file for parallel"   section (section 5.7) of the "Getting data into VisIt" report that can be   found here:   https://wci.llnl.gov/codes/visit/2.0.0/GettingDataIntoVisIt2.0.0.pdf  
+* [0.x.183]*
+   This function is equivalent to the write_visit_record() above but for   multiple time steps. Here is an example of how the function would be   used:  
+* [1.x.22]
+*      This function is documented in the "Creating a master file for parallel"   section (section 5.7) of the "Getting data into VisIt" report that can be   found here:   https://wci.llnl.gov/codes/visit/2.0.0/GettingDataIntoVisIt2.0.0.pdf  
+* [0.x.184]*
+   This function is equivalent to the write_visit_record() above but for   multiple time steps and with additional information about the time for   each timestep. Here is an example of how the function would be   used:  
+* [1.x.23]
+*      This function is documented in the "Creating a master file for parallel"   section (section 5.7) of the "Getting data into VisIt" report that can be   found here:   https://wci.llnl.gov/codes/visit/2.0.0/GettingDataIntoVisIt2.0.0.pdf  
+* [0.x.185]*
+   Write the given list of patches to the output stream in SVG format.     SVG (Scalable Vector Graphics) is an XML-based vector image format   developed and maintained by the World Wide Web Consortium (W3C). This   function conforms to the latest specification SVG 1.1, released on August   16, 2011. Controlling the graphic output is possible by setting or   clearing the respective flags (see the SvgFlags struct). At present, this   format only supports output for two-dimensional data, with values in the   third direction taken from a data vector.     For the output, each patch is subdivided into four triangles which are   then written as polygons and filled with a linear color gradient. The   arising coloring of the patches visualizes the data values at the   vertices taken from the specified data vector. A colorbar can be drawn to   encode the coloring.    
+*  [2.x.107]  This function is so far only implemented for two dimensions with an   additional dimension reserved for data information.  
+* [0.x.186]*
+   Write the given list of patches to the output stream in deal.II   intermediate format. This is not a format understood by any other   graphics program, but is rather a direct dump of the intermediate   internal format used by deal.II. This internal format is generated by the   various classes that can generate output using the DataOutBase class, for   example from a finite element solution, and is then converted in the   present class to the final graphics format.     Note that the intermediate format is what its name suggests: a direct   representation of internal data. It isn't standardized and will change   whenever we change our internal representation. You can only expect to   process files written in this format using the same version of deal.II   that was used for writing.     The reason why we offer to write out this intermediate format is that it   can be read back into a deal.II program using the DataOutReader class,   which is helpful in at least two contexts: First, this can be used to   later generate graphical output in any other graphics format presently   understood; this way, it is not necessary to know at run-time which   output format is requested, or if multiple output files in different   formats are needed. Secondly, in contrast to almost all other graphics   formats, it is possible to merge several files that contain intermediate   format data, and generate a single output file from it, which may be   again in intermediate format or any of the final formats. This latter   option is most helpful for parallel programs: as demonstrated in the    [2.x.108]  example program, it is possible to let only one processor   generate the graphical output for the entire parallel program, but this   can become vastly inefficient if many processors are involved, because   the load is no longer balanced. The way out is to let each processor   generate intermediate graphical output for its chunk of the domain, and   the later merge the different files into one, which is an operation that   is much cheaper than the generation of the intermediate data.     Intermediate format deal.II data is usually stored in files with the   ending <tt>.d2</tt>.  
+* [0.x.187]*
+   Write the data in  [2.x.109]  to a single HDF5 file containing both the   mesh and solution values.  
+* [0.x.188]*
+   Write the data in  [2.x.110]  to HDF5 file(s). If  [2.x.111]  is   false, the mesh data will not be written and the solution file will   contain only the solution values. If  [2.x.112]  is true and the   filenames are the same, the resulting file will contain both mesh data   and solution values.  
+* [0.x.189]*
+   DataOutFilter is an intermediate data format that reduces the amount of   data that will be written to files. The object filled by this function   can then later be used again to write data in a concrete file format;   see, for example,  [2.x.113]   
+* [0.x.190]*
+   Given an input stream that contains data written by   write_deal_II_intermediate(), determine the <tt>dim</tt> and   <tt>spacedim</tt> template parameters with which that function was   called, and return them as a pair of values.     Note that this function eats a number of elements at the present position   of the stream, and therefore alters it. In order to read from it using,   for example, the DataOutReader class, you may wish to either reset the   stream to its previous position, or close and reopen it.  
+* [0.x.191]*
+   Return the OutputFormat value corresponding to the given string. If the   string does not match any known format, an exception is thrown.     The main purpose of this function is to allow a program to use any   implemented output format without the need to extend the program's parser   each time a new format is implemented.     To get a list of presently available format names, e.g. to give it to the   ParameterHandler class, use the function get_output_format_names().  
+* [0.x.192]*
+   Return a list of implemented output formats. The different names are   separated by vertical bar signs (<tt>`|'</tt>) as used by the   ParameterHandler classes.  
+* [0.x.193]*
+   Provide a function which tells us which suffix a file with a given output   format usually has. At present the following formats are defined:    [2.x.114]     [2.x.115]  <tt>dx</tt>: <tt>.dx</tt>    [2.x.116]  <tt>ucd</tt>: <tt>.inp</tt>    [2.x.117]  <tt>gnuplot</tt>: <tt>.gnuplot</tt>    [2.x.118]  <tt>povray</tt>: <tt>.pov</tt>    [2.x.119]  <tt>eps</tt>: <tt>.eps</tt>    [2.x.120]  <tt>gmv</tt>: <tt>.gmv</tt>    [2.x.121]  <tt>tecplot</tt>: <tt>.dat</tt>    [2.x.122]  <tt>tecplot_binary</tt>: <tt>.plt</tt>    [2.x.123]  <tt>vtk</tt>: <tt>.vtk</tt>    [2.x.124]  <tt>vtu</tt>: <tt>.vtu</tt>    [2.x.125]  <tt>svg</tt>: <tt>.svg</tt>    [2.x.126]  <tt>deal_II_intermediate</tt>: <tt>.d2</tt>.    [2.x.127]       [2.x.128]  Using Tecplot binary output is deprecated.  
+* [0.x.194]*
+    [2.x.129]  Exceptions    [2.x.130]   
+* [0.x.195]*
+   Exception  
+* [0.x.196]*
+   An output function did not receive any patches for writing.  
+* [0.x.197]*
+   Exception  
+* [0.x.198]*
+   Exception  
+* [0.x.199]*
+ This class is the interface to the functions in the DataOutBase namespace, as already its name might suggest. It does not offer much functionality apart from a way to access the implemented formats and a way to dynamically dispatch what output format to chose.
+*  This class is thought as a base class to classes actually generating data for output. It has two abstract virtual functions, get_patches() and get_dataset_names() produce the data which is actually needed. These are the only functions that need to be overloaded by a derived class. In addition to that, it has a function for each output format supported by the underlying base class which gets the output data using these two virtual functions and passes them to the raw output functions.
+*  The purpose of this class is mainly two-fold: to support storing flags by which the output in the different output formats are controlled, and means to work with output in a way where output format, flags and other things are determined at run time. In addition to that it offers the abstract interface to derived classes briefly discussed above.
+* 
+
+*  [1.x.24]
+*  The way we treat flags in this class is very similar to that used in the <tt>GridOut</tt> class. For detailed information on the why's and how's, as well as an example of programming, we refer to the documentation of that class.
+*  Basically, this class stores a set of flags for each output format supported by the underlying <tt>DataOutBase</tt> class. These are used whenever one of the <tt>write_*</tt> functions is used. By default, the values of these flags are set to reasonable start-ups, but in case you want to change them, you can create a structure holding the flags for one of the output formats and set it using the <tt>set_flags</tt> functions of this class to determine all future output the object might produce by that output format.
+*  For information on what parameters are supported by different output functions, please see the documentation of the <tt>DataOutBase</tt> class and its member classes.
+* 
+
+*  [1.x.25]
+*  In the output flags classes, described above, many flags are defined for output in the different formats. In order to make them available to the input file handler class <tt>ParameterHandler</tt>, each of these has a function declaring these flags to the parameter handler and to read them back from an actual input file. In order to avoid that in user programs these functions have to be called for each available output format and the respective flag class, the present <tt>DataOutInterface</tt> class offers a function <tt>declare_parameters</tt> which calls the respective function of all known output format flags classes. The flags of each such format are packed together in a subsection in the input file. Likewise, there is a function <tt>parse_parameters</tt> which reads these parameters and stores them in the flags associated with this object (see above).
+*  Using these functions, you do not have to track which formats are presently implemented.
+*  Usage is as follows:
+
+* 
+* [1.x.26]
+*  Note that in the present example, the class <tt>DataOut</tt> was used. However, any other class derived from <tt>DataOutInterface</tt> would work alike.
+* 
+
+*  [1.x.27]
+*  This class, much like the <tt>GridOut</tt> class, has a set of functions providing a list of supported output formats, an <tt>enum</tt> denoting all these and a function to parse a string and return the respective <tt>enum</tt> value if it is a valid output format's name (actually, these functions are inherited from the base class). Finally, there is a function <tt>write</tt>, which takes a value of this <tt>enum</tt> and dispatches to one of the actual <tt>write_*</tt> functions depending on the output format selected by this value.
+*  The functions offering the different output format names are, respectively, <tt>default_suffix</tt>, <tt>parse_output_format</tt>, and <tt>get_output_format_names</tt>. They make the selection of output formats in parameter files much easier, and especially independent of the formats presently implemented. User programs need therefore not be changed whenever a new format is implemented.
+*  Additionally, objects of this class have a default format, which can be set by the parameter "Output format" of the parameter file. Within a program, this can be changed by the member function <tt>set_default_format</tt>. Using this default format, it is possible to leave the format selection completely to the parameter file. A suitable suffix for the output file name can be obtained by <tt>default_suffix</tt> without arguments.
+* 
+
+* 
+*  [2.x.131] 
+
+* 
+* [0.x.200]*
+   Constructor.  
+* [0.x.201]*
+   Destructor. Does nothing, but is declared virtual since this class has   virtual functions.  
+* [0.x.202]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in OpenDX   format. See  [2.x.132]   
+* [0.x.203]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in EPS   format. See  [2.x.133]   
+* [0.x.204]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in GMV   format. See  [2.x.134]   
+* [0.x.205]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in GNUPLOT   format. See  [2.x.135]   
+* [0.x.206]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in POVRAY   format. See  [2.x.136]   
+* [0.x.207]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in Tecplot   format. See  [2.x.137]   
+* [0.x.208]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in UCD   format for AVS. See  [2.x.138]   
+* [0.x.209]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in Vtk   format. See  [2.x.139]     
+*  [2.x.140]  VTK is a legacy format and has largely been supplanted by the VTU   format (an XML-structured version of VTK). In particular, VTU allows for   the compression of data and consequently leads to much smaller file sizes   that equivalent VTK files for large files. Since all visualization   programs that support VTK also support VTU, you should consider using the   latter file format instead, by using the write_vtu() function.  
+* [0.x.210]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in Vtu   (VTK's XML) format. See  [2.x.141]      Some visualization programs, such as ParaView, can read several separate   VTU files to parallelize visualization. In that case, you need a    [2.x.142]  file that describes which VTU files form a group. The    [2.x.143]  function can generate such a   centralized record. Likewise,  [2.x.144]  does   the same for older versions of VisIt (although VisIt can also read    [2.x.145]  records since version 2.5.1). Finally,    [2.x.146]  can be used to group together the   files that jointly make up a time dependent simulation.  
+* [0.x.211]*
+   Collective MPI call to write the solution from all participating nodes   (those in the given communicator) to a single compressed .vtu file on a   shared file system.  The communicator can be a sub communicator of the   one used by the computation.  This routine uses MPI I/O to achieve high   performance on parallel filesystems. Also see    [2.x.147]   
+* [0.x.212]*
+   Some visualization programs, such as ParaView, can read several separate   VTU files that all form part of the same simulation, in order to   parallelize visualization. In that case, you need a    [2.x.148]  file that describes which VTU files (written, for   example, through the  [2.x.149]  function) form a group.   The current function can generate such a centralized record.     The central record file generated by this function   contains a list of (scalar or vector) fields that describes which   fields can actually be found in the individual files that comprise the set   of parallel VTU files along with the names of these files. This function   gets the names and types of fields through the get_dataset_names() and   get_nonscalar_data_ranges() functions of this class. The second argument   to this function specifies the names of the files that form the parallel   set.    
+*  [2.x.150]  Use  [2.x.151]  and  [2.x.152]    for writing each piece. Also note that   only one parallel process needs to call the current function, listing the   names of the files written by all parallel processes.    
+*  [2.x.153]  The use of this function is explained in  [2.x.154] .    
+*  [2.x.155]  In order to tell Paraview to group together multiple    [2.x.156]  files that each describe one time step of a time   dependent simulation, see the  [2.x.157]    function.    
+*  [2.x.158]  Older versions of VisIt (before 2.5.1), can not read    [2.x.159]  records. However, it can read visit records as written   by the write_visit_record() function.  
+* [0.x.213]*
+   This function writes several .vtu files and a .pvtu record in parallel   and constructs the filenames automatically. It is a combination of    [2.x.160]  or    [2.x.161]  and    [2.x.162]      For example, running   <code> write_vtu_with_pvtu_record("output/", "solution", 3, comm, 4, 2)   </code> on 10 processes generates the files  
+* [1.x.28]
+*    where the `.0.vtu` file contains the output of the first half of the   processes grouped together, and the `.1.vtu` the data from the remaining   half.     A specified  [2.x.163]  and a  [2.x.164]    form the first part of the filename. The filename is then extended with   a  [2.x.165]  labeling the current timestep/iteration/etc., the processor ID,   and finally the .vtu/.pvtu ending. Since the number of timesteps to be   written depends on the application, the number of digits to be reserved in   the filename can be specified as parameter  [2.x.166]  and the number   is not padded with leading zeros if this parameter is left at its default   value  [2.x.167]  If more than one file identifier   is needed (e.g. time step number and iteration counter of solver), the   last identifier is used as  [2.x.168]  while all other identifiers have to be   added to  [2.x.169]  when calling this function.     In a   parallel setting, several files are typically written per time step. The   number of files written in parallel depends on the number of MPI processes   (see parameter  [2.x.170]  and a   specified number of  [2.x.171]  with default value 0. The background is that   VTU file output supports grouping files from several CPUs into a given   number of files using MPI I/O when writing on a parallel filesystem. The   default value of  [2.x.172]  is 0, meaning that every MPI rank will write one   file. A value of 1 will generate one big file containing the solution over   the whole domain, while a larger value will create  [2.x.173]  files (but not   more than there are MPI ranks).     Note that only one processor needs to   generate the .pvtu file, where processor zero is chosen to take over this   job.     The return value is the filename of the centralized file for the pvtu   record.    
+*  [2.x.174]  The code simply combines the strings  [2.x.175]  and    [2.x.176]  i.e., the user has to make sure that    [2.x.177]  contains a trailing character, e.g. "/", that separates the   directory from the filename.    
+*  [2.x.178]  Use an empty string "" for the first argument if output is to be   written in the current working directory.  
+* [0.x.214]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in SVG   format. See  [2.x.179]   
+* [0.x.215]*
+   Obtain data through get_patches() and write it to <tt>out</tt> in deal.II   intermediate format. See  [2.x.180]      Note that the intermediate format is what its name suggests: a direct   representation of internal data. It isn't standardized and will change   whenever we change our internal representation. You can only expect to   process files written in this format using the same version of deal.II   that was used for writing.  
+* [0.x.216]*
+   Create an XDMFEntry based on the data in the data_filter. This assumes   the mesh and solution data were written to a single file. See   write_xdmf_file() for an example of usage.  
+* [0.x.217]*
+   Create an XDMFEntry based on the data in the data_filter. This assumes   the mesh and solution data were written to separate files. See   write_xdmf_file() for an example of usage.  
+* [0.x.218]*
+   Write an XDMF file based on the provided vector of XDMFEntry objects.   Below is an example of how to use this function with HDF5 and the   DataOutFilter:    
+* [1.x.29]
+*   
+* [0.x.219]*
+   Write the data in  [2.x.181]  to a single HDF5 file containing both the   mesh and solution values. Below is an example of how to use this function   with the DataOutFilter:    
+* [1.x.30]
+*   
+* [0.x.220]*
+   Write the data in data_filter to HDF5 file(s). If write_mesh_file is   false, the mesh data will not be written and the solution file will   contain only the solution values. If write_mesh_file is true and the   filenames are the same, the resulting file will contain both mesh data   and solution values.  
+* [0.x.221]*
+   DataOutFilter is an intermediate data format that reduces the amount of   data that will be written to files. The object filled by this function   can then later be used again to write data in a concrete file format;   see, for example,  [2.x.182]   
+* [0.x.222]*
+   Write data and grid to <tt>out</tt> according to the given data format.   This function simply calls the appropriate <tt>write_*</tt> function. If   no output format is requested, the <tt>default_format</tt> is written.     An error occurs if no format is provided and the default format is   <tt>default_format</tt>.  
+* [0.x.223]*
+   Set the default format. The value set here is used anytime, output for   format <tt>default_format</tt> is requested.  
+* [0.x.224]*
+   Set the flags to be used for output. This method expects <tt>flags</tt>   to be a member of one of the child classes of <tt>OutputFlagsBase</tt>.  
+* [0.x.225]*
+   A function that returns the same string as the respective function in the   base class does; the only exception being that if the parameter is   omitted, then the value for the present default format is returned, i.e.   the correct suffix for the format that was set through   set_default_format() or parse_parameters() before calling this function.  
+* [0.x.226]*
+   Declare parameters for all output formats by declaring subsections within   the parameter file for each output format and call the respective   <tt>declare_parameters</tt> functions of the flag classes for each output   format.     Some of the declared subsections may not contain entries, if the   respective format does not export any flags.     Note that the top-level parameters denoting the number of subdivisions   per patch and the output format are not declared, since they are only   passed to virtual functions and are not stored inside objects of this   type. You have to declare them yourself.  
+* [0.x.227]*
+   Read the parameters declared in declare_parameters() and set the flags   for the output formats accordingly.     The flags thus obtained overwrite all previous contents of the flag   objects as default-constructed or set by the set_flags() function.  
+* [0.x.228]*
+   Return an estimate for the memory consumption, in bytes, of this object.   This is not exact (but will usually be close) because calculating the   memory usage of trees (e.g.,  [2.x.183]  is difficult.  
+* [0.x.229]*
+   This is the abstract function through which derived classes propagate   preprocessed data in the form of Patch structures (declared in the base   class DataOutBase) to the actual output function. You need to overload   this function to allow the output functions to know what they shall   print.  
+* [0.x.230]*
+   Abstract virtual function through which the names of data sets are   obtained by the output functions of the base class.  
+* [0.x.231]*
+   This functions returns information about how the individual components of   output files that consist of more than one data set are to be   interpreted.     It returns a list of index pairs and corresponding name and type indicating   which components of the output are to be considered vector- or   tensor-valued rather than just a collection of scalar data. The index pairs   are inclusive; for example, if we have a Stokes problem in 2d with   components (u,v,p), then the corresponding vector data range should be   (0,1), and the returned list would consist of only a single element with a   tuple such as (0,1,"velocity",component_is_part_of_vector).     Since some of the derived classes do not know about non-scalar data, this   function has a default implementation that simply returns an empty   string, meaning that all data is to be considered a collection of scalar   fields.  
+* [0.x.232]*
+   Validate that the names of the datasets returned by get_dataset_names() and   get_nonscalar_data_ranges() are valid. This currently consists of checking   that names are not used more than once. If an invalid state is encountered,   an Assert() will be triggered in debug mode.  
+* [0.x.233]*
+   The default number of subdivisions for patches. This is filled by   parse_parameters() and should be obeyed by build_patches() in derived   classes.  
+* [0.x.234]*
+   Standard output format.  Use this format, if output format default_format   is requested. It can be changed by the <tt>set_format</tt> function or in   a parameter file.  
+* [0.x.235]*
+   Flags to be used upon output of OpenDX data. Can be changed by using the   <tt>set_flags</tt> function.  
+* [0.x.236]*
+   Flags to be used upon output of UCD data. Can be changed by using the   <tt>set_flags</tt> function.  
+* [0.x.237]*
+   Flags to be used upon output of GNUPLOT data. Can be changed by using the   <tt>set_flags</tt> function.  
+* [0.x.238]*
+   Flags to be used upon output of POVRAY data. Can be changed by using the   <tt>set_flags</tt> function.  
+* [0.x.239]*
+   Flags to be used upon output of EPS data in one space dimension. Can be   changed by using the <tt>set_flags</tt> function.  
+* [0.x.240]*
+   Flags to be used upon output of gmv data in one space dimension. Can be   changed by using the <tt>set_flags</tt> function.  
+* [0.x.241]*
+   Flags to be used upon output of Tecplot data in one space dimension. Can   be changed by using the <tt>set_flags</tt> function.  
+* [0.x.242]*
+   Flags to be used upon output of vtk data in one space dimension. Can be   changed by using the <tt>set_flags</tt> function.  
+* [0.x.243]*
+   Flags to be used upon output of svg data in one space dimension. Can be   changed by using the <tt>set_flags</tt> function.  
+* [0.x.244]*
+   Flags to be used upon output of deal.II intermediate data in one space   dimension. Can be changed by using the <tt>set_flags</tt> function.  
+* [0.x.245]*
+ A class that is used to read data written in deal.II intermediate format back in, so that it can be written out in any of the other supported graphics formats. This class has two main purposes:
+*  The first use of this class is so that application programs can defer the decision of which graphics format to use until after the program has been run. The data is written in intermediate format into a file, and later on it can then be converted into any graphics format you wish. This may be useful, for example, if you want to convert it to gnuplot format to get a quick glimpse and later on want to convert it to OpenDX format as well to get a high quality version of the data. The present class allows to read this intermediate format back into the program, and allows it to be written in any other supported format using the relevant functions of the base class.
+*  The second use is mostly useful in parallel programs: rather than having one central process generate the graphical output for the entire program, one can let each process generate the graphical data for the cells it owns, and write it into a separate file in intermediate format. Later on, all these intermediate files can then be read back in and merged together, a process that is fast compared to generating the data in the first place. The use of the intermediate format is mostly because it allows separate files to be merged, while this is almost impossible once the data has been written out in any of the supported established graphics formats.
+*  This second use scenario is explained in some detail in the  [2.x.184]  example program.
+*  In order to read data back into this object, you have to know the template parameters for the space dimension which were used when writing the data. If this knowledge is available at compile time, then this is no problem. However, if it is not (such as in a simple format converter), then it needs to be figured out at run time, even though the compiler already needs it at compile time. A way around using the  [2.x.185]  function.
+*  Note that the intermediate format is what its name suggests: a direct representation of internal data. It isn't standardized and will change whenever we change our internal representation. You can only expect to process files written in this format using the same version of deal.II that was used for writing.
+* 
+
+* 
+*  [2.x.186] 
+
+* 
+* [0.x.246]*
+   Read a sequence of patches as written previously by    [2.x.187]  and store them in the   present object. This overwrites any previous content.  
+* [0.x.247]*
+   This function can be used to merge the patches read by the other object   into the patches that this present object stores. This is sometimes handy   if one has, for example, a domain decomposition algorithm where each   block is represented by a DoFHandler of its own, but one wants to output   the solution on all the blocks at the same time. Alternatively, it may   also be used for parallel programs, where each process only generates   output for its share of the cells, even if all processes can see all   cells.     For this to work, the input files for the present object and the given   argument need to have the same number of output vectors, and they need to   use the same number of subdivisions per patch. The output will probably   look rather funny if patches in both objects overlap in space.     If you call read() for this object after merging in patches, the previous   state is overwritten, and the merged-in patches are lost.     This function will fail if either this or the other object did not yet   set up any patches.  
+* [0.x.248]*
+   Exception  
+* [0.x.249]*
+   Exception  
+* [0.x.250]*
+   Exception  
+* [0.x.251]*
+   This is the function through which this class propagates preprocessed   data in the form of Patch structures (declared in the base class   DataOutBase) to the actual output function.     It returns the patches as read the last time a stream was given to the   read() function.  
+* [0.x.252]*
+   Abstract virtual function through which the names of data sets are   obtained by the output functions of the base class.     Return the names of the variables as read the last time we read a file.  
+* [0.x.253]*
+   This functions returns information about how the individual components of   output files that consist of more than one data set are to be   interpreted.     It returns a list of index pairs and corresponding name indicating which   components of the output are to be considered vector-valued rather than   just a collection of scalar data. The index pairs are inclusive; for   example, if we have a Stokes problem in 2d with components (u,v,p), then   the corresponding vector data range should be (0,1), and the returned   list would consist of only a single element with a tuple such as   (0,1,"velocity").     Since some of the derived classes do not know about vector data, this   function has a default implementation that simply returns an empty   string, meaning that all data is to be considered a collection of scalar   fields.  
+* [0.x.254]*
+   Arrays holding the set of patches as well as the names of output   variables, all of which we read from an input stream.  
+* [0.x.255]*
+   Information about whether certain components of the output field are to   be considered vectors.  
+* [0.x.256]*
+ A class to store relevant data to use when writing a lightweight XDMF file. The XDMF file in turn points to heavy data files (such as HDF5) where the actual simulation data is stored. This allows flexibility in arranging the data, and also allows the mesh to be separated from the point data.
+
+* 
+* [0.x.257]*
+   Default constructor that creates an invalid object.  
+* [0.x.258]*
+   Simplified constructor that calls the complete constructor for   cases where  [2.x.188] , and    [2.x.189] .  
+* [0.x.259]*
+   Simplified constructor that calls the complete constructor for   cases where  [2.x.190] .  
+* [0.x.260]*
+   Constructor that sets all members to provided parameters.  
+* [0.x.261]*
+   Record an attribute and associated dimensionality.  
+* [0.x.262]*
+   Read or write the data of this object for serialization using the   [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.263]*
+   Get the XDMF content associated with this entry.   If the entry is not valid, this returns an empty string.      [2.x.191]  Use the overload taking an `unsigned int` and a   `const ReferenceCell &` instead.  
+* [0.x.264]*
+   Get the XDMF content associated with this entry.   If the entry is not valid, this returns an empty string.  
+* [0.x.265]*
+   Whether this entry is valid and contains data to be written.  
+* [0.x.266]*
+   The name of the HDF5 heavy data solution file this entry references.  
+* [0.x.267]*
+   The name of the HDF5 mesh file this entry references.  
+* [0.x.268]*
+   The simulation time associated with this entry.  
+* [0.x.269]*
+   The number of data nodes.  
+* [0.x.270]*
+   The number of data cells.  
+* [0.x.271]*
+   The dimension associated with the data.  
+* [0.x.272]*
+   The dimension of the space the data lives in.   Note that dimension <= space_dimension.  
+* [0.x.273]*
+   The attributes associated with this entry and their dimension.  
+* [0.x.274]*
+   Output operator for an object of type  [2.x.192]  This   operator dumps the intermediate graphics format represented by the patch   data structure. It may later be converted into regular formats for a   number of graphics programs.  
+* [0.x.275]*
+   Input operator for an object of type  [2.x.193]  This   operator reads the intermediate graphics format represented by the patch   data structure, using the format in which it was written using the   operator<<.  
+* [0.x.276]

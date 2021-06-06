@@ -108,18 +108,18 @@ Inheritance diagram for FEValuesBase&lt; dim, spacedim &gt;::CellIterator&lt; CI
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abc7821150195ef1b8dc193bf43410f56"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEValuesBase_1_1CellIterator.html#abc7821150195ef1b8dc193bf43410f56">CellIterator</a> (const CI &amp;<a class="el" href="classFEValuesBase_1_1CellIterator.html#adaf75156e38e748ad5e6c4fc0dbfa312">cell</a>)</td></tr>
+<tr class="memitem:abc7821150195ef1b8dc193bf43410f56"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEValuesBase_1_1CellIterator.html#abc7821150195ef1b8dc193bf43410f56">CellIterator</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CI &amp;<a class="el" href="classFEValuesBase_1_1CellIterator.html#adaf75156e38e748ad5e6c4fc0dbfa312">cell</a>)</td></tr>
 <tr class="separator:abc7821150195ef1b8dc193bf43410f56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3199fdcf816835fed2cfd002e502bdca"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEValuesBase_1_1CellIterator.html#a3199fdcf816835fed2cfd002e502bdca">operator typename Triangulation&lt; dim, spacedim &gt;::cell_iterator</a> () const override</td></tr>
+<tr class="memitem:a3199fdcf816835fed2cfd002e502bdca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEValuesBase_1_1CellIterator.html#a3199fdcf816835fed2cfd002e502bdca">operator typename Triangulation&lt; dim, spacedim &gt;::cell_iterator</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a3199fdcf816835fed2cfd002e502bdca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5893c6057fdb91462b692dd2757dd10d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEValuesBase_1_1CellIterator.html#a5893c6057fdb91462b692dd2757dd10d">n_dofs_for_dof_handler</a> () const override</td></tr>
+<tr class="memitem:a5893c6057fdb91462b692dd2757dd10d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEValuesBase_1_1CellIterator.html#a5893c6057fdb91462b692dd2757dd10d">n_dofs_for_dof_handler</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:a5893c6057fdb91462b692dd2757dd10d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbf337340887d91dd6d6c3c2b29a7631"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEValuesBase_1_1CellIterator.html#acbf337340887d91dd6d6c3c2b29a7631">get_interpolated_dof_values</a> (const <a class="el" href="classIndexSet.html">IndexSet</a> &amp;in, <a class="el" href="classVector.html">Vector</a>&lt; <a class="el" href="classIndexSet.html#a7923832556d89fd2ff2a0e8778f3dceb">IndexSet::value_type</a> &gt; &amp;out) const override</td></tr>
+<tr class="memitem:acbf337340887d91dd6d6c3c2b29a7631"><td class="memItemLeft" align="right" valign="top"><a class="el" href="time__dependent__0_8txt.html#aec4741ed233852c8c3d33ac036f9de89">virtual</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEValuesBase_1_1CellIterator.html#acbf337340887d91dd6d6c3c2b29a7631">get_interpolated_dof_values</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classIndexSet.html">IndexSet</a> &amp;<a class="el" href="tria__description__0_8txt.html#a11901ff80013804497fa645646431eae">in</a>, <a class="el" href="classVector.html">Vector</a>&lt; <a class="el" href="classIndexSet.html#a7923832556d89fd2ff2a0e8778f3dceb">IndexSet::value_type</a> &gt; &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> override</td></tr>
 <tr class="separator:acbf337340887d91dd6d6c3c2b29a7631"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:adaf75156e38e748ad5e6c4fc0dbfa312"><td class="memItemLeft" align="right" valign="top">const CI&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEValuesBase_1_1CellIterator.html#adaf75156e38e748ad5e6c4fc0dbfa312">cell</a></td></tr>
+<tr class="memitem:adaf75156e38e748ad5e6c4fc0dbfa312"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CI&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEValuesBase_1_1CellIterator.html#adaf75156e38e748ad5e6c4fc0dbfa312">cell</a></td></tr>
 <tr class="separator:adaf75156e38e748ad5e6c4fc0dbfa312"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -143,9 +143,9 @@ template&lt;int dim, int spacedim&gt; </div>
 template&lt;typename CI &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; dim, spacedim &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a>&lt; CI &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a> </td>
+          <td class="memname"><a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a>&lt; CI &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a> </td>
           <td>(</td>
-          <td class="paramtype">const CI &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CI &amp;&#160;</td>
           <td class="paramname"><em>cell</em></td><td>)</td>
           <td></td>
         </tr>
@@ -172,7 +172,7 @@ template&lt;typename CI &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; dim, spacedim &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a>&lt; CI &gt;::operator typename <a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator</td>
+          <td class="memname"><a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a>&lt; CI &gt;::<a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a> typename <a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator</td>
         </tr>
       </table>
   </td>
@@ -203,7 +203,7 @@ template&lt;typename CI &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; dim, spacedim &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a>&lt; CI &gt;::n_dofs_for_dof_handler</td>
+          <td class="memname"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a>&lt; CI &gt;::n_dofs_for_dof_handler</td>
         </tr>
       </table>
   </td>
@@ -234,9 +234,9 @@ template&lt;typename CI &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; dim, spacedim &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a>&lt; CI &gt;::get_interpolated_dof_values </td>
+          <td class="memname">void <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a>&lt; CI &gt;::get_interpolated_dof_values </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classIndexSet.html">IndexSet</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classIndexSet.html">IndexSet</a> &amp;&#160;</td>
           <td class="paramname"><em>in</em>, </td>
         </tr>
         <tr>
@@ -280,7 +280,7 @@ template&lt;typename CI &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const CI <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; dim, spacedim &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a>&lt; CI &gt;::cell</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CI <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="classFEValuesBase_1_1CellIterator.html">CellIterator</a>&lt; CI &gt;::cell</td>
         </tr>
       </table>
   </td>

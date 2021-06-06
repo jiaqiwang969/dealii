@@ -1,9 +1,9 @@
-digraph "CUDA Wrappers"
+digraph "CUDA Wrappers The classes in this module are"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
   Node2 [label="Preconditioners and\l Relaxation Operators",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Preconditioners.html",tooltip=" "];
-  Node1 [label="CUDA Wrappers",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="The classes in this module are concerned with the description of features to be run on GPUs using CUD..."];
+  Node1 [label="CUDA Wrappers The classes\l in this module are",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="concerned with the description of features to be run on GPUs using CUDA."];
   Node1->Node2 [shape=plaintext, label="CUDAWrappers::PreconditionIC\nCUDAWrappers::PreconditionILU", color="orange", dir="none", style="dashed"];
 }

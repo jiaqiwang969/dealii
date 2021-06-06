@@ -1,0 +1,94 @@
+[0.x.0]*
+
+
+* 
+*  [2.x.0] 
+*  This class simplifies the construction of convergence tables, reading the options for the generation of the table from a parameter file. It provides a series of methods that can be used to compute the error given a reference exact solution, or the difference between two numerical solutions, or any other custom computation of the error, given via  [2.x.1]  objects.
+*  An example usage of this class is given by
+
+* 
+* [1.x.0]
+* 
+*  The above code constructs a ParsedConvergenceTable that works for scalar problems, and will produce an error table with `H1_norm`, `L2_norm`, and `Linfty_norm` norms of the error.
+*  Whenever a call to the methods error_from_exact() or difference() is made, the instance of this class inspects its parameters, computes all norms specified by the parameter given at construction time, possibly modified via a parameter file, computes all extra column entries specified using the method add_extra_column(), and writes one row of the convergence table.
+*  Once you have finished with the computations, a call to output_table() will generate a formatted convergence table on the provided stream, and to the file (if any) specified in the parameter file.
+*  With a small modification, the same code can be used to estimate the errors of mixed or multi-physics problems, e.g.:
+
+* 
+* [1.x.1]
+* 
+*  The above code assumes that you are solving a Stokes problem with three components. Two components for the vector velocity field `u`, and one component for the pressure field `p`, and will produce an error table with `H1` and `L2` norm of the error in the velocity field (first two, components) and `L2` error in the pressure field.
+*  You may also call `table.output_table()` without arguments, to write the table only to the file specified in the parameter file.
+*  By calling the method add_parameters() passing a ParameterHandler object, the following options will be defined in the given ParameterHandler object (in the current level of the ParameterHandler object, i.e., whatever level you have entered with the  [2.x.2]  method), and can be modified at run time through a parameter file:
+
+* 
+* [1.x.2]
+* 
+*  When using this class, please cite
+
+* 
+* [1.x.3]
+* 
+
+* 
+* [0.x.1]*
+   Minimal constructor for ParsedConvergenceTable objects.     The number of components must match the number of components of the   finite element space that is used to compute the errors. If   a component name is repeated, than it is interpreted as a vector field,   and the errors of the repeated components are grouped together.     The size of the vector  [2.x.3]  must match the number of   unique component names, and may contain zero or more comma separated   identifiers for the norm to compute for each component (see the   documentation of  [2.x.4]  for the available options).     For example, the following constructor  
+* [1.x.4]
+*    would produce (if the parameter file is left untouched) a table similar to  
+* [1.x.5]
+*      See the other constructor for a documentation of all the parameters you can   change.      [2.x.5]  component_names Specify the names of the components;    [2.x.6]  list_of_error_norms Specify what error norms to compute for each   unique component name.  
+* [0.x.2]*
+   Full constructor for ParsedConvergenceTable.      [2.x.7]  component_names Names of the components. Repeated consecutive   names are interpreted as components of a vector valued field;    [2.x.8]  list_of_error_norms Specify what error norms to compute for each   unique component name;    [2.x.9]  exponent The exponent to use in p-norms;    [2.x.10]  extra_columns Extra columns to add. These may be "cells" or "dofs";    [2.x.11]  rate_key Specify the extra column by which we will compute the   error rates. This key can either be one of "cells" or "dofs", or, if you   add extra columns to the table via the method add_extra_column(), it may   be one of the extra columns you added;    [2.x.12]  rate_mode Specify the rate mode to use when computing error rates.   This maybe either "reduction_rate", "reduction_rate_log2", or "none". See   the documentation of  [2.x.13]  for an explanation of how   each of this mode behaves;    [2.x.14]  error_file_name Name of error output file (with extension txt,   gpl, tex, or org). If different from the empty string, than   output_table() also writes in this file in the format deduced from its   extension;    [2.x.15]  precision How many digits to use when writing the error;    [2.x.16]  compute_error Control whether the filling of the table is enabled   or not. This flag may be used to disable at run time any error computation;     The parameters you specify with this constructor can be written to a   ParameterHandler object by calling the add_parameters() method. Once you   call the add_parameters() method, the following options will be defined in   the given ParameterHandler object, and the parameters of the instance of   this class will follow the modification you make to the ParameterHandler   object at run time:  
+* [1.x.6]
+*   
+* [0.x.3]*
+   Attach all the parameters in this class to entries of the parameter   handler  [2.x.17]  Whenever the content of  [2.x.18]  changes, the parameters   of this class will be updated.  
+* [0.x.4]*
+   Add a row to the error table, containing the error between  [2.x.19]  and   the  [2.x.20]  function, in the norm(s) specified in the parameter file.     If you specify a  [2.x.21]  function during this call, then this is used   to compute weighted errors. The weight function can be either a scalar   function (which will be used for all components), or a vector function.   When it is a vector function, an assertion is triggered if the number of   components does not coincide with the number of components of the   underlying finite element space.  
+* [0.x.5]*
+   Same as above, with a different mapping.  
+* [0.x.6]*
+   Add an additional column (with name  [2.x.22]  to the table, by invoking   the function  [2.x.23]  when calling error_from_exact() or   difference().     You can call this method as many times as you want. If  [2.x.24]  was   already used in a previous call, then calling this method with the same   name will overwrite whatever function you had previously specified. If   you use a lambda function for this call, make sure that the variables used   internally in the lambda function remain valid until the call to   error_from_exact() or difference().     Make sure you add all extra columns before the first call to   error_from_exact() or difference(). Adding additional columns to the   convergence table after you already started filling the table will trigger   an exception.     This method may be used, for example, to compute the error w.r.t. to   time step increments in time, for example:  
+* [1.x.7]
+*    will produce a table similar to  
+* [1.x.8]
+*    provided that you use the following parameter file (only non default   entries are shown here):  
+* [1.x.9]
+*         [2.x.25]  column_name Name of the column to add;    [2.x.26]  custom_function %Function that will be called to fill the given   entry. You need to make sure that the scope of this function is valid   up to the call to error_from_exact() or difference();    [2.x.27]  compute_rate If set to true, then this column will be included in   the list of columns for which error rates are computed. You may want to set   this to false if you want to compute error rates with respect to this   column. In this case, you should also specify  [2.x.28]  as the rate   key in the parameter file.  
+* [0.x.7]*
+   Difference between two solutions in the same vector space.  
+* [0.x.8]*
+   Same as above, with a non default mapping.  
+* [0.x.9]*
+   Write the error table to the  [2.x.29]  stream (in text format), and   (possibly) to the file stream specified in the parameters (with the format   deduced from the file name extension).  
+* [0.x.10]*
+   Write the error table to the file stream specified in the parameters.     If the "Error file name" option in the parameter file is set to the empty   string, no output is written.  
+* [0.x.11]*
+   Add rates to the output table.  
+* [0.x.12]*
+   Names of the solution components.  
+* [0.x.13]*
+   Same as above, but containing repeated component names only once.  
+* [0.x.14]*
+   Masks for each unique component name.  
+* [0.x.15]*
+   Additional methods to call when adding rows to the table.  
+* [0.x.16]*
+   Type of error to compute per components.  
+* [0.x.17]*
+   Exponent to use in p-norm types.  
+* [0.x.18]*
+   The actual table  
+* [0.x.19]*
+   Extra columns to add to the table.  
+* [0.x.20]*
+   The name of column with respect to which we compute convergence rates.  
+* [0.x.21]*
+   Reduction rate mode. See  [2.x.30]  for a documentation.  
+* [0.x.22]*
+   The precision used to output the table.  
+* [0.x.23]*
+   Filename to use when writing to file.  
+* [0.x.24]*
+   Compute the error. If this is false, all methods that perform the   computation of the error are disabled and don't do anything.  
+* [0.x.25]

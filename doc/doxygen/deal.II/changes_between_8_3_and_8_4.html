@@ -396,7 +396,7 @@ Changed: The function <a class="el" href="namespaceDoFRenumbering.html#abbd60882
 <p><a class="anchor" id="specific"></a> </p><h3>Specific improvements</h3>
 <ol>
 <li>
-<p class="startli">New: <a class="el" href="classFunctionParser.html">FunctionParser</a> now supports <code>rand()</code> and <code>rand_seed(number)</code>, which return a random value in the range [0,1]. <br  />
+<p class="startli">New: <a class="el" href="classFunctionParser.html">FunctionParser</a> now supports <code><a class="el" href="base_2utilities__0_8txt.html#abdaf96304944a8787ae4488ed5461fac">rand()</a></code> and <code>rand_seed(number)</code>, which return a random value in the range [0,1]. <br  />
  (Wolfgang Bangerth, Luca Heltai, Alberto Sartori, 2016/02/09) </p>
 <p class="endli"></p>
 </li>
@@ -476,7 +476,7 @@ Changed: The function <a class="el" href="namespaceDoFRenumbering.html#abbd60882
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed: <a class="el" href="classAlignedVector.html#a6d1805fd5c0824de60b496daa958b8a5">AlignedVector&lt;T&gt;::fill()</a> (and thus, Table&lt;N,T&gt;::reinit) did not correctly call the destructor of <a class="el" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T()</a> and could leak memory for complicated class types that depend on their constructor to free memory. <br  />
+<p class="startli">Fixed: AlignedVector&lt;T&gt;::fill() (and thus, Table&lt;N,T&gt;::reinit) did not correctly call the destructor of <a class="el" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T()</a> and could leak memory for complicated class types that depend on their constructor to free memory. <br  />
  (Martin Kronbichler, 2016/01/08) </p>
 <p class="endli"></p>
 </li>
@@ -720,7 +720,7 @@ Changed: The function <a class="el" href="namespaceDoFRenumbering.html#abbd60882
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Changed: <a class="el" href="namespaceparallel.html#acff5a80eecf505943d8abbec0658ae93">FEValues::transform()</a> has been deprecated. The functionality of this function is a (small) subset of what the <a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a> classes already provide. <br  />
+<p class="startli">Changed: FEValues::transform() has been deprecated. The functionality of this function is a (small) subset of what the <a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a> classes already provide. <br  />
  (Wolfgang Bangerth, 2015/09/02) </p>
 <p class="endli"></p>
 </li>
@@ -825,7 +825,7 @@ Changed: The function <a class="el" href="namespaceDoFRenumbering.html#abbd60882
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Improved: The conversion Epetra_Map -&gt; <a class="el" href="classIndexSet.html">IndexSet</a> is now an O(1) operation for contiguous index ranges, improving over the old O(N) behavior. <br  />
+<p class="startli">Improved: The conversion Epetra_Map -&gt; <a class="el" href="classIndexSet.html">IndexSet</a> is now an O(1) operation for contiguous index ranges, improving over the old <a class="el" href="base_2utilities__0_8txt.html#a327ba1a6237ec37b823125ef77868fee">O(N)</a> behavior. <br  />
  (Martin Kronbichler, 2015/07/30) </p>
 <p class="endli"></p>
 </li>

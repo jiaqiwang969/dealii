@@ -1,0 +1,156 @@
+[0.x.0]*
+ Global coarsening utility functions.
+
+* 
+* [0.x.1]*
+   Common polynomial coarsening sequences.    
+*  [2.x.0]  These polynomial coarsening sequences up to a degree of 9 are     precompiled in MGTwoLevelTransfer. See also:      [2.x.1]   
+* [0.x.2]*
+     Half polynomial degree by integer division. For example, for degree=7     the following sequence would be obtained:: 7
+* 
+-> 3
+* 
+-> 1    
+* [0.x.3]*
+     Decrease the polynomial degree by one. E.g., for degree=7 following     sequence would result: 7
+* 
+-> 6
+* 
+-> 5
+* 
+-> 4
+* 
+-> 3
+* 
+-> 2
+* 
+-> 1    
+* [0.x.4]*
+     Decrease the polynomial degree to one. E.g., for degree=7 following     sequence would result: 7
+* 
+-> 1    
+* [0.x.5]*
+   For a given  [2.x.2]  and polynomial coarsening sequence  [2.x.3]    determine the next coarser degree.  
+* [0.x.6]*
+   For a given  [2.x.4]  and polynomial coarsening sequence  [2.x.5]    determine the full sequence of polynomial degrees, sorted in ascending   order.  
+* [0.x.7]*
+   For a given triangulation  [2.x.6]  determine the geometric coarsening   sequence by repeated global coarsening of the provided triangulation.    
+*  [2.x.7]  For convenience, a reference to the input triangulation is stored in     the last entry of the return vector.  
+*  [2.x.8]  Currently, not implemented for  [2.x.9]   
+*  [2.x.10]  The type of the returned triangulations is the same as of the input     triangulation.  
+* [0.x.8]*
+   Similar to the above function but also taking a  [2.x.11]  for   repartitioning the triangulations on the coarser levels. If    [2.x.12]  is set, the input triangulation is not   altered,   else the triangulation is coarsened. If  [2.x.13]    is set, the triangulation on the finest level is repartitioned as well. If   the flags are set to true/false, the input triangulation is simply used as   the finest triangulation.    
+*  [2.x.14]  For convenience, a reference to the input triangulation is stored in     the last entry of the return vector.  
+*  [2.x.15]  The type of the returned triangulations is      [2.x.16]   
+*  [2.x.17]  Currently, only implemented for  [2.x.18]   
+* [0.x.9]*
+   Similar to the above function but taking in a constant version of    [2.x.19]  and as a consequence not allowing to directly use it for   coarsening, requiring that internally a temporal copy is created.  
+* [0.x.10]*
+ Class for transfer between two multigrid levels for p- or global coarsening.
+
+* 
+* [0.x.11]*
+   Perform prolongation.  
+* [0.x.12]*
+   Perform restriction.  
+* [0.x.13]*
+   Perform interpolation of a solution vector from the fine level to the   coarse level. This function is different from restriction, where a   weighted residual is transferred to a coarser level (transposition of   prolongation matrix).  
+* [0.x.14]*
+ Class for transfer between two multigrid levels for p- or global coarsening. Specialization for  [2.x.20] 
+
+* 
+* [0.x.15]*
+   Set up global coarsening between the given DoFHandler objects (    [2.x.21]  and  [2.x.22]  The transfer   can be only performed on active levels.  
+* [0.x.16]*
+   Set up polynomial coarsening between the given DoFHandler objects (    [2.x.23]  and  [2.x.24]  Polynomial transfers   can be only performed on active levels  [2.x.25]    or on coarse-grid levels.    
+*  [2.x.26]  The function polynomial_transfer_supported() can be used to     check if the given polynomial coarsening strategy is supported.  
+* [0.x.17]*
+   Check if a fast templated version of the polynomial transfer between    [2.x.27]  and  [2.x.28]  is available.    
+*  [2.x.29]  Currently, the polynomial coarsening strategies: 1) go-to-one,     2) bisect, and 3) decrease-by-one are precompiled with templates for     degrees up to 9.  
+* [0.x.18]*
+   Perform prolongation.  
+* [0.x.19]*
+   Perform restriction.  
+* [0.x.20]*
+   Perform interpolation of a solution vector from the fine level to the   coarse level. This function is different from restriction, where a   weighted residual is transferred to a coarser level (transposition of   prolongation matrix).  
+* [0.x.21]*
+   A multigrid transfer scheme. A multrigrid transfer class can have different   transfer schemes to enable p-adaptivity (one transfer scheme per   polynomial degree pair) and to enable global coarsening (one transfer   scheme for transfer between children and parent cells, as well as, one   transfer scheme for cells that are not refined).  
+* [0.x.22]*
+     Number of coarse cells.    
+* [0.x.23]*
+     Number of degrees of freedom of a coarse cell.    
+* [0.x.24]*
+     Number of degrees of freedom of fine cell.    
+* [0.x.25]*
+     Polynomial degree of the finite element of the coarse cells.    
+* [0.x.26]*
+     Polynomial degree of the finite element of the fine cells.    
+* [0.x.27]*
+     Weights for continuous elements.    
+* [0.x.28]*
+     Prolongation matrix for non-tensor-product elements.    
+* [0.x.29]*
+     1D prolongation matrix for tensor-product elements.    
+* [0.x.30]*
+     Restriction matrix for non-tensor-product elements.    
+* [0.x.31]*
+     1D restriction matrix for tensor-product elements.    
+* [0.x.32]*
+     DoF indices of the coarse cells, expressed in indices local to the MPI     rank.    
+* [0.x.33]*
+     DoF indices of the fine cells, expressed in indices local to the MPI     rank.    
+* [0.x.34]*
+   Transfer schemes.  
+* [0.x.35]*
+   Flag if the finite elements on the fine cells are continuous. If yes,   the multiplicity of DoF sharing a vertex/line as well as constraints have   to be taken into account via weights.  
+* [0.x.36]*
+   Partitioner needed by the intermediate vector.  
+* [0.x.37]*
+   Partitioner needed by the intermediate vector.  
+* [0.x.38]*
+   Internal vector needed for collecting all degrees of freedom of the fine   cells. It is only initialized if the fine-level DoF indices touch DoFs   other than the locally active ones (which we always assume can be   accessed by the given vectors in the prolongate/restrict functions),   otherwise it is left at size zero.  
+* [0.x.39]*
+   Internal vector on that the actual prolongation/restriction is performed.  
+* [0.x.40]*
+   Internal vector for performing manual constraint_coarse.distribute(), which   is needed for acceptable performance.  
+* [0.x.41]*
+   Constraint-entry indices for manually performing   constraint_coarse.distribute() in MPI-local indices (for performance   reasons).  
+* [0.x.42]*
+   Constraint-entry values for manually performing   constraint_coarse.distribute() in MPI-local indices (for performance   reasons).  
+* [0.x.43]*
+   Pointers to the constraint entries for performing manual   constraint_coarse.distribute().  
+* [0.x.44]*
+   Constraint-entry indices for performing manual   constraint_coarse.distribute_local_to_global().  
+* [0.x.45]*
+   Constraint-entry values for performing manual   constraint_coarse.distribute_local_to_global().  
+* [0.x.46]*
+   Pointers to the constraint entries for performing manual   constraint_coarse.distribute_local_to_global().  
+* [0.x.47]*
+   Number of components.  
+* [0.x.48]*
+ Implementation of the MGTransferBase. In contrast to other multigrid transfer operators, the user can provide separate transfer operators of type MGTwoLevelTransfer between each level.
+*  This class currently only works for tensor-product finite elements based on FE_Q and FE_DGQ elements. Systems involving multiple components of one of these element, as well as, systems with different elements or other elements are currently not implemented.
+
+* 
+* [0.x.49]*
+   Value type.  
+* [0.x.50]*
+   Constructor taking a collection of transfer operators (with the coarsest   level kept   empty in  [2.x.30]  and an optional function that initializes the   internal level vectors within the function call copy_to_mg() if used in the   context of PreconditionMG.  
+* [0.x.51]*
+   Perform prolongation.  
+* [0.x.52]*
+   Perform restriction.  
+* [0.x.53]*
+   Initialize internal vectors and copy  [2.x.31]  vector to the finest   multigrid level.    
+*  [2.x.32]  DoFHandler is not needed here, but is required by the interface.  
+* [0.x.54]*
+   Initialize internal vectors and copy the values on the finest   multigrid level to  [2.x.33]  vector.    
+*  [2.x.34]  DoFHandler is not needed here, but is required by the interface.  
+* [0.x.55]*
+   Interpolate fine-mesh field  [2.x.35]  to each multigrid level in    [2.x.36]  and store the result in  [2.x.37]  This function is different   from restriction, where a weighted residual is   transferred to a coarser level (transposition of prolongation matrix).     The argument  [2.x.38]  has to be initialized with the correct size according   to the number of levels of the triangulation.     If an inner vector of  [2.x.39]  is empty or has incorrect locally owned size,   it will be resized to locally relevant degrees of freedom on each level.    
+*  [2.x.40]  DoFHandler is not needed here, but is required by the interface.  
+* [0.x.56]*
+   Collection of the two-level transfer operators.  
+* [0.x.57]*
+   %Function to initialize internal level vectors.  
+* [0.x.58]

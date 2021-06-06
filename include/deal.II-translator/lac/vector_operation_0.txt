@@ -1,0 +1,20 @@
+[0.x.0]!  [2.x.0]  Vectors [2.x.1] 
+
+* 
+* [0.x.1]*
+ This enum keeps track of the current operation in parallel linear algebra objects like Vectors and Matrices.
+*  It is used in the various compress() functions. They also exist in serial codes for compatibility and are empty there.
+*  See  [2.x.2]  "Compressing distributed objects" for more information.
+
+* 
+* [0.x.2]*
+     The current operation is unknown.    
+* [0.x.3]*
+     The current operation is an insertion.    
+* [0.x.4]*
+     The current operation is an addition.    
+* [0.x.5]*
+     The current operation is a minimization.    
+* [0.x.6]*
+     The current operation is a maximization.    
+* [0.x.7]

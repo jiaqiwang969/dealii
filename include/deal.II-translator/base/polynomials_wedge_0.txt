@@ -1,0 +1,35 @@
+[0.x.0]*
+ Polynomials defined on wedge entities. This class is basis of FE_WedgeP.
+*  The polynomials are created via a tensor product of a  [2.x.0]  and a  [2.x.1]  however, are re-numerated to better match the definition of FiniteElement.
+
+* 
+* [0.x.1]*
+   Make the dimension available to the outside.  
+* [0.x.2]   Constructor taking the polynomial  [2.x.2]  as input.    
+*  [2.x.3]  Currently, only linear (degree=1) and quadratic polynomials     (degree=2) are implemented.  
+* [0.x.3]*
+    [2.x.4]   [2.x.5]     
+*  [2.x.6]  Currently, only the vectors  [2.x.7]  and  [2.x.8]  are filled.  
+* [0.x.4]*
+    [2.x.9]   [2.x.10]     
+*  [2.x.11]  Currently, only implemented for first derivative.  
+* [0.x.5]*
+    [2.x.12]   [2.x.13]     
+*  [2.x.14]  Not implemented yet.  
+* [0.x.6]*
+    [2.x.15]   [2.x.16]     
+*  [2.x.17]  Not implemented yet.  
+* [0.x.7]*
+    [2.x.18]   [2.x.19]     
+*  [2.x.20]  Not implemented yet.  
+* [0.x.8]*
+    [2.x.21]   [2.x.22]     
+*  [2.x.23]  Not implemented yet.  
+* [0.x.9]*
+    [2.x.24]   [2.x.25]     
+*  [2.x.26]  Not implemented yet.  
+* [0.x.10]*
+   Scalar polynomials defined on a triangle.  
+* [0.x.11]*
+   Scalar polynomials defined on a line.  
+* [0.x.12]

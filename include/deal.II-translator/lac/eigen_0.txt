@@ -1,0 +1,47 @@
+[0.x.0]*
+ Power method (von Mises) for eigenvalue computations.
+*  This method determines the largest eigenvalue of a matrix by applying increasing powers of this matrix to a vector. If there is an eigenvalue  [2.x.0]  with dominant absolute value, the iteration vectors will become aligned to its eigenspace and  [2.x.1] .
+*  A shift parameter allows to shift the spectrum, so it is possible to compute the smallest eigenvalue, too.
+*  Convergence of this method is known to be slow.
+
+* 
+* [0.x.1]*
+   Declare type of container size.  
+* [0.x.2]*
+   Standardized data struct to pipe additional data to the solver.  
+* [0.x.3]*
+     Shift parameter. This parameter allows to shift the spectrum to compute     a different eigenvalue.    
+* [0.x.4]*
+     Constructor. Set the shift parameter.    
+* [0.x.5]*
+   Constructor.  
+* [0.x.6]*
+   Power method.  [2.x.2]  is the (not necessarily normalized, but nonzero) start   vector for the power method. After the iteration,  [2.x.3]  is the   approximated eigenvalue and  [2.x.4]  is the corresponding eigenvector,   normalized with respect to the l2-norm.  
+* [0.x.7]*
+   Shift parameter.  
+* [0.x.8]*
+ Inverse iteration (Wieland) for eigenvalue computations.
+*  This class implements an adaptive version of the inverse iteration by Wieland.
+*  There are two choices for the stopping criterion: by default, the norm of the residual  [2.x.5]  is computed. Since this might not converge to zero for non-symmetric matrices with non-trivial Jordan blocks, it can be replaced by checking the difference of successive eigenvalues. Use  [2.x.6]  for switching this option.
+*  Usually, the initial guess entering this method is updated after each step, replacing it with the new approximation of the eigenvalue. Using a parameter  [2.x.7]  between 0 and 1, this update can be damped. With relaxation parameter 0, no update is performed. This damping allows for slower adaption of the shift value to make sure that the method converges to the eigenvalue closest to the initial guess. This can be aided by the parameter  [2.x.8]  which indicates the first iteration step in which the shift value should be adapted.
+
+* 
+* [0.x.9]*
+   Declare type of container size.  
+* [0.x.10]*
+   Standardized data struct to pipe additional data to the solver.  
+* [0.x.11]*
+     Damping of the updated shift value.    
+* [0.x.12]*
+     Start step of adaptive shift parameter.    
+* [0.x.13]*
+     Flag for the stopping criterion.    
+* [0.x.14]*
+     Constructor.    
+* [0.x.15]*
+   Constructor.  
+* [0.x.16]*
+   Inverse method.  [2.x.9]  is the start guess for the eigenvalue and  [2.x.10]    is the (not necessarily normalized, but nonzero) start vector for the   power method. After the iteration,  [2.x.11]  is the approximated   eigenvalue and  [2.x.12]  is the corresponding eigenvector, normalized with   respect to the l2-norm.  
+* [0.x.17]*
+   Flags for execution.  
+* [0.x.18]

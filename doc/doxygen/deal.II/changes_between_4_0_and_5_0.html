@@ -111,7 +111,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">Removed: The <code><a class="el" href="group__Exceptions.html#gafa7ae4d32bda6035661c9cccfe185597">SparseLUDecomposition::reinit</a></code> and <code><a class="el" href="group__Exceptions.html#gafa7ae4d32bda6035661c9cccfe185597">SparseMIC::reinit</a></code> functions without argument had been deprecated before, and have now been removed. <br  />
+<p class="interli">Removed: The <code>SparseLUDecomposition::reinit</code> and <code>SparseMIC::reinit</code> functions without argument had been deprecated before, and have now been removed. <br  />
  (WB 2004/05/10) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -219,7 +219,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: The <code><a class="el" href="config_8h.html">config.h</a></code> file now declares a variable <code class="member">deal_II_numbers::invalid_unsigned_int</code>. It is a representation of the largest number that can be put into an unsigned integer. This value is widely used throughout the library as a marker for an invalid unsigned integer value, such as an invalid array index, an invalid array size, and the like. <br  />
+<p class="interli">New: The <code>config.h</code> file now declares a variable <code class="member">deal_II_numbers::invalid_unsigned_int</code>. It is a representation of the largest number that can be put into an unsigned integer. This value is widely used throughout the library as a marker for an invalid unsigned integer value, such as an invalid array index, an invalid array size, and the like. <br  />
  (WB 2003/10/24) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -593,7 +593,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">Improved: <code><a class="el" href="classFiniteElementData.html">FiniteElementData</a></code> has a function <code>tensor_degree()</code>, returning the degree of the polynomial space suitable for choosing a tensor product quadrature formula. <br  />
+<p class="interli">Improved: <code><a class="el" href="classFiniteElementData.html">FiniteElementData</a></code> has a function <code><a class="el" href="mapping__fe__0_8txt.html#a9d820bafe623eb7d0bcca2636adabbad">tensor_degree()</a></code>, returning the degree of the polynomial space suitable for choosing a tensor product quadrature formula. <br  />
  (GK 2003/11/28) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -628,14 +628,14 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: There is now also a function <code>MGDoFCellAccessor::neighbor_child_on_subface</code> that returns the result of the <code><a class="el" href="classCellAccessor.html#a54844a9be3a35e62aaabc8d43ad1f8b8">CellAccessor::neighbor_child_on_subface</a></code> function but converts it so that one can also access MGDoF data. <br  />
+<p class="interli">New: There is now also a function <code>MGDoFCellAccessor::neighbor_child_on_subface</code> that returns the result of the <code><a class="el" href="classCellAccessor.html#a2b05364556328fdb8d6492c3459ab91d">CellAccessor::neighbor_child_on_subface</a></code> function but converts it so that one can also access MGDoF data. <br  />
  (RH 2003/10/22) </p>
 <p class="interli"></p>
 <p class="endli"></p>
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: There are now functions <code><a class="el" href="classCellAccessor.html#a54844a9be3a35e62aaabc8d43ad1f8b8">CellAccessor::neighbor_child_on_subface</a></code> and <code><a class="el" href="classDoFCellAccessor.html#ac3fe8449042487bf12d34fb2dd574af2">DoFCellAccessor::neighbor_child_on_subface</a></code> that should be called instead of using <code><a class="el" href="structGeometryInfo.html#a1263120c3a820d6b17b4055e6e0ef9f1">GeometryInfo::child_cell_on_face</a></code> in most cases. <br  />
+<p class="interli">New: There are now functions <code><a class="el" href="classCellAccessor.html#a2b05364556328fdb8d6492c3459ab91d">CellAccessor::neighbor_child_on_subface</a></code> and <code><a class="el" href="classDoFCellAccessor.html#acf6b3ae7147febfdb34f214dad849a09">DoFCellAccessor::neighbor_child_on_subface</a></code> that should be called instead of using <code><a class="el" href="structGeometryInfo.html#a1263120c3a820d6b17b4055e6e0ef9f1">GeometryInfo::child_cell_on_face</a></code> in most cases. <br  />
  (WB 2003/10/17) </p>
 <p class="interli"></p>
 <p class="endli"></p>

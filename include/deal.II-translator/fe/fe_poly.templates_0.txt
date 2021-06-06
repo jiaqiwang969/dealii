@@ -1,0 +1,6 @@
+[0.x.0]*
+ Returns whether we need to correct the Hessians and third derivatives with the derivatives of the Jacobian. This is determined by checking if the jacobian_pushed_forward are zero.
+*  Especially for the third derivatives, the correction term is very expensive, which is why we check if the derivatives are zero before computing the correction.
+
+* 
+* [0.x.1]

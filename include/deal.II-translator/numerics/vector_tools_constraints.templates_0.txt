@@ -1,0 +1,9 @@
+[0.x.0]*
+     A structure that stores the dim DoF indices that correspond to a     vector-valued quantity at a single support point.    
+* [0.x.1]*
+     Add the constraint  [2.x.0]  to the list of     constraints.         Here,  [2.x.1]  is represented by the set of given DoF indices, and      [2.x.2]  by the vector specified as the second argument.         The function does not add constraints if a degree of freedom is already     constrained in the constraints object.    
+* [0.x.2]*
+     Add the constraint  [2.x.3]  to the list of     constraints. In 2d, this is a single constraint, in 3d these are two     constraints.         Here,  [2.x.4]  is represented by the set of given DoF indices, and      [2.x.5]  by the vector specified as the second argument.         The function does not add constraints if a degree of freedom is already     constrained in the constraints object.    
+* [0.x.3]*
+     Given a vector, compute a set of dim-1 vectors that are orthogonal to     the first one and mutually orthonormal as well.    
+* [0.x.4]

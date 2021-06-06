@@ -1,0 +1,62 @@
+[0.x.0]!  [2.x.0]  Matrix1 [2.x.1] 
+
+* 
+* [0.x.1]*
+ A block matrix consisting of blocks of type SparseMatrixEZ.
+*  Like the other Block-objects, this matrix can be used like a SparseMatrixEZ, when it comes to access to entries. Then, there are functions for the multiplication with BlockVector and access to the individual blocks.
+*   [2.x.2]   [2.x.3]  "Block (linear algebra)"
+
+* 
+* [0.x.2]*
+   Declare type for container size.  
+* [0.x.3]*
+   Default constructor. The result is an empty object with zero dimensions.  
+* [0.x.4]*
+   Constructor setting up an object with given number of block rows and   columns. The blocks themselves still have zero dimension.  
+* [0.x.5]*
+   Copy constructor. This is needed for some container classes. It creates   an object of the same number of block rows and columns. Since it calls   the copy constructor of SparseMatrixEZ, the block s must be empty.  
+* [0.x.6]*
+   Copy operator. Like the copy constructor, this may be called for objects   with empty blocks only.  
+* [0.x.7]*
+   This operator assigns a scalar to a matrix. Since this does usually not   make much sense (should we set all matrix entries to this value? Only the   nonzero entries of the sparsity pattern?), this operation is only allowed   if the actual value to be assigned is zero. This operator only exists to   allow for the obvious notation <tt>matrix=0</tt>, which sets all elements   of the matrix to zero, but keep the sparsity pattern previously used.  
+* [0.x.8]*
+   Set matrix to zero dimensions and release memory.  
+* [0.x.9]*
+   Initialize to given block numbers.  After this operation, the matrix will   have the block dimensions provided. Each block will have zero dimensions   and must be initialized subsequently. After setting the sizes of the   blocks, collect_sizes() must be called to update internal data   structures.  
+* [0.x.10]*
+   This function collects the sizes of the sub-objects and stores them in   internal arrays, in order to be able to relay global indices into the   matrix to indices into the subobjects. Youmust* call this function each   time after you have changed the size of the sub-objects.  
+* [0.x.11]*
+   Access the block with the given coordinates.  
+* [0.x.12]*
+   Access the block with the given coordinates. Version for constant   objects.  
+* [0.x.13]*
+   Return the number of blocks in a column.  
+* [0.x.14]*
+   Return the number of blocks in a row.  
+* [0.x.15]*
+   Return whether the object is empty. It is empty if no memory is   allocated, which is the same as that both dimensions are zero. This   function is just the concatenation of the respective call to all sub-   matrices.  
+* [0.x.16]*
+   Return number of rows of this matrix, which equals the dimension of the   codomain (or range) space. It is the sum of the number of rows over the   sub-matrix blocks of this matrix. Recall that the matrix is of size m()   times n().  
+* [0.x.17]*
+   Return number of columns of this matrix, which equals the dimension of   the domain space. It is the sum of the number of columns over the sub-   matrix blocks of this matrix. Recall that the matrix is of size m() times   n().  
+* [0.x.18]*
+   Set the element <tt>(i,j)</tt> to  [2.x.4]   Throws an error if the entry   does not exist or if <tt>value</tt> is not a finite number. Still, it is   allowed to store zero values in non-existent fields.  
+* [0.x.19]*
+   Add  [2.x.5]  to the element <tt>(i,j)</tt>.  Throws an error if the entry   does not exist or if <tt>value</tt> is not a finite number. Still, it is   allowed to store zero values in non-existent fields.  
+* [0.x.20]*
+   Matrix-vector multiplication: let  [2.x.6]  with  [2.x.7]  being this   matrix.  
+* [0.x.21]*
+   Matrix-vector multiplication: let  [2.x.8]  with  [2.x.9]  being this   matrix. This function does the same as vmult() but takes the transposed   matrix.  
+* [0.x.22]*
+   Adding Matrix-vector multiplication. Add  [2.x.10]  on  [2.x.11]  with  [2.x.12]  being   this matrix.  
+* [0.x.23]*
+   Adding Matrix-vector multiplication. Add  [2.x.13]  to  [2.x.14]  with  [2.x.15]    being this matrix. This function does the same as vmult_add() but takes   the transposed matrix.  
+* [0.x.24]*
+   Print statistics. If  [2.x.16]  is  [2.x.17]  prints a histogram of all   existing row lengths and allocated row lengths. Otherwise, just the   relation of allocated and used entries is shown.  
+* [0.x.25]*
+   Object storing and managing the transformation of row indices to indices   of the sub-objects.  
+* [0.x.26]*
+   Object storing and managing the transformation of column indices to   indices of the sub-objects.  
+* [0.x.27]*
+   The actual matrices  
+* [0.x.28]

@@ -1,0 +1,57 @@
+[0.x.0]*
+   Helper copy data struct.     This class is a good default drop in CopyData object for the    [2.x.0]  and  [2.x.1]  functions.     It arrays of (local) full matrices, vectors, and local degrees of freedom   index vectors, with size determined by the corresponding template argument.     In particular, you can specify the following template arguments
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.2]  n_matrices: Size of the array of matrices
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.3]  n_vectors: size of the array of vectors
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.4]  n_dof_indices: size of the array of local dof indices  
+* [0.x.1]*
+     Initialize everything with the same  [2.x.5]  This is usually the number     of local degrees of freedom.    
+* [0.x.2]*
+     For every object, specify the size they should have.    
+* [0.x.3]*
+     Deep copy constructor.    
+* [0.x.4]*
+     An array of local matrices.    
+* [0.x.5]*
+     An array of local vectors.    
+* [0.x.6]*
+     An array of local degrees of freedom indices.    
+* [0.x.7]

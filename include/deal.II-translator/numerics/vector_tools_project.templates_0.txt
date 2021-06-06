@@ -1,0 +1,14 @@
+[0.x.0]*
+     Interpolate zero boundary values. We don't need to worry about a     mapping here because the function we evaluate for the DoFs is zero in     the mapped locations as well as in the original, unmapped locations    
+* [0.x.1]*
+     Compute the boundary values to be used in the project() functions.    
+* [0.x.2]     MatrixFree implementation of project() for an arbitrary number of     components of the FiniteElement.    
+* [0.x.3]*
+     Helper interface for the matrix-free implementation of project(): avoid     instantiating the other helper functions for more than one VectorType     by copying from a  [2.x.0]     
+* [0.x.4]*
+     Return whether the boundary values try to constrain a degree of freedom     that is already constrained to something else    
+* [0.x.5]*
+     Generic implementation of the project() function    
+* [0.x.6]*
+     Specialization of project() for the case dim==spacedim.     Check if we can use the MatrixFree implementation or need     to use the matrix based one.    
+* [0.x.7]

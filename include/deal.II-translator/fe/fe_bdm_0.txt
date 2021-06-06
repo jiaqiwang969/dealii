@@ -1,0 +1,32 @@
+[0.x.0]*
+ The Brezzi-Douglas-Marini element.
+*  [1.x.0]
+*   [2.x.0]  The 3D version exhibits some numerical instabilities, in particular for higher order
+*   [2.x.1]  Restriction matrices are missing.
+*  The matching pressure space for FE_BDM of order [1.x.1] is the element FE_DGP of order [1.x.2].
+*  The BDM element of order  [2.x.2]  has [1.x.3] degrees of freedom on each face. These are implemented as the function values in the [1.x.4] Gauss points on each face.
+*  Additionally, for order greater or equal 2, we have additional [1.x.5], the number of vector valued polynomials in [1.x.6], interior degrees of freedom. These are the vector function values in the first [1.x.7] of the [1.x.8] Gauss points in the cell.
+* 
+
+* 
+*  [2.x.3] 
+
+* 
+* [0.x.1]*
+   Constructor for the BDM element of degree  [2.x.4]   
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_BDM<dim>(degree)</tt>, with  [2.x.5]  and  [2.x.6]  replaced   by appropriate values.  
+* [0.x.3]*
+   Only for internal use. Its full name is  [2.x.7]    function and it creates the  [2.x.8]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.9]    FiniteElementData.  
+* [0.x.4]*
+   Compute the vector used for the  [2.x.10]  field passed   to the base class's constructor.  
+* [0.x.5]*
+   Initialize the  [2.x.11]  and    [2.x.12]  fields. Called from   the constructor. See the    [2.x.13]  "glossary entry on generalized support points"   for more information.  
+* [0.x.6]*
+   The values in the face support points of the polynomials needed as test   functions. The outer vector is indexed by quadrature points, the inner by   the test function. The test function space is PolynomialsP<dim-1>.  
+* [0.x.7]*
+   The values in the interior support points of the polynomials needed as   test functions. The outer vector is indexed by quadrature points, the   inner by the test function. The test function space is PolynomialsP<dim>.  
+* [0.x.8]*
+   Initialize the permutation pattern and the pattern of sign change.    
+*  [2.x.14]  This function is not fully filled with the correct implementation   yet. It needs to be consistently implemented in a future release to work   on meshes that contain cells with flipped faces.  
+* [0.x.9]

@@ -1,0 +1,32 @@
+[0.x.0]*
+   A namespace for internal data structures of the DoFHandler group of   classes.    
+*  [2.x.0]   
+* [0.x.1]*
+         [1.x.0]         These classes are similar to the DoFLevel classes. We here store     information that is associated with faces, rather than cells, as this     information is independent of the hierarchical structure of cells,     which are organized in levels. In 2D we store information on degrees of     freedom located on lines whereas in 3D we store information on degrees     of freedom located on quads and lines. In 1D we do nothing, as the     faces of lines are vertices which are treated separately.         Apart from the DoFObjects object containing the data to store (degree     of freedom indices) we do not store any data or provide any     functionality. However, we do implement a function to determine an     estimate of the memory consumption of the contained DoFObjects     object(s).         The data contained isn't usually directly accessed. Rather, except for     some access from the DoFHandler class, access is usually through the      [2.x.1]  and  [2.x.2]  functions or     similar functions of derived classes that in turn access the member     variables using the  [2.x.3]  and corresponding     setter functions. Knowledge of the actual data format is therefore     encapsulated to the present hierarchy of classes as well as the      [2.x.4]  class.    
+* [0.x.2]*
+       Constructor. This constructor is deleted to prevent the use of this       template, as only the specializations should be used      
+* [0.x.3]*
+     Store the indices of degrees of freedom on faces in 1D. As these would     be vertices, which are treated separately, don't do anything.    
+* [0.x.4]*
+       Determine an estimate for the memory consumption (in bytes) of this       object.      
+* [0.x.5]*
+       Read or write the data of this object to or from a stream for the       purpose of serialization using the [BOOST serialization       library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).            
+* [0.x.6]*
+     Store the indices of degrees of freedom on faces in 2D, which are     lines.    
+* [0.x.7]*
+       The object containing the data of DoFs on lines.      
+* [0.x.8]*
+       Determine an estimate for the memory consumption (in bytes) of this       object.      
+* [0.x.9]*
+       Read or write the data of this object to or from a stream for the       purpose of serialization using the [BOOST serialization       library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).      
+* [0.x.10]*
+     Store the indices of degrees of freedom on faces in 3D, which are     quads, additionally also on lines.    
+* [0.x.11]*
+       The object containing the data of DoFs on lines.      
+* [0.x.12]*
+       The object containing the data of DoFs on quads.      
+* [0.x.13]*
+       Determine an estimate for the memory consumption (in bytes) of this       object.      
+* [0.x.14]*
+       Read or write the data of this object to or from a stream for the       purpose of serialization using the [BOOST serialization       library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).      
+* [0.x.15]

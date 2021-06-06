@@ -1,0 +1,130 @@
+[0.x.0]*
+   A namespace for a helper class to the GMRES solver.  
+* [0.x.1]*
+     Class to hold temporary vectors.  This class automatically allocates a     new vector, once it is needed.         A future version should also be able to shift through vectors     automatically, avoiding restart.    
+* [0.x.2]*
+       Constructor. Prepares an array of  [2.x.0]  of length  [2.x.1]        max_size.      
+* [0.x.3]*
+       Destructor. Delete all allocated vectors.      
+* [0.x.4]*
+       Get vector number  [2.x.2]  If this vector was unused before, an error       occurs.      
+* [0.x.5]*
+       Get vector number  [2.x.3]  Allocate it if necessary.             If a vector must be allocated,  [2.x.4]  is used to reinit it to the       proper dimensions.      
+* [0.x.6]*
+       Return size of data vector. It is used in the solver to store       the Arnoldi vectors.      
+* [0.x.7]*
+       Pool where vectors are obtained from.      
+* [0.x.8]*
+       Field for storing the vectors.      
+* [0.x.9]*
+ Implementation of the Restarted Preconditioned Direct Generalized Minimal Residual Method. The stopping criterion is the norm of the residual.
+*  The AdditionalData structure contains the number of temporary vectors used. The size of the Arnoldi basis is this number minus three. Additionally, it allows you to choose between right or left preconditioning. The default is left preconditioning. Finally it includes a flag indicating whether or not the default residual is used as stopping criterion.
+* 
+
+*  [1.x.0]
+*   [2.x.5]  allows you to choose between left and right preconditioning. As expected, this switches between solving for the systems [1.x.1] and [1.x.2], respectively.
+*  A second consequence is the type of residual which is used to measure convergence. With left preconditioning, this is the [1.x.3] residual, while with right preconditioning, it is the residual of the unpreconditioned system.
+*  Optionally, this behavior can be overridden by using the flag  [2.x.6]  A <tt>true</tt> value refers to the behavior described in the previous paragraph, while <tt>false</tt> reverts it. Be aware though that additional residuals have to be computed in this case, impeding the overall performance of the solver.
+* 
+
+*  [1.x.4]
+*  The maximal basis size is controlled by  [2.x.7]  and it is this number minus 2. If the number of iteration steps exceeds this number, all basis vectors are discarded and the iteration starts anew from the approximation obtained so far.
+*  Note that the minimizing property of GMRes only pertains to the Krylov space spanned by the Arnoldi basis. Therefore, restarted GMRes is [1.x.5] minimizing anymore. The choice of the basis length is a trade- off between memory consumption and convergence speed, since a longer basis means minimization over a larger space.
+*  For the requirements on matrices and vectors in order to work with this class, see the documentation of the Solver base class.
+* 
+
+*  [1.x.6]
+*  The solve() function of this class uses the mechanism described in the Solver base class to determine convergence. This mechanism can also be used to observe the progress of the iteration.
+* 
+
+*  [1.x.7]
+*  This class can estimate eigenvalues and condition number during the solution process. This is done by creating the Hessenberg matrix during the inner iterations. The eigenvalues are estimated as the eigenvalues of the Hessenberg matrix and the condition number is estimated as the ratio of the largest and smallest singular value of the Hessenberg matrix. The estimates can be obtained by connecting a function as a slot using  [2.x.8]  connect_condition_number_slot and  [2.x.9]  These slots will then be called from the solver with the estimates as argument.
+
+* 
+* [0.x.10]*
+   Standardized data struct to pipe additional data to the solver.  
+* [0.x.11]*
+     Constructor. By default, set the number of temporary vectors to 30,     i.e. do a restart every 28 iterations. Also set preconditioning from     left, the residual of the stopping criterion to the default residual,     and re-orthogonalization only if necessary.    
+* [0.x.12]*
+     Maximum number of temporary vectors. This parameter controls the size     of the Arnoldi basis, which for historical reasons is     #max_n_tmp_vectors-2. SolverGMRES assumes that there are at least three     temporary vectors, so this value must be greater than or equal to three.    
+* [0.x.13]*
+     Flag for right preconditioning.        
+*  [2.x.10]  Change between left and right preconditioning will also change     the way residuals are evaluated. See the corresponding section in the     SolverGMRES.    
+* [0.x.14]*
+     Flag for the default residual that is used to measure convergence.    
+* [0.x.15]*
+     Flag to force re-orthogonalization of orthonormal basis in every step.     If set to false, the solver automatically checks for loss of     orthogonality every 5 iterations and enables re-orthogonalization only     if necessary.    
+* [0.x.16]*
+   Constructor.  
+* [0.x.17]*
+   Constructor. Use an object of type GrowingVectorMemory as a default to   allocate memory.  
+* [0.x.18]*
+   The copy constructor is deleted.  
+* [0.x.19]*
+   Solve the linear system  [2.x.11]  for x.  
+* [0.x.20]*
+   Connect a slot to retrieve the estimated condition number. Called on each   outer iteration if every_iteration=true, otherwise called once when   iterations are ended (i.e., either because convergence has been achieved,   or because divergence has been detected).  
+* [0.x.21]*
+   Connect a slot to retrieve the estimated eigenvalues. Called on each   outer iteration if every_iteration=true, otherwise called once when   iterations are ended (i.e., either because convergence has been achieved,   or because divergence has been detected).  
+* [0.x.22]*
+   Connect a slot to retrieve the Hessenberg matrix obtained by the   projection of the initial matrix on the Krylov basis. Called on each   outer iteration if every_iteration=true, otherwise called once when   iterations are ended (i.e., either because convergence has been achieved,   or because divergence has been detected).  
+* [0.x.23]*
+   Connect a slot to retrieve the basis vectors of the Krylov space   generated by the Arnoldi algorithm. Called at once when iterations   are completed (i.e., either because convergence has been achieved,   or because divergence has been detected).  
+* [0.x.24]*
+   Connect a slot to retrieve a notification when the vectors are   re-orthogonalized.  
+* [0.x.25]*
+   Includes the maximum number of tmp vectors.  
+* [0.x.26]*
+   Signal used to retrieve the estimated condition number. Called once when   all iterations are ended.  
+* [0.x.27]*
+   Signal used to retrieve the estimated condition numbers. Called on each   outer iteration.  
+* [0.x.28]*
+   Signal used to retrieve the estimated eigenvalues. Called once when all   iterations are ended.  
+* [0.x.29]*
+   Signal used to retrieve the estimated eigenvalues. Called on each outer   iteration.  
+* [0.x.30]*
+   Signal used to retrieve the Hessenberg matrix. Called once when   all iterations are ended.  
+* [0.x.31]*
+   Signal used to retrieve the Hessenberg matrix. Called on each outer   iteration.  
+* [0.x.32]*
+   Signal used to retrieve the Krylov space basis vectors. Called once   when all iterations are ended.  
+* [0.x.33]*
+   Signal used to retrieve a notification   when the vectors are re-orthogonalized.  
+* [0.x.34]*
+   Implementation of the computation of the norm of the residual.  
+* [0.x.35]*
+   Transformation of an upper Hessenberg matrix into tridiagonal structure   by givens rotation of the last column  
+* [0.x.36]*
+   Orthogonalize the vector  [2.x.12]  against the  [2.x.13]  (orthogonal) vectors   given by the first argument using the modified Gram-Schmidt algorithm.   The factors used for orthogonalization are stored in  [2.x.14]  The boolean  [2.x.15]    re_orthogonalize specifies whether the modified Gram-Schmidt algorithm   should be applied twice. The algorithm checks loss of orthogonality in   the procedure every fifth step and sets the flag to true in that case.   All subsequent iterations use re-orthogonalization.   Calls the signal re_orthogonalize_signal if it is connected.  
+* [0.x.37]*
+   Estimates the eigenvalues from the Hessenberg matrix, H_orig, generated   during the inner iterations. Uses these estimate to compute the condition   number. Calls the signals eigenvalues_signal and cond_signal with these   estimates as arguments.  
+* [0.x.38]*
+   Projected system matrix  
+* [0.x.39]*
+   Auxiliary matrix for inverting  [2.x.16]   
+* [0.x.40]*
+ Implementation of the Generalized minimal residual method with flexible preconditioning (flexible GMRES or FGMRES).
+*  This flexible version of the GMRES method allows for the use of a different preconditioner in each iteration step. Therefore, it is also more robust with respect to inaccurate evaluation of the preconditioner. An important application is the use of a Krylov space method inside the preconditioner. As opposed to SolverGMRES which allows one to choose between left and right preconditioning, this solver always applies the preconditioner from the right.
+*  FGMRES needs two vectors in each iteration steps yielding a total of  [2.x.17]  auxiliary vectors. Otherwise, FGMRES requires roughly the same number of operations per iteration compared to GMRES, except one application of the preconditioner less at each restart and at the end of solve().
+*  For more details see  [2.x.18] .
+
+* 
+* [0.x.41]*
+   Standardized data struct to pipe additional data to the solver.  
+* [0.x.42]*
+     Constructor. By default, set the maximum basis size to 30.    
+* [0.x.43]*
+     Maximum basis size.    
+* [0.x.44]*
+   Constructor.  
+* [0.x.45]*
+   Constructor. Use an object of type GrowingVectorMemory as a default to   allocate memory.  
+* [0.x.46]*
+   Solve the linear system  [2.x.19]  for x.  
+* [0.x.47]*
+   Additional flags.  
+* [0.x.48]*
+   Projected system matrix  
+* [0.x.49]*
+   Auxiliary matrix for inverting  [2.x.20]   
+* [0.x.50]

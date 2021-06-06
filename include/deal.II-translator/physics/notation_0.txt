@@ -1,0 +1,85 @@
+[0.x.0]*
+    
+*  [2.x.0]      vectors and tensors to and from a compressed format using Kelvin notation     and weighting.         Both Kelvin and Voigt notation adopt the same indexing convention.     With specific reference to the spatial dimension 3 case, for     a rank-2 symmetric tensor  [2.x.1]  we enumerate its tensor     components     [1.x.0]     where  [2.x.2]  denotes the Kelvin index for the tensor component,     while for a general rank-2 tensor  [2.x.3]      [1.x.1]     and for a rank-1 tensor  [2.x.4]      [1.x.2]     To summarize, the relationship between tensor and Kelvin indices for both     the three-dimensional case and the analogously discerned two-dimensional     case outlined in the following table:      [2.x.5]      </td>     <td align="middle">        [2.x.6]      </td>     </tr>     </table>         To illustrate the purpose of this notation, consider the rank-2 symmetric     tensors  [2.x.7]  and  [2.x.8]  that are related to one another by      [2.x.9] , where the operator  [2.x.10]  is a     fourth-order symmetric tensor. As opposed to the commonly used Voigt     notation, Kelvin (or Mandel) notation keeps the same definition of the     inner product  [2.x.11]  when both  [2.x.12]  and      [2.x.13]  are symmetric. In general, the inner product of all     symmetric and general tensors remain the same regardless of the notation     with which it is represented.         To achieve these two properties, namely that     [1.x.3]     and     [1.x.4]     it holds that the Kelvin-condensed equivalents of the previously defined     symmetric tensors, indicated by the  [2.x.14] , must     be defined as     [1.x.5]     The corresponding and consistent condensed fourth-order symmetric tensor     is     [1.x.6]     The mapping from the two Kelvin indices of the FullMatrix      [2.x.15]  to the rank-4 SymmetricTensor  [2.x.16]  can be inferred     using the table shown above.         An important observation is that both the left-hand side tensor      [2.x.17]  and right-hand side tensor  [2.x.18]  have     the same form; this is a property that is not present in Voigt notation.     The various factors introduced into  [2.x.19] ,      [2.x.20]  and  [2.x.21]  account for the symmetry of     the tensors. The Kelvin description of their non-symmetric counterparts     include no such factors.         Some useful references that show how this notation works include, amongst     others,    
+* [1.x.7]
+*      and    
+* [1.x.8]
+*      as well as the online reference found on     [1.x.9] and [1.x.10].    
+* [0.x.1]*
+       Input matrix has incorrect number of rows.      
+* [0.x.2]*
+       Input matrix has incorrect number of rows.      
+* [0.x.3]*
+       Input matrix has incorrect number of columns.      
+* [0.x.4]*
+       Input matrix has incorrect number of columns.      
+* [0.x.5]*
+        [2.x.22]  Forward operation: Tensor notation to Kelvin notation      
+* [0.x.6]*
+       Convert a scalar value to its compressed vector equivalent.             The output vector has one entry.      
+* [0.x.7]*
+       Convert a rank-0 tensor to its compressed vector equivalent.             The output vector has one entry.      
+* [0.x.8]*
+       Convert a rank-1 tensor to its compressed vector equivalent.             The output vector has  [2.x.23]  entries.      
+* [0.x.9]*
+       Convert a rank-2 tensor to its compressed vector equivalent.             The output vector has  [2.x.24]  entries.      
+* [0.x.10]*
+       Convert a rank-2 symmetric tensor to its compressed vector equivalent.             The output vector has  [2.x.25]        entries.      
+* [0.x.11]*
+       Convert a scalar value to its compressed matrix equivalent.             The output matrix will have one row and one column.      
+* [0.x.12]*
+       Convert a rank-0 tensor to its compressed matrix equivalent.             The output matrix will have one row and one column.      
+* [0.x.13]*
+       Convert a rank-1 tensor to its compressed matrix equivalent.             The output matrix will have  [2.x.26]  rows and one column.      
+* [0.x.14]*
+       Convert a rank-2 tensor to its compressed matrix equivalent.             The output matrix will have  [2.x.27]  rows and  [2.x.28]  columns.      
+* [0.x.15]*
+       Convert a rank-2 symmetric tensor to its compressed matrix equivalent.             The output matrix will have  [2.x.29]  rows and  [2.x.30]  columns, with the same       format as the equivalent function for non-symmetric tensors. This is       because it is not possible to compress the        [2.x.31]  unique entries into a       square matrix.      
+* [0.x.16]*
+       Convert a rank-3 tensor to its compressed matrix equivalent.             The template arguments  [2.x.32]  and  [2.x.33]  determine how       the unrolling occurs, in particular how the elements of the rank-3       tensor are to be interpreted.             So, for example, with the following two conversions      
+* [1.x.11]
+*        the matrix  [2.x.34]  will have  [2.x.35]  rows and  [2.x.36]  columns       (i.e. size  [2.x.37]   [2.x.38]         [2.x.39]        while those of the matrix  [2.x.40]  will have  [2.x.41]  rows and        [2.x.42]  columns       (i.e. size  [2.x.43]   [2.x.44]         [2.x.45]  as it is assumed       that the entries corresponding to the alternation of the second and       third indices are equal. That is to say that        [2.x.46] .      
+* [0.x.17]*
+       Convert a rank-4 tensor to its compressed matrix equivalent.             The output matrix will have  [2.x.47]        rows and  [2.x.48]  columns.      
+* [0.x.18]*
+       Convert a rank-4 symmetric tensor to its compressed matrix equivalent.             The output matrix will have        [2.x.49]  rows and        [2.x.50]  columns.      
+* [0.x.19]*
+        [2.x.51]  Reverse operation: Kelvin notation to tensor notation      
+* [0.x.20]*
+       Convert a compressed vector to its equivalent scalar value.      
+* [0.x.21]*
+       Convert a compressed vector to its equivalent rank-0 tensor.      
+* [0.x.22]*
+       Convert a compressed vector to its equivalent rank-1 tensor.      
+* [0.x.23]*
+       Convert a compressed vector to its equivalent rank-2 tensor.      
+* [0.x.24]*
+       Convert a compressed vector to its equivalent rank-2 symmetric tensor.      
+* [0.x.25]*
+       Convert a compressed matrix to its equivalent scalar value.      
+* [0.x.26]*
+       Convert a compressed matrix to its equivalent rank-0 tensor.      
+* [0.x.27]*
+       Convert a compressed matrix to its equivalent rank-1 tensor.      
+* [0.x.28]*
+       Convert a compressed matrix to its equivalent rank-2 tensor.      
+* [0.x.29]*
+       Convert a compressed matrix to its equivalent rank-2 symmetric tensor.      
+* [0.x.30]*
+       Convert a compressed matrix to its equivalent rank-3 tensor.            
+*  [2.x.52]  Based on the size of the matrix  [2.x.53]  some of the       components of  [2.x.54]  may be interpreted as having symmetric       counterparts. This is the reverse of the operation explained       in the documentation of the counterpart to_matrix()       function.      
+* [0.x.31]*
+       Convert a compressed matrix to its equivalent rank-4 tensor.      
+* [0.x.32]*
+       Convert a compressed matrix to its equivalent rank-4 symmetric tensor.      
+* [0.x.33]*
+       A generic helper function that will convert a compressed vector       to its equivalent  [2.x.55]       
+* [0.x.34]*
+       A generic helper function that will convert a compressed matrix       to its equivalent  [2.x.56]       
+* [0.x.35]*
+         Return the tensor indices  [2.x.57]          associated with a condensed component index. The          [2.x.58]  flag indicates whether or not the          [2.x.59]  index is associated with a tensor that         has symmetric entries.        
+* [0.x.36]*
+         Return the scaling factor to be applied to the         entry in the condensed vector.        
+* [0.x.37]*
+         Return the scaling factor to be applied to the         entry in the condensed matrix.        
+* [0.x.38]

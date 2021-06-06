@@ -1,0 +1,13 @@
+[0.x.0]*
+     Declare type for container size.    
+* [0.x.1]*
+     Add the result of multiplying a chunk of size chunk_size times     chunk_size by a source vector fragment of size chunk_size to the     destination vector fragment.    
+* [0.x.2]*
+     Like the previous function, but subtract. We need this for computing     the residual.    
+* [0.x.3]*
+     Add the result of multiplying the transpose of a chunk of size     chunk_size times chunk_size by a source vector fragment of size     chunk_size to the destination vector fragment.    
+* [0.x.4]*
+     Produce the result of the matrix scalar product  [2.x.0]  for an     individual chunk.    
+* [0.x.5]*
+     Perform a vmult_add using the ChunkSparseMatrix data structures, but     only using a subinterval of the matrix rows.         In the sequential case, this function is called on all rows, in the     parallel case it may be called on a subrange, at the discretion of the     task scheduler.    
+* [0.x.6]

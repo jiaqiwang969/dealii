@@ -1,0 +1,62 @@
+[0.x.0]*
+ A class to represent a unique ID for a cell in a Triangulation. It is returned by `cell->id()` (i.e.,  [2.x.0]  where `cell` is assumed to be a cell iterator.
+*  This class stores the index of the coarse cell from which a cell is descendant (or, more specifically, the entry on  [2.x.1]  "coarse cell IDs"), together with information on how to reach the cell from that coarse cell (i.e., which child index to take on each level of the triangulation when moving from one cell to its children). The important point about this class is that an object of the current class uniquely identifies a cell in triangulation, and it even does so in the context of objects of type  [2.x.2]  where the local portion of a mesh may not store all cells. For example, the CellId computed for a ghost cell on one processor will be exactly the same as the CellId computed for the very same cell on the processor that actually owns the cell, although the level and index of the iterators pointing to that cell [1.x.0] may (and in general will) be different. In other words, CellId provides the tool with which it is possible to globally and uniquely identify cells in a parallel triangulation, and consequently makes it possible to exchange, between processors, data tied to individual cells.
+* 
+
+* 
+*  [2.x.3]  How this data is internally represented is not of importance (and not exposed on purpose).
+
+* 
+* [0.x.1]*
+   A type that is used to encode the CellId data in a compact and fast way   (e.g. for MPI transfer to other processes). Note that it limits the   number of children that can be transferred to 20 in 3D and 30 in 2D   (using 2 times 32 bit for storage), a limitation that is identical to   the one used by p4est.  
+* [0.x.2]*
+   Construct a CellId object with a given  [2.x.4]  and vector of   child indices.  [2.x.5]  is   interpreted identical to the member variable with the same name, namely   each entry denotes which child to pick from one refinement level to the   next, starting with the coarse cell, until we get to the cell represented   by the current object. Therefore, each entry should be a number between 0   and the number of children of a cell in the current space dimension (i.e.,    [2.x.6]   
+* [0.x.3]*
+   Construct a CellId object with a given  [2.x.7]  and array of   child indices provided in  [2.x.8]   [2.x.9]  is   interpreted identical to the member variable with the same name, namely   each entry denotes which child to pick from one refinement level to the   next, starting with the coarse cell, until we get to the cell represented   by the current object. Therefore, each entry should be a number between 0   and the number of children of a cell in the current space dimension (i.e.,    [2.x.10]  The array    [2.x.11]  must have at least  [2.x.12]  valid entries.  
+* [0.x.4]*
+   Construct a CellId object with a given binary representation that was   previously constructed by  [2.x.13]   
+* [0.x.5]*
+   Create a CellId from a string with the same format that is produced by   to_string().  
+* [0.x.6]*
+   Construct an invalid CellId.  
+* [0.x.7]*
+   Return a human-readable string representation of this CellId.     The string returned by this function consists of only ASCII characters   and will look, for example, like this: `"0_3:006"`. Itcan* be   interpreted by humans as saying "This cell originates from the zeroth   coarse mesh cell, lives on refinement level 3, and the path from the   coarse mesh cell to its children and grand children is given by 006".   But it is notmeant* to be interpreted in any meaningful way: It's just   a way of representing the internal state of the current object using   only ASCII characters in the printable range.  
+* [0.x.8]*
+   Return a compact and fast binary representation of this CellId.  
+* [0.x.9]*
+   Return a cell_iterator to the cell represented by this CellId.      [2.x.14]  Use  [2.x.15]  instead.  
+* [0.x.10]*
+   Compare two CellId objects for equality.  
+* [0.x.11]*
+   Compare two CellIds for inequality.  
+* [0.x.12]*
+   Compare two CellIds with regard to an ordering. The details of this   ordering are unspecified except that the operation provides a   total ordering among all cells.  
+* [0.x.13]*
+   Determine if this cell id is the direct parent of the input cell id.  
+* [0.x.14]*
+   Determine if this cell id is the ancestor of the input cell id.  
+* [0.x.15]*
+   Read or write the data of this object to or from a stream for the   purpose of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.16]*
+   Return the id of the coarse cell.  
+* [0.x.17]*
+   Return a read-only container of integers that denotes which child to pick   from one refinement level to the next, starting with the coarse cell, until   we get to the cell represented by the current object.     The number of elements in this container corresponds to (level-1) of the   current cell.  
+* [0.x.18]*
+   The number of the coarse cell within whose tree the cell   represented by the current object is located.  
+* [0.x.19]*
+   The number of child indices stored in the child_indices array. This is   equivalent to (level-1) of the current cell.  
+* [0.x.20]*
+   An array of integers that denotes which child to pick from one   refinement level to the next, starting with the coarse cell,   until we get to the cell represented by the current object.   Only the first n_child_indices entries are used, but we use a statically   allocated array instead of a vector of size n_child_indices to speed up   creation of this object. If the given dimensions ever become a limitation   the array can be extended.  
+* [0.x.21]*
+ Write a CellId object into a stream.
+
+* 
+* [0.x.22]*
+ Serialization function
+
+* 
+* [0.x.23]*
+ Read a CellId object from a stream.
+
+* 
+* [0.x.24]

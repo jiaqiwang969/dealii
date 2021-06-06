@@ -1,0 +1,29 @@
+[0.x.0]*
+ This class provides information about the system which may be of use in multithreaded programs.  At the moment this is just the number of CPUs. If deal.II is compiled with multithreading support, some functions will use multiple threads for their action. Currently the library supports both thread-based and task-based parallelism.  [2.x.0]  describes the different uses of each. The default number of threads used for task-based parallel methods is selected automatically by the Threading Building Blocks library. See  [2.x.1]  for more information on this.  Thread-based parallel methods need to explicitly create threads and may want to use a number of threads that is related to the number of CPUs in your system. The recommended number of threads can be queried using  [2.x.2]  while the number of cores in the system is returned by  [2.x.3] 
+* 
+
+* 
+*  [2.x.4] 
+
+* 
+* [0.x.1]*
+   Constructor. This constructor is deleted because no instance of   this class needs to be constructed (all members are static).  
+* [0.x.2]*
+   The number of CPUs in the system.     This internally calls    [2.x.5]    but sets the result to 1 if the call returns an error.  
+* [0.x.3]*
+   Return the number of threads to use. This is initially set to the number   of cores the system has (see n_cores()) but can be further restricted by   set_thread_limit() and the environment variable DEAL_II_NUM_THREADS.  
+* [0.x.4]*
+   Return an estimate for the memory consumption, in bytes, of this object.   This is not exact (but will usually be close) because calculating the   memory usage of trees (e.g.,  [2.x.6]  is difficult.  
+* [0.x.5]*
+   Set the maximum number of threads to be used to the minimum of the   environment variable DEAL_II_NUM_THREADS and the given argument (or its   default value). This affects the initialization of the TBB. If neither is   given, the default from TBB is used (based on the number of cores in the   system).     This routine is executed automatically with the default argument before   your code in main() is running (using a static constructor). It is also   executed by  [2.x.7]  Use the appropriate   argument of the constructor of  [2.x.8]  if you   have an MPI based code.  
+* [0.x.6]*
+   Return if the TBB is running using a single thread either because of   thread affinity or because it is set via a call to set_thread_limit. This   is used in the PETScWrappers to avoid using the interface that is not   thread-safe.  
+* [0.x.7]*
+   Make sure the multithreading API is initialized. This normally does not   need to be called in usercode.  
+* [0.x.8]*
+   Return a reference to the global Executor from taskflow.     The Executor is set to use n_threads() worker threads that you can   control using set_thread_limit() and the DEAL_II_NUM_THREADS environment   variable.  
+* [0.x.9]*
+   Variable representing the maximum number of threads.  
+* [0.x.10]*
+   Store a taskflow Executor that is constructed with N workers (from   set_thread_limit).  
+* [0.x.11]

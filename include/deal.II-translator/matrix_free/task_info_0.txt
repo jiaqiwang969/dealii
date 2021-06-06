@@ -1,0 +1,103 @@
+[0.x.0]*
+   An interface for the worker object that runs the various operations we   want to perform during the matrix-free loop.  
+* [0.x.1]*
+     A struct that collects all information related to parallelization with     threads: The work is subdivided into tasks that can be done     independently.    
+* [0.x.2]*
+       Constructor.      
+* [0.x.3]*
+       Clears all the data fields and resets them       to zero.      
+* [0.x.4]*
+       Runs the matrix-free loop.      
+* [0.x.5]*
+       Make the number of cells which can only be treated in the       communication overlap divisible by the vectorization length.      
+* [0.x.6]*
+       Sets up the blocks for running the cell loop based on the options       controlled by the input arguments.              [2.x.0]  cells_with_comm A list of cells that need to exchange data       prior to performing computations. These will be given a certain id in       the partitioning to make sure cell loops that overlap communication       with communication have the ghost data ready.              [2.x.1]  dofs_per_cell Gives an expected value for the number of degrees       of freedom on a cell, which is used to determine the block size for       interleaving cell and face integrals.              [2.x.2]  categories_are_hp Defines whether       `cell_vectorization_categories` is originating from a hp-adaptive       computation with variable polynomial degree or a user-defined       variant.              [2.x.3]  cell_vectorization_categories This set of categories defines       the cells that should be grouped together inside the lanes of a       vectorized array. This can be the polynomial degree in an hp-element       or a user-provided grouping.              [2.x.4]  cell_vectorization_categories_strict Defines whether the       categories defined by the previous variables should be separated       strictly or whether it is allowed to insert lower categories into the       next high one(s).              [2.x.5]  parent_relation This data field is used to specify which cells       have the same parent cell. Cells with the same ancestor are grouped       together into the same batch(es) with vectorization across cells.              [2.x.6]  renumbering When leaving this function, the vector contains a       new numbering of the cells that aligns with the grouping stored in       this class.              [2.x.7]  incompletely_filled_vectorization Given the vectorized layout       of this class, some cell batches might have components in the       vectorized array (SIMD lanes) that are not used and do not carray       valid data. This array indicates the cell batches where this occurs       according to the renumbering returned by this function.      
+* [0.x.7]*
+       First step in the block creation for the task-parallel blocking setup.              [2.x.8]  boundary_cells A list of cells that need to exchange data prior       to performing computations. These will be given a certain id in the       partitioning.              [2.x.9]  renumbering When leaving this function, the vector contains a       new numbering of the cells that aligns with the grouping stored in       this class (before actually creating the tasks).              [2.x.10]  incompletely_filled_vectorization Given the vectorized layout       of this class, some cell batches might have components in the       vectorized array (SIMD lanes) that are not used and do not carray       valid data. This array indicates the cell batches where this occurs       according to the renumbering returned by this function.      
+* [0.x.8]*
+       This helper function determines a block size if the user decided not       to force a block size through  [2.x.11]  This is       computed based on the number of hardware threads on the system and       the number of macro cells that we should work on.      
+* [0.x.9]*
+       This method goes through all cells that have been filled into  [2.x.12]        dof_indices and finds out which cells can be worked on independently       and which ones are neighboring and need to be done at different times       when used in parallel.             The strategy is based on a two-level approach. The outer level is       subdivided into partitions similar to the type of neighbors in       Cuthill-McKee, and the inner level is subdivided via colors (for       chunks within the same color, can work independently). One task is       represented by a chunk of cells. The cell chunks are formed before       subdivision into partitions and colors.              [2.x.13]  connectivity (in/out) Determines whether cells `i` and `j` are       conflicting, expressed by an entry in position (i,j).              [2.x.14]  renumbering (in/out) At output, the element j of this variable       gives the original number of the cell that is reordered to place j by       the ordering due to the thread graph.              [2.x.15]  irregular_cells (in/out) Informs the current function whether       some SIMD lanes in VectorizedArray would not be filled for a given       cell batch index.              [2.x.16]  hp_bool Defines whether we are in hp-mode or not      
+* [0.x.10]*
+       This function goes through all cells that have been filled into  [2.x.17]        dof_indices and finds out which cells can be worked on independently       and which ones are neighboring and need to be done at different times       when used in parallel.             The strategy is based on a two-level approach. The outer level is       subdivided into partitions similar to the type of neighbors in       Cuthill-McKee, and the inner level is again subdivided into Cuthill-       McKee-like partitions (partitions whose level differs by more than 2       can be worked on independently). One task is represented by a chunk       of cells. The cell chunks are formed after subdivision into the two       levels of partitions.              [2.x.18]  cell_active_fe_index The active FE index corresponding to the       individual indices in the list of all cell indices, in order to be       able to not place cells with different indices into the same cell       batch with vectorization.              [2.x.19]  connectivity (in/out) Determines whether cells `i` and `j` are       conflicting, expressed by an entry in position (i,j).              [2.x.20]  renumbering (in/out) At output, the element j of this variable       gives the original number of the cell that is reordered to place j by       the ordering due to the thread graph.              [2.x.21]  irregular_cells (in/out) Informs the current function whether       some SIMD lanes in VectorizedArray would not be filled for a given       cell batch index.              [2.x.22]  hp_bool Defines whether we are in hp-mode or not      
+* [0.x.11]*
+       Either calls make_thread_graph_partition_color() or       make_thread_graph_partition_partition() accessible from the outside,       depending on the setting in the data structure.              [2.x.23]  cell_active_fe_index The active FE index corresponding to the       individual indices in the list of all cell indices, in order to be       able to not place cells with different indices into the same cell       batch with vectorization.              [2.x.24]  connectivity (in/out) Determines whether cells `i` and `j` are       conflicting, expressed by an entry in position (i,j).              [2.x.25]  renumbering (in/out) At output, the element j of this variable       gives the original number of the cell that is reordered to place j by       the ordering due to the thread graph.              [2.x.26]  irregular_cells (in/out) Informs the current function whether       some SIMD lanes in VectorizedArray would not be filled for a given       cell batch index.              [2.x.27]  hp_bool Defines whether we are in hp-mode or not      
+* [0.x.12]*
+       This function computes the connectivity between blocks of cells from       the connectivity between the individual cells.      
+* [0.x.13]*
+       %Function to create coloring on the second layer within each       partition.      
+* [0.x.14]*
+       %Function to create partitioning on the second layer within each       partition.      
+* [0.x.15]*
+       This function creates partitions according to the provided connectivity       graph.              [2.x.28]  connectivity Connectivity between (blocks of cells)              [2.x.29]  cluster_size The number of cells in each partition should be a       multiple of cluster_size (for blocking later on)              [2.x.30]  cell_partition Saves of each (block of cells) to which       partition the block belongs              [2.x.31]  partition_list partition_list[j] gives the old number of the       block that should be renumbered to j due to the partitioning              [2.x.32]  partition_size Vector pointing to start of each partition (on       output)              [2.x.33]  partition number of partitions created      
+* [0.x.16]*
+       Update fields of task info for task graph set up in       make_thread_graph.      
+* [0.x.17]*
+       Creates a task graph from a connectivity structure.      
+* [0.x.18]*
+       Returns the memory consumption of the class.      
+* [0.x.19]*
+       Prints minimum, average, and maximal memory consumption over the MPI       processes.      
+* [0.x.20]*
+       Number of physical cells in the mesh, not cell batches after       vectorization      
+* [0.x.21]*
+       Number of physical ghost cells in the mesh which are subject to       special treatment and should not be included in loops      
+* [0.x.22]*
+       Number of lanes in the SIMD array that are used for vectorization      
+* [0.x.23]*
+       Block size information for multithreading      
+* [0.x.24]*
+       Number of blocks for multithreading      
+* [0.x.25]*
+       Parallel scheme applied by multithreading      
+* [0.x.26]*
+       The blocks are organized by a vector-of-vector concept, and this data       field  [2.x.34]  stores the distance from one 'vector' to       the next within the linear storage of all data to the two-level       partitioning.      
+* [0.x.27]*
+       This is a linear storage of all partitions, building a range of       indices of the form cell_partition_data[idx] to       cell_partition_data[idx+1] within the integer list of all cells in       MatrixFree, subdivided into chunks by  [2.x.35]       
+* [0.x.28]*
+       Like cell_partition_data but with precomputed subranges for each       active fe index. The start and end point of a partition is given       by cell_partition_data_hp_ptr.      
+* [0.x.29]*
+       Pointers within cell_partition_data_hp, indicating the start and end       of a partition.      
+* [0.x.30]*
+       This is a linear storage of all partitions of inner faces, building a       range of indices of the form face_partition_data[idx] to       face_partition_data[idx+1] within the integer list of all interior       faces in MatrixFree, subdivided into chunks by  [2.x.36]        partition_row_index.      
+* [0.x.31]*
+       Like face_partition_data but with precomputed subranges for each       active fe index pair. The start and end point of a partition is given       by face_partition_data_hp_ptr.      
+* [0.x.32]*
+       Pointers within face_partition_data_hp, indicating the start and end       of a partition.      
+* [0.x.33]*
+       This is a linear storage of all partitions of boundary faces,       building a range of indices of the form boundary_partition_data[idx]       to boundary_partition_data[idx+1] within the integer list of all       boundary faces in MatrixFree, subdivided into chunks by  [2.x.37]        partition_row_index.      
+* [0.x.34]*
+       Like boundary_partition_data but with precomputed subranges for each       active fe index. The start and end point of a partition is given       by boundary_partition_data_hp_ptr.      
+* [0.x.35]*
+       Pointers within boundary_partition_data_hp, indicating the start and       end of a partition.      
+* [0.x.36]*
+       This is a linear storage of all partitions of interior faces on       boundaries to other processors that are not locally used, building a       range of indices of the form ghost_face_partition_data[idx] to       ghost_face_partition_data[idx+1] within the integer list of all such       faces in MatrixFree, subdivided into chunks by  [2.x.38]        partition_row_index.      
+* [0.x.37]*
+       This is a linear storage of all partitions of faces for multigrid       levels that have a coarser neighbor and are only included in certain       residual computations but not in smoothing, building a range of       indices of the form refinement_edge_face_partition_data[idx] to       refinement_edge_face_partition_data[idx+1] within the integer list of       all such faces in MatrixFree, subdivided into chunks by  [2.x.39]        partition_row_index.      
+* [0.x.38]*
+       Thread information (which chunk to start 'even' partitions from) to       be handed to the dynamic task scheduler      
+* [0.x.39]*
+       Thread information (which chunk to start 'odd' partitions from) to be       handed to the dynamic task scheduler      
+* [0.x.40]*
+       Thread information regarding the dependencies for partitions handed       to the dynamic task scheduler      
+* [0.x.41]*
+       Thread information regarding the dependencies for partitions handed       to the dynamic task scheduler      
+* [0.x.42]*
+       Number of even partitions accumulated over the field  [2.x.40]        partitions_even      
+* [0.x.43]*
+       Number of odd partitions accumulated over the field  [2.x.41]        partitions_odd      
+* [0.x.44]*
+       Number of blocked workers accumulated over the field  [2.x.42]        partition_n_blocked_workers      
+* [0.x.45]*
+       Number of workers accumulated over the field  [2.x.43]       
+* [0.x.46]*
+       Stores whether a particular task is at an MPI boundary and needs data       exchange      
+* [0.x.47]*
+       MPI communicator      
+* [0.x.48]*
+       Shared-memory MPI communicator      
+* [0.x.49]*
+       Rank of MPI process      
+* [0.x.50]*
+       Number of MPI rank for the current communicator      
+* [0.x.51]

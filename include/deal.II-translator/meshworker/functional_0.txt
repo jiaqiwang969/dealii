@@ -1,0 +1,31 @@
+[0.x.0]*
+     The class assembling local contributions to a functional into global     functionals.                
+*  [2.x.0]     
+* [0.x.1]*
+       Initialize local data to store functionals. The number <tt>n</tt> is       the number of functionals to be computed.      
+* [0.x.2]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.1]  object refers to a cell if  [2.x.2] , or else to an       interior or boundary face.      
+* [0.x.3]*
+       Assemble the local values into the global vectors.      
+* [0.x.4]*
+       Assemble both local values into the global vectors.      
+* [0.x.5]*
+       The value of the ith entry in #results.      
+* [0.x.6]*
+       The values into which the results are added.      
+* [0.x.7]*
+     Compute cell and face contributions of one or several functionals,     typically for error estimates. The information in which component the     result is stored for a given cell or face is transmitted by its     user_index variable. Hence, you need to make sure to set these variables     appropriately before using this class.        
+*  [2.x.3]     
+* [0.x.8]*
+       Constructor. Initialize the member variables.      
+* [0.x.9]*
+       The initialization function, specifying the  [2.x.4]  vectors and       whether face data should be collected separately.              [2.x.5]  should contain two block vectors named "cells" and "faces"       (the latter only if  [2.x.6]  is true). In each of the two,       each block should have equal size and be large enough to accommodate       all user indices set in the cells and faces covered by the loop it is       used in. Typically, for estimators, this is        [2.x.7]  and  [2.x.8]        respectively.             The use of BlockVector may seem cumbersome, but it allows us to       assemble several functionals at the same time, one in each block. The       typical situation for error estimate is just having a single block in       each vector.      
+* [0.x.10]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.9]  object refers to a cell if  [2.x.10] , or else to an       interior or boundary face.      
+* [0.x.11]*
+       Assemble the local values into the global vectors.      
+* [0.x.12]*
+       Assemble both local values into the global vectors.      
+* [0.x.13]*
+       The value of the ith entry in  [2.x.11]       
+* [0.x.14]

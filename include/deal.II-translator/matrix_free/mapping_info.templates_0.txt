@@ -1,0 +1,11 @@
+[0.x.0]*
+       Internal temporary data used for the initialization.      
+* [0.x.1]*
+       Helper function called internally during the initialize function.      
+* [0.x.2]*
+       This invokes the FEValues part of the initialization of MappingQ,       storing the resulting quadrature points and an initial representation       of Jacobians in two arrays.      
+* [0.x.3]*
+       This evaluates the mapping information on a range of cells calling       into the tensor product interpolators of the matrix-free framework,       using a polynomial expansion of the cell geometry in terms of       MappingQ.      
+* [0.x.4]*
+       This evaluates the mapping information on a range of cells calling       into the tensor product interpolators of the matrix-free framework,       using a polynomial expansion of the cell geometry in terms of       MappingQ.      
+* [0.x.5]

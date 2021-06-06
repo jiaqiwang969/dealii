@@ -28,10 +28,8 @@ digraph "FEEvaluationBase&lt; dim, n_components_, Number, is_face, VectorizedArr
   Node11 [label="FEEvaluationBase\< dim,\l 1, Number, is_face,\l VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBase.html",tooltip=" "];
   Node11 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node12 [label="FEEvaluationAccess\l\< dim, 1, Number, is\l_face, VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationAccess_3_01dim_00_011_00_01Number_00_01is__face_00_01VectorizedArrayType_01_4.html",tooltip=" "];
-  Node1 -> Node13 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, 1, double, false,\l VectorizedArray\< double \> \>" ,fontname="Helvetica"];
-  Node13 [label="FEEvaluationBase\< dim,\l 1, double, false, Vectorized\lArray\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBase.html",tooltip=" "];
-  Node1 -> Node14 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim, Number,\l is_face, VectorizedArrayType \>" ,fontname="Helvetica"];
-  Node14 [label="FEEvaluationBase\< dim,\l dim, Number, is_face,\l VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBase.html",tooltip=" "];
-  Node14 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node15 [label="FEEvaluationAccess\l\< dim, dim, Number,\l is_face, VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationAccess_3_01dim_00_01dim_00_01Number_00_01is__face_00_01VectorizedArrayType_01_4.html",tooltip=" "];
+  Node1 -> Node13 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim, Number,\l is_face, VectorizedArrayType \>" ,fontname="Helvetica"];
+  Node13 [label="FEEvaluationBase\< dim,\l dim, Number, is_face,\l VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationBase.html",tooltip=" "];
+  Node13 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="FEEvaluationAccess\l\< dim, dim, Number,\l is_face, VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFEEvaluationAccess_3_01dim_00_01dim_00_01Number_00_01is__face_00_01VectorizedArrayType_01_4.html",tooltip=" "];
 }

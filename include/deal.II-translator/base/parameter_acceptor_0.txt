@@ -1,0 +1,159 @@
+[0.x.0]*
+ A parameter acceptor base class. This class is used to define a public interface for classes which want to use a single global ParameterHandler to handle parameters. This class declares one static ParameterHandler, and two static functions (declare_all_parameters() and parse_all_parameters()) that manage all of the derived classes.
+*  The basic interface provides two subscription mechanisms: a*global subscription mechanism** and a*local subscription mechanism**.
+*  The global subscription mechanism is such that whenever an object of a class derived from ParameterAcceptor is created, then a pointer to that object-of-derived-type is registered, together with a path in the parameter file.
+*  Such registry is traversed upon invocation of the single function  [2.x.0]  which in turn calls the method  [2.x.1]  for each of the registered classes, reads the file `file.prm` and subsequently calls the method  [2.x.2]  again for each of the registered classes. The method log_info() can be used to extract information about the classes that have been derived from ParameterAcceptor, and that will be parsed when calling  [2.x.3] 
+*  ParameterAcceptor can be used in three different ways: by overloading the  [2.x.4]  and  [2.x.5]  methods, by calling its  [2.x.6]  method for each parameter we want to have, or by constructing a ParameterAcceptorProxy class with your own class, provided that your class implements the  [2.x.7]  and  [2.x.8]  functions (the first can be a static member in this case).
+*  By using the add_parameter method, ParameterAcceptor makes sure that the given parameter is registered in the global parameter handler (by calling  [2.x.9]  at the correct path. If you define all your parameters using the  [2.x.10]  method, then you don't need to overload any of the virtual methods of this class.
+*  If some post processing is required on the parsed values, the user can attach a signal to  [2.x.11]  and  [2.x.12]  that are called just after the declare_parameters() and parse_parameters() functions of each derived class.  [2.x.13]  has an example of doing this.
+*  A typical usage of this class is the following:
+* 
+
+* 
+* [1.x.0]
+* 
+*  An implementation that uses user defined declare and parse functions is given by the following example:
+* 
+
+* 
+* [1.x.1]
+* 
+* 
+
+*  Parameter files can be organised into section/subsection/subsubsection. To do so, the  [2.x.14]  passed to ParameterAcceptor within the constructor of the derived class needs to contain the separator "/". In fact, "first/second/third/My Class" will organize the parameters as follows
+* 
+
+* 
+* [1.x.2]
+* 
+*  In the following examples, we propose some use cases with increasing complexities.
+*  MyClass is derived from ParameterAcceptor and has a member object that is derived itself from ParameterAcceptor.
+
+* 
+* [1.x.3]
+* 
+*  In this case, the structure of the parameters will be
+
+* 
+* [1.x.4]
+* 
+*  Now suppose that in the main file we need two or more objects of MyClass
+
+* 
+* [1.x.5]
+* 
+*  What we will read in the parameter file looks like
+
+* 
+* [1.x.6]
+*  Note that there is only one section "Forcing term", this is because both objects have defined the same name for the section of their SomeParsedClass. There are two strategies to change this behavior. The first one (not recommended) would be to change the name of the section of SomeParsedClass such that it contains also the string passed to the constructor of MyClass:
+
+* 
+* [1.x.7]
+* 
+*  The other way to proceed (recommended) is to use exploit the /section/subsection approach*in the main class**.
+
+* 
+* [1.x.8]
+*  Now, in the parameter file we can find
+
+* 
+* [1.x.9]
+* 
+*  Note the "/" at the begin of the string name. This is interpreted by ParameterAcceptor like the root folder in Unix systems. The sections "Class A" and "Class B" will not be nested under any section. On the other hand, if the string does not begin with a "/" as in the previous cases the section will be created*under the current path**, which depends on the previously defined sections/subsections/subsubsections. Indeed, the section "Forcing term" is nested under "Class A" or "Class B". To make things more clear. let's consider the following two examples
+* 
+
+* 
+* [1.x.10]
+*  The parameter file will have the following structure
+
+* 
+* [1.x.11]
+* 
+*  If instead one of the paths ends with "/" instead of just a name of the class, subsequent classes will interpret this as a full path, interpreting the class name as a directory name:
+
+* 
+* [1.x.12]
+*  The parameter file will have the following structure
+
+* 
+* [1.x.13]
+* 
+*  As a final remark, in order to allow a proper management of all the sections/subsections, the instantiation of objects and the call to  [2.x.15]  cannot be done on multiple, concurrently running threads.
+*  If you pass an empty name, the  [2.x.16]  function is used to fill the section name with a human readable version of the class name itself.
+*  See the tutorial program  [2.x.17]  for an example on how to use this class.
+
+* 
+* [0.x.1]*
+   The constructor adds derived classes to the list of acceptors. If   a section name is specified, then this is used to scope the   parameters in the given section, otherwise a pretty printed   version of the derived class is used.  
+* [0.x.2]*
+   Destructor.  
+* [0.x.3]*
+   Call declare_all_parameters(), read the parameters from `filename` (only   if `filename` is a non-empty string), and then call   parse_all_parameters().     If the parameter `filename` is the empty string, then no attempt to read a   parameter file is done. This may be useful if you are ok with using   default values, and don't want to read external files to use a class   derived from ParameterAcceptor.     If  [2.x.18]  is not the empty string, then we write the content   that was read into the  [2.x.19]  file, using the style specified   in  [2.x.20]  The format of both input and output   files are selected using the extensions of the files themselves. This can   be either `prm`, `xml`, or `json` for the  [2.x.21]  and any of the   supported formats for the  [2.x.22]      If the input file does not exist, a default one with the same name is   created for you following the style specified in    [2.x.23]  and an exception is thrown.     By default, the file format used to write the files is deduced from   the extension of the file names. If the corresponding    [2.x.24]  specifies a format specification, this must   be compatible with the file extension, or an exception will be thrown.     If the extension is not recognized, and you do not specify a format in the   corresponding  [2.x.25]  an assertion is thrown.      [2.x.26]  filename Input file name    [2.x.27]  output_filename Output file name    [2.x.28]  output_style_for_output_filename How to write the output file    [2.x.29]  prm The ParameterHandler to use    [2.x.30]  output_style_for_filename How to write the default input file if it   does not exist  
+* [0.x.4]*
+   Call declare_all_parameters(), read the parameters from the `input_stream`   in `prm` format, and then call parse_all_parameters().     An exception is thrown if the `input_stream` is invalid.      [2.x.31]  input_stream Input stream    [2.x.32]  prm The ParameterHandler to use  
+* [0.x.5]*
+   Clear class list and global parameter file.  
+* [0.x.6]*
+   Derived classes can use this method to declare their parameters.    [2.x.33]  calls it for each derived class. The   default implementation is empty.  
+* [0.x.7]*
+   Declare parameter call back. This signal is triggered right after   declare_parameters() has been called, to allow users to prepare their   variables right after parameters have been decalred. The default   implementation is empty.  
+* [0.x.8]*
+   Derived classes can use this method to parse their parameters.    [2.x.34]  calls it for each derived class. The   default implementation is empty.  
+* [0.x.9]*
+   Parse parameter call back. This function is called at the end of   parse_parameters(), to allow users to process their parameters right after   they have been parsed. The default implementation is empty.     You can use this function, for example, to create a quadrature rule after   you have read how many quadrature points you wanted to use from the   parameter file.  
+* [0.x.10]*
+   Parse the given ParameterHandler. This function enters the   subsection returned by get_section_name() for each derived class,   and parses all parameters that were added using add_parameter().  
+* [0.x.11]*
+   Initialize the global ParameterHandler with all derived classes   parameters.This function enters the subsection returned by   get_section_name() for each derived class, and declares all parameters   that were added using add_parameter().  
+* [0.x.12]*
+   Return the section name of this class. If a name was provided   at construction time, then that name is returned, otherwise it   returns the demangled name of this class.  
+* [0.x.13]*
+   Traverse all registered classes, and figure out what subsections we need to   enter.  
+* [0.x.14]*
+   Add a parameter in the correct path. This method forwards all arguments to   the prm.add_parameter() method, after entering the correct section path.   By default it uses the  [2.x.35]  variable as   ParameterHandler.     See the documentation of  [2.x.36]  for more   information.  
+* [0.x.15]*
+   The global parameter handler.  
+* [0.x.16]*
+   Add the given  [2.x.37]  to the global path stored in this class.     This function changes the behavior of enter_my_subsection(), by   appending a new subsection to the path stored in this class.     This method can be used to split the parameters of this class into   subsections, while still maintaining the general behavior of this   class.     An example usage is given by the following snippet:  
+* [1.x.14]
+*      which will produce a parameter file organized as    
+* [1.x.15]
+*   
+* [0.x.17]*
+   Leave the subsection that was entered by calling the enter_subsection()   function.  
+* [0.x.18]*
+   Make sure we enter the right subsection of the given parameter.  
+* [0.x.19]*
+   This function undoes what the enter_my_subsection() function did. It only   makes sense if enter_my_subsection() was called on `prm` before this one.  
+* [0.x.20]*
+   A list containing all constructed classes of type   ParameterAcceptor.  
+* [0.x.21]*
+   Separator between sections.  
+* [0.x.22]*
+ A proxy ParameterAcceptor wrapper for classes that have a static member function  [2.x.38]  and a non virtual  [2.x.39]  method.
+*  If you cannot or do not want to derive your "parameter accepting" class from ParameterAcceptor, for example if by design you are required to have a static member function  [2.x.40]  and a member  [2.x.41]  parse_parameters, or if someone has already implemented such a class for you, and only provides you with an API that you cannot modify, then you may be able to use ParameterAcceptor facilities nonetheless, by wrapping your class into ParameterAcceptorProxy.
+*  This class implements the public interface of ParameterAcceptor, and at the same time it derives from the template class  [2.x.42]  allowing you to register your existing  [2.x.43]  as a ParameterAcceptor class, without requiring you to explicitly derive your  [2.x.44]  from ParameterAcceptor.
+*  An example usage is given by the following snippet of code, using  [2.x.45]  as an example source class:
+* 
+
+* 
+* [1.x.16]
+* 
+*  The above snippet of code will initialize  [2.x.46]  with a section "Some function", and will correctly parse and assign to the object `fun` the expression parsed from the file `test.prm`. If non-existent, the program will exit, and generate it for you (here you can see the resulting short text version of the parameter file generated with the above snippet):
+* 
+
+* 
+* [1.x.17]
+* 
+*  The resulting `fun` object, is both a ParsedFunction object and a ParameterAcceptor one, allowing you to use it as a replacement of the ParsedFunction class, with automatic declaration and parsing of parameter files.
+*  See the tutorial program  [2.x.47]  for an example on how to use this class.
+
+* 
+* [0.x.23]*
+   Default constructor. The argument `section_name` is forwarded to the   constructor of the ParameterAcceptor class, while all other arguments   are passed to the SourceClass constructor.  
+* [0.x.24]*
+   Overloads the  [2.x.48]  function, by calling    [2.x.49]  with  [2.x.50]  as an argument.  
+* [0.x.25]*
+   Overloads the  [2.x.51]  function, by calling    [2.x.52]  with  [2.x.53]  as an argument.  
+* [0.x.26]

@@ -1,0 +1,93 @@
+[0.x.0]*
+   This class is a wrapper around cuSPARSE csr sparse matrix. Unlike deal.II's   own SparseMatrix all elements within each row are stored in increasing   column index order.    
+*  [2.x.0]  Instantiations for this template are provided for <tt> [2.x.1]  and    [2.x.2]     
+*  [2.x.3]   
+* [0.x.1]*
+     Declare type for container size.    
+* [0.x.2]*
+     Type of the matrix entries.    
+* [0.x.3]*
+     Declare a type that holds real-valued numbers with the same precision     as the template argument to this class.    
+* [0.x.4]*
+      [2.x.4]  Constructors and initialization    
+* [0.x.5]*
+     Constructor. Initialize the matrix to be empty, without any structure,     i.e., the matrix is not usable at all. This constructor is therefore     only useful for matrices which are members of a class.         You have to initialize the matrix before usage with reinit.    
+* [0.x.6]*
+     Constructor. Takes a  [2.x.5]  and a sparse matrix on the     host. The sparse matrix on the host is copied on the device and the     elements are reordered according to the format supported by cuSPARSE.    
+* [0.x.7]*
+     Move constructor. Create a new SparseMatrix by stealing the internal     data.    
+* [0.x.8]*
+     Copy constructor is deleted.    
+* [0.x.9]*
+     Destructor. Free all memory.    
+* [0.x.10]*
+     Move assignment operator.    
+* [0.x.11]*
+     Copy assignment is deleted.    
+* [0.x.12]*
+     Reinitialize the sparse matrix. The sparse matrix on the host is copied     to the device and the elementes are reordered according to the format     supported by cuSPARSE.    
+* [0.x.13]*
+      [2.x.6]  Information on the matrix    
+* [0.x.14]*
+     Return the dimension of the codomain (or range) space. Note that the     matrix is of dimension  [2.x.7] .    
+* [0.x.15]*
+     Return the dimension of the domain space. Note that the matrix is of     dimension  [2.x.8] .    
+* [0.x.16]*
+     Return the number of nonzero elements of this matrix. Actually, it     returns the number of entries in the sparsity pattern; if any of the     entries should happen to be zero, it is counted anyway.    
+* [0.x.17]*
+     Print the matrix to the given stream, using the format <tt>(row,column)     value</tt>, i.e. one nonzero entry of the matrix per line. If     <tt>across</tt> is true, print all entries on a single line, using the     format row,column:value.         If the argument <tt>diagonal_first</tt> is true, diagonal elements of     quadratic matrices are printed first in their row. If it is false,     the elements in a row are written in ascending column order.    
+* [0.x.18]*
+     Print the matrix in the usual format, i.e. as a matrix and not as a list     of nonzero elements. For better readability, elements not in the matrix     are displayed as empty space, while matrix elements which are explicitly     set to zero are displayed as such.         The parameters allow for a flexible setting of the output format:     <tt>precision</tt> and <tt>scientific</tt> are used to determine the     number format, where <tt>scientific = false</tt> means fixed point     notation.  A zero entry for <tt>width</tt> makes the function compute a     width, but it may be changed to a positive value, if output is crude.         Additionally, a character for an empty value may be specified.         Finally, the whole matrix can be multiplied with a common denominator to     produce more readable output, even integers.          [2.x.9]  This function may produce [1.x.0] amounts of output if     applied to a large matrix!    
+* [0.x.19]*
+      [2.x.10]  Modifying entries    
+* [0.x.20]*
+     Multiply the entire matrix by a fixed factor.    
+* [0.x.21]*
+     Divide the entire matrix by a fixed factor.    
+* [0.x.22]*
+      [2.x.11]  Multiplications    
+* [0.x.23]*
+     Matrix-vector multiplication: let  [2.x.12]  with  [2.x.13]      being this matrix.    
+* [0.x.24]*
+     Matrix-vector multiplication: let  [2.x.14]  with      [2.x.15]  being this matrix. This function does the same as vmult() but     takes this transposed matrix.    
+* [0.x.25]*
+     Adding matrix-vector multiplication. Add  [2.x.16]  on  [2.x.17]      with  [2.x.18]  being this matrix.    
+* [0.x.26]*
+     Adding matrix-vector multiplication. Add  [2.x.19]  to      [2.x.20]  with  [2.x.21]  being this matrix. This function foes the same     as vmult_add() but takes the transposed matrix.    
+* [0.x.27]*
+     Return the square of the norm of the vector  [2.x.22]  with respect to the     norm induced by this matrix, i.e.,  [2.x.23] . This is useful,     e.g., in the finite context, where the  [2.x.24]  norm of a function equals     the matrix norm with respect to the mass matrix of the vector     representing the nodal values of the finite element function.         Obviously, the matrix needs to be quadratic for this operation.    
+* [0.x.28]*
+     Compute the matrix scalar product  [2.x.25] .    
+* [0.x.29]*
+     Compute the residual of an equation  [2.x.26] , where the residual is     defined to be  [2.x.27] . Write the residual into  [2.x.28] . The      [2.x.29]  norm of the residual vector is returned.         Source  [2.x.30]  and destination  [2.x.31]  must not be the same vector.    
+* [0.x.30]*
+      [2.x.32]  Matrix norms    
+* [0.x.31]*
+     Return the  [2.x.33] -norm of the matrix, that is  [2.x.34] , (max. sum of     columns). This is the natural matrix norm that is compatible to the      [2.x.35] -norm for vectors, i.e.,  [2.x.36] .    
+* [0.x.32]*
+     Return the  [2.x.37] -norm of the matrix, that is      [2.x.38] , (max. sum of rows). This is the natural norm that is     compatible to the  [2.x.39] -norm of vectors, i.e.,  [2.x.40] .    
+* [0.x.33]*
+     Return the frobenius norm of the matrix, i.e., the square root of the     sum of squares of all entries in the matrix.    
+* [0.x.34]*
+     [2.x.41]  Access to underlying CUDA data    
+* [0.x.35]*
+     Return a tuple containing the pointer to the values of matrix, the     pointer to the columns indices, the pointer to the rows pointer,     the cuSPARSE matrix description, and the cuSPARSE SP matrix description.    
+* [0.x.36]*
+     cuSPARSE handle used to call cuSPARSE functions.    
+* [0.x.37]*
+     Number of non-zero elements in the sparse matrix.    
+* [0.x.38]*
+     Number of rows of the sparse matrix.    
+* [0.x.39]*
+     Number of columns of the sparse matrix.    
+* [0.x.40]*
+     Pointer to the values (on the device) of the sparse matrix.    
+* [0.x.41]*
+     Pointer to the column indices (on the device) of the sparse matrix.    
+* [0.x.42]*
+     Pointer to the row pointer (on the device) of the sparse matrix.    
+* [0.x.43]*
+     cuSPARSE description of the matrix.    
+* [0.x.44]*
+     cuSPARSE description of the sparse matrix.    
+* [0.x.45]

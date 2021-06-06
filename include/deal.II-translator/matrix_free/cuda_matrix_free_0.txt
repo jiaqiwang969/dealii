@@ -1,0 +1,193 @@
+[0.x.0]*
+   This class collects all the data that is stored for the matrix free   implementation. The storage scheme is tailored towards several loops   performed with the same data, i.e., typically doing many matrix-vector   products or residual computations on the same mesh.     This class does not implement any operations involving finite element basis   functions, i.e., regarding the operation performed on the cells. For these   operations, the class FEEvaluation is designed to use the data collected in   this class.     This class implements a loop over all cells (cell_loop()). This loop is   scheduled in such a way that cells that share degrees of freedom   are not worked on simultaneously, which implies that it is possible to   write to vectors in parallel without having to explicitly synchronize   access to these vectors and matrices. This class does not implement any   shape values, all it does is to cache the respective data. To implement   finite element operations, use the class  [2.x.0]      This class traverse the cells in a different order than the usual   Triangulation class in deal.II.    
+*  [2.x.1]  Only float and double are supported.    
+*  [2.x.2]   
+* [0.x.1]*
+     Parallelization scheme used: parallel_in_elem (parallelism at the level     of degrees of freedom) or parallel_over_elem (parallelism at the level of     cells)    
+* [0.x.2]*
+     Standardized data struct to pipe additional data to MatrixFree.    
+* [0.x.3]*
+       Constructor.      
+* [0.x.4]*
+       Parallelization scheme used, parallelization over degrees of freedom or       over cells.      
+* [0.x.5]*
+       This flag is used to determine which quantities should be cached. This       class can cache data needed for gradient computations (inverse       Jacobians), Jacobian determinants (JxW), quadrature points as well as       data for Hessians (derivative of Jacobians). By default, only data for       gradients and Jacobian determinants times quadrature weights, JxW, are       cached. If quadrature points of second derivatives are needed, they       must be specified by this field.      
+* [0.x.6]*
+       If true, use graph coloring. Otherwise, use atomic operations. Graph       coloring ensures bitwise reproducibility but is slower on Pascal and       newer architectures.      
+* [0.x.7]*
+        Overlap MPI communications with computation. This requires CUDA-aware        MPI and use_coloring must be false.      
+* [0.x.8]*
+     Structure which is passed to the kernel. It is used to pass all the     necessary information from the CPU to the GPU.    
+* [0.x.9]*
+       Pointer to the quadrature points.      
+* [0.x.10]*
+       Map the position in the local vector to the position in the global       vector.      
+* [0.x.11]*
+       Pointer to the inverse Jacobian.      
+* [0.x.12]*
+       Pointer to the Jacobian times the weights.      
+* [0.x.13]*
+       ID of the associated MatrixFree object.      
+* [0.x.14]*
+       Number of cells.      
+* [0.x.15]*
+       Length of the padding.      
+* [0.x.16]*
+       Row start (including padding).      
+* [0.x.17]*
+       Mask deciding where constraints are set on a given cell.      
+* [0.x.18]*
+       If true, use graph coloring has been used and we can simply add into       the destingation vector. Otherwise, use atomic operations.      
+* [0.x.19]*
+     Default constructor.    
+* [0.x.20]*
+     Destructor.    
+* [0.x.21]*
+     Return the length of the padding.    
+* [0.x.22]*
+     Extracts the information needed to perform loops over cells. The     DoFHandler and AffineConstraints objects describe the layout of     degrees of freedom, the DoFHandler and the mapping describe the     transformation from unit to real cell, and the finite element     underlying the DoFHandler together with the quadrature formula     describe the local operations. This function takes an IteratorFilters     object (predicate) to loop over a subset of the active cells. When using     MPI, the predicate should filter out non locally owned cells.    
+* [0.x.23]*
+     Same as above using  [2.x.3]  as predicate.    
+* [0.x.24]*
+     Initializes the data structures. Same as above but using a Q1 mapping.    
+* [0.x.25]*
+     Return the Data structure associated with  [2.x.4]     
+* [0.x.26]*
+     This method runs the loop over all cells and apply the local operation on     each element in parallel.  [2.x.5]  is a functor which is applied on each color.          [2.x.6]  needs to define     \code     __device__ void operator()(       const unsigned int                                          cell,       const typename  [2.x.7]   [2.x.8]         [2.x.9]  Number>                     shared_data,       const Number                                              src,       Number                                                    dst) const;       static const unsigned int n_dofs_1d;       static const unsigned int n_local_dofs;       static const unsigned int n_q_points;     \endcode    
+* [0.x.27]*
+     This method runs the loop over all cells and apply the local operation on     each element in parallel. This function is very similar to cell_loop()     but it uses a simpler functor.          [2.x.10]  needs to define     \code      __device__ void operator()(        const unsigned int                                          cell,        const typename  [2.x.11]   [2.x.12]      static const unsigned int n_dofs_1d;     static const unsigned int n_local_dofs;     static const unsigned int n_q_points;     \endcode    
+* [0.x.28]*
+     Copy the values of the constrained entries from  [2.x.13]  to  [2.x.14]  This is     used to impose zero Dirichlet boundary condition.    
+* [0.x.29]*
+     Set the entries in  [2.x.15]  corresponding to constrained values to  [2.x.16]      The main purpose of this function is to set the constrained entries of     the source vector used in cell_loop() to zero.    
+* [0.x.30]*
+     Initialize a serial vector. The size corresponds to the number of degrees     of freedom in the DoFHandler object.    
+* [0.x.31]*
+     Initialize a distributed vector. The local elements correspond to the     locally owned degrees of freedom and the ghost elements correspond to the     (additional) locally relevant dofs.    
+* [0.x.32]*
+     Return the colored graph of locally owned active cells.    
+* [0.x.33]*
+     Return the partitioner that represents the locally owned data and the     ghost indices where access is needed to for the cell loop. The     partitioner is constructed from the locally owned dofs and ghost dofs     given by the respective fields. If you want to have specific information     about these objects, you can query them with the respective access     functions. If you just want to initialize a (parallel) vector, you should     usually prefer this data structure as the data exchange information can     be reused from one vector to another.    
+* [0.x.34]*
+     Free all the memory allocated.    
+* [0.x.35]*
+     Return the DoFHandler.    
+* [0.x.36]*
+     Return an approximation of the memory consumption of this class in bytes.    
+* [0.x.37]*
+     Initializes the data structures.    
+* [0.x.38]*
+     Helper function. Loop over all the cells and apply the functor on each     element in parallel. This function is used when MPI is not used.    
+* [0.x.39]*
+     Helper function. Loop over all the cells and apply the functor on each     element in parallel. This function is used when MPI is used.    
+* [0.x.40]*
+     This function should never be called. Calling it results in an internal     error. This function exists only because cell_loop needs     distributed_cell_loop() to exist for  [2.x.17]     
+* [0.x.41]*
+     Helper function. Copy the values of the constrained entries of  [2.x.18]  to      [2.x.19]  This function is used when MPI is not used.    
+* [0.x.42]*
+     Helper function. Copy the values of the constrained entries of  [2.x.20]  to      [2.x.21]  This function is used when MPI is used.    
+* [0.x.43]*
+     This function should never be called. Calling it results in an internal     error. This function exists only because copy_constrained_values needs     distributed_copy_constrained_values() to exist for      [2.x.22]     
+* [0.x.44]*
+     Helper function. Set the constrained entries of  [2.x.23]  to  [2.x.24]  This     function is used when MPI is not used.    
+* [0.x.45]*
+     Helper function. Set the constrained entries of  [2.x.25]  to  [2.x.26]  This     function is used when MPI is used.    
+* [0.x.46]*
+     This function should never be called. Calling it results in an internal     error. This function exists only because set_constrained_values needs     distributed_set_constrained_values() to exist for      [2.x.27]     
+* [0.x.47]*
+     Unique ID associated with the object.    
+* [0.x.48]*
+     Parallelization scheme used, parallelization over degrees of freedom or     over cells.    
+* [0.x.49]*
+     If true, use graph coloring. Otherwise, use atomic operations. Graph     coloring ensures bitwise reproducibility but is slower on Pascal and     newer architectures.    
+* [0.x.50]*
+      Overlap MPI communications with computation. This requires CUDA-aware      MPI and use_coloring must be false.    
+* [0.x.51]*
+     Total number of degrees of freedom.    
+* [0.x.52]*
+     Degree of the finite element used.    
+* [0.x.53]*
+     Number of degrees of freedom per cell.    
+* [0.x.54]*
+     Number of constrained degrees of freedom.    
+* [0.x.55]*
+     Number of quadrature points per cells.    
+* [0.x.56]*
+     Number of colors produced by the graph coloring algorithm.    
+* [0.x.57]*
+     Number of cells in each color.    
+* [0.x.58]*
+     Vector of pointers to the quadrature points associated to the cells of     each color.    
+* [0.x.59]*
+     Map the position in the local vector to the position in the global     vector.    
+* [0.x.60]*
+     Vector of pointer to the inverse Jacobian associated to the cells of each     color.    
+* [0.x.61]*
+     Vector of pointer to the Jacobian times the weights associated to the     cells of each color.    
+* [0.x.62]*
+     Pointer to the constrained degrees of freedom.    
+* [0.x.63]*
+     Mask deciding where constraints are set on a given cell.    
+* [0.x.64]*
+     Grid dimensions associated to the different colors. The grid dimensions     are used to launch the CUDA kernels.    
+* [0.x.65]*
+     Block dimensions associated to the different colors. The block dimensions     are used to launch the CUDA kernels.    
+* [0.x.66]*
+     Shared pointer to a Partitioner for distributed Vectors used in     cell_loop. When MPI is not used the pointer is null.    
+* [0.x.67]*
+     Cells per block (determined by the function cells_per_block_shmem() ).    
+* [0.x.68]*
+     Grid dimensions used to launch the CUDA kernels     in_constrained_values-operations.    
+* [0.x.69]*
+     Block dimensions used to launch the CUDA kernels     in_constrained_values-operations.    
+* [0.x.70]*
+     Length of the padding (closest power of two larger than or equal to     the number of thread).    
+* [0.x.71]*
+     Row start of each color.    
+* [0.x.72]*
+     Pointer to the DoFHandler associated with the object.    
+* [0.x.73]*
+     Colored graphed of locally owned active cells.    
+* [0.x.74]*
+   Structure to pass the shared memory into a general user function.  
+* [0.x.75]*
+     Constructor.    
+* [0.x.76]*
+     Shared memory for dof and quad values.    
+* [0.x.77]*
+     Shared memory for computed gradients in reference coordinate system.     The gradient in each direction is saved in a struct-of-array     format, i.e. first, all gradients in the x-direction come...    
+* [0.x.78]*
+   Compute the quadrature point index in the local cell of a given thread.      [2.x.28]   [2.x.29]   
+* [0.x.79]*
+   Return the quadrature point index local of a given thread. The index is   only unique for a given MPI process.      [2.x.30]   [2.x.31]   
+* [0.x.80]*
+   Return the quadrature point associated with a given thread.      [2.x.32]   [2.x.33]   
+* [0.x.81]*
+   Structure which is passed to the kernel. It is used to pass all the   necessary information from the CPU to the GPU.  
+* [0.x.82]*
+     Vector of quadrature points.    
+* [0.x.83]*
+     Map the position in the local vector to the position in the global     vector.    
+* [0.x.84]*
+     Vector of inverse Jacobians.    
+* [0.x.85]*
+     Vector of Jacobian times the weights.    
+* [0.x.86]*
+     ID of the associated MatrixFree object.    
+* [0.x.87]*
+     Number of cells.    
+* [0.x.88]*
+     Length of the padding.    
+* [0.x.89]*
+     Row start (including padding).    
+* [0.x.90]*
+     Mask deciding where constraints are set on a given cell.    
+* [0.x.91]*
+     If true, use graph coloring has been used and we can simply add into     the destingation vector. Otherwise, use atomic operations.    
+* [0.x.92]*
+   Copy  [2.x.34]  from the device to the device.  [2.x.35]  should be   identical to the one used in  [2.x.36]       [2.x.37]   [2.x.38]   
+* [0.x.93]*
+   This function is the host version of local_q_point_id().      [2.x.39]   [2.x.40]   
+* [0.x.94]*
+   This function is the host version of get_quadrature_point(). It assumes   that the data in MatrixFree<dim,  [2.x.41]  has been copied to the host   using copy_mf_data_to_host().      [2.x.42]   [2.x.43]   
+* [0.x.95]

@@ -1,9 +1,9 @@
-digraph "Memory handling"
+digraph "Memory handling This group has some basic classes and"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
-  Node2 [label="Utility functions and\l classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__utilities.html",tooltip="This module simply collects a number of functions and classes that provide general tools for tasks th..."];
-  Node1 [label="Memory handling",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="This group has some basic classes and namespaces for memory handling. The Subscriptor and SmartPointe..."];
+  Node2 [label="Utility functions and\l classes This module\l simply",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__utilities.html",tooltip="collects a number of functions and classes that provide general tools for tasks that do not usually h..."];
+  Node1 [label="Memory handling This\l group has some basic\l classes and",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="namespaces for memory handling. The Subscriptor and SmartPointer classes are used for counted memory ..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
 }

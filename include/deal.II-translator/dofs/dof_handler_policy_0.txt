@@ -1,0 +1,39 @@
+[0.x.0]*
+     A namespace in which we define classes that describe how to distribute     and renumber degrees of freedom.    
+* [0.x.1]*
+       A class that implements policies for how the        [2.x.0]  and  [2.x.1]  functions       should work.      
+* [0.x.2]*
+         Destructor.        
+* [0.x.3]*
+         Distribute degrees of freedom on the DoFHandler object associated         with this policy object. The argument is a reference to the         NumberCache of the DoFHandler object. The function may modify it to         make DoFHandler related functions work properly when called within         the policies classes. The updated NumberCache is written to that         argument.        
+* [0.x.4]*
+         Distribute the multigrid dofs on each level of the DoFHandler         associated with this policy object. Return a vector of number         caches for all of the levels.        
+* [0.x.5]*
+         Renumber degrees of freedom as specified by the first argument.                 Return an updated NumberCache for the DoFHandler after renumbering.        
+* [0.x.6]*
+         Renumber multilevel degrees of freedom on one level of a multigrid         hierarchy. The second argument specifies the set of new DoF         indices.                 Return an updated NumberCache for the specified level of the         DoFHandler after renumbering.        
+* [0.x.7]*
+       This class implements the default policy for sequential operations,       i.e. for the case where all cells get degrees of freedom.      
+* [0.x.8]*
+         Constructor.          [2.x.2]  dof_handler The DoFHandler object upon which this           policy class is supposed to work.        
+* [0.x.9]*
+         The DoFHandler object on which this policy object works.        
+* [0.x.10]*
+       This class implements the policy for operations when we use a        [2.x.3]  object.      
+* [0.x.11]*
+         Constructor.          [2.x.4]  dof_handler The DoFHandler object upon which this           policy class is supposed to work.        
+* [0.x.12]*
+         Distribute degrees of freedom on the object given as first         argument.                 On distribution, DoFs are renumbered subdomain-wise and         number_cache.n_locally_owned_dofs_per_processor[i] and         number_cache.locally_owned_dofs are updated consistently.        
+* [0.x.13]*
+         This function is not yet implemented.        
+* [0.x.14]*
+         Renumber degrees of freedom as specified by the first argument.                 The input argument  [2.x.5]  may either have as many entries         as there are global degrees of freedom (i.e. dof_handler.n_dofs() )         or dof_handler.locally_owned_dofs().n_elements(). Therefore it can         be utilized with renumbering functions implemented for the          [2.x.6]  case.        
+* [0.x.15]*
+         The DoFHandler object on which this policy object works.        
+* [0.x.16]*
+       This class implements the policy for operations when we use a        [2.x.7]  object.      
+* [0.x.17]*
+         Constructor.          [2.x.8]  dof_handler The DoFHandler object upon which this           policy class is supposed to work.        
+* [0.x.18]*
+         The DoFHandler object on which this policy object works.        
+* [0.x.19]

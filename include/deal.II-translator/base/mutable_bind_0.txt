@@ -1,0 +1,37 @@
+[0.x.0]*
+   A mutable version of  [2.x.0]  that binds all arguments of a function   pointer to a stored tuple, and allows you to update the tuple between   calls.     An example usage of this class is through the helper function   mutable_bind() that creates a MutableBind object on the fly, based on its   arguments:    
+* [1.x.0]
+*      The arguments are copied to the tuple, with their reference and const   attributes removed. Only copy constructible objects are allowed as   function arguments. If you need to keep some references around, you may   wrap your function into a lambda function:    
+* [1.x.1]
+*   
+* [0.x.1]*
+     An alias to the stored  [2.x.1]  type. Only copy constructible     objects are allowed as tuple members.    
+* [0.x.2]*
+     Construct a MutableBind object specifying the function, and     each arguments separately.    
+* [0.x.3]*
+     Construct a MutableBind object specifying the function, and     the arguments as a tuple.    
+* [0.x.4]*
+     Construct a MutableBind object specifying only the function. By default,     the arguments are left to their default constructor values.    
+* [0.x.5]*
+     Call the original function, passing as arguments the elements of the     tuple of bound arguments.    
+* [0.x.6]*
+     Set the arguments to use in  [2.x.2]  for next time     operator()() is called, using move semantic.    
+* [0.x.7]*
+     Set the arguments to use in  [2.x.3]  for next time     operator()() is called, using move semantic.    
+* [0.x.8]*
+     Parse the arguments to use in  [2.x.4]  from a string, for next time     operator()() is called.         The conversion is performed using a user supplied  [2.x.5]      object. By default,  [2.x.6]  is     used to determine how to convert from  [2.x.7]  to a TupleType     object.          [2.x.8]  value_string The string to convert from      [2.x.9]  pattern A unique pointer to the pattern to use when performing     the conversion    
+* [0.x.9]*
+     An  [2.x.10]  that stores the original function.    
+* [0.x.10]*
+     Currently stored arguments. These are forwarded to the function object     above, when calling operator()().    
+* [0.x.11]*
+   Create a MutableBind object from a function pointer and a list of   arguments.     An example usage is given by:  
+* [1.x.2]
+*   
+* [0.x.12]*
+   Same as above, using a  [2.x.11]  object.  
+* [0.x.13]*
+   Create a MutableBind object from a function pointer, with uninitialized   arguments.     Notice that if you do not call one of the  [2.x.12]    methods, or the  [2.x.13]  function on the returned   object, then the arguments passed to the function object will be   initialized with the values coming from each of the arguments' default   constructors.  
+* [0.x.14]*
+   Same as above, using a  [2.x.14]  object.  
+* [0.x.15]

@@ -196,14 +196,14 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: Since <code>math.h</code> only defines the values of PI or E (as <code>M_PI</code> and <code>M_E</code>) when certain defines are set (on Linux, these are <code>__USE_BSD</code> or <code>__USE_XOPEN</code>), portable programs usually defined these constants themselves. In deal.II, this happened at 6 different places. To avoid this in the future, <code><a class="el" href="config_8h.html">base/config.h</a></code> now exports a namespace <code>deal_II_numbers</code> that defines these two, and a number of other numerical constants. <br  />
+<p class="interli">New: Since <code>math.h</code> only defines the values of PI or E (as <code>M_PI</code> and <code>M_E</code>) when certain defines are set (on Linux, these are <code>__USE_BSD</code> or <code>__USE_XOPEN</code>), portable programs usually defined these constants themselves. In deal.II, this happened at 6 different places. To avoid this in the future, <code>base/config.h</code> now exports a namespace <code>deal_II_numbers</code> that defines these two, and a number of other numerical constants. <br  />
  (WB 2002/09/12) </p>
 <p class="interli"></p>
 <p class="endli"></p>
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: <code><a class="el" href="config_8h.html">base/config.h</a></code> now exports the deal.II base directory through the <code>DEAL_II_PATH</code> preprocessor variable. <br  />
+<p class="interli">New: <code>base/config.h</code> now exports the deal.II base directory through the <code>DEAL_II_PATH</code> preprocessor variable. <br  />
  (WB 2002/09/09) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -318,7 +318,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: Newer versions of gcc have a very nice feature: you can set a verbose terminate handler, that not only aborts a program when an exception is thrown and not caught somewhere, but before aborting it prints that an exception has been thrown, and possibly what the std::exception::what() function has to say. Since many people run into the trap of not having a catch clause in main(), they wonder where that abort may be coming from. The terminate handler then at least says what is missing in their program. <br  />
+<p class="interli">New: Newer versions of gcc have a very nice feature: you can set a verbose terminate handler, that not only aborts a program when an exception is thrown and not caught somewhere, but before aborting it prints that an exception has been thrown, and possibly what the std::exception::what() function has to say. Since many people run into the trap of not having a catch clause in <a class="el" href="step-1_8cc.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>, they wonder where that abort may be coming from. The terminate handler then at least says what is missing in their program. <br  />
  (WB 2002/12/19) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -474,14 +474,14 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: <code>PointerMatrix</code> now has <code>empty()</code> function, which returns true if the pointer is null; otherwise we call the pointer's <code>empty()</code> function. This requires the class MATRIX to have an <code>empty()</code> function. <br  />
+<p class="interli">New: <code>PointerMatrix</code> now has <code><a class="el" href="distributed__0_8txt.html#ae662b500470aa22b097e11a9da781fd8">empty()</a></code> function, which returns true if the pointer is null; otherwise we call the pointer's <code><a class="el" href="distributed__0_8txt.html#ae662b500470aa22b097e11a9da781fd8">empty()</a></code> function. This requires the class MATRIX to have an <code><a class="el" href="distributed__0_8txt.html#ae662b500470aa22b097e11a9da781fd8">empty()</a></code> function. <br  />
  (Brian Carnes 2003/05/22) </p>
 <p class="interli"></p>
 <p class="endli"></p>
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: <code><a class="el" href="classSparseLUDecomposition.html">SparseLUDecomposition</a></code> now has <code>empty()</code> function, which calls the inherited <code class="class"><a class="el" href="classSparseMatrix.html">SparseMatrix</a></code> <code>empty()</code> function. <br  />
+<p class="interli">New: <code><a class="el" href="classSparseLUDecomposition.html">SparseLUDecomposition</a></code> now has <code><a class="el" href="distributed__0_8txt.html#ae662b500470aa22b097e11a9da781fd8">empty()</a></code> function, which calls the inherited <code class="class"><a class="el" href="classSparseMatrix.html">SparseMatrix</a></code> <code><a class="el" href="distributed__0_8txt.html#ae662b500470aa22b097e11a9da781fd8">empty()</a></code> function. <br  />
  (Brian Carnes 2003/05/22) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -579,7 +579,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: Class <code><a class="el" href="classSparseMatrix.html">SparseMatrix</a></code> has an STL-conforming <code>const_iterator</code> and functions <code><a class="el" href="namespaceTrilinosWrappers_1_1internal.html#ad88a9499e01173b35d78413e5945e020">begin()</a></code> and <code class="member"><a class="el" href="namespaceTrilinosWrappers_1_1internal.html#aee42c8e3004e2e81eac3c3356d3ec46b">end()</a></code> for looping through all existing entries. Furthermore, <code>begin(row)</code> and <code>end(row)</code> allow looping through all entries of a single line. <br  />
+<p class="interli">New: Class <code><a class="el" href="classSparseMatrix.html">SparseMatrix</a></code> has an STL-conforming <code>const_iterator</code> and functions <code><a class="el" href="index__set__0_8txt.html#a06c4d20c91ab07a0e74210eb580db6d1">begin()</a></code> and <code class="member"><a class="el" href="coding__conventions__0_8txt.html#a177c697348e3052c514824563807ea3b">end()</a></code> for looping through all existing entries. Furthermore, <code>begin(row)</code> and <code>end(row)</code> allow looping through all entries of a single line. <br  />
  (GK 2002/09/11) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -799,7 +799,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">Fixed: The algorithm to generate neighbor information for patches from cells in <code><a class="el" href="classDataOut.html#a087f63e22f0614bca326dbdca288c646">DataOut::build_patches</a></code> was rather inefficient, tripling the time for patch generation when support for neighbor information was added. Furthermore, the algorithm was at least O(N log N), where the rest was all O(N), making this particularly problematic when the data set was already large. This should now be back to the previous level, by using a more efficient algorithm. <br  />
+<p class="interli">Fixed: The algorithm to generate neighbor information for patches from cells in <code><a class="el" href="classDataOut.html#a087f63e22f0614bca326dbdca288c646">DataOut::build_patches</a></code> was rather inefficient, tripling the time for patch generation when support for neighbor information was added. Furthermore, the algorithm was at least O(N log N), where the rest was all <a class="el" href="base_2utilities__0_8txt.html#a327ba1a6237ec37b823125ef77868fee">O(N)</a>, making this particularly problematic when the data set was already large. This should now be back to the previous level, by using a more efficient algorithm. <br  />
  (WB 2002/10/10) </p>
 <p class="interli"></p>
 <p class="endli"></p>

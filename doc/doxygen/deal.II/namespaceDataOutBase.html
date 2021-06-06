@@ -90,7 +90,7 @@ $(function() {
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">DataOutBase Namespace Reference<div class="ingroups"><a class="el" href="group__IO.html">Input/Output</a> &raquo; <a class="el" href="group__output.html">Graphical output</a></div></div>  </div>
+<div class="title">DataOutBase Namespace Reference<div class="ingroups"><a class="el" href="group__IO.html">Input/Output This module collects the classes used for reading</a> &raquo; <a class="el" href="group__output.html">Graphical output deal.II generates three types of output:</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -313,114 +313,114 @@ Enumerations</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a75750d50e3d27159f8a1e4de7f0a8f32"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a75750d50e3d27159f8a1e4de7f0a8f32"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a75750d50e3d27159f8a1e4de7f0a8f32">write_dx</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1DXFlags.html">DXFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:a75750d50e3d27159f8a1e4de7f0a8f32"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a75750d50e3d27159f8a1e4de7f0a8f32">write_dx</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1DXFlags.html">DXFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:a75750d50e3d27159f8a1e4de7f0a8f32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98914588b1516419a572a1718b1bf3d5"><td class="memTemplParams" colspan="2">template&lt;int spacedim&gt; </td></tr>
-<tr class="memitem:a98914588b1516419a572a1718b1bf3d5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a98914588b1516419a572a1718b1bf3d5">write_eps</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; 2, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1EpsFlags.html">EpsFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:a98914588b1516419a572a1718b1bf3d5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a98914588b1516419a572a1718b1bf3d5">write_eps</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; 2, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1EpsFlags.html">EpsFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:a98914588b1516419a572a1718b1bf3d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a175a197c99b06d22f17e2efcbdd18a18"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a175a197c99b06d22f17e2efcbdd18a18"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a175a197c99b06d22f17e2efcbdd18a18">write_eps</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1EpsFlags.html">EpsFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:a175a197c99b06d22f17e2efcbdd18a18"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a175a197c99b06d22f17e2efcbdd18a18">write_eps</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1EpsFlags.html">EpsFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:a175a197c99b06d22f17e2efcbdd18a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa4389cfc36770d2881867f6889bc348"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:afa4389cfc36770d2881867f6889bc348"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#afa4389cfc36770d2881867f6889bc348">write_gmv</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1GmvFlags.html">GmvFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:afa4389cfc36770d2881867f6889bc348"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#afa4389cfc36770d2881867f6889bc348">write_gmv</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1GmvFlags.html">GmvFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:afa4389cfc36770d2881867f6889bc348"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cfd561a7b5262f83e3cdc4020b377f4"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a3cfd561a7b5262f83e3cdc4020b377f4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a3cfd561a7b5262f83e3cdc4020b377f4">write_gnuplot</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1GnuplotFlags.html">GnuplotFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:a3cfd561a7b5262f83e3cdc4020b377f4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a3cfd561a7b5262f83e3cdc4020b377f4">write_gnuplot</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1GnuplotFlags.html">GnuplotFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:a3cfd561a7b5262f83e3cdc4020b377f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae661c9d7979da0c39b5f08fd715ed947"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:ae661c9d7979da0c39b5f08fd715ed947"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ae661c9d7979da0c39b5f08fd715ed947">write_povray</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1PovrayFlags.html">PovrayFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:ae661c9d7979da0c39b5f08fd715ed947"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ae661c9d7979da0c39b5f08fd715ed947">write_povray</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1PovrayFlags.html">PovrayFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:ae661c9d7979da0c39b5f08fd715ed947"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9f9f33c200120450b6844d986a83604"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:ab9f9f33c200120450b6844d986a83604"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ab9f9f33c200120450b6844d986a83604">write_tecplot</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1TecplotFlags.html">TecplotFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:ab9f9f33c200120450b6844d986a83604"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ab9f9f33c200120450b6844d986a83604">write_tecplot</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1TecplotFlags.html">TecplotFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:ab9f9f33c200120450b6844d986a83604"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ec32be3e3379b7c83dc339f52cf2ad6"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a5ec32be3e3379b7c83dc339f52cf2ad6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a5ec32be3e3379b7c83dc339f52cf2ad6">write_ucd</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1UcdFlags.html">UcdFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:a5ec32be3e3379b7c83dc339f52cf2ad6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a5ec32be3e3379b7c83dc339f52cf2ad6">write_ucd</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1UcdFlags.html">UcdFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:a5ec32be3e3379b7c83dc339f52cf2ad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a336d97147011f5f8f3746cac0a3ca4ab"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a336d97147011f5f8f3746cac0a3ca4ab"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a336d97147011f5f8f3746cac0a3ca4ab">write_vtk</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:a336d97147011f5f8f3746cac0a3ca4ab"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a336d97147011f5f8f3746cac0a3ca4ab">write_vtk</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:a336d97147011f5f8f3746cac0a3ca4ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3aec479936b78bd0ec2ecc3674e24584"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a3aec479936b78bd0ec2ecc3674e24584"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a3aec479936b78bd0ec2ecc3674e24584">write_vtu</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:a3aec479936b78bd0ec2ecc3674e24584"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a3aec479936b78bd0ec2ecc3674e24584">write_vtu</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:a3aec479936b78bd0ec2ecc3674e24584"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cb8c60785a483ffaf2644ab93508da9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a6cb8c60785a483ffaf2644ab93508da9">write_vtu_header</a> (std::ostream &amp;out, const <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;flags)</td></tr>
+<tr class="memitem:a6cb8c60785a483ffaf2644ab93508da9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a6cb8c60785a483ffaf2644ab93508da9">write_vtu_header</a> (std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>)</td></tr>
 <tr class="separator:a6cb8c60785a483ffaf2644ab93508da9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8709fac9a9e37c808518888630b4e04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#aa8709fac9a9e37c808518888630b4e04">write_vtu_footer</a> (std::ostream &amp;out)</td></tr>
+<tr class="memitem:aa8709fac9a9e37c808518888630b4e04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#aa8709fac9a9e37c808518888630b4e04">write_vtu_footer</a> (std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:aa8709fac9a9e37c808518888630b4e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac502afe8d8c9fe9d1bdd8184f1f1291e"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:ac502afe8d8c9fe9d1bdd8184f1f1291e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ac502afe8d8c9fe9d1bdd8184f1f1291e">write_vtu_main</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:ac502afe8d8c9fe9d1bdd8184f1f1291e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ac502afe8d8c9fe9d1bdd8184f1f1291e">write_vtu_main</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:ac502afe8d8c9fe9d1bdd8184f1f1291e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8c87832129884d0603e3ab9ae132741"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ac8c87832129884d0603e3ab9ae132741">write_pvtu_record</a> (std::ostream &amp;out, const std::vector&lt; std::string &gt; &amp;piece_names, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges)</td></tr>
+<tr class="memitem:ac8c87832129884d0603e3ab9ae132741"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ac8c87832129884d0603e3ab9ae132741">write_pvtu_record</a> (std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;piece_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges)</td></tr>
 <tr class="separator:ac8c87832129884d0603e3ab9ae132741"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f1c052ba49fd44cd8e3f35ba871aebd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a6f1c052ba49fd44cd8e3f35ba871aebd">write_pvd_record</a> (std::ostream &amp;out, const std::vector&lt; std::pair&lt; <a class="el" href="classdouble.html">double</a>, std::string &gt;&gt; &amp;times_and_names)</td></tr>
+<tr class="memitem:a6f1c052ba49fd44cd8e3f35ba871aebd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a6f1c052ba49fd44cd8e3f35ba871aebd">write_pvd_record</a> (std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a>, std::string &gt;&gt; &amp;times_and_names)</td></tr>
 <tr class="separator:a6f1c052ba49fd44cd8e3f35ba871aebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4c65120d0661fe57597ff0d13a296c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ae4c65120d0661fe57597ff0d13a296c1">write_visit_record</a> (std::ostream &amp;out, const std::vector&lt; std::string &gt; &amp;piece_names)</td></tr>
+<tr class="memitem:ae4c65120d0661fe57597ff0d13a296c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ae4c65120d0661fe57597ff0d13a296c1">write_visit_record</a> (std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;piece_names)</td></tr>
 <tr class="separator:ae4c65120d0661fe57597ff0d13a296c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34a2666ee12e5b0364d888b18eb3ec8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a34a2666ee12e5b0364d888b18eb3ec8e">write_visit_record</a> (std::ostream &amp;out, const std::vector&lt; std::vector&lt; std::string &gt;&gt; &amp;piece_names)</td></tr>
+<tr class="memitem:a34a2666ee12e5b0364d888b18eb3ec8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a34a2666ee12e5b0364d888b18eb3ec8e">write_visit_record</a> (std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt;&gt; &amp;piece_names)</td></tr>
 <tr class="separator:a34a2666ee12e5b0364d888b18eb3ec8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a482d9621dcc87d6a43cf8a9651e16cd8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a482d9621dcc87d6a43cf8a9651e16cd8">write_visit_record</a> (std::ostream &amp;out, const std::vector&lt; std::pair&lt; <a class="el" href="classdouble.html">double</a>, std::vector&lt; std::string &gt;&gt;&gt; &amp;times_and_piece_names)</td></tr>
+<tr class="memitem:a482d9621dcc87d6a43cf8a9651e16cd8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a482d9621dcc87d6a43cf8a9651e16cd8">write_visit_record</a> (std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a>, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt;&gt;&gt; &amp;times_and_piece_names)</td></tr>
 <tr class="separator:a482d9621dcc87d6a43cf8a9651e16cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad20ab1f2f5ec29122aefe1f016ff6eac"><td class="memTemplParams" colspan="2">template&lt;int spacedim&gt; </td></tr>
-<tr class="memitem:ad20ab1f2f5ec29122aefe1f016ff6eac"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ad20ab1f2f5ec29122aefe1f016ff6eac">write_svg</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; 2, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1SvgFlags.html">SvgFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:ad20ab1f2f5ec29122aefe1f016ff6eac"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ad20ab1f2f5ec29122aefe1f016ff6eac">write_svg</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; 2, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1SvgFlags.html">SvgFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:ad20ab1f2f5ec29122aefe1f016ff6eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70b0a895fd8b48c1555fa1c34f2cd176"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a70b0a895fd8b48c1555fa1c34f2cd176"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a70b0a895fd8b48c1555fa1c34f2cd176">write_deal_II_intermediate</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1Deal__II__IntermediateFlags.html">Deal_II_IntermediateFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:a70b0a895fd8b48c1555fa1c34f2cd176"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a70b0a895fd8b48c1555fa1c34f2cd176">write_deal_II_intermediate</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1Deal__II__IntermediateFlags.html">Deal_II_IntermediateFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:a70b0a895fd8b48c1555fa1c34f2cd176"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5a956cffba0fa383f85a82bb2a4ca63"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:af5a956cffba0fa383f85a82bb2a4ca63"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#af5a956cffba0fa383f85a82bb2a4ca63">write_hdf5_parallel</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const <a class="el" href="classDataOutBase_1_1DataOutFilter.html">DataOutFilter</a> &amp;data_filter, const std::string &amp;filename, const <a class="el" href="classMPI__Comm.html">MPI_Comm</a> &amp;comm)</td></tr>
+<tr class="memitem:af5a956cffba0fa383f85a82bb2a4ca63"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#af5a956cffba0fa383f85a82bb2a4ca63">write_hdf5_parallel</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDataOutBase_1_1DataOutFilter.html">DataOutFilter</a> &amp;data_filter, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;filename, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> MPI_Comm &amp;comm)</td></tr>
 <tr class="separator:af5a956cffba0fa383f85a82bb2a4ca63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b63e70306e3d6671ac16b46f7d158e4"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a5b63e70306e3d6671ac16b46f7d158e4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a5b63e70306e3d6671ac16b46f7d158e4">write_hdf5_parallel</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const <a class="el" href="classDataOutBase_1_1DataOutFilter.html">DataOutFilter</a> &amp;data_filter, const <a class="el" href="classbool.html">bool</a> write_mesh_file, const std::string &amp;mesh_filename, const std::string &amp;solution_filename, const <a class="el" href="classMPI__Comm.html">MPI_Comm</a> &amp;comm)</td></tr>
+<tr class="memitem:a5b63e70306e3d6671ac16b46f7d158e4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a5b63e70306e3d6671ac16b46f7d158e4">write_hdf5_parallel</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDataOutBase_1_1DataOutFilter.html">DataOutFilter</a> &amp;data_filter, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> write_mesh_file, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;mesh_filename, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;solution_filename, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> MPI_Comm &amp;comm)</td></tr>
 <tr class="separator:a5b63e70306e3d6671ac16b46f7d158e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5eae1562cccea12a7cc4be2bbf9830a7"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a5eae1562cccea12a7cc4be2bbf9830a7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a5eae1562cccea12a7cc4be2bbf9830a7">write_filtered_data</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="classDataOutBase_1_1DataOutFilter.html">DataOutFilter</a> &amp;filtered_data)</td></tr>
+<tr class="memitem:a5eae1562cccea12a7cc4be2bbf9830a7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a5eae1562cccea12a7cc4be2bbf9830a7">write_filtered_data</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="classDataOutBase_1_1DataOutFilter.html">DataOutFilter</a> &amp;filtered_data)</td></tr>
 <tr class="separator:a5eae1562cccea12a7cc4be2bbf9830a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14e601aef19bd7d10884a1d25f07f3f8"><td class="memItemLeft" align="right" valign="top">std::pair&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a14e601aef19bd7d10884a1d25f07f3f8">determine_intermediate_format_dimensions</a> (std::istream &amp;input)</td></tr>
+<tr class="memitem:a14e601aef19bd7d10884a1d25f07f3f8"><td class="memItemLeft" align="right" valign="top">std::pair&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a14e601aef19bd7d10884a1d25f07f3f8">determine_intermediate_format_dimensions</a> (std::istream &amp;<a class="el" href="parameter__handler__0_8txt.html#a141ebbaf93668d52831bbd4ec5a1e949">input</a>)</td></tr>
 <tr class="separator:a14e601aef19bd7d10884a1d25f07f3f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbf6308a89986d2081638ef3117699a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">OutputFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#abbf6308a89986d2081638ef3117699a9">parse_output_format</a> (const std::string &amp;format_name)</td></tr>
+<tr class="memitem:abbf6308a89986d2081638ef3117699a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">OutputFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#abbf6308a89986d2081638ef3117699a9">parse_output_format</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;format_name)</td></tr>
 <tr class="separator:abbf6308a89986d2081638ef3117699a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add43d8f47ccf7052f0178e710ad4ca02"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#add43d8f47ccf7052f0178e710ad4ca02">get_output_format_names</a> ()</td></tr>
 <tr class="separator:add43d8f47ccf7052f0178e710ad4ca02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed25a6ddf928a6904fd1ac942125ec86"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#aed25a6ddf928a6904fd1ac942125ec86">default_suffix</a> (const <a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">OutputFormat</a> output_format)</td></tr>
+<tr class="memitem:aed25a6ddf928a6904fd1ac942125ec86"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#aed25a6ddf928a6904fd1ac942125ec86">default_suffix</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">OutputFormat</a> output_format)</td></tr>
 <tr class="separator:aed25a6ddf928a6904fd1ac942125ec86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7ee90f94d79a99d58013199c0acf6034"><td class="memItemLeft" align="right" valign="top">static ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga7ee90f94d79a99d58013199c0acf6034">ExcInvalidDatasetSize</a> (<a class="el" href="classint.html">int</a> arg1, <a class="el" href="classint.html">int</a> arg2)</td></tr>
+<tr class="memitem:ga7ee90f94d79a99d58013199c0acf6034"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga7ee90f94d79a99d58013199c0acf6034">ExcInvalidDatasetSize</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> arg1, <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> arg2)</td></tr>
 <tr class="separator:ga7ee90f94d79a99d58013199c0acf6034"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad06f77234d13c7c6d63d8fc54b524b3f"><td class="memItemLeft" align="right" valign="top">static ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gad06f77234d13c7c6d63d8fc54b524b3f">ExcNoPatches</a> ()</td></tr>
+<tr class="memitem:gad06f77234d13c7c6d63d8fc54b524b3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gad06f77234d13c7c6d63d8fc54b524b3f">ExcNoPatches</a> ()</td></tr>
 <tr class="separator:gad06f77234d13c7c6d63d8fc54b524b3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa5fe1fc60077930909828fa4344a9aa2"><td class="memItemLeft" align="right" valign="top">static ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaa5fe1fc60077930909828fa4344a9aa2">ExcTecplotAPIError</a> ()</td></tr>
+<tr class="memitem:gaa5fe1fc60077930909828fa4344a9aa2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaa5fe1fc60077930909828fa4344a9aa2">ExcTecplotAPIError</a> ()</td></tr>
 <tr class="separator:gaa5fe1fc60077930909828fa4344a9aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1ecb35cb7c9815777fa989f17cfa3846"><td class="memItemLeft" align="right" valign="top">static ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga1ecb35cb7c9815777fa989f17cfa3846">ExcErrorOpeningTecplotFile</a> (char *arg1)</td></tr>
+<tr class="memitem:ga1ecb35cb7c9815777fa989f17cfa3846"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga1ecb35cb7c9815777fa989f17cfa3846">ExcErrorOpeningTecplotFile</a> (char *arg1)</td></tr>
 <tr class="separator:ga1ecb35cb7c9815777fa989f17cfa3846"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1b471b212de843a0e7d1de8d6d631fea"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:ga1b471b212de843a0e7d1de8d6d631fea"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga1b471b212de843a0e7d1de8d6d631fea">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt; &amp;patch)</td></tr>
+<tr class="memitem:ga1b471b212de843a0e7d1de8d6d631fea"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga1b471b212de843a0e7d1de8d6d631fea">operator&lt;&lt;</a> (std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;<a class="el" href="data__out__base__0_8txt.html#abff8270fbbbb0d3e9f0aeb14d7e3eec8">patch</a>)</td></tr>
 <tr class="separator:ga1b471b212de843a0e7d1de8d6d631fea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad5f1da20fc706db32c3355d79fa819ae"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:gad5f1da20fc706db32c3355d79fa819ae"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gad5f1da20fc706db32c3355d79fa819ae">operator&gt;&gt;</a> (std::istream &amp;in, <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt; &amp;patch)</td></tr>
+<tr class="memitem:gad5f1da20fc706db32c3355d79fa819ae"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gad5f1da20fc706db32c3355d79fa819ae">operator&gt;&gt;</a> (std::istream &amp;<a class="el" href="tria__description__0_8txt.html#a11901ff80013804497fa645646431eae">in</a>, <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;<a class="el" href="data__out__base__0_8txt.html#abff8270fbbbb0d3e9f0aeb14d7e3eec8">patch</a>)</td></tr>
 <tr class="separator:gad5f1da20fc706db32c3355d79fa819ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga701d6ede4eb8573fb03722aeb60e07c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga701d6ede4eb8573fb03722aeb60e07c9">DeclException2</a> (<a class="el" href="group__Exceptions.html#ga7ee90f94d79a99d58013199c0acf6034">ExcInvalidDatasetSize</a>, <a class="el" href="classint.html">int</a>, <a class="el" href="classint.html">int</a>,&lt;&lt; &quot;The number of points in this data set is &quot;&lt;&lt; arg1&lt;&lt; &quot;, but we expected &quot;&lt;&lt; arg2&lt;&lt; &quot; in each space direction.&quot;)</td></tr>
+<tr class="memitem:ga701d6ede4eb8573fb03722aeb60e07c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga701d6ede4eb8573fb03722aeb60e07c9">DeclException2</a> (<a class="el" href="group__Exceptions.html#ga7ee90f94d79a99d58013199c0acf6034">ExcInvalidDatasetSize</a>, <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>,&lt;&lt; &quot;The <a class="el" href="generators__0_8txt.html#a52d07c1744d923546e9cafc255f70465">number</a> <a class="el" href="copy__data__0_8txt.html#ad2652187ccefa4786a264b05b284b040">of</a> <a class="el" href="vector__tools__point__value__0_8txt.html#af03f5f6ab2a471e8151c1243c39efbbe">points</a> <a class="el" href="tria__description__0_8txt.html#a11901ff80013804497fa645646431eae">in</a> <a class="el" href="data__postprocessor__0_8txt.html#a600bd43d5bd41af065e85ec3e40fed92">this</a> <a class="el" href="tria__levels__0_8txt.html#a4d7c8e1606c9f0e65ee92db40db25445">data</a> <a class="el" href="histogram__0_8txt.html#a1f28b62a413a3352bc54e62ef004750e">set</a> <a class="el" href="grid__generator__0_8txt.html#ab587b856781570b837e9fb6b42d51116">is</a> &quot;&lt;&lt; arg1&lt;&lt; &quot;, but we <a class="el" href="solver__gmres__0_8txt.html#a18a583e128f812fdbedf91331d1c6f0a">expected</a> &quot;&lt;&lt; arg2&lt;&lt; &quot; in <a class="el" href="multithreading__0_8txt.html#ad44003d851a375dab57ebd3f6f32212e">each</a> <a class="el" href="block__indices__0_8txt.html#ab8f536d33e352461076872b7c8a3461b">space</a> direction.&quot;)</td></tr>
 <tr class="separator:ga701d6ede4eb8573fb03722aeb60e07c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga01d60c26467dcacb3c2a48751378151b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga01d60c26467dcacb3c2a48751378151b">DeclExceptionMsg</a> (<a class="el" href="group__Exceptions.html#gad06f77234d13c7c6d63d8fc54b524b3f">ExcNoPatches</a>, &quot;You are trying to write graphical data into a file, but &quot; &quot;no data is available in the intermediate format that &quot; &quot;the DataOutBase functions require. Did you forget to &quot; &quot;call a function such as <a class="el" href="classDataOut.html#a087f63e22f0614bca326dbdca288c646">DataOut::build_patches</a>()?&quot;)</td></tr>
+<tr class="memitem:ga01d60c26467dcacb3c2a48751378151b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga01d60c26467dcacb3c2a48751378151b">DeclExceptionMsg</a> (<a class="el" href="group__Exceptions.html#gad06f77234d13c7c6d63d8fc54b524b3f">ExcNoPatches</a>, &quot;You <a class="el" href="data__postprocessor__0_8txt.html#a6ebaf907b929a4a6c7934522af56fdb5">are</a> trying <a class="el" href="error__estimator__0_8txt.html#a4ec80ded5cb4f47bcabf0a970c68075b">to</a> <a class="el" href="data__out__dof__data__0_8txt.html#a3e48a27e3fe919edd61a889b64af63dc">write</a> graphical <a class="el" href="tria__levels__0_8txt.html#a4d7c8e1606c9f0e65ee92db40db25445">data</a> <a class="el" href="notation__0_8txt.html#ab06607927e72a2cfe7133c2ae01120ac">into</a> <a class="el" href="vector__tools__constraints__0_8txt.html#a5bb8955c98135fbb60012ceeee4b7839">a</a> <a class="el" href="data__out__dof__data__0_8txt.html#ae179cdf3e697f77aacafd59e15bd871e">file</a>, <a class="el" href="fe__raviart__thomas__0_8txt.html#a8d1cf95cc7b7823aec3fb45189ff7fa1">but</a> &quot; &quot;<a class="el" href="multithreading__0_8txt.html#a4c0a7149e1927066d2fcdb356cb90f7b">no</a> <a class="el" href="tria__levels__0_8txt.html#a4d7c8e1606c9f0e65ee92db40db25445">data</a> <a class="el" href="grid__generator__0_8txt.html#ab587b856781570b837e9fb6b42d51116">is</a> <a class="el" href="opencascade_2utilities__0_8txt.html#a3288da6a8b1ff377728e6e7fd71ec10c">available</a> <a class="el" href="tria__description__0_8txt.html#a11901ff80013804497fa645646431eae">in</a> <a class="el" href="vector__tools__project__0_8txt.html#a0f636bbf8ef44dc0f3b278cf16adb0a7">the</a> <a class="el" href="sparsity__0_8txt.html#aaa4d72bc02fb6cf85549cf30f01e0d0d">intermediate</a> <a class="el" href="mapping__info__0_8txt.html#aa46177c3defd6741f8c7759c442c072f">format</a> <a class="el" href="vector__tools__0_8txt.html#ad36d8e63bd23499eabecf374d589e6e1">that</a> &quot; &quot;<a class="el" href="vector__tools__project__0_8txt.html#a0f636bbf8ef44dc0f3b278cf16adb0a7">the</a> DataOutBase <a class="el" href="solver__0_8txt.html#ae803101356374394451c433b656057d5">functions</a> require. Did you forget <a class="el" href="error__estimator__0_8txt.html#a4ec80ded5cb4f47bcabf0a970c68075b">to</a> &quot; &quot;<a class="el" href="fe__evaluation__0_8txt.html#a0f97c0b84d8517529f0e91de012fb8f5">call</a> <a class="el" href="vector__tools__constraints__0_8txt.html#a5bb8955c98135fbb60012ceeee4b7839">a</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">function</a> <a class="el" href="grid__in__0_8txt.html#a2fee894286c2307d82e1c3477d82da86">such</a> <a class="el" href="smoothness__estimator__0_8txt.html#a28ea152c9330b58630f7578c332ca594">as</a> <a class="el" href="classDataOut.html#a087f63e22f0614bca326dbdca288c646">DataOut::build_patches</a>()?&quot;)</td></tr>
 <tr class="separator:ga01d60c26467dcacb3c2a48751378151b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga670d8226518ff170b3bd523f5b18c53d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga670d8226518ff170b3bd523f5b18c53d">DeclExceptionMsg</a> (<a class="el" href="group__Exceptions.html#gaa5fe1fc60077930909828fa4344a9aa2">ExcTecplotAPIError</a>, &quot;The error code of one of the Tecplot functions was &quot; &quot;not zero as expected.&quot;)</td></tr>
+<tr class="memitem:ga670d8226518ff170b3bd523f5b18c53d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga670d8226518ff170b3bd523f5b18c53d">DeclExceptionMsg</a> (<a class="el" href="group__Exceptions.html#gaa5fe1fc60077930909828fa4344a9aa2">ExcTecplotAPIError</a>, &quot;The <a class="el" href="vector__tools__integrate__difference__0_8txt.html#a314323b5102f87ea7e2b4a1aba773b82">error</a> <a class="el" href="fe__evaluation__0_8txt.html#a27d63ac74e5d44c8a9726c2ef5e61ef9">code</a> <a class="el" href="copy__data__0_8txt.html#ad2652187ccefa4786a264b05b284b040">of</a> <a class="el" href="fe__rt__bubbles__0_8txt.html#ad2e4404538d5721e1b54fabe907232f5">one</a> <a class="el" href="copy__data__0_8txt.html#ad2652187ccefa4786a264b05b284b040">of</a> <a class="el" href="vector__tools__project__0_8txt.html#a0f636bbf8ef44dc0f3b278cf16adb0a7">the</a> <a class="el" href="grid__in__0_8txt.html#aea8ba32a8de765365ec7486e7b47cd52">Tecplot</a> <a class="el" href="solver__0_8txt.html#ae803101356374394451c433b656057d5">functions</a> was &quot; &quot;<a class="el" href="matrix__free__0_8txt.html#aaa1256056e47f82858c53b9796768300">not</a> <a class="el" href="trilinos__precondition__0_8txt.html#a28873da16414f72c131316465f5d0eec">zero</a> <a class="el" href="smoothness__estimator__0_8txt.html#a28ea152c9330b58630f7578c332ca594">as</a> expected.&quot;)</td></tr>
 <tr class="separator:ga670d8226518ff170b3bd523f5b18c53d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4f27a3163ad9b329237ea4097b083084"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga4f27a3163ad9b329237ea4097b083084">DeclException1</a> (<a class="el" href="group__Exceptions.html#ga1ecb35cb7c9815777fa989f17cfa3846">ExcErrorOpeningTecplotFile</a>, char *,&lt;&lt; &quot;There was an error opening Tecplot file &quot;&lt;&lt; arg1&lt;&lt; &quot; for output.&quot;)</td></tr>
+<tr class="memitem:ga4f27a3163ad9b329237ea4097b083084"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga4f27a3163ad9b329237ea4097b083084">DeclException1</a> (<a class="el" href="group__Exceptions.html#ga1ecb35cb7c9815777fa989f17cfa3846">ExcErrorOpeningTecplotFile</a>, char *,&lt;&lt; &quot;There was an <a class="el" href="vector__tools__integrate__difference__0_8txt.html#a314323b5102f87ea7e2b4a1aba773b82">error</a> opening <a class="el" href="grid__in__0_8txt.html#aea8ba32a8de765365ec7486e7b47cd52">Tecplot</a> <a class="el" href="data__out__dof__data__0_8txt.html#ae179cdf3e697f77aacafd59e15bd871e">file</a> &quot;&lt;&lt; arg1&lt;&lt; &quot; for output.&quot;)</td></tr>
 <tr class="separator:ga4f27a3163ad9b329237ea4097b083084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9d2fc6fcad028f50919c86b635e368e"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim, typename StreamType &gt; </td></tr>
-<tr class="memitem:aa9d2fc6fcad028f50919c86b635e368e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#aa9d2fc6fcad028f50919c86b635e368e">write_nodes</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, StreamType &amp;out)</td></tr>
+<tr class="memitem:aa9d2fc6fcad028f50919c86b635e368e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#aa9d2fc6fcad028f50919c86b635e368e">write_nodes</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, StreamType &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:aa9d2fc6fcad028f50919c86b635e368e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acad7f3fa14924353348a60368c129a99"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim, typename StreamType &gt; </td></tr>
-<tr class="memitem:acad7f3fa14924353348a60368c129a99"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#acad7f3fa14924353348a60368c129a99">write_cells</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, StreamType &amp;out)</td></tr>
+<tr class="memitem:acad7f3fa14924353348a60368c129a99"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#acad7f3fa14924353348a60368c129a99">write_cells</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, StreamType &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:acad7f3fa14924353348a60368c129a99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada672e280a680b8a20dfb60d747e3fed"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim, typename StreamType &gt; </td></tr>
-<tr class="memitem:ada672e280a680b8a20dfb60d747e3fed"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ada672e280a680b8a20dfb60d747e3fed">write_high_order_cells</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, StreamType &amp;out)</td></tr>
+<tr class="memitem:ada672e280a680b8a20dfb60d747e3fed"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ada672e280a680b8a20dfb60d747e3fed">write_high_order_cells</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, StreamType &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:ada672e280a680b8a20dfb60d747e3fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d19d285f4429a9d2827bf49c37a6e3d"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim, class StreamType &gt; </td></tr>
-<tr class="memitem:a5d19d285f4429a9d2827bf49c37a6e3d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a5d19d285f4429a9d2827bf49c37a6e3d">write_data</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, unsigned <a class="el" href="classint.html">int</a> n_data_sets, const <a class="el" href="classbool.html">bool</a> double_precision, StreamType &amp;out)</td></tr>
+<tr class="memitem:a5d19d285f4429a9d2827bf49c37a6e3d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a5d19d285f4429a9d2827bf49c37a6e3d">write_data</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> n_data_sets, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> double_precision, StreamType &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:a5d19d285f4429a9d2827bf49c37a6e3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75caf324397dd942b2eec09b3bec7181"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a75caf324397dd942b2eec09b3bec7181"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a75caf324397dd942b2eec09b3bec7181">write_tecplot_binary</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;patches, const std::vector&lt; std::string &gt; &amp;data_names, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, const <a class="el" href="structDataOutBase_1_1TecplotFlags.html">TecplotFlags</a> &amp;flags, std::ostream &amp;out)</td></tr>
+<tr class="memitem:a75caf324397dd942b2eec09b3bec7181"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#a75caf324397dd942b2eec09b3bec7181">write_tecplot_binary</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;<a class="el" href="data__out__faces__0_8txt.html#a7e5d18b175fd7e86261bd670ce4063f9">patches</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;data_names, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;nonscalar_data_ranges, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1TecplotFlags.html">TecplotFlags</a> &amp;<a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>, std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>)</td></tr>
 <tr class="separator:a75caf324397dd942b2eec09b3bec7181"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4758c1a6d19b99a12f01e56146535d5"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:ac4758c1a6d19b99a12f01e56146535d5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ac4758c1a6d19b99a12f01e56146535d5">write_svg</a> (const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;, const std::vector&lt; std::string &gt; &amp;, const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;, const <a class="el" href="structDataOutBase_1_1SvgFlags.html">SvgFlags</a> &amp;, std::ostream &amp;)</td></tr>
+<tr class="memitem:ac4758c1a6d19b99a12f01e56146535d5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceDataOutBase.html#ac4758c1a6d19b99a12f01e56146535d5">write_svg</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1SvgFlags.html">SvgFlags</a> &amp;, std::ostream &amp;)</td></tr>
 <tr class="separator:ac4758c1a6d19b99a12f01e56146535d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -496,7 +496,7 @@ Lagrange VTK output by Alexander Grayver </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">DataOutBase::OutputFormat</a></td>
+          <td class="memname"><a class="el" href="shared__tria__0_8txt.html#abcd3e97091f492496aa258c912ae135b">enum</a> <a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">DataOutBase::OutputFormat</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -614,7 +614,7 @@ Lagrange VTK output by Alexander Grayver </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">DataOutBase::OutputFormat</a></td>
+          <td class="memname"><a class="el" href="shared__tria__0_8txt.html#abcd3e97091f492496aa258c912ae135b">enum</a> <a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">DataOutBase::OutputFormat</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -732,7 +732,7 @@ Lagrange VTK output by Alexander Grayver </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">DataOutBase::OutputFormat</a></td>
+          <td class="memname"><a class="el" href="shared__tria__0_8txt.html#abcd3e97091f492496aa258c912ae135b">enum</a> <a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">DataOutBase::OutputFormat</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -855,25 +855,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_dx </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1DXFlags.html">DXFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1DXFlags.html">DXFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -906,25 +906,25 @@ template&lt;int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_eps </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; 2, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; 2, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1EpsFlags.html">EpsFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1EpsFlags.html">EpsFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -957,25 +957,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_eps </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1EpsFlags.html">EpsFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1EpsFlags.html">EpsFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1008,25 +1008,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_gmv </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1GmvFlags.html">GmvFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1GmvFlags.html">GmvFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1059,25 +1059,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_gnuplot </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1GnuplotFlags.html">GnuplotFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1GnuplotFlags.html">GnuplotFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1128,25 +1128,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_povray </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1PovrayFlags.html">PovrayFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1PovrayFlags.html">PovrayFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1186,25 +1186,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_tecplot </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1TecplotFlags.html">TecplotFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1TecplotFlags.html">TecplotFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1237,25 +1237,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_ucd </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1UcdFlags.html">UcdFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1UcdFlags.html">UcdFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1288,25 +1288,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_vtk </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1339,25 +1339,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_vtu </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1398,7 +1398,7 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>&#160;</td>
         </tr>
         <tr>
@@ -1446,25 +1446,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_vtu_main </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1VtkFlags.html">VtkFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1501,19 +1501,19 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>piece_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>&#160;</td>
         </tr>
         <tr>
@@ -1548,7 +1548,7 @@ Older versions of VisIt (before 2.5.1), can not read <code>pvtu</code> records. 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::pair&lt; <a class="el" href="classdouble.html">double</a>, std::string &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a>, std::string &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>times_and_names</em>&#160;</td>
         </tr>
         <tr>
@@ -1564,16 +1564,16 @@ Older versions of VisIt (before 2.5.1), can not read <code>pvtu</code> records. 
 <div class="line"><a class="code" href="classDataOut.html">DataOut&lt;dim&gt;</a> data_out;</div>
 <div class="line"> </div>
 <div class="line">data_out.<a class="code" href="classDataOut__DoFData.html#a6ed7c846331069f406b8c9933c37fda4">attach_dof_handler</a>(dof_handler);</div>
-<div class="line">data_out.<a class="code" href="classDataOut__DoFData.html#a79cbe2f02f8dfb85026c71d783dbb703">add_data_vector</a>(solution, <span class="stringliteral">&quot;U&quot;</span>);</div>
+<div class="line">data_out.<a class="code" href="classDataOut__DoFData.html#a79cbe2f02f8dfb85026c71d783dbb703">add_data_vector</a>(<a class="code" href="distributed__0_8txt.html#ac2b339f054fd752a401e197097db8cfe">solution</a>, <span class="stringliteral">&quot;U&quot;</span>);</div>
 <div class="line">data_out.<a class="code" href="classDataOut.html#a087f63e22f0614bca326dbdca288c646">build_patches</a>();</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">const</span> std::string filename = <span class="stringliteral">&quot;solution-&quot;</span> +</div>
 <div class="line">                             <a class="code" href="namespaceUtilities.html#a6195c5f009ea8c7c536c6ffdf108c32f">Utilities::int_to_string</a> (timestep_n, 3) +</div>
 <div class="line">                             <span class="stringliteral">&quot;.vtu&quot;</span>;</div>
-<div class="line">std::ofstream output(filename);</div>
-<div class="line">data_out.<a class="code" href="classDataOutInterface.html#a93c780f93105e0daaa76c6c43694b4ae">write_vtu</a>(output);</div>
+<div class="line">std::ofstream <a class="code" href="distributed__0_8txt.html#afec1b694405cadb2d251275096ad3563">output</a>(filename);</div>
+<div class="line">data_out.<a class="code" href="classDataOutInterface.html#a93c780f93105e0daaa76c6c43694b4ae">write_vtu</a>(<a class="code" href="distributed__0_8txt.html#afec1b694405cadb2d251275096ad3563">output</a>);</div>
 <div class="line"> </div>
-<div class="line">times_and_names.emplace_back (time, filename);</div>
+<div class="line">times_and_names.emplace_back (<a class="code" href="automatic__and__symbolic__differentiation__0_8txt.html#a96ecfde131843f52ee49d0e0c1180134">time</a>, filename);</div>
 <div class="line">std::ofstream pvd_output (<span class="stringliteral">&quot;solution.pvd&quot;</span>);</div>
 <div class="line"><a class="code" href="namespaceDataOutBase.html#a6f1c052ba49fd44cd8e3f35ba871aebd">DataOutBase::write_pvd_record</a> (pvd_output, times_and_names);</div>
 <div class="line">}</div>
@@ -1588,16 +1588,16 @@ The second element of each pair, i.e., the file in which the graphical data for 
 <div class="line">  <a class="code" href="classDataOut.html">DataOut&lt;dim&gt;</a> data_out;</div>
 <div class="line"> </div>
 <div class="line">  data_out.<a class="code" href="classDataOut__DoFData.html#a6ed7c846331069f406b8c9933c37fda4">attach_dof_handler</a>(dof_handler);</div>
-<div class="line">  data_out.<a class="code" href="classDataOut__DoFData.html#a79cbe2f02f8dfb85026c71d783dbb703">add_data_vector</a>(solution, <span class="stringliteral">&quot;U&quot;</span>);</div>
+<div class="line">  data_out.<a class="code" href="classDataOut__DoFData.html#a79cbe2f02f8dfb85026c71d783dbb703">add_data_vector</a>(<a class="code" href="distributed__0_8txt.html#ac2b339f054fd752a401e197097db8cfe">solution</a>, <span class="stringliteral">&quot;U&quot;</span>);</div>
 <div class="line">  data_out.<a class="code" href="classDataOut.html#a087f63e22f0614bca326dbdca288c646">build_patches</a>();</div>
 <div class="line"> </div>
 <div class="line">  <span class="keyword">const</span> std::string filename = <span class="stringliteral">&quot;solution-&quot;</span> +</div>
 <div class="line">                               <a class="code" href="namespaceUtilities.html#a6195c5f009ea8c7c536c6ffdf108c32f">Utilities::int_to_string</a> (timestep_n, 3) +</div>
 <div class="line">                               <span class="stringliteral">&quot;.vtu&quot;</span>;</div>
-<div class="line">  std::ofstream output(filename);</div>
-<div class="line">  data_out.<a class="code" href="classDataOutInterface.html#a93c780f93105e0daaa76c6c43694b4ae">write_vtu</a>(output);</div>
+<div class="line">  std::ofstream <a class="code" href="distributed__0_8txt.html#afec1b694405cadb2d251275096ad3563">output</a>(filename);</div>
+<div class="line">  data_out.<a class="code" href="classDataOutInterface.html#a93c780f93105e0daaa76c6c43694b4ae">write_vtu</a>(<a class="code" href="distributed__0_8txt.html#afec1b694405cadb2d251275096ad3563">output</a>);</div>
 <div class="line"> </div>
-<div class="line">  times_and_names.emplace_back (time, filename);</div>
+<div class="line">  times_and_names.emplace_back (<a class="code" href="automatic__and__symbolic__differentiation__0_8txt.html#a96ecfde131843f52ee49d0e0c1180134">time</a>, filename);</div>
 <div class="line">  std::ofstream pvd_output (<span class="stringliteral">&quot;solution.pvd&quot;</span>);</div>
 <div class="line">  <a class="code" href="namespaceDataOutBase.html#a6f1c052ba49fd44cd8e3f35ba871aebd">DataOutBase::write_pvd_record</a> (pvd_output, times_and_names);</div>
 <div class="line">}</div>
@@ -1624,7 +1624,7 @@ The second element of each pair, i.e., the file in which the graphical data for 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>piece_names</em>&#160;</td>
         </tr>
         <tr>
@@ -1657,7 +1657,7 @@ VisIt" report that can be found here: <a href="https://wci.llnl.gov/codes/visit/
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::vector&lt; std::string &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>piece_names</em>&#160;</td>
         </tr>
         <tr>
@@ -1703,7 +1703,7 @@ VisIt" report that can be found here: <a href="https://wci.llnl.gov/codes/visit/
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::pair&lt; <a class="el" href="classdouble.html">double</a>, std::vector&lt; std::string &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a>, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>times_and_piece_names</em>&#160;</td>
         </tr>
         <tr>
@@ -1749,25 +1749,25 @@ template&lt;int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_svg </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; 2, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; 2, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1SvgFlags.html">SvgFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1SvgFlags.html">SvgFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1800,25 +1800,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_deal_II_intermediate </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1Deal__II__IntermediateFlags.html">Deal_II_IntermediateFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1Deal__II__IntermediateFlags.html">Deal_II_IntermediateFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -1851,25 +1851,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_hdf5_parallel </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classDataOutBase_1_1DataOutFilter.html">DataOutFilter</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDataOutBase_1_1DataOutFilter.html">DataOutFilter</a> &amp;&#160;</td>
           <td class="paramname"><em>data_filter</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;&#160;</td>
           <td class="paramname"><em>filename</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classMPI__Comm.html">MPI_Comm</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> MPI_Comm &amp;&#160;</td>
           <td class="paramname"><em>comm</em>&#160;</td>
         </tr>
         <tr>
@@ -1896,37 +1896,37 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_hdf5_parallel </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classDataOutBase_1_1DataOutFilter.html">DataOutFilter</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDataOutBase_1_1DataOutFilter.html">DataOutFilter</a> &amp;&#160;</td>
           <td class="paramname"><em>data_filter</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classbool.html">bool</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>&#160;</td>
           <td class="paramname"><em>write_mesh_file</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;&#160;</td>
           <td class="paramname"><em>mesh_filename</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;&#160;</td>
           <td class="paramname"><em>solution_filename</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classMPI__Comm.html">MPI_Comm</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> MPI_Comm &amp;&#160;</td>
           <td class="paramname"><em>comm</em>&#160;</td>
         </tr>
         <tr>
@@ -1953,19 +1953,19 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_filtered_data </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
@@ -1994,7 +1994,7 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::pair&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a> &gt; DataOutBase::determine_intermediate_format_dimensions </td>
+          <td class="memname">std::pair&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; DataOutBase::determine_intermediate_format_dimensions </td>
           <td>(</td>
           <td class="paramtype">std::istream &amp;&#160;</td>
           <td class="paramname"><em>input</em></td><td>)</td>
@@ -2017,7 +2017,7 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname"><a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">OutputFormat</a> DataOutBase::parse_output_format </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;&#160;</td>
           <td class="paramname"><em>format_name</em></td><td>)</td>
           <td></td>
         </tr>
@@ -2058,7 +2058,7 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">std::string DataOutBase::default_suffix </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">OutputFormat</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceDataOutBase.html#aa3cbced9f1d4ae661f13018f4c980aa1">OutputFormat</a>&#160;</td>
           <td class="paramname"><em>output_format</em></td><td>)</td>
           <td></td>
         </tr>
@@ -2161,7 +2161,7 @@ template&lt;int dim, int spacedim, typename StreamType &gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_nodes </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
@@ -2193,7 +2193,7 @@ template&lt;int dim, int spacedim, typename StreamType &gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_cells </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
@@ -2225,7 +2225,7 @@ template&lt;int dim, int spacedim, typename StreamType &gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_high_order_cells </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
@@ -2257,19 +2257,19 @@ template&lt;int dim, int spacedim, class StreamType &gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_data </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_data_sets</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classbool.html">bool</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>&#160;</td>
           <td class="paramname"><em>double_precision</em>, </td>
         </tr>
         <tr>
@@ -2301,25 +2301,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_tecplot_binary </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>patches</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>data_names</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>nonscalar_data_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1TecplotFlags.html">TecplotFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1TecplotFlags.html">TecplotFlags</a> &amp;&#160;</td>
           <td class="paramname"><em>flags</em>, </td>
         </tr>
         <tr>
@@ -2351,25 +2351,25 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void DataOutBase::write_svg </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; dim, spacedim &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="structDataOutBase_1_1Patch.html">Patch</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; unsigned <a class="el" href="classint.html">int</a>, unsigned <a class="el" href="classint.html">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="mutable__bind__0_8txt.html#a5a49c39376217ea6431e7e112013da28">std::tuple</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, <a class="el" href="namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0">DataComponentInterpretation::DataComponentInterpretation</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structDataOutBase_1_1SvgFlags.html">SvgFlags</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structDataOutBase_1_1SvgFlags.html">SvgFlags</a> &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
@@ -2392,12 +2392,15 @@ template&lt;int dim, int spacedim&gt; </div>
 </div>
 </div><!-- contents -->
 <div class="ttc" id="aclassDataOut__DoFData_html_a79cbe2f02f8dfb85026c71d783dbb703"><div class="ttname"><a href="classDataOut__DoFData.html#a79cbe2f02f8dfb85026c71d783dbb703">DataOut_DoFData::add_data_vector</a></div><div class="ttdeci">void add_data_vector(const VectorType &amp;data, const std::vector&lt; std::string &gt; &amp;names, const DataVectorType type=type_automatic, const std::vector&lt; DataComponentInterpretation::DataComponentInterpretation &gt; &amp;data_component_interpretation=std::vector&lt; DataComponentInterpretation::DataComponentInterpretation &gt;())</div><div class="ttdef"><b>Definition:</b> <a href="numerics_2data__out__dof__data_8h_source.html#l01096">data_out_dof_data.h:1096</a></div></div>
+<div class="ttc" id="adistributed__0_8txt_html_afec1b694405cadb2d251275096ad3563"><div class="ttname"><a href="distributed__0_8txt.html#afec1b694405cadb2d251275096ad3563">output</a></div><div class="ttdeci">if we even only hold bytes per line in this sparsity we ll need GB for this object even if every single line is empty Of only million lines will be non for which we need MB plus whatever is necessary to store the actual column indices of nonzero entries Let s say we have a moderately complex problem with entries per for each of which we store the column index worth then we ll need bytes for each of the million lines that correspond to the degrees of freedom we for a total of GB And we ll need bytes for each of the million lines that we don t for a total of GB It is clear that this ratio doesn t become any better if we go to even higher numbers of processors *The solution to this problem is to really only use any memory at all for those parts of the linear system that we or need for some other reason For all other we must know that they but we can not set up any part of our data structure To this there exists a class called IndexSet that denotes a set of indices which we care for and for which we may have to allocate memory The data structures for sparsity patterns constraint matrices matrices and vector can be initialized with these IndexSet objects to really only care for those rows or entries that correspond to indices in the index set and not care about all others These objects will then ask how many indices exist in the set allocate memory for each one of and when you want to access data for global degree of freedom[2.x.28] you will be redirected to the result of calling[2.x.29] with index[2.x.30] instead Accessing data for elements[2.x.31] for which[2.x.32] is false will yield an error *The remaining question is how to identify the set of indices that correspond to degrees of freedom we need to worry about on each processor To this you can use the[2.x.33] function to get at all the indices a processor owns Note that this is a subset of the degrees of freedom that are defined on the locally owned one sometimes needs the set of all degrees of freedom on the locally owned subdomain as well as the adjacent ghost cells This information is provided by the[2.x.35] function ***A typical parallel application is dealing with two different kinds of parallel but there are of course different vector types that can each represent both ghosted vectors are typically used for data output</div><div class="ttdef"><b>Definition:</b> <a href="distributed__0_8txt_source.html#l00059">distributed_0.txt:59</a></div></div>
 <div class="ttc" id="anamespaceUtilities_html_a6195c5f009ea8c7c536c6ffdf108c32f"><div class="ttname"><a href="namespaceUtilities.html#a6195c5f009ea8c7c536c6ffdf108c32f">Utilities::int_to_string</a></div><div class="ttdeci">std::string int_to_string(const unsigned int value, const unsigned int digits=numbers::invalid_unsigned_int)</div><div class="ttdef"><b>Definition:</b> <a href="base_2utilities_8cc_source.html#l00473">utilities.cc:473</a></div></div>
 <div class="ttc" id="aclassDataOutInterface_html_a93c780f93105e0daaa76c6c43694b4ae"><div class="ttname"><a href="classDataOutInterface.html#a93c780f93105e0daaa76c6c43694b4ae">DataOutInterface::write_vtu</a></div><div class="ttdeci">void write_vtu(std::ostream &amp;out) const</div><div class="ttdef"><b>Definition:</b> <a href="data__out__base_8cc_source.html#l07232">data_out_base.cc:7232</a></div></div>
+<div class="ttc" id="adistributed__0_8txt_html_ac2b339f054fd752a401e197097db8cfe"><div class="ttname"><a href="distributed__0_8txt.html#ac2b339f054fd752a401e197097db8cfe">solution</a></div><div class="ttdeci">********clusters ***deal II can use multiple machines connected via MPI to parallelize in addition to the parallelization within a shared memory machine discussed in the[2.x.4] module There are essentially two ways to utilize multiple but only a share of the global sparsity and solution vector is stored on each machine ****The mesh and DoF handler are also i e each processor stores only a share of the cells and degrees of freedom No processor has knowledge of the entire or solution</div><div class="ttdef"><b>Definition:</b> <a href="distributed__0_8txt_source.html#l00025">distributed_0.txt:25</a></div></div>
 <div class="ttc" id="aclassDataOut__DoFData_html_a6ed7c846331069f406b8c9933c37fda4"><div class="ttname"><a href="classDataOut__DoFData.html#a6ed7c846331069f406b8c9933c37fda4">DataOut_DoFData::attach_dof_handler</a></div><div class="ttdeci">void attach_dof_handler(const DoFHandler&lt; dim, spacedim &gt; &amp;)</div></div>
 <div class="ttc" id="anamespaceDataOutBase_html_a6f1c052ba49fd44cd8e3f35ba871aebd"><div class="ttname"><a href="namespaceDataOutBase.html#a6f1c052ba49fd44cd8e3f35ba871aebd">DataOutBase::write_pvd_record</a></div><div class="ttdeci">void write_pvd_record(std::ostream &amp;out, const std::vector&lt; std::pair&lt; double, std::string &gt;&gt; &amp;times_and_names)</div><div class="ttdef"><b>Definition:</b> <a href="data__out__base_8cc_source.html#l05963">data_out_base.cc:5963</a></div></div>
 <div class="ttc" id="aclassDataOut_html_a087f63e22f0614bca326dbdca288c646"><div class="ttname"><a href="classDataOut.html#a087f63e22f0614bca326dbdca288c646">DataOut::build_patches</a></div><div class="ttdeci">virtual void build_patches(const unsigned int n_subdivisions=0)</div><div class="ttdef"><b>Definition:</b> <a href="numerics_2data__out_8cc_source.html#l01071">data_out.cc:1071</a></div></div>
 <div class="ttc" id="anamespaceDataOutBase_html_ae4c65120d0661fe57597ff0d13a296c1"><div class="ttname"><a href="namespaceDataOutBase.html#ae4c65120d0661fe57597ff0d13a296c1">DataOutBase::write_visit_record</a></div><div class="ttdeci">void write_visit_record(std::ostream &amp;out, const std::vector&lt; std::string &gt; &amp;piece_names)</div><div class="ttdef"><b>Definition:</b> <a href="data__out__base_8cc_source.html#l06000">data_out_base.cc:6000</a></div></div>
+<div class="ttc" id="aautomatic__and__symbolic__differentiation__0_8txt_html_a96ecfde131843f52ee49d0e0c1180134"><div class="ttname"><a href="automatic__and__symbolic__differentiation__0_8txt.html#a96ecfde131843f52ee49d0e0c1180134">time</a></div><div class="ttdeci">computing derivatives of these terms is impractical in most applications in impossible to get right Higher derivatives are even more impossible to do without computer aid Automatic or symbolic differentiation is a way out of and gets compile time</div><div class="ttdef"><b>Definition:</b> <a href="automatic__and__symbolic__differentiation__0_8txt_source.html#l00012">automatic_and_symbolic_differentiation_0.txt:12</a></div></div>
 <div class="ttc" id="aclassDataOut_html"><div class="ttname"><a href="classDataOut.html">DataOut&lt; dim &gt;</a></div></div>
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->

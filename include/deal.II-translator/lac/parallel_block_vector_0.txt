@@ -1,0 +1,5 @@
+[0.x.0]!  [2.x.0]  Vectors     [2.x.1]     
+* [0.x.1]*
+     An implementation of block vectors based on distributed deal.II     vectors. While the base class provides for most of the interface, this     class handles the actual allocation of vectors and provides functions     that are specific to the underlying vector type.        
+*  [2.x.2]  Instantiations for this template are provided for <tt> [2.x.3]      and  [2.x.4]  others can be generated in application programs     (see the section on      [2.x.5]      in the manual).          [2.x.6]       [2.x.7]  "Block (linear algebra)"          [2.x.8]  Use  [2.x.9]  instead.    
+* [0.x.2]

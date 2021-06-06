@@ -90,7 +90,7 @@ $(function() {
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classBlockInfo-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">BlockInfo Class Reference<div class="ingroups"><a class="el" href="group__dofs.html">Degrees of Freedom</a></div></div>  </div>
+<div class="title">BlockInfo Class Reference<div class="ingroups"><a class="el" href="group__dofs.html">Degrees of Freedom This module groups classes and namespaces</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -108,88 +108,88 @@ Inheritance diagram for BlockInfo:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af3d8654d89a6c7f39db8f3ccbcfa83ba">initialize</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;, <a class="el" href="classbool.html">bool</a> levels_only=false, <a class="el" href="classbool.html">bool</a> active_only=false)</td></tr>
+<tr class="memitem:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af3d8654d89a6c7f39db8f3ccbcfa83ba">initialize</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;, <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> levels_only=<a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a>, <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> active_only=<a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a>)</td></tr>
 <tr class="memdesc:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the object with values describing block structure of the <a class="el" href="classDoFHandler.html">DoFHandler</a>. By default, this function will attempt to initialize whatever is possible. If active dofs have been assigned int the <a class="el" href="classDoFHandler.html">DoFHandler</a> argument, they <a class="el" href="classBlockIndices.html">BlockIndices</a> for those will be generated. The same for level dofs. This default behavior can be overridden by the two parameters, which can switch off active dofs or level dofs. This function will also clear the <a class="el" href="classBlockInfo.html#acb3a36ef4badb3fa8607b2b85b2489de">local()</a> indices.  <a href="classBlockInfo.html#af3d8654d89a6c7f39db8f3ccbcfa83ba">More...</a><br /></td></tr>
 <tr class="separator:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af32417e3a55a6eca6230e0e024cf8cbb">initialize_local</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;)</td></tr>
+<tr class="memitem:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af32417e3a55a6eca6230e0e024cf8cbb">initialize_local</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;)</td></tr>
 <tr class="memdesc:af32417e3a55a6eca6230e0e024cf8cbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize block structure on cells and compute renumbering between cell dofs and block cell dofs.  <a href="classBlockInfo.html#af32417e3a55a6eca6230e0e024cf8cbb">More...</a><br /></td></tr>
 <tr class="separator:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9c42d6e2e1fb8bfc0f55ecd938b2f2b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#ab9c42d6e2e1fb8bfc0f55ecd938b2f2b">global</a> () const</td></tr>
+<tr class="memitem:ab9c42d6e2e1fb8bfc0f55ecd938b2f2b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#ab9c42d6e2e1fb8bfc0f55ecd938b2f2b">global</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ab9c42d6e2e1fb8bfc0f55ecd938b2f2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb3a36ef4badb3fa8607b2b85b2489de"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#acb3a36ef4badb3fa8607b2b85b2489de">local</a> () const</td></tr>
+<tr class="memitem:acb3a36ef4badb3fa8607b2b85b2489de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#acb3a36ef4badb3fa8607b2b85b2489de">local</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:acb3a36ef4badb3fa8607b2b85b2489de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b200f57e2db76116691e6d523aa8989"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a9b200f57e2db76116691e6d523aa8989">level</a> (unsigned <a class="el" href="classint.html">int</a> level) const</td></tr>
+<tr class="memitem:a9b200f57e2db76116691e6d523aa8989"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a9b200f57e2db76116691e6d523aa8989">level</a> (unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> level) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a9b200f57e2db76116691e6d523aa8989"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91ae8cd1be54ce3c303485b0b0ed2536"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a91ae8cd1be54ce3c303485b0b0ed2536">renumber</a> (const unsigned <a class="el" href="classint.html">int</a> i) const</td></tr>
+<tr class="memitem:a91ae8cd1be54ce3c303485b0b0ed2536"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a91ae8cd1be54ce3c303485b0b0ed2536">renumber</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a91ae8cd1be54ce3c303485b0b0ed2536"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32695a9ccb60bcbc25b72e36f437278e"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a32695a9ccb60bcbc25b72e36f437278e">n_base_elements</a> () const</td></tr>
+<tr class="memitem:a32695a9ccb60bcbc25b72e36f437278e"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a32695a9ccb60bcbc25b72e36f437278e">n_base_elements</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a32695a9ccb60bcbc25b72e36f437278e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a004becfca0c9dfc4ef9e88df706b0dfa"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a004becfca0c9dfc4ef9e88df706b0dfa">base_element</a> (const unsigned <a class="el" href="classint.html">int</a> i) const</td></tr>
+<tr class="memitem:a004becfca0c9dfc4ef9e88df706b0dfa"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a004becfca0c9dfc4ef9e88df706b0dfa">base_element</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a004becfca0c9dfc4ef9e88df706b0dfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memTemplParams" colspan="2">template&lt;class OS &gt; </td></tr>
-<tr class="memitem:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#aebd9d7249bd2aea93a26a2cdb740ef57">print</a> (OS &amp;stream) const</td></tr>
+<tr class="memitem:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#aebd9d7249bd2aea93a26a2cdb740ef57">print</a> (OS &amp;<a class="el" href="parsed__convergence__table__0_8txt.html#ac4cb6e971231aafc6d126e7d463b9680">stream</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a851e03280c25f1f2c5ff9080f41511a1"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a851e03280c25f1f2c5ff9080f41511a1">memory_consumption</a> () const</td></tr>
+<tr class="memitem:a851e03280c25f1f2c5ff9080f41511a1"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a851e03280c25f1f2c5ff9080f41511a1">memory_consumption</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a851e03280c25f1f2c5ff9080f41511a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memTemplParams" colspan="2">template&lt;class Archive &gt; </td></tr>
-<tr class="memitem:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a46af5fd8e8f32e64f3589d429c2249c4">serialize</a> (Archive &amp;ar, const unsigned <a class="el" href="classint.html">int</a>)</td></tr>
+<tr class="memitem:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a46af5fd8e8f32e64f3589d429c2249c4">serialize</a> (Archive &amp;ar, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>)</td></tr>
 <tr class="separator:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af3d8654d89a6c7f39db8f3ccbcfa83ba">initialize</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;, <a class="el" href="classbool.html">bool</a> levels_only=false, <a class="el" href="classbool.html">bool</a> active_only=false)</td></tr>
+<tr class="memitem:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af3d8654d89a6c7f39db8f3ccbcfa83ba">initialize</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;, <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> levels_only=<a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a>, <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> active_only=<a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a>)</td></tr>
 <tr class="memdesc:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the object with values describing block structure of the <a class="el" href="classDoFHandler.html">DoFHandler</a>.  <a href="classBlockInfo.html#af3d8654d89a6c7f39db8f3ccbcfa83ba">More...</a><br /></td></tr>
 <tr class="separator:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af32417e3a55a6eca6230e0e024cf8cbb">initialize_local</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;)</td></tr>
+<tr class="memitem:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af32417e3a55a6eca6230e0e024cf8cbb">initialize_local</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;)</td></tr>
 <tr class="memdesc:af32417e3a55a6eca6230e0e024cf8cbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize block structure on cells and compute renumbering between cell dofs and block cell dofs.  <a href="classBlockInfo.html#af32417e3a55a6eca6230e0e024cf8cbb">More...</a><br /></td></tr>
 <tr class="separator:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbcabd77f667fe2e739353022470e91e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#abbcabd77f667fe2e739353022470e91e">global</a> () const</td></tr>
+<tr class="memitem:abbcabd77f667fe2e739353022470e91e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#abbcabd77f667fe2e739353022470e91e">global</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:abbcabd77f667fe2e739353022470e91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc57a9c016f8b34c889cabe39d6203e0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#acc57a9c016f8b34c889cabe39d6203e0">local</a> () const</td></tr>
+<tr class="memitem:acc57a9c016f8b34c889cabe39d6203e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#acc57a9c016f8b34c889cabe39d6203e0">local</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:acc57a9c016f8b34c889cabe39d6203e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4000d8380e2a0a24480e3ff8001872a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#aa4000d8380e2a0a24480e3ff8001872a">level</a> (unsigned <a class="el" href="classint.html">int</a> level) const</td></tr>
+<tr class="memitem:aa4000d8380e2a0a24480e3ff8001872a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#aa4000d8380e2a0a24480e3ff8001872a">level</a> (unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> level) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa4000d8380e2a0a24480e3ff8001872a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91ae8cd1be54ce3c303485b0b0ed2536"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a91ae8cd1be54ce3c303485b0b0ed2536">renumber</a> (const unsigned <a class="el" href="classint.html">int</a> i) const</td></tr>
+<tr class="memitem:a91ae8cd1be54ce3c303485b0b0ed2536"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a91ae8cd1be54ce3c303485b0b0ed2536">renumber</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a91ae8cd1be54ce3c303485b0b0ed2536"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32695a9ccb60bcbc25b72e36f437278e"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a32695a9ccb60bcbc25b72e36f437278e">n_base_elements</a> () const</td></tr>
+<tr class="memitem:a32695a9ccb60bcbc25b72e36f437278e"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a32695a9ccb60bcbc25b72e36f437278e">n_base_elements</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a32695a9ccb60bcbc25b72e36f437278e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a004becfca0c9dfc4ef9e88df706b0dfa"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a004becfca0c9dfc4ef9e88df706b0dfa">base_element</a> (const unsigned <a class="el" href="classint.html">int</a> i) const</td></tr>
+<tr class="memitem:a004becfca0c9dfc4ef9e88df706b0dfa"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a004becfca0c9dfc4ef9e88df706b0dfa">base_element</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a004becfca0c9dfc4ef9e88df706b0dfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memTemplParams" colspan="2">template&lt;class OS &gt; </td></tr>
-<tr class="memitem:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#aebd9d7249bd2aea93a26a2cdb740ef57">print</a> (OS &amp;stream) const</td></tr>
+<tr class="memitem:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#aebd9d7249bd2aea93a26a2cdb740ef57">print</a> (OS &amp;<a class="el" href="parsed__convergence__table__0_8txt.html#ac4cb6e971231aafc6d126e7d463b9680">stream</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a851e03280c25f1f2c5ff9080f41511a1"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a851e03280c25f1f2c5ff9080f41511a1">memory_consumption</a> () const</td></tr>
+<tr class="memitem:a851e03280c25f1f2c5ff9080f41511a1"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a851e03280c25f1f2c5ff9080f41511a1">memory_consumption</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a851e03280c25f1f2c5ff9080f41511a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memTemplParams" colspan="2">template&lt;class Archive &gt; </td></tr>
-<tr class="memitem:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a46af5fd8e8f32e64f3589d429c2249c4">serialize</a> (Archive &amp;ar, const unsigned <a class="el" href="classint.html">int</a>)</td></tr>
+<tr class="memitem:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a46af5fd8e8f32e64f3589d429c2249c4">serialize</a> (Archive &amp;ar, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>)</td></tr>
 <tr class="separator:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af3d8654d89a6c7f39db8f3ccbcfa83ba">initialize</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;, <a class="el" href="classbool.html">bool</a> levels_only=false, <a class="el" href="classbool.html">bool</a> active_only=false)</td></tr>
+<tr class="memitem:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af3d8654d89a6c7f39db8f3ccbcfa83ba">initialize</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;, <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> levels_only=<a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a>, <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> active_only=<a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a>)</td></tr>
 <tr class="memdesc:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the object with values describing block structure of the <a class="el" href="classDoFHandler.html">DoFHandler</a>. By default, this function will attempt to initialize whatever is possible. If active dofs have been assigned int the <a class="el" href="classDoFHandler.html">DoFHandler</a> argument, they <a class="el" href="classBlockIndices.html">BlockIndices</a> for those will be generated. The same for level dofs. This default behavior can be overridden by the two parameters, which can switch off active dofs or level dofs. This function will also clear the <a class="el" href="classBlockInfo.html#acb3a36ef4badb3fa8607b2b85b2489de">local()</a> indices.  <a href="classBlockInfo.html#af3d8654d89a6c7f39db8f3ccbcfa83ba">More...</a><br /></td></tr>
 <tr class="separator:af3d8654d89a6c7f39db8f3ccbcfa83ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af32417e3a55a6eca6230e0e024cf8cbb">initialize_local</a> (const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;)</td></tr>
+<tr class="memitem:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#af32417e3a55a6eca6230e0e024cf8cbb">initialize_local</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;)</td></tr>
 <tr class="memdesc:af32417e3a55a6eca6230e0e024cf8cbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize block structure on cells and compute renumbering between cell dofs and block cell dofs.  <a href="classBlockInfo.html#af32417e3a55a6eca6230e0e024cf8cbb">More...</a><br /></td></tr>
 <tr class="separator:af32417e3a55a6eca6230e0e024cf8cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbcabd77f667fe2e739353022470e91e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#abbcabd77f667fe2e739353022470e91e">global</a> () const</td></tr>
+<tr class="memitem:abbcabd77f667fe2e739353022470e91e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#abbcabd77f667fe2e739353022470e91e">global</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:abbcabd77f667fe2e739353022470e91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc57a9c016f8b34c889cabe39d6203e0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#acc57a9c016f8b34c889cabe39d6203e0">local</a> () const</td></tr>
+<tr class="memitem:acc57a9c016f8b34c889cabe39d6203e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#acc57a9c016f8b34c889cabe39d6203e0">local</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:acc57a9c016f8b34c889cabe39d6203e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4000d8380e2a0a24480e3ff8001872a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#aa4000d8380e2a0a24480e3ff8001872a">level</a> (unsigned <a class="el" href="classint.html">int</a> level) const</td></tr>
+<tr class="memitem:aa4000d8380e2a0a24480e3ff8001872a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#aa4000d8380e2a0a24480e3ff8001872a">level</a> (unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> level) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa4000d8380e2a0a24480e3ff8001872a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91ae8cd1be54ce3c303485b0b0ed2536"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a91ae8cd1be54ce3c303485b0b0ed2536">renumber</a> (const unsigned <a class="el" href="classint.html">int</a> i) const</td></tr>
+<tr class="memitem:a91ae8cd1be54ce3c303485b0b0ed2536"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a91ae8cd1be54ce3c303485b0b0ed2536">renumber</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a91ae8cd1be54ce3c303485b0b0ed2536"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32695a9ccb60bcbc25b72e36f437278e"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a32695a9ccb60bcbc25b72e36f437278e">n_base_elements</a> () const</td></tr>
+<tr class="memitem:a32695a9ccb60bcbc25b72e36f437278e"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a32695a9ccb60bcbc25b72e36f437278e">n_base_elements</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a32695a9ccb60bcbc25b72e36f437278e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a004becfca0c9dfc4ef9e88df706b0dfa"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a004becfca0c9dfc4ef9e88df706b0dfa">base_element</a> (const unsigned <a class="el" href="classint.html">int</a> i) const</td></tr>
+<tr class="memitem:a004becfca0c9dfc4ef9e88df706b0dfa"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a004becfca0c9dfc4ef9e88df706b0dfa">base_element</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__update__flags__0_8txt.html#a7fed529950f4ba3a4b673cb3f1e36cf4">i</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a004becfca0c9dfc4ef9e88df706b0dfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memTemplParams" colspan="2">template&lt;class OS &gt; </td></tr>
-<tr class="memitem:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#aebd9d7249bd2aea93a26a2cdb740ef57">print</a> (OS &amp;stream) const</td></tr>
+<tr class="memitem:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#aebd9d7249bd2aea93a26a2cdb740ef57">print</a> (OS &amp;<a class="el" href="parsed__convergence__table__0_8txt.html#ac4cb6e971231aafc6d126e7d463b9680">stream</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aebd9d7249bd2aea93a26a2cdb740ef57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a851e03280c25f1f2c5ff9080f41511a1"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a851e03280c25f1f2c5ff9080f41511a1">memory_consumption</a> () const</td></tr>
+<tr class="memitem:a851e03280c25f1f2c5ff9080f41511a1"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a851e03280c25f1f2c5ff9080f41511a1">memory_consumption</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a851e03280c25f1f2c5ff9080f41511a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memTemplParams" colspan="2">template&lt;class Archive &gt; </td></tr>
-<tr class="memitem:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a46af5fd8e8f32e64f3589d429c2249c4">serialize</a> (Archive &amp;ar, const unsigned <a class="el" href="classint.html">int</a>)</td></tr>
+<tr class="memitem:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a46af5fd8e8f32e64f3589d429c2249c4">serialize</a> (Archive &amp;ar, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>)</td></tr>
 <tr class="separator:a46af5fd8e8f32e64f3589d429c2249c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
@@ -197,96 +197,96 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a7b9963f3a44f54fa981e4c4b42adf629"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlockIndices.html">BlockIndices</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a7b9963f3a44f54fa981e4c4b42adf629">bi_global</a></td></tr>
 <tr class="memdesc:a7b9963f3a44f54fa981e4c4b42adf629"><td class="mdescLeft">&#160;</td><td class="mdescRight">The block structure of the global system.  <a href="classBlockInfo.html#a7b9963f3a44f54fa981e4c4b42adf629">More...</a><br /></td></tr>
 <tr class="separator:a7b9963f3a44f54fa981e4c4b42adf629"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a076c70d30ac0e09c12ceffd0ae4c30f3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classBlockIndices.html">BlockIndices</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a076c70d30ac0e09c12ceffd0ae4c30f3">levels</a></td></tr>
+<tr class="memitem:a076c70d30ac0e09c12ceffd0ae4c30f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classBlockIndices.html">BlockIndices</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a076c70d30ac0e09c12ceffd0ae4c30f3">levels</a></td></tr>
 <tr class="memdesc:a076c70d30ac0e09c12ceffd0ae4c30f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">The multilevel block structure.  <a href="classBlockInfo.html#a076c70d30ac0e09c12ceffd0ae4c30f3">More...</a><br /></td></tr>
 <tr class="separator:a076c70d30ac0e09c12ceffd0ae4c30f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a872aeb6a639055c8df970c8bb5578ea4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlockIndices.html">BlockIndices</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a872aeb6a639055c8df970c8bb5578ea4">bi_local</a></td></tr>
 <tr class="memdesc:a872aeb6a639055c8df970c8bb5578ea4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The block structure of the cell systems.  <a href="classBlockInfo.html#a872aeb6a639055c8df970c8bb5578ea4">More...</a><br /></td></tr>
 <tr class="separator:a872aeb6a639055c8df970c8bb5578ea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9a6a052ba2c1912cf79fee8077c68eb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#ac9a6a052ba2c1912cf79fee8077c68eb">base_elements</a></td></tr>
+<tr class="memitem:ac9a6a052ba2c1912cf79fee8077c68eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#ac9a6a052ba2c1912cf79fee8077c68eb">base_elements</a></td></tr>
 <tr class="separator:ac9a6a052ba2c1912cf79fee8077c68eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a786e46ae3a47955c538262ab828897e2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a786e46ae3a47955c538262ab828897e2">local_renumbering</a></td></tr>
+<tr class="memitem:a786e46ae3a47955c538262ab828897e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockInfo.html#a786e46ae3a47955c538262ab828897e2">local_renumbering</a></td></tr>
 <tr class="separator:a786e46ae3a47955c538262ab828897e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 Subscriptor functionality Classes derived from Subscriptor provide a facility to subscribe to this object. This is mostly used by the SmartPointer class.</h2></td></tr>
-<tr class="memitem:ga59ce0f51d416c85636bf91b3f742b973"><td class="memItemLeft" align="right" valign="top">std::atomic&lt; unsigned <a class="el" href="classint.html">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga59ce0f51d416c85636bf91b3f742b973">counter</a></td></tr>
+<tr class="memitem:ga59ce0f51d416c85636bf91b3f742b973"><td class="memItemLeft" align="right" valign="top">std::atomic&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga59ce0f51d416c85636bf91b3f742b973">counter</a></td></tr>
 <tr class="separator:ga59ce0f51d416c85636bf91b3f742b973"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa8a6425a34c214f597771104e612d44e"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, unsigned <a class="el" href="classint.html">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a></td></tr>
+<tr class="memitem:gaa8a6425a34c214f597771104e612d44e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vector__tools__boundary__0_8txt.html#a58193f617a635b1dcbe36c1cc04cc810">std::map</a>&lt; std::string, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a></td></tr>
 <tr class="separator:gaa8a6425a34c214f597771104e612d44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacf0e61df4116db53e18e3e4bae936bc8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::atomic&lt; <a class="el" href="classbool.html">bool</a> &gt; * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gacf0e61df4116db53e18e3e4bae936bc8">validity_pointers</a></td></tr>
+<tr class="memitem:gacf0e61df4116db53e18e3e4bae936bc8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::atomic&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> &gt; * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gacf0e61df4116db53e18e3e4bae936bc8">validity_pointers</a></td></tr>
 <tr class="separator:gacf0e61df4116db53e18e3e4bae936bc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga278215db24afe1a020fb9d41f8eb41e6"><td class="memItemLeft" align="right" valign="top">const std::type_info *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga278215db24afe1a020fb9d41f8eb41e6">object_info</a></td></tr>
+<tr class="memitem:ga278215db24afe1a020fb9d41f8eb41e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::type_info *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga278215db24afe1a020fb9d41f8eb41e6">object_info</a></td></tr>
 <tr class="separator:ga278215db24afe1a020fb9d41f8eb41e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5f0a31fd6c55fba2d0f68ffed307832f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga5f0a31fd6c55fba2d0f68ffed307832f">subscribe</a> (std::atomic&lt; <a class="el" href="classbool.html">bool</a> &gt; *const validity, const std::string &amp;identifier=&quot;&quot;) const</td></tr>
+<tr class="memitem:ga5f0a31fd6c55fba2d0f68ffed307832f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga5f0a31fd6c55fba2d0f68ffed307832f">subscribe</a> (std::atomic&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> &gt; *<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> validity, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;identifier=&quot;&quot;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ga5f0a31fd6c55fba2d0f68ffed307832f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5f0a31fd6c55fba2d0f68ffed307832f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga5f0a31fd6c55fba2d0f68ffed307832f">subscribe</a> (std::atomic&lt; <a class="el" href="classbool.html">bool</a> &gt; *const validity, const std::string &amp;identifier=&quot;&quot;) const</td></tr>
+<tr class="memitem:ga5f0a31fd6c55fba2d0f68ffed307832f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga5f0a31fd6c55fba2d0f68ffed307832f">subscribe</a> (std::atomic&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> &gt; *<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> validity, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;identifier=&quot;&quot;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ga5f0a31fd6c55fba2d0f68ffed307832f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga09c341da7c0fafd60c30848103bf51dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga09c341da7c0fafd60c30848103bf51dd">unsubscribe</a> (std::atomic&lt; <a class="el" href="classbool.html">bool</a> &gt; *const validity, const std::string &amp;identifier=&quot;&quot;) const</td></tr>
+<tr class="memitem:ga09c341da7c0fafd60c30848103bf51dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga09c341da7c0fafd60c30848103bf51dd">unsubscribe</a> (std::atomic&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> &gt; *<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> validity, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;identifier=&quot;&quot;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ga09c341da7c0fafd60c30848103bf51dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga09c341da7c0fafd60c30848103bf51dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga09c341da7c0fafd60c30848103bf51dd">unsubscribe</a> (std::atomic&lt; <a class="el" href="classbool.html">bool</a> &gt; *const validity, const std::string &amp;identifier=&quot;&quot;) const</td></tr>
+<tr class="memitem:ga09c341da7c0fafd60c30848103bf51dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga09c341da7c0fafd60c30848103bf51dd">unsubscribe</a> (std::atomic&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> &gt; *<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> validity, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;identifier=&quot;&quot;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ga09c341da7c0fafd60c30848103bf51dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf9b78412f1bad58f6578b1285611c9e5"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf9b78412f1bad58f6578b1285611c9e5">n_subscriptions</a> () const</td></tr>
+<tr class="memitem:gaf9b78412f1bad58f6578b1285611c9e5"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf9b78412f1bad58f6578b1285611c9e5">n_subscriptions</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:gaf9b78412f1bad58f6578b1285611c9e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf9b78412f1bad58f6578b1285611c9e5"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf9b78412f1bad58f6578b1285611c9e5">n_subscriptions</a> () const</td></tr>
+<tr class="memitem:gaf9b78412f1bad58f6578b1285611c9e5"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf9b78412f1bad58f6578b1285611c9e5">n_subscriptions</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:gaf9b78412f1bad58f6578b1285611c9e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memTemplParams" colspan="2">template&lt;typename StreamType &gt; </td></tr>
-<tr class="memitem:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf5dc5153076ef7e8c4806ef2b21dbc4f">list_subscribers</a> (StreamType &amp;stream) const</td></tr>
+<tr class="memitem:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf5dc5153076ef7e8c4806ef2b21dbc4f">list_subscribers</a> (StreamType &amp;<a class="el" href="parsed__convergence__table__0_8txt.html#ac4cb6e971231aafc6d126e7d463b9680">stream</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga32b1dacf5ccfa29f7f093864a95e02b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga32b1dacf5ccfa29f7f093864a95e02b0">list_subscribers</a> () const</td></tr>
+<tr class="memitem:ga32b1dacf5ccfa29f7f093864a95e02b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga32b1dacf5ccfa29f7f093864a95e02b0">list_subscribers</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ga32b1dacf5ccfa29f7f093864a95e02b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memTemplParams" colspan="2">template&lt;typename StreamType &gt; </td></tr>
-<tr class="memitem:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf5dc5153076ef7e8c4806ef2b21dbc4f">list_subscribers</a> (StreamType &amp;stream) const</td></tr>
+<tr class="memitem:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf5dc5153076ef7e8c4806ef2b21dbc4f">list_subscribers</a> (StreamType &amp;<a class="el" href="parsed__convergence__table__0_8txt.html#ac4cb6e971231aafc6d126e7d463b9680">stream</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga32b1dacf5ccfa29f7f093864a95e02b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga32b1dacf5ccfa29f7f093864a95e02b0">list_subscribers</a> () const</td></tr>
+<tr class="memitem:ga32b1dacf5ccfa29f7f093864a95e02b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga32b1dacf5ccfa29f7f093864a95e02b0">list_subscribers</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ga32b1dacf5ccfa29f7f093864a95e02b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1bfc941513876e79de72c8132c8434e2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga1bfc941513876e79de72c8132c8434e2">DeclException3</a> (<a class="el" href="group__Exceptions.html#gac763df3ce17c4ff01be5887902c88cb5">ExcInUse</a>, <a class="el" href="classint.html">int</a>, std::string, std::string,&lt;&lt; &quot;Object of class &quot;&lt;&lt; arg2&lt;&lt; &quot; is still used by &quot;&lt;&lt; arg1&lt;&lt; &quot; other objects.&quot;&lt;&lt; &quot;\n\n&quot;&lt;&lt; &quot;(Additional information: &quot;&lt;&lt; arg3&lt;&lt; &quot;)\n\n&quot;&lt;&lt; &quot;See the entry in the Frequently Asked Questions of &quot;&lt;&lt; &quot;deal.II (linked to from http://www.dealii.org/) for &quot;&lt;&lt; &quot;a lot more information on what this error means and &quot;&lt;&lt; &quot;how to fix programs in which it happens.&quot;)</td></tr>
+<tr class="memitem:ga1bfc941513876e79de72c8132c8434e2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga1bfc941513876e79de72c8132c8434e2">DeclException3</a> (<a class="el" href="group__Exceptions.html#gac763df3ce17c4ff01be5887902c88cb5">ExcInUse</a>, <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, std::string,&lt;&lt; &quot;Object <a class="el" href="copy__data__0_8txt.html#ad2652187ccefa4786a264b05b284b040">of</a> <a class="el" href="glossary__0_8txt.html#a93b103a7f521d431e3489028bb7f9e9f">class</a> &quot;&lt;&lt; arg2&lt;&lt; &quot; is still <a class="el" href="kinsol__0_8txt.html#a19e73f3d7e2bbefc4ec076d97de80570">used</a> <a class="el" href="data__out__dof__data__0_8txt.html#a17832850ea240be223f45ca3fc9e3ad8">by</a> &quot;&lt;&lt; arg1&lt;&lt; &quot; other objects.&quot;&lt;&lt; &quot;\<a class="el" href="tensor__polynomials__base__0_8txt.html#afdd52dfdef2425462b558c76cd7a3c49">n\n</a>&quot;&lt;&lt; &quot;(Additional information: &quot;&lt;&lt; arg3&lt;&lt; &quot;)\n\n&quot;&lt;&lt; &quot;See <a class="el" href="vector__tools__project__0_8txt.html#a0f636bbf8ef44dc0f3b278cf16adb0a7">the</a> <a class="el" href="any__data__0_8txt.html#ac7bd1b0fa154f30c162b019580dacc97">entry</a> <a class="el" href="tria__description__0_8txt.html#a11901ff80013804497fa645646431eae">in</a> <a class="el" href="vector__tools__project__0_8txt.html#a0f636bbf8ef44dc0f3b278cf16adb0a7">the</a> Frequently Asked Questions <a class="el" href="copy__data__0_8txt.html#ad2652187ccefa4786a264b05b284b040">of</a> &quot;&lt;&lt; &quot;<a class="el" href="petsc__matrix__base__0_8txt.html#aeb98faf2dc1f3bc185b173eaba26928b">deal.II</a> (linked <a class="el" href="error__estimator__0_8txt.html#a4ec80ded5cb4f47bcabf0a970c68075b">to</a> <a class="el" href="matrix__free__0_8txt.html#a415c819fcc6f671265057640dc18ad44">from</a> http://www.dealii.org/) <a class="el" href="chunk__sparse__matrix__0_8txt.html#aae7ed603ea40c1e6a20bb18bab713802">for</a> &quot;&lt;&lt; &quot;<a class="el" href="vector__tools__constraints__0_8txt.html#a5bb8955c98135fbb60012ceeee4b7839">a</a> lot <a class="el" href="petsc__matrix__base__0_8txt.html#a91d0bc46add3efe5a167829805522d28">more</a> <a class="el" href="particles_2partitioner__0_8txt.html#aebeefe540d7186696ccb0c5517c2bd98">information</a> <a class="el" href="data__postprocessor__0_8txt.html#a232fd208d0a301873073f51d8474883a">on</a> what <a class="el" href="data__postprocessor__0_8txt.html#a600bd43d5bd41af065e85ec3e40fed92">this</a> <a class="el" href="vector__tools__integrate__difference__0_8txt.html#a314323b5102f87ea7e2b4a1aba773b82">error</a> <a class="el" href="chunk__sparsity__pattern__0_8txt.html#a767c487cfadd1a8705c06e38b12838d5">means</a> <a class="el" href="histogram__0_8txt.html#a289e95579c441f9a994ce0a00f5a114a">and</a> &quot;&lt;&lt; &quot;<a class="el" href="fe__poly__tensor__0_8txt.html#a698742fc4e3c5d9a3746b1a9703c1045">how</a> <a class="el" href="error__estimator__0_8txt.html#a4ec80ded5cb4f47bcabf0a970c68075b">to</a> fix <a class="el" href="vector__0_8txt.html#a32dac5cdfac1128c9e998de82a6f4d51">programs</a> <a class="el" href="tria__description__0_8txt.html#a11901ff80013804497fa645646431eae">in</a> <a class="el" href="function__restriction__0_8txt.html#a79f2798b238440d7e1841d2cf4711885">which</a> <a class="el" href="point__value__history__0_8txt.html#a0e6b11ac5f75ce3d8f49f448e960b421">it</a> happens.&quot;)</td></tr>
 <tr class="separator:ga1bfc941513876e79de72c8132c8434e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga53750be13af0d16ede77584b94cf75c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga53750be13af0d16ede77584b94cf75c2">DeclException2</a> (<a class="el" href="group__Exceptions.html#ga914cc7f7eb16630ed4b0afc37c233e2e">ExcNoSubscriber</a>, std::string, std::string,&lt;&lt; &quot;No subscriber with identifier &lt;&quot;&lt;&lt; arg2&lt;&lt; &quot;&gt; subscribes to this object of class &quot;&lt;&lt; arg1&lt;&lt; &quot;. Consequently, it cannot be unsubscribed.&quot;)</td></tr>
+<tr class="memitem:ga53750be13af0d16ede77584b94cf75c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga53750be13af0d16ede77584b94cf75c2">DeclException2</a> (<a class="el" href="group__Exceptions.html#ga914cc7f7eb16630ed4b0afc37c233e2e">ExcNoSubscriber</a>, std::string, std::string,&lt;&lt; &quot;No subscriber <a class="el" href="grid_2manifold__0_8txt.html#aa3b93e70343218f73e9e61ccbb7f1589">with</a> identifier &lt;&quot;&lt;&lt; arg2&lt;&lt; &quot;&gt; subscribes <a class="el" href="error__estimator__0_8txt.html#a4ec80ded5cb4f47bcabf0a970c68075b">to</a> <a class="el" href="data__postprocessor__0_8txt.html#a600bd43d5bd41af065e85ec3e40fed92">this</a> <a class="el" href="particle__0_8txt.html#aa5453bb7f5639b588c4baf9c9e74a5f1">object</a> <a class="el" href="copy__data__0_8txt.html#ad2652187ccefa4786a264b05b284b040">of</a> <a class="el" href="glossary__0_8txt.html#a93b103a7f521d431e3489028bb7f9e9f">class</a> &quot;&lt;&lt; arg1&lt;&lt; &quot;. Consequently, <a class="el" href="point__value__history__0_8txt.html#a0e6b11ac5f75ce3d8f49f448e960b421">it</a> cannot <a class="el" href="tria__iterator__0_8txt.html#ae2c744f7850c09a43eafeafedf8e2619">be</a> unsubscribed.&quot;)</td></tr>
 <tr class="separator:ga53750be13af0d16ede77584b94cf75c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaeb9ac67567aa7d837f25debd33cd4ce5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaeb9ac67567aa7d837f25debd33cd4ce5">map_value_type</a> = decltype(<a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a>)::value_type</td></tr>
 <tr class="separator:gaeb9ac67567aa7d837f25debd33cd4ce5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaeb9ac67567aa7d837f25debd33cd4ce5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaeb9ac67567aa7d837f25debd33cd4ce5">map_value_type</a> = decltype(<a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a>)::value_type</td></tr>
 <tr class="separator:gaeb9ac67567aa7d837f25debd33cd4ce5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacebdc2d11f8522e4d9e8b7d73ac3f491"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gacebdc2d11f8522e4d9e8b7d73ac3f491">map_iterator</a> = decltype(<a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a>)::iterator</td></tr>
+<tr class="memitem:gacebdc2d11f8522e4d9e8b7d73ac3f491"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gacebdc2d11f8522e4d9e8b7d73ac3f491">map_iterator</a> = decltype(<a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a>)::<a class="el" href="grid_2manifold__0_8txt.html#ac23a4ff7d359fbeb8dbe7993e2ae9c5e">iterator</a></td></tr>
 <tr class="separator:gacebdc2d11f8522e4d9e8b7d73ac3f491"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacebdc2d11f8522e4d9e8b7d73ac3f491"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gacebdc2d11f8522e4d9e8b7d73ac3f491">map_iterator</a> = decltype(<a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a>)::iterator</td></tr>
+<tr class="memitem:gacebdc2d11f8522e4d9e8b7d73ac3f491"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gacebdc2d11f8522e4d9e8b7d73ac3f491">map_iterator</a> = decltype(<a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a>)::<a class="el" href="grid_2manifold__0_8txt.html#ac23a4ff7d359fbeb8dbe7993e2ae9c5e">iterator</a></td></tr>
 <tr class="separator:gacebdc2d11f8522e4d9e8b7d73ac3f491"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7e0d86893427a935e46d5bd6dcbc3f78"><td class="memItemLeft" align="right" valign="top">static std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga7e0d86893427a935e46d5bd6dcbc3f78">mutex</a></td></tr>
+<tr class="memitem:ga7e0d86893427a935e46d5bd6dcbc3f78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga7e0d86893427a935e46d5bd6dcbc3f78">mutex</a></td></tr>
 <tr class="separator:ga7e0d86893427a935e46d5bd6dcbc3f78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac763df3ce17c4ff01be5887902c88cb5"><td class="memItemLeft" align="right" valign="top">static ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gac763df3ce17c4ff01be5887902c88cb5">ExcInUse</a> (<a class="el" href="classint.html">int</a> arg1, std::string arg2, std::string arg3)</td></tr>
+<tr class="memitem:gac763df3ce17c4ff01be5887902c88cb5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gac763df3ce17c4ff01be5887902c88cb5">ExcInUse</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> arg1, std::string arg2, std::string arg3)</td></tr>
 <tr class="separator:gac763df3ce17c4ff01be5887902c88cb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga914cc7f7eb16630ed4b0afc37c233e2e"><td class="memItemLeft" align="right" valign="top">static ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga914cc7f7eb16630ed4b0afc37c233e2e">ExcNoSubscriber</a> (std::string arg1, std::string arg2)</td></tr>
+<tr class="memitem:ga914cc7f7eb16630ed4b0afc37c233e2e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> ::<a class="el" href="classExceptionBase.html">ExceptionBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga914cc7f7eb16630ed4b0afc37c233e2e">ExcNoSubscriber</a> (std::string arg1, std::string arg2)</td></tr>
 <tr class="separator:ga914cc7f7eb16630ed4b0afc37c233e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga300c593ea0f9422dcbce1445903e6c12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga300c593ea0f9422dcbce1445903e6c12">check_no_subscribers</a> () const noexcept</td></tr>
+<tr class="memitem:ga300c593ea0f9422dcbce1445903e6c12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga300c593ea0f9422dcbce1445903e6c12">check_no_subscribers</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> noexcept</td></tr>
 <tr class="separator:ga300c593ea0f9422dcbce1445903e6c12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga300c593ea0f9422dcbce1445903e6c12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga300c593ea0f9422dcbce1445903e6c12">check_no_subscribers</a> () const noexcept</td></tr>
+<tr class="memitem:ga300c593ea0f9422dcbce1445903e6c12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga300c593ea0f9422dcbce1445903e6c12">check_no_subscribers</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> noexcept</td></tr>
 <tr class="separator:ga300c593ea0f9422dcbce1445903e6c12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 Subscriptor functionality</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp8d6bc922eebec0b76272099aee4a220d"></a>Classes derived from <a class="el" href="classSubscriptor.html">Subscriptor</a> provide a facility to subscribe to this object. This is mostly used by the <a class="el" href="classSmartPointer.html">SmartPointer</a> class. </p>
 </td></tr>
-<tr class="memitem:ga5f0a31fd6c55fba2d0f68ffed307832f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga5f0a31fd6c55fba2d0f68ffed307832f">subscribe</a> (std::atomic&lt; <a class="el" href="classbool.html">bool</a> &gt; *const validity, const std::string &amp;identifier=&quot;&quot;) const</td></tr>
+<tr class="memitem:ga5f0a31fd6c55fba2d0f68ffed307832f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga5f0a31fd6c55fba2d0f68ffed307832f">subscribe</a> (std::atomic&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> &gt; *<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> validity, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;identifier=&quot;&quot;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ga5f0a31fd6c55fba2d0f68ffed307832f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga09c341da7c0fafd60c30848103bf51dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga09c341da7c0fafd60c30848103bf51dd">unsubscribe</a> (std::atomic&lt; <a class="el" href="classbool.html">bool</a> &gt; *const validity, const std::string &amp;identifier=&quot;&quot;) const</td></tr>
+<tr class="memitem:ga09c341da7c0fafd60c30848103bf51dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga09c341da7c0fafd60c30848103bf51dd">unsubscribe</a> (std::atomic&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a> &gt; *<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> validity, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::string &amp;identifier=&quot;&quot;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ga09c341da7c0fafd60c30848103bf51dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf9b78412f1bad58f6578b1285611c9e5"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf9b78412f1bad58f6578b1285611c9e5">n_subscriptions</a> () const</td></tr>
+<tr class="memitem:gaf9b78412f1bad58f6578b1285611c9e5"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf9b78412f1bad58f6578b1285611c9e5">n_subscriptions</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:gaf9b78412f1bad58f6578b1285611c9e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memTemplParams" colspan="2">template&lt;typename StreamType &gt; </td></tr>
-<tr class="memitem:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf5dc5153076ef7e8c4806ef2b21dbc4f">list_subscribers</a> (StreamType &amp;stream) const</td></tr>
+<tr class="memitem:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaf5dc5153076ef7e8c4806ef2b21dbc4f">list_subscribers</a> (StreamType &amp;<a class="el" href="parsed__convergence__table__0_8txt.html#ac4cb6e971231aafc6d126e7d463b9680">stream</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:gaf5dc5153076ef7e8c4806ef2b21dbc4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga32b1dacf5ccfa29f7f093864a95e02b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga32b1dacf5ccfa29f7f093864a95e02b0">list_subscribers</a> () const</td></tr>
+<tr class="memitem:ga32b1dacf5ccfa29f7f093864a95e02b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga32b1dacf5ccfa29f7f093864a95e02b0">list_subscribers</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ga32b1dacf5ccfa29f7f093864a95e02b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1bfc941513876e79de72c8132c8434e2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga1bfc941513876e79de72c8132c8434e2">DeclException3</a> (<a class="el" href="group__Exceptions.html#gac763df3ce17c4ff01be5887902c88cb5">ExcInUse</a>, <a class="el" href="classint.html">int</a>, std::string, std::string,&lt;&lt; &quot;Object of class &quot;&lt;&lt; arg2&lt;&lt; &quot; is still used by &quot;&lt;&lt; arg1&lt;&lt; &quot; other objects.&quot;&lt;&lt; &quot;\n\n&quot;&lt;&lt; &quot;(Additional information: &quot;&lt;&lt; arg3&lt;&lt; &quot;)\n\n&quot;&lt;&lt; &quot;See the entry in the Frequently Asked Questions of &quot;&lt;&lt; &quot;deal.II (linked to from http://www.dealii.org/) for &quot;&lt;&lt; &quot;a lot more information on what this error means and &quot;&lt;&lt; &quot;how to fix programs in which it happens.&quot;)</td></tr>
+<tr class="memitem:ga1bfc941513876e79de72c8132c8434e2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga1bfc941513876e79de72c8132c8434e2">DeclException3</a> (<a class="el" href="group__Exceptions.html#gac763df3ce17c4ff01be5887902c88cb5">ExcInUse</a>, <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, std::string, std::string,&lt;&lt; &quot;Object <a class="el" href="copy__data__0_8txt.html#ad2652187ccefa4786a264b05b284b040">of</a> <a class="el" href="glossary__0_8txt.html#a93b103a7f521d431e3489028bb7f9e9f">class</a> &quot;&lt;&lt; arg2&lt;&lt; &quot; is still <a class="el" href="kinsol__0_8txt.html#a19e73f3d7e2bbefc4ec076d97de80570">used</a> <a class="el" href="data__out__dof__data__0_8txt.html#a17832850ea240be223f45ca3fc9e3ad8">by</a> &quot;&lt;&lt; arg1&lt;&lt; &quot; other objects.&quot;&lt;&lt; &quot;\<a class="el" href="tensor__polynomials__base__0_8txt.html#afdd52dfdef2425462b558c76cd7a3c49">n\n</a>&quot;&lt;&lt; &quot;(Additional information: &quot;&lt;&lt; arg3&lt;&lt; &quot;)\n\n&quot;&lt;&lt; &quot;See <a class="el" href="vector__tools__project__0_8txt.html#a0f636bbf8ef44dc0f3b278cf16adb0a7">the</a> <a class="el" href="any__data__0_8txt.html#ac7bd1b0fa154f30c162b019580dacc97">entry</a> <a class="el" href="tria__description__0_8txt.html#a11901ff80013804497fa645646431eae">in</a> <a class="el" href="vector__tools__project__0_8txt.html#a0f636bbf8ef44dc0f3b278cf16adb0a7">the</a> Frequently Asked Questions <a class="el" href="copy__data__0_8txt.html#ad2652187ccefa4786a264b05b284b040">of</a> &quot;&lt;&lt; &quot;<a class="el" href="petsc__matrix__base__0_8txt.html#aeb98faf2dc1f3bc185b173eaba26928b">deal.II</a> (linked <a class="el" href="error__estimator__0_8txt.html#a4ec80ded5cb4f47bcabf0a970c68075b">to</a> <a class="el" href="matrix__free__0_8txt.html#a415c819fcc6f671265057640dc18ad44">from</a> http://www.dealii.org/) <a class="el" href="chunk__sparse__matrix__0_8txt.html#aae7ed603ea40c1e6a20bb18bab713802">for</a> &quot;&lt;&lt; &quot;<a class="el" href="vector__tools__constraints__0_8txt.html#a5bb8955c98135fbb60012ceeee4b7839">a</a> lot <a class="el" href="petsc__matrix__base__0_8txt.html#a91d0bc46add3efe5a167829805522d28">more</a> <a class="el" href="particles_2partitioner__0_8txt.html#aebeefe540d7186696ccb0c5517c2bd98">information</a> <a class="el" href="data__postprocessor__0_8txt.html#a232fd208d0a301873073f51d8474883a">on</a> what <a class="el" href="data__postprocessor__0_8txt.html#a600bd43d5bd41af065e85ec3e40fed92">this</a> <a class="el" href="vector__tools__integrate__difference__0_8txt.html#a314323b5102f87ea7e2b4a1aba773b82">error</a> <a class="el" href="chunk__sparsity__pattern__0_8txt.html#a767c487cfadd1a8705c06e38b12838d5">means</a> <a class="el" href="histogram__0_8txt.html#a289e95579c441f9a994ce0a00f5a114a">and</a> &quot;&lt;&lt; &quot;<a class="el" href="fe__poly__tensor__0_8txt.html#a698742fc4e3c5d9a3746b1a9703c1045">how</a> <a class="el" href="error__estimator__0_8txt.html#a4ec80ded5cb4f47bcabf0a970c68075b">to</a> fix <a class="el" href="vector__0_8txt.html#a32dac5cdfac1128c9e998de82a6f4d51">programs</a> <a class="el" href="tria__description__0_8txt.html#a11901ff80013804497fa645646431eae">in</a> <a class="el" href="function__restriction__0_8txt.html#a79f2798b238440d7e1841d2cf4711885">which</a> <a class="el" href="point__value__history__0_8txt.html#a0e6b11ac5f75ce3d8f49f448e960b421">it</a> happens.&quot;)</td></tr>
 <tr class="separator:ga1bfc941513876e79de72c8132c8434e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga53750be13af0d16ede77584b94cf75c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga53750be13af0d16ede77584b94cf75c2">DeclException2</a> (<a class="el" href="group__Exceptions.html#ga914cc7f7eb16630ed4b0afc37c233e2e">ExcNoSubscriber</a>, std::string, std::string,&lt;&lt; &quot;No subscriber with identifier &lt;&quot;&lt;&lt; arg2&lt;&lt; &quot;&gt; subscribes to this object of class &quot;&lt;&lt; arg1&lt;&lt; &quot;. Consequently, it cannot be unsubscribed.&quot;)</td></tr>
+<tr class="memitem:ga53750be13af0d16ede77584b94cf75c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga53750be13af0d16ede77584b94cf75c2">DeclException2</a> (<a class="el" href="group__Exceptions.html#ga914cc7f7eb16630ed4b0afc37c233e2e">ExcNoSubscriber</a>, std::string, std::string,&lt;&lt; &quot;No subscriber <a class="el" href="grid_2manifold__0_8txt.html#aa3b93e70343218f73e9e61ccbb7f1589">with</a> identifier &lt;&quot;&lt;&lt; arg2&lt;&lt; &quot;&gt; subscribes <a class="el" href="error__estimator__0_8txt.html#a4ec80ded5cb4f47bcabf0a970c68075b">to</a> <a class="el" href="data__postprocessor__0_8txt.html#a600bd43d5bd41af065e85ec3e40fed92">this</a> <a class="el" href="particle__0_8txt.html#aa5453bb7f5639b588c4baf9c9e74a5f1">object</a> <a class="el" href="copy__data__0_8txt.html#ad2652187ccefa4786a264b05b284b040">of</a> <a class="el" href="glossary__0_8txt.html#a93b103a7f521d431e3489028bb7f9e9f">class</a> &quot;&lt;&lt; arg1&lt;&lt; &quot;. Consequently, <a class="el" href="point__value__history__0_8txt.html#a0e6b11ac5f75ce3d8f49f448e960b421">it</a> cannot <a class="el" href="tria__iterator__0_8txt.html#ae2c744f7850c09a43eafeafedf8e2619">be</a> unsubscribed.&quot;)</td></tr>
 <tr class="separator:ga53750be13af0d16ede77584b94cf75c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaeb9ac67567aa7d837f25debd33cd4ce5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gaeb9ac67567aa7d837f25debd33cd4ce5">map_value_type</a> = decltype(<a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a>)::value_type</td></tr>
 <tr class="separator:gaeb9ac67567aa7d837f25debd33cd4ce5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacebdc2d11f8522e4d9e8b7d73ac3f491"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gacebdc2d11f8522e4d9e8b7d73ac3f491">map_iterator</a> = decltype(<a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a>)::iterator</td></tr>
+<tr class="memitem:gacebdc2d11f8522e4d9e8b7d73ac3f491"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#gacebdc2d11f8522e4d9e8b7d73ac3f491">map_iterator</a> = decltype(<a class="el" href="group__Exceptions.html#gaa8a6425a34c214f597771104e612d44e">counter_map</a>)::<a class="el" href="grid_2manifold__0_8txt.html#ac23a4ff7d359fbeb8dbe7993e2ae9c5e">iterator</a></td></tr>
 <tr class="separator:gacebdc2d11f8522e4d9e8b7d73ac3f491"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga300c593ea0f9422dcbce1445903e6c12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga300c593ea0f9422dcbce1445903e6c12">check_no_subscribers</a> () const noexcept</td></tr>
+<tr class="memitem:ga300c593ea0f9422dcbce1445903e6c12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Exceptions.html#ga300c593ea0f9422dcbce1445903e6c12">check_no_subscribers</a> () <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> noexcept</td></tr>
 <tr class="separator:ga300c593ea0f9422dcbce1445903e6c12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -294,17 +294,17 @@ Subscriptor functionality</h2></td></tr>
 <p>A small class collecting the different <a class="el" href="classBlockIndices.html">BlockIndices</a> involved in global, multilevel and local computations.</p>
 <h3>Usage</h3>
 <p>The most common usage for this object is initializing vectors as in the following code:</p>
-<div class="fragment"><div class="line"><a class="code" href="classDoFHandler.html">DoFHandler&lt;dim&gt;</a> dof_handler(<a class="code" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>);</div>
+<div class="fragment"><div class="line"><a class="code" href="classDoFHandler.html">DoFHandler&lt;dim&gt;</a> dof_handler(<a class="code" href="iterators__0_8txt.html#a6cf0880ba2af3a1be4aacdbbd4b90f9c">triangulation</a>);</div>
 <div class="line">dof_handler.distribute_dofs(fe_system);</div>
 <div class="line">dof_handler.distribute_mg_dofs(fe_system);</div>
 <div class="line"><a class="code" href="namespaceDoFRenumbering.html#a658593cab0e93a92a7d8ce0ffe086518">DoFRenumbering::block_wise</a>(dof_handler);</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="classBlockVector.html">BlockVector&lt;double&gt;</a> solution(dof_handler.block_info().global());</div>
+<div class="line"><a class="code" href="classBlockVector.html">BlockVector&lt;double&gt;</a> <a class="code" href="distributed__0_8txt.html#ac2b339f054fd752a401e197097db8cfe">solution</a>(dof_handler.block_info().global());</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="classMGLevelObject.html">MGLevelObject&lt;BlockVector&lt;double&gt;</a> &gt; mg_vector(0, <a class="code" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>.n_levels()-1);</div>
-<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>.n_levels(); ++i)</div>
+<div class="line"><a class="code" href="classMGLevelObject.html">MGLevelObject&lt;BlockVector&lt;double&gt;</a> &gt; mg_vector(0, <a class="code" href="iterators__0_8txt.html#a6cf0880ba2af3a1be4aacdbbd4b90f9c">triangulation</a>.n_levels()-1);</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a> = 0; <a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a> &lt; <a class="code" href="iterators__0_8txt.html#a6cf0880ba2af3a1be4aacdbbd4b90f9c">triangulation</a>.n_levels(); ++<a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>)</div>
 <div class="line">{</div>
-<div class="line">  mg_vector[i].reinit(dof_handler.block_info().level(i));</div>
+<div class="line">  mg_vector[<a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>].reinit(dof_handler.block_info().level(<a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>));</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>In this example, <code>solution</code> obtains the block structure needed to represent a finite element function on the <a class="el" href="classDoFHandler.html">DoFHandler</a>. Similarly, all levels of <code>mg_vector</code> will have the block structure needed on that level. </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>Extend the functions <a class="el" href="classBlockInfo.html#acb3a36ef4badb3fa8607b2b85b2489de">local()</a> and <a class="el" href="classBlockInfo.html#a91ae8cd1be54ce3c303485b0b0ed2536">renumber()</a> to allow for hp-capablilites.</dd></dl>
 <p>Once a <a class="el" href="classDoFHandler.html">DoFHandler</a> has been initialized with an <a class="el" href="classFESystem.html">FESystem</a>, a data object of type <a class="el" href="classBlockInfo.html" title="A small class collecting the different BlockIndices involved in global, multilevel and local computat...">BlockInfo</a> (accessed by <a class="el" href="classDoFHandler.html#a76c71bc8d38639321ff571661de296dd">DoFHandler::block_info()</a> ) is filled, which reflects the block structure of the degrees of freedom.</p>
@@ -313,33 +313,33 @@ Subscriptor functionality</h2></td></tr>
 <p>Finally, there are <a class="el" href="classBlockInfo.html#acb3a36ef4badb3fa8607b2b85b2489de">local()</a> <a class="el" href="classBlockIndices.html">BlockIndices</a>, which describe the block structure on a single cell. This is used for instance by <a class="el" href="classMeshWorker_1_1Assembler_1_1MatrixLocalBlocksToGlobalBlocks.html">MeshWorker::Assembler::MatrixLocalBlocksToGlobalBlocks</a>. The local indices are not filled automatically, since they change the behavior of the <a class="el" href="namespaceMeshWorker_1_1Assembler.html">MeshWorker::Assembler</a> classes relying on <a class="el" href="classBlockInfo.html" title="A small class collecting the different BlockIndices involved in global, multilevel and local computat...">BlockInfo</a>. They must be initialized by hand through <a class="el" href="classBlockInfo.html#af32417e3a55a6eca6230e0e024cf8cbb" title="Initialize block structure on cells and compute renumbering between cell dofs and block cell dofs.">initialize_local()</a>.</p>
 <h3>Usage</h3>
 <p>The most common usage for this object is initializing vectors as in the following code:</p>
-<div class="fragment"><div class="line"><a class="code" href="classDoFHandler.html">DoFHandler&lt;dim&gt;</a> dof_handler(<a class="code" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>);</div>
+<div class="fragment"><div class="line"><a class="code" href="classDoFHandler.html">DoFHandler&lt;dim&gt;</a> dof_handler(<a class="code" href="iterators__0_8txt.html#a6cf0880ba2af3a1be4aacdbbd4b90f9c">triangulation</a>);</div>
 <div class="line">dof_handler.distribute_dofs(fe_system);</div>
 <div class="line">dof_handler.distribute_mg_dofs(fe_system);</div>
 <div class="line"><a class="code" href="namespaceDoFRenumbering.html#a658593cab0e93a92a7d8ce0ffe086518">DoFRenumbering::block_wise</a>(dof_handler);</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="classBlockVector.html">BlockVector&lt;double&gt;</a> solution(dof_handler.block_info().global());</div>
+<div class="line"><a class="code" href="classBlockVector.html">BlockVector&lt;double&gt;</a> <a class="code" href="distributed__0_8txt.html#ac2b339f054fd752a401e197097db8cfe">solution</a>(dof_handler.block_info().global());</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="classMGLevelObject.html">MGLevelObject&lt;BlockVector&lt;double&gt;</a> &gt; mg_vector(0, <a class="code" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>.n_levels()-1);</div>
-<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>.n_levels(); ++i)</div>
+<div class="line"><a class="code" href="classMGLevelObject.html">MGLevelObject&lt;BlockVector&lt;double&gt;</a> &gt; mg_vector(0, <a class="code" href="iterators__0_8txt.html#a6cf0880ba2af3a1be4aacdbbd4b90f9c">triangulation</a>.n_levels()-1);</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a> = 0; <a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a> &lt; <a class="code" href="iterators__0_8txt.html#a6cf0880ba2af3a1be4aacdbbd4b90f9c">triangulation</a>.n_levels(); ++<a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>)</div>
 <div class="line">  {</div>
-<div class="line">    mg_vector[i].reinit(dof_handler.block_info().level(i));</div>
+<div class="line">    mg_vector[<a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>].reinit(dof_handler.block_info().level(<a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>));</div>
 <div class="line">  }</div>
 </div><!-- fragment --><p>In this example, <code>solution</code> obtains the block structure needed to represent a finite element function on the <a class="el" href="classDoFHandler.html">DoFHandler</a>. Similarly, all levels of <code>mg_vector</code> will have the block structure needed on that level.</p>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000044">Todo:</a></b></dt><dd>Extend the functions <a class="el" href="classBlockInfo.html#acb3a36ef4badb3fa8607b2b85b2489de">local()</a> and <a class="el" href="classBlockInfo.html#a91ae8cd1be54ce3c303485b0b0ed2536">renumber()</a> to allow for hp-capablilites.</dd></dl>
 <h3>Usage</h3>
 <p>The most common usage for this object is initializing vectors as in the following code:</p>
-<div class="fragment"><div class="line"><a class="code" href="classDoFHandler.html">DoFHandler&lt;dim&gt;</a> dof_handler(<a class="code" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>);</div>
+<div class="fragment"><div class="line"><a class="code" href="classDoFHandler.html">DoFHandler&lt;dim&gt;</a> dof_handler(<a class="code" href="iterators__0_8txt.html#a6cf0880ba2af3a1be4aacdbbd4b90f9c">triangulation</a>);</div>
 <div class="line">dof_handler.distribute_dofs(fe_system);</div>
 <div class="line">dof_handler.distribute_mg_dofs(fe_system);</div>
 <div class="line"><a class="code" href="namespaceDoFRenumbering.html#a658593cab0e93a92a7d8ce0ffe086518">DoFRenumbering::block_wise</a>(dof_handler);</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="classBlockVector.html">BlockVector&lt;double&gt;</a> solution(dof_handler.block_info().global());</div>
+<div class="line"><a class="code" href="classBlockVector.html">BlockVector&lt;double&gt;</a> <a class="code" href="distributed__0_8txt.html#ac2b339f054fd752a401e197097db8cfe">solution</a>(dof_handler.block_info().global());</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="classMGLevelObject.html">MGLevelObject&lt;BlockVector&lt;double&gt;</a> &gt; mg_vector(0, <a class="code" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>.n_levels()-1);</div>
-<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a>.n_levels(); ++i)</div>
+<div class="line"><a class="code" href="classMGLevelObject.html">MGLevelObject&lt;BlockVector&lt;double&gt;</a> &gt; mg_vector(0, <a class="code" href="iterators__0_8txt.html#a6cf0880ba2af3a1be4aacdbbd4b90f9c">triangulation</a>.n_levels()-1);</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a> = 0; <a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a> &lt; <a class="code" href="iterators__0_8txt.html#a6cf0880ba2af3a1be4aacdbbd4b90f9c">triangulation</a>.n_levels(); ++<a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>)</div>
 <div class="line">{</div>
-<div class="line">  mg_vector[i].reinit(dof_handler.block_info().level(i));</div>
+<div class="line">  mg_vector[<a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>].reinit(dof_handler.block_info().level(<a class="code" href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a>));</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>In this example, <code>solution</code> obtains the block structure needed to represent a finite element function on the <a class="el" href="classDoFHandler.html">DoFHandler</a>. Similarly, all levels of <code>mg_vector</code> will have the block structure needed on that level. </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000084">Todo:</a></b></dt><dd>Extend the functions <a class="el" href="classBlockInfo.html#acb3a36ef4badb3fa8607b2b85b2489de">local()</a> and <a class="el" href="classBlockInfo.html#a91ae8cd1be54ce3c303485b0b0ed2536">renumber()</a> to allow for hp-capablilites.</dd></dl>
 
@@ -356,20 +356,20 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void BlockInfo::initialize </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classbool.html">bool</a>&#160;</td>
-          <td class="paramname"><em>levels_only</em> = <code>false</code>, </td>
+          <td class="paramtype"><a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>&#160;</td>
+          <td class="paramname"><em>levels_only</em> = <code><a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classbool.html">bool</a>&#160;</td>
-          <td class="paramname"><em>active_only</em> = <code>false</code>&#160;</td>
+          <td class="paramtype"><a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>&#160;</td>
+          <td class="paramname"><em>active_only</em> = <code><a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -396,7 +396,7 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void BlockInfo::initialize_local </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof</em></td><td>)</td>
           <td></td>
         </tr>
@@ -419,7 +419,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp; BlockInfo::global </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp; BlockInfo::global </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -447,7 +447,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp; BlockInfo::local </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp; BlockInfo::local </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -475,9 +475,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp; BlockInfo::level </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a> &amp; BlockInfo::level </td>
           <td>(</td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>level</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -506,7 +506,7 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> BlockInfo::renumber </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -533,7 +533,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned <a class="el" href="classint.html">int</a> BlockInfo::n_base_elements </td>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> BlockInfo::n_base_elements </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -561,9 +561,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned <a class="el" href="classint.html">int</a> BlockInfo::base_element </td>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> BlockInfo::base_element </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -656,7 +656,7 @@ template&lt;class Archive &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -683,20 +683,20 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void BlockInfo::initialize </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classbool.html">bool</a>&#160;</td>
-          <td class="paramname"><em>levels_only</em> = <code>false</code>, </td>
+          <td class="paramtype"><a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>&#160;</td>
+          <td class="paramname"><em>levels_only</em> = <code><a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classbool.html">bool</a>&#160;</td>
-          <td class="paramname"><em>active_only</em> = <code>false</code>&#160;</td>
+          <td class="paramtype"><a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>&#160;</td>
+          <td class="paramname"><em>active_only</em> = <code><a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -724,7 +724,7 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void BlockInfo::initialize_local </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -742,7 +742,7 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::global </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::global </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -760,7 +760,7 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::local </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::local </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -778,9 +778,9 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::level </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::level </td>
           <td>(</td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>level</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -799,7 +799,7 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> BlockInfo::renumber </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -817,7 +817,7 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned <a class="el" href="classint.html">int</a> BlockInfo::n_base_elements </td>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> BlockInfo::n_base_elements </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -835,9 +835,9 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned <a class="el" href="classint.html">int</a> BlockInfo::base_element </td>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> BlockInfo::base_element </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -903,7 +903,7 @@ template&lt;class Archive &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -928,20 +928,20 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void BlockInfo::initialize </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classbool.html">bool</a>&#160;</td>
-          <td class="paramname"><em>levels_only</em> = <code>false</code>, </td>
+          <td class="paramtype"><a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>&#160;</td>
+          <td class="paramname"><em>levels_only</em> = <code><a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classbool.html">bool</a>&#160;</td>
-          <td class="paramname"><em>active_only</em> = <code>false</code>&#160;</td>
+          <td class="paramtype"><a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>&#160;</td>
+          <td class="paramname"><em>active_only</em> = <code><a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -966,7 +966,7 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname">void BlockInfo::initialize_local </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -984,7 +984,7 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::global </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::global </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1002,7 +1002,7 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::local </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::local </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1020,9 +1020,9 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::level </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classBlockIndices.html">BlockIndices</a>&amp; BlockInfo::level </td>
           <td>(</td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>level</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1041,7 +1041,7 @@ template&lt;int dim, int spacedim&gt; </div>
         <tr>
           <td class="memname"><a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> BlockInfo::renumber </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1058,7 +1058,7 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned <a class="el" href="classint.html">int</a> BlockInfo::n_base_elements </td>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> BlockInfo::n_base_elements </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1076,9 +1076,9 @@ template&lt;int dim, int spacedim&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned <a class="el" href="classint.html">int</a> BlockInfo::base_element </td>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> BlockInfo::base_element </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>i</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1144,7 +1144,7 @@ template&lt;class Archive &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1195,7 +1195,7 @@ template&lt;class Archive &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="classBlockIndices.html">BlockIndices</a> &gt; BlockInfo::levels</td>
+          <td class="memname"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classBlockIndices.html">BlockIndices</a> &gt; BlockInfo::levels</td>
         </tr>
       </table>
   </td>
@@ -1247,7 +1247,7 @@ template&lt;class Archive &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; BlockInfo::base_elements</td>
+          <td class="memname"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; BlockInfo::base_elements</td>
         </tr>
       </table>
   </td>
@@ -1272,7 +1272,7 @@ template&lt;class Archive &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; BlockInfo::local_renumbering</td>
+          <td class="memname"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; BlockInfo::local_renumbering</td>
         </tr>
       </table>
   </td>
@@ -1292,11 +1292,13 @@ template&lt;class Archive &gt; </div>
 <li>source/dofs/<a class="el" href="block__info_8cc_source.html">block_info.cc</a></li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="apolynomial__0_8txt_html_af1258c87f1d73d29bd17331843ac1d25"><div class="ttname"><a href="polynomial__0_8txt.html#af1258c87f1d73d29bd17331843ac1d25">i</a></div><div class="ttdeci">namespace in which classes relating to the description of d polynomial spaces are declared ***Base class for all D polynomials A polynomial is represented in this class by its coefficients which are set through the constructor or by derived classes There are two paths for evaluation of polynomials One is based on the coefficients which are evaluated through the Horner scheme which is a robust general purpose scheme An alternative and more stable evaluation of high degree polynomials with roots in the unit interval is provided by a product in terms of the roots This form is available for special polynomials such as Lagrange polynomials or Legendre polynomials and used with the respective constructor To obtain this more stable evaluation form the constructor with the roots in form of a Lagrange polynomial must be used In case a manipulation is done that changes the roots the representation is switched to the coefficient form This class is a typical example of a possible template argument for the TensorProductPolynomials class **Constructor The coefficients of the polynomial are passed as and denote the i e the first element of the array denotes the constant the second the linear and so on The degree of the polynomial represented by this object is thus the number of elements in the&lt; tt &gt; coefficient&lt;/tt &gt; array minus one **Constructor creating a zero polynomial of degree *[2.x.3] *Constructor for a Lagrange polynomial and its point of evaluation The idea is to where j is the evaluation point specified as argument and the support points contain all the evaluation is based on products of the whereas the Horner scheme is used for polynomials in the coefficient form **Return the values and the derivatives of the Polynomial at point&lt; tt &gt; x&lt;/tt &gt;&lt; tt &gt; i</div><div class="ttdef"><b>Definition:</b> <a href="polynomial__0_8txt_source.html#l00024">polynomial_0.txt:24</a></div></div>
+<div class="ttc" id="aiterators__0_8txt_html_a6cf0880ba2af3a1be4aacdbbd4b90f9c"><div class="ttname"><a href="iterators__0_8txt.html#a6cf0880ba2af3a1be4aacdbbd4b90f9c">triangulation</a></div><div class="ttdeci">where BaseIterator usually is one of thestandard iterators discussed above *The FilteredIterator gets an additional Predicate in its constructor and willskip all objects where this Predicate evaluates to&lt; tt &gt; false&lt;/tt &gt; Acollection of predicates already implemented can be found in the namespaceIteratorFilters ***IteratorsLoops Iterating over objects *All iterators of the same kind and iterating over thesame kind of geometrical objects traverse the mesh in the sameorder Take this code all iterators will always point to the same mesh even though&lt; tt &gt; DoFHandler&lt;/tt &gt; and&lt; tt &gt; Triangulation&lt;/tt &gt; are very different and even if the DoFHandlers are handling different finite the difference is only in the Accessor As mentioned the order in which iterators traverse the forest ofobjects is actually well but application programs should notassume any such but rather consider this an implementation detailof the library *Corresponding to above the order in which iterators traverse activeobjects is the same for all iterators in the following the difference to the previous example being that here we only consider active but theyare really rather dumb Their magic only lies in the fact that they point tosome useful in this case the Accessor For they point to anactual object that stores some data On the other the deal II when do not return a reference to an actual but returnan object that knows how to get at the data that represents cells In thisobject doesn t store itself where the vertices of a cell are or what its neighborsare it knows how to tease this sort of information from out of thearrays and tables and lists that the Triangulation class sets up to describe amesh *Accessing data that characterizes a cell is always done through the i e the expression[2.x.10] grants access to[1.x.6] attributes of this Accessor Examples of properties you can query from aniterator are ***Since dereferencing iterators yields accessor these calls are tomember etc These in turn figure out the relevant datafrom the various data structures that store this data How this is actuallydone and what data structures are used is not really of concern to authors ofapplications in deal II In by hiding the actual data structureswe are able to store data in an efficient not necessarily in a way thatmakes it easily accessible or understandable to application writers ***IteratorsTypedefs Kinds of accessors *Depending on what sort of data you want to there are different kindsof accessor and hexes that make up a triangulation</div><div class="ttdef"><b>Definition:</b> <a href="iterators__0_8txt_source.html#l00063">iterators_0.txt:63</a></div></div>
 <div class="ttc" id="aclassBlockVector_html"><div class="ttname"><a href="classBlockVector.html">BlockVector&lt; double &gt;</a></div></div>
-<div class="ttc" id="aclassDoFHandler_html"><div class="ttname"><a href="classDoFHandler.html">DoFHandler&lt; dim &gt;</a></div></div>
+<div class="ttc" id="adistributed__0_8txt_html_ac2b339f054fd752a401e197097db8cfe"><div class="ttname"><a href="distributed__0_8txt.html#ac2b339f054fd752a401e197097db8cfe">solution</a></div><div class="ttdeci">********clusters ***deal II can use multiple machines connected via MPI to parallelize in addition to the parallelization within a shared memory machine discussed in the[2.x.4] module There are essentially two ways to utilize multiple but only a share of the global sparsity and solution vector is stored on each machine ****The mesh and DoF handler are also i e each processor stores only a share of the cells and degrees of freedom No processor has knowledge of the entire or solution</div><div class="ttdef"><b>Definition:</b> <a href="distributed__0_8txt_source.html#l00025">distributed_0.txt:25</a></div></div>
+<div class="ttc" id="aclassDoFHandler_html"><div class="ttname"><a href="classDoFHandler.html">DoFHandler</a></div><div class="ttdef"><b>Definition:</b> <a href="dofs_2dof__handler_8h_source.html#l00266">dof_handler.h:266</a></div></div>
 <div class="ttc" id="anamespaceDoFRenumbering_html_a658593cab0e93a92a7d8ce0ffe086518"><div class="ttname"><a href="namespaceDoFRenumbering.html#a658593cab0e93a92a7d8ce0ffe086518">DoFRenumbering::block_wise</a></div><div class="ttdeci">void block_wise(DoFHandler&lt; dim, spacedim &gt; &amp;dof_handler)</div><div class="ttdef"><b>Definition:</b> <a href="dof__renumbering_8cc_source.html#l00997">dof_renumbering.cc:997</a></div></div>
 <div class="ttc" id="aclassMGLevelObject_html"><div class="ttname"><a href="classMGLevelObject.html">MGLevelObject</a></div><div class="ttdef"><b>Definition:</b> <a href="base_2mg__level__object_8h_source.html#l00051">mg_level_object.h:51</a></div></div>
-<div class="ttc" id="ap4est__wrappers_8cc_html_aa78f707e9416892e3e018027ffab1c80"><div class="ttname"><a href="p4est__wrappers_8cc.html#aa78f707e9416892e3e018027ffab1c80">triangulation</a></div><div class="ttdeci">const typename ::parallel::distributed::Triangulation&lt; dim, spacedim &gt; * triangulation</div><div class="ttdef"><b>Definition:</b> <a href="p4est__wrappers_8cc_source.html#l00069">p4est_wrappers.cc:69</a></div></div>
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

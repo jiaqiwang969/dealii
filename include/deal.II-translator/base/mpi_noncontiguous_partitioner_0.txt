@@ -1,0 +1,59 @@
+[0.x.0]*
+     A flexible Partitioner class, which does not impose restrictions     regarding the order of the underlying index sets.    
+* [0.x.1]*
+       Default constructor. Requires calling one of the reinit() functions       to create a valid object.      
+* [0.x.2]*
+       Constructor. Set up point-to-point communication pattern based on the       IndexSets arguments  [2.x.0]  and  [2.x.1]  for the MPI       communicator  [2.x.2]       
+* [0.x.3]*
+       Constructor. Same as above but for vectors of indices  [2.x.3]        and  [2.x.4]  This allows the indices to not be sorted and the       values are read and written automatically at the right position of       the vector during update_values(), update_values_start(), and       update_values_finish(). It is allowed to include entries with the       value  [2.x.5]  which do not take part of the index       exchange but are present in the data vectors as padding.      
+* [0.x.4]*
+       Fill the vector  [2.x.6]  according to the precomputed communication       pattern with values from  [2.x.7]               [2.x.8]  The vectors only have to provide a method begin(), which allows         to access their raw data.              [2.x.9]  The size of both vectors must be at least as large as the number         of entries in the index sets passed to the constructors or the         reinit() functions.            
+*  [2.x.10]  This function calls the methods update_values_start() and         update_values_finish() in sequence. Users can call these two         functions separately and hereby overlap communication and         computation.      
+* [0.x.5]*
+       Same as above but with an interface similar to        [2.x.11]  and        [2.x.12]  In this       function, the user can provide the temporary data structures to be       used.              [2.x.13]  The size of the  [2.x.14]  vector has to be at least         temporary_storage_size. The reason for this is that this vector is         used as buffer for both sending and receiving data.            
+*  [2.x.15]  Any value less than 10 is a valid value of          [2.x.16]       
+* [0.x.6]*
+       Start update: Data is packed, non-blocking send and receives       are started.            
+*  [2.x.17]  In contrast to the function          [2.x.18]  the user         does not pass a reference to the destination vector, since the data         is received into a designated part of the buffer  [2.x.19]  This         allows for padding and other post-processing of the received data.              [2.x.20]  The required size of the vectors are the same as in the functions         above.            
+*  [2.x.21]  Any value less than 10 is a valid value of          [2.x.22]       
+* [0.x.7]*
+       Finish update. The method waits until all data has been sent and       received. Once data from any process is received it is processed and       placed at the right position of the vector  [2.x.23]             
+*  [2.x.24]  In contrast to the function          [2.x.25]  the user         also has to pass a reference to the buffer  [2.x.26]          since the data has been received into the buffer and not into the         destination vector.              [2.x.27]  The required size of the vectors are the same as in the functions         above.      
+* [0.x.8]*
+       Returns the number of processes this process sends data to and the       number of processes this process receives data from.      
+* [0.x.9]*
+       Return the size of the temporary storage needed by the       export_to_ghosted_array() functions, if the temporary storage is       handled by the user code.      
+* [0.x.10]*
+       Return memory consumption in Byte.      
+* [0.x.11]*
+       Return the underlying communicator.      
+* [0.x.12]*
+       Initialize the inner data structures.      
+* [0.x.13]*
+       Initialize the inner data structures.      
+* [0.x.14]*
+       MPI communicator.      
+* [0.x.15]*
+       The ranks this process sends data to.      
+* [0.x.16]*
+       Offset of each process within send_buffer.            
+*  [2.x.28]  Together with `send_indices` this forms a CRS data structure.      
+* [0.x.17]*
+       Local index of each entry in send_buffer within the destination       vector.            
+*  [2.x.29]  Together with `send_ptr` this forms a CRS data structure.      
+* [0.x.18]*
+       The ranks this process receives data from.      
+* [0.x.19]*
+       Offset of each process within recv_buffer.            
+*  [2.x.30]  Together with `recv_indices` this forms a CRS data structure.      
+* [0.x.20]*
+       Local index of each entry in recv_buffer within the destination       vector.            
+*  [2.x.31]  Together with `recv_ptr` this forms a CRS data structure.      
+* [0.x.21]*
+       Buffer containing the values sorted by rank for sending and receiving.            
+*  [2.x.32]  Only allocated if not provided externally by user.            
+*  [2.x.33]  At this place we do not know the type of the data to be sent. So         we use an arbitrary type of size 1 byte. The type is cast to the         requested type in the relevant functions.      
+* [0.x.22]*
+       MPI requests for sending and receiving.            
+*  [2.x.34]  Only allocated if not provided externally by user.      
+* [0.x.23]

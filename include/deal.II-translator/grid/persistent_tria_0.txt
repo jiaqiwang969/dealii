@@ -1,0 +1,63 @@
+[0.x.0]*
+ This class handles the history of a triangulation and can rebuild it after it was deleted some time before. Its main purpose is support for time- dependent problems where one frequently deletes a triangulation due to memory pressure and later wants to rebuild it; this class has all the information to rebuild it exactly as it was before including the mapping of cell numbers to the geometrical cells.
+*  Basically, this is a drop-in replacement for the triangulation. Since it is derived from the Triangulation class, it shares all the functionality, but it overrides some virtual functions and adds some functions, too. The main change to the base class is that it overrides the  [2.x.0]  execute_coarsening_and_refinement function, where the new version first stores all refinement and coarsening flags and only then calls the respective function of the base class. The stored flags may later be used to restore the grid just as it was before. Some other functions have been extended slightly as well, see their documentation for more information.
+*  We note that since the triangulation is created in exactly the same state as it was before, other objects working on it should result in the same state as well. This holds in particular for the DoFHandler object, which will assign the same degrees of freedom to the original cells and the ones after reconstruction of the triangulation. You can therefore safely use data vectors computed on the original grid on the reconstructed grid as well.
+* 
+
+*  [1.x.0] You can use objects of this class almost in the same way as objects of the Triangulation class. One of the few differences is that you can only construct such an object by giving a coarse grid to the constructor. The coarse grid will be used to base the triangulation on, and therefore the lifetime of the coarse grid has to be longer than the lifetime of the object of this class.
+*  Basically, usage looks like this:
+
+* 
+* [1.x.1]
+* 
+*  Note that initially, the PersistentTriangulation object does not constitute a triangulation; it only becomes one after  [2.x.1]  is first called. Note also that the  [2.x.2]  stores all necessary flags for later reconstruction using the  [2.x.3]  function.  [2.x.4]  resets the underlying triangulation to a virgin state, but does not affect the stored refinement flags needed for later reconstruction and does also not touch the coarse grid which is used within restore().
+* 
+
+* 
+*  [2.x.5] 
+
+* 
+* [0.x.1]*
+   Make the dimension available in function templates.  
+* [0.x.2]*
+   Build up the triangulation from the coarse grid in future. Copy smoothing   flags, etc from that grid as well. Note that the initial state of the   triangulation is empty, until  [2.x.6]  is called for the first   time.     The coarse grid must persist until the end of this object, since it will   be used upon reconstruction of the grid.  
+* [0.x.3]*
+   Copy constructor. This operation is only allowed, if the triangulation   underlying the object to be copied is presently empty. Refinement flags   as well as the pointer to the coarse grid are copied, however.  
+* [0.x.4]*
+   Destructor.  
+* [0.x.5]*
+   Overloaded version of the same function in the base class which stores   the refinement and coarsening flags for later reconstruction of the   triangulation and after that calls the respective function of the base   class.  
+* [0.x.6]*
+   Restore the grid according to the saved data. For this, the coarse grid   is copied and the grid is stepwise rebuilt using the saved flags.     Note that this function will result in an error if the underlying   triangulation is not empty, i.e. it will only succeed if this object is   newly created or the <tt>clear()</tt> function of the base class was   called on it before.     Repeatedly calls the <tt>restore(unsigned int)</tt> function in a loop   over all refinement steps.  
+* [0.x.7]*
+   Differential restore. Performs the  [2.x.7]  local refinement and   coarsening step. Step 0 stands for the copying of the coarse grid.     This function will only succeed if the triangulation is in just the state   it were if restore would have been called from   <tt>step=0...step_no-1</tt> before.  
+* [0.x.8]*
+   Return the number of refinement and coarsening steps. This is given by   the size of the  [2.x.8]  vector.  
+* [0.x.9]*
+   Overload this function to use  [2.x.9]  as a new coarse grid. The present   triangulation and all refinement and coarsening flags storing its history   are deleted, and the state of the underlying triangulation is reset to be   empty, until  [2.x.10]  is called the next time.     The coarse grid must persist until the end of this object, since it will   be used upon reconstruction of the grid.  
+* [0.x.10]*
+   Throw an error, since this function is not useful in the context of this   class.  
+* [0.x.11]*
+    [2.x.11]   [2.x.12]     
+*  [2.x.13]  Not implemented yet.  
+* [0.x.12]*
+   An overload of the respective function of the base class.     Throw an error, since this function is not useful in the context of this   class.  
+* [0.x.13]*
+   Write all refine and coarsen flags to the ostream  [2.x.14]   
+* [0.x.14]*
+   Reads all refine and coarsen flags that previously were written by   <tt>write_flags(...)</tt>. This is especially useful for rebuilding the   triangulation after the end or breakdown of a program and its restart.  
+* [0.x.15]*
+   Clear all flags. Retains the same coarse grid.  
+* [0.x.16]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.17]*
+   Exception.  
+* [0.x.18]*
+   Exception.  
+* [0.x.19]*
+   This grid shall be used as coarse grid.  
+* [0.x.20]*
+   Vectors holding the refinement and coarsening flags of the different   sweeps on this time level. The vectors therefore hold the history of the   grid.  
+* [0.x.21]*
+    [2.x.15]   
+* [0.x.22]

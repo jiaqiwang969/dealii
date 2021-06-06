@@ -1,0 +1,166 @@
+[0.x.0]*
+   Find out if an iterator supports inactive cells.  
+* [0.x.1]*
+   Collection of parameters to control the execution of MeshWorker loops.  
+* [0.x.2]*
+     Constructor.    
+* [0.x.3]*
+     Loop over cells owned by this process. Defaults to  [2.x.0] .    
+* [0.x.4]*
+     Loop over cells not owned by this process. Defaults to      [2.x.1] .    
+* [0.x.5]*
+     Enumeration describing when to do assembly on a face: see, e.g.,      [2.x.2]  for an example of how the value     of this enumeration is interpreted in a particular circumstance.    
+* [0.x.6]*
+       Do not perform assembly on a face.      
+* [0.x.7]*
+       Perform assembly on one face.      
+* [0.x.8]*
+       Perform assembly on both faces.      
+* [0.x.9]*
+     Control for looping over faces between a locally owned cell and a ghost     cell:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - never: Do not assembly these faces.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - one: Only one of the processes will assemble these faces (from the       finer side or the process with the lower MPI rank).
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - both: Both processes will assemble these faces. Note that these faces       are never assembled from both sides on a single process.         The default is  [2.x.3] .    
+* [0.x.10]*
+     Control for looping over faces between two locally owned cells:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - never: Do not assemble face terms.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - one: Assemble once (always coming from the finer side).
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - both: Assemble each face twice (not implemented for hanging nodes!).         The default is  [2.x.4] .    
+* [0.x.11]*
+     A flag to determine if cells integrals should be done before or after     face integrals. The default is  [2.x.5] .    
+* [0.x.12]*
+   The function called by loop() to perform the required actions on a cell   and its faces. The three functions <tt>cell_worker</tt>,   <tt>boundary_worker</tt> and <tt>face_worker</tt> are the same ones   handed to loop(). While there we only run the loop over all cells, here,   we do a single cell and, if necessary, its faces, interior and boundary.     Upon return, the DoFInfo objects in the DoFInfoBox are filled with the   data computed on the cell and each of the faces. Thus, after the   execution of this function, we are ready to call  [2.x.6]    to distribute the local data into global data.      [2.x.7]  cell is the cell we work on    [2.x.8]  dof_info is the object into which local results are entered. It is   expected to have been set up for the right types of data.    [2.x.9]  info is the object containing additional data only needed for   internal processing.    [2.x.10]  cell_worker defines the local action on each cell.    [2.x.11]  boundary_worker defines the local action on boundary faces    [2.x.12]  face_worker defines the local action on interior faces.    [2.x.13]  loop_control control structure to specify what actions should be   performed.    
+*  [2.x.14]   
+* [0.x.13]*
+   The main work function of this namespace. It is a loop over all cells in   an iterator range, in which cell_action() is called for each cell.   Unilaterally refined interior faces are handled automatically by the   loop. Most of the work in this loop is done in cell_action(), which also   receives most of the parameters of this function. See the documentation   there for more details.     If you don't want anything to be done on cells, interior or boundary   faces to happen, simply pass the Null pointer to one of the function   arguments.    
+*  [2.x.15]   
+* [0.x.14]*
+   Simplified interface for loop() if specialized for integration, using the   virtual functions in LocalIntegrator.    
+*  [2.x.16]   
+* [0.x.15]

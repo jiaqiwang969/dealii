@@ -1,0 +1,35 @@
+[0.x.0]*
+   Denote which norm/integral is to be computed by the   integrate_difference() function on each cell and compute_global_error()   for the whole domain.   Let  [2.x.0]  be a finite element function   with  [2.x.1]  components where component  [2.x.2]  is denoted by  [2.x.3]  and  [2.x.4]    be the reference function (the  [2.x.5]  and  [2.x.6]    arguments to integrate_difference()). Let  [2.x.7]    be the difference or error between the two. Further,   let   [2.x.8]  be the  [2.x.9]  function of integrate_difference(), which is   assumed to be equal to one if not supplied. Finally, let  [2.x.10]  be the    [2.x.11]  argument (for  [2.x.12] -norms).     In the following,we denote by  [2.x.13]  the local error computed by   integrate_difference() on cell  [2.x.14] , whereas  [2.x.15]  is the global error   computed by compute_global_error(). Note that integrals are   approximated by quadrature in the usual way:   [1.x.0]   Similarly for suprema over a cell  [2.x.16] :   [1.x.1]  
+* [0.x.1]*
+     The function or difference of functions is integrated on each cell  [2.x.17] :     [1.x.2]     and summed up to get     [1.x.3]     or, for  [2.x.18] :     [1.x.4]         Note: This differs from what is typically known as     the mean of a function by a factor of  [2.x.19] . To     compute the mean you can also use compute_mean_value(). Finally,     pay attention to the sign: if  [2.x.20] , this will compute the     negative of the mean of  [2.x.21] .    
+* [0.x.2]*
+     The absolute value of the function is integrated:     [1.x.5]     and     [1.x.6]     or, for  [2.x.22] :     [1.x.7]    
+* [0.x.3]*
+     The square of the function is integrated and the square root of the     result is computed on each cell:     [1.x.8]     and     [1.x.9]     or, for  [2.x.23] :     [1.x.10]    
+* [0.x.4]*
+     The absolute value to the  [2.x.24] -th power is integrated and the  [2.x.25] -th     root is computed on each cell. The exponent  [2.x.26]  is the  [2.x.27]      exponent argument of integrate_difference() and compute_mean_value():     [1.x.11]     and     [1.x.12]     or, for  [2.x.28] :     [1.x.13]    
+* [0.x.5]*
+     The maximum absolute value of the function:     [1.x.14]     and     [1.x.15]     or, for  [2.x.29] :     [1.x.16]    
+* [0.x.6]*
+     #L2_norm of the gradient:     [1.x.17]     and     [1.x.18]     or, for  [2.x.30] :     [1.x.19]    
+* [0.x.7]*
+     #L2_norm of the divergence of a vector field. The function  [2.x.31]  is     expected to have  [2.x.32]  components and the first  [2.x.33]      will be used to compute the divergence:     [1.x.20]     and     [1.x.21]     or, for  [2.x.34] :     [1.x.22]    
+* [0.x.8]*
+     The square of this norm is the square of the #L2_norm plus the square     of the #H1_seminorm:     [1.x.23]     and     [1.x.24]     or, for  [2.x.35] :     [1.x.25]    
+* [0.x.9]*
+     #Lp_norm of the gradient:     [1.x.26]     and     [1.x.27]     or, for  [2.x.36] :     [1.x.28]    
+* [0.x.10]*
+     The same as the #H1_norm but using [1.x.29]:     [1.x.30]     and     [1.x.31]     or, for  [2.x.37] :     [1.x.32]    
+* [0.x.11]*
+     #Linfty_norm of the gradient:     [1.x.33]     and     [1.x.34]     or, for  [2.x.38] :     [1.x.35]    
+* [0.x.12]*
+     The sum of #Linfty_norm and #W1infty_seminorm:     [1.x.36]     The global norm is not implemented in compute_global_error(),     because it is impossible to compute the sum of the global     norms from the values  [2.x.39] . As a work-around, you can compute the     global #Linfty_norm and #W1infty_seminorm separately and then add them     to get (with  [2.x.40] ):     [1.x.37]    
+* [0.x.13]*
+   Exception  
+* [0.x.14]*
+       Return the Correct pattern for NormType.      
+* [0.x.15]*
+       Convert a NormType to a string.      
+* [0.x.16]*
+       Convert a string to a NormType.      
+* [0.x.17]

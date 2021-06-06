@@ -1,0 +1,43 @@
+[0.x.0]*
+   Integer type in BLAS.  
+* [0.x.1]*
+   Integer type in BLAS.  
+* [0.x.2]*
+ A namespace containing constants, exceptions, enumerations, and other utilities used by the deal.II LAPACK bindings.
+
+* 
+* [0.x.3]*
+   Most of the LAPACK functions one can apply to a matrix (e.g., by calling   the member functions of this class) change its content in some ways. For   example, they may invert the matrix, or may replace it by a matrix whose   columns represent the eigenvectors of the original content of the matrix.   The elements of this enumeration are therefore used to track what is   currently being stored by this object.  
+* [0.x.4]*
+   %Function printing the name of a State.  
+* [0.x.5]*
+   A matrix can have certain features allowing for optimization, but hard to   test. These are listed here.  
+* [0.x.6]*
+   %Function printing the name of a Property.  
+* [0.x.7]*
+   Character constant.  
+* [0.x.8]*
+   Character constant.  
+* [0.x.9]*
+   Character constant.  
+* [0.x.10]*
+   Character constant.  
+* [0.x.11]*
+   Character constant.  
+* [0.x.12]*
+   Character constant.  
+* [0.x.13]*
+   Character constant.  
+* [0.x.14]*
+   Integer constant.  
+* [0.x.15]*
+   Integer constant.  
+* [0.x.16]*
+   A LAPACK function returned an error code.  
+* [0.x.17]*
+   Exception thrown when a matrix is not in a suitable state for an   operation. For instance, a LAPACK routine may have left the matrix in an   unusable state, then vmult does not make sense anymore.  
+* [0.x.18]*
+   Exception thrown when a matrix does not have suitable properties for an   operation.  
+* [0.x.19]*
+   This exception is thrown if a certain LAPACK function is not available   because no LAPACK installation was detected during configuration.  
+* [0.x.20]

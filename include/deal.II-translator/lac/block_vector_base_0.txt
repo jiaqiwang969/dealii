@@ -1,0 +1,237 @@
+[0.x.0]!  [2.x.0]  Vectors [2.x.1] 
+
+* 
+* [0.x.1]*
+ A class that can be used to determine whether a given type is a block vector type or not. For example,
+
+* 
+* [1.x.0]
+*  has the value false, whereas
+
+* 
+* [1.x.1]
+*  is true. This is sometimes useful in template contexts where we may want to do things differently depending on whether a template type denotes a regular or a block vector type.
+
+* 
+* [0.x.2]*
+   Overload returning true if the class is derived from BlockVectorBase,   which is what block vectors do.  
+* [0.x.3]*
+   Catch all for all other potential vector types that are not block   matrices.  
+* [0.x.4]*
+   A statically computable value that indicates whether the template   argument to this class is a block vector (in fact whether the type is   derived from BlockVectorBase<T>).  
+* [0.x.5]*
+   Namespace in which iterators in block vectors are implemented.  
+* [0.x.6]*
+     General random-access iterator class for block vectors. Since we do not     want to have two classes for non-const iterator and const_iterator, we     take a second template argument which denotes whether the vector we     point into is a constant object or not. The first template argument is     always the number type of the block vector in use.         This class satisfies all requirements of random access iterators     defined in the C++ standard. Operations on these iterators are constant     in the number of elements in the block vector. However, they are     sometimes linear in the number of blocks in the vector, but since that     does rarely change dynamically within an application, this is a     constant and we again have that the iterator satisfies the requirements     of a random access iterator.    
+* [0.x.7]*
+       Declare the type for container size.      
+* [0.x.8]*
+       Type of the number this iterator points to. Depending on the value of       the second template parameter, this is either a constant or non-const       number.      
+* [0.x.9]*
+       Declare some alias which are standard for iterators and are used       by algorithms to enquire about the specifics of the iterators they       work on.      
+* [0.x.10]*
+       Typedef the type of the block vector (which differs in constness,       depending on the second template parameter).      
+* [0.x.11]*
+       Construct an iterator from a vector to which we point and the global       index of the element pointed to.             Depending on the value of the <tt>Constness</tt> template argument of       this class, the first argument of this constructor is either is a       const or non-const reference.      
+* [0.x.12]*
+       Copy constructor from an iterator of different constness.            
+*  [2.x.2]  Constructing a non-const iterator from a const iterator does       not make sense. Attempting this will result in a compile-time error       (via  [2.x.3] ).      
+* [0.x.13]*
+       Copy constructor from an iterator with the same constness.      
+* [0.x.14]*
+       Constructor used internally in this class. The arguments match       exactly the values of the respective member variables.      
+* [0.x.15]*
+       Copy operator.      
+* [0.x.16]*
+       Dereferencing operator. If the template argument <tt>Constness</tt>       is <tt>true</tt>, then no writing to the result is possible, making       this a const_iterator.      
+* [0.x.17]*
+       Random access operator, grant access to arbitrary elements relative       to the one presently pointed to.      
+* [0.x.18]*
+       Prefix increment operator. This operator advances the iterator to the       next element and returns a reference to <tt>*this</tt>.      
+* [0.x.19]*
+       Postfix increment operator. This operator advances the iterator to       the next element and returns a copy of the old value of this       iterator.      
+* [0.x.20]*
+       Prefix decrement operator. This operator retracts the iterator to the       previous element and returns a reference to <tt>*this</tt>.      
+* [0.x.21]*
+       Postfix decrement operator. This operator retracts the iterator to       the previous element and returns a copy of the old value of this       iterator.      
+* [0.x.22]*
+       Compare for equality of iterators. This operator checks whether the       vectors pointed to are the same, and if not it throws an exception.      
+* [0.x.23]*
+       Compare for inequality of iterators. This operator checks whether the       vectors pointed to are the same, and if not it throws an exception.      
+* [0.x.24]*
+       Check whether this iterators points to an element previous to the one       pointed to by the given argument. This operator checks whether the       vectors pointed to are the same, and if not it throws an exception.      
+* [0.x.25]*
+       Comparison operator alike to the one above.      
+* [0.x.26]*
+       Comparison operator alike to the one above.      
+* [0.x.27]*
+       Comparison operator alike to the one above.      
+* [0.x.28]*
+       Return the distance between the two iterators, in elements.      
+* [0.x.29]*
+       Return an iterator which is the given number of elements in front of       the present one.      
+* [0.x.30]*
+       Return an iterator which is the given number of elements behind the       present one.      
+* [0.x.31]*
+       Move the iterator <tt>d</tt> elements forward at once, and return the       result.      
+* [0.x.32]*
+       Move the iterator <tt>d</tt> elements backward at once, and return       the result.      
+* [0.x.33]*
+        [2.x.4]  Exceptions        [2.x.5]       
+* [0.x.34]*
+       Exception thrown when one performs arithmetical comparisons on       iterators belonging to two different block vectors.      
+* [0.x.35]*
+       Pointer to the block vector object to which this iterator points.       Depending on the value of the <tt>Constness</tt> template argument of       this class, this is a <tt>const</tt> or non-<tt>const</tt> pointer.      
+* [0.x.36]*
+       Global index of the element to which we presently point.      
+* [0.x.37]*
+       Current block and index within this block of the element presently       pointed to.      
+* [0.x.38]*
+       Indices of the global element address at which we have to move on to       another block when moving forward and backward. These indices are       kept as a cache since this is much more efficient than always asking       the parent object.      
+* [0.x.39]*
+       Move forward one element.      
+* [0.x.40]*
+       Move backward one element.      
+* [0.x.41]*
+ A vector composed of several blocks each representing a vector of its own.
+*  The BlockVector is a collection of vectors of a given type (e.g., deal.II Vector objects,  [2.x.6]  objects, etc.). Each of the vectors inside can have a different size.
+*  The functionality of BlockVector includes everything a Vector can do, plus the access to a single Vector inside the BlockVector by <tt>block(i)</tt>. It also has a complete random access iterator, just as the other Vector classes or the standard C++ library template  [2.x.7]  Therefore, all algorithms working on iterators also work with objects of this class.
+*  While this base class implements most of the functionality by dispatching calls to its member functions to the respective functions on each of the individual blocks, this class does not actually allocate some memory or change the size of vectors. For this, the constructors, assignment operators and reinit() functions of derived classes are responsible. This class only handles the common part that is independent of the actual vector type the block vector is built on.
+* 
+
+*  [1.x.2]
+*  Apart from using this object as a whole, you can use each block separately as a vector, using the block() function.  There is a single caveat: if you have changed the size of one or several blocks, you must call the function collect_sizes() of the block vector to update its internal structures.
+*   [2.x.8]  Warning: If you change the sizes of single blocks without calling collect_sizes(), results may be unpredictable. The debug version does not check consistency here for performance reasons!
+*   [2.x.9]   [2.x.10]  "Block (linear algebra)"
+
+* 
+* [0.x.42]*
+   Typedef the type of the underlying vector.  
+* [0.x.43]   Declare standard types used in   all containers. These types   parallel those in the   <tt>C++</tt> standard   libraries    [2.x.11]    class. This includes iterator   types.  
+* [0.x.44]*
+   Declare a type that has holds real-valued numbers with the same precision   as the template argument to this class. If the template argument of this   class is a real data type, then real_type equals the template argument.   If the template argument is a  [2.x.12]  type then real_type equals the   type underlying the complex numbers.     This alias is used to represent the return type of norms.  
+* [0.x.45]*
+   Default constructor.  
+* [0.x.46]*
+   Copy constructor.  
+* [0.x.47]*
+   Move constructor. Each block of the argument vector is moved into the   current object if the underlying  [2.x.13]  is   move-constructible, otherwise they are copied.  
+* [0.x.48]*
+   Update internal structures after resizing vectors. Whenever you reinited   a block of a block vector, the internal data structures are corrupted.   Therefore, you should call this function after all blocks got their new   size.  
+* [0.x.49]*
+   Call the compress() function on all the subblocks of the matrix.     This functionality only needs to be called if using MPI based vectors and   exists in other objects for compatibility.     See    [2.x.14]  "Compressing distributed objects"   for more information.  
+* [0.x.50]*
+   Access to a single block.  
+* [0.x.51]*
+   Read-only access to a single block.  
+* [0.x.52]*
+   Return a reference on the object that describes the mapping between block   and global indices. The use of this function is highly deprecated and it   should vanish in one of the next versions  
+* [0.x.53]*
+   Number of blocks.  
+* [0.x.54]*
+   Return dimension of the vector. This is the sum of the dimensions of all   components.  
+* [0.x.55]*
+   Return local dimension of the vector. This is the sum of the local   dimensions (i.e., values stored on the current processor) of all   components.  
+* [0.x.56]*
+   Return an index set that describes which elements of this vector are   owned by the current processor. Note that this index set does not include   elements this vector may store locally as ghost elements but that are in   fact owned by another processor. As a consequence, the index sets   returned on different processors if this is a distributed vector will   form disjoint sets that add up to the complete index set. Obviously, if a   vector is created on only one processor, then the result would satisfy  
+* [1.x.3]
+*      For block vectors, this function returns the union of the locally owned   elements of the individual blocks, shifted by their respective index   offsets.  
+* [0.x.57]*
+   Return an iterator pointing to the first element.  
+* [0.x.58]*
+   Return an iterator pointing to the first element of a constant block   vector.  
+* [0.x.59]*
+   Return an iterator pointing to the element past the end.  
+* [0.x.60]*
+   Return an iterator pointing to the element past the end of a constant   block vector.  
+* [0.x.61]*
+   Access components, returns U(i).  
+* [0.x.62]*
+   Access components, returns U(i) as a writeable reference.  
+* [0.x.63]*
+   Access components, returns U(i).     Exactly the same as operator().  
+* [0.x.64]*
+   Access components, returns U(i) as a writeable reference.     Exactly the same as operator().  
+* [0.x.65]*
+   Instead of getting individual elements of a vector via operator(),   this function allows getting a whole set of elements at once. The   indices of the elements to be read are stated in the first argument, the   corresponding values are returned in the second.     If the current vector is called  [2.x.15]  then this function is the equivalent   to the code  
+* [1.x.4]
+*       [2.x.16]  The sizes of the  [2.x.17]  and  [2.x.18]  arrays must be identical.  
+* [0.x.66]*
+   Instead of getting individual elements of a vector via operator(),   this function allows getting a whole set of elements at once. In   contrast to the previous function, this function obtains the   indices of the elements by dereferencing all elements of the iterator   range provided by the first two arguments, and puts the vector   values into memory locations obtained by dereferencing a range   of iterators starting at the location pointed to by the third   argument.     If the current vector is called  [2.x.19]  then this function is the equivalent   to the code  
+* [1.x.5]
+*       [2.x.20]  It must be possible to write into as many memory locations     starting at  [2.x.21]  as there are iterators between      [2.x.22]  and  [2.x.23]   
+* [0.x.67]*
+   Copy operator: fill all components of the vector with the given scalar   value.  
+* [0.x.68]*
+   Copy operator for arguments of the same type.  
+* [0.x.69]*
+   Move assignment operator. Move each block of the given argument   vector into the current object if `VectorType` is   move-constructible, otherwise copy them.  
+* [0.x.70]*
+   Copy operator for template arguments of different types.  
+* [0.x.71]*
+   Copy operator from non-block vectors to block vectors.  
+* [0.x.72]*
+   Check for equality of two block vector types. This operation is only   allowed if the two vectors already have the same block structure.  
+* [0.x.73]*
+    [2.x.24] : scalar product.  
+* [0.x.74]*
+   Return the square of the  [2.x.25] -norm.  
+* [0.x.75]*
+   Return the mean value of the elements of this vector.  
+* [0.x.76]*
+   Return the  [2.x.26] -norm of the vector, i.e. the sum of the absolute values.  
+* [0.x.77]*
+   Return the  [2.x.27] -norm of the vector, i.e. the square root of the sum of   the squares of the elements.  
+* [0.x.78]*
+   Return the maximum absolute value of the elements of this vector, which   is the  [2.x.28] -norm of a vector.  
+* [0.x.79]*
+   Performs a combined operation of a vector addition and a subsequent inner   product, returning the value of the inner product. In other words, the   result of this function is the same as if the user called  
+* [1.x.6]
+*      The reason this function exists is that this operation involves less   memory transfer than calling the two functions separately on deal.II's   vector classes (Vector<Number> and    [2.x.29]  This method only needs to load   three vectors,  [2.x.30]   [2.x.31]   [2.x.32]  whereas calling separate methods   means to load the calling vector  [2.x.33]  twice. Since most vector   operations are memory transfer limited, this reduces the time by 25\% (or   50\% if  [2.x.34]  equals  [2.x.35]      For complex-valued vectors, the scalar product in the second step is   implemented as    [2.x.36] .  
+* [0.x.80]*
+   Return true if the given global index is in the local range of this   processor. Asks the corresponding block.  
+* [0.x.81]*
+   Return whether the vector contains only elements with value zero. This   function is mainly for internal consistency check and should seldom be   used when not in debug mode since it uses quite some time.  
+* [0.x.82]*
+   Return  [2.x.37]  if the vector has no negative entries, i.e. all entries   are zero or positive. This function is used, for example, to check   whether refinement indicators are really all positive (or zero).  
+* [0.x.83]*
+   Addition operator.  Fast equivalent to <tt>U.add(1, V)</tt>.  
+* [0.x.84]*
+   Subtraction operator.  Fast equivalent to <tt>U.add(-1, V)</tt>.  
+* [0.x.85]*
+   A collective add operation: This function adds a whole set of values   stored in  [2.x.38]  to the vector components specified by  [2.x.39]   
+* [0.x.86]*
+   This is a second collective add operation. As a difference, this function   takes a deal.II vector of values.  
+* [0.x.87]*
+   Take an address where <tt>n_elements</tt> are stored contiguously and add   them into the vector. Handles all cases which are not covered by the   other two <tt>add()</tt> functions above.  
+* [0.x.88]*
+    [2.x.40] .  Addition of <tt>s</tt> to all components. Note that   <tt>s</tt> is a scalar and not a vector.  
+* [0.x.89]*
+   U+=a*V. Simple addition of a scaled vector.  
+* [0.x.90]*
+   U+=a*V+b*W. Multiple addition of scaled vectors.  
+* [0.x.91]*
+   U=s*U+V. Scaling and simple vector addition.  
+* [0.x.92]*
+   U=s*U+a*V. Scaling and simple addition.  
+* [0.x.93]*
+   U=s*U+a*V+b*W. Scaling and multiple addition.  
+* [0.x.94]*
+   U=s*U+a*V+b*W+c*X. Scaling and multiple addition.  
+* [0.x.95]*
+   Scale each element of the vector by a constant value.  
+* [0.x.96]*
+   Scale each element of the vector by the inverse of the given value.  
+* [0.x.97]*
+   Multiply each element of this vector by the corresponding element of   <tt>v</tt>.  
+* [0.x.98]*
+   U=a*V. Assignment.  
+* [0.x.99]*
+   Update the ghost values by calling  [2.x.41]  for   each block.  
+* [0.x.100]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.101]*
+   Pointer to the array of components.  
+* [0.x.102]*
+   Object managing the transformation between global indices and indices   within the different blocks.  
+* [0.x.103]

@@ -1,0 +1,114 @@
+[0.x.0]*
+ Interface for using PARPACK. PARPACK is a collection of Fortran77 subroutines designed to solve large scale eigenvalue problems. Here we interface to the routines  [2.x.0] ,  [2.x.1]  of PARPACK.  The package is designed to compute a few eigenvalues and corresponding eigenvectors of a general n by n matrix A. It is most appropriate for large sparse matrices A.
+*  In this class we make use of the method applied to the generalized eigenspectrum problem  [2.x.2] , for  [2.x.3] ; where  [2.x.4]  is a system matrix,  [2.x.5]  is a mass matrix, and  [2.x.6]  are a set of eigenvalues and eigenvectors respectively.
+*  The ArpackSolver can be used in application codes in the following way:
+
+* 
+* [1.x.0]
+*  for the generalized eigenvalue problem  [2.x.7] , where the variable  [2.x.8]  tells PARPACK the number of eigenvector/eigenvalue pairs to solve for. Here,  [2.x.9]  is a vector that will contain the eigenvalues computed,  [2.x.10]  a vector of objects of type  [2.x.11]  that will contain the eigenvectors computed.
+*  Currently, only three modes of (P)Arpack are implemented. In mode 3 (default),  [2.x.12]  is an inverse operation for the matrix <code>A
+* 
+*  - sigma B</code>, where  [2.x.13]  is a shift value, set to zero by default. Whereas in mode 2,  [2.x.14]  is an inverse of  [2.x.15] . Finally, mode 1 corresponds to standard eigenvalue problem without spectral transformation  [2.x.16] . The mode can be specified via AdditionalData object. Note that for shift-and-invert (mode=3), the sought eigenpairs are those after the spectral transformation is applied.
+*  The  [2.x.17]  can be specified by using a LinearOperator:
+
+* 
+* [1.x.1]
+* 
+*  The class is intended to be used with MPI and can work on arbitrary vector and matrix distributed classes.  Both symmetric and non-symmetric  [2.x.18]  are supported.
+*  For further information on how the PARPACK routines  [2.x.19] ,  [2.x.20]  work and also how to set the parameters appropriately please take a look into the PARPACK manual.
+
+* 
+* [0.x.1]*
+   Declare the type for container size.  
+* [0.x.2]*
+   An enum that lists the possible choices for which eigenvalues to compute   in the solve() function. Note, that this corresponds to the problem after   shift-and-invert (the only currently supported spectral transformation)   is applied.     A particular choice is limited based on symmetric or non-symmetric matrix    [2.x.21]  considered.  
+* [0.x.3]*
+     The algebraically largest eigenvalues.    
+* [0.x.4]*
+     The algebraically smallest eigenvalues.    
+* [0.x.5]*
+     The eigenvalue with the largest magnitudes.    
+* [0.x.6]*
+     The eigenvalue with the smallest magnitudes.    
+* [0.x.7]*
+     The eigenvalues with the largest real parts.    
+* [0.x.8]*
+     The eigenvalues with the smallest real parts.    
+* [0.x.9]*
+     The eigenvalues with the largest imaginary parts.    
+* [0.x.10]*
+     The eigenvalues with the smallest imaginary parts.    
+* [0.x.11]*
+     Compute half of the eigenvalues from the high end of the spectrum and     the other half from the low end. If the number of requested     eigenvectors is odd, then the extra eigenvector comes from the high end     of the spectrum.    
+* [0.x.12]*
+   Standardized data struct to pipe additional data to the solver, should it   be needed.  
+* [0.x.13]*
+   Access to the object that controls convergence.  
+* [0.x.14]*
+   Constructor.  
+* [0.x.15]*
+   Initialize internal variables.  
+* [0.x.16]*
+   Initialize internal variables when working with BlockVectors.    [2.x.22]  is used to set the dimension of the problem,   whereas  [2.x.23]  is used for calling the reinit of the deal.II   blockvectors used.  
+* [0.x.17]*
+   Initialize internal variables from the input  [2.x.24]   
+* [0.x.18]*
+   Set initial vector for building Krylov space.  
+* [0.x.19]*
+   Set shift  [2.x.25]  for shift-and-invert spectral transformation.     If this function is not called, the shift is assumed to be zero.    
+*  [2.x.26]  only relevant for  [2.x.27]  (see the general documentation of this   class for a definition of what the different modes are).  
+* [0.x.20]*
+   Solve the generalized eigensprectrum problem  [2.x.28]  by calling   the  [2.x.29]  functions of   PARPACK.     In  [2.x.30] ,  [2.x.31]  should correspond to  [2.x.32] ,   whereas in  [2.x.33]  it should represent  [2.x.34] . For    [2.x.35]  both  [2.x.36]  and  [2.x.37]  are ignored.  
+* [0.x.21]*
+   Same as above but takes eigenvectors as pointers.  
+* [0.x.22]*
+   Return the memory consumption of this class in bytes.  
+* [0.x.23]*
+   Reference to the object that controls convergence of the iterative   solver.  
+* [0.x.24]*
+   Store a copy of the flags for this particular solver.  
+* [0.x.25]*
+   C++ MPI communicator.  
+* [0.x.26]*
+   Fortran MPI communicator.  
+* [0.x.27]*
+   Length of the work array workl.  
+* [0.x.28]*
+   Double precision  work array of length lworkl  
+* [0.x.29]*
+   Double precision  work array of length 3*N  
+* [0.x.30]*
+   Number of local degrees of freedom.  
+* [0.x.31]*
+   Number of Arnoldi basis vectors specified in additional_data  
+* [0.x.32]*
+   The leading dimension of the array v  
+* [0.x.33]*
+   Double precision vector of size ldv by NCV.  Will contains the final set   of Arnoldi basis vectors.  
+* [0.x.34]*
+   An auxiliary flag which is set to true when initial vector is provided.  
+* [0.x.35]*
+   The initial residual vector, possibly from a previous run.  On output, it   contains the final residual vector.  
+* [0.x.36]*
+   The leading dimension of the array Z equal to nloc.  
+* [0.x.37]*
+   A vector of minimum size of nloc by NEV+1.  Z contains the B-orthonormal   Ritz vectors of the eigensystem A*z = lambda*B*z corresponding to the   Ritz value approximations.  
+* [0.x.38]*
+   The size of the workev array.  
+* [0.x.39]*
+   Double precision  work array of dimension 3* NCV.  
+* [0.x.40]*
+   A vector of dimension NCV.  
+* [0.x.41]*
+   Temporary vectors used between Arpack and deal.II  
+* [0.x.42]*
+   Indices of local degrees of freedom.  
+* [0.x.43]*
+   Real part of the shift  
+* [0.x.44]*
+   Imaginary part of the shift  
+* [0.x.45]*
+   Initialize internal variables which depend on    [2.x.38]      This function is called inside the reinit() functions  
+* [0.x.46]*
+   PArpackExcInfoPdnaupds.  
+* [0.x.47]

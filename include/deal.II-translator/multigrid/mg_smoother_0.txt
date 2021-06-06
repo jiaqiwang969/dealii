@@ -1,0 +1,122 @@
+[0.x.0] MGSmootherBase is defined in mg_base.h
+
+* 
+* [0.x.1]*
+ A base class for smoother handling information on smoothing. While not adding to the abstract interface in MGSmootherBase, this class stores information on the number and type of smoothing steps, which in turn can be used by a derived class.
+
+* 
+* [0.x.2]*
+   Constructor.  
+* [0.x.3]*
+   Modify the number of smoothing steps on finest level.  
+* [0.x.4]*
+   Switch on/off variable smoothing.  
+* [0.x.5]*
+   Switch on/off symmetric smoothing.  
+* [0.x.6]*
+   Switch on/off transposed smoothing. The effect is overridden by   set_symmetric().  
+* [0.x.7]*
+   Set  [2.x.0]  to a nonzero value to get debug information logged to  [2.x.1]    deallog. Increase to get more information  
+* [0.x.8]*
+   A memory object to be used for temporary vectors.     The object is marked as mutable since we will need to use it to allocate   temporary vectors also in functions that are const.  
+* [0.x.9]*
+   Number of smoothing steps on the finest level. If no #variable smoothing   is chosen, this is the number of steps on all levels.  
+* [0.x.10]*
+   Variable smoothing: double the number of smoothing steps whenever going   to the next coarser level  
+* [0.x.11]*
+   Symmetric smoothing: in the smoothing iteration, alternate between the   relaxation method and its transpose.  
+* [0.x.12]*
+   Use the transpose of the relaxation method instead of the method itself.   This has no effect if #symmetric smoothing is chosen.  
+* [0.x.13]*
+   Output debugging information to  [2.x.2]  if this is nonzero.  
+* [0.x.14]*
+ Smoother doing nothing. This class is not useful for many applications other than for testing some multigrid procedures. Also some applications might get convergence without smoothing and then this class brings you the cheapest possible multigrid.
+
+* 
+* [0.x.15]*
+   Implementation of the interface for  [2.x.3]  This function does   nothing, which by comparison with the definition of this function means   that the smoothing operator equals the null operator.  
+* [0.x.16]*
+   Smoother using relaxation classes.     A relaxation class is an object that satisfies the    [2.x.4]  "relaxation concept".     This class performs smoothing on each level. The operation can be   controlled by several parameters. First, the relaxation parameter  [2.x.5]    omega is used in the underlying relaxation method.  [2.x.6]  is the number   of relaxation steps on the finest level (on all levels if  [2.x.7]  is   off). If  [2.x.8]  is  [2.x.9]  the number of smoothing steps is doubled   on each coarser level. This results in a method having the complexity of   the W-cycle, but saving grid transfers. This is the method proposed by   Bramble at al.     The option  [2.x.10]  switches on alternating between the smoother and   its transpose in each step as proposed by Bramble.      [2.x.11]  uses the transposed smoothing operation using <tt>Tstep</tt>   instead of the regular <tt>step</tt> of the relaxation scheme.     If you are using block matrices, the second  [2.x.12]  function offers   the possibility to extract a single block for smoothing. In this case,   the multigrid method must be used only with the vector associated to that   single block.  
+* [0.x.17]*
+     Constructor. Sets smoothing parameters.    
+* [0.x.18]*
+     Initialize for matrices. This function initializes the smoothing     operator with the same smoother for each level.          [2.x.13]  is an object of type  [2.x.14]       [2.x.15]  and is handed to the initialization     function of the relaxation method.    
+* [0.x.19]*
+     Initialize matrices and additional data for each level.         If minimal or maximal level of the two objects differ, the greatest     common range is utilized. This way, smoothing can be restricted to     certain levels even if the matrix was generated for all levels.    
+* [0.x.20]*
+     Empty all vectors.    
+* [0.x.21]*
+     The actual smoothing method.    
+* [0.x.22]*
+     The apply variant of smoothing, setting the vector u to zero before     calling the smooth function. This function is equivalent to the     following code    
+* [1.x.0]
+*          In the multigrid preconditioner interfaces, the apply() method is used     for the pre-smoothing operation because the previous content in the     solution vector needs to be overwritten for a new incoming residual. On     the other hand, all subsequent operations need to smooth the content     already present     in the vector  [2.x.16]  given the right hand side, which is done by smooth().    
+* [0.x.23]*
+     Memory used by this object.    
+* [0.x.24]*
+ Smoother using a solver that satisfies the  [2.x.17]  "relaxation concept".
+*  This class performs smoothing on each level. The operation can be controlled by several parameters. First, the relaxation parameter  [2.x.18]  is used in the underlying relaxation method.  [2.x.19]  is the number of relaxation steps on the finest level (on all levels if  [2.x.20]  is off). If  [2.x.21]  is  [2.x.22]  the number of smoothing steps is doubled on each coarser level. This results in a method having the complexity of the W-cycle, but saving grid transfers. This is the method proposed by Bramble at al.
+*  The option  [2.x.23]  switches on alternating between the smoother and its transpose in each step as proposed by Bramble.
+*   [2.x.24]  uses the transposed smoothing operation using <tt>Tstep</tt> instead of the regular <tt>step</tt> of the relaxation scheme.
+*  If you are using block matrices, the second  [2.x.25]  function offers the possibility to extract a single block for smoothing. In this case, the multigrid method must be used only with the vector associated to that single block.
+*  The library contains instantiation for <tt>SparseMatrix<.></tt> and <tt>Vector<.></tt>, where the template arguments are all combinations of  [2.x.26]  float and  [2.x.27]  Additional instantiations may be created by including the file mg_smoother.templates.h.
+
+* 
+* [0.x.25]*
+   Constructor. Sets smoothing parameters.  
+* [0.x.26]*
+   Initialize for matrices. This function stores pointers to the level   matrices and initializes the smoothing operator with the same smoother   for each level.      [2.x.28]  is an object of type  [2.x.29]    and is handed to the initialization function of the relaxation method.  
+* [0.x.27]*
+   Initialize for matrices. This function stores pointers to the level   matrices and initializes the smoothing operator with the according   smoother for each level.      [2.x.30]  is an object of type  [2.x.31]    and is handed to the initialization function of the relaxation method.  
+* [0.x.28]*
+   Initialize for single blocks of matrices. Of this block matrix, the block   indicated by  [2.x.32]  and  [2.x.33]  is selected on each level.   This function stores pointers to the level matrices and initializes the   smoothing operator with the same smoother for each level.      [2.x.34]  is an object of type  [2.x.35]    and is handed to the initialization function of the relaxation method.  
+* [0.x.29]*
+   Initialize for single blocks of matrices. Of this block matrix, the block   indicated by  [2.x.36]  and  [2.x.37]  is selected on each level.   This function stores pointers to the level matrices and initializes the   smoothing operator with the according smoother for each level.      [2.x.38]  is an object of type  [2.x.39]    and is handed to the initialization function of the relaxation method.  
+* [0.x.30]*
+   Empty all vectors.  
+* [0.x.31]*
+   The actual smoothing method.  
+* [0.x.32]*
+   The apply variant of smoothing, setting the vector u to zero before   calling the smooth function. This function is equivalent to the   following code  
+* [1.x.1]
+*      In the multigrid preconditioner interfaces, the apply() method is used for   the pre-smoothing operation because the previous content in the solution   vector needs to be overwritten for a new incoming residual. On the other   hand, all subsequent operations need to smooth the content already present   in the vector  [2.x.40]  given the right hand side, which is done by smooth().  
+* [0.x.33]*
+   Object containing relaxation methods.  
+* [0.x.34]*
+   Memory used by this object.  
+* [0.x.35]*
+   Pointer to the matrices.  
+* [0.x.36]*
+ Smoother using preconditioner classes.
+*  This class performs smoothing on each level. The operation can be controlled by several parameters. First, the relaxation parameter  [2.x.41]  is used in the underlying relaxation method.  [2.x.42]  is the number of relaxation steps on the finest level (on all levels if  [2.x.43]  is off). If  [2.x.44]  is  [2.x.45]  the number of smoothing steps is doubled on each coarser level. This results in a method having the complexity of the W-cycle, but saving grid transfers. This is the method proposed by Bramble at al.
+*  The option  [2.x.46]  switches on alternating between the smoother and its transpose in each step as proposed by Bramble.
+*   [2.x.47]  uses the transposed smoothing operation using <tt>Tvmult</tt> instead of the regular <tt>vmult</tt> of the relaxation scheme.
+*  If you are using block matrices, the second  [2.x.48]  function offers the possibility to extract a single block for smoothing. In this case, the multigrid method must be used only with the vector associated to that single block.
+*  The library contains instantiation for <tt>SparseMatrix<.></tt> and <tt>Vector<.></tt>, where the template arguments are all combinations of  [2.x.49]  float and  [2.x.50]  Additional instantiations may be created by including the file mg_smoother.templates.h.
+
+* 
+* [0.x.37]*
+   Constructor. Sets smoothing parameters.  
+* [0.x.38]*
+   Initialize for matrices. This function stores pointers to the level   matrices and initializes the smoothing operator with the same smoother   for each level.      [2.x.51]  is an object of type  [2.x.52]     [2.x.53]  and is handed to the initialization   function of the relaxation method.  
+* [0.x.39]*
+   Initialize for matrices. This function stores pointers to the level   matrices and initializes the smoothing operator with the according   smoother for each level.      [2.x.54]  is an object of type  [2.x.55]     [2.x.56]  and is handed to the initialization   function of the relaxation method.  
+* [0.x.40]*
+   Initialize for single blocks of matrices. Of this block matrix, the block   indicated by  [2.x.57]  and  [2.x.58]  is selected on each level.   This function stores pointers to the level matrices and initializes the   smoothing operator with the same smoother for each level.      [2.x.59]  is an object of type  [2.x.60]     [2.x.61]  and is handed to the initialization   function of the relaxation method.  
+* [0.x.41]*
+   Initialize for single blocks of matrices. Of this block matrix, the block   indicated by  [2.x.62]  and  [2.x.63]  is selected on each level.   This function stores pointers to the level matrices and initializes the   smoothing operator with the according smoother for each level.      [2.x.64]  is an object of type  [2.x.65]     [2.x.66]  and is handed to the initialization   function of the relaxation method.  
+* [0.x.42]*
+   Empty all vectors.  
+* [0.x.43]*
+   The actual smoothing method.  
+* [0.x.44]*
+   The apply variant of smoothing, setting the vector u to zero before   calling the smooth function. This function is equivalent to the   following code  
+* [1.x.2]
+*      In the multigrid preconditioner interfaces, the apply() method is used for   the pre-smoothing operation because the previous content in the solution   vector needs to be overwritten for a new incoming residual. On the other   hand, all subsequent operations need to smooth the content already present   in the vector  [2.x.67]  given the right hand side, which is done by smooth().  
+* [0.x.45]*
+   Object containing relaxation methods.  
+* [0.x.46]*
+   Memory used by this object.  
+* [0.x.47]*
+   Pointer to the matrices.  
+* [0.x.48]

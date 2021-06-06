@@ -1,0 +1,161 @@
+[0.x.0]*
+   Base class for solver classes using the Trilinos solvers. Since solvers   in Trilinos are selected based on flags passed to a generic solver   object, basically all the actual solver calls happen in this class, and   derived classes simply set the right flags to select one solver or   another, or to set certain parameters for individual solvers. For a   general discussion on the Trilinos solver package AztecOO, we refer to   the [1.x.0].     This solver class can also be used as a standalone class, where the   respective Krylov method is set via the flag <tt>solver_name</tt>. This   can be done at runtime (e.g., when parsing the solver from a   ParameterList) and is similar to the deal.II class SolverSelector.    
+*  [2.x.0]   
+* [0.x.1]*
+     Enumeration object that is set in the constructor of the derived     classes and tells Trilinos which solver to use. This option can also be     set in the user program, so one might use this base class instead of     one of the specialized derived classes when the solver should be set at     runtime. Currently enabled options are:    
+* [0.x.2]*
+       Use the conjugate gradient (CG) algorithm.      
+* [0.x.3]*
+       Use the conjugate gradient squared (CGS) algorithm.      
+* [0.x.4]*
+       Use the generalized minimum residual (GMRES) algorithm.      
+* [0.x.5]*
+       Use the biconjugate gradient stabilized (BICGStab) algorithm.      
+* [0.x.6]*
+       Use the transpose-free quasi-minimal residual (TFQMR) method.      
+* [0.x.7]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.8]*
+       Set the additional data field to the desired output format and puts       the restart parameter in case the derived class is GMRES.             TODO: Find a better way for setting the GMRES restart parameter since       it is quite inelegant to set a specific option of one solver in the       base class for all solvers.      
+* [0.x.9]*
+       Enables/disables the output of solver details (residual in each       iterations etc.).      
+* [0.x.10]*
+       Restart parameter for GMRES solver.      
+* [0.x.11]*
+     Constructor. Takes the solver control object and creates the solver.    
+* [0.x.12]*
+     Second constructor. This constructor takes an enum object that     specifies the solver name and sets the appropriate Krylov method.    
+* [0.x.13]*
+     Destructor.    
+* [0.x.14]*
+     Solve the linear system <tt>Ax=b</tt>. Depending on the information     provided by derived classes and the object passed as a preconditioner,     one of the linear solvers and preconditioners of Trilinos is chosen.    
+* [0.x.15]*
+     Solve the linear system <tt>Ax=b</tt> where <tt>A</tt> is an operator.     This function can be used for matrix free computation. Depending on the     information provided by derived classes and the object passed as a     preconditioner, one of the linear solvers and preconditioners of     Trilinos is chosen.    
+* [0.x.16]*
+     Solve the linear system <tt>Ax=b</tt> where both <tt>A</tt> and its      [2.x.1]  are an operator.     This function can be used when both <tt>A</tt> and the  [2.x.2]      are LinearOperators derived from a TrilinosPayload.     Depending on the information provided by derived classes and the object     passed as a preconditioner, one of the linear solvers and preconditioners     of Trilinos is chosen.    
+* [0.x.17]*
+     Solve the linear system <tt>Ax=b</tt> where <tt>A</tt> is an operator,     and the vectors  [2.x.3]  and  [2.x.4]  are native Trilinos vector types.     This function can be used when <tt>A</tt> is a LinearOperators derived     from a TrilinosPayload.     Depending on the information provided by derived classes and the object     passed as a preconditioner, one of the linear solvers and preconditioners     of Trilinos is chosen.    
+* [0.x.18]*
+     Solve the linear system <tt>Ax=b</tt> where both <tt>A</tt> and its      [2.x.5]  are an operator, and the vectors  [2.x.6]  and  [2.x.7]  are     native Trilinos vector types.     This function can be used when both <tt>A</tt> and the  [2.x.8]      are LinearOperators derived from a TrilinosPayload.     Depending on the information provided by derived classes and the object     passed as a preconditioner, one of the linear solvers and preconditioners     of Trilinos is chosen.    
+* [0.x.19]*
+     Solve the linear system <tt>Ax=b</tt>. Depending on the information     provided by derived classes and the object passed as a preconditioner,     one of the linear solvers and preconditioners of Trilinos is chosen.     This class works with matrices according to the TrilinosWrappers     format, but can take deal.II vectors as argument. Since deal.II are     serial vectors (not distributed), this function does only what you     expect in case the matrix is locally owned. Otherwise, an exception     will be thrown.    
+* [0.x.20]*
+     Solve the linear system <tt>Ax=b</tt> where <tt>A</tt> is an operator.     This function can be used for matrix free computations. Depending on     the information provided by derived classes and the object passed as a     preconditioner, one of the linear solvers and preconditioners of     Trilinos is chosen. This class works with matrices according to the     TrilinosWrappers format, but can take deal.II vectors as argument.     Since deal.II are serial vectors (not distributed), this function does     only what you expect in case the matrix is locally owned. Otherwise, an     exception will be thrown.    
+* [0.x.21]*
+     Solve the linear system <tt>Ax=b</tt> for deal.II's parallel     distributed vectors. Depending on the information provided by derived     classes and the object passed as a preconditioner, one of the linear     solvers and preconditioners of Trilinos is chosen.    
+* [0.x.22]*
+     Solve the linear system <tt>Ax=b</tt> where <tt>A</tt> is an operator.     This function can be used for matrix free computation. Depending on the     information provided by derived classes and the object passed as a     preconditioner, one of the linear solvers and preconditioners of     Trilinos is chosen.    
+* [0.x.23]*
+     Access to object that controls convergence.    
+* [0.x.24]*
+     Exception    
+* [0.x.25]*
+     Reference to the object that controls convergence of the iterative     solver. In fact, for these Trilinos wrappers, Trilinos does so itself,     but we copy the data from this object before starting the solution     process, and copy the data back into it afterwards.    
+* [0.x.26]*
+     The solve function is used to set properly the Epetra_LinearProblem,     once it is done this function solves the linear problem.    
+* [0.x.27]*
+     A function that sets the preconditioner that the solver will apply    
+* [0.x.28]*
+     A structure that collects the Trilinos sparse matrix, the right hand     side vector and the solution vector, which is passed down to the     Trilinos solver.    
+* [0.x.29]*
+     A structure that contains a Trilinos object that can query the linear     solver and determine whether the convergence criterion have been met.    
+* [0.x.30]*
+     A structure that contains the Trilinos solver and preconditioner     objects.    
+* [0.x.31]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.32]*
+   An implementation of the solver interface using the Trilinos CG solver.    
+*  [2.x.9]   
+* [0.x.33]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.34]*
+       Set the additional data field to the desired output format.      
+* [0.x.35]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object.         The last argument takes a structure with additional, solver dependent     flags for tuning.    
+* [0.x.36]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.37]*
+   An implementation of the solver interface using the Trilinos CGS solver.    
+*  [2.x.10]   
+* [0.x.38]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.39]*
+       Set the additional data field to the desired output format.      
+* [0.x.40]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object.         The last argument takes a structure with additional, solver dependent     flags for tuning.    
+* [0.x.41]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.42]*
+   An implementation of the solver interface using the Trilinos GMRES   solver.  
+* [0.x.43]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.44]*
+       Constructor. By default, set the number of temporary vectors to 30,       i.e. do a restart every 30 iterations.      
+* [0.x.45]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object.         The last argument takes a structure with additional, solver dependent     flags for tuning.    
+* [0.x.46]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.47]*
+   An implementation of the solver interface using the Trilinos BiCGStab   solver.    
+*  [2.x.11]   
+* [0.x.48]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.49]*
+       Set the additional data field to the desired output format.      
+* [0.x.50]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object.         The last argument takes a structure with additional, solver dependent     flags for tuning.    
+* [0.x.51]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.52]*
+   An implementation of the solver interface using the Trilinos TFQMR   solver.    
+*  [2.x.12]   
+* [0.x.53]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.54]*
+       Set the additional data field to the desired output format.      
+* [0.x.55]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object.         The last argument takes a structure with additional, solver dependent     flags for tuning.    
+* [0.x.56]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.57]*
+   An implementation of Trilinos direct solvers (using the Amesos package).   The data field  [2.x.13]  can be used to specify the   type of solver. It allows the use of built-in solvers Amesos_Klu as well   as third-party solvers Amesos_Superludist or Amesos_Mumps.     For instructions on how to install Trilinos for use with direct solvers   other than KLU, see the link to the Trilinos installation instructions   linked to from the deal.II ReadMe file.    
+*  [2.x.14]   
+* [0.x.58]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.59]*
+       Set the additional data field to the desired output format.      
+* [0.x.60]*
+       Enables/disables the output of solver details (residual in each       iterations etc.).      
+* [0.x.61]*
+       Set the solver type (for third party solver support of Trilinos       Amesos package). Possibilities are:        [2.x.15]         [2.x.16]   "Amesos_Lapack"  [2.x.17]         [2.x.18]   "Amesos_Scalapack"  [2.x.19]         [2.x.20]   "Amesos_Klu"  [2.x.21]         [2.x.22]   "Amesos_Umfpack"  [2.x.23]         [2.x.24]   "Amesos_Pardiso"  [2.x.25]         [2.x.26]   "Amesos_Taucs"  [2.x.27]         [2.x.28]   "Amesos_Superlu"  [2.x.29]         [2.x.30]   "Amesos_Superludist"  [2.x.31]         [2.x.32]   "Amesos_Dscpack"  [2.x.33]         [2.x.34]   "Amesos_Mumps"  [2.x.35]         [2.x.36]        Note that the availability of these solvers in deal.II depends on       which solvers were set when configuring Trilinos.      
+* [0.x.62]*
+     Constructor. Takes the solver control object and creates the solver.    
+* [0.x.63]*
+     Destructor.    
+* [0.x.64]*
+     Initializes the direct solver for the matrix <tt>A</tt> and creates a     factorization for it with the package chosen from the additional     data structure. Note that there is no need for a preconditioner     here and solve() is not called.    
+* [0.x.65]*
+     Solve the linear system <tt>Ax=b</tt> based on the     package set in initialize(). Note the matrix is not refactorized during     this call.    
+* [0.x.66]*
+     Solve the linear system <tt>Ax=b</tt> based on the package set in     initialize() for deal.II's own parallel vectors. Note the matrix is not     refactorized during this call.    
+* [0.x.67]*
+     Solve the linear system <tt>Ax=b</tt>. Creates a factorization of the     matrix with the package chosen from the additional data structure and     performs the solve. Note that there is no need for a preconditioner     here.    
+* [0.x.68]*
+     Solve the linear system <tt>Ax=b</tt>. This class works with Trilinos     matrices, but takes deal.II serial vectors as argument. Since these     vectors are not distributed, this function does only what you expect in     case the matrix is serial (i.e., locally owned). Otherwise, an     exception will be thrown.    
+* [0.x.69]*
+     Solve the linear system <tt>Ax=b</tt> for deal.II's own parallel     vectors. Creates a factorization of the matrix with the package chosen     from the additional data structure and performs the solve. Note that     there is no need for a preconditioner here.    
+* [0.x.70]*
+     Access to object that controls convergence.    
+* [0.x.71]*
+     Exception    
+* [0.x.72]*
+     Actually performs the operations for solving the linear system,     including the factorization and forward and backward substitution.    
+* [0.x.73]*
+     Reference to the object that controls convergence of the iterative     solver. In fact, for these Trilinos wrappers, Trilinos does so itself,     but we copy the data from this object before starting the solution     process, and copy the data back into it afterwards.    
+* [0.x.74]*
+     A structure that collects the Trilinos sparse matrix, the right hand     side vector and the solution vector, which is passed down to the     Trilinos solver.    
+* [0.x.75]*
+     A structure that contains the Trilinos solver and preconditioner     objects.    
+* [0.x.76]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.77]

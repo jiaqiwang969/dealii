@@ -1,0 +1,26 @@
+[0.x.0]*
+     A class that, instead of assembling into a matrix or vector, outputs     the results on a cell to a gnuplot patch.         This assembler expects that LocalResults contains quadrature values set     with  [2.x.0]  When it is initialized with the     number of quadrature points in a single (!) space direction and the     number of data fields to be displayed, it initializes LocalResults     automatically. The number of data fields in local results will be     increased by dim in order to accommodate for the coordinates of the     data points.         While data slots for the space coordinates are allocated automatically,     these coordinates are not entered. It is up to the user to enter the     coordinates in the first dim data entries at every point. This adds the     flexibility to output transformed coordinates or even something     completely different.        
+*  [2.x.1]  In the current implementation, only cell data can be written.    
+* [0.x.1]*
+       Constructor.      
+* [0.x.2]*
+       Initialize for writing [1.x.0] data vectors. The number of points is       the number of quadrature points in a single direction in a tensor       product formula. It must match the number in the actual Quadrature       used to create the patches. The total number of data vectors produced       is <tt>n+dim</tt> and the first dim should be the space coordinates       of the points. Nevertheless, it is up to the user to set these values       to whatever is desired.      
+* [0.x.3]*
+       Set the stream #os to which data is written. If no stream is selected       with this function, data goes to  [2.x.2]       
+* [0.x.4]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.3]  object refers to a cell if  [2.x.4] , or else to an       interior or boundary face.      
+* [0.x.5]*
+       Write the patch to the output stream.      
+* [0.x.6]*
+        [2.x.5]  Not implemented yet      
+* [0.x.7]*
+       Write the object T either to the stream #os, if initialize_stream()       has been called, or to  [2.x.6]  if no pointer has been set.      
+* [0.x.8]*
+       Write an end-of-line marker either to the stream #os, if       initialize_stream has been called, or to  [2.x.7]  if no pointer has       been set.      
+* [0.x.9]*
+       The number of output components in each point.      
+* [0.x.10]*
+       The number of points in one direction.      
+* [0.x.11]*
+       Stream to which output is to be written. Set by initialize_stream().      
+* [0.x.12]

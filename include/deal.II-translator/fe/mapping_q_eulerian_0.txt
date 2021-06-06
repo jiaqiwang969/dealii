@@ -1,0 +1,56 @@
+[0.x.0]*
+ This class is an extension of the MappingQ1Eulerian class to higher order  [2.x.0]  mappings.  It is useful when one wants to calculate shape function information on a domain that is deforming as the computation proceeds.
+*  [1.x.0]
+*  The constructor of this class takes three arguments: the polynomial degree of the desired Qp mapping, a reference to the vector that defines the mapping from the initial configuration to the current configuration, and a reference to the DoFHandler. The most common case is to use the solution vector for the problem under consideration as the shift vector. The key requirement is that the number of components of the given vector field must be equal to (or possibly greater than) the number of space dimensions. If there are more components than space dimensions (for example, if one is working with a coupled problem where there are additional solution variables), the first <tt>dim</tt> components are assumed to represent the displacement field, and the remaining components are ignored.  If this assumption does not hold one may need to set up a separate DoFHandler on the triangulation and associate the desired shift vector to it.
+*  Typically, the DoFHandler operates on a finite element that is constructed as a system element (FESystem) from continuous FE_Q objects. An example is shown below:
+
+* 
+* [1.x.1]
+* 
+*  In this example, our element consists of <tt>(dim+1)</tt> components. Only the first <tt>dim</tt> components will be used, however, to define the Q2 mapping.  The remaining components are ignored.
+*  Note that it is essential to call the distribute_dofs(...) function before constructing a mapping object.
+*  Also note that since the vector of shift values and the dof handler are only associated to this object at construction time, you have to make sure that whenever you use this object, the given objects still represent valid data.
+*  To enable the use of the MappingQEulerian class also in the context of parallel codes using the PETSc or Trilinos wrapper classes, the type of the vector can be specified as template parameter <tt>VectorType</tt>.
+
+* 
+* [0.x.1]*
+   Constructor.      [2.x.1]  degree The polynomial degree of the desired  [2.x.2]  mapping.    [2.x.3]  euler_dof_handler A DoFHandler object that defines a finite   element space. This space needs to have at least dim components and the   first dim components of the space will be considered displacements   relative to the original positions of the cells of the triangulation.    [2.x.4]  euler_vector A finite element function in the space defined by   the second argument. The first dim components of this function will be   interpreted as the displacement we use in defining the mapping, relative   to the location of cells of the underlying triangulation.    [2.x.5]  level The multi-grid level at which the mapping will   be used. It is mainly used to check if the size of the  [2.x.6]    is consistent with the  [2.x.7]  .  
+* [0.x.2]*
+   Return the mapped vertices of the cell. For the current class, this   function does not use the support points from the geometry of the current   cell but instead evaluates an externally given displacement field in   addition to the geometry of the cell.  
+* [0.x.3]*
+   Return a pointer to a copy of the present object. The caller of this copy   then assumes ownership of it.  
+* [0.x.4]*
+   Always return  [2.x.8]  because MappingQEulerian does not in general   preserve vertex locations (unless the translation vector happens to   provide zero displacements at vertex locations).  
+* [0.x.5]*
+   Exception which is thrown when the mapping is being evaluated at   non-active cell.  
+* [0.x.6]*
+   Compute mapping-related information for a cell. See the documentation of    [2.x.9]  for a discussion of purpose, arguments, and   return value of this function.     This function overrides the function in the base class since we cannot   use any cell similarity for this class.  
+* [0.x.7]*
+   Reference to the vector of shifts.  
+* [0.x.8]*
+   Pointer to the DoFHandler to which the mapping vector is associated.  
+* [0.x.9]*
+   Multigrid level at which the mapping is to be used.  
+* [0.x.10]*
+   A class derived from MappingQGeneric that provides the generic mapping   with support points on boundary objects so that the corresponding Q3   mapping ends up being C1.  
+* [0.x.11]*
+     Constructor.    
+* [0.x.12]*
+     Return the mapped vertices of the cell. For the current class, this     function does not use the support points from the geometry of the     current cell but instead evaluates an externally given displacement     field in addition to the geometry of the cell.    
+* [0.x.13]*
+     Compute the positions of the support points in the current     configuration. See the documentation of      [2.x.10]  for more information.    
+* [0.x.14]*
+     Always return  [2.x.11]  because MappingQEulerianGeneric does not in general     preserve vertex locations (unless the translation vector happens to     provide for zero displacements at vertex locations).    
+* [0.x.15]*
+     Reference to the surrounding object off of which we live.    
+* [0.x.16]*
+     Special quadrature rule used to define the support points in the     reference configuration.    
+* [0.x.17]*
+       Constructor, with an argument defining the desired polynomial degree.      
+* [0.x.18]*
+     A member variable holding the quadrature points in the right order.    
+* [0.x.19]*
+     FEValues object used to query the given finite element field at the     support points in the reference configuration.         The variable is marked as mutable since we have to call      [2.x.12]  from compute_mapping_support_points, a function that     is 'const'.    
+* [0.x.20]*
+     A variable to guard access to the fe_values variable.    
+* [0.x.21]

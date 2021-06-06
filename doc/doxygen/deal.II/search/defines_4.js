@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['have_5fconfig_5fh_21366',['HAVE_CONFIG_H',['../opencascade_2manifold__lib_8h.html#ae8322fb214ef7a74414e3d7f0465e6d9',1,'HAVE_CONFIG_H():&#160;manifold_lib.h'],['../include_2deal_8II_2opencascade_2utilities_8h.html#ae8322fb214ef7a74414e3d7f0465e6d9',1,'HAVE_CONFIG_H():&#160;utilities.h'],['../origin_2opencascade_2manifold__lib_8h.html#ae8322fb214ef7a74414e3d7f0465e6d9',1,'HAVE_CONFIG_H():&#160;manifold_lib.h'],['../include_2deal_8II-origin_2opencascade_2utilities_8h.html#ae8322fb214ef7a74414e3d7f0465e6d9',1,'HAVE_CONFIG_H():&#160;utilities.h'],['../translator_2opencascade_2manifold__lib_8h.html#ae8322fb214ef7a74414e3d7f0465e6d9',1,'HAVE_CONFIG_H():&#160;manifold_lib.h'],['../include_2deal_8II-translator_2opencascade_2utilities_8h.html#ae8322fb214ef7a74414e3d7f0465e6d9',1,'HAVE_CONFIG_H():&#160;utilities.h']]]
+  ['force_5fuse_5fof_5ftrilinos_29153',['FORCE_USE_OF_TRILINOS',['../step-50_8cc.html#a68c9ebb48889d54523bff3c6dc3870c4',1,'FORCE_USE_OF_TRILINOS():&#160;step-50.cc'],['../step-70_8cc.html#a68c9ebb48889d54523bff3c6dc3870c4',1,'FORCE_USE_OF_TRILINOS():&#160;step-70.cc']]]
 ];

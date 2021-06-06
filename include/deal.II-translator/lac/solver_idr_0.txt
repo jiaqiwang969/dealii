@@ -1,0 +1,41 @@
+[0.x.0]*
+   A namespace for a helper class to the IDR(s) solver.  
+* [0.x.1]*
+     Class to hold temporary vectors whose size depends on     the solver parameter s.    
+* [0.x.2]*
+       Constructor. Prepares an array of  [2.x.0]  of length  [2.x.1]       
+* [0.x.3]*
+       Destructor. Delete all allocated vectors.      
+* [0.x.4]*
+       Get vector number  [2.x.2]  If this vector was unused before, an error       occurs.      
+* [0.x.5]*
+       Get vector number  [2.x.3]  Allocate it if necessary.             If a vector must be allocated,  [2.x.4]  is used to reinit it to the       proper dimensions.      
+* [0.x.6]*
+       Pool where vectors are obtained from.      
+* [0.x.7]*
+       Field for storing the vectors.      
+* [0.x.8]*
+ This class implements the IDR(s) method used for solving nonsymmetric, indefinite linear systems, developed in [1.x.0]. The implementation here is the preconditioned version from [1.x.1]. The local structure  [2.x.5]  takes the value for the parameter s which can be any integer greater than or equal to 1. For  [2.x.6] , this method has similar convergence to BiCGStab.
+* 
+
+* 
+*  [2.x.7]  Each iteration of IDR(s) requires  [2.x.8]  preconditioning steps and matrix-vector products. In this implementation the residual is updated and convergence is checked after each of these inner steps inside the outer iteration. If the user enables the history data, the residual at each of these steps is stored and therefore there will be multiple values per iteration.
+
+* 
+* [0.x.9]*
+   Structure for storing additional data needed by the solver.  
+* [0.x.10]*
+     Constructor. By default, an IDR(2) method is used.    
+* [0.x.11]*
+   Constructor.  
+* [0.x.12]*
+   Constructor. Use an object of type GrowingVectorMemory as a default to   allocate memory.  
+* [0.x.13]*
+   Virtual destructor.  
+* [0.x.14]*
+   Solve the linear system  [2.x.9]  for x.  
+* [0.x.15]*
+   Interface for derived class. This function gets the current iteration   vector, the residual and the update vector in each step. It can be used   for graphical output of the convergence history.  
+* [0.x.16]*
+   Additional solver parameters.  
+* [0.x.17]

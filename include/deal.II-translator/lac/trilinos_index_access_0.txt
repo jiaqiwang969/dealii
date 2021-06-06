@@ -1,0 +1,25 @@
+[0.x.0]*
+   A helper function that queries the size of an Epetra_BlockMap object   and calls either the 32 or 64 bit function to get the number of global   elements in the map.  
+* [0.x.1]*
+   A helper function that finds the minimum global index value on the   calling processor by calling either the 32 or 64 bit function.  
+* [0.x.2]*
+   A helper function that finds the maximum global index value on the   calling processor by calling either the 32 or 64 bit function.  
+* [0.x.3]*
+   A helper function that converts a local index to a global one calling   either the 32 or 64 bit function.  
+* [0.x.4]*
+   A helper function that returns a pointer to the array containing the   global indices assigned to the current process by calling either the 32   or 64 bit function.  
+* [0.x.5]*
+   A helper function that finds the global number of rows by calling   either the 32 or 64 bit function.  
+* [0.x.6]*
+   A helper function that finds the global number of columns by calling   either the 32 or 64 bit function.  
+* [0.x.7]*
+   A helper function that finds the number of global entries by calling   either the 32 or 64 bit function.  
+* [0.x.8]*
+   A helper function that finds the global row index by calling   either the 32 or 64 bit function.  
+* [0.x.9]*
+   A helper function that finds the global column index by calling   either the 32 or 64 bit function.  
+* [0.x.10]*
+   A helper function that finds the global length of a vector by calling   either the 32 or 64 bit function.  
+* [0.x.11]*
+   A helper function that finds the global number of rows by calling   either the 32 or 64 bit function.  
+* [0.x.12]

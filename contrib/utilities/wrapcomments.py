@@ -577,7 +577,7 @@ for line in lines:
         cur = []
         inblock = False
 
-assert(cur==[])
+#assert(cur==[])
 
 for line in out:
     print (line)

@@ -1,0 +1,159 @@
+[0.x.0]*
+ Control class to determine convergence of iterative solvers.
+*  Used by iterative methods to determine whether the iteration should be continued. To this end, the virtual function <tt>check()</tt> is called in each iteration with the current iteration step and the value indicating convergence (usually the residual).
+*  After the iteration has terminated, the functions last_value() and last_step() can be used to obtain information about the final state of the iteration.
+*  check() can be replaced in derived classes to allow for more sophisticated tests.
+* 
+
+*  [1.x.0] The return states of the check function are of type #State, which is an enum local to this class. It indicates the state the solver is in.
+*  The possible values of State are  [2.x.0]   [2.x.1]  <tt>iterate = 0</tt>: continue the iteration.  [2.x.2]   [2.x.3]  the goal is reached, the iterative method can terminate successfully.  [2.x.4]   [2.x.5]  the iterative method should stop because convergence could not be achieved or at least was not achieved within the given maximal number of iterations.  [2.x.6] 
+
+* 
+* [0.x.1]*
+   Enum denoting the different states a solver can be in. See the general   documentation of this class for more information.  
+* [0.x.2]*
+   Class to be thrown upon failing convergence of an iterative solver, when   either the number of iterations exceeds the limit or the residual fails   to reach the desired limit, e.g. in the case of a break-down.     The residual in the last iteration, as well as the iteration number of   the last step are stored in this object and can be recovered upon   catching an exception of this class.  
+* [0.x.3]*
+     Iteration number of the last step.    
+* [0.x.4]*
+     Residual in the last step.    
+* [0.x.5]*
+   Constructor. The parameters  [2.x.7]  and  [2.x.8]  are the maximum number of   iteration steps before failure and the tolerance to determine success of   the iteration.      [2.x.9]  specifies whether the history (i.e. the value to be   checked and the number of the iteration step) shall be printed to  [2.x.10]    deallog stream.  Default is: do not print. Similarly,  [2.x.11]    specifies the whether the final result is logged to  [2.x.12]  Default   is yes.  
+* [0.x.6]*
+   Virtual destructor is needed as there are virtual functions in this   class.  
+* [0.x.7]*
+   Interface to parameter file.  
+* [0.x.8]*
+   Read parameters from file.  
+* [0.x.9]*
+   Decide about success or failure of an iteration.  This function gets the   current iteration step to determine, whether the allowed number of steps   has been exceeded and returns  [2.x.13]  in this case. If  [2.x.14]    is below the prescribed tolerance, it returns  [2.x.15]  In all other   cases  [2.x.16]  is returned to suggest continuation of the iterative   procedure.     The iteration is also aborted if the residual becomes a denormalized   value ( [2.x.17]      <tt>check()</tt> additionally preserves  [2.x.18]  and  [2.x.19]  These   values are accessible by <tt>last_value()</tt> and <tt>last_step()</tt>.     Derived classes may overload this function, e.g. to log the convergence   indicators ( [2.x.20]  or to do other computations.  
+* [0.x.10]*
+   Return the result of the last check operation.  
+* [0.x.11]*
+   Return the initial convergence criterion.  
+* [0.x.12]*
+   Return the convergence value of last iteration step for which  [2.x.21]    was called by the solver.  
+* [0.x.13]*
+   Number of last iteration step.  
+* [0.x.14]*
+   Maximum number of steps.  
+* [0.x.15]*
+   Change maximum number of steps.  
+* [0.x.16]*
+   Enables the failure check. Solving is stopped with  [2.x.22]   [2.x.23]    failure if <tt>residual>failure_residual</tt> with   <tt>failure_residual := rel_failure_residual*first_residual</tt>.  
+* [0.x.17]*
+   Disables failure check and resets  [2.x.24]  and  [2.x.25]    failure_residual to zero.  
+* [0.x.18]*
+   Tolerance.  
+* [0.x.19]*
+   Change tolerance.  
+* [0.x.20]*
+   Enables writing residuals of each step into a vector for later analysis.  
+* [0.x.21]*
+   Provide read access to the collected residual data.  
+* [0.x.22]*
+   Average error reduction over all steps.     Requires enable_history_data()  
+* [0.x.23]*
+   Error reduction of the last step; for stationary iterations, this   approximates the norm of the iteration matrix.     Requires enable_history_data()  
+* [0.x.24]*
+   Error reduction of any iteration step.     Requires enable_history_data()  
+* [0.x.25]*
+   Log each iteration step. Use  [2.x.26]  for skipping steps.  
+* [0.x.26]*
+   Return the  [2.x.27]  flag.  
+* [0.x.27]*
+   Set logging frequency.  
+* [0.x.28]*
+   Log start and end step.  
+* [0.x.29]*
+   Return the  [2.x.28]  flag.  
+* [0.x.30]*
+   This exception is thrown if a function operating on the vector of history   data of a SolverControl object id called, but storage of history data was   not enabled by enable_history_data().  
+* [0.x.31]*
+   Maximum number of steps.  
+* [0.x.32]*
+   Prescribed tolerance to be achieved.  
+* [0.x.33]*
+   Result of last check operation.  
+* [0.x.34]*
+   Initial value.  
+* [0.x.35]*
+   Last value of the convergence criterion.  
+* [0.x.36]*
+   Last step.  
+* [0.x.37]*
+   Is set to  [2.x.29]  by  [2.x.30]  and enables failure   checking.  
+* [0.x.38]*
+   Stores the  [2.x.31]  set by  [2.x.32]   
+* [0.x.39]*
+    [2.x.33]  equals the first residual multiplied by  [2.x.34]    relative_crit set by  [2.x.35]  (see there).     Until the first residual is known it is 0.  
+* [0.x.40]*
+   Log convergence history to  [2.x.36]   
+* [0.x.41]*
+   Log only every nth step.  
+* [0.x.42]*
+   Log iteration result to  [2.x.37]   If true, after finishing the   iteration, a statement about failure or success together with  [2.x.38]    and  [2.x.39]  are logged.  
+* [0.x.43]*
+   Control over the storage of history data. Set by enable_history_data().  
+* [0.x.44]*
+   Vector storing the result after each iteration step for later statistical   analysis.     Use of this vector is enabled by enable_history_data().  
+* [0.x.45]*
+ Specialization of  [2.x.40]  which returns  [2.x.41]  if either the specified tolerance is achieved or if the initial residual (or whatever criterion was chosen by the solver class) is reduced by a given factor. This is useful in cases where you don't want to solve exactly, but rather want to gain two digits or if the maximal number of iterations is achieved. For example: The maximal number of iterations is 20, the reduction factor is 1% and the tolerance is 0.1%. The initial residual is 2.5. The process will break if 20 iteration are completed or the new residual is less then 2.5*1% or if it is less then 0.1%.
+
+* 
+* [0.x.46]*
+   Constructor.  Provide the reduction factor in addition to arguments that   have the same meaning as those of the constructor of the SolverControl   constructor.  
+* [0.x.47]*
+   Initialize with a SolverControl object. The result will emulate   SolverControl by setting  [2.x.42]  to zero.  
+* [0.x.48]*
+   Assign a SolverControl object to ReductionControl. The result of the   assignment will emulate SolverControl by setting  [2.x.43]  to zero.  
+* [0.x.49]*
+   Virtual destructor is needed as there are virtual functions in this   class.  
+* [0.x.50]*
+   Interface to parameter file.  
+* [0.x.51]*
+   Read parameters from file.  
+* [0.x.52]*
+   Decide about success or failure of an iteration.  This function calls the   one in the base class, but sets the tolerance to <tt>reduction initial   value</tt> upon the first iteration.  
+* [0.x.53]*
+   Reduction factor.  
+* [0.x.54]*
+   Change reduction factor.  
+* [0.x.55]*
+   Desired reduction factor.  
+* [0.x.56]*
+   Reduced tolerance. Stop iterations if either this value is achieved or if   the base class indicates success.  
+* [0.x.57]*
+ Specialization of  [2.x.44]  which returns  [2.x.45]  if a given number of iteration was performed, irrespective of the actual residual. This is useful in cases where you don't want to solve exactly, but rather want to perform a fixed number of iterations, e.g. in an inner solver. The arguments given to this class are exactly the same as for the SolverControl class and the solver terminates similarly when one of the given tolerance or the maximum iteration count were reached. The only difference to SolverControl is that the solver returns success in the latter case.
+
+* 
+* [0.x.58]*
+   Constructor.  Provide exactly the same arguments as the constructor of   the SolverControl class.  
+* [0.x.59]*
+   Initialize with a SolverControl object. The result will emulate   SolverControl by setting the reduction target to zero.  
+* [0.x.60]*
+   Assign a SolverControl object to ReductionControl. The result of the   assignment will emulate SolverControl by setting the reduction target to   zero.  
+* [0.x.61]*
+   Virtual destructor is needed as there are virtual functions in this   class.  
+* [0.x.62]*
+   Decide about success or failure of an iteration. This function bases   success solely on the fact if a given number of iterations was reached or   the check value reached exactly zero.  
+* [0.x.63]*
+ Specialization of  [2.x.46]  which returns  [2.x.47]  if and only if a certain positive number of consecutive iterations satisfy the specified tolerance. This is useful in cases when solving nonlinear problems using inexact Hessian.
+*  For example: The requested number of consecutively converged iterations is 2, the tolerance is 0.2. The ConsecutiveControl will return  [2.x.48]  only at the last step in the sequence 0.5, 0.0005, 1.0, 0.05, 0.01.
+
+* 
+* [0.x.64]*
+   Constructor.  [2.x.49]  is the number of   consecutive iterations which should satisfy the prescribed tolerance for   convergence. Other arguments have the same meaning as those of the   constructor of the SolverControl.  
+* [0.x.65]*
+   Initialize with a SolverControl object. The result will emulate   SolverControl by setting  [2.x.50]  to one.  
+* [0.x.66]*
+   Assign a SolverControl object to ConsecutiveControl. The result of the   assignment will emulate SolverControl by setting  [2.x.51]    to one.  
+* [0.x.67]*
+   Virtual destructor is needed as there are virtual functions in this   class.  
+* [0.x.68]*
+   Decide about success or failure of an iteration, see the class description   above.  
+* [0.x.69]*
+   The number of consecutive iterations which should satisfy the prescribed   tolerance for convergence.  
+* [0.x.70]*
+   Counter for the number of consecutively converged iterations.  
+* [0.x.71]

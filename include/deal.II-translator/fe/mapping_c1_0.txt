@@ -1,0 +1,17 @@
+[0.x.0]*
+ Mapping class that uses C1 (continuously differentiable) cubic mappings of the boundary. This class is built atop of MappingQ by simply determining the interpolation points for a cubic mapping of the boundary differently: MappingQ chooses them such that they interpolate the boundary, while this class chooses them such that the discretized boundary is globally continuously differentiable.
+
+* 
+* [0.x.1]*
+   Constructor. Pass the fixed degree  [2.x.0]  down to the base class, as a   cubic mapping suffices to generate a continuous mapping of the boundary.  
+* [0.x.2]*
+   Return a pointer to a copy of the present object. The caller of this copy   then assumes ownership of it.  
+* [0.x.3]*
+   A class derived from MappingQGeneric that provides the generic mapping   with support points on boundary objects so that the corresponding Q3   mapping ends up being C1.  
+* [0.x.4]*
+     Constructor.    
+* [0.x.5]*
+     For <tt>dim=2,3</tt>. Append the support points of all shape functions     located on bounding lines to the vector  [2.x.1]  Points located on the     line but on vertices are not included.         This function chooses the respective points not such that they are     interpolating the boundary (as does the base class), but rather such     that the resulting cubic mapping is a continuous one.    
+* [0.x.6]*
+     For <tt>dim=3</tt>. Append the support points of all shape functions     located on bounding faces (quads in 3d) to the vector  [2.x.2]  Points     located on the line but on vertices are not included.         This function chooses the respective points not such that they are     interpolating the boundary (as does the base class), but rather such     that the resulting cubic mapping is a continuous one.    
+* [0.x.7]

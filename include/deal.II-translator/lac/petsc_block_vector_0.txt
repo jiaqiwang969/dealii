@@ -1,0 +1,61 @@
+[0.x.0]!  [2.x.0]  PETScWrappers     [2.x.1]     
+* [0.x.1]*
+     An implementation of block vectors based on the parallel vector class     implemented in PETScWrappers. While the base class provides for most of     the interface, this class handles the actual allocation of vectors and     provides functions that are specific to the underlying vector type.         The model of distribution of data is such that each of the blocks is     distributed across all MPI processes named in the MPI communicator.     I.e. we don't just distribute the whole vector, but each component. In     the constructors and reinit() functions, one therefore not only has to     specify the sizes of the individual blocks, but also the number of     elements of each of these blocks to be stored on the local process.        
+*  [2.x.2]       [2.x.3]  "Block (linear algebra)"    
+* [0.x.2]*
+       Typedef the base class for simpler access to its own alias.      
+* [0.x.3]*
+       Typedef the type of the underlying vector.      
+* [0.x.4]*
+       Import the alias from the base class.      
+* [0.x.5]*
+       Default constructor. Generate an empty vector without any blocks.      
+* [0.x.6]*
+       Constructor. Generate a block vector with  [2.x.4]  blocks, each of       which is a parallel vector across  [2.x.5]  with  [2.x.6]        elements of which  [2.x.7]  elements are stored on the       present process.      
+* [0.x.7]*
+       Copy constructor. Set all the properties of the parallel vector to       those of the given argument and copy the elements.      
+* [0.x.8]*
+       Constructor. Set the number of blocks to <tt>block_sizes.size()</tt>       and initialize each block with <tt>block_sizes[i]</tt> zero elements.       The individual blocks are distributed across the given communicator,       and each store <tt>local_elements[i]</tt> elements on the present       process.      
+* [0.x.9]*
+       Create a BlockVector with parallel_partitioning.size() blocks, each       initialized with the given IndexSet.      
+* [0.x.10]*
+       Same as above, but include ghost elements      
+* [0.x.11]*
+       Destructor. Clears memory      
+* [0.x.12]*
+       Copy operator: fill all components of the vector that are locally       stored with the given scalar value.      
+* [0.x.13]*
+       Copy operator for arguments of the same type.      
+* [0.x.14]*
+       Reinitialize the BlockVector to contain  [2.x.8]  of size  [2.x.9]        block_size, each of which stores  [2.x.10]  elements       locally. The  [2.x.11]  argument denotes which MPI channel each       of these blocks shall communicate.             If <tt>omit_zeroing_entries==false</tt>, the vector is filled with       zeros.      
+* [0.x.15]*
+       Reinitialize the BlockVector such that it contains       <tt>block_sizes.size()</tt> blocks. Each block is reinitialized to       dimension <tt>block_sizes[i]</tt>. Each of them stores       <tt>locally_owned_sizes[i]</tt> elements on the present process.             If the number of blocks is the same as before this function was       called, all vectors remain the same and reinit() is called for each       vector.             If <tt>omit_zeroing_entries==false</tt>, the vector is filled with       zeros.             Note that you must call this (or the other reinit() functions)       function, rather than calling the reinit() functions of an individual       block, to allow the block vector to update its caches of vector       sizes. If you call reinit() of one of the blocks, then subsequent       actions on this object may yield unpredictable results since they may       be routed to the wrong block.      
+* [0.x.16]*
+       Change the dimension to that of the vector <tt>V</tt>. The same       applies as for the other reinit() function.             The elements of <tt>V</tt> are not copied, i.e.  this function is the       same as calling <tt>reinit (V.size(), omit_zeroing_entries)</tt>.             Note that you must call this (or the other reinit() functions)       function, rather than calling the reinit() functions of an individual       block, to allow the block vector to update its caches of vector       sizes. If you call reinit() on one of the blocks, then subsequent       actions on this object may yield unpredictable results since they may       be routed to the wrong block.      
+* [0.x.17]*
+       Reinitialize the BlockVector using IndexSets. See the constructor       with the same arguments for details.      
+* [0.x.18]*
+       Same as above but include ghost entries.      
+* [0.x.19]*
+       Change the number of blocks to <tt>num_blocks</tt>. The individual       blocks will get initialized with zero size, so it is assumed that the       user resizes the individual blocks by herself in an appropriate way,       and calls <tt>collect_sizes</tt> afterwards.      
+* [0.x.20]*
+       Return if this vector is a ghosted vector (and thus read-only).      
+* [0.x.21]*
+       Return a reference to the MPI communicator object in use with this       vector.      
+* [0.x.22]*
+       Swap the contents of this vector and the other vector <tt>v</tt>. One       could do this operation with a temporary variable and copying over       the data elements, but this function is significantly more efficient       since it only swaps the pointers to the data of the two vectors and       therefore does not need to allocate temporary storage and move data       around.             Limitation: right now this function only works if both vectors have       the same number of blocks. If needed, the numbers of blocks should be       exchanged, too.             This function is analogous to the swap() function of all C++       standard containers. Also, there is a global function swap(u,v) that       simply calls <tt>u.swap(v)</tt>, again in analogy to standard       functions.      
+* [0.x.23]*
+       Print to a stream.      
+* [0.x.24]*
+       Exception      
+* [0.x.25]*
+       Exception      
+* [0.x.26]*
+     Global function which overloads the default implementation of the C++     standard library which uses a temporary object. The function simply     exchanges the data of the two vectors.          [2.x.12]   [2.x.13]     
+* [0.x.27]*
+     A helper class used internally in linear_operator.h. Specialization for      [2.x.14]     
+* [0.x.28]*
+ Declare  [2.x.15]  as distributed vector.
+
+* 
+* [0.x.29]

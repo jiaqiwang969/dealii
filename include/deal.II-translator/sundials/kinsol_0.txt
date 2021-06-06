@@ -1,0 +1,643 @@
+[0.x.0]*
+   Interface to SUNDIALS' nonlinear solver (KINSOL).     KINSOL is a solver for nonlinear algebraic systems in residual form  [2.x.0]  or fixed point form  [2.x.1] , where  [2.x.2]  is a vector which we will   assume to be in  [2.x.3]  or  [2.x.4] , but that may also have   a block structure and may be distributed in parallel computations; the   functions  [2.x.5]  and  [2.x.6]  satisfy  [2.x.7]  or    [2.x.8] . It includes a Newton-Krylov solver   as well as Picard and fixed point solvers, both of which can be   accelerated with Anderson acceleration. KINSOL is based on the previous   Fortran package NKSOL of Brown and Saad. An example of using KINSOL   can be found in the  [2.x.9]  tutorial program.     KINSOL's Newton solver employs the inexact Newton method. As this solver   is intended mainly for large systems, the user is required to provide   their own solver function.     At the highest level, KINSOL implements the following iteration   scheme:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - set  [2.x.10]  = an initial guess
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - For  [2.x.11]  until convergence do:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Solve  [2.x.12] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Set  [2.x.13] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Test for convergence     Here,  [2.x.14]  is the  [2.x.15] -th iterate to  [2.x.16] , and  [2.x.17]  is   the system Jacobian. At each stage in the iteration process, a scalar   multiple of the step  [2.x.18] , is added to  [2.x.19]  to produce a new   iterate,  [2.x.20] . A test for convergence is made before the iteration   continues.     Unless specified otherwise by the user, KINSOL strives to update Jacobian   information as infrequently as possible to balance the high costs of   matrix operations against other costs. Specifically, these updates occur   when:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - the problem is initialized,
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.21]  (inexact Newton only,     see below for a definition of  [2.x.22] )
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - a specified number of  nonlinear iterations have passed since the last     update,
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - the linear solver failed recoverably with outdated Jacobian information,
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - the global strategy failed with outdated Jacobian information, or
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.23] tolerance* with outdated     Jacobian information.     KINSOL allows changes to the above strategy through optional solver   inputs. The user can disable the initial Jacobian information evaluation   or change the default value of the number of nonlinear iterations after   which a Jacobian information update is enforced.     To address the case of ill-conditioned nonlinear systems, KINSOL allows   prescribing scaling factors both for the solution vector and for the   residual vector. For scaling to be used, the user may supply the function   get_solution_scaling(), that returns values  [2.x.24] , which are diagonal   elements of the scaling matrix such that  [2.x.25]  has all components   roughly the same magnitude when  [2.x.26]  is close to a solution, and   get_function_scaling(), that supply values  [2.x.27] , which are diagonal   scaling matrix elements such that  [2.x.28]  has all components roughly the   same magnitude when  [2.x.29]  isnot* too close to a solution.     When scaling values are provided for the solution vector, these values are   automatically incorporated into the calculation of the perturbations used   for the default difference quotient approximations for Jacobian   information if the user does not supply a Jacobian solver through the   solve_jacobian_system() function.     Two methods of applying a computed step  [2.x.30]  to the previously   computed solution vector are implemented. The first and simplest is the   standard Newton strategy which applies the update with a constant    [2.x.31]  always set to 1. The other method is a global strategy, which   attempts to use the direction implied by  [2.x.32]  in the most efficient   way for furthering convergence of the nonlinear problem. This technique is   implemented in the second strategy, called Linesearch. This option employs   both the  [2.x.33]  and  [2.x.34]  conditions of the Goldstein-Armijo   linesearch algorithm given inJ. E. Dennis and R. B. Schnabel. "Numerical   Methods for Unconstrained Optimization and Nonlinear Equations." SIAM,   Philadelphia, 1996.*, where  [2.x.35]  is chosen to guarantee a sufficient   decrease in  [2.x.36]  relative to the step length as well as a minimum step   length relative to the initial rate of decrease of  [2.x.37] . One property of the   algorithm is that the full Newton step tends to be taken close to the   solution.     The basic fixed-point iteration scheme implemented in KINSOL is given by:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Set  [2.x.38]  an initial guess
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - For  [2.x.39]  until convergence do:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Set  [2.x.40] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Test for convergence     At each stage in the iteration process, function  [2.x.41]  is applied to the   current iterate to produce a new iterate,  [2.x.42] . A test for   convergence is made before the iteration continues.     For Picard iteration, as implemented in KINSOL, we consider a special form   of the nonlinear function  [2.x.43] , such that  [2.x.44] , where  [2.x.45]  is   a constant nonsingular matrix and  [2.x.46]  is (in general) nonlinear.     Then the fixed-point function  [2.x.47]  is defined as  [2.x.48] .   Within each iteration, the Picard step is computed then added to  [2.x.49]  to   produce the new iterate. Next, the nonlinear residual function is   evaluated at the new iterate, and convergence is checked. The Picard and   fixed point methods can be significantly accelerated using Anderson's   method.     The user has to provide the implementation of the following  [2.x.50] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - reinit_vector;   and only one of
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - residual;   or
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - iteration_function;     Specifying residual() allows the user to use Newton and Picard strategies   (i.e.,  [2.x.51]  will be solved), while specifying iteration_function(), a   fixed point iteration will be used (i.e.,  [2.x.52]  will be solved).     If the use of a Newton or Picard method is desired, then the user should   also supply
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - solve_jacobian_system or solve_with_jacobian;   and optionally
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - setup_jacobian;     Fixed point iteration does not require the solution of any linear system.     Also the following functions could be rewritten, to provide additional   scaling factors for both the solution and the residual evaluation during   convergence checks:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - get_solution_scaling;
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - get_function_scaling;  
+* [0.x.1]*
+     Additional parameters that can be passed to the KINSOL class.    
+* [0.x.2]*
+       KINSOL solution strategy. KINSOL includes a Newton-Krylov solver (both       local and global) as well as Picard and fixed point solvers.      
+* [0.x.3]*
+         Standard Newton iteration.        
+* [0.x.4]*
+         Newton iteration with linesearch.        
+* [0.x.5]*
+         Fixed point iteration.        
+* [0.x.6]*
+         Picard iteration.        
+* [0.x.7]*
+       Initialization parameters for KINSOL.             Global parameters:              [2.x.53]  strategy Solution strategy        [2.x.54]  maximum_non_linear_iterations Maximum number of nonlinear       iterations        [2.x.55]  function_tolerance %Function norm stopping tolerance        [2.x.56]  step_tolerance Scaled step stopping tolerance             Newton parameters:              [2.x.57]  no_init_setup No initial matrix setup        [2.x.58]  maximum_setup_calls Maximum iterations without matrix setup        [2.x.59]  maximum_newton_step Maximum allowable scaled length of the       Newton step        [2.x.60]  dq_relative_error Relative error for different quotient       computation             Line search parameters:              [2.x.61]  maximum_beta_failures Maximum number of beta-condition failures             Fixed point and Picard parameters:              [2.x.62]  anderson_subspace_size Anderson acceleration subspace size      
+* [0.x.8]*
+       Add all AdditionalData() parameters to the given ParameterHandler       object. When the parameters are parsed from a file, the internal       parameters are automatically updated.             The following parameters are declared:            
+* [1.x.0]
+*              These are one-to-one with the options you can pass at construction       time.             The options you pass at construction time are set as default values in       the ParameterHandler object `prm`. You can later modify them by parsing       a parameter file using `prm`. The values of the parameter will be       updated whenever the content of `prm` is updated.             Make sure that this class lives longer than `prm`. Undefined behavior       will occur if you destroy this class, and then parse a parameter file       using `prm`.      
+* [0.x.9]*
+       The solution strategy to use. If you choose  [2.x.63]        or  [2.x.64]  you have to provide also the function       residual(). If you choose  [2.x.65]  or        [2.x.66]  you have to provide also the function       iteration_function().      
+* [0.x.10]*
+       Maximum number of nonlinear iterations allowed.      
+* [0.x.11]*
+       A scalar used as a stopping tolerance on the scaled       maximum norm of the system function  [2.x.67]  or  [2.x.68] .             If set to zero, default values provided by KINSOL will be used.      
+* [0.x.12]*
+       A scalar used as a stopping tolerance on the minimum       scaled step length.             If set to zero, default values provided by KINSOL will be used.      
+* [0.x.13]*
+       Whether an initial call to the preconditioner or Jacobian       setup function should be made or not.             A call to this function is useful when solving a sequence of problems,       in which the final preconditioner or Jacobian value from one problem       is to be used initially for the next problem.      
+* [0.x.14]*
+       The maximum number of nonlinear iterations that can be       performed between calls to the setup_jacobian() function.             If set to zero, default values provided by KINSOL will be used,       and in practice this often means that KINSOL will re-use a       Jacobian matrix computed in one iteration for later iterations.      
+* [0.x.15]*
+       The maximum allowable scaled length of the Newton step.             If set to zero, default values provided by KINSOL will be used.      
+* [0.x.16]*
+       The relative error in computing  [2.x.69] , which is used in the       difference quotient approximation to the Jacobian matrix when the user       does not supply a solve_jacobian_system_matrix() function.             If set to zero, default values provided by KINSOL will be used.      
+* [0.x.17]*
+       The maximum number of beta-condition failures in the       linesearch algorithm. Only used if        [2.x.70]       
+* [0.x.18]*
+       The size of the subspace used with Anderson acceleration       in conjunction with Picard or fixed-point iteration.             If you set this to 0, no acceleration is used.      
+* [0.x.19]*
+     Constructor. It is possible to fine tune the SUNDIALS KINSOL solver by     passing an AdditionalData() object that sets all of the solver     parameters.          [2.x.71]  data KINSOL configuration data      [2.x.72]  mpi_comm MPI communicator    
+* [0.x.20]*
+     Destructor.    
+* [0.x.21]*
+     Solve the non linear system. Return the number of nonlinear steps taken     to converge. KINSOL uses the content of `initial_guess_and_solution` as     initial guess, and stores the final solution in the same vector.    
+* [0.x.22]*
+     A function object that users need to supply and that is intended to     reinitize the given vector to its correct size, block structure (if     block vectors are used), and MPI communicator (if the vector is     distributed across multiple processors using MPI), along with any     other properties necessary.    
+* [0.x.23]*
+     A function object that users should supply and that is intended to     compute the residual `dst = F(src)`. This function is only used if the      [2.x.73]  or  [2.x.74]  strategies     were selected.         This function should return:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - 0: Success
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - >0: Recoverable error (KINSOL will try to change its internal     parameters and attempt a new solution step)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - <0: Unrecoverable error the computation will be aborted and an     assertion will be thrown.    
+* [0.x.24]*
+     A function object that users should supply and that is intended to     compute the iteration function  [2.x.75]  for the fixed point and Picard     iteration. This function is only used if the      [2.x.76]  or  [2.x.77]  strategies     were selected.         This function should return:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - 0: Success
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - >0: Recoverable error (KINSOL will try to change its internal     parameters and attempt a new solution step)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - <0: Unrecoverable error; the computation will be aborted and an     assertion will be thrown.    
+* [0.x.25]*
+     A function object that users may supply and that is intended to     prepare the linear solver for subsequent calls to     solve_jacobian_system().         The job of setup_jacobian() is to prepare the linear solver for     subsequent calls to solve_jacobian_system(), in the solution of linear     systems  [2.x.78] . The exact nature of this system depends on the     SolutionStrategy that has been selected.         In the cases strategy =  [2.x.79]  or      [2.x.80]   [2.x.81]  is the Jacobian  [2.x.82] . If strategy =  [2.x.83]   [2.x.84]  is the     approximate Jacobian matrix  [2.x.85] . If strategy =      [2.x.86]  then linear systems do not arise, and this     function is never called.         The setup_jacobian() function may call a user-supplied function, or a     function within the linear solver module, to compute Jacobian-related     data that is required by the linear solver. It may also preprocess that     data as needed for solve_jacobian_system(), which may involve calling a     generic function (such as for LU factorization) or, more generally,     build preconditioners from the assembled Jacobian. In any case, the     data so generated may then be used whenever a linear system is solved.         The point of this function is that     setup_jacobian() function is not called at every Newton iteration,     but only as frequently as the solver determines that it is appropriate     to perform the setup task. In this way, Jacobian-related data generated     by setup_jacobian() is expected to be used over a number of Newton     iterations. KINSOL determines itself when it is beneficial to regenerate     the Jacobian and associated information (such as preconditioners     computed for the Jacobian), thereby saving the effort to regenerate     the Jacobian matrix and a preconditioner for it whenever possible.          [2.x.87]  current_u Current value of  [2.x.88]       [2.x.89]  current_f Current value of  [2.x.90]  or  [2.x.91]          This function should return:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - 0: Success
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - >0: Recoverable error (KINSOL will try to change its internal     parameters and attempt a new solution step)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - <0: Unrecoverable error the computation will be aborted and an     assertion will be thrown.    
+* [0.x.26]*
+      [2.x.92]  Versions of SUNDIALS after 4.0 no longer provide all       of the information necessary for this callback (see below). Use the       `solve_with_jacobian` callback described below.         A function object that users may supply and that is intended to solve     a linear system with the Jacobian matrix. This function will be called by     KINSOL (possibly several times) after setup_jacobian() has been called at     least once. KINSOL tries to do its best to call setup_jacobian() the     minimum number of times. If convergence can be achieved without updating     the Jacobian, then KINSOL does not call setup_jacobian() again. If, on     the contrary, internal KINSOL convergence tests fail, then KINSOL calls     setup_jacobian() again with updated vectors and coefficients so that     successive calls to solve_jacobian_systems() lead to better convergence     in the Newton process.         If you do not specify a `solve_jacobian_system` or `solve_with_jacobian`     function, then only a fixed point iteration strategy can be used. Notice     that this may not converge, or may converge very slowly.         A call to this function should store in `dst` the result of  [2.x.93]      applied to `rhs`, i.e., `J*dst = rhs`. It is the user's responsibility     to set up proper solvers and preconditioners inside this function     (or in the `setup_jacobian` callback above).             Arguments to the function are:          [2.x.94]  ycur The current  [2.x.95]  vector for the current KINSOL     internal step. In the documentation above, this  [2.x.96]  vector is generally     denoted by  [2.x.97] .      [2.x.98]  fcur The current value of the implicit right-hand side at     `ycur`,  [2.x.99] .      [2.x.100]  rhs The system right hand side to solve for      [2.x.101]  dst The solution of  [2.x.102]          This function should return:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - 0: Success
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - >0: Recoverable error (KINSOL will try to change its internal     parameters and attempt a new solution step)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - <0: Unrecoverable error the computation will be aborted and an     assertion will be thrown.          [2.x.103]  Starting with SUNDIALS 4.1, SUNDIALS no longer provides the       `ycur` and `fcur` variables
+* 
+*  -  only `rhs` is provided and `dst`       needs to be returned. The first two arguments will therefore be       empty vectors in that case. In practice, that means that one       can no longer compute a Jacobian matrix for the current iterate       within this function. Rather, this has to happen inside the       `setup_jacobian` function above that receives this information.       If it is important that the Jacobian corresponds to thecurrent*
+       iterate (rather than a re-used Jacobian matrix that had been       computed in a previous iteration and that therefore corresponds       to aprevious* iterate), then you will also have to set the        [2.x.104]  variable to one, indicating       that the Jacobian should be re-computed in every iteration.    
+* [0.x.27]*
+     A function object that users may supply and that is intended to solve     a linear system with the Jacobian matrix. This function will be called by     KINSOL (possibly several times) after setup_jacobian() has been called at     least once. KINSOL tries to do its best to call setup_jacobian() the     minimum number of times. If convergence can be achieved without updating     the Jacobian, then KINSOL does not call setup_jacobian() again. If, on     the contrary, internal KINSOL convergence tests fail, then KINSOL calls     setup_jacobian() again with updated vectors and coefficients so that     successive calls to solve_jacobian_systems() lead to better convergence     in the Newton process.         If you do not specify a `solve_with_jacobian` function, then only a     fixed point iteration strategy can be used. Notice that this may not     converge, or may converge very slowly.         A call to this function should store in `dst` the result of  [2.x.105]      applied to `rhs`, i.e., `J*dst = rhs`. It is the user's responsibility     to set up proper solvers and preconditioners inside this function     (or in the `setup_jacobian` callback above). The function attached     to this callback is also provided with a tolerance to the linear solver,     indicating that it is not necessary to solve the linear system with     the Jacobian matrix exactly, but only to a tolerance that KINSOL will     adapt over time.         Arguments to the function are:          [2.x.106]  rhs The system right hand side to solve for.      [2.x.107]  dst The solution of  [2.x.108] .      [2.x.109]  tolerance The tolerance with which to solve the linear system       of equations.         This function should return:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - 0: Success
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - >0: Recoverable error (KINSOL will try to change its internal     parameters and attempt a new solution step)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - <0: Unrecoverable error the computation will be aborted and an     assertion will be thrown.    
+* [0.x.28]*
+     A function object that users may supply and that is intended to return a     vector whose components are the weights used by KINSOL to compute the     vector norm of the solution. The implementation of this function is     optional, and it is used only if implemented.         The intent for this scaling factor is for problems in which the different     components of a solution have vastly different numerical magnitudes
+* 
+*  -      typically because they have different physical units and represent     different things. For example, if one were to solve a nonlinear Stokes     problem, the solution vector has components that correspond to velocities     and other components that correspond to pressures. These have different     physical units and depending on which units one chooses, they may have     roughly comparable numerical sizes or maybe they don't. To give just one     example, in simulations of flow in the Earth's interior, one has     velocities on the order of maybe ten centimeters per year, and pressures     up to around 100 GPa. If one expresses this in SI units, this corresponds     to velocities of around  [2.x.110]  m/s, and     pressures around  [2.x.111] , i.e., vastly     different. In such cases, computing the  [2.x.112]  norm of a solution-type     vector (e.g., the difference between the previous and the current     solution) makes no sense because the norm will either be dominated by the     velocity components or the pressure components. The scaling vector this     function returns is intended to provide each component of the solution     with a scaling factor that is generally chosen as as the inverse of a     "typical velocity" or "typical pressure" so that upon multiplication of a     vector component by the corresponding scaling vector component, one     obtains a number that is of order of magnitude of one (i.e., a reasonably     small multiple of one times the typical velocity/pressure). The KINSOL     manual states this as follows: "The user should supply values  [2.x.113] ,     which are diagonal elements of the scaling matrix such that  [2.x.114]  has     all components roughly the same magnitude when  [2.x.115]  is close to a     solution".         If no function is provided to a KINSOL object, then this is interpreted     as implicitly saying that all of these scaling factors should be     considered as one.    
+* [0.x.29]*
+     A function object that users may supply and that is intended to return a     vector whose components are the weights used by KINSOL to compute the     vector norm of the function evaluation away from the solution. The     implementation of this function is optional, and it is used only if     implemented.         The point of this function and the scaling vector it returns is similar     to the one discussed above for `get_solution_scaling`, except that it is     for a vector that scales the components of the function  [2.x.116] , rather     than the components of  [2.x.117] , when computing norms. As above, if no     function is provided, then this is equivalent to using a scaling vector     whose components are all equal to one.    
+* [0.x.30]*
+     Handle KINSOL exceptions.    
+* [0.x.31]*
+     Throw an exception when a function with the given name is not     implemented.    
+* [0.x.32]*
+     This function is executed at construction time to set the      [2.x.118]  above to trigger an assert if they are not     implemented.    
+* [0.x.33]*
+     KINSOL configuration data.    
+* [0.x.34]*
+     KINSOL memory object.    
+* [0.x.35]*
+     Memory pool of vectors.    
+* [0.x.36]

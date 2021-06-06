@@ -1,0 +1,40 @@
+[0.x.0]*
+ A finite element, which is the trace of FE_Q elements, that is a tensor product of polynomials on the faces, undefined in the interior of the cells and continuous. The basis functions on the faces are formed by a tensor product of 1D Lagrange polynomials with equidistant points up to degree 2 and Gauss-Lobatto points starting from degree 3.
+*  This finite element is the trace space of FE_Q on the faces.
+* 
+
+* 
+*  [2.x.0]  Since these are only finite elements on faces, only FEFaceValues and FESubfaceValues will be able to extract reasonable values from any face polynomial. In order to make the use of FESystem simpler, FEValues objects will not fail using this finite element space, but all shape function values extracted will equal to zero.
+
+* 
+* [0.x.1]*
+   Constructor for tensor product polynomials of degree <tt>p</tt>. The   shape functions created using this constructor correspond to Legendre   polynomials in each coordinate direction.  
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGQ<dim>(degree)</tt>, with <tt>dim</tt> and   <tt>degree</tt> replaced by appropriate values.  
+* [0.x.3]*
+   Implementation of the corresponding function in the FiniteElement   class.  Since the current element is interpolatory, the nodal   values are exactly the support point values. Furthermore, since   the current element is scalar, the support point values need to   be vectors of length 1.  
+* [0.x.4]*
+   This function returns  [2.x.1]  if the shape function  [2.x.2]  has   non-zero function values somewhere on the face  [2.x.3]   
+* [0.x.5]*
+   Return a list of constant modes of the element. For this element, it   simply returns one row with all entries set to true.  
+* [0.x.6]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".  
+* [0.x.7]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. This   element only provides interpolation matrices for elements of the same   type and FE_Nothing. For all other elements, an exception of type    [2.x.4]  is thrown.  
+* [0.x.8]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. This   element only provides interpolation matrices for elements of the same   type and FE_Nothing. For all other elements, an exception of type    [2.x.5]  is thrown.  
+* [0.x.9]*
+    [2.x.6]   [2.x.7]   
+* [0.x.10]*
+   Store a copy of FE_Q for delegating the hp-constraints functionality.  
+* [0.x.11]*
+   Return vector with dofs per vertex, line, quad, hex.  
+* [0.x.12]*
+ FE_TraceQ in 1D, i.e., with degrees of freedom on the element vertices.
+
+* 
+* [0.x.13]*
+   Constructor.  
+* [0.x.14]*
+   Return the name of the element  
+* [0.x.15]

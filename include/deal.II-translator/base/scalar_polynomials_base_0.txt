@@ -1,0 +1,52 @@
+[0.x.0]*
+ This class provides a framework for the finite element polynomial classes for use with finite element classes that are derived from FE_Poly. An object of this type (or rather of a type derived from this class) is stored as a member variable in each object of type FE_Poly.
+*  [1.x.0]
+*  Any derived class must provide the most basic properties for shape functions evaluated on the reference cell. This includes, but is not limited to, implementing the evaluate(), name(), and clone() member functions. These functions are necessary to store the most basic information of how the polynomials in the derived class evaluate at a given point on the reference cell. More information on each function can be found in the corresponding function's documentation.
+*  Some classes that derive from this class include  [2.x.0]     [2.x.1]  <tt>PolynomialsAdini</tt>    [2.x.2]  <tt>PolynomialsRannacherTurek</tt>    [2.x.3]  <tt>PolynomialsP</tt>    [2.x.4]  <tt>PolynomialSpace</tt>    [2.x.5]  <tt>TensorProductPolynomials</tt>    [2.x.6]  <tt>TensorProductPolynomialsConst</tt>    [2.x.7]  <tt>TensorProductPolynomialsBubbles</tt>  [2.x.8] 
+* 
+
+* 
+*  [2.x.9] 
+
+* 
+* [0.x.1]*
+   Constructor. This takes the degree of the space,  [2.x.10]  from the finite element   class, and  [2.x.11]  the number of polynomials for the space.  
+* [0.x.2]*
+   Move constructor.  
+* [0.x.3]*
+   Copy constructor.  
+* [0.x.4]*
+   Virtual destructor. Makes sure that pointers to this class are deleted   properly.  
+* [0.x.5]*
+   Compute the value and the derivatives of the polynomials at    [2.x.12]      The size of the vectors must either be zero or equal <tt>n()</tt>.  In   the first case, the function will not compute these values.     If you need values or derivatives of all polynomials then use this   function, rather than using any of the <tt>compute_value</tt>,   <tt>compute_grad</tt> or <tt>compute_grad_grad</tt> functions, see below,   in a loop over all tensor product polynomials.  
+* [0.x.6]*
+   Compute the value of the <tt>i</tt>th polynomial at unit point   <tt>p</tt>.     Consider using evaluate() instead.  
+* [0.x.7]*
+   Compute the <tt>order</tt>th derivative of the <tt>i</tt>th polynomial   at unit point <tt>p</tt>.     Consider using evaluate() instead.      [2.x.13]  order The order of the derivative.  
+* [0.x.8]*
+   Compute the first derivative of the <tt>i</tt>th polynomial   at unit point <tt>p</tt>.     Consider using evaluate() instead.  
+* [0.x.9]*
+   Compute the second derivative of the <tt>i</tt>th polynomial   at unit point <tt>p</tt>.     Consider using evaluate() instead.  
+* [0.x.10]*
+   Compute the third derivative of the <tt>i</tt>th polynomial   at unit point <tt>p</tt>.     Consider using evaluate() instead.  
+* [0.x.11]*
+   Compute the fourth derivative of the <tt>i</tt>th polynomial   at unit point <tt>p</tt>.     Consider using evaluate() instead.  
+* [0.x.12]*
+   Compute the gradient of the <tt>i</tt>th polynomial at unit point   <tt>p</tt>.     Consider using evaluate() instead.  
+* [0.x.13]*
+   Compute the second derivative (grad_grad) of the <tt>i</tt>th polynomial   at unit point <tt>p</tt>.     Consider using evaluate() instead.  
+* [0.x.14]*
+   Return the number of polynomials.  
+* [0.x.15]*
+   Return the highest polynomial degree of polynomials represented by this   class. A derived class may override this if its value is different from    [2.x.14]   
+* [0.x.16]*
+   A sort of virtual copy constructor, this function returns a copy of   the polynomial space object. Derived classes need to override the function   here in this base class and return an object of the same type as the   derived class.     Some places in the library, for example the constructors of FE_Poly,   need to make copies of polynomial spaces without knowing their exact type.   They do so through this function.  
+* [0.x.17]*
+   Return the name of the space.  
+* [0.x.18]*
+   Return an estimate (in bytes) for the memory consumption of this object.  
+* [0.x.19]*
+   The highest polynomial degree of this functions represented by this object.  
+* [0.x.20]*
+   The number of polynomials represented by this object.  
+* [0.x.21]

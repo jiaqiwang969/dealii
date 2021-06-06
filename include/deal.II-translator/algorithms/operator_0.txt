@@ -1,0 +1,34 @@
+[0.x.0]*
+ Namespace containing numerical algorithms in a unified form.
+*  All algorithmic classes in this namespace are derived from either Operator or OutputOperator, depending on whether they return a value or not. See the documentation of those classes for more detailed information on how to use them.
+
+* 
+* [0.x.1]*
+    [2.x.0]  Update this documentation and the one of Operator     The abstract base class of all algorithms in this library. An operator is   an object with an operator(), which transforms a set of named vectors   into another set of named vectors.     Furthermore, an operator can be notified of parameter changes by the   calling routine. The outer iteration can notify() the Operator of an   Event, which could be for instance a change of mesh, a different time   step size or too slow convergence of Newton's method, which would then   trigger reassembling of a matrix or similar things.     [1.x.0]     This is probably the most prominent use for Operator, where an outer   iterative method calls an inner solver and so on. Typically, the   innermost method in such a nested system will have to compute a residual   using values from all outer iterations. Since the depth and order of such   a nesting is hardly predictable when designing a general tool, we use   AnyData to access these vectors. Typically, the first vector in   <tt>out</tt> contains the start vector when operator()() is called, and   the solution when the function returns. The object <tt>in</tt> is   providing additional information and forwarded to the inner Operator   objects of the nested iteration.  
+* [0.x.2]*
+     The virtual destructor.    
+* [0.x.3]*
+     The actual operation, which is implemented in a derived class.    
+* [0.x.4]*
+     Register an event triggered by an outer iteration.    
+* [0.x.5]*
+     Clear all #notifications.    
+* [0.x.6]*
+     Accumulate events here. If any of those is set, the function solve() of     a terminal application must take care of reassembling the matrix.    
+* [0.x.7]*
+   An unary operator base class, intended to output the vectors in AnyData   in each step of an iteration.  
+* [0.x.8]*
+     Constructor initializing member variables with invalid data.    
+* [0.x.9]*
+     The copy constructor is deleted since objects of this class     should not be copied.    
+* [0.x.10]*
+     Empty virtual destructor.    
+* [0.x.11]*
+     Set the stream  [2.x.1]  to which data is written. If no stream is selected     with this function, data goes to  [2.x.2]     
+* [0.x.12]*
+     Set the current step.    
+* [0.x.13]*
+     Output all the vectors in AnyData.    
+* [0.x.14]*
+   Set the step number in OutputOperator by shifting an integer value.      [2.x.3]  OutputOperator  
+* [0.x.15]

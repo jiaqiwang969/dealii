@@ -1,0 +1,56 @@
+[0.x.0]*
+ This class collects the basic methods used in FE_Q, FE_Q_DG0 and FE_Q_Bubbles. There is no public constructor for this class as it is not functional as a stand-alone. The completion of definitions is left to the derived classes.
+
+* 
+* [0.x.1]*
+   Constructor.  
+* [0.x.2]*
+   Return the matrix interpolating from the given finite element to the   present one. The size of the matrix is then  [2.x.0]  times   <tt>source.n_dofs_per_cell()</tt>.     These matrices are only available if the source element is also a  [2.x.1]    element. Otherwise, an exception of type    [2.x.2]  is thrown.  
+* [0.x.3]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. The   FE_Q element family only provides interpolation matrices for elements of   the same type and FE_Nothing. For all other elements, an exception of   type  [2.x.3]  is   thrown.  
+* [0.x.4]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. The   FE_Q element family only provides interpolation matrices for elements of   the same type and FE_Nothing. For all other elements, an exception of   type  [2.x.4]  is   thrown.  
+* [0.x.5]*
+   This function returns  [2.x.5]  if the shape function  [2.x.6]  has   non-zero function values somewhere on the face  [2.x.7]   
+* [0.x.6]*
+   Projection from a fine grid space onto a coarse grid space. Overrides the   respective method in FiniteElement, implementing lazy evaluation   (initialize when requested).     If this projection operator is associated with a matrix  [2.x.8]  then the   restriction of this matrix  [2.x.9]  to a single child cell is returned   here.     The matrix  [2.x.10]  is the concatenation or the sum of the cell matrices  [2.x.11]    P_i, depending on the #restriction_is_additive_flags. This distinguishes   interpolation (concatenation) and projection with respect to scalar   products (summation).     Row and column indices are related to coarse grid and fine grid spaces,   respectively, consistent with the definition of the associated operator.     If projection matrices are not implemented in the derived finite element   class, this function aborts with ExcProjectionVoid. You can check whether   this is the case by calling the restriction_is_implemented() or the   isotropic_restriction_is_implemented() function.  
+* [0.x.7]*
+   Embedding matrix between grids. Overrides the respective method in   FiniteElement, implementing lazy evaluation (initialize when queried).     The identity operator from a coarse grid space into a fine grid space is   associated with a matrix  [2.x.12]  The restriction of this matrix  [2.x.13]  to a   single child cell is returned here.     The matrix  [2.x.14]  is the concatenation, not the sum of the cell matrices  [2.x.15]    P_i. That is, if the same non-zero entry <tt>j,k</tt> exists in two   different child matrices  [2.x.16]  the value should be the same in both   matrices and it is copied into the matrix  [2.x.17]  only once.     Row and column indices are related to fine grid and coarse grid spaces,   respectively, consistent with the definition of the associated operator.     These matrices are used by routines assembling the prolongation matrix   for multi-level methods.  Upon assembling the transfer matrix between   cells using this matrix array, zero elements in the prolongation matrix   are discarded and will not fill up the transfer matrix.     If projection matrices are not implemented in the derived finite element   class, this function aborts with ExcEmbeddingVoid. You can check whether   this is the case by calling the prolongation_is_implemented() or the   isotropic_prolongation_is_implemented() function.  
+* [0.x.8]*
+   Given an index in the natural ordering of indices on a face, return the   index of the same degree of freedom on the cell.     To explain the concept, consider the case where we would like to know   whether a degree of freedom on a face, for example as part of an FESystem   element, is primitive. Unfortunately, the is_primitive() function in the   FiniteElement class takes a cell index, so we would need to find the cell   index of the shape function that corresponds to the present face index.   This function does that.     Code implementing this would then look like this:  
+* [1.x.0]
+*    The function takes additional arguments that account for the fact that   actual faces can be in their standard ordering with respect to the cell   under consideration, or can be flipped, oriented, etc.      [2.x.18]  face_dof_index The index of the degree of freedom on a face. This   index must be between zero and dofs_per_face.    [2.x.19]  face The number of the face this degree of freedom lives on. This   number must be between zero and  [2.x.20]     [2.x.21]  face_orientation One part of the description of the orientation of   the face. See    [2.x.22] .    [2.x.23]  face_flip One part of the description of the orientation of the   face. See    [2.x.24] .    [2.x.25]  face_rotation One part of the description of the orientation of   the face. See    [2.x.26] .    [2.x.27]  The index of this degree of freedom within the set of degrees of   freedom on the entire cell. The returned value will be between zero and   dofs_per_cell.  
+* [0.x.9]*
+   Return a list of constant modes of the element. For this element, the   list consists of true arguments for all components.  
+* [0.x.10]*
+    [2.x.28]  Functions to support hp    [2.x.29]   
+* [0.x.11]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".     For the FE_Q class the result is always true (independent of the degree   of the element), as it implements the complete set of functions necessary   for hp-capability.  
+* [0.x.12]*
+   If, on a vertex, several finite elements are active, the hp-code first   assigns the degrees of freedom of each of these FEs different global   indices. It then calls this function to find out which of them should get   identical values, and consequently can receive the same global DoF index.   This function therefore returns a list of identities between DoFs of the   present finite element object with the DoFs of  [2.x.30]  which is a   reference to a finite element object representing one of the other finite   elements active on this particular vertex. The function computes which of   the degrees of freedom of the two finite element objects are equivalent,   both numbered between zero and the corresponding value of   n_dofs_per_vertex() of the two finite elements. The first index of each   pair denotes one of the vertex dofs of the present element, whereas the   second is the corresponding index of the other finite element.  
+* [0.x.13]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on lines.  
+* [0.x.14]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on quads.  
+* [0.x.15]*
+   Attempt to construct an FE_Q object of degree 0    
+*  [2.x.31]   
+* [0.x.16]*
+   Only for internal use. Its full name is  [2.x.32]    function and it creates the  [2.x.33]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.34]    FiniteElementData.  
+* [0.x.17]*
+   Perform the initialization of the element based on 1D support points,   i.e., sets renumbering, initializes unit support points, initializes   constraints as well as restriction and prolongation matrices.  
+* [0.x.18]*
+   Initialize the hanging node constraints matrices. Called from   initialize().  
+* [0.x.19]*
+   Initialize the  [2.x.35]  field of the FiniteElement class.   Called from initialize().  
+* [0.x.20]*
+   Initialize the  [2.x.36]  field of the FiniteElement   class. Called from initialize().  
+* [0.x.21]*
+   Initialize the  [2.x.37]  field   of the FiniteElement class. Called from initialize().  
+* [0.x.22]*
+   Forward declaration of a class into which we put significant parts of the   implementation.     See the .cc file for more information.  
+* [0.x.23]*
+   Mutex for protecting initialization of restriction and embedding matrix.  
+* [0.x.24]*
+   The highest polynomial degree of the underlying tensor product space   without any enrichment. For FE_Q*(p) this is p. Note that enrichments   may lead to a difference to degree.  
+* [0.x.25]

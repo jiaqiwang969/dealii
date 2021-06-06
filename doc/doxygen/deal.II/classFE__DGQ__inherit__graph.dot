@@ -26,6 +26,11 @@ digraph "FE_DGQ&lt; dim, spacedim &gt;"
   Node9 [label="FE_DGQArbitraryNodes\l\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGQArbitraryNodes.html",tooltip=" "];
   Node8 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node10 [label="FE_DGQHermite\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGQHermite.html",tooltip=" "];
+  Node10 -> Node11 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
+  Node11 [label="FE_DGQHermite\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGQHermite.html",tooltip=" "];
   Node8 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node11 [label="FE_DGQLegendre\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGQLegendre.html",tooltip=" "];
+  Node8 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="FE_DGQLegendre\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGQLegendre.html",tooltip=" "];
+  Node1 -> Node13 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
+  Node13 [label="FE_DGQ\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFE__DGQ.html",tooltip=" "];
 }

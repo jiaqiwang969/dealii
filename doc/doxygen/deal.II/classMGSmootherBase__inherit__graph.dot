@@ -15,15 +15,18 @@ digraph "MGSmootherBase&lt; VectorType &gt;"
   Node5 [label="MGSmootherPrecondition\l\< VectorType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmootherPrecondition.html",tooltip=" "];
   Node3 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node6 [label="MGSmootherRelaxation\l\< VectorType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmootherRelaxation.html",tooltip=" "];
-  Node3 -> Node7 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< BlockVector\< number \> \>" ,fontname="Helvetica"];
-  Node7 [label="MGSmoother\< BlockVector\l\< number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmoother.html",tooltip=" "];
-  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node8 [label="MGSmootherBlock\< MatrixType,\l RelaxationType, number \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmootherBlock.html",tooltip=" "];
-  Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node9 [label="MGSmootherIdentity\l\< VectorType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmootherIdentity.html",tooltip=" "];
-  Node1 -> Node10 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< Vector\< double \> \>" ,fontname="Helvetica"];
-  Node10 [label="MGSmootherBase\< Vector\l\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmootherBase.html",tooltip=" "];
-  Node1 -> Node11 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< BlockVector\< number \> \>" ,fontname="Helvetica"];
-  Node11 [label="MGSmootherBase\< BlockVector\l\< number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmootherBase.html",tooltip=" "];
+  Node3 -> Node7 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< Vector\< double \> \>" ,fontname="Helvetica"];
+  Node7 [label="MGSmoother\< Vector\l\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmoother.html",tooltip=" "];
+  Node3 -> Node8 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< BlockVector\< number \> \>" ,fontname="Helvetica"];
+  Node8 [label="MGSmoother\< BlockVector\l\< number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmoother.html",tooltip=" "];
+  Node8 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="MGSmootherBlock\< MatrixType,\l RelaxationType, number \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmootherBlock.html",tooltip=" "];
+  Node1 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="MGSmootherIdentity\l\< VectorType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmootherIdentity.html",tooltip=" "];
+  Node1 -> Node11 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< Vector\< double \> \>" ,fontname="Helvetica"];
+  Node11 [label="MGSmootherBase\< Vector\l\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmootherBase.html",tooltip=" "];
   Node11 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node12 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< BlockVector\< number \> \>" ,fontname="Helvetica"];
+  Node12 [label="MGSmootherBase\< BlockVector\l\< number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGSmootherBase.html",tooltip=" "];
+  Node12 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 }

@@ -1,0 +1,9 @@
+[0.x.0]*
+     Transpose a N x M matrix stored in a one-dimensional array to a M x N     matrix stored in a one-dimensional array.    
+* [0.x.1]*
+     Same as above but the source and the destination are the same vector.    
+* [0.x.2]*
+     Allocate an array to the device and copy  [2.x.0]  to the device.    
+* [0.x.3]*
+     Helper class to (re)initialize MatrixFree object.    
+* [0.x.4]

@@ -103,6 +103,12 @@ $(function() {
 <li>q_degree
 : <a class="el" href="classFE__Q__Base.html#a3a0e7be49e27c7e4f8f675c6baaeeb97">FE_Q_Base&lt; dim, spacedim &gt;</a>
 </li>
+<li>q_phi
+: <a class="el" href="structStep51_1_1HDG_1_1ScratchData.html#ab531d1c2c40766e11d8847475490a681">Step51::HDG&lt; dim &gt;::ScratchData</a>
+</li>
+<li>q_phi_div
+: <a class="el" href="structStep51_1_1HDG_1_1ScratchData.html#ac4835632fd8db2020e5811187bcbc619">Step51::HDG&lt; dim &gt;::ScratchData</a>
+</li>
 <li>q_point_id_in_cell()
 : <a class="el" href="classCUDAWrappers_1_1MatrixFree.html#ad9bf898f42b0e497ee68d67bb825e3b1">CUDAWrappers::MatrixFree&lt; dim, Number &gt;</a>
 </li>
@@ -114,14 +120,34 @@ $(function() {
 <li>q_points_per_cell
 : <a class="el" href="classCUDAWrappers_1_1MatrixFree.html#ab9b58003356f2772819a7a904fb62abd">CUDAWrappers::MatrixFree&lt; dim, Number &gt;</a>
 </li>
+<li>Q_t
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law.html#a2cd45cb9c96611a1c6013ac3ed009d92">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law&lt; dim &gt;</a>
+, <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law__SD.html#ac18751b908e8361ed69ce42d28a874fb">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law_SD&lt; dim &gt;</a>
+</li>
+<li>Q_t1
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law.html#a4d279e0e42680c5af20f74c6a48e7d36">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law&lt; dim &gt;</a>
+, <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law__SD.html#a082f67fa3384573df1be638ade0bd373">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law_SD&lt; dim &gt;</a>
+</li>
+<li>Q_t1_sd
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law__SD.html#a07d4edd57b1409b99aca91aa1fe05460">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law_SD&lt; dim &gt;</a>
+</li>
+<li>Q_t_sd
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law__SD.html#a5b7fff7ab2d88cb971d9baf14025e35f">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law_SD&lt; dim &gt;</a>
+</li>
 <li>QAnisotropic()
-: <a class="el" href="classQAnisotropic.html#a4baa36eec420ed336eb3fe9865fceec8">QAnisotropic&lt; dim &gt;</a>
+: <a class="el" href="classQAnisotropic.html#abc90e05d39558d5e76ec3584b16efeb6">QAnisotropic&lt; dim &gt;</a>
 </li>
 <li>QCollection()
-: <a class="el" href="classhp_1_1QCollection.html#aa640aaeb70da5e94d33c0d753083e474">hp::QCollection&lt; dim &gt;</a>
+: <a class="el" href="classhp_1_1QCollection.html#ab2329453b0459e86eddffb04865a3175">hp::QCollection&lt; dim &gt;</a>
 </li>
 <li>QDuffy()
 : <a class="el" href="classQDuffy.html#ac54216e1687225d7d03ffb2f3ef47a34">QDuffy</a>
+</li>
+<li>qf_cell
+: <a class="el" href="classStep44_1_1Solid.html#a665b86155d60784c094bbff40acbff98">Step44::Solid&lt; dim &gt;</a>
+</li>
+<li>qf_face
+: <a class="el" href="classStep44_1_1Solid.html#a3448ebb16380037242947de4180ebe3c">Step44::Solid&lt; dim &gt;</a>
 </li>
 <li>QGauss()
 : <a class="el" href="classQGauss.html#a4c8489846ac963c90d4125508a7f9d39">QGauss&lt; dim &gt;</a>
@@ -136,7 +162,7 @@ $(function() {
 : <a class="el" href="classQGaussLobattoChebyshev.html#a91b00093ce945e881552241c0ce2aa17">QGaussLobattoChebyshev&lt; dim &gt;</a>
 </li>
 <li>QGaussLog()
-: <a class="el" href="classQGaussLog.html#aa0222cad637e9d17318aedd566004591">QGaussLog&lt; dim &gt;</a>
+: <a class="el" href="classQGaussLog.html#a151fadba067c62a4900eb5e7d93dde24">QGaussLog&lt; dim &gt;</a>
 </li>
 <li>QGaussLogR()
 : <a class="el" href="classQGaussLogR.html#ad3968a15059aa1ceec800fb61c060050">QGaussLogR&lt; dim &gt;</a>
@@ -226,6 +252,9 @@ $(function() {
 <li>quad_no
 : <a class="el" href="classFEEvaluationBaseData.html#a533b073ea515b343f9d785da2f342066">FEEvaluationBaseData&lt; dim, Number, is_face, VectorizedArrayType &gt;</a>
 </li>
+<li>quad_order
+: <a class="el" href="structStep44_1_1Parameters_1_1FESystem.html#aa17013f43749d6e2b8a1808847fefca9">Step44::Parameters::FESystem</a>
+</li>
 <li>quad_orientation
 : <a class="el" href="structinternal_1_1TriangulationImplementation_1_1Connectivity.html#a949e6fdd8bc0200ea532a021a5c32661">internal::TriangulationImplementation::Connectivity&lt; T &gt;</a>
 </li>
@@ -288,11 +317,28 @@ $(function() {
 , <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1UnivariateShapeData.html#a262f325244d26660afa0f3a9e5730ada">internal::MatrixFreeFunctions::UnivariateShapeData&lt; Number &gt;</a>
 </li>
 <li>Quadrature()
-: <a class="el" href="classQuadrature.html#a1bb2637c2df9c8b76a59a78a50d7a33b">Quadrature&lt; dim &gt;</a>
+: <a class="el" href="classQuadrature.html#a169c9437240ed3c8af08fa3a18c12c10">Quadrature&lt; dim &gt;</a>
+</li>
+<li>quadrature
+: <a class="el" href="classStep12_1_1AdvectionProblem.html#af075bebbc4dd97bd46143e36a0c4dfb7">Step12::AdvectionProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep13_1_1LaplaceSolver_1_1Solver.html#ae1f22e7240698298be5e7cbcfaa948cf">Step13::LaplaceSolver::Solver&lt; dim &gt;</a>
+, <a class="el" href="classStep14_1_1LaplaceSolver_1_1Solver.html#a8359c758d35d5363325d0c9780c2b093">Step14::LaplaceSolver::Solver&lt; dim &gt;</a>
+, <a class="el" href="classStep30_1_1DGMethod.html#ab6fb91c8bc8dab140b8eb0ceee439308">Step30::DGMethod&lt; dim &gt;</a>
+, <a class="el" href="classStep33_1_1ConservationLaw.html#a5691fb59a8a482d6a7ffe0810c90c742">Step33::ConservationLaw&lt; dim &gt;</a>
+, <a class="el" href="classStep34_1_1BEMProblem.html#a8d5533bdbfc95ceceb6c2eb0c347c59c">Step34::BEMProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep69_1_1Discretization.html#a438325a5c9549c816063c6fae21e5130">Step69::Discretization&lt; dim &gt;</a>
+, <a class="el" href="classStep74_1_1SIPGLaplace.html#a9a53e430ddcac1f1279e1518bb0fc67a">Step74::SIPGLaplace&lt; dim &gt;</a>
 </li>
 <li>quadrature_1d
 : <a class="el" href="classinternal_1_1MatrixFreeFunctions_1_1MappingDataOnTheFly.html#aa87dc2e1ed3100c5d92c2f83a1d9284b">internal::MatrixFreeFunctions::MappingDataOnTheFly&lt; dim, Number, VectorizedArrayType &gt;</a>
 , <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage_1_1QuadratureDescriptor.html#acc7e527f460357697a0c11983581e1ed">internal::MatrixFreeFunctions::MappingInfoStorage&lt; structdim, spacedim, Number, VectorizedArrayType &gt;::QuadratureDescriptor</a>
+</li>
+<li>quadrature_cache
+: <a class="el" href="classstep62_1_1ElasticWave.html#a40501d3df49e8d649ed01fb7f1ab7b77">step62::ElasticWave&lt; dim &gt;</a>
+</li>
+<li>quadrature_collection
+: <a class="el" href="classStep27_1_1LaplaceProblem.html#ab4864d1aaa31e7924a14c31eee514347">Step27::LaplaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep75_1_1LaplaceProblem.html#ad8db61b79e8baea2d57f6a85f1c337cc">Step75::LaplaceProblem&lt; dim &gt;</a>
 </li>
 <li>quadrature_data
 : <a class="el" href="classMeshWorker_1_1LocalResults.html#ad69cdcc0c2e99543d68d4c1c78e67708">MeshWorker::LocalResults&lt; number &gt;</a>
@@ -300,10 +346,25 @@ $(function() {
 <li>quadrature_data_on_face
 : <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1UnivariateShapeData.html#ac921233afda25af13a298380d6a647cb">internal::MatrixFreeFunctions::UnivariateShapeData&lt; Number &gt;</a>
 </li>
+<li>quadrature_face
+: <a class="el" href="classStep12_1_1AdvectionProblem.html#a006e847337bc56235411c1f4834d0155">Step12::AdvectionProblem&lt; dim &gt;</a>
+</li>
+<li>quadrature_formula
+: <a class="el" href="classStep18_1_1TopLevel.html#a89ffedeafab6f41a1c64f4228fb4ad5d">Step18::TopLevel&lt; dim &gt;</a>
+, <a class="el" href="classstep62_1_1ElasticWave.html#a1ddbe0d92fbae12098232554b0c0ef55">step62::ElasticWave&lt; dim &gt;</a>
+, <a class="el" href="classStep72_1_1MinimalSurfaceProblem.html#a7331fe381c1bdff150dfd6ed7982ae8a">Step72::MinimalSurfaceProblem&lt; dim &gt;</a>
+</li>
+<li>quadrature_overintegration
+: <a class="el" href="classStep74_1_1SIPGLaplace.html#a27241924f46c9387b3e7eb69b019302d">Step74::SIPGLaplace&lt; dim &gt;</a>
+</li>
 <li>quadrature_point()
 : <a class="el" href="classFEEvaluation.html#ac502951246b5155d586bd090cc9e1572">FEEvaluation&lt; dim, fe_degree, n_q_points_1d, n_components_, Number, VectorizedArrayType &gt;</a>
 , <a class="el" href="classFEFaceEvaluation.html#abd6d0dc13e7e10c558170af34f53db19">FEFaceEvaluation&lt; dim, fe_degree, n_q_points_1d, n_components_, Number, VectorizedArrayType &gt;</a>
 , <a class="el" href="classFEValuesBase.html#ab123e5da03736be4977c76fbcb6a2e37">FEValuesBase&lt; dim, spacedim &gt;</a>
+</li>
+<li>quadrature_point_history
+: <a class="el" href="classStep18_1_1TopLevel.html#ad8603cfe6db73744a8bcc9db9db4d2dc">Step18::TopLevel&lt; dim &gt;</a>
+, <a class="el" href="classStep44_1_1Solid.html#abbd300d8a4b8327593aec9e48185405a">Step44::Solid&lt; dim &gt;</a>
 </li>
 <li>quadrature_point_indices()
 : <a class="el" href="classFEValuesBase.html#aada8380792b5e6a1f91dcba94b558cb8">FEValuesBase&lt; dim, spacedim &gt;</a>
@@ -317,16 +378,25 @@ $(function() {
 , <a class="el" href="classMappingCartesian_1_1InternalData.html#a3eb13b047188b903454d80d61d000ecc">MappingCartesian&lt; dim, spacedim &gt;::InternalData</a>
 , <a class="el" href="classQuadrature.html#abaa8c19db2a13e2e93252faae97d1ba8">Quadrature&lt; dim &gt;</a>
 </li>
+<li>quadrature_pressure
+: <a class="el" href="classStep35_1_1NavierStokesProjection.html#a924eb05979d8bdc0ff0d815279af4589">Step35::NavierStokesProjection&lt; dim &gt;</a>
+</li>
 <li>quadrature_value()
 : <a class="el" href="classMeshWorker_1_1LocalResults.html#a8512d50f51bae1cf7713de56fb74aa17">MeshWorker::LocalResults&lt; number &gt;</a>
 </li>
 <li>quadrature_values()
 : <a class="el" href="classMeshWorker_1_1LocalResults.html#a413f9bb54faec070a1a04137e0697f6b">MeshWorker::LocalResults&lt; number &gt;</a>
 </li>
+<li>quadrature_velocity
+: <a class="el" href="classStep35_1_1NavierStokesProjection.html#af6e5bcc3bcc355324695c42662c1f571">Step35::NavierStokesProjection&lt; dim &gt;</a>
+</li>
 <li>quadrature_weights
 : <a class="el" href="classFEEvaluationBaseData.html#a3cd1e4ca2ad7f7d17de98f4fd3ab9e27">FEEvaluationBaseData&lt; dim, Number, is_face, VectorizedArrayType &gt;</a>
 , <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage_1_1QuadratureDescriptor.html#a5b1487e3cd8346c40a4d2e3392b4ed96">internal::MatrixFreeFunctions::MappingInfoStorage&lt; structdim, spacedim, Number, VectorizedArrayType &gt;::QuadratureDescriptor</a>
 , <a class="el" href="classMappingFE_1_1InternalData.html#a731ed32b1a25a152c1b92d2c5c83a1c7">MappingFE&lt; dim, spacedim &gt;::InternalData</a>
+</li>
+<li>QuadratureCache()
+: <a class="el" href="classstep62_1_1QuadratureCache.html#a9f12738efdfc9c0828a454aa250c52b7">step62::QuadratureCache&lt; dim &gt;</a>
 </li>
 <li>QuadratureDescriptor()
 : <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage_1_1QuadratureDescriptor.html#ae0aff6bd5c844d919cc013b94aeb3e54">internal::MatrixFreeFunctions::MappingInfoStorage&lt; structdim, spacedim, Number, VectorizedArrayType &gt;::QuadratureDescriptor</a>
@@ -357,6 +427,9 @@ $(function() {
 </li>
 <li>query_io_mode
 : <a class="el" href="classHDF5_1_1DataSet.html#a264429d02334812d0b716bf551ca089f">HDF5::DataSet</a>
+</li>
+<li>quiet
+: <a class="el" href="structStep33_1_1Parameters_1_1Solver.html#aaa738fa019c8d725380f4c81837cf0aaa1088d9335629c61250b9251ccce5167e">Step33::Parameters::Solver</a>
 </li>
 <li>QWeddle()
 : <a class="el" href="classQWeddle.html#a9ce7121d3caacd5347162d297e661cb4">QWeddle&lt; dim &gt;</a>

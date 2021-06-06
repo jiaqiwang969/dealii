@@ -1,0 +1,60 @@
+[0.x.0]*
+ This class provides a map between two grids which are derived from the same coarse grid. For each cell iterator of the source map, it provides the respective cell iterator on the destination map, through its <tt>operator []</tt>.
+*  Usually, the two grids will be refined differently. Then, the value returned for an iterator on the source grid will be either:  [2.x.0]   [2.x.1]  The same cell on the destination grid, if it exists there;  [2.x.2]  The most refined cell of the destination grid from which the pendant of the source cell could be obtained by refinement. This cell is always active and has a refinement level less than that of the source cell.  [2.x.3]  Keys for this map are all cells on the source grid, whether active or not.
+*  For example, consider these two one-dimensional grids:
+
+* 
+* [1.x.0]
+*  (Cell numbers are only given as an example and will not correspond to real cell iterator's indices.) The mapping from grid 1 to grid 2 will then be as follows:
+
+* 
+* [1.x.1]
+*  Besides the mappings shown here, the non-active cells on grid 1 are also valid keys. For example, the mapping for the mother cell of cells 1 and 2 on the first grid will point to cell 1 on the second grid.
+*   [2.x.4]  MeshType This class may be used with any class that satisfies the  [2.x.5]  "MeshType concept". The extension to other classes offering iterator functions and some minor additional requirements is simple.
+*  Note that this class could in principle be based on the C++  [2.x.6]  data type. Instead, it uses another data format which is more effective both in terms of computing time for access as well as with regard to memory consumption.
+* 
+
+*  [1.x.2]
+*  In practice, use of this class is as follows:
+
+* 
+* [1.x.3]
+* 
+*  Note that the template parameters to this class have to be given as <tt>InterGridMap<DoFHandler<2> ></tt>, which here is DoFHandler (and could equally well be Triangulation or PersistentTriangulation).
+* 
+
+* 
+*  [2.x.7] 
+
+* 
+* [0.x.1]*
+   Typedef to the iterator type of the grid class under consideration.  
+* [0.x.2]*
+   Constructor setting the class name arguments in the SmartPointer members.  
+* [0.x.3]*
+   Create the mapping between the two grids.  
+* [0.x.4]*
+   Access operator: give a cell on the source grid and receive the   respective cell on the other grid, or if that does not exist, the most   refined cell of which the source cell would be created if it were further   refined.  
+* [0.x.5]*
+   Delete all data of this class.  
+* [0.x.6]*
+   Return a reference to the source grid.  
+* [0.x.7]*
+   Return a reference to the destination grid.  
+* [0.x.8]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.9]*
+   Exception  
+* [0.x.10]*
+   Exception  
+* [0.x.11]*
+   The actual data. Hold one iterator for each cell on each level.  
+* [0.x.12]*
+   Store a pointer to the source grid.  
+* [0.x.13]*
+   Likewise for the destination grid.  
+* [0.x.14]*
+   Set the mapping for the pair of cells given. These shall match in level   of refinement and all other properties.  
+* [0.x.15]*
+   Set the value of the key  [2.x.8]  to  [2.x.9]  Do so as well for   all the children and their children of  [2.x.10]  This function is used   for cells which are more refined on  [2.x.11]  than on  [2.x.12]  then   all values of the hierarchy of cells and their children point to one cell   on the  [2.x.13]   
+* [0.x.16]

@@ -1,0 +1,81 @@
+[0.x.0]*
+ A class storing the inverse diagonal blocks for block preconditioners and block relaxation methods.
+*  This class does the book keeping for preconditioners and relaxation methods based on inverting blocks on the diagonal of a matrix. It allows us to either store all diagonal blocks and their inverses or the same block for each entry, and it keeps track of the choice. Thus, after initializing it and filling the inverse diagonal blocks correctly, a derived class can use inverse() with an integer argument referring to the block number.
+*  Additionally, it allows the storage of the original diagonal blocks, not only the inverses. These are for instance used in the intermediate step of the SSOR preconditioner.
+
+* 
+* [0.x.1]*
+   Declare type for container size.  
+* [0.x.2]*
+   Choose a method for inverting the blocks, and thus the data type for the   inverses.  
+* [0.x.3]*
+     Use the standard Gauss-Jacobi method implemented in      [2.x.0]     
+* [0.x.4]*
+     Use QR decomposition of the Householder class.    
+* [0.x.5]*
+     Use the singular value decomposition of LAPACKFullMatrix.    
+* [0.x.6]*
+   Constructor initializing default values.  
+* [0.x.7]*
+   The virtual destructor  
+* [0.x.8]*
+   Deletes the inverse diagonal block matrices if existent hence leaves the   class in the state that it had directly after calling the constructor.  
+* [0.x.9]*
+   Resize to this number of diagonal blocks with the given block size. If   <tt>compress</tt> is true, then only one block will be stored.  
+* [0.x.10]*
+   Tell the class that inverses are computed.  
+* [0.x.11]*
+   Does the matrix use only one diagonal block?  
+* [0.x.12]*
+   Check, whether diagonal blocks (not their inverses) should be stored.  
+* [0.x.13]*
+   Return true, if inverses are ready for use.  
+* [0.x.14]*
+   The number of blocks.  
+* [0.x.15]*
+   Multiply with the inverse block at position <tt>i</tt>.  
+* [0.x.16]*
+   Multiply with the transposed inverse block at position <tt>i</tt>.  
+* [0.x.17]*
+   Access to the inverse diagonal blocks if Inversion is #gauss_jordan.  
+* [0.x.18]*
+   Access to the inverse diagonal blocks if Inversion is #householder.  
+* [0.x.19]*
+   Access to the inverse diagonal blocks if Inversion is #householder.  
+* [0.x.20]*
+   Access to the inverse diagonal blocks.  
+* [0.x.21]*
+   Access to the inverse diagonal blocks if Inversion is #householder.  
+* [0.x.22]*
+   Access to the inverse diagonal blocks if Inversion is #householder.  
+* [0.x.23]*
+   Access to the diagonal blocks.  
+* [0.x.24]*
+   Access to the diagonal blocks.  
+* [0.x.25]*
+   Print some statistics about the inverses to  [2.x.1]  Output depends on   #Inversion. It is richest for svd, where we obtain statistics on extremal   singular values and condition numbers.  
+* [0.x.26]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.27]*
+   You are trying to access a diagonal block (not its inverse), but you   decided not to store the diagonal blocks.  
+* [0.x.28]*
+   You are accessing a diagonal block, assuming that it has a certain type.   But, the method used for inverting the diagonal blocks does not use this   type  
+* [0.x.29]*
+   The method used for inverting blocks.  
+* [0.x.30]*
+   The number of (inverse) diagonal blocks, if only one is stored.  
+* [0.x.31]*
+   Storage of the inverse matrices of the diagonal blocks matrices as   <tt>FullMatrix<number></tt> matrices, if Inversion #gauss_jordan is used.   Using <tt>number=float</tt> saves memory in comparison with   <tt>number=double</tt>, but may introduce numerical instability.  
+* [0.x.32]*
+   Storage of the inverse matrices of the diagonal blocks matrices as   <tt>Householder</tt> matrices if Inversion #householder is used. Using   <tt>number=float</tt> saves memory in comparison with   <tt>number=double</tt>, but may introduce numerical instability.  
+* [0.x.33]*
+   Storage of the inverse matrices of the diagonal blocks matrices as   <tt>LAPACKFullMatrix</tt> matrices if Inversion #svd is used. Using   <tt>number=float</tt> saves memory in comparison with   <tt>number=double</tt>, but may introduce numerical instability.  
+* [0.x.34]*
+   Storage of the original diagonal blocks.     Used by the blocked SSOR method.  
+* [0.x.35]*
+   This is true, if the field #var_diagonal is to be used.  
+* [0.x.36]*
+   This is true, if only one inverse is stored.  
+* [0.x.37]*
+   The inverse matrices are usable. Set by the parent class via   inverses_computed().  
+* [0.x.38]

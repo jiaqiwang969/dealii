@@ -1,0 +1,235 @@
+[0.x.0]*
+     Interface of geometric cell entities with the focus on creating a     reduced connectivity table.    
+* [0.x.1]*
+       Default destructor.      
+* [0.x.2]*
+       Number of sub-entities of dimension  [2.x.0]       
+* [0.x.3]*
+       Number of vertices of the  [2.x.1]  sub-entity of dimension  [2.x.2]       
+* [0.x.4]*
+       Geometric entity type of the  [2.x.3]  sub-entity of dimension  [2.x.4]       
+* [0.x.5]*
+       Number of lines of  [2.x.5]  surface.      
+* [0.x.6]*
+       Index of the  [2.x.6]  lines of  [2.x.7]  surface.      
+* [0.x.7]*
+       Vertex indices of the  [2.x.8]  lines of  [2.x.9]  surface.      
+* [0.x.8]*
+     Implementation for lines.    
+* [0.x.9]*
+     Implementation for triangles.    
+* [0.x.10]*
+     Implementation for quadrilaterals.    
+* [0.x.11]*
+     Implementation for tetrahedrons.    
+* [0.x.12]*
+     Implementation for pyramids.    
+* [0.x.13]*
+     Implementation for wedges.    
+* [0.x.14]*
+     Implementation for hexahedra.    
+* [0.x.15]*
+     Compressed row storage sparse matrix. This class is similar to     SparsityPattern but reduced to the bare minimum as needed here
+* 
+*  - in the     context of setting up the connectivity
+* 
+*  - and allowing direct simplified     access to the entries.    
+* [0.x.16]*
+       Default constructor.      
+* [0.x.17]*
+       Constructor which allows to set the internal fields directly.      
+* [0.x.18]*
+     Class for storing the reduced connectivity table.         A full connectivity table contains all possible connectivities of     entities of dimension d and entities of dimension d' with 0<=d,d'<=dim.     However, in the library we only need the following types of     connectivities:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - dim-dimensional neighbors of dim-dimensional entities (connected via        faces)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - d-dimensional entity to it's (d-1)-dimension bounding entities
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - quad (2
+* 
+*  - 3D), line (1
+* 
+*  - 2D/3D) to vertices (0) to be able to process        the user provided SubCellData during         [2.x.10]      We call a table, which computes the corresponding entries of a full     connectivity table a reduced table.         The entries of the reduced table are as follows for 1D-3D:         1D :    | 0 1    2D:    | 0 1 2    3D:    | 0 1 2 3
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - -+-----
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - -+-------
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - -+--------           0 |             0 |               0 |           1 | x n         1 | x             1 | x                           2 | s x n         2 | s x                                             3 |     x n         with markers highlighting the reason for the entry x:=bounding entities;     n:= neighboring entities; s:=sub-cell data    
+* [0.x.19]*
+     Determine the neighbors of all cells.          [2.x.11]  connectivity cell-face      [2.x.12]  connectivity cell-cell (for each cell-face it contains the       index of the neighboring cell or
+* 
+*  -  for boundary face)    
+* [0.x.20]*
+     Build entities of dimension d (with 0<d<dim). Entities are described by     a set of vertices.         Furthermore, the function determines for each cell of which d-dimensional     entity it consists of and its orientation relative to the cell.    
+* [0.x.21]*
+     Call the right templated function to be able to use  [2.x.13]  instead     of  [2.x.14]     
+* [0.x.22]*
+     Build surface lines described by:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - connectivity quad
+* 
+-> line
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - orientation of line relative to the quad         Furthermore, the type of the quad is determined.    
+* [0.x.23]*
+     Build the reduced connectivity table for the given dimension  [2.x.15]          This function is inspired by the publication Anders Logg "Efficient     Representation of Computational Meshes" and the FEniCS's DOLFIN mesh     implementation. It has been strongly adjusted to efficiently solely meet     our connectivity needs while sacrificing some of the flexibility there.    
+* [0.x.24]*
+     Preprocessing step to remove the template argument dim.    
+* [0.x.25]

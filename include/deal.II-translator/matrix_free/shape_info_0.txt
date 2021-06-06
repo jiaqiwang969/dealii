@@ -1,0 +1,128 @@
+[0.x.0]*
+     An enum that encodes the type of element detected during     initialization. FEEvaluation will select the most efficient algorithm     based on the given element type.         There is an implied ordering in the type  [2.x.0]      in the sense that both  [2.x.1]  and      [2.x.2]  are also of type      [2.x.3]  Likewise, a configuration of type      [2.x.4]  is also of type      [2.x.5]  As a consequence, we support `<=`     operations between the types with this sorting, but not against the     even higher indexed types such as  [2.x.6]         
+*  [2.x.7]     
+* [0.x.1]*
+       Tensor product shape function where the shape value evaluation in the       quadrature point corresponds to the identity operation and no       interpolation needs to be performed (collocation approach, also       called spectral evaluation). This is for example the case for an       element with nodes in the Gauss-Lobatto support points and       integration in the Gauss-Lobatto quadrature points of the same order.      
+* [0.x.2]*
+       Symmetric tensor product shape functions fulfilling a Hermite       identity with values and first derivatives zero at the element end       points in 1D.      
+* [0.x.3]*
+       Usual tensor product shape functions whose shape values and       quadrature points are symmetric about the midpoint of the unit       interval 0.5      
+* [0.x.4]*
+       Tensor product shape functions without further particular properties      
+* [0.x.5]*
+       Polynomials of complete degree rather than tensor degree which can be       described by a truncated tensor product      
+* [0.x.6]*
+       Tensor product shape functions that are symmetric about the midpoint       of the unit interval 0.5 that additionally add a constant shape       function according to FE_Q_DG0.      
+* [0.x.7]*
+       Shape functions without an tensor product properties.      
+* [0.x.8]*
+     This struct stores the shape functions, their gradients and Hessians     evaluated for a one-dimensional section of a tensor product finite     element and tensor product quadrature formula in reference     coordinates. This data structure also includes the evaluation of     quantities at the cell boundary and on the sub-interval  [2.x.8]  and      [2.x.9]  for face integrals.    
+* [0.x.9]*
+       Empty constructor. Sets default configuration.      
+* [0.x.10]*
+       Return the memory consumption of this class in bytes.      
+* [0.x.11]*
+       Encodes the type of element detected at construction. FEEvaluation       will select the most efficient algorithm based on the given element       type.      
+* [0.x.12]*
+       Stores the shape values of the 1D finite element evaluated on all 1D       quadrature points. The length of       this array is <tt>n_dofs_1d n_q_points_1d</tt> and quadrature       points are the index running fastest.      
+* [0.x.13]*
+       Stores the shape gradients of the 1D finite element evaluated on all       1D quadrature points. The length of       this array is <tt>n_dofs_1d n_q_points_1d</tt> and quadrature       points are the index running fastest.      
+* [0.x.14]*
+       Stores the shape Hessians of the 1D finite element evaluated on all       1D quadrature points. The length of       this array is <tt>n_dofs_1d n_q_points_1d</tt> and quadrature       points are the index running fastest.      
+* [0.x.15]*
+       Stores the shape gradients of the shape function space associated to       the quadrature (collocation), given by FE_DGQ<1>(Quadrature<1>).      
+* [0.x.16]*
+       Stores the shape hessians of the shape function space associated to       the quadrature (collocation), given by FE_DGQ<1>(Quadrature<1>).      
+* [0.x.17]*
+       Stores the shape values in a different format, namely the so-called       even-odd scheme where the symmetries in shape_values are used for       faster evaluation.      
+* [0.x.18]*
+       Stores the shape gradients in a different format, namely the so-       called even-odd scheme where the symmetries in shape_gradients are       used for faster evaluation.      
+* [0.x.19]*
+       Stores the shape second derivatives in a different format, namely the       so-called even-odd scheme where the symmetries in shape_hessians are       used for faster evaluation.      
+* [0.x.20]*
+       Stores the shape gradients of the shape function space associated to       the quadrature (collocation), given by FE_DGQ<1>(Quadrature<1>). This       array provides an alternative representation of the       shape_gradients_collocation field in the even-odd format.      
+* [0.x.21]*
+       Stores the shape hessians of the shape function space associated to       the quadrature (collocation), given by FE_DGQ<1>(Quadrature<1>). This       array provides an alternative representation of the       shape_hessians_collocation field in the even-odd format.      
+* [0.x.22]*
+       Stores the inverse transformation from the data at quadrature points       to the basis defined by the shape_values fields. The data at       quadrature points is interpreted either implicitly by its polynomial       interpolation, or explicitly in terms of separate polynomials such as       with the `_collocation` fields. The size of the array equals the       layout of the `shape_values` array, and it is combined with the shape       values array such that this matrix is the pseudo inverse of       shape_values. In case the number of 1D quadrature points equals the       size of the basis, this array is exactly the inverse of the       shape_values array. The length of this array is <tt>n_dofs_1d       n_q_points_1d</tt> and quadrature points are the index running       fastest.      
+* [0.x.23]*
+       Stores the even-odd variant of the `inverse_shape_values` field.      
+* [0.x.24]*
+       Collects all data of 1D shape values evaluated at the point 0 and 1       (the vertices) in one data structure. Sorting is first the values,       then gradients, then second derivatives.      
+* [0.x.25]*
+       Collects all data of 1D nodal shape values (defined by the Lagrange       polynomials in the points of the quadrature rule) evaluated at the       point 0 and 1 (the vertices) in one data structure.             This data structure can be used to interpolate from the cell to the       face quadrature points.            
+*  [2.x.10]  In contrast to shape_data_on_face, only the vales are evaluated.      
+* [0.x.26]*
+       Stores one-dimensional values of shape functions on subface. Since       there are two subfaces, store two variants.      
+* [0.x.27]*
+       Stores one-dimensional gradients of shape functions on subface. Since       there are two subfaces, store two variants.      
+* [0.x.28]*
+       Stores one-dimensional gradients of shape functions on subface. Since       there are two subfaces, store two variants.      
+* [0.x.29]*
+       We store a copy of the one-dimensional quadrature formula       used for initialization.      
+* [0.x.30]*
+       Stores the degree of the element.      
+* [0.x.31]*
+       Stores the number of quadrature points per dimension.      
+* [0.x.32]*
+       Indicates whether the basis functions are nodal in 0 and 1, i.e., the       end points of the unit cell.      
+* [0.x.33]*
+       Stores the shape values of the finite element evaluated on all       quadrature points for all faces and orientations (no tensor-product       structure exploited).      
+* [0.x.34]*
+       Stores the shape gradients of the finite element evaluated on all       quadrature points for all faces, orientations, and directions       (no tensor-product structure  exploited).      
+* [0.x.35]*
+     This struct stores a tensor (Kronecker) product view of the finite     element and quadrature formula used for evaluation. It is based on a     single or a collection of UnivariateShapeData object(s) that describe     one-dimensional ingredients, plus some additional information about how     these are combined and how indices are laid out in the multi-dimensional     case such as the hierarchical
+* 
+-> lexicographic ordering of FE_Q.        
+*  [2.x.11]     
+* [0.x.36]*
+       Encodes the type of element detected at construction. FEEvaluation       will select the most efficient algorithm based on the given element       type.      
+* [0.x.37]*
+       Empty constructor. Does nothing.      
+* [0.x.38]*
+       Constructor that initializes the data fields using the reinit method.      
+* [0.x.39]*
+       Initializes the data fields. Takes a one-dimensional quadrature       formula and a finite element as arguments and evaluates the shape       functions, gradients and Hessians on the one-dimensional unit cell.       This function assumes that the finite element is derived from a one-       dimensional element by a tensor product and that the zeroth shape       function in zero evaluates to one.      
+* [0.x.40]*
+       Return which kinds of elements are supported by MatrixFree.      
+* [0.x.41]*
+       Return data of univariate shape functions which defines the       dimension  [2.x.12]  of tensor product shape functions       regarding vector component  [2.x.13]  of the underlying       finite element.      
+* [0.x.42]*
+       Return the memory consumption of this class in bytes.      
+* [0.x.43]*
+       Renumbering from deal.II's numbering of cell degrees of freedom to       lexicographic numbering used inside the FEEvaluation schemes of the       underlying element in the DoFHandler. For vector-valued elements, the       renumbering starts with a lexicographic numbering of the first       component, then everything of the second component, and so on.      
+* [0.x.44]*
+       Stores data of univariate shape functions defining the       underlying tensor product finite element.      
+* [0.x.45]*
+       Grants access to univariate shape function data of given       dimension and vector component. Rows identify dimensions and       columns identify vector components.      
+* [0.x.46]*
+       Stores the number of space dimensions.      
+* [0.x.47]*
+       Stores the number of vector components of the underlying       vector-valued finite element.      
+* [0.x.48]*
+       Stores the number of quadrature points in  [2.x.14]  dimensions for a       cell.      
+* [0.x.49]*
+       Stores the number of DoFs per cell of the scalar element in  [2.x.15]        dimensions.      
+* [0.x.50]*
+       Stores the number of quadrature points per face in  [2.x.16]  dimensions.      
+* [0.x.51]*
+       Stores the number of quadrature points of a face in  [2.x.17]  dimensions       for simplex, wedge and pyramid reference cells.      
+* [0.x.52]*
+       Stores the number of DoFs per face in  [2.x.18]  dimensions.      
+* [0.x.53]*
+       For nodal basis functions with nodes located at the boundary of the       unit cell, face integrals that involve only the values of the shape       functions (approximations of first derivatives in DG) do not need to       load all degrees of freedom of the cell but rather only the degrees       of freedom located on the face. While it would also be possible to       compute these indices on the fly, we choose to simplify the code and       store the indirect addressing in this class.             The first table index runs through the faces of a cell, and the       second runs through the nodal degrees of freedom of the face, using        [2.x.19]  entries.             The indices stored in this member variable are as follows. Consider       for example a 2D element of degree 3 with the following degrees of       freedom in lexicographic numbering:      
+* [1.x.0]
+*              The first row stores the indices on the face with index 0, i.e., the       numbers  [2.x.20] , the second row holds the indices        [2.x.21]  for face 1, the third row holds the indices        [2.x.22]  for face 2, and the last (fourth) row holds       the indices  [2.x.23] . Similarly, the indices are       stored in 3D. (Note that the y faces in 3D use indices reversed in       terms of the lexicographic numbers due to the orientation of the       coordinate system.)            
+*  [2.x.24]  This object is only filled in case  [2.x.25]        evaluates to  [2.x.26]       
+* [0.x.54]*
+       The  [2.x.27]  provides a shortcut for the       evaluation of values on the faces. For Hermite-type basis functions,       one can go one step further and also use shortcuts to get derivatives       more cheaply where only two layers of degrees of freedom contribute       to the derivative on the face. In the lexicographic ordering, the       respective indices is in the next "layer" of degrees of freedom as       compared to the nodal values. This array stores the indirect       addressing of both the values and the gradient.             The first table index runs through the faces of a cell, and the       second runs through the pairs of the nodal degrees of freedom of the       face and the derivatives, using  [2.x.28]  entries.             The indices stored in this member variable are as follows. Consider       for example a 2D element of degree 3 with the following degrees of       freedom in lexicographic numbering:      
+* [1.x.1]
+*              The first row stores the indices for values and gradients on the face       with index 0, i.e., the numbers <code>0, 1, 5, 6, 10, 11, 15, 16, 20,       21</code>, the second row holds the indices <code>4, 3, 9, 8, 14, 13,       19, 18, 24, 23</code> for face 1, the third row holds the indices        [2.x.29]  for face 2, and the last       (fourth) row holds the indices <code>20, 15, 21, 16, 22, 17, 23, 18,       24, 19</code>. Similarly, the indices are stored in 3D. (Note that       the y faces in 3D use indices reversed in terms of the lexicographic       numbers due to the orientation of the coordinate system.)            
+*  [2.x.30]  This object is only filled in case  [2.x.31]  evaluates to        [2.x.32]       
+* [0.x.55]*
+       For degrees on faces, the basis functions are not       in the correct order if a face is not in the standard orientation       to a given element. This data structure is used to re-order the       basis functions to represent the correct order.      
+* [0.x.56]*
+       Check whether we have symmetries in the shape values. In that case,       also fill the shape_???_eo fields.      
+* [0.x.57]*
+       Check whether symmetric 1D basis functions are such that the shape       values form a diagonal matrix, i.e., the nodal points are collocated       with the quadrature points. This allows for specialized algorithms       that save some operations in the evaluation.      
+* [0.x.58]

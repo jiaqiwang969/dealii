@@ -1,0 +1,200 @@
+[0.x.0]*
+ We collect here some helper functions used in the Manifold<dim,spacedim> classes.
+
+* 
+* [0.x.1]*
+   A  [2.x.0]  helper function that returns the number of   default points for the structure type pointed to by the given    [2.x.1] . See the documentation of    [2.x.2]  for more information.  
+* [0.x.2]*
+   Given a general mesh iterator, construct arrays of quadrature points and   weights that contain the following points:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - If the iterator points to a line, then the quadrature points     are the two vertices of the line. This results in a point vector     with two points.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - If the iterator points to a quad, then the quadrature points     are the vertices and line mid-points. This results in a point vector     with eight (4+4) points.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - If the iterator points to a hex, then the quadrature points     are the vertices, the line mid-points, and the face mid-points.     This results in a points vector with 26 (8+12+6) points.     The quadrature weights for these points are either chosen identically and   equal to one over the number of quadrature points (if  [2.x.3]    with_interpolation is  [2.x.4]  or in a way that gives points closer to   the cell center (measured on the reference cell) a higher weight. These   weights correspond to the weights applied to lines and vertices in   transfinite interpolation (see TransfiniteInterpolationManifold for a   more thorough description) if  [2.x.5]  is  [2.x.6]      The function is primarily used to construct the input argument   for the  [2.x.7]  function, which computes a new   point on a manifold based on a weighted average of "surrounding"   points represented by the quadrature points and weights stored in the   returned pair of vectors. This function creates such an object based on   the points that "surround" a cell, face, or edge, and weights   are chosen in a way appropriate for computing the new "mid-point"   of the object pointed to. An example of where this is necessary   is for mesh refinement, where (using the 2d situation as an example)   we need to first create new edge mid-points, and then a new cell-point.      [2.x.8]  iterator A mesh iterator that points to either a line, quad,     or hex.    [2.x.9]  with_interpolation Whether or not to compute the quadrature   weights from transfinite interpolation, as discussed above.    [2.x.10]  MeshIteratorType An iterator type that corresponds to either      [2.x.11]  (or variants such as      [2.x.12]  or  [2.x.13]  or     that is the result of statements such as      [2.x.14] .  
+* [0.x.3]*
+ Manifolds are used to describe the geometry of boundaries of domains as well as the geometry of the interior. Manifold objects are therefore associated with cells, faces, and/or edges, either by direct user action or, if a user program does not do this explicitly, a default manifold object is used.
+*  Manifolds are best understood by using the language of differential geometry, but their common uses can be easily described simply through examples. An exhaustive discussion of how, where, and why this class is used is provided in the  [2.x.15]  "geometry paper".
+* 
+
+*  [1.x.0]
+*  In the most essential use of manifolds, manifold descriptions are used to create a "point between other points". For example, when a triangulation creates a new vertex on a cell, face, or edge, it determines the new vertex' coordinates through the following function call:  
+* [1.x.1]
+*  Here,  [2.x.16]  is a collection of points in  [2.x.17]  dimension, and  [2.x.18]  collection of corresponding weights. The points in this context will then be the vertices of the cell, face, or edge, and the weights are typically one over the number of points when a new midpoint of the cell, face, or edge is needed. Derived classes then will implement the  [2.x.19]  function in a way that computes the location of this new point. In the simplest case, for example in the FlatManifold class, the function simply computes the arithmetic average (with given weights) of the given points. However, other classes do something differently; for example, the SphericalManifold class, which is used to describe domains that form (part of) the sphere, will ensure that, given the two vertices of an edge at the boundary, the new returned point will lie on the grand circle that connects the two points, rather than choosing a point that is half-way between the two points in  [2.x.20] .
+* 
+
+* 
+
+* 
+*  [2.x.21]  Unlike almost all other cases in the library, we here interpret the points to be in real space, not on the reference cell.
+*   [2.x.22]  has a default implementation that can simplify this process somewhat: Internally, the function calls the  [2.x.23]  to compute pair-wise intermediate points. Internally the  [2.x.24]  calls the  [2.x.25]  function after computing the convex combination of the given points.  This allows derived classes to only overload  [2.x.26]  for simple situations. This is often useful when describing manifolds that are embedded in higher dimensional space, e.g., the surface of a sphere.  In those cases, the desired new point may be computed simply by the (weighted) average of the provided points, projected back out onto the sphere.
+* 
+
+*  [1.x.2]
+*  The second use of this class is in computing directions on domains and boundaries. For example, we may need to compute the normal vector to a face in order to impose the no-flow boundary condition  [2.x.27]  (see the  [2.x.28]  as an example). Similarly, we may need normal vectors in the computation of the normal component of the gradient of the numerical solution in order to compute the jump in the gradient of the solution in error estimators (see, for example, the KellyErrorEstimator class).
+*  To make this possible, the Manifold class provides a member function (to be implemented by derived classes) that computes a "vector tangent to the manifold at one point, in direction of another point" via the  [2.x.29]  function. For example, in 2d, one would use this function with the two vertices of an edge at the boundary to compute a "tangential" vector along the edge, and then get the normal vector by rotation by 90 degrees. In 3d, one would compute the two vectors "tangential" to the two edges of a boundary face adjacent to a boundary vertex, and then take the cross product of these two to obtain a vector normal to the boundary.
+*  For reasons that are more difficult to understand, these direction vectors are normalized in a very specific way, rather than to have unit norm. See the documentation of  [2.x.30]  as well as below, for more information.
+*  In the simplest case (namely, the FlatManifold class), these tangent vectors are just the difference vector between the two given points. However, in more complicated (and more interesting) cases, the direction may be different. For example, for the SphericalManifold case, if the two given points lie on a common grand circle around the origin, then the tangent vector will be tangential to the grand circle, rather than pointing straight from one point to the other.
+* 
+
+*  [1.x.3]
+*  The "real" way to understand what this class does is to see it in the framework of differential geometry. More specifically, differential geometry is fundamentally based on the assumption that two sufficiently close points are connected via a line of "shortest distance". This line is called a "geodesic", and it is selected from all other lines that connect the two points by the property that it is shortest if distances are measured in terms of the "metric" that describes a manifold. To give examples, recall that the geodesics of a flat manifold (implemented in the FlatManifold class) are simply the straight lines connecting two points, whereas for spherical manifolds (see the SphericalManifold class) geodesics between two points of same distance are the grand circles, and are in general curved lines when connecting two lines of different distance from the origin.
+*  In the following discussion, and for the purposes of implementing the current class, the concept of "metrics" that is so fundamental to differential geometry is no longer of great importance to us. Rather, everything can simply be described by postulating the existence of geodesics connecting points on a manifold.
+*  Given geodesics, the operations discussed in the previous two sections can be described in a more formal way. In essence, they rely on the fact that we can assume that a geodesic is parameterized by a "time" like variable  [2.x.31]  so that  [2.x.32]  describes the curve and so that  [2.x.33]  is the location of the first and  [2.x.34]  the location of the second point. Furthermore,  [2.x.35]  traces out the geodesic at constant speed, covering equal distance in equal time (as measured by the metric). Note that this parameterization uses time, not arc length to denote progress along the geodesic.
+*  In this picture, computing a mid-point between points  [2.x.36]  and  [2.x.37] , with weights  [2.x.38]  and  [2.x.39] , simply requires computing the point  [2.x.40] . Computing a new point as a weighted average of more than two points can be done by considering pairwise geodesics, finding suitable points on the geodetic between the first two points, then on the geodetic between this new point and the third given point, etc.
+*  Likewise, the "tangential" vector described above is simply the velocity vector,  [2.x.41] , evaluated at one of the end points of a geodesic (i.e., at  [2.x.42]  or  [2.x.43] ). In the case of a flat manifold, the geodesic is simply the straight line connecting two points, and the velocity vector is just the connecting vector in that case. On the other hand, for two points on a spherical manifold, the geodesic is a grand circle, and the velocity vector is tangent to the spherical surface.
+*  Note that if we wanted to, we could use this to compute the length of the geodesic that connects two points  [2.x.44]  and  [2.x.45]  by computing  [2.x.46]  along the geodesic that connects them, but this operation will not be of use to us in practice. One could also conceive computing the direction vector using the "new point" operation above, using the formula  [2.x.47]  where all we need to do is compute the new point  [2.x.48]  with weights  [2.x.49]  and  [2.x.50]  along the geodesic connecting  [2.x.51]  and  [2.x.52] . The default implementation of the function does this, by evaluating the quotient for a small but finite weight  [2.x.53] . In practice, however, it is almost always possible to explicitly compute the direction vector, i.e., without the need to numerically approximate the limit process, and derived classes should do so.
+* 
+
+* 
+
+* 
+*  [2.x.54] 
+
+* 
+* [0.x.4]*
+   Type keeping information about the normals at the vertices of a face of a   cell. Thus, there are  [2.x.55]    normal vectors, that define the tangent spaces of the boundary at the   vertices. Note that the vectors stored in this object are not required to   be normalized, nor to actually point outward, as one often will only want   to check for orthogonality to define the tangent plane; if a function   requires the normals to be normalized, then it must do so itself.     For obvious reasons, this type is not useful in 1d.  
+* [0.x.5]*
+   Destructor. Does nothing here, but needs to be declared virtual to make   class hierarchies derived from this class possible.  
+* [0.x.6]*
+   Return a copy of this manifold.     Every derived class should implement this operation in a sensible manner.  
+* [0.x.7]*
+    [2.x.56]  Computing the location of points.  
+* [0.x.8]*
+   Return an intermediate point between two given   points. Overloading this function allows the default pair-wise   reduction implementation of the method get_new_point() that takes   a Quadrature object as input to work properly.     An implementation of this function should returns a parametric   curve on the manifold, joining the points `p1` and `p2`, with   parameter `w` in the interval [0,1]. In particular   `get_intermediate_point(p1, p2, 0.0)` should return `p1` and   `get_intermediate_point(p1, p2, 1.0)` should return `p2`.     In its default implementation, this function calls the   project_to_manifold() method with the convex combination of `p1`   and `p2`. User classes can get away by simply implementing the   project_to_manifold() method.  
+* [0.x.9]*
+   Return the point which shall become the new vertex surrounded by the   given points  [2.x.57]   [2.x.58]  contains appropriate   weights for the surrounding points according to which the manifold   determines the new point's position.     In its default implementation it uses a pair-wise reduction of   the points by calling the function get_intermediate_point() on the first   two points, then on the resulting point and the next, until all points in   the vector have been taken into account. User classes can get away by   simply implementing the get_intermediate_point() function. Notice that   by default the get_intermediate_point() function calls the   project_to_manifold() function with the convex combination of its   arguments. For simple situations you may get away by implementing   only the project_to_manifold() function.  
+* [0.x.10]*
+   Compute a new set of points that interpolate between the given points  [2.x.59]    surrounding_points.  [2.x.60]  is a table with as many columns as  [2.x.61]    surrounding_points.size(). The number of rows in  [2.x.62]  must match   the length of  [2.x.63]      In its default implementation, this function simply calls get_new_point()   on each row of  [2.x.64]  and writes those points into the output array    [2.x.65]  However, this function is more efficient if multiple new   points need to be generated like in MappingQGeneric and the manifold does   expensive transformations between a chart space and the physical space,   such as ChartManifold. For this function, the surrounding points need to   be transformed back to the chart sparse only once, rather than for every   call to get_new_point(). If efficiency is not important, you may get away   by implementing only the get_new_point() function.     The implementation does not allow for  [2.x.66]  and    [2.x.67]  to point to the same array, so make sure to pass different   objects into the function.  
+* [0.x.11]*
+   Given a point which lies close to the given manifold, it modifies it and   projects it to manifold itself.     This class is used by the default implementation of the function   get_new_point() and should be implemented by derived classes. The default   implementation simply throws an exception if called.     If your manifold is simple, you could implement this function only, and   the default behavior should work out of the box.  
+* [0.x.12]*
+   Backward compatibility interface.  Return the point which shall become   the new middle vertex of the two children of a regular line. In 2D, this   line is a line at the boundary, while in 3d, it is bounding a face at the   boundary (the lines therefore is also on the boundary).     The default implementation of this function passes its argument to the    [2.x.68]  function, and then calls the    [2.x.69]  function. User derived classes   can overload  [2.x.70]  or    [2.x.71]  which is called by the   default implementation of  [2.x.72]   
+* [0.x.13]*
+   Backward compatibility interface. Return the point which shall become the   common point of the four children of a quad at the boundary in three or   more spatial dimensions. This function therefore is only useful in at   least three dimensions and should not be called for lower dimensions.     This function is called after the four lines bounding the given  [2.x.73]    are refined, so you may want to use the information provided by   <tt>quad->line(i)->child(j)</tt>, <tt>i=0...3</tt>, <tt>j=0,1</tt>.     The default implementation of this function passes its argument to the    [2.x.74]  function, and then calls the    [2.x.75]  function. User derived classes   can overload  [2.x.76]  or    [2.x.77]  which is called by the   default implementation of  [2.x.78]   
+* [0.x.14]*
+   Backward compatibility interface.  Return the point which shall become   the common point of the eight children of a hex in three or spatial   dimensions. This function therefore is only useful in at least three   dimensions and should not be called for lower dimensions.     This function is called after the all the bounding objects of the given    [2.x.79]  are refined, so you may want to use the information provided by   <tt>hex->quad(i)->line(j)->child(k)</tt>, <tt>i=0...5</tt>,   <tt>j=0...3</tt>, <tt>k=0,1</tt>.     The default implementation of this function passes its argument to the    [2.x.80]  function, and then calls the    [2.x.81]  function. User derived classes   can overload  [2.x.82]  or    [2.x.83]  which is called by the   default implementation of  [2.x.84]   
+* [0.x.15]*
+   Backward compatibility interface. Depending on <tt>dim=2</tt> or   <tt>dim=3</tt> this function calls the get_new_point_on_line or the   get_new_point_on_quad function. It throws an exception for   <tt>dim=1</tt>. This wrapper allows dimension independent programming.  
+* [0.x.16]*
+   Backward compatibility interface.  Depending on <tt>dim=1</tt>,   <tt>dim=2</tt> or <tt>dim=3</tt> this function calls the   get_new_point_on_line, get_new_point_on_quad or the get_new_point_on_hex   function. This wrapper allows dimension independent programming.  
+* [0.x.17]*
+    [2.x.85]  Computing tangent vectors  
+* [0.x.18]*
+   Return a vector that, at  [2.x.86] , is tangential to   the geodesic that connects two points  [2.x.87] . The   geodesic is the shortest line between these two points, where "shortest" is   defined via a metric specific to a particular implementation of this class   in a derived class. For example, in the case of a FlatManifold, the   shortest line between two points is just the straight line, and in this   case the tangent vector is just the difference  [2.x.88] . On the other hand, for a manifold that describes a   surface embedded in a higher dimensional space (e.g., the surface of a   sphere), then the tangent vector is tangential to the surface, and   consequently may point in a different direction than the straight line that   connects the two points.     While tangent vectors are often normalized to unit length, the vectors   returned by this function are normalized as described in the introduction   of this class. Specifically, if  [2.x.89]  traces out the geodesic   between the two points where  [2.x.90]  and    [2.x.91] , then the returned vector must equal    [2.x.92] . In other words, the norm of the returned vector also   encodes, in some sense, the [1.x.4] of the geodesic because a curve    [2.x.93]  must move "faster" if the two points it connects between   arguments  [2.x.94]  and  [2.x.95]  are farther apart.     The default implementation of this function approximates    [2.x.96]    for a small value of  [2.x.97] , and the evaluation of  [2.x.98]  is done by calling get_new_point(). If possible, derived   classes should override this function by an implementation of the exact   derivative.      [2.x.99]  x1 The first point that describes the geodesic, and the one     at which the "direction" is to be evaluated.    [2.x.100]  x2 The second point that describes the geodesic.    [2.x.101]  A "direction" vector tangential to the geodesic.  
+* [0.x.19]*
+    [2.x.102]  Computing normal vectors  
+* [0.x.20]*
+   Return the normal vector to a face embedded in this manifold, at   the point p. If p is not in fact on the surface, but only   close-by, try to return something reasonable, for example the   normal vector at the surface point closest to p.  (The point p   will in fact not normally lie on the actual surface, but rather   be a quadrature point mapped by some polynomial mapping; the   mapped surface, however, will not usually coincide with the   actual surface.)     This function only makes sense if dim==spacedim because   otherwise there is no unique normal vector but in fact a   (spacedim-dim+1)-dimensional tangent space of vectors that   are all both normal to the face and normal to the dim-dimensional   surface that lives in spacedim-dimensional space. For example,   think of a two-dimensional mesh that covers a two-dimensional   surface in three-dimensional space. In that case, each   face (edge) is one-dimensional, and there are two linearly independent   vectors that are both normal to the edge: one is normal to the   edge and tangent to the surface (intuitively, that would be the   one that points from the current cell to the neighboring one,   if the surface was locally flat), and the other one is rooted   in the edge but points perpendicular to the surface (which is   also perpendicular to the edge that lives within the surface).   Thus, because there are no obviously correct semantics for this function   if spacedim is greater than dim, the function will simply throw   an error in that situation.     The face iterator gives an indication which face this function is   supposed to compute the normal vector for.  This is useful if the   boundary of the domain is composed of different nondifferential   pieces (for example when using the FlatManifold class to   approximate a geometry that is completely described by the coarse   mesh, with piecewise (bi-)linear components between the vertices,   but where the boundary may have a kink at the vertices itself).    
+*  [2.x.103]  In 2d, the default implementation of this function computes the   normal vector by taking the tangent direction from p to   the further one of the two vertices that make up an edge, and then   rotates it outward (with respect to the coordinate system of the edge)   by 90 degrees. In 3d, the default implementation is more   complicated, aiming at avoiding problems with numerical round-off   for points close to one of the vertices, and avoiding tangent directions   that are linearly dependent.  
+* [0.x.21]*
+   Compute the normal vectors to the boundary at each vertex of the   given face embedded in the Manifold. It is not required that the   normal vectors be normed somehow.  Neither is it required that   the normals actually point outward.     This function is needed to compute data for C1 mappings. The   default implementation calls normal_vector() on each vertex.     Note that when computing normal vectors at a vertex where the   boundary is not differentiable, you have to make sure that you   compute the one-sided limits, i.e. limit with respect to points   inside the given face.  
+* [0.x.22]*
+ Specialization of Manifold<dim,spacedim>, which represent a possibly periodic Euclidean space of dimension  [2.x.104]  embedded in the Euclidean space of  [2.x.105]  dimensions. The main characteristic of this Manifold is the fact that the function  [2.x.106]  is the identity function.
+* 
+
+* 
+*  [2.x.107] 
+
+* 
+* [0.x.23]*
+   Default constructor. The optional argument can be used to specify the   periodicity of the spacedim-dimensional manifold (one period per   direction). A periodicity value of zero means that along that direction   there is no periodicity. By default no periodicity is assumed.     Periodicity affects the way a middle point is computed. It is assumed   that if two points are more than half period distant, then the distance   should be computed by crossing the periodicity boundary, i.e., the   average is computed by adding a full period to the sum of the two. For   example, if along direction 0 we have 2*pi periodicity, then the average   of (2*pi-eps) and (eps) is not pi, but 2*pi (or zero), since, on a   periodic manifold, these two points are at distance 2*eps and not (2*pi-   eps). Special cases are taken into account, to ensure that the behavior   is always as expected. The third argument is used as a relative tolerance   when computing distances.     Periodicity will be intended in the following way: the domain is   considered to be the box contained in [Point<spacedim>(), periodicity)   where the right extreme is excluded. If any of the components of this box   has zero length, then no periodicity is assumed in that direction.   Whenever a function that tries to compute averages is called, an   exception will be thrown if one of the points which you are using for the   average lies outside the periodicity box. The return points are   guaranteed to lie in the periodicity box plus or minus   tolerance*periodicity.norm().  
+* [0.x.24]*
+   Return a copy of this manifold.  
+* [0.x.25]*
+   Let the new point be the average sum of surrounding vertices.     This particular implementation constructs the weighted average of the   surrounding points, and then calls internally the function   project_to_manifold(). The reason why we do it this way, is to allow lazy   programmers to implement only the project_to_manifold() function for their   own Manifold classes which are small (or trivial) perturbations of a flat   manifold. This is the case whenever the coarse mesh is a decent   approximation of the manifold geometry. In this case, the middle point of   a cell is close to true middle point of the manifold, and a projection   may suffice.     For most simple geometries, it is possible to get reasonable results by   deriving your own Manifold class from FlatManifold, and write a new   interface only for the project_to_manifold function. You will have good   approximations also with large deformations, as long as in the coarsest   mesh size you are trying to refine, the middle point is not too far from   the manifold mid point, i.e., as long as the coarse mesh size is small   enough.  
+* [0.x.26]*
+   Compute a new set of points that interpolate between the given points  [2.x.108]    surrounding_points.  [2.x.109]  is a table with as many columns as  [2.x.110]    surrounding_points.size(). The number of rows in  [2.x.111]  must match   the length of  [2.x.112]      For this particular implementation, the interpolation of the    [2.x.113]  according to the  [2.x.114]  is simply performed in   Cartesian space.  
+* [0.x.27]*
+   Project to FlatManifold. This is the identity function for flat,   Euclidean spaces. Note however that this function can be overloaded by   derived classes, which will then benefit from the logic behind the   get_new_point() function which are often very similar (if not identical) to   the one implemented in this class.  
+* [0.x.28]*
+   Return a vector that, at  [2.x.115] , is tangential to   the geodesic that connects two points  [2.x.116] .   For the current class, we assume that the manifold is flat, so   the geodesic is the straight line between the two points, and we   return  [2.x.117] . The normalization of the vector   is chosen so that it fits the convention described in    [2.x.118]     
+*  [2.x.119]  If you use this class as a stepping stone to build a manifold     that only "slightly" deviates from a flat manifold, by overloading     the project_to_manifold() function.      [2.x.120]  x1 The first point that describes the geodesic, and the one     at which the "direction" is to be evaluated.    [2.x.121]  x2 The second point that describes the geodesic.    [2.x.122]  A "direction" vector tangential to the geodesic. Here, this is      [2.x.123] , possibly modified by the periodicity of     the domain as set in the constructor, to use the "shortest" connection     between the points through the periodic boundary as necessary.  
+* [0.x.29]*
+   Return the normal vector to the given face at point p taking into account   that quadrilateral faces of hexahedral cells in 3d may not be planar.   In those cases, the face is assumed to have a geometry described by a   bilinear function, and the normal vector is computed by embedding this   bilinear form into a Cartesian space with a flat metric.  
+* [0.x.30]*
+   Compute the normal vectors to the boundary at each vertex of the   given face taking into account that quadrilateral faces of hexahedral   cells in 3d may not be planar. In those cases, the face is assumed to   have a geometry described by a bilinear function, and the normal vector   is computed by embedding this bilinear form into a Cartesian space with   a flat metric.  
+* [0.x.31]*
+   Return the periodicity of this Manifold.  
+* [0.x.32]*
+   The periodicity of this Manifold. Periodicity affects the way a middle   point is computed. It is assumed that if two points are more than half   period distant, then the distance should be computed by crossing the   periodicity boundary, i.e., the average is computed by adding a full   period to the sum of the two. For example, if along direction 0 we have   2*pi periodicity, then the average of (2*pi-eps) and (eps) is not pi, but   2*pi (or zero), since, on a periodic manifold, these two points are at   distance 2*eps and not (2*pi-eps).     A periodicity 0 along one direction means no periodicity. This is the   default value for all directions.  
+* [0.x.33]*
+   Relative tolerance. This tolerance is used to compute distances in double   precision.  
+* [0.x.34]*
+ This class describes mappings that can be expressed in terms of charts. Specifically, this class with its template arguments describes a chart of dimension chartdim, which is part of a Manifold<dim,spacedim> and is used in an object of type Triangulation<dim,spacedim>:  It specializes a Manifold of dimension chartdim embedded in a manifold of dimension spacedim, for which you have explicit pull_back() and push_forward() transformations. Its use is explained in great detail in  [2.x.124] .
+*  This is a helper class which is useful when you have an explicit map from an Euclidean space of dimension chartdim to an Euclidean space of dimension spacedim which represents your manifold, i.e., when your manifold  [2.x.125]  can be represented by a map [1.x.5] (the push_forward() function) and that admits the inverse transformation [1.x.6] (the pull_back() function).
+*  The get_new_point() function of the ChartManifold class is implemented by calling the pull_back() method for all <tt>surrounding_points</tt>, computing their weighted average in the chartdim Euclidean space, and calling the push_forward() method with the resulting point, i.e., [1.x.7]
+*  Derived classes are required to implement the push_forward() and the pull_back() methods. All other functions (with the exception of the push_forward_gradient() function, see below) that are required by mappings will then be provided by this class.
+* 
+
+*  [1.x.8]
+*  In order to compute vectors that are tangent to the manifold (for example, tangent to a surface embedded in higher dimensional space, or simply the three unit vectors of  [2.x.126] ), one needs to also have access to the [1.x.9] of the push-forward function  [2.x.127] . The gradient is the matrix  [2.x.128] , where we take the derivative with regard to the chartdim reference coordinates on the flat Euclidean space in which  [2.x.129]  is located. In other words, at a point  [2.x.130] ,  [2.x.131]  is a matrix of size  [2.x.132]  times  [2.x.133] 
+*  Only the  [2.x.134]  function uses the gradient of the push-forward, but only a subset of all finite element codes actually require the computation of tangent vectors. Consequently, while derived classes need to implement the abstract virtual push_forward() and pull_back() functions of this class, they do not need to implement the virtual push_forward_gradient() function. Rather, that function has a default implementation (and consequently is not abstract, therefore not forcing derived classes to overload it), but the default implementation clearly can not compute anything useful and therefore simply triggers and exception.
+* 
+
+*  [1.x.10]
+*  The dimension arguments  [2.x.135]   [2.x.136]  and  [2.x.137]  must satisfy the following relationships:  
+* [1.x.11]
+*  However, there is no a priori relationship between  [2.x.138]  and  [2.x.139]  For example, if you want to describe a mapping for an edge (a 1d object) in a 2d triangulation embedded in 3d space, you could do so by parameterizing it via a line   [1.x.12] in which case  [2.x.140]  is 1. On the other hand, there is no reason why one can't describe this as a mapping   [1.x.13] in such a way that the line  [2.x.141]  happens to be mapped onto the edge in question. Here,  [2.x.142]  is 3. This may seem cumbersome but satisfies the requirements of an invertible function  [2.x.143]  just fine as long as it is possible to get from the edge to the pull-back space and then back again. Finally, given that we are dealing with a 2d triangulation in 3d, one will often have a mapping from, say, the 2d unit square or unit disk to the domain in 3d space, and the edge in question may simply be the mapped edge of the unit domain in 2d space. In this case,  [2.x.144]  chartdim is 2.
+* 
+
+* 
+*  [2.x.145] 
+
+* 
+* [0.x.35]*
+   Constructor. The optional argument can be used to specify the periodicity   of the chartdim-dimensional manifold (one period per direction). A   periodicity value of zero means that along that direction there is no   periodicity. By default no periodicity is assumed.     Periodicity affects the way a middle point is computed. It is assumed   that if two points are more than half period distant, then the distance   should be computed by crossing the periodicity boundary, i.e., then the   average is computed by adding a full period to the sum of the two. For   example, if along direction 0 we have 2*pi periodicity, then the average   of (2*pi-eps) and (eps) is not pi, but 2*pi (or zero), since, on the   manifold, these two points are at distance 2*eps and not (2*pi-eps)  
+* [0.x.36]*
+   Destructor. Does nothing here, but needs to be declared to make it   virtual.  
+* [0.x.37]*
+   Refer to the general documentation of this class and the documentation of   the base class for more information.  
+* [0.x.38]*
+   Refer to the general documentation of this class and the documentation of   the base class for more information.  
+* [0.x.39]*
+   Compute a new set of points that interpolate between the given points  [2.x.146]    surrounding_points.  [2.x.147]  is a table with as many columns as  [2.x.148]    surrounding_points.size(). The number of rows in  [2.x.149]  must match   the length of  [2.x.150]      The implementation of this function first transforms the    [2.x.151]  to the chart space by calling pull_back(). Then, new   points are computed on the chart by usual interpolation according to the   given  [2.x.152]  which are finally transformed to the image space by   push_forward().     This implementation can be much more efficient for computing multiple new   points from the same surrounding points than separate calls to   get_new_point() in case the pull_back() operation is expensive. This is   because pull_back() is only called once for the surrounding points and   the interpolation is done for all given weights using this set of   points. Often, pull_back() is also more expensive than push_forward()   because the former might involve some kind of Newton iteration in   non-trivial manifolds.  
+* [0.x.40]*
+   Pull back the given point in spacedim to the Euclidean chartdim   dimensional space.     Refer to the general documentation of this class for more information.  
+* [0.x.41]*
+   Given a point in the chartdim dimensional Euclidean space, this method   returns a point on the manifold embedded in the spacedim Euclidean space.     Refer to the general documentation of this class for more information.  
+* [0.x.42]*
+   Given a point in the chartdim dimensional Euclidean space, this method   returns the derivatives of the function  [2.x.153]  that maps from the   chartdim-dimensional to the spacedim-dimensional space. In other   words, it is a matrix of size  [2.x.154] .     This function is used in the computations required by the   get_tangent_vector() function. Since not all users of the Manifold   class interface will require calling that function, the current   function is implemented but will trigger an exception whenever   called. This allows derived classes to avoid implementing the   push_forward_gradient function if this functionality is not   needed in the user program.     Refer to the general documentation of this class for more information.  
+* [0.x.43]*
+   Return a vector that, at  [2.x.155] , is tangential to   the geodesic that connects two points  [2.x.156] .   See the documentation of the Manifold class and of    [2.x.157]  for a more detailed description.     For the current class, we assume that this geodesic is the image   under the push_forward() operation of a straight line of the   pre-images of  [2.x.158]  and  [2.x.159]  (where pre-images are computed by pulling   back the locations  [2.x.160]  and  [2.x.161]  In other words, if these   preimages are  [2.x.162] ,   then the geodesic in preimage (the chartdim-dimensional Euclidean) space   is  
+* [1.x.14]
+*    In image space, i.e., in the space in which we operate, this   leads to the curve  
+* [1.x.15]
+*    What the current function is supposed to return is  [2.x.163] . By   the chain rule, this is equal to  
+* [1.x.16]
+*    This formula may then have to be slightly modified by   considering any periodicity that was assumed in the call to   the constructor.     Thus, the computation of tangent vectors also requires the   implementation of [1.x.17]  [2.x.164]  of   the push-forward mapping. Here,  [2.x.165]    is a chartdim-dimensional vector, and  [2.x.166]  is a   spacedim-times-chartdim-dimensional matrix. Consequently, and as desired,   the operation results in a spacedim-dimensional vector.      [2.x.167]  x1 The first point that describes the geodesic, and the one     at which the "direction" is to be evaluated.    [2.x.168]  x2 The second point that describes the geodesic.    [2.x.169]  A "direction" vector tangential to the geodesic.  
+* [0.x.44]*
+   Return the periodicity associated with the submanifold.  
+* [0.x.45]*
+   The sub_manifold object is used to compute the average of the points in   the chart coordinates system.     In an ideal world, it would have type   FlatManifold<dim,chartdim>. However, this would instantiate cases   where dim>spacedim, which leads to invalid situations. We instead   use <chartdim,chartdim>, which is (i) always valid, and (ii) does   not matter at all since the first (dim) argument of manifolds is,   in fact, ignored as far as manifold functionality is concerned.  
+* [0.x.46]

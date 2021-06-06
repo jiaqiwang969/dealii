@@ -1,0 +1,31 @@
+[0.x.0]*
+   A class that is used to iterate over particles. Together with the   ParticleAccessor class this is used to hide the internal implementation   of the particle class and the particle container.  
+* [0.x.1]*
+     Empty constructor. Such an object is not usable!    
+* [0.x.2]*
+     Constructor of the iterator. Takes a reference to the particle     container, and an iterator to the cell-particle pair.    
+* [0.x.3]*
+     Dereferencing operator, returns a reference to an accessor. Usage is thus     like <tt>(*i).get_id ();</tt>    
+* [0.x.4]*
+     Dereferencing operator, non- [2.x.0]  version.    
+* [0.x.5]*
+     Dereferencing operator, returns a pointer of the particle pointed to.     Usage is thus like <tt>i->get_id ();</tt>         There is a  [2.x.1]  and a non- [2.x.2]  version.    
+* [0.x.6]*
+     Dereferencing operator, non- [2.x.3]  version.    
+* [0.x.7]*
+     Compare for equality.    
+* [0.x.8]*
+     Compare for inequality.    
+* [0.x.9]*
+     Prefix <tt>++</tt> operator: <tt>++iterator</tt>. This operator advances     the iterator to the next element and returns a reference to     <tt>*this</tt>.    
+* [0.x.10]*
+     Postfix <tt>++</tt> operator: <tt>iterator++</tt>. This operator advances     the iterator to the next element, but returns an iterator to the element     previously pointed to.    
+* [0.x.11]*
+     Prefix <tt>\--</tt> operator: <tt>\--iterator</tt>. This operator moves     the iterator to the previous element and returns a reference to     <tt>*this</tt>.    
+* [0.x.12]*
+     Postfix <tt>\--</tt> operator: <tt>iterator\--</tt>. This operator moves     the iterator to the previous element, but returns an iterator to the     element previously pointed to.    
+* [0.x.13]*
+     Mark the class as bidirectional iterator and declare some alias which     are standard for iterators and are used by algorithms to enquire about     the specifics of the iterators they work on.    
+* [0.x.14]*
+     The accessor to the actual particle.    
+* [0.x.15]

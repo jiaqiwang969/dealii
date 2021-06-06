@@ -1,0 +1,91 @@
+[0.x.0]*
+    [2.x.0]  Interpolation and projection  
+* [0.x.1]*
+   Compute the projection of  [2.x.1]  to the finite element space. In other   words, given a function  [2.x.2] , the current function computes a   finite element function  [2.x.3]    characterized by the (output) vector of nodal values  [2.x.4]  that satisfies   the equation  
+* [1.x.0]
+*    for all test functions  [2.x.5] . This requires solving a linear system   involving the mass matrix since the equation above is equivalent to   the linear system  
+* [1.x.1]
+*    which can also be written as  [2.x.6]  with    [2.x.7]  and    [2.x.8] .     By default, no boundary values for  [2.x.9]  are needed nor   imposed, but there are optional parameters to this function that allow   imposing either zero boundary values or, in a first step, to project   the boundary values of  [2.x.10]  onto the finite element space on the boundary   of the mesh in a similar way to above, and then using these values as the   imposed boundary values for  [2.x.11] . The ordering of arguments to this   function is such that you need not give a second quadrature formula (of   type `Quadrature<dim-1>` and used for the computation of the matrix and   right hand side for the projection of boundary values) if you   don't want to project to the boundary first, but that you must if you want   to do so.     A MatrixFree implementation is used if the following conditions are met:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.12]  is false,
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.13]  is false,
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - the FiniteElement is supported by the MatrixFree class,
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - the FiniteElement has less than five components
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - the degree of the FiniteElement is less than nine.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - dim==spacedim     In this case, this function performs numerical quadrature using the given   quadrature formula for integration of the right hand side  [2.x.14]  while a   QGauss(fe_degree+2) object is used for the mass operator. You should   therefore make sure that the given quadrature formula is sufficiently   accurate for creating the right-hand side.     Otherwise, only serial Triangulations are supported and the mass matrix   is assembled using  [2.x.15]  The given   quadrature rule is then used for both the matrix and the right-hand side.   You should therefore make sure that the given quadrature formula is also   sufficient for creating the mass matrix. In particular, the degree of the   quadrature formula must be sufficiently high to ensure that the mass   matrix is invertible. For example, if you are using a FE_Q(k) element,   then the integrand of the matrix entries  [2.x.16]  is of polynomial   degree  [2.x.17]  in each variable, and you need a Gauss quadrature formula   with  [2.x.18]  points in each coordinate direction to ensure that  [2.x.19]    is invertible.     See the general documentation of this namespace for further information.     In 1d, the default value of the boundary quadrature formula is an invalid   object since integration on the boundary doesn't happen in 1d.      [2.x.20]  mapping The mapping object to use.    [2.x.21]  dof The DoFHandler the describes the finite element space to   project into and that corresponds to  [2.x.22]     [2.x.23]  constraints Constraints to be used when assembling the mass   matrix, typically needed when you have hanging nodes.    [2.x.24]  quadrature The quadrature formula to be used for assembling the   mass matrix.    [2.x.25]  function The function to project into the finite element space.    [2.x.26]  vec The output vector where the projected function will be   stored in. This vector is required to be already initialized and must not   have ghost elements.    [2.x.27]  enforce_zero_boundary If true,  [2.x.28]  will have zero boundary   conditions.    [2.x.29]  q_boundary Quadrature rule to be used if  [2.x.30]    is true.    [2.x.31]  project_to_boundary_first If true, perform a projection on the   boundary before projecting the interior of the function.  
+* [0.x.2]*
+   Call the project() function above, with   <tt>mapping=MappingQGeneric [2.x.32]   
+* [0.x.3]*
+   Same as above, but with hp-capabilities.  
+* [0.x.4]*
+   Call the project() function above, with a collection of  [2.x.33]  mapping   objects, i.e., with  [2.x.34]   
+* [0.x.5]*
+   The same as above for projection of scalar-valued quadrature data.   The user provided function should return a value at the quadrature point   based on the cell iterator and quadrature number and of course should be   consistent with the provided  [2.x.35]  object, which will be used   to assemble the right-hand-side.     This function can be used with lambdas:  
+* [1.x.2]
+*    where  [2.x.36]  is a CellDataStorage object, which stores   quadrature point data.  
+* [0.x.6]*
+   The same as above for projection of scalar-valued MatrixFree quadrature   data.   The user provided function  [2.x.37]  should return a VectorizedArray value   at the quadrature point based on the cell number and quadrature number and   should be consistent with the  [2.x.38]      This function can be used with lambdas:  
+* [1.x.3]
+*    where  [2.x.39]  is a an object of type Table<2,   VectorizedArray<double> >, which stores quadrature point data.      [2.x.40]  allow to additionally specify which component of  [2.x.41]    to use in case it was constructed with an  [2.x.42]    DoFHandler<dim>*></code>. It will be used internally in constructor of   FEEvaluation object.  
+* [0.x.7]*
+   Same as above but for <code>n_q_points_1d =   matrix_free.get_dof_handler().get_fe().degree+1</code>.  
+* [0.x.8]

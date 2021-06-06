@@ -1,0 +1,72 @@
+[0.x.0]*
+ A namespace in which we declare "extractors", i.e. classes that when used as subscripts in operator[] expressions on FEValues, FEFaceValues, and FESubfaceValues objects extract certain components of a vector-valued element. The result of applying an extractor to these objects is an object with corresponding type from the namespace FEValuesViews. There are extractors for single scalar components, vector components consisting of  [2.x.0]  elements, and second order symmetric tensors consisting of  [2.x.1]  components, as well as second order nonsymmetric tensors.
+*  One can think of extractors as the equivalent of an index, or an index range. In the case of scalar extractors (i.e., the  [2.x.2]  class), creating an object like (see  [2.x.3]  for this use)
+
+* 
+* [1.x.0]
+*  can be thought of as creating a single index with value `dim`. By itself, an index does not know what it is an index to, so it takes the equivalent of an array to extract anything. Consequently, assume that there is a finite element with at least `dim+1` vector components (as indeed there is in  [2.x.4] ), and an FEValues object that operates on it, then writing
+
+* 
+* [1.x.1]
+*  results in an object that represents the shape functions of only the `dim`th component of the overall element. In the example, these would be the values of the pressure shape functions, or more precisely: the (scalar) pressure values of all shape functions (even for shape functions that are not associated with the pressure, but for example the velocity). In the example above, the result of using `operator[]` on the `fe_values` object as shown is of type  [2.x.5] 
+*  Likewise, when using
+
+* 
+* [1.x.2]
+*  then the object so created can be thought of as an [1.x.3], starting at zero and extending exactly `dim` components on. In Matlab notation, one could write this as `0:dim-1`. Then, writing
+
+* 
+* [1.x.4]
+*  will result in an object that represents the values of a subset of exactly `dim` vector components of the overall finite element, in much the same way as writing `array(3:7)` in Matlab would return an array of length 5 that has been extracted from the original array by looking at indices 3 through 7 (inclusive).
+*  See the description of the  [2.x.6]  module for examples how to use the features of this namespace.
+* 
+
+* 
+*  [2.x.7] 
+
+* 
+* [0.x.1]*
+   Extractor for a single scalar component of a vector-valued element. The   result of applying an object of this type to an FEValues, FEFaceValues or   FESubfaceValues object is of type  [2.x.8]  The concept of   extractors is defined in the documentation of the namespace   FEValuesExtractors and in the    [2.x.9]    module.    
+*  [2.x.10]   
+* [0.x.2]*
+     The selected scalar component of the vector.    
+* [0.x.3]*
+     Default constructor. Initialize the object with an invalid component.     This leads to an object that can not be used, but it allows objects of     this kind to be put into arrays that require a default constructor upon     resizing the array, and then later assigning a suitable object to each     element of the array.    
+* [0.x.4]*
+     Constructor. Take the selected vector component as argument.    
+* [0.x.5]*
+     Return a string that uniquely identifies this finite element extractor.    
+* [0.x.6]*
+   Extractor for a vector of  [2.x.11]  components of a vector-   valued element. The value of  [2.x.12]  is defined by the   FEValues object the extractor is applied to. The result of applying an   object of this type to an FEValues, FEFaceValues or FESubfaceValues   object is of type  [2.x.13]      The concept of extractors is defined in the documentation of the   namespace FEValuesExtractors and in the    [2.x.14]    module.     Note that in the current context, a vector is meant in the sense physics   uses it: it has  [2.x.15]  components that behave in specific   ways under coordinate system transformations. Examples include velocity   or displacement fields. This is opposed to how mathematics uses the word   "vector" (and how we use this word in other contexts in the library, for   example in the Vector class), where it really stands for a collection of   numbers. An example of this latter use of the word could be the set of   concentrations of chemical species in a flame; however, these are really   just a collection of scalar variables, since they do not change if the   coordinate system is rotated, unlike the components of a velocity vector,   and consequently, this class should not be used for this context.    
+*  [2.x.16]   
+* [0.x.7]*
+     The first component of the vector view.    
+* [0.x.8]*
+     Default constructor. Initialize the object with an invalid component.     This leads to an object that can not be used, but it allows objects of     this kind to be put into arrays that require a default constructor upon     resizing the array, and then later assigning a suitable object to each     element of the array.    
+* [0.x.9]*
+     Constructor. Take the first component of the selected vector inside the     FEValues object as argument.    
+* [0.x.10]*
+     Return a string that uniquely identifies this finite element extractor.    
+* [0.x.11]*
+   Extractor for a symmetric tensor of a rank specified by the template   argument. For a second order symmetric tensor, this represents a   collection of  [2.x.17]  components of a vector-   valued element. The value of  [2.x.18]  is defined by the FEValues   object the extractor is applied to. The result of applying an object of   this type to an FEValues, FEFaceValues or FESubfaceValues object is of   type  [2.x.19]      The concept of extractors is defined in the documentation of the   namespace FEValuesExtractors and in the    [2.x.20]    module.    
+*  [2.x.21]   
+* [0.x.12]*
+     The first component of the tensor view.    
+* [0.x.13]*
+     Default constructor. Initialize the object with an invalid component.     This leads to an object that can not be used, but it allows objects of     this kind to be put into arrays that require a default constructor upon     resizing the array, and then later assigning a suitable object to each     element of the array.    
+* [0.x.14]*
+     Constructor. Take the first component of the selected tensor inside the     FEValues object as argument.    
+* [0.x.15]*
+     Return a string that uniquely identifies this finite element extractor.    
+* [0.x.16]*
+   Extractor for a general tensor of a given rank specified by   the template argument. For a second order tensor, this represents a   collection of  [2.x.22]  components of a vector-valued   element. The value of  [2.x.23]  is defined by the FEValues object   the extractor is applied to. The result of applying an object of this   type to an FEValues, FEFaceValues or FESubfaceValues object is of type    [2.x.24]      The concept of extractors is defined in the documentation of the   namespace FEValuesExtractors and in the    [2.x.25]    module.    
+*  [2.x.26]   
+* [0.x.17]*
+     The first component of the tensor view.    
+* [0.x.18]*
+     Default constructor. Initialize the object with an invalid component.     This leads to an object that can not be used, but it allows objects of     this kind to be put into arrays that require a default constructor upon     resizing the array, and then later assigning a suitable object to each     element of the array.    
+* [0.x.19]*
+     Constructor. Take the first component of the selected tensor inside the     FEValues object as argument.    
+* [0.x.20]*
+     Return a string that uniquely identifies this finite element extractor.    
+* [0.x.21]

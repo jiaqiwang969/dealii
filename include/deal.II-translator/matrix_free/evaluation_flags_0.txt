@@ -1,0 +1,28 @@
+[0.x.0]*
+
+
+* 
+*  [2.x.0] 
+*  This namespace contains the enum EvaluationFlags used in FEEvaluation to control evaluation and integration of values, gradients, etc..
+
+* 
+* [0.x.1]*
+  
+*  [2.x.1]      This enum contains a set of flags used by  [2.x.2]     [2.x.3]  and others to determine if values, gradients,   hessians, or a combination of them is being used.  
+* [0.x.2]*
+     Do not use or compute anything.    
+* [0.x.3]*
+     Use or evaluate values.    
+* [0.x.4]*
+     Use or evaluate gradients.    
+* [0.x.5]*
+     Use or evaluate hessians.    
+* [0.x.6]*
+   Global operator which returns an object in which all bits are set which are   either set in the first or the second argument. This operator exists since   if it did not then the result of the bit-or <tt>operator |</tt> would be an   integer which would in turn trigger a compiler warning when we tried to   assign it to an object of type UpdateFlags.      [2.x.4]   
+* [0.x.7]*
+   Global operator which sets the bits from the second argument also in the   first one.      [2.x.5]   
+* [0.x.8]*
+   Global operator which returns an object in which all bits are set which are   set in the first as well as the second argument. This operator exists since   if it did not then the result of the bit-and <tt>operator &</tt> would be   an integer which would in turn trigger a compiler warning when we tried to   assign it to an object of type UpdateFlags.      [2.x.6]   
+* [0.x.9]*
+   Global operator which clears all the bits in the first argument if they are   not also set in the second argument.      [2.x.7]   
+* [0.x.10]

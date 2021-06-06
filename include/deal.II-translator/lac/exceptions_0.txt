@@ -1,0 +1,16 @@
+[0.x.0]*
+    [2.x.0]  Exceptions  
+* [0.x.1]*
+   This function only works for quadratic matrices.  
+* [0.x.2]*
+   The operation cannot be finished since the matrix is singular.  
+* [0.x.3]*
+   Block indices of two block objects are different.  
+* [0.x.4]*
+   The operation requires a sparsity pattern.  
+* [0.x.5]*
+   Exception thrown when a PETSc function reports an error. If possible,   this exception uses the message provided by    [2.x.1]  to print a description of the error.    
+*  [2.x.2]  For backwards compatibility this is defined whether or not deal.II   is compiled with PETSc.  
+* [0.x.6]*
+   An error of a Trilinos function was encountered. Check the Trilinos   documentation for details.  
+* [0.x.7]

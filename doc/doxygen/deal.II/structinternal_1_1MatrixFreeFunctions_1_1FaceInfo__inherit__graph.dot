@@ -7,8 +7,10 @@ digraph "internal::MatrixFreeFunctions::FaceInfo&lt; vectorization_width &gt;"
   Node1 [label="internal::MatrixFreeFunctions\l::FaceInfo\< vectorization\l_width \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
   Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< VectorizedArray\<\l double \> ::size()\>" ,fontname="Helvetica"];
   Node2 [label="internal::MatrixFreeFunctions\l::FaceInfo\< VectorizedArray\l\< double \> ::size()\>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1FaceInfo.html",tooltip=" "];
-  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< VectorizedArray\<\l Number \> ::size()\>" ,fontname="Helvetica"];
-  Node3 [label="internal::MatrixFreeFunctions\l::FaceInfo\< VectorizedArray\l\< Number \> ::size()\>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1FaceInfo.html",tooltip=" "];
-  Node1 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< VectorizedArray\<\l typename LinearAlgebra\l::distributed::Vector\<\l double \> ::value_type \>\l ::size()\>" ,fontname="Helvetica"];
-  Node4 [label="internal::MatrixFreeFunctions\l::FaceInfo\< VectorizedArray\l\< typename LinearAlgebra::distributed\l::Vector\< double \> ::value_type \>\l ::size()\>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1FaceInfo.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< VectorizedArray \l::size()\>" ,fontname="Helvetica"];
+  Node3 [label="internal::MatrixFreeFunctions\l::FaceInfo\< VectorizedArray\l ::size()\>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1FaceInfo.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< VectorizedArray\<\l Number \> ::size()\>" ,fontname="Helvetica"];
+  Node4 [label="internal::MatrixFreeFunctions\l::FaceInfo\< VectorizedArray\l\< Number \> ::size()\>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1FaceInfo.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< VectorizedArray\<\l number \> ::size()\>" ,fontname="Helvetica"];
+  Node5 [label="internal::MatrixFreeFunctions\l::FaceInfo\< VectorizedArray\l\< number \> ::size()\>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1FaceInfo.html",tooltip=" "];
 }

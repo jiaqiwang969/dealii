@@ -1,0 +1,60 @@
+[0.x.0]*
+ Implementation of a scalar Lagrange finite element  [2.x.0]  that yields the finite element space of continuous, piecewise polynomials of degree  [2.x.1]  p in each coordinate direction plus the space of locally constant functions. This class is realized using tensor product polynomials based on equidistant or given support points.
+*  The standard constructor of this class takes the degree  [2.x.2]  of this finite element. Alternatively, it can take a quadrature formula  [2.x.3]  defining the support points of the Lagrange interpolation in one coordinate direction.
+*  For more information about the <tt>spacedim</tt> template parameter check the documentation of FiniteElement or the one of Triangulation.
+*  For more information regarding this element see: Boffi, D., et al. "Local Mass Conservation of Stokes Finite Elements." Journal of Scientific Computing (2012): 1-18.
+*  [1.x.0]
+*  The constructor creates a TensorProductPolynomials object that includes the tensor product of  [2.x.4]  polynomials of degree  [2.x.5]  plus the locally constant function. This  [2.x.6]  object provides all values and derivatives of the shape functions. In case a quadrature rule is given, the constructor creates a TensorProductPolynomialsConst object that includes the tensor product of  [2.x.7]  Lagrange polynomials with the support points from  [2.x.8]  and a locally constant function.
+*  Furthermore the constructor fills the  [2.x.9]  the  [2.x.10]  prolongation (embedding) and the  [2.x.11]  matrices.
+*  [1.x.1]
+*  The original ordering of the shape functions represented by the TensorProductPolynomialsConst is a tensor product numbering. However, the shape functions on a cell are renumbered beginning with the shape functions whose support points are at the vertices, then on the line, on the quads, and finally (for 3d) on the hexes. Finally there is a support point for the discontinuous shape function in the middle of the cell. To be explicit, these numberings are listed in the following:
+*  [1.x.2]  [2.x.12]   [2.x.13]  1D case:  
+* [1.x.3]
+* 
+*   [2.x.14]  2D case:  
+* [1.x.4]
+* 
+*   [2.x.15]  3D case:  
+* [1.x.5]
+* 
+*  The respective coordinate values of the support points of the degrees of freedom are as follows:  [2.x.16]   [2.x.17]  Index 0: <tt>[ 0,  0, 0]</tt>;  [2.x.18]  Index 1: <tt>[ 1,  0, 0]</tt>;  [2.x.19]  Index 2: <tt>[ 0,  1, 0]</tt>;  [2.x.20]  Index 3: <tt>[ 1,  1, 0]</tt>;  [2.x.21]  Index 4: <tt>[ 0,  0, 1]</tt>;  [2.x.22]  Index 5: <tt>[ 1,  0, 1]</tt>;  [2.x.23]  Index 6: <tt>[ 0,  1, 1]</tt>;  [2.x.24]  Index 7: <tt>[ 1,  1, 1]</tt>;  [2.x.25]  Index 8: <tt>[1/2, 1/2, 1/2]</tt>;  [2.x.26]   [2.x.27]  [1.x.6]  [2.x.28]   [2.x.29]  1D case:  
+* [1.x.7]
+*  Index 3 has the same coordinates as index 2
+*   [2.x.30]  2D case:  
+* [1.x.8]
+*  Index 9 has the same coordinates as index 2
+*   [2.x.31]  3D case:  
+* [1.x.9]
+*  The center vertices have number 26 and 27.
+*  The respective coordinate values of the support points of the degrees of freedom are as follows:  [2.x.32]   [2.x.33]  Index 0: <tt>[0, 0, 0]</tt>;  [2.x.34]  Index 1: <tt>[1, 0, 0]</tt>;  [2.x.35]  Index 2: <tt>[0, 1, 0]</tt>;  [2.x.36]  Index 3: <tt>[1, 1, 0]</tt>;  [2.x.37]  Index 4: <tt>[0, 0, 1]</tt>;  [2.x.38]  Index 5: <tt>[1, 0, 1]</tt>;  [2.x.39]  Index 6: <tt>[0, 1, 1]</tt>;  [2.x.40]  Index 7: <tt>[1, 1, 1]</tt>;  [2.x.41]  Index 8: <tt>[0, 1/2, 0]</tt>;  [2.x.42]  Index 9: <tt>[1, 1/2, 0]</tt>;  [2.x.43]  Index 10: <tt>[1/2, 0, 0]</tt>;  [2.x.44]  Index 11: <tt>[1/2, 1, 0]</tt>;  [2.x.45]  Index 12: <tt>[0, 1/2, 1]</tt>;  [2.x.46]  Index 13: <tt>[1, 1/2, 1]</tt>;  [2.x.47]  Index 14: <tt>[1/2, 0, 1]</tt>;  [2.x.48]  Index 15: <tt>[1/2, 1, 1]</tt>;  [2.x.49]  Index 16: <tt>[0, 0, 1/2]</tt>;  [2.x.50]  Index 17: <tt>[1, 0, 1/2]</tt>;  [2.x.51]  Index 18: <tt>[0, 1, 1/2]</tt>;  [2.x.52]  Index 19: <tt>[1, 1, 1/2]</tt>;  [2.x.53]  Index 20: <tt>[0, 1/2, 1/2]</tt>;  [2.x.54]  Index 21: <tt>[1, 1/2, 1/2]</tt>;  [2.x.55]  Index 22: <tt>[1/2, 0, 1/2]</tt>;  [2.x.56]  Index 23: <tt>[1/2, 1, 1/2]</tt>;  [2.x.57]  Index 24: <tt>[1/2, 1/2, 0]</tt>;  [2.x.58]  Index 25: <tt>[1/2, 1/2, 1]</tt>;  [2.x.59]  Index 26: <tt>[1/2, 1/2, 1/2]</tt>;  [2.x.60]  Index 27: <tt>[1/2, 1/2, 1/2]</tt>;  [2.x.61]   [2.x.62]  [1.x.10]  [2.x.63]   [2.x.64]  1D case:  
+* [1.x.11]
+* 
+*   [2.x.65]  2D case:  
+* [1.x.12]
+*   [2.x.66]  [1.x.13]  [2.x.67]   [2.x.68]  1D case:  
+* [1.x.14]
+*  Index 5 has the same coordinates as index 3
+*   [2.x.69]  2D case:  
+* [1.x.15]
+*  Index 21 has the same coordinates as index 20  [2.x.70] 
+
+* 
+* [0.x.1]*
+   Constructor for tensor product polynomials of degree  [2.x.71]  plus locally   constant functions.  
+* [0.x.2]*
+   Constructor for tensor product polynomials with support points  [2.x.72]    plus locally constant functions based on a one-dimensional quadrature   formula. The degree of the finite element is <tt>points.size()-1</tt>.   Note that the first point has to be 0 and the last one 1.  
+* [0.x.3]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_Q_DG0<dim>(degree)</tt>, with  [2.x.73]  and  [2.x.74]    replaced by appropriate values.  
+* [0.x.4]*
+   Return the matrix interpolating from the given finite element to the   present one.  The size of the matrix is then  [2.x.75]  times   <tt>source.n_dofs_per_cell()</tt>.     These matrices are only available if the source element is also a  [2.x.76]    FE_Q_DG0 element. Otherwise, an exception of type    [2.x.77]  is thrown.  
+* [0.x.5]*
+   This function returns  [2.x.78]  if the shape function  [2.x.79]  has   non-zero function values somewhere on the face  [2.x.80]   
+* [0.x.6]*
+   Return a list of constant modes of the element. For this element, there   are two constant modes despite the element is scalar: The first constant   mode is all ones for the usual FE_Q basis and the second one only using   the discontinuous part.  
+* [0.x.7]*
+    [2.x.81]   [2.x.82]   
+* [0.x.8]*
+   Return the restriction_is_additive flags. Only the last component is   true.  
+* [0.x.9]*
+   Only for internal use. Its full name is  [2.x.83]    function and it creates the  [2.x.84]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.85]    FiniteElementData.  
+* [0.x.10]

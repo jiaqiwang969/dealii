@@ -152,6 +152,7 @@ doxygen.log: doc/news/9.0.1-vs-9.1.0.h
 doxygen.log: doc/news/9.1.0-vs-9.1.1.h
 doxygen.log: doc/news/9.1.1-vs-9.2.0.h
 doxygen.log: doc/news/9.2.0-vs-9.3.0.h
+doxygen.log: doc/news/changes.h
 doxygen.log: include/deal.II/algorithms/any_data.h
 doxygen.log: include/deal.II/algorithms/general_data_storage.h
 doxygen.log: include/deal.II/algorithms/named_selection.h

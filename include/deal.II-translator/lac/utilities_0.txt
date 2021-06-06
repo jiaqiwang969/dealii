@@ -1,0 +1,22 @@
+[0.x.0]*
+   A collection of linear-algebra utilities.  
+* [0.x.1]*
+     Return the elements of a continuous Givens rotation matrix and     the norm of the input vector.         That is for a given     pair  [2.x.0]  and  [2.x.1]  return  [2.x.2]  ,  [2.x.3]  and  [2.x.4]  such that     [1.x.0]        
+*  [2.x.5]  The function is implemented for real valued numbers only.    
+* [0.x.2]*
+     Return the elements of a hyperbolic rotation matrix.         That is for a given     pair  [2.x.6]  and  [2.x.7]  return  [2.x.8]  ,  [2.x.9]  and  [2.x.10]  such that     [1.x.1]         Real valued solution only exists if  [2.x.11] , the function will     throw an error otherwise.        
+*  [2.x.12]  The function is implemented for real valued numbers only.    
+* [0.x.3]*
+     Estimate an upper bound for the largest eigenvalue of  [2.x.13]  by a  [2.x.14] 
+* 
+*  - tep     Lanczos process starting from the initial vector  [2.x.15]  Typical     values of  [2.x.16]  are below 10. This estimator computes a k-step Lanczos     decomposition  [2.x.17]  where  [2.x.18]  contains k Lanczos     basis,  [2.x.19] ,  [2.x.20]  is the tridiagonal Lanczos matrix,  [2.x.21]  is     a residual vector  [2.x.22] , and  [2.x.23]  is the k-th canonical basis of      [2.x.24] . The returned value is  [2.x.25] .     If  [2.x.26]  is not  [2.x.27] , the eigenvalues of  [2.x.28]  will be written there.          [2.x.29]  is used to allocate memory for temporary vectors.     OperatorType has to provide  [2.x.30]  operation with     VectorType.         This function implements the algorithm from    
+* [1.x.2]
+*         
+*  [2.x.31]  This function uses Lapack routines to compute the largest     eigenvalue of  [2.x.32] .        
+*  [2.x.33]  This function provides an alternate estimate to that obtained from     several steps of SolverCG with      [2.x.34]     
+* [0.x.4]*
+     Apply Chebyshev polynomial of the operator  [2.x.35]  to  [2.x.36]  For a     non-defective operator  [2.x.37]  with a complete set of eigenpairs      [2.x.38] , the action of a polynomial filter  [2.x.39]  is     given by  [2.x.40] , where  [2.x.41] . Thus by appropriately choosing the polynomial filter, one can     alter the eigenmodes contained in  [2.x.42] .         This function uses Chebyshev polynomials of first kind. Below is an     example of polynomial  [2.x.43]  of degree  [2.x.44]  normalized to unity at      [2.x.45] .  [2.x.46]      By introducing a linear mapping  [2.x.47]  from  [2.x.48]  to      [2.x.49] , we can dump the corresponding modes in  [2.x.50]  The higher     the polynomial degree  [2.x.51] , the more rapid it grows outside of the      [2.x.52] . In order to avoid numerical overflow, we normalize     polynomial filter to unity at  [2.x.53]  Thus, the filtered operator     is  [2.x.54] .         The action of the Chebyshev filter only requires     evaluation of  [2.x.55]  of  [2.x.56]  and is based on the     recursion equation for Chebyshev polynomial of degree  [2.x.57] :      [2.x.58]  with  [2.x.59]  and  [2.x.60] .          [2.x.61]  is used to allocate memory for temporary objects.         This function implements the algorithm (with a minor fix of sign of      [2.x.62] ) from    
+* [1.x.3]
+*         
+*  [2.x.63]  If  [2.x.64]  is equal to      [2.x.65] , no normalization     will be performed.    
+* [0.x.5]

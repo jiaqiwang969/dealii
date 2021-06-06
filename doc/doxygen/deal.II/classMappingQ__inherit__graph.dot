@@ -4,10 +4,14 @@ digraph "MappingQ&lt; dim, spacedim &gt;"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   Node1 [label="MappingQ\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
-  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
-  Node2 [label="MappingQ\< dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMappingQ.html",tooltip=" "];
-  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node3 [label="MappingC1\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMappingC1.html",tooltip=" "];
-  Node2 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node4 [label="MappingQEulerian\< dim,\l VectorType, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMappingQEulerian.html",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim - 1, dim \>" ,fontname="Helvetica"];
+  Node2 [label="MappingQ\< dim - 1,\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMappingQ.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
+  Node3 [label="MappingQ\< dim, dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMappingQ.html",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="MappingC1\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMappingC1.html",tooltip=" "];
+  Node3 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="MappingQEulerian\< dim,\l VectorType, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMappingQEulerian.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
+  Node6 [label="MappingQ\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMappingQ.html",tooltip=" "];
 }

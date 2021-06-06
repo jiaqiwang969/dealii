@@ -167,7 +167,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Removed: <a class="el" href="classTrilinosWrappers_1_1SparseMatrix.html">TrilinosWrappers::SparseMatrix</a> copy constructor got removed to be in line with PETSc and <a class="el" href="classSparseMatrix.html">SparseMatrix</a>. You can use <a class="el" href="namespaceinternal.html#a38181f4582ff69679bda7d8e31c37291">reinit()</a> and copy_from(). <br  />
+<p class="startli">Removed: <a class="el" href="classTrilinosWrappers_1_1SparseMatrix.html">TrilinosWrappers::SparseMatrix</a> copy constructor got removed to be in line with PETSc and <a class="el" href="classSparseMatrix.html">SparseMatrix</a>. You can use <a class="el" href="namespaceinternal.html#a38181f4582ff69679bda7d8e31c37291">reinit()</a> and <a class="el" href="sparsity__pattern__0_8txt.html#a45eea81dd79003b1d7aaf96bcd5d434d">copy_from()</a>. <br  />
  (Timo Heister, 2015/01/12) </p>
 <p class="endli"></p>
 </li>
@@ -215,7 +215,7 @@ $(function() {
  <em>With headers in <code>deal.II/lac/</code>:</em></p><ul>
 <li>The deprecated constructors of <a class="el" href="classSparseMIC.html">SparseMIC</a>, <a class="el" href="classSparseILU.html">SparseILU</a>, and <a class="el" href="classSparseLUDecomposition.html">SparseLUDecomposition</a>.</li>
 <li>SparseMIC::decompose and SparseILU::decompose.</li>
-<li><a class="el" href="group__Exceptions.html#gafa7ae4d32bda6035661c9cccfe185597">SparseMIC::reinit</a> and <a class="el" href="group__Exceptions.html#gafa7ae4d32bda6035661c9cccfe185597">SparseLUDecomposition::reinit</a>.</li>
+<li>SparseMIC::reinit and SparseLUDecomposition::reinit.</li>
 <li>SparseILU::apply_decomposition.</li>
 <li>SparseLUDecomposition::decompose and SparseLUDecomposition::is_decomposed.</li>
 <li>The <a class="el" href="namespaceUtilities.html#a6155277fd058eddb1504f9562cb1c04d">compress()</a> functions without argument in the various vector classes. You should use the versions with a <a class="el" href="structVectorOperation.html">VectorOperation</a> argument instead.</li>
@@ -303,7 +303,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-Removed: The <a class="el" href="config_8h.html">config.h</a> file no longer exports HAVE_* definitions. Those are either entirely removed (for the blas/lapack symbols) or renamed to DEAL_II_HAVE_*. This change is done in order to avoid clashes with external projects also exporting HAVE_* definitions in their header files. <br  />
+Removed: The config.h file no longer exports HAVE_* definitions. Those are either entirely removed (for the blas/lapack symbols) or renamed to DEAL_II_HAVE_*. This change is done in order to avoid clashes with external projects also exporting HAVE_* definitions in their header files. <br  />
  (Matthias Maier, 2014/12/29)  </li>
 </ol>
 <p><a class="anchor" id="general"></a> </p><h3>General</h3>
@@ -610,7 +610,7 @@ New: The build system now queries for git branch name and revision sha1 (and aut
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: One can now ask a cell the how many-th active cell it is, using <a class="el" href="classCellAccessor.html#ad4b8ec35236bea8ee91a72bbd19762fe">CellAccessor::active_cell_index()</a> (which is called as <code>cell-&gt;active_cell_index()</code>). <br  />
+<p class="startli">New: One can now ask a cell the how many-th active cell it is, using <a class="el" href="classCellAccessor.html#ad4b8ec35236bea8ee91a72bbd19762fe">CellAccessor::active_cell_index()</a> (which is called as <code>cell-&gt;<a class="el" href="matrix__free__0_8txt.html#a24682f2a4db2b43201b7b99b3d2ddf88">active_cell_index()</a></code>). <br  />
  (Wolfgang Bangerth, 2015/04/10) </p>
 <p class="endli"></p>
 </li>

@@ -1,0 +1,72 @@
+[0.x.0]*
+ This namespace offers functions to calculate expansion series of the solution on the reference element. Coefficients of expansion are often used to estimate local smoothness of the underlying FiniteElement field to decide on h- or p-adaptive refinement strategy.
+
+* 
+* [0.x.1]*
+   A class to calculate expansion of a scalar FE (or a single component   of vector-valued FE) field into Fourier series on a reference element.   The exponential form of the Fourier series is  based on completeness   and Hermitian orthogonality of the set of exponential   functions  [2.x.0] .   For example in 1D the L2-orthogonality condition reads   [1.x.0]   Note that  [2.x.1] .     The arbitrary scalar FE field on the reference element can be expanded in   the complete orthogonal exponential basis as   [1.x.1]   From the orthogonality property of the basis, it follows that   [1.x.2]   It is this complex-valued expansion coefficients, that are calculated by   this class. Note that  [2.x.2] ,   where  [2.x.3]  are real-valued FiniteElement shape functions.   Consequently  [2.x.4]  and   we only need to compute  [2.x.5]  for positive indices    [2.x.6]  .  
+* [0.x.2]*
+     Constructor that initializes all required data structures.         The  [2.x.7]  defines the number of coefficients in     each direction,  [2.x.8]  is the  [2.x.9]  for which     expansion will be used and  [2.x.10]  is the  [2.x.11]  used to     integrate the expansion for each FiniteElement in  [2.x.12]          As the Fourier expansion can only be performed on scalar fields, this     class does not operate on vector-valued finite elements and will     therefore throw an assertion. However, each component of a finite element     field can be treated as a scalar field, respectively, on which Fourier     expansions are again possible. For this purpose, the optional parameter      [2.x.13]  defines which component of each FiniteElement will be used.     The default value of  [2.x.14]  only applies to scalar FEs, in which     case it indicates that the sole component is to be decomposed. For     vector-valued FEs, a non-default value must be explicitly provided.    
+* [0.x.3]*
+     A non-default constructor. The  [2.x.15]  defines the     number of modes in each direction,  [2.x.16]  is the  [2.x.17]      for which expansion will be used and  [2.x.18]  is the  [2.x.19]      used to integrate the expansion for each FiniteElement     in  [2.x.20]           [2.x.21]  Use a different constructor instead.    
+* [0.x.4]*
+     Calculate  [2.x.22]  of the cell vector field given by      [2.x.23]  corresponding to FiniteElement with      [2.x.24]  .    
+* [0.x.5]*
+     Return the number of coefficients in each coordinate direction for the     finite element associated with  [2.x.25]  in the provided  [2.x.26]     
+* [0.x.6]*
+     Calculate all transformation matrices to transfer the finite element     solution to the series expansion representation.         These matrices will be generated on demand by calling calculate() and     stored for recurring purposes. Usually, this operation consumes a lot of     workload. With this function, all matrices will be calculated in advance.     This way, we can separate their costly generation from the actual     application.    
+* [0.x.7]*
+     Write all transformation matrices of this object to a stream for the     purpose of serialization.         Since any of its transformation matrices has to be generated only once     for a given scenario, it is common practice to determine them in advance     calling precalculate_all_transformation_matrices() and keep them via     serialization.    
+* [0.x.8]*
+     Read all transformation matrices from a stream and recover them for this     object.    
+* [0.x.9]*
+     Test for equality of two series expansion objects.    
+* [0.x.10]*
+     Number of coefficients in each direction for each finite element in the     registered  [2.x.27]     
+* [0.x.11]*
+      [2.x.28]  for which transformation matrices will be calculated.    
+* [0.x.12]*
+      [2.x.29]  used in calculation of transformation matrices.    
+* [0.x.13]*
+     Angular frequencies  [2.x.30]  .    
+* [0.x.14]*
+     Transformation matrices for each FiniteElement.    
+* [0.x.15]*
+     Auxiliary vector to store unrolled coefficients.    
+* [0.x.16]*
+     Which component of FiniteElement should be used to calculate the     expansion.    
+* [0.x.17]*
+   A class to calculate expansion of a scalar FE (or a single component   of vector-valued FE) field into series of Legendre functions on a   reference element.     Legendre functions are solutions to Legendre's differential equation   [1.x.3]   and can be expressed using Rodrigues' formula   [1.x.4]   These polynomials are orthogonal with respect to the  [2.x.31]  inner   product on the interval  [2.x.32]    [1.x.5]   and are complete.   A family of  [2.x.33] -orthogonal polynomials on  [2.x.34]  can be   constructed via   [1.x.6]       An arbitrary scalar FE field on the reference element  [2.x.35]  can be   expanded in the complete orthogonal basis as   [1.x.7]   From the orthogonality property of the basis, it follows that   [1.x.8]   This class calculates coefficients  [2.x.36]  using    [2.x.37] -dimensional Legendre polynomials constructed from    [2.x.38]  using tensor product rule.  
+* [0.x.18]*
+     Constructor that initializes all required data structures.         The  [2.x.39]  defines the number of coefficients in     each direction,  [2.x.40]  is the  [2.x.41]  for which     expansion will be used and  [2.x.42]  is the  [2.x.43]  used to     integrate the expansion for each FiniteElement in  [2.x.44]          As the Legendre expansion can only be performed on scalar fields, this     class does not operate on vector-valued finite elements and will     therefore throw an assertion. However, each component of a finite element     field can be treated as a scalar field, respectively, on which Legendre     expansions are again possible. For this purpose, the optional parameter      [2.x.45]  defines which component of each FiniteElement will be used.     The default value of  [2.x.46]  only applies to scalar FEs, in which     case it indicates that the sole component is to be decomposed. For     vector-valued FEs, a non-default value must be explicitly provided.    
+* [0.x.19]*
+     A non-default constructor. The  [2.x.47]  defines the number     of coefficients in each direction,  [2.x.48]  is the  [2.x.49]      for which expansion will be used and  [2.x.50]  is the  [2.x.51]      used to integrate the expansion for each FiniteElement in  [2.x.52]           [2.x.53]  Use a different constructor instead.    
+* [0.x.20]*
+     Calculate  [2.x.54]  of the cell vector field given by      [2.x.55]  corresponding to FiniteElement with      [2.x.56]  .    
+* [0.x.21]*
+     Return the number of coefficients in each coordinate direction for the     finite element associated with  [2.x.57]  in the provided  [2.x.58]     
+* [0.x.22]*
+     Calculate all transformation matrices to transfer the finite element     solution to the series expansion representation.         These matrices will be generated on demand by calling calculate() and     stored for recurring purposes. Usually, this operation consumes a lot of     workload. With this function, all matrices will be calculated in advance.     This way, we can separate their costly generation from the actual     application.    
+* [0.x.23]*
+     Write all transformation matrices of this object to a stream for the     purpose of serialization.         Since any of its transformation matrices has to be generated only once     for a given scenario, it is common practice to determine them in advance     calling precalculate_all_transformation_matrices() and keep them via     serialization.    
+* [0.x.24]*
+     Read all transformation matrices from a stream and recover them for this     object.    
+* [0.x.25]*
+     Test for equality of two series expansion objects.    
+* [0.x.26]*
+     Number of coefficients in each direction for each finite element in the     registered  [2.x.59]     
+* [0.x.27]*
+      [2.x.60]  for which transformation matrices will be calculated.    
+* [0.x.28]*
+      [2.x.61]  used in calculation of transformation matrices.    
+* [0.x.29]*
+     Transformation matrices for each FiniteElement.    
+* [0.x.30]*
+     Auxiliary vector to store unrolled coefficients.    
+* [0.x.31]*
+     Which component of FiniteElement should be used to calculate the     expansion.    
+* [0.x.32]*
+   Calculate the  [2.x.62]  of subsets of  [2.x.63]  defined by    [2.x.64]  being constant. Return the pair of vectors of predicate values   and the vector of calculated subset norms.      [2.x.65]  should return a pair of  [2.x.66]  and <code>unsigned   int</code>. The former is a flag whether a given TableIndices should be   used in calculation, whereas the latter is the unrolled value of indices   according to which the subsets of coefficients will be formed.     Only those coefficients will be considered which are larger than    [2.x.67]     
+*  [2.x.68]  Only the following values of  [2.x.69]  are implemented and make   sense in this case: mean, L1_norm, L2_norm, Linfty_norm. The mean norm ca   only be applied to real valued coefficients.  
+* [0.x.33]*
+   Linear regression least-square fit of  [2.x.70] .   The size of the input vectors should be equal and more than 1.   The returned pair will contain  [2.x.71]  (first) and  [2.x.72]  (second).  
+* [0.x.34]

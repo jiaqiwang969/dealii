@@ -1,0 +1,81 @@
+[0.x.0]*
+     Namespace containing the CUDA kernels.    
+* [0.x.1]*
+       Multiply each entry of  [2.x.0]  of size  [2.x.1]  by  [2.x.2]             
+*  [2.x.3]       
+* [0.x.2]*
+       Functor defining the addition of two Numbers.            
+*  [2.x.4]       
+* [0.x.3]*
+       Functor defining the subtraction of two Numbers.            
+*  [2.x.5]       
+* [0.x.4]*
+       Functor defining the maximum of two Numbers.            
+*  [2.x.6]       
+* [0.x.5]*
+       Functor defining the maximum of two Numbers.            
+*  [2.x.7]       
+* [0.x.6]*
+       Apply the functor  [2.x.8]  to each element of  [2.x.9]  and  [2.x.10]             
+*  [2.x.11]       
+* [0.x.7]*
+       Apply the functor  [2.x.12]  to the elements of  [2.x.13]  that have       indices in  [2.x.14]  and  [2.x.15]  The size of  [2.x.16]  should be greater       than the size of  [2.x.17]   [2.x.18]  and  [2.x.19]  should have the same size  [2.x.20]        N.            
+*  [2.x.21]       
+* [0.x.8]*
+       Structure implementing the functions used to add elements when       using a reduction.            
+*  [2.x.22]       
+* [0.x.9]*
+       Structure implementing the functions used to compute the L1 norm       when using a reduction.            
+*  [2.x.23]       
+* [0.x.10]*
+       Structure implementing the functions used to compute the L-infinity       norm when using a reduction.            
+*  [2.x.24]       
+* [0.x.11]*
+       Perform a reduction on  [2.x.25]  using  [2.x.26]             
+*  [2.x.27]       
+* [0.x.12]*
+       Structure implementing the functions used to compute the dot       product norm when using a double vector reduction.            
+*  [2.x.28]       
+* [0.x.13]*
+       Perform a binary operation on each element of  [2.x.29]  and  [2.x.30]  followed       by reduction on the resulting array.            
+*  [2.x.31]       
+* [0.x.14]*
+       Add  [2.x.32]  to each element of  [2.x.33]             
+*  [2.x.34]       
+* [0.x.15]*
+       Addition of a multiple of a vector, i.e., <tt>val += a*V_val</tt>.            
+*  [2.x.35]       
+* [0.x.16]*
+       Addition of multiple scaled vector, i.e., <tt>val += a*V_val +       b*W_val</tt>.            
+*  [2.x.36]       
+* [0.x.17]*
+       Scaling and simple addition of a multiple of a vector, i.e. <tt>val       = = s*val + a*V_val</tt>            
+*  [2.x.37]       
+* [0.x.18]*
+       Scaling and multiple additions of scaled vectors, i.e. <tt>val =       = s*val + a*V_val + b*W_val</tt>            
+*  [2.x.38]       
+* [0.x.19]*
+       Scale each element of this vector by the corresponding element in       the argument.            
+*  [2.x.39]       
+* [0.x.20]*
+       Assignment <tt>val = a*V_val</tt>.            
+*  [2.x.40]       
+* [0.x.21]*
+       Assignment <tt>val = a*V_val + b*W_val</tt>.            
+*  [2.x.41]       
+* [0.x.22]*
+       Perform a combined operation of a vector addition and a subsequent       inner product, returning the value of the inner product.            
+*  [2.x.42]       
+* [0.x.23]*
+       Set each element of  [2.x.43]  to  [2.x.44]             
+*  [2.x.45]       
+* [0.x.24]*
+       Set each element in  [2.x.46]  to  [2.x.47]  using  [2.x.48]  as permutation, i.e.,       <tt>val[indices[i]] = v[i]</tt>.            
+*  [2.x.49]       
+* [0.x.25]*
+       Set each element in  [2.x.50]  to  [2.x.51]  using  [2.x.52]  as permutation, i.e.,       <tt>val[i] = v[indices[i]]</tt>.            
+*  [2.x.53]       
+* [0.x.26]*
+       Add each element in  [2.x.54]  to  [2.x.55]  using  [2.x.56]  as permutation, i.e.,       <tt>val[indices[i]] += v[i]</tt>.            
+*  [2.x.57]       
+* [0.x.27]

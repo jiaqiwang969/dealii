@@ -1,0 +1,35 @@
+[0.x.0]*
+   The enum type given to the Cache class to select what   information to update.     You can select more than one flag by concatenation using the bitwise or    [2.x.0] .  
+* [0.x.1]*
+     Update Nothing.    
+* [0.x.2]*
+     Update vertex_to_cell_map, as returned by      [2.x.1]     
+* [0.x.3]*
+     Update vertex_to_cell_centers_directions, as returned by      [2.x.2]     
+* [0.x.4]*
+     Update a mapping of used vertices.    
+* [0.x.5]*
+     Update an RTree of the used vertices.    
+* [0.x.6]*
+     Update an RTree of the cell bounding boxes.    
+* [0.x.7]*
+     Update the covering rtree object, initialized with pairs     of a bounding box and an unsigned int. The bounding     boxes are used to describe approximately which portion     of the mesh contains locally owned cells by the     process of rank the second element of the pair.    
+* [0.x.8]*
+     Update an RTree of locally owned cell bounding boxes.    
+* [0.x.9]*
+     Update vertex to neighbor subdomain    
+* [0.x.10]*
+     Update all objects.    
+* [0.x.11]*
+   Output operator which outputs assemble flags as a set of or'd text values.      [2.x.3]   
+* [0.x.12]*
+   Global operator which returns an object in which all bits are set which are   either set in the first or the second argument. This operator exists since   if it did not then the result of the bit-or <tt>operator |</tt> would be an   integer which would in turn trigger a compiler warning when we tried to   assign it to an object of type CacheUpdateFlags.      [2.x.4]   
+* [0.x.13]*
+   Global operator which returns an object in which all bits are set which are   not set in the argument. This operator exists since   if it did not then the result of the bit-negation <tt>operator ~</tt> would   be an integer which would in turn trigger a compiler warning when we tried   to assign it to an object of type CacheUpdateFlags.      [2.x.5]   
+* [0.x.14]*
+   Global operator which sets the bits from the second argument also in the   first one.      [2.x.6]   
+* [0.x.15]*
+   Global operator which returns an object in which all bits are set which are   set in the first as well as the second argument. This operator exists since   if it did not then the result of the bit-and <tt>operator &</tt> would be   an integer which would in turn trigger a compiler warning when we tried to   assign it to an object of type CacheUpdateFlags.      [2.x.7]   
+* [0.x.16]*
+   Global operator which clears all the bits in the first argument if they are   not also set in the second argument.      [2.x.8]   
+* [0.x.17]

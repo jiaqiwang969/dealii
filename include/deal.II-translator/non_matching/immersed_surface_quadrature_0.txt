@@ -1,0 +1,16 @@
+[0.x.0]*
+   This class defines a quadrature formula for integration over an   oriented surface,  [2.x.0] , immersed in the unit cell. By   immersed it is meant that the surface may intersect the unit cell   in an arbitrary way. The quadrature formula is described by a set   of quadrature points,  [2.x.1] , weights,  [2.x.2] , and normalized   surface normals,  [2.x.3] .     We typically want to compute surface integrals in real space.   A surface  [2.x.4]  intersecting a cell  [2.x.5]  in real space, can be mapped onto a   surface  [2.x.6]  intersecting the unit cell  [2.x.7] .   Thus a surface integral over  [2.x.8]  in real space can be transformed to   a surface integral over  [2.x.9]  according to   [1.x.0]   where  [2.x.10]  is the mapping from reference to real space and  [2.x.11]  is its   Jacobian. This transformation is possible since the continuous surface   elements are vectors:  [2.x.12]  which are   parallel to the normals of  [2.x.13]  and  [2.x.14] . So in order to compute the   integral in real space one needs information about the normal to do the   transformation.     Thus, in addition to storing points and weights, this quadrature stores   also the normalized normal for each quadrature point. This can be viewed   as storing a discrete surface element,   [1.x.1]   for each quadrature point. The surface integral in real space would then be   approximated as   [1.x.2]      [2.x.15]   
+* [0.x.1]*
+     Default constructor to initialize the quadrature with no quadrature     points.    
+* [0.x.2]*
+     Construct a quadrature formula from vectors of points, weights and     surface normals. The points, weights and normals should be with respect     to reference space, and the normals should be normalized.    
+* [0.x.3]*
+     Extend the given formula by an additional quadrature point.     The point, weight and normal should be with respect to reference space,     and the normal should be normalized.         This function exists since immersed quadrature rules can be rather     complicated to construct. Often the construction is done by     partitioning the cell into regions and constructing points on each     region separately. This can make it cumbersome to create the quadrature     from the constructor since all quadrature points have to be known at     time of creation of the object.        
+*  [2.x.16]  This function should only be used during construction of the     quadrature formula.    
+* [0.x.4]*
+     Return a reference to the <tt>i</tt>th surface normal.    
+* [0.x.5]*
+     Return a reference to the whole %vector of normals.    
+* [0.x.6]*
+     %Vector of surface normals at each quadrature point.    
+* [0.x.7]

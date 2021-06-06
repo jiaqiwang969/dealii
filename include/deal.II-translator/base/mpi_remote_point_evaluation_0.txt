@@ -1,0 +1,65 @@
+[0.x.0]*
+     Helper class to access values on non-matching grids.        
+*  [2.x.0]  The name of the fields are chosen with the method       evaluate_and_process() in mind. Here, quantities are       computed at specified arbitrary positioned points (and even on remote       processes in the MPI universe) cell by cell and these values are sent       to requesting processes, which receive the result and resort the       result according to the points.    
+* [0.x.1]*
+       Constructor.              [2.x.1]  tolerance Tolerance in terms of unit cell coordinates for         determining all cells around a point passed to the class during         reinit(). Depending on the problem, it might be necessary to adjust         the tolerance in order to be able to identify a cell.         Floating point arithmetic implies that a point will, in general, not         lie exactly on a vertex, edge, or face.        [2.x.2]  enforce_unique_mapping Enforce unique mapping, i.e.,         (one-to-one) relation of points and cells.        [2.x.3]  rtree_level RTree level to be used during the construction of the bounding boxes.      
+* [0.x.2]*
+       Destructor.      
+* [0.x.3]*
+       Set up internal data structures and communication pattern based on       a list of points  [2.x.4]  and mesh description ( [2.x.5]  and  [2.x.6]        mapping).              [2.x.7]  This is a collective call that needs to be executed by all         processors in the communicator.      
+* [0.x.4]*
+       Data of points positioned in a cell.      
+* [0.x.5]*
+         Level and index of cells.        
+* [0.x.6]*
+         Pointers to beginning and ending of the (reference) points         associated to the cell.        
+* [0.x.7]*
+         Reference points in the interval [0,1]^dim.        
+* [0.x.8]*
+       Evaluate function  [2.x.8]  in the given  points and       triangulation. The result is stored in  [2.x.9]             
+*  [2.x.10]  If the map of points to cells is not a         one-to-one relation (is_map_unique()==false), the result needs to be         processed with the help of get_point_ptrs(). This         might be the case if a point coincides with a geometric entity (e.g.,         vertex) that is shared by multiple cells or a point is outside of the         computational domain.              [2.x.11]  This is a collective call that needs to be executed by all         processors in the communicator.      
+* [0.x.9]*
+       This method is the inverse of the method evaluate_and_process(). It       makes the data at the points, provided by  [2.x.12]  available in the       function  [2.x.13]               [2.x.14]  This is a collective call that needs to be executed by all         processors in the communicator.      
+* [0.x.10]*
+       Return a CRS-like data structure to determine the position of the       result corresponding a point and the amount.      
+* [0.x.11]*
+       Return if points and cells have a one-to-one relation. This is not the       case if a point is not owned by any cell (the point is outside of the       domain) or if multiple cells own the point (the point is positioned       on a geometric entity shared by neighboring cells).      
+* [0.x.12]*
+       Return the Triangulation object used during reinit().      
+* [0.x.13]*
+       Return the Mapping object used during reinit().      
+* [0.x.14]*
+       Return if the internal data structures have been set up and if yes       whether they are still valid (and not invalidated due to changes of the       Triangulation).      
+* [0.x.15]*
+       Tolerance to be used while determining the surrounding cells of a       point.      
+* [0.x.16]*
+       Enforce unique mapping, i.e., (one-to-one) relation of points and       cells.      
+* [0.x.17]*
+       RTree level to be used during the construction of the bounding boxes.      
+* [0.x.18]*
+       Storage for the status of the triangulation signal.      
+* [0.x.19]*
+       Flag indicating if the reinit() function has been called and if yes       the triangulation has not been modified since then (potentially       invalidating the communication pattern).      
+* [0.x.20]*
+       Reference to the Triangulation object used during reinit().      
+* [0.x.21]*
+       Reference to the Mapping object used during reinit().      
+* [0.x.22]*
+       (One-to-one) relation of points and cells.      
+* [0.x.23]*
+       Since for each point multiple or no results can be available, the       pointers in this vector indicate the first and last entry associated       with a point in a CRS-like fashion.      
+* [0.x.24]*
+       Permutation index within a recv buffer.      
+* [0.x.25]*
+       Pointers of ranges within a receive buffer that are filled by ranks       specified by recv_ranks.      
+* [0.x.26]*
+       Ranks from where data is received.      
+* [0.x.27]*
+       Point data sorted according to cells so that evaluation (incl. reading       of degrees of freedoms) needs to performed only once per cell.      
+* [0.x.28]*
+       Permutation index within a send buffer.      
+* [0.x.29]*
+       Ranks to send to.      
+* [0.x.30]*
+       Pointers of ranges within a send buffer to be sent to the ranks       specified by send_ranks.      
+* [0.x.31]

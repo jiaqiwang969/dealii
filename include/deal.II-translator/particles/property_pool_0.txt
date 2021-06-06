@@ -1,0 +1,55 @@
+[0.x.0]*
+   The type used for indices of particles. While in   sequential computations the 4 billion indices of 32-bit unsigned integers   is plenty, parallel computations using hundreds of processes can overflow   this number and we need a bigger index space. We here utilize the same   build variable that controls the dof indices because the number   of degrees of freedom and the number of particles are typically on the same   order of magnitude.     The data type always indicates an unsigned integer type.  
+* [0.x.1]*
+   An identifier that denotes the MPI type associated with    [2.x.0]   
+* [0.x.2]*
+   The type used for indices of particles. While in   sequential computations the 4 billion indices of 32-bit unsigned integers   is plenty, parallel computations using hundreds of processes can overflow   this number and we need a bigger index space. We here utilize the same   build variable that controls the dof indices because the number   of degrees of freedom and the number of particles are typically on the same   order of magnitude.     The data type always indicates an unsigned integer type.  
+* [0.x.3]*
+   An identifier that denotes the MPI type associated with    [2.x.1]   
+* [0.x.4]*
+   This class manages a memory space in which all particles associated with   a ParticleHandler store their properties. It also stores the locations   and reference locations of particles.     The rationale for this class is   that because typically every particle stores the same number of   properties, and because algorithms generally traverse over all particles   doing the same operation on all particles' properties, it is more efficient   to let the memory used for properties be handled by a central manager.   Particles then do not store a pointer to a memory area in which they store   their properties, but instead a "handle" that the PropertyPool class then   translates into a pointer to concrete memory.     All this said, the current implementation only provides this kind of   interface, but still uses simple new/delete allocation for every   set of properties requested by a particle. Additionally, the current   implementation assumes the same number of properties per particle, but of   course the PropertyType could contain a pointer to dynamically allocated   memory with varying sizes per particle (this memory would not be managed by   this class).  
+* [0.x.5]*
+     Typedef for the handle that is returned to the particles, and that     uniquely identifies the slot of memory that is reserved for this     particle.    
+* [0.x.6]*
+     Define a default (invalid) value for handles.    
+* [0.x.7]*
+     Constructor. Stores the number of properties per reserved slot.    
+* [0.x.8]*
+     Destructor. This function ensures that all memory that had     previously been allocated using allocate_properties_array()     has also been returned via deallocate_properties_array().    
+* [0.x.9]*
+     Clear the dynamic memory allocated by this class. This function     ensures that all memory that had previously been allocated using     allocate_properties_array() has also been returned via     deallocate_properties_array().    
+* [0.x.10]*
+     Return a new handle that allows a particle to store information such as     properties and locations. This also allocated memory in this PropertyPool     variable.    
+* [0.x.11]*
+     Return a handle obtained by register_particle() and mark the memory     allocated for storing the particle's data as free for re-use.    
+* [0.x.12]*
+     Return the location of a particle identified by the given `handle`.    
+* [0.x.13]*
+     Set the location of a particle identified by the given `handle`.    
+* [0.x.14]*
+     Return the reference_location of a particle identified by the given     `handle`.    
+* [0.x.15]*
+     Set the reference location of a particle identified by the given     `handle`.    
+* [0.x.16]*
+     Return the ID number of this particle identified by the given     `handle`.    
+* [0.x.17]*
+     Set the ID number of this particle identified by the given     `handle`.    
+* [0.x.18]*
+     Return an ArrayView to the properties that correspond to the given     handle  [2.x.2]     
+* [0.x.19]*
+     Reserve the dynamic memory needed for storing the properties of      [2.x.3]  particles.    
+* [0.x.20]*
+     Return how many properties are stored per slot in the pool.    
+* [0.x.21]*
+     The number of properties that are reserved per particle.    
+* [0.x.22]*
+     A vector that stores the locations of particles. It is indexed in the     same way as the `reference_locations` and `properties` arrays, i.e., via     handles.    
+* [0.x.23]*
+     A vector that stores the reference locations of particles. It is indexed     in the same way as the `locations` and `properties` arrays, i.e., via     handles.    
+* [0.x.24]*
+     A vector that stores the unique identifiers of particles. It is indexed     in the same way as the `locations` and `properties` arrays, i.e., via     handles.    
+* [0.x.25]*
+     The currently allocated properties (whether assigned to     a particle or available for assignment). It is indexed the same way as     the `locations` and `reference_locations` arrays via handles.    
+* [0.x.26]*
+     A collection of handles that have been created by     allocate_properties_array() and have been destroyed by     deallocate_properties_array(). Since the memory is still     allocated these handles can be reused for new particles     to avoid memory allocation.    
+* [0.x.27]

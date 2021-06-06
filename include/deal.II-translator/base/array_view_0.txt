@@ -1,0 +1,249 @@
+[0.x.0]*
+ A class that represents a window of memory locations of type  [2.x.0]  and presents it as if it was an array. In essence, this class is nothing more than just a pointer to the first location and an integer that represents the length of the array in elements. The memory remains owned by whoever allocated it, as this class does not take over ownership.
+*  The advantage of using this class is that you don't have to pass around pairs of pointers and that  [2.x.1]  checks for the validity of the index with which you subscript this array view. Note that accessing elements is only allowed if the underlying data is stored in CPU memory.
+*  This class can handle views to both non-constant and constant memory locations. If you want to represent a view of a constant array, then the template argument type of this class needs to be  [2.x.2]  as well. The following code snippet gives an example:
+
+* 
+* [1.x.0]
+*  In either case, accessing an element of a view does not change the ArrayView object itself, and consequently  [2.x.3]  is a  [2.x.4]  const function. This corresponds to the notion that a view simply represents a, well, "view" of memory that is owned by someone else. Thus, accessing elements of the view changes the memory managed by some other object, but not the view itself, allowing us to make  [2.x.5]  a  [2.x.6]  member function. This is in contrast to, say,  [2.x.7]  which manages the memory it points to and changing an element of the  [2.x.8]  therefore changes the  [2.x.9]  object itself
+* 
+*  -  consequently, the  [2.x.10]  is non- [2.x.11] 
+* 
+
+* 
+*  [2.x.12]  This class is similar to    [2.x.13]  but the   latter is only available starting in C++20.
+* 
+
+* 
+*  [2.x.14] 
+
+* 
+* [0.x.1]*
+   An alias that denotes the "value_type" of this container-like class,   i.e., the type of the element it "stores" or points to.  
+* [0.x.2]*
+   An alias for iterators pointing into the array.  
+* [0.x.3]*
+   An alias for const iterators pointing into the array.  
+* [0.x.4]*
+   Default constructor.  
+* [0.x.5]*
+   Constructor.      [2.x.15]  starting_element A pointer to the first element of the array   this object should represent.    [2.x.16]  n_elements The length (in elements) of the chunk of memory   this object should represent.    
+*  [2.x.17]  The object that is constructed from these arguments has no   knowledge how large the object into which it points really is. As a   consequence, whenever you call  [2.x.18]  the array view can   check that the given index is within the range of the view, but it can't   check that the view is indeed a subset of the valid range of elements of   the underlying object that allocated that range. In other words, you need   to ensure that the range of the view specified by the two arguments to   this constructor is in fact a subset of the elements of the array into   which it points. The appropriate way to do this is to use the   make_array_view() functions.  
+* [0.x.6]*
+   Copy constructor from array views that point to non- [2.x.19]  elements. If   the current object will point to non- [2.x.20]  elements, then this is a   straight forward copy constructor. On the other hand, if the current   type's  [2.x.21]  template argument is a  [2.x.22]  qualified type,   then the current constructor is a conversion constructor that converts a   non- [2.x.23]  view to a  [2.x.24]  view, akin to converting a non- [2.x.25]    pointer to a  [2.x.26]  pointer.  
+* [0.x.7]*
+   A constructor that automatically creates a view from a single value_type   object. The view so created then has length one.  
+* [0.x.8]*
+   A constructor that automatically creates a view from a  [2.x.27]  object.   The view encompasses all elements of the given vector.     This implicit conversion constructor is particularly useful when calling   a function that takes an ArrayView object as argument, and passing in   a  [2.x.28]     
+*  [2.x.29]  This constructor takes a reference to a  [2.x.30]  vector as argument.     It can only be used to initialize ArrayView objects that point to      [2.x.31]  memory locations, such as  [2.x.32] .     You cannot initialize ArrayView objects to non- [2.x.33]  memory with     such arguments, such as  [2.x.34] .  
+* [0.x.9]*
+   A constructor that automatically creates a view from a  [2.x.35]  object.   The view encompasses all elements of the given vector.     This implicit conversion constructor is particularly useful when calling   a function that takes an ArrayView object as argument, and passing in   a  [2.x.36]     
+*  [2.x.37]  This constructor takes a reference to a non- [2.x.38]  vector as     argument. It can be used to initialize ArrayView objects that point to     either  [2.x.39]  memory locations, such as      [2.x.40] , or to non- [2.x.41]  memory,     such as  [2.x.42] .  
+* [0.x.10]*
+   A constructor that automatically creates a view for a given C-style array.   This constructor can be used as follows:  
+* [1.x.1]
+*    The object so returned is then a view of the array, with the size 7   correctly deduced.  
+* [0.x.11]*
+   A constructor that automatically creates a view from a  [2.x.43]  object.   The view encompasses all elements of the given vector.     This implicit conversion constructor is particularly useful when calling   a function that takes an ArrayView object as argument, and passing in   a  [2.x.44]   
+* [0.x.12]*
+   A constructor that automatically creates a view from a  [2.x.45]  object.   The view encompasses all elements of the given vector.     This implicit conversion constructor is particularly useful when calling   a function that takes an ArrayView object as argument, and passing in   a  [2.x.46]   
+* [0.x.13]*
+   Reinitialize a view.      [2.x.47]  starting_element A pointer to the first element of the array   this object should represent.    [2.x.48]  n_elements The length (in elements) of the chunk of memory   this object should represent.    
+*  [2.x.49]  The object that is constructed from these arguments has no   knowledge how large the object into which it points really is. As a   consequence, whenever you call  [2.x.50]  the array view can   check that the given index is within the range of the view, but it can't   check that the view is indeed a subset of the valid range of elements of   the underlying object that allocated that range. In other words, you need   to ensure that the range of the view specified by the two arguments to   this constructor is in fact a subset of the elements of the array into   which it points. The appropriate way to do this is to use the   make_array_view() functions.  
+* [0.x.14]*
+   Compare two ArrayView objects of the same type. Two objects are considered   equal if they have the same size and the same starting pointer.   This version always compares with the const value_type.  
+* [0.x.15]*
+   Compare two ArrayView objects of the same type. Two objects are considered   equal if they have the same size and the same starting pointer.   This version always compares with the non-const value_type.  
+* [0.x.16]*
+   Compare two ArrayView objects of the same type. Two objects are considered   equal if they have the same size and the same starting pointer.   This version always compares with the const value_type.  
+* [0.x.17]*
+   Compare two ArrayView objects of the same type. Two objects are considered   equal if they have the same size and the same starting pointer.   This version always compares with the non-const value_type.  
+* [0.x.18]*
+   Return the size (in elements) of the view of memory this object   represents.  
+* [0.x.19]*
+   Return a pointer to the underlying array serving as element storage.   In case the container is empty a nullptr is returned.  
+* [0.x.20]*
+   Return an iterator pointing to the beginning of the array view.  
+* [0.x.21]*
+   Return an iterator pointing to one past the end of the array view.  
+* [0.x.22]*
+   Return a constant iterator pointing to the beginning of the array view.  
+* [0.x.23]*
+   Return a constant iterator pointing to one past the end of the array view.  
+* [0.x.24]*
+   Return a reference to the  [2.x.51] th element of the range represented by the   current object.     This function is marked as  [2.x.52]  because it does not change the    [2.x.53] view object [2.x.54] . It may however return a reference to a non- [2.x.55]    memory location depending on whether the template type of the class is  [2.x.56]    const or not.     This function is only allowed to be called if the underlying data is indeed   stored in CPU memory.  
+* [0.x.25]*
+   A pointer to the first element of the range of locations in memory that   this object represents.  
+* [0.x.26]*
+   The length of the array this object represents.  
+* [0.x.27]*
+     Return whether the objects one gets by dereferencing the     iterators within the given iterator range form a contiguous     range in memory.    
+* [0.x.28]*
+     Return whether the objects one gets by dereferencing the     iterators within the given iterator range form a contiguous     range in memory.         This specialization for ( [2.x.57]  or non- [2.x.58]  pointers     returns  [2.x.59]  unconditionally since the fact that objects     pointed to by pointers are contiguous is embedded in the memory     model of C++.    
+* [0.x.29]*
+ Create an ArrayView that takes a pair of iterators as arguments. The type of the ArrayView is inferred from the value type of the iterator (e.g., the view created from two const iterators will have a const type).
+*   [2.x.60]  The iterators  [2.x.61]  and  [2.x.62]  must bound (in the usual half-open way) a contiguous in memory range of values. This function is intended for use with iterators into containers like  [2.x.63]  and will not work correctly with, e.g.,  [2.x.64] . In debug mode, we check that the provided iterators represent contiguous memory indeed.
+*   [2.x.65]  ArrayView
+
+* 
+* [0.x.30]*
+ Create a view from a pair of pointers.  [2.x.66]  may be const-qualified.
+*   [2.x.67]  The pointers  [2.x.68]  and  [2.x.69]  must bound (in the usual half-open way) a contiguous in memory range of values.
+*   [2.x.70]  ArrayView
+
+* 
+* [0.x.31]*
+ Create a view from an ArrayView itself.
+*  This function is used for  [2.x.71]  references to objects of ArrayView type. It only exists for compatibility purposes.
+*   [2.x.72]  array_view The ArrayView that we wish to make a copy of.
+*   [2.x.73]  ArrayView
+
+* 
+* [0.x.32]*
+ Create a view from an ArrayView itself.
+*  This function is used for non- [2.x.74]  references to objects of ArrayView type. It only exists for compatibility purposes.
+*   [2.x.75]  array_view The ArrayView that we wish to make a copy of.
+*   [2.x.76]  ArrayView
+
+* 
+* [0.x.33]*
+ Create a view to an entire Tensor object. This is equivalent to initializing an ArrayView object with a pointer to the first element and the size of the given argument.
+*  This function is used for  [2.x.77]  references to objects of Tensor type because they contain immutable elements. Consequently, the return type of this function is a view to a set of  [2.x.78]  objects.
+*   [2.x.79]  tensor The Tensor for which we want to have an array view object. The array view corresponds to the  [2.x.80] entire [2.x.81]  object but the order in which the entries are presented in the array is an implementation detail and should not be relied upon.
+*   [2.x.82]  ArrayView
+
+* 
+* [0.x.34]*
+ Create a view to an entire Tensor object. This is equivalent to initializing an ArrayView object with a pointer to the first element and the size of the given argument.
+*  This function is used for non- [2.x.83]  references to objects of Tensor type. Such objects contain elements that can be written to. Consequently, the return type of this function is a view to a set of writable objects.
+*   [2.x.84]  tensor The Tensor for which we want to have an array view object. The array view corresponds to the  [2.x.85] entire [2.x.86]  object but the order in which the entries are presented in the array is an implementation detail and should not be relied upon.
+*   [2.x.87]  ArrayView
+
+* 
+* [0.x.35]*
+ Create a view to an entire SymmetricTensor object. This is equivalent to initializing an ArrayView object with a pointer to the first element and the size of the given argument.
+*  This function is used for  [2.x.88]  references to objects of SymmetricTensor type because they contain immutable elements. Consequently, the return type of this function is a view to a set of  [2.x.89]  objects.
+*   [2.x.90]  tensor The SymmetricTensor for which we want to have an array view object. The array view corresponds to the  [2.x.91] entire [2.x.92]  object but the order in which the entries are presented in the array is an implementation detail and should not be relied upon.
+*   [2.x.93]  ArrayView
+
+* 
+* [0.x.36]*
+ Create a view to an entire SymmetricTensor object. This is equivalent to initializing an ArrayView object with a pointer to the first element and the size of the given argument.
+*  This function is used for non- [2.x.94]  references to objects of SymmetricTensor type. Such objects contain elements that can be written to. Consequently, the return type of this function is a view to a set of writable objects.
+*   [2.x.95]  tensor The SymmetricTensor for which we want to have an array view object. The array view corresponds to the  [2.x.96] entire [2.x.97]  object but the order in which the entries are presented in the array is an implementation detail and should not be relied upon.
+*   [2.x.98]  ArrayView
+
+* 
+* [0.x.37]*
+ Create a view to an entire C-style array. This is equivalent to initializing an ArrayView object with a pointer to the first element and the size of the given argument.
+*  Whether the resulting ArrayView is writable or not depends on the ElementType being a const type or not.
+*   [2.x.99]  array The C-style array for which we want to have an ArrayView object. The ArrayView corresponds to the  [2.x.100] entire [2.x.101]  vector.
+*   [2.x.102]  ArrayView
+
+* 
+* [0.x.38]*
+ Create a view to an entire Vector object. This is equivalent to initializing an ArrayView object with a pointer to the first element and the size of the given argument.
+*  This function is used for non- [2.x.103]  references to objects of Vector type. Such objects contain elements that can be written to. Consequently, the return type of this function is a view to a set of writable objects.
+*   [2.x.104]  vector The Vector for which we want to have an array view object. The array view corresponds to the  [2.x.105] entire [2.x.106]  Vector.
+*   [2.x.107]  ArrayView
+
+* 
+* [0.x.39]*
+ Create a view to an entire Vector object. This is equivalent to initializing an ArrayView object with a pointer to the first element and the size of the given argument.
+*  This function is used for  [2.x.108]  references to objects of Vector type because they contain immutable elements. Consequently, the return type of this function is a view to a set of  [2.x.109]  objects.
+*   [2.x.110]  vector The Vector for which we want to have an array view object. The array view corresponds to the  [2.x.111] entire [2.x.112]  Vector.
+*   [2.x.113]  ArrayView
+
+* 
+* [0.x.40]*
+ Create a view to an entire  [2.x.114]  object. This is equivalent to initializing an ArrayView object with a pointer to the first element and the size of the given argument.
+*  This function is used for non- [2.x.115]  references to objects of vector type. Such objects contain elements that can be written to. Consequently, the return type of this function is a view to a set of writable objects.
+*   [2.x.116]  vector The vector for which we want to have an array view object. The array view corresponds to the  [2.x.117] entire [2.x.118]  vector.
+*   [2.x.119]  ArrayView
+
+* 
+* [0.x.41]*
+ Create a view to an entire  [2.x.120]  object. This is equivalent to initializing an ArrayView object with a pointer to the first element and the size of the given argument.
+*  This function is used for  [2.x.121]  references to objects of vector type because they contain immutable elements. Consequently, the return type of this function is a view to a set of  [2.x.122]  objects.
+*   [2.x.123]  vector The vector for which we want to have an array view object. The array view corresponds to the  [2.x.124] entire [2.x.125]  vector.
+*   [2.x.126]  ArrayView
+
+* 
+* [0.x.42]*
+ Create a view to a part of a  [2.x.127]  object. This is equivalent to initializing the ArrayView object with a pointer to the  [2.x.128]  th element and the  [2.x.129]  as the length of the view.
+*  This function is used for non- [2.x.130]  references to objects of vector type. Such objects contain elements that can be written to. Consequently, the return type of this function is a view to a set of writable objects.
+*   [2.x.131]  vector The vector for which we want to have an array view object.  [2.x.132]  starting_index The index of the first element of the vector that will be part of this view.  [2.x.133]  size_of_view Number of elements in the new ArrayView.
+*   [2.x.134]   [2.x.135] 
+*   [2.x.136]  ArrayView
+
+* 
+* [0.x.43]*
+ Create a view to a part of a  [2.x.137]  object. This is equivalent to initializing the ArrayView object with a pointer to the  [2.x.138]  th element and the  [2.x.139]  as the length of the view.
+*  This function is used for  [2.x.140]  references to objects of vector type because they contain immutable elements. Consequently, the return type of this function is a view to a set of  [2.x.141]  objects.
+*   [2.x.142]  vector The vector for which we want to have an array view object.  [2.x.143]  starting_index The index of the first element of the vector that will be part of this view.  [2.x.144]  size_of_view Number of elements in the new ArrayView.
+*   [2.x.145]   [2.x.146] 
+*   [2.x.147]  ArrayView
+
+* 
+* [0.x.44]*
+ Create a view to an entire row of a Table<2> object. This is equivalent to initializing an ArrayView object with a pointer to the first element of the given row, and the length of the row as the length of the view.
+*  This function is used for non- [2.x.148]  references to objects of Table type. Such objects contain elements that can be written to. Consequently, the return type of this function is a view to a set of writable objects.
+*   [2.x.149]  table The Table for which we want to have an array view object. The array view corresponds to an  [2.x.150] entire [2.x.151]  row.  [2.x.152]  row The index of the row into the table to which this view should correspond.
+*   [2.x.153]  ArrayView
+
+* 
+* [0.x.45]*
+ Create a view to an entire Table<2> object. This is equivalent to initializing an ArrayView object with a pointer to the first element of the given table, and the number of table entries as the length of the view.
+*  This function is used for non- [2.x.154]  references to objects of Table type. Such objects contain elements that can be written to. Consequently, the return type of this function is a view to a set of writable objects.
+*   [2.x.155]  table The Table for which we want to have an array view object. The array view corresponds to the  [2.x.156] entire [2.x.157]  table but the order in which the entries are presented in the array is an implementation detail and should not be relied upon.
+*   [2.x.158]  ArrayView
+
+* 
+* [0.x.46]*
+ Create a view to an entire Table<2> object. This is equivalent to initializing an ArrayView object with a pointer to the first element of the given table, and the number of table entries as the length of the view.
+*  This function is used for  [2.x.159]  references to objects of Table type because they contain immutable elements. Consequently, the return type of this function is a view to a set of  [2.x.160]  objects.
+*   [2.x.161]  table The Table for which we want to have an array view object. The array view corresponds to the  [2.x.162] entire [2.x.163]  table but the order in which the entries are presented in the array is an implementation detail and should not be relied upon.
+*   [2.x.164]  ArrayView
+
+* 
+* [0.x.47]*
+ Create a view to an entire LAPACKFullMatrix object. This is equivalent to initializing an ArrayView object with a pointer to the first element of the given object, and the number entries as the length of the view.
+*  This function is used for  [2.x.165]  references to objects of LAPACKFullMatrix type. Such objects contain elements that can be written to. Consequently, the return type of this function is a view to a set of  [2.x.166]  objects.
+*   [2.x.167]  matrix The LAPACKFullMatrix for which we want to have an array view object. The array view corresponds to the  [2.x.168] entire [2.x.169]  object but the order in which the entries are presented in the array is an implementation detail and should not be relied upon.
+*   [2.x.170]  ArrayView
+
+* 
+* [0.x.48]*
+ Create a view to an entire LAPACKFullMatrix object. This is equivalent to initializing an ArrayView object with a pointer to the first element of the given object, and the number of entries as the length of the view.
+*  This function is used for  [2.x.171]  references to objects of LAPACKFullMatrix type because they contain immutable elements. Consequently, the return type of this function is a view to a set of  [2.x.172]  objects.
+*   [2.x.173]  matrix The LAPACKFullMatrix for which we want to have an array view object. The array view corresponds to the  [2.x.174] entire [2.x.175]  object but the order in which the entries are presented in the array is an implementation detail and should not be relied upon.
+*   [2.x.176]  ArrayView
+
+* 
+* [0.x.49]*
+ Create a view to an entire row of a Table<2> object. This is equivalent to initializing an ArrayView object with a pointer to the first element of the given row, and the length of the row as the length of the view.
+*  This function is used for  [2.x.177]  references to objects of Table type because they contain immutable elements. Consequently, the return type of this function is a view to a set of  [2.x.178]  objects.
+*   [2.x.179]  table The Table for which we want to have an array view object. The array view corresponds to an  [2.x.180] entire [2.x.181]  row.  [2.x.182]  row The index of the row into the table to which this view should correspond.
+*   [2.x.183]  ArrayView
+
+* 
+* [0.x.50]*
+ Create a view to (a part of) a row of a Table<2> object.
+*  This function is used for non- [2.x.184]  references to objects of Table type. Such objects contain elements that can be written to. Consequently, the return type of this function is a view to a set of writable objects.
+*   [2.x.185]  table The Table for which we want to have an array view object. The array view corresponds to an  [2.x.186] entire [2.x.187]  row.  [2.x.188]  row The index of the row into the table to which this view should correspond.  [2.x.189]  starting_column The index of the column into the given row of the table that corresponds to the first element of this view.  [2.x.190]  size_of_view The number of elements this view should have. This corresponds to the number of columns in the current row to which the view should correspond.
+*   [2.x.191]  ArrayView
+
+* 
+* [0.x.51]*
+ Create a view to (a part of) a row of a Table<2> object.
+*  This function is used for  [2.x.192]  references to objects of Table type because they contain immutable elements. Consequently, the return type of this function is a view to a set of  [2.x.193]  objects.
+*   [2.x.194]  table The Table for which we want to have an array view object. The array view corresponds to an  [2.x.195] entire [2.x.196]  row.  [2.x.197]  row The index of the row into the table to which this view should correspond.  [2.x.198]  starting_column The index of the column into the given row of the table that corresponds to the first element of this view.  [2.x.199]  size_of_view The number of elements this view should have. This corresponds to the number of columns in the current row to which the view should correspond.
+*   [2.x.200]  ArrayView
+
+* 
+* [0.x.52] Create a view that doesn't allow the container it points to to be modified. This is useful if the object passed in is not `const` already and a function requires a view to constant memory in its signature.
+*  This function returns an object of type `ArrayView<const T>` where `T` is the element type of the container.
+*   [2.x.201]  ArrayView
+
+* 
+* [0.x.53]

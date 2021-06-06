@@ -1,0 +1,108 @@
+[0.x.0] The header containing the classes  [2.x.0]   [2.x.1]   [2.x.2]  and  [2.x.3] 
+
+* 
+* [0.x.1]*
+     Assemble residuals without block structure.         The data structure for this Assembler class is a simple vector on each     cell with entries from zero to  [2.x.4]  and a     simple global vector with entries numbered from zero to      [2.x.5]  No BlockInfo is required and the global vector     may be any type of vector having element access through <tt>operator()     (unsigned int)</tt>        
+*  [2.x.6]     
+* [0.x.2]*
+       Initialize with an AnyData object holding the result of assembling.             Assembling currently writes into the first vector of       <tt>results</tt>.      
+* [0.x.3]*
+       Initialize the constraints.      
+* [0.x.4]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.7]  object refers to a cell if  [2.x.8] , or else to an       interior or boundary face.      
+* [0.x.5]*
+       Assemble the local residuals into the global residuals.             Values are added to the previous contents. If constraints are active,        [2.x.9]  is used.      
+* [0.x.6]*
+       Assemble both local residuals into the global residuals.      
+* [0.x.7]*
+       The global residual vectors filled by assemble().      
+* [0.x.8]*
+       A pointer to the object containing constraints.      
+* [0.x.9]*
+     Assemble local matrices into a single global matrix or several global     matrices associated with the same DoFHandler. If these global matrix     have a block structure, this structure is not used, but rather the     global numbering of degrees of freedom.         After being initialized with a SparseMatrix object (or another matrix     offering the same functionality as  [2.x.10]  or a vector of     such, this class can be used in a  [2.x.11]  to assemble the     cell and face matrices into the global matrix.         If a AffineConstraints has been provided during initialization, this     matrix will be used  [2.x.12]  to     be precise) to enter the local matrix into the global sparse matrix.         The assembler can handle two different types of local data. First, by     default, the obvious choice of taking a single local matrix with     dimensions equal to the number of degrees of freedom of the cell.     Alternatively, a local block structure can be initialized in DoFInfo.     After this, the local data will be arranged as an array of n by n     FullMatrix blocks (n being the number of blocks in the FESystem used by     the DoFHandler in DoFInfo), which are ordered lexicographically with     column index fastest in DoFInfo. If the matrix was initialized with a     vector of several matrices and local block structure is used, then the     first n<sup>2</sup> matrices in LocalResults will be used for the first     matrix in this vector, the second set of n<sup>2</sup> for the second,     and so on.        
+*  [2.x.13]     
+* [0.x.10]*
+       Constructor, initializing the #threshold, which limits how small       numbers may be to be entered into the matrix.      
+* [0.x.11]*
+       Store the result matrix for later assembling.      
+* [0.x.12]*
+       Store several result matrices for later assembling.      
+* [0.x.13]*
+       Initialize the constraints. After this function has been called with       a valid AffineConstraints object, the function        [2.x.14]  will be used by       assemble() to distribute the cell and face matrices into a global       sparse matrix.      
+* [0.x.14]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.15]  object refers to a cell if  [2.x.16] , or else to an       interior or boundary face.      
+* [0.x.15]*
+       Assemble the local matrices associated with a single cell into the       global matrix.      
+* [0.x.16]*
+       Assemble all local matrices associated with an interior face in the        [2.x.17]  and  [2.x.18]  objects into the global matrix.      
+* [0.x.17]*
+       The vector of global matrices being assembled.      
+* [0.x.18]*
+       The smallest positive number that will be entered into the global       matrix. All smaller absolute values will be treated as zero and will       not be assembled.      
+* [0.x.19]*
+       Assemble a single matrix  [2.x.19]  into the element at        [2.x.20]  in the vector #matrix.      
+* [0.x.20]*
+       A pointer to the object containing constraints.      
+* [0.x.21]*
+     Assemble local matrices into level matrices without using block     structure.          [2.x.21]  The matrix structures needed for assembling level matrices with     local refinement and continuous elements are missing.        
+*  [2.x.22]     
+* [0.x.22]*
+       Constructor, initializing the #threshold, which limits how small       numbers may be to be entered into the matrix.      
+* [0.x.23]*
+       Store the result matrix for later assembling.      
+* [0.x.24]*
+       Initialize the multilevel constraints.      
+* [0.x.25]*
+       Initialize the matrices #flux_up and #flux_down used for local       refinement with discontinuous Galerkin methods.      
+* [0.x.26]*
+       Initialize the matrices #interface_in and #interface_out used for       local refinement with continuous Galerkin methods.      
+* [0.x.27]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.23]  object refers to a cell if  [2.x.24] , or else to an       interior or boundary face.      
+* [0.x.28]*
+       Assemble the matrix  [2.x.25]  into the global matrix.      
+* [0.x.29]*
+       Assemble both local matrices in the  [2.x.26]  and  [2.x.27]        objects into the global matrices.      
+* [0.x.30]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.31]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.32]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.33]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.34]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.35]*
+       Assemble a single matrix into a global matrix.      
+* [0.x.36]*
+       The global matrix being assembled.      
+* [0.x.37]*
+       The matrix used for face flux terms across the refinement edge,       coupling coarse to fine.      
+* [0.x.38]*
+       The matrix used for face flux terms across the refinement edge,       coupling fine to coarse.      
+* [0.x.39]*
+       The matrix used for face contributions for continuous elements across       the refinement edge, coupling coarse to fine.      
+* [0.x.40]*
+       The matrix used for face contributions for continuous elements across       the refinement edge, coupling fine to coarse.      
+* [0.x.41]*
+       A pointer to the object containing constraints.      
+* [0.x.42]*
+       The smallest positive number that will be entered into the global       matrix. All smaller absolute values will be treated as zero and will       not be assembled.      
+* [0.x.43]*
+     Assemble a simple matrix and a simple right hand side at once. We use a     combination of MatrixSimple and ResidualSimple to achieve this. Cell     and face operators should fill the matrix and vector objects in     LocalResults and this class will assemble them into matrix and vector     objects.        
+*  [2.x.28]     
+* [0.x.44]*
+       Constructor setting the threshold value in MatrixSimple.      
+* [0.x.45]*
+       Store the two objects data is assembled into.      
+* [0.x.46]*
+       Initialize the constraints. After this function has been called with       a valid AffineConstraints object, the function        [2.x.29]  will be used by       assemble() to distribute the cell and face matrices into a global       sparse matrix.      
+* [0.x.47]*
+       Initialize the local data in the DoFInfo object used later for       assembling.             The  [2.x.30]  object refers to a cell if  [2.x.31] , or else to an       interior or boundary face.      
+* [0.x.48]*
+       Assemble the matrix  [2.x.32]  into the global matrix.      
+* [0.x.49]*
+       Assemble both local matrices in the  [2.x.33]  and  [2.x.34]        objects into the global matrix.      
+* [0.x.50]*
+       Assemble a single matrix  [2.x.35]  into the element at        [2.x.36]  in the vector #matrix.      
+* [0.x.51]

@@ -1,0 +1,31 @@
+[0.x.0]*
+ Provide an <tt>operator*</tt> that operates on mixed complex floating point types. Annoyingly, the standard library does not provide such an operator...
+*   [2.x.0]  ProductType
+
+* 
+* [0.x.1]*
+ Provide an <tt>operator/</tt> that operates on mixed complex floating point types. Annoyingly, the standard library does not provide such an operator...
+*   [2.x.1]  ProductType
+
+* 
+* [0.x.2]*
+ Provide an <tt>operator*</tt> for a scalar multiplication of a complex floating point type with a different real floating point type. Annoyingly, the standard library does not provide such an operator...
+*   [2.x.2]  ProductType
+
+* 
+* [0.x.3]*
+ Provide an <tt>operator/</tt> for a scalar division of a complex floating point type with a different real floating point type. Annoyingly, the standard library does not provide such an operator...
+*   [2.x.3]  ProductType
+
+* 
+* [0.x.4]*
+ Provide an <tt>operator*</tt> for a scalar multiplication of a real floating point type with a different complex floating point type. Annoyingly, the standard library does not provide such an operator...
+*   [2.x.4]  ProductType
+
+* 
+* [0.x.5]*
+ Provide an <tt>operator/</tt> for a scalar division of a real floating point type with a different complex floating point type. Annoyingly, the standard library does not provide such an operator...
+*   [2.x.5]  ProductType
+
+* 
+* [0.x.6]

@@ -1,0 +1,266 @@
+[0.x.0]*
+   A namespace for parallel implementations of vectors.  
+* [0.x.1]!  [2.x.0]  Vectors     [2.x.1]     
+* [0.x.2]*
+     Implementation of a parallel vector class. The design of this class is     similar to the standard  [2.x.2]  class in deal.II, with the     exception that storage is distributed with MPI.         The vector is designed for the following scheme of parallel     partitioning:      [2.x.3]       [2.x.4]  The indices held by individual processes (locally owned part) in     the MPI parallelization form a contiguous range      [2.x.5] .      [2.x.6]  Ghost indices residing on arbitrary positions of other processors     are allowed. It is in general more efficient if ghost indices are     clustered, since they are stored as a set of intervals. The     communication pattern of the ghost indices is determined when calling     the function <code>reinit (locally_owned, ghost_indices,     communicator)</code>, and retained until the partitioning is changed.     This allows for efficient parallel communication of indices. In     particular, it stores the communication pattern, rather than having to     compute it again for every communication. For more information on ghost     vectors, see also the      [2.x.7]  "glossary entry on vectors with ghost elements".      [2.x.8]  Besides the usual global access operator() it is also possible to     access vector entries in the local index space with the function  [2.x.9]      local_element(). Locally owned indices are placed first, [0,     locally_owned_size()), and then all ghost indices follow after them     contiguously, [locally_owned_size(),     locally_owned_size()+n_ghost_entries()).      [2.x.10]          Functions related to parallel functionality:      [2.x.11]       [2.x.12]  The function  [2.x.13]  goes through the data     associated with ghost indices and communicates it to the owner process,     which can then add it to the correct position. This can be used e.g.     after having run an assembly routine involving ghosts that fill this     vector. Note that the  [2.x.14]  mode of  [2.x.15]  does not set the     elements included in ghost entries but simply discards them, assuming     that the owning processor has set them to the desired value already     (See also the      [2.x.16]  "glossary entry on compress").      [2.x.17]  The  [2.x.18]  function imports the data     from the owning processor to the ghost indices in order to provide read     access to the data associated with ghosts.      [2.x.19]  It is possible to split the above functions into two phases, where     the first initiates the communication and the second one finishes it.     These functions can be used to overlap communication with computations     in other parts of the code.      [2.x.20]  Of course, reduction operations (like norms) make use of     collective all-to-all MPI communications.      [2.x.21]          This vector can take two different states with respect to ghost     elements:      [2.x.22]       [2.x.23]  After creation and whenever zero_out_ghost_values() is called (or      [2.x.24] ), the vector does only allow writing into     ghost elements but not reading from ghost elements.      [2.x.25]  After a call to update_ghost_values(), the vector does not allow     writing into ghost elements but only reading from them. This is to     avoid undesired ghost data artifacts when calling compress() after     modifying some vector entries. The current status of the ghost entries     (read mode or write mode) can be queried by the method     has_ghost_elements(), which returns  [2.x.26]  exactly when     ghost elements have been updated and  [2.x.27]  otherwise,     irrespective of the actual number of ghost entries in the vector layout     (for that information, use n_ghost_entries() instead).      [2.x.28]          This vector uses the facilities of the class  [2.x.29]  for     implementing the operations on the local range of the vector. In     particular, it also inherits thread parallelism that splits most     vector-vector operations into smaller chunks if the program uses     multiple threads. This may or may not be desired when working also with     MPI.         [1.x.0]         This vector class is based on two different number types for indexing.     The so-called global index type encodes the overall size of the vector.     Its type is  [2.x.30]  The largest possible value is      [2.x.31]  or approximately 4 billion in case 64 bit integers     are disabled at configuration of deal.II (default case) or      [2.x.32]  if 64 bit     integers are enabled (see the glossary entry on      [2.x.33]      for further information).         The second relevant index type is the local index used within one MPI     rank. As opposed to the global index, the implementation assumes 32-bit     unsigned integers unconditionally. In other words, to actually use a     vector with more than four billion entries, you need to use MPI with     more than one rank (which in general is a safe assumption since four     billion entries consume at least 16 GB of memory for floats or 32 GB of     memory for doubles) and enable 64-bit indices. If more than 4 billion     local elements are present, the implementation tries to detect that,     which triggers an exception and aborts the code. Note, however, that     the detection of overflow is tricky and the detection mechanism might     fail in some circumstances. Therefore, it is strongly recommended to     not rely on this class to automatically detect the unsupported case.         [1.x.1]         This vector class supports two different memory spaces: Host and CUDA. By     default, the memory space is Host and all the data are allocated on the     CPU. When the memory space is CUDA, all the data is allocated on the GPU.     The operations on the vector are performed on the chosen memory space.     From the host, there are two methods to access the elements of the Vector     when using the CUDA memory space:      [2.x.34]       [2.x.35]  use get_values():    
+* [1.x.2]
+*       [2.x.36]  use import():    
+* [1.x.3]
+*       [2.x.37]      The import method is a lot safer and will perform an MPI communication if     necessary. Since an MPI communication may be performed, import needs to     be called on all the processors.        
+*  [2.x.38]  By default, all the ranks will try to access the device 0. This is     fine is if you have one rank per node and one gpu per node. If you     have multiple GPUs on one node, we need each process to access a     different GPU. If each node has the same number of GPUs, this can be done     as follows:     <code> int n_devices = 0; cudaGetDeviceCount(&n_devices); int     device_id = my_rank % n_devices;     cudaSetDevice(device_id);     </code>         [1.x.4]         In Host mode, this class allows to use MPI-3 shared-memory features     by providing a separate MPI communicator that consists of processes on     the same shared-memory domain. By calling     `vector.shared_vector_data();`,     users have read-only access to both locally-owned and ghost values of     processes combined in the shared-memory communicator ( [2.x.39]  in     reinit()).         For this to work, you have to call the constructor or one of the reinit()     functions of this class with a non-default value for the `comm_sm`     argument, where the argument corresponds to a communicator consisting of     all processes on the same shared-memory domain. This kind of communicator     can be created using the following code snippet:    
+* [1.x.5]
+*           [2.x.40]  CUDAWrappers    
+* [0.x.3]*
+        [2.x.41]  1: Basic Object-handling      
+* [0.x.4]*
+       Empty constructor.      
+* [0.x.5]*
+       Copy constructor. Uses the parallel partitioning of  [2.x.42]        It should be noted that this constructor automatically sets ghost       values to zero. Call  [2.x.43]  directly following       construction if a ghosted vector is required.      
+* [0.x.6]*
+       Construct a parallel vector of the given global size without any       actual parallel distribution.      
+* [0.x.7]*
+       Construct a parallel vector. The local range is specified by  [2.x.44]        locally_owned_set (note that this must be a contiguous interval,       multiple intervals are not possible). The IndexSet  [2.x.45]        specifies ghost indices, i.e., indices which one might need to read       data from or accumulate data from. It is allowed that the set of       ghost indices also contains the local range, but it does not need to.             This function involves global communication, so it should only be       called once for a given layout. Use the constructor with       Vector<Number> argument to create additional vectors with the same       parallel layout.              [2.x.46]         [2.x.47]  "vectors with ghost elements"      
+* [0.x.8]*
+       Same constructor as above but without any ghost indices.      
+* [0.x.9]*
+       Create the vector based on the parallel partitioning described in  [2.x.48]        partitioner. The input argument is a shared pointer, which stores the       partitioner data only once and share it between several vectors with       the same layout.      
+* [0.x.10]*
+       Destructor.      
+* [0.x.11]*
+       Set the global size of the vector to  [2.x.49]  without any actual       parallel distribution.      
+* [0.x.12]*
+       Uses the parallel layout of the input vector  [2.x.50]  and       allocates memory for this vector. Recommended initialization function       when several vectors with the same layout should be created.             If the flag  [2.x.51]  is set to false, the memory will       be initialized with zero, otherwise the memory will be untouched (and       the user must make sure to fill it with reasonable data before using       it).      
+* [0.x.13]*
+       Initialize the vector. The local range is specified by  [2.x.52]        locally_owned_set (note that this must be a contiguous interval,       multiple intervals are not possible). The IndexSet  [2.x.53]        specifies ghost indices, i.e., indices which one might need to read       data from or accumulate data from. It is allowed that the set of       ghost indices also contains the local range, but it does not need to.             This function involves global communication, so it should only be       called once for a given layout. Use the  [2.x.54]  function with       Vector<Number> argument to create additional vectors with the same       parallel layout.              [2.x.55]         [2.x.56]  "vectors with ghost elements"      
+* [0.x.14]*
+       Same as above, but without ghost entries.      
+* [0.x.15]*
+       Initialize the vector given to the parallel partitioning described in        [2.x.57]  The input argument is a shared pointer, which stores       the partitioner data only once and share it between several vectors       with the same layout.             The optional argument  [2.x.58]  which consists of processes on       the same shared-memory domain, allows users have read-only access to       both locally-owned and ghost values of processes combined in the       shared-memory communicator. See the general documentation of this class       for more information about this argument.      
+* [0.x.16]*
+       Initialize vector with  [2.x.59]  locally-owned and  [2.x.60]        ghost degrees of freedoms.             The optional argument  [2.x.61]  which consists of processes on       the same shared-memory domain, allows users have read-only access to       both locally-owned and ghost values of processes combined in the       shared-memory communicator. See the general documentation of this class       for more information about this argument.            
+*  [2.x.62]  In the created underlying partitioner, the local index range is         translated to global indices in an ascending and one-to-one fashion,         i.e., the indices of process  [2.x.63]  sit exactly between the indices of         the processes  [2.x.64]  and  [2.x.65] , respectively. Setting the          [2.x.66]  variable to an appropriate value provides memory space         for the ghost data in a vector's memory allocation as and allows         access to it via local_element(). However, the associated global         indices must be handled externally in this case.      
+* [0.x.17]*
+       Swap the contents of this vector and the other vector  [2.x.67]  One could       do this operation with a temporary variable and copying over the data       elements, but this function is significantly more efficient since it       only swaps the pointers to the data of the two vectors and therefore       does not need to allocate temporary storage and move data around.             This function is analogous to the  [2.x.68]  function of all C++       standard containers. Also, there is a global function       <tt>swap(u,v)</tt> that simply calls <tt>u.swap(v)</tt>, again in       analogy to standard functions.      
+* [0.x.18]*
+       Assigns the vector to the parallel partitioning of the input vector        [2.x.69]  and copies all the data.             If one of the input vector or the calling vector (to the left of the       assignment operator) had ghost elements set before this operation,       the calling vector will have ghost values set. Otherwise, it will be       in write mode. If the input vector does not have any ghost elements       at all, the vector will also update its ghost values in analogy to       the respective setting the Trilinos and PETSc vectors.      
+* [0.x.19]*
+       Assigns the vector to the parallel partitioning of the input vector        [2.x.70]  and copies all the data.             If one of the input vector or the calling vector (to the left of the       assignment operator) had ghost elements set before this operation,       the calling vector will have ghost values set. Otherwise, it will be       in write mode. If the input vector does not have any ghost elements       at all, the vector will also update its ghost values in analogy to       the respective setting the Trilinos and PETSc vectors.      
+* [0.x.20]*
+        [2.x.71]  2: Parallel data exchange      
+* [0.x.21]*
+       This function copies the data that has accumulated in the data buffer       for ghost indices to the owning processor. For the meaning of the       argument  [2.x.72]  see the entry on        [2.x.73]  "Compressing distributed vectors and matrices"       in the glossary.             There are four variants for this function. If called with argument  [2.x.74]         [2.x.75]  adds all the data accumulated in ghost elements       to the respective elements on the owning processor and clears the       ghost array afterwards. If called with argument  [2.x.76]         [2.x.77]  a set operation is performed. Since setting       elements in a vector with ghost elements is ambiguous (as one can set       both the element on the ghost site as well as the owning site), this       operation makes the assumption that all data is set correctly on the       owning processor. Upon call of  [2.x.78]  all       ghost entries are thus simply zeroed out (using zero_ghost_values()).       In debug mode, a check is performed for whether the data set is       actually consistent between processors, i.e., whenever a non-zero       ghost element is found, it is compared to the value on the owning       processor and an exception is thrown if these elements do not agree.       If called with  [2.x.79]  or  [2.x.80]  the       minimum or maximum on all elements across the processors is set.      
+*  [2.x.81]  This vector class has a fixed set of ghost entries attached to       the local representation. As a consequence, all ghost entries are       assumed to be valid and will be exchanged unconditionally according       to the given VectorOperation. Make sure to initialize all ghost       entries with the neutral element of the given VectorOperation or       touch all ghost entries. The neutral element is zero for        [2.x.82]  and  [2.x.83]  `+inf` for        [2.x.84]  and `-inf` for  [2.x.85]  If all       values are initialized with values below zero and compress is called       with  [2.x.86]  two times subsequently, the maximal value       after the second calculation will be zero.      
+* [0.x.22]*
+       Fills the data field for ghost indices with the values stored in the       respective positions of the owning processor. This function is needed       before reading from ghosts. The function is  [2.x.87]  even though       ghost data is changed. This is needed to allow functions with a  [2.x.88]        const vector to perform the data exchange without creating       temporaries.             After calling this method, write access to ghost elements of the       vector is forbidden and an exception is thrown. Only read access to       ghost elements is allowed in this state. Note that all subsequent       operations on this vector, like global vector addition, etc., will       also update the ghost values by a call to this method after the       operation. However, global reduction operations like norms or the       inner product will always ignore ghost elements in order to avoid       counting the ghost data more than once. To allow writing to ghost       elements again, call zero_out_ghost_values().              [2.x.89]         [2.x.90]  "vectors with ghost elements"      
+* [0.x.23]*
+       Initiates communication for the  [2.x.91]  function with non-       blocking communication. This function does not wait for the transfer       to finish, in order to allow for other computations during the time       it takes until all data arrives.             Before the data is actually exchanged, the function must be followed       by a call to  [2.x.92]              In case this function is called for more than one vector before  [2.x.93]        compress_finish() is invoked, it is mandatory to specify a unique       communication channel to each such call, in order to avoid several       messages with the same ID that will corrupt this operation. Any       communication channel less than 100 is a valid value (in particular,       the range  [2.x.94]  is reserved for        [2.x.95]       
+* [0.x.24]*
+       For all requests that have been initiated in compress_start, wait for       the communication to finish. Once it is finished, add or set the data       (depending on the flag operation) to the respective positions in the       owning processor, and clear the contents in the ghost data fields.       The meaning of this argument is the same as in compress().             This function should be called exactly once per vector after calling       compress_start, otherwise the result is undefined. In particular, it       is not well-defined to call compress_start on the same vector again       before compress_finished has been called. However, there is no       warning to prevent this situation.             Must follow a call to the  [2.x.96]  function.             When the MemorySpace is CUDA and MPI is not CUDA-aware, data changed on       the device after the call to compress_start will be lost.      
+* [0.x.25]*
+       Initiates communication for the  [2.x.97]  function       with non-blocking communication. This function does not wait for the       transfer to finish, in order to allow for other computations during       the time it takes until all data arrives.             Before the data is actually exchanged, the function must be followed       by a call to  [2.x.98]              In case this function is called for more than one vector before  [2.x.99]        update_ghost_values_finish() is invoked, it is mandatory to specify a       unique communication channel to each such call, in order to avoid       several messages with the same ID that will corrupt this operation.       Any communication channel less than 100 is a valid value (in       particular, the range  [2.x.100]  is reserved for        [2.x.101]       
+* [0.x.26]*
+       For all requests that have been started in update_ghost_values_start,       wait for the communication to finish.             Must follow a call to the  [2.x.102]  function       before reading data from ghost indices.      
+* [0.x.27]*
+       This method zeros the entries on ghost dofs, but does not touch       locally owned DoFs.             After calling this method, read access to ghost elements of the       vector is forbidden and an exception is thrown. Only write access to       ghost elements is allowed in this state.              [2.x.103]  Use zero_out_ghost_values() instead.      
+* [0.x.28]*
+       This method zeros the entries on ghost dofs, but does not touch       locally owned DoFs.             After calling this method, read access to ghost elements of the       vector is forbidden and an exception is thrown. Only write access to       ghost elements is allowed in this state.      
+* [0.x.29]*
+       Return whether the vector currently is in a state where ghost values       can be read or not. This is the same functionality as other parallel       vectors have. If this method returns false, this only means that       read-access to ghost elements is prohibited whereas write access is       still possible (to those entries specified as ghosts during       initialization), not that there are no ghost elements at all.              [2.x.104]         [2.x.105]  "vectors with ghost elements"      
+* [0.x.30]*
+       This method copies the data in the locally owned range from another       distributed vector  [2.x.106]  into the calling vector. As opposed to       operator= that also includes ghost entries, this operation ignores       the ghost range. The only prerequisite is that the local range on the       calling vector and the given vector  [2.x.107]  are the same on all       processors. It is explicitly allowed that the two vectors have       different ghost elements that might or might not be related to each       other.             Since no data exchange is performed, make sure that neither  [2.x.108]        nor the calling vector have pending communications in order to obtain       correct results.      
+* [0.x.31]*
+       Import all the elements present in the distributed vector  [2.x.109]         [2.x.110]   [2.x.111]  is used to decide if the elements       in  [2.x.112]  should be added to the current vector or replace the current       elements. The main purpose of this function is to get data from one       memory space, e.g. CUDA, to the other, e.g. the Host.            
+*  [2.x.113]  The partitioners of the two distributed vectors need to be the       same as no MPI communication is performed.      
+* [0.x.32]*
+        [2.x.114]  3: Implementation of VectorSpaceVector      
+* [0.x.33]*
+       Change the dimension to that of the vector V. The elements of V are not       copied.      
+* [0.x.34]*
+       Multiply the entire vector by a fixed factor.      
+* [0.x.35]*
+       Divide the entire vector by a fixed factor.      
+* [0.x.36]*
+       Add the vector  [2.x.115]  to the present one.      
+* [0.x.37]*
+       Subtract the vector  [2.x.116]  from the present one.      
+* [0.x.38]*
+       Import all the elements present in the vector's IndexSet from the input       vector  [2.x.117]   [2.x.118]   [2.x.119]  is used to decide if       the elements in  [2.x.120]  should be added to the current vector or replace the       current elements. The last parameter can be used if the same       communication pattern is used multiple times. This can be used to       improve performance.            
+*  [2.x.121]  If the MemorySpace is CUDA, the data in the ReadWriteVector will       be moved to the device.      
+* [0.x.39]*
+       Return the scalar product of two vectors.      
+* [0.x.40]*
+       Add  [2.x.122]  to all components. Note that  [2.x.123]  is a scalar not a vector.      
+* [0.x.41]*
+       Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.      
+* [0.x.42]*
+       Multiple addition of scaled vectors, i.e. <tt>*this += a*V+b*W</tt>.      
+* [0.x.43]*
+       A collective add operation: This function adds a whole set of values       stored in  [2.x.124]  to the vector components specified by  [2.x.125]       
+* [0.x.44]*
+       Scaling and simple addition of a multiple of a vector, i.e. <tt>*this =       s*(*this)+a*V</tt>.      
+* [0.x.45]*
+       Scale each element of this vector by the corresponding element in the       argument. This function is mostly meant to simulate multiplication (and       immediate re-assignment) by a diagonal scaling matrix.      
+* [0.x.46]*
+       Assignment <tt>*this = a*V</tt>.      
+* [0.x.47]*
+       Return the l<sub>1</sub> norm of the vector (i.e., the sum of the       absolute values of all entries among all processors).      
+* [0.x.48]*
+       Return the  [2.x.126]  norm of the vector (i.e., the square root of       the sum of the square of all entries among all processors).      
+* [0.x.49]*
+       Return the square of the  [2.x.127]  norm of the vector.      
+* [0.x.50]*
+       Return the maximum norm of the vector (i.e., the maximum absolute value       among all entries and among all processors).      
+* [0.x.51]*
+       Perform a combined operation of a vector addition and a subsequent       inner product, returning the value of the inner product. In other       words, the result of this function is the same as if the user called      
+* [1.x.6]
+*              The reason this function exists is that this operation involves less       memory transfer than calling the two functions separately. This method       only needs to load three vectors,  [2.x.128]   [2.x.129]   [2.x.130]  whereas calling       separate methods means to load the calling vector  [2.x.131]  twice. Since       most vector operations are memory transfer limited, this reduces the       time by 25\% (or 50\% if  [2.x.132]  equals  [2.x.133]              For complex-valued vectors, the scalar product in the second step is       implemented as        [2.x.134] .      
+* [0.x.52]*
+       Return the global size of the vector, equal to the sum of the number of       locally owned indices among all processors.      
+* [0.x.53]*
+       Return an index set that describes which elements of this vector are       owned by the current processor. As a consequence, the index sets       returned on different processors if this is a distributed vector will       form disjoint sets that add up to the complete index set. Obviously, if       a vector is created on only one processor, then the result would       satisfy      
+* [1.x.7]
+*       
+* [0.x.54]*
+       Print the vector to the output stream  [2.x.135]       
+* [0.x.55]*
+       Return the memory consumption of this class in bytes.      
+* [0.x.56]*
+        [2.x.136]  4: Other vector operations not included in VectorSpaceVector      
+* [0.x.57]*
+       Sets all elements of the vector to the scalar  [2.x.137]  If the scalar is       zero, also ghost elements are set to zero, otherwise they remain       unchanged.      
+* [0.x.58]*
+       This is a collective add operation that adds a whole set of values       stored in  [2.x.138]  to the vector components specified by  [2.x.139]       
+* [0.x.59]*
+       Take an address where n_elements are stored contiguously and add them       into the vector.      
+* [0.x.60]*
+       Scaling and simple vector addition, i.e.  <tt>*this =       s*(*this)+V</tt>.      
+* [0.x.61]*
+        [2.x.140]  5: Entry access and local data representation      
+* [0.x.62]*
+       Return the local size of the vector, i.e., the number of indices       owned locally.              [2.x.141]  Use locally_owned_size() instead.      
+* [0.x.63]*
+       Return the local size of the vector, i.e., the number of indices       owned locally.      
+* [0.x.64]*
+       Return true if the given global index is in the local range of this       processor.      
+* [0.x.65]*
+       Make the  [2.x.142]  class a bit like the <tt>vector<></tt> class of       the C++ standard library by returning iterators to the start and end       of the [1.x.8] elements of this vector.             It holds that end()
+* 
+*  - begin() == locally_owned_size().            
+*  [2.x.143]  For the CUDA memory space, the iterator points to memory on the       device.      
+* [0.x.66]*
+       Return constant iterator to the start of the locally owned elements       of the vector.            
+*  [2.x.144]  For the CUDA memory space, the iterator points to memory on the       device.      
+* [0.x.67]*
+       Return an iterator pointing to the element past the end of the array       of locally owned entries.            
+*  [2.x.145]  For the CUDA memory space, the iterator points to memory on the       device.      
+* [0.x.68]*
+       Return a constant iterator pointing to the element past the end of       the array of the locally owned entries.            
+*  [2.x.146]  For the CUDA memory space, the iterator points to memory on the       device.      
+* [0.x.69]*
+       Read access to the data in the position corresponding to  [2.x.147]        global_index. The index must be either in the local range of the       vector or be specified as a ghost index at construction.             Performance: <tt>O(1)</tt> for locally owned elements that represent       a contiguous range and <tt>O(log(n<sub>ranges</sub>))</tt> for ghost       elements (quite fast, but slower than local_element()).      
+* [0.x.70]*
+       Read and write access to the data in the position corresponding to  [2.x.148]        global_index. The index must be either in the local range of the       vector or be specified as a ghost index at construction.             Performance: <tt>O(1)</tt> for locally owned elements that represent       a contiguous range and <tt>O(log(n<sub>ranges</sub>))</tt> for ghost       elements (quite fast, but slower than local_element()).      
+* [0.x.71]*
+       Read access to the data in the position corresponding to  [2.x.149]        global_index. The index must be either in the local range of the       vector or be specified as a ghost index at construction.             This function does the same thing as operator().      
+* [0.x.72]*
+       Read and write access to the data in the position corresponding to  [2.x.150]        global_index. The index must be either in the local range of the       vector or be specified as a ghost index at construction.             This function does the same thing as operator().      
+* [0.x.73]*
+       Read access to the data field specified by  [2.x.151]  Locally       owned indices can be accessed with indices        [2.x.152] , and ghost indices with indices        [2.x.153] .             Performance: Direct array access (fast).      
+* [0.x.74]*
+       Read and write access to the data field specified by  [2.x.154]        Locally owned indices can be accessed with indices        [2.x.155] , and ghost indices with indices        [2.x.156] .             Performance: Direct array access (fast).      
+* [0.x.75]*
+       Return the pointer to the underlying raw array.            
+*  [2.x.157]  For the CUDA memory space, the pointer points to memory on the       device.      
+* [0.x.76]*
+       Instead of getting individual elements of a vector via operator(),       this function allows getting a whole set of elements at once. The       indices of the elements to be read are stated in the first argument,       the corresponding values are returned in the second.             If the current vector is called  [2.x.158]  then this function is the equivalent       to the code      
+* [1.x.9]
+*               [2.x.159]  The sizes of the  [2.x.160]  and  [2.x.161]  arrays must be identical.            
+*  [2.x.162]  This function is not implemented for CUDA memory space.      
+* [0.x.77]*
+       Instead of getting individual elements of a vector via operator(),       this function allows getting a whole set of elements at once. In       contrast to the previous function, this function obtains the       indices of the elements by dereferencing all elements of the iterator       range provided by the first two arguments, and puts the vector       values into memory locations obtained by dereferencing a range       of iterators starting at the location pointed to by the third       argument.             If the current vector is called  [2.x.163]  then this function is the equivalent       to the code      
+* [1.x.10]
+*               [2.x.164]  It must be possible to write into as many memory locations         starting at  [2.x.165]  as there are iterators between          [2.x.166]  and  [2.x.167]       
+* [0.x.78]*
+       Return whether the vector contains only elements with value zero.       This is a collective operation. This function is expensive, because       potentially all elements have to be checked.      
+* [0.x.79]*
+       Compute the mean value of all the entries in the vector.      
+* [0.x.80]*
+        [2.x.168] -norm of the vector. The pth root of the sum of the pth powers       of the absolute values of the elements.      
+* [0.x.81]*
+        [2.x.169]  6: Mixed stuff      
+* [0.x.82]*
+       Return a reference to the MPI communicator object in use with this       vector.      
+* [0.x.83]*
+       Return the MPI partitioner that describes the parallel layout of the       vector. This object can be used to initialize another vector with the       respective reinit() call, for additional queries regarding the       parallel communication, or the compatibility of partitioners.      
+* [0.x.84]*
+       Check whether the given partitioner is compatible with the       partitioner used for this vector. Two partitioners are compatible if       they have the same local size and the same ghost indices. They do not       necessarily need to be the same data field of the shared pointer.       This is a local operation only, i.e., if only some processors decide       that the partitioning is not compatible, only these processors will       return  [2.x.170]  whereas the other processors will return  [2.x.171]       
+* [0.x.85]*
+       Check whether the given partitioner is compatible with the       partitioner used for this vector. Two partitioners are compatible if       they have the same local size and the same ghost indices. They do not       necessarily need to be the same data field. As opposed to       partitioners_are_compatible(), this method checks for compatibility       among all processors and the method only returns  [2.x.172]  if the       partitioner is the same on all processors.             This method performs global communication, so make sure to use it       only in a context where all processors call it the same number of       times.      
+* [0.x.86]*
+       Change the ghost state of this vector to  [2.x.173]       
+* [0.x.87]*
+       Get pointers to the beginning of the values of the other       processes of the same shared-memory domain.      
+* [0.x.88]*
+       Attempt to perform an operation between two incompatible vector types.            
+*  [2.x.174]       
+* [0.x.89]*
+       Attempt to perform an operation not implemented on the device.            
+*  [2.x.175]       
+* [0.x.90]*
+       Exception      
+* [0.x.91]*
+       Exception      
+* [0.x.92]*
+       Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>       without MPI communication.      
+* [0.x.93]*
+       Scaling and simple addition of a multiple of a vector, i.e. <tt>*this =       s*(*this)+a*V</tt> without MPI communication.      
+* [0.x.94]*
+       Local part of the inner product of two vectors.      
+* [0.x.95]*
+       Local part of norm_sqr().      
+* [0.x.96]*
+       Local part of mean_value().      
+* [0.x.97]*
+       Local part of l1_norm().      
+* [0.x.98]*
+       Local part of lp_norm().      
+* [0.x.99]*
+       Local part of linfty_norm().      
+* [0.x.100]*
+       Local part of the addition followed by an inner product of two       vectors. The same applies for complex-valued vectors as for       the add_and_dot() function.      
+* [0.x.101]*
+       Shared pointer to store the parallel partitioning information. This       information can be shared between several vectors that have the same       partitioning.      
+* [0.x.102]*
+       The size that is currently allocated in the val array.      
+* [0.x.103]*
+       Underlying data structure storing the local elements of this vector.      
+* [0.x.104]*
+       For parallel loops with TBB, this member variable stores the affinity       information of loops.      
+* [0.x.105]*
+       Temporary storage that holds the data that is sent to this processor       in compress() or sent from this processor in update_ghost_values().      
+* [0.x.106]*
+       Stores whether the vector currently allows for reading ghost elements       or not. Note that this is to ensure consistent ghost data and does       not indicate whether the vector actually can store ghost elements. In       particular, when assembling a vector we do not allow reading       elements, only writing them.      
+* [0.x.107]*
+       A vector that collects all requests from compress() operations.       This class uses persistent MPI communicators, i.e., the communication       channels are stored during successive calls to a given function. This       reduces the overhead involved with setting up the MPI machinery, but       it does not remove the need for a receive operation to be posted       before the data can actually be sent.      
+* [0.x.108]*
+       A vector that collects all requests from update_ghost_values()       operations. This class uses persistent MPI communicators.      
+* [0.x.109]*
+       A lock that makes sure that the compress() and update_ghost_values()       functions give reasonable results also when used       with several threads.      
+* [0.x.110]*
+       Communicator to be used for the shared-memory domain. See the general       documentation of this class for more information about the purpose of       `comm_sm`.      
+* [0.x.111]*
+       A helper function that clears the compress_requests and       update_ghost_values_requests field. Used in reinit() functions.      
+* [0.x.112]*
+       A helper function that is used to resize the val array.      
+* [0.x.113]*
+ Global function  [2.x.176]  which overloads the default implementation of the C++ standard library which uses a temporary object. The function simply exchanges the data of the two vectors.
+*   [2.x.177]  Vector
+
+* 
+* [0.x.114]*
+ Declare  [2.x.178]  as distributed vector.
+
+* 
+* [0.x.115]*
+     A helper class used internally in linear_operator.h. Specialization for      [2.x.179]     
+* [0.x.116]

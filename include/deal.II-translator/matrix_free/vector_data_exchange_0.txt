@@ -1,0 +1,42 @@
+[0.x.0]*
+     Namespace containing classes for inter-process data exchange (i.e.,     for update_ghost_values and compress) in MatrixFree.    
+* [0.x.1]*
+       Interface needed by MatrixFree.      
+* [0.x.2]*
+       Class that simply delegates the task to a  [2.x.0]       
+* [0.x.3]*
+       Similar to the above but using the internal data structures in the       partitioner in order to identify indices of degrees of freedom that are       in the same shared memory region.      
+* [0.x.4]*
+         Global communicator.        
+* [0.x.5]*
+         Shared-memory sub-communicator.        
+* [0.x.6]*
+         Number of locally-owned vector entries.        
+* [0.x.7]*
+         Number of ghost vector entries.        
+* [0.x.8]*
+         Number of global vector entries.        
+* [0.x.9]*
+         A variable caching the number of ghost indices in a larger set of         indices by rank.        
+* [0.x.10]*
+         The set of indices that appear for an IndexSet that is a subset of a         larger set for each rank in a compressed manner.        
+* [0.x.11]*
+         An array that contains information which processors my ghost indices         belong to, at which offset and how many those indices are        
+* [0.x.12]*
+         The set of processors and length of data field which send us their         ghost data.                
+*  [2.x.1]  Structured as ghost_targets_data.        
+* [0.x.13]*
+         An array that caches the number of chunks in the import indices per         MPI rank. The length is import_indices_data.size()+1.                 The set of (local) indices that we are importing during compress()         from remote processes, i.e., others' ghosts that belong to the local         range.        
+* [0.x.14]*
+         Shared-memory ranks from which data is copied from during         export_to_ghosted_array_finish().        
+* [0.x.15]*
+         Indices from where to copy data from during         export_to_ghosted_array_finish().        
+* [0.x.16]*
+         Indices where to copy data to during         export_to_ghosted_array_finish().        
+* [0.x.17]*
+         Shared-memory ranks from where to copy data from during         import_from_ghosted_array_finish().        
+* [0.x.18]*
+         Indices from where to copy data from during         import_from_ghosted_array_finish().        
+* [0.x.19]*
+         Indices where to copy data to during         import_from_ghosted_array_finish().        
+* [0.x.20]

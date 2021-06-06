@@ -1,0 +1,151 @@
+[0.x.0]*
+ A wrapper around a matrix object, storing the coordinates in a block matrix as well.
+*  This class is an alternative to BlockMatrixBase, if you only want to generate a single block of the system, not the whole system. Using the add() functions of this class, it is possible to use the standard assembling functions used for block matrices, but only enter in one of the blocks and still avoiding the index computations involved.  The reason for this class is, that we may need a different number of matrices for different blocks in a block system. For example, a preconditioner for the Oseen system can be built as a block system, where the pressure block is of the form [1.x.0]<sup>-1</sup>[1.x.1]<sup>-1</sup> with [1.x.2] the pressure mass matrix, [1.x.3] the pressure Laplacian and [1.x.4] the advection diffusion operator applied to the pressure space. Since only a single matrix is needed for the other blocks, using BlockSparseMatrix or similar would be a waste of memory.
+*  While the add() functions make a MatrixBlock appear like a block matrix for assembling, the functions vmult(), Tvmult(), vmult_add(), and Tvmult_add() make it behave like a MatrixType, when it comes to applying it to a vector. This behavior allows us to store MatrixBlock objects in vectors, for instance in MGLevelObject without extracting the #matrix first.
+*  MatrixBlock comes handy when using BlockMatrixArray. Once the MatrixBlock has been properly initialized and filled, it can be used in the simplest case as:
+
+* 
+* [1.x.5]
+* 
+*  Here, we have not gained very much, except that we do not need to set up empty blocks in the block system.
+* 
+
+* 
+*  [2.x.0]  This class expects, that the row and column BlockIndices objects for the system are equal. If they are not, some functions will throw ExcNotImplemented.
+*   [2.x.1]  Example for the product preconditioner of the pressure Schur complement.
+* 
+
+* 
+*  [2.x.2] 
+
+* 
+*  [2.x.3] 
+*   [2.x.4]   [2.x.5]  "Block (linear algebra)"
+
+* 
+* [0.x.1]*
+   Declare type for container size.  
+* [0.x.2]*
+   Declare a type for matrix entries.  
+* [0.x.3]*
+   Constructor rendering an uninitialized object.  
+* [0.x.4]*
+   Copy constructor.  
+* [0.x.5]*
+   Assignment operator.  
+* [0.x.6]*
+   Constructor setting block coordinates, but not initializing the matrix.  
+* [0.x.7]*
+   Reinitialize the matrix for a new BlockSparsityPattern. This adjusts the   #matrix as well as the #row_indices and #column_indices.    
+*  [2.x.6]  The row and column block structure of the sparsity pattern must be   equal.  
+* [0.x.8]*
+   Add <tt>value</tt> to the element ([1.x.6]). Throws an error if the   entry does not exist or if it is in a different block.  
+* [0.x.9]*
+   Add all elements in a FullMatrix into sparse matrix locations given by   <tt>indices</tt>. This function assumes a quadratic sparse matrix and a   quadratic full_matrix.  The global locations are translated into   locations in this block and ExcBlockIndexMismatch is thrown, if the   global index does not point into the block referred to by #row and   #column.      [2.x.7]  <tt>elide_zero_values</tt> is currently ignored.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.10]*
+   Add all elements in a FullMatrix into global locations given by   <tt>row_indices</tt> and <tt>col_indices</tt>, respectively. The global   locations are translated into locations in this block and   ExcBlockIndexMismatch is thrown, if the global index does not point into   the block referred to by #row and #column.      [2.x.8]  <tt>elide_zero_values</tt> is currently ignored.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.11]*
+   Set several elements in the specified row of the matrix with column   indices as given by <tt>col_indices</tt> to the respective value. This is   the function doing the actual work for the ones adding full matrices. The   global locations <tt>row_index</tt> and <tt>col_indices</tt> are   translated into locations in this block and ExcBlockIndexMismatch is   thrown, if the global index does not point into the block referred to by   #row and #column.      [2.x.9]  <tt>elide_zero_values</tt> is currently ignored.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.12]*
+   Add an array of values given by <tt>values</tt> in the given global   matrix row at columns specified by col_indices in the sparse matrix.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.13]*
+   Matrix-vector-multiplication, forwarding to the same function in   MatrixType. No index computations are done, thus, the vectors need to   have sizes matching #matrix.  
+* [0.x.14]*
+   Matrix-vector-multiplication, forwarding to the same function in   MatrixType. No index computations are done, thus, the vectors need to   have sizes matching #matrix.  
+* [0.x.15]*
+   Matrix-vector-multiplication, forwarding to the same function in   MatrixType. No index computations are done, thus, the vectors need to   have sizes matching #matrix.  
+* [0.x.16]*
+   Matrix-vector-multiplication, forwarding to the same function in   MatrixType. No index computations are done, thus, the vectors need to   have sizes matching #matrix.  
+* [0.x.17]*
+   The memory used by this object.  
+* [0.x.18]*
+   The block number computed from an index by using BlockIndices does not   match the block coordinates stored in this object.  
+* [0.x.19]*
+   Row coordinate.  This is the position of the data member matrix on the   global matrix.  
+* [0.x.20]*
+   Column coordinate.  This is the position of the data member matrix on the   global matrix.  
+* [0.x.21]*
+   The matrix itself  
+* [0.x.22]*
+   The row BlockIndices of the whole system. Using row(), this allows us to   find the index of the first row degree of freedom for this block.  
+* [0.x.23]*
+   The column BlockIndices of the whole system. Using column(), this allows   us to find the index of the first column degree of freedom for this   block.  
+* [0.x.24]*
+ A vector of MatrixBlock, which is implemented using shared pointers, in order to allow for copying and rearranging. Each matrix block can be identified by name.
+*   [2.x.10]  MatrixBlock
+
+* 
+*  [2.x.11] 
+
+* 
+* [0.x.25]*
+   Declare type for container size.  
+* [0.x.26]*
+   The type of object stored.  
+* [0.x.27]*
+   The pointer type used for storing the objects. We use a shard pointer,   such that they get deleted automatically when not used anymore.  
+* [0.x.28]*
+   Add a new matrix block at the position <tt>(row,column)</tt> in the block   system.  
+* [0.x.29]*
+   For matrices using a SparsityPattern, this function reinitializes each   matrix in the vector with the correct pattern from the block system.  
+* [0.x.30]*
+   Clear the object.     Since often only clearing of the individual matrices is desired, but not   removing the blocks themselves, there is an optional argument. If the   argument is missing or  [2.x.12]  all matrices will be empty, but the size   of this object and the block positions will not change. If  [2.x.13]    really_clean is  [2.x.14]  then the object will contain no blocks at the   end.  
+* [0.x.31]*
+   The memory used by this object.  
+* [0.x.32]*
+   Access a constant reference to the block at position [1.x.7].  
+* [0.x.33]*
+   Access a reference to the block at position [1.x.8].  
+* [0.x.34]*
+   Access the matrix at position [1.x.9] for read and write access.  
+* [0.x.35]*
+   import functions from private base class  
+* [0.x.36]*
+ A vector of MGLevelObject<MatrixBlock>, which is implemented using shared pointers, in order to allow for copying and rearranging. Each matrix block can be identified by name.
+*   [2.x.15]  MatrixBlock
+
+* 
+*  [2.x.16] 
+
+* 
+* [0.x.37]*
+   Declare type for container size.  
+* [0.x.38]*
+   The type of object stored.  
+* [0.x.39]*
+   Constructor, determining which matrices should be stored.     If <tt>edge_matrices</tt> is true, then objects for edge matrices for   discretizations with degrees of freedom on faces are allocated.     If <tt>edge_flux_matrices</tt> is true, then objects for DG fluxes on the   refinement edge are allocated.  
+* [0.x.40]*
+   The number of blocks.  
+* [0.x.41]*
+   Add a new matrix block at the position <tt>(row,column)</tt> in the block   system. The third argument allows to give the matrix a name for later   identification.  
+* [0.x.42]*
+   For matrices using a SparsityPattern, this function reinitializes each   matrix in the vector with the correct pattern from the block system.     This function reinitializes the level matrices.  
+* [0.x.43]*
+   For matrices using a SparsityPattern, this function reinitializes each   matrix in the vector with the correct pattern from the block system.     This function reinitializes the matrices for degrees of freedom on the   refinement edge.  
+* [0.x.44]*
+   For matrices using a SparsityPattern, this function reinitializes each   matrix in the vector with the correct pattern from the block system.     This function reinitializes the flux matrices over the refinement edge.  
+* [0.x.45]*
+   Clear the object.     Since often only clearing of the individual matrices is desired, but not   removing the blocks themselves, there is an optional argument. If the   argument is missing or  [2.x.17]  all matrices will be empty, but the size   of this object and the block positions will not change. If  [2.x.18]    really_clean is  [2.x.19]  then the object will contain no blocks at the   end.  
+* [0.x.46]*
+   Access a constant reference to the matrix block at position [1.x.10].  
+* [0.x.47]*
+   Access a reference to the matrix block at position [1.x.11].  
+* [0.x.48]*
+   Access a constant reference to the edge matrix block at position   [1.x.12].  
+* [0.x.49]*
+   Access a reference to the edge matrix block at position [1.x.13].  
+* [0.x.50]*
+   Access a constant reference to the edge matrix block at position   [1.x.14].  
+* [0.x.51]*
+   Access a reference to the edge matrix block at position [1.x.15].  
+* [0.x.52]*
+   Access a constant reference to the  edge flux matrix block at position   [1.x.16].  
+* [0.x.53]*
+   Access a reference to the  edge flux matrix block at position [1.x.17].  
+* [0.x.54]*
+   Access a constant reference to the  edge flux matrix block at position   [1.x.18].  
+* [0.x.55]*
+   Access a reference to the edge flux matrix block at position [1.x.19].  
+* [0.x.56]*
+   The memory used by this object.  
+* [0.x.57]

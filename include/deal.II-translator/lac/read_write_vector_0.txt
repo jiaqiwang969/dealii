@@ -1,0 +1,146 @@
+[0.x.0]!  [2.x.0]  Vectors   [2.x.1]   
+* [0.x.1]*
+   ReadWriteVector is intended to represent vectors in  [2.x.2]  for   which it stores all or a subset of elements. The latter case in important   in parallel computations, where  [2.x.3]  may be so large that no processor can   actually all elements of a solution vector, but where this is also not   necessary: one typically only has to store the values of degrees of   freedom that live on cells that are locally owned plus potentially those   degrees of freedom that live on ghost cells.     This class allows to access individual elements to be read or written.   However, it does not allow global operations such as taking the norm.   ReadWriteVector can be used to read and write elements in vectors derived   from VectorSpaceVector such as  [2.x.4]  and    [2.x.5]      [1.x.0] Most of the time, one will simply read from or   write into a vector of the current class using the global numbers of   these degrees of freedom. This is done using operator()() or operator[]()   which call global_to_local() to transform the [1.x.1] index into a   [1.x.2] one. In such cases, it is clear that one can only access   elements of the vector that the current object indeed stores.     However, it is also possible to access elements in the order in which   they are stored by the current object. In other words, one is not   interested in accessing elements with their [1.x.3] indices, but   instead using an enumeration that only takes into account the elements   that are actually stored. This is facilitated by the local_element()   function. To this end, it is necessary to know [1.x.4] the   current class stores its element. The elements of all the consecutive   ranges are stored in ascending order of the first index of each range.   The function  [2.x.6]  can be used to   get the first index of the largest range.  
+* [0.x.2]*
+     Declare standard types used in all containers. These types parallel     those in the <tt>C++</tt> standard libraries <tt>vector<...></tt>     class.    
+* [0.x.3]*
+      [2.x.7]  1: Basic Object-handling    
+* [0.x.4]*
+     Empty constructor.    
+* [0.x.5]*
+     Copy constructor.    
+* [0.x.6]*
+     Construct a vector given the size, the stored elements have their     index in [0,size).    
+* [0.x.7]*
+     Construct a vector whose stored elements indices are given by the     IndexSet  [2.x.8]     
+* [0.x.8]*
+     Destructor.    
+* [0.x.9]*
+     Set the global size of the vector to  [2.x.9]  The stored elements have     their index in [0,size).         If the flag  [2.x.10]  is set to false, the memory will be     initialized with zero, otherwise the memory will be untouched (and the     user must make sure to fill it with reasonable data before using it).    
+* [0.x.10]*
+     Uses the same IndexSet as the one of the input vector  [2.x.11]  and     allocates memory for this vector.         If the flag  [2.x.12]  is set to false, the memory will be     initialized with zero, otherwise the memory will be untouched (and the     user must make sure to fill it with reasonable data before using it).    
+* [0.x.11]*
+     Initializes the vector. The indices are specified by  [2.x.13]      locally_stored_indices.         If the flag  [2.x.14]  is set to false, the memory will be     initialized with zero, otherwise the memory will be untouched (and the     user must make sure to fill it with reasonable data before using it).     locally_stored_indices.    
+* [0.x.12]*
+     Initialize this ReadWriteVector by supplying access to all locally     available entries in the given ghosted or non-ghosted vector.        
+*  [2.x.15]  This function currently copies the values from the argument into     the ReadWriteVector, so modifications here will not modify  [2.x.16]          This function is mainly written for backwards-compatibility to get     element access to a ghosted  [2.x.17]  inside the     library.    
+* [0.x.13]*
+     Apply the functor  [2.x.18]  to each element of the vector. The functor     should look like    
+* [1.x.5]
+*         
+*  [2.x.19]  This function requires that the header read_write_vector.templates.h     be included.    
+* [0.x.14]*
+     Swap the contents of this vector and the other vector  [2.x.20]  One could     do this operation with a temporary variable and copying over the data     elements, but this function is significantly more efficient since it     only swaps the pointers to the data of the two vectors and therefore     does not need to allocate temporary storage and move data around.         This function is analogous to the  [2.x.21]  function of all C++     standard containers. Also, there is a global function     <tt>swap(u,v)</tt> that simply calls <tt>u.swap(v)</tt>, again in     analogy to standard functions.    
+* [0.x.15]*
+     Copies the data and the IndexSet of the input vector  [2.x.22]     
+* [0.x.16]*
+     Copies the data and the IndexSet of the input vector  [2.x.23]     
+* [0.x.17]*
+     Sets all elements of the vector to the scalar  [2.x.24]  This operation is     only allowed if  [2.x.25]  is equal to zero.    
+* [0.x.18]*
+     Imports all the elements present in the vector's IndexSet from the     input vector  [2.x.26]   [2.x.27]   [2.x.28]      is used to decide if the elements in  [2.x.29]  should be added to the     current vector or replace the current elements.        
+*  [2.x.30]  The parameter  [2.x.31]  is ignored since we are       dealing with a serial vector here.    
+* [0.x.19]*
+     Imports all the elements present in the vector's IndexSet from the     input vector  [2.x.32]   [2.x.33]   [2.x.34]      is used to decide if the elements in  [2.x.35]  should be added to the     current vector or replace the current elements.        
+*  [2.x.36]  The parameter  [2.x.37]  is ignored since we are       dealing with a serial vector here.    
+* [0.x.20]*
+     Imports all the elements present in the vector's IndexSet from the     input vector  [2.x.38]   [2.x.39]   [2.x.40]      is used to decide if the elements in  [2.x.41]  should be added to the     current vector or replace the current elements. The last parameter can     be used if the same communication pattern is used multiple times. This     can be used to improve performance.    
+* [0.x.21]*
+     Imports all the elements present in the vector's IndexSet from the input     vector  [2.x.42]   [2.x.43]   [2.x.44]  is used to decide     if the elements in  [2.x.45]  should be added to the current vector or replace     the current elements. The last parameter can be used if the same     communication pattern is used multiple times. This can be used to improve     performance.    
+* [0.x.22]*
+     Imports all the elements present in the vector's IndexSet from the input     vector  [2.x.46]   [2.x.47]   [2.x.48]  is used to     decide if the elements in  [2.x.49]  should be added to the current vector or     replace the current elements. The last parameter can be used if the same     communication pattern is used multiple times. This can be used to improve     performance.        
+*  [2.x.50]  The  [2.x.51]  is not allowed to have ghost entries.    
+* [0.x.23]*
+     Imports all the elements present in the vector's IndexSet from the input     vector  [2.x.52]   [2.x.53]   [2.x.54]  is used to     decide if the elements in  [2.x.55]  should be added to the current vector or     replace the current elements. The last parameter can be used if the same     communication pattern is used multiple times. This can be used to improve     performance.    
+* [0.x.24]*
+     Imports all the elements present in the vector's IndexSet from the input     vector  [2.x.56]   [2.x.57]   [2.x.58]  is used to     decide if the elements in  [2.x.59]  should be added to the current vector or     replace the current elements. The last parameter can be used if the same     communication pattern is used multiple times. This can be used to improve     performance.    
+* [0.x.25]*
+     Import all the elements present in the vector's IndexSet from the input     vector  [2.x.60]   [2.x.61]   [2.x.62]  is used to     decide if the elements in  [2.x.63]  should be added to the current vector or     replace the current elements. The last parameter is not used.    
+* [0.x.26]*
+     The value returned by this function denotes the dimension of the vector     spaces that are modeled by objects of this kind. However, objects of     the current class do not actually stores all elements of vectors of     this space but may, in fact store only a subset. The number of elements     stored is returned by n_elements() and is smaller or equal to the     number returned by the current function.    
+* [0.x.27]*
+     This function returns the number of elements stored. It is smaller or     equal to the dimension of the vector space that is modeled by an object     of this kind. This dimension is return by size().          [2.x.64]  use locally_owned_size() instead.    
+* [0.x.28]*
+     Return the local size of the vector, i.e., the number of indices     owned locally.    
+* [0.x.29]*
+     Return the IndexSet that represents the indices of the elements stored.    
+* [0.x.30]*
+     Make the  [2.x.65]  class a bit like the <tt>vector<></tt>     class of the C++ standard library by returning iterators to the start     and end of the [1.x.6] elements of this vector.    
+* [0.x.31]*
+     Return constant iterator to the start of the locally stored elements     of the vector.    
+* [0.x.32]*
+     Return an iterator pointing to the element past the end of the array     of locally stored entries.    
+* [0.x.33]*
+     Return a constant iterator pointing to the element past the end of the     array of the locally stored entries.    
+* [0.x.34]*
+      [2.x.66]  2: Data-Access    
+* [0.x.35]*
+     Read access to the data in the position corresponding to  [2.x.67]      global_index. An exception is thrown if  [2.x.68]  is not stored     by the current object.    
+* [0.x.36]*
+     Read and write access to the data in the position corresponding to  [2.x.69]      global_index. An exception is thrown if  [2.x.70]  is not stored     by the current object.    
+* [0.x.37]*
+     Read access to the data in the position corresponding to  [2.x.71]      global_index. An exception is thrown if  [2.x.72]  is not stored     by the current object.         This function does the same thing as operator().    
+* [0.x.38]*
+     Read and write access to the data in the position corresponding to  [2.x.73]      global_index. An exception is thrown if  [2.x.74]  is not stored     by the current object.         This function does the same thing as operator().    
+* [0.x.39]*
+     Instead of getting individual elements of a vector via operator(),     this function allows getting a whole set of elements at once. The     indices of the elements to be read are stated in the first argument, the     corresponding values are returned in the second.         If the current vector is called  [2.x.75]  then this function is the equivalent     to the code    
+* [1.x.7]
+*           [2.x.76]  The sizes of the  [2.x.77]  and  [2.x.78]  arrays must be identical.    
+* [0.x.40]*
+     Instead of getting individual elements of a vector via operator(),     this function allows getting a whole set of elements at once. In     contrast to the previous function, this function obtains the     indices of the elements by dereferencing all elements of the iterator     range provided by the first two arguments, and puts the vector     values into memory locations obtained by dereferencing a range     of iterators starting at the location pointed to by the third     argument.         If the current vector is called  [2.x.79]  then this function is the equivalent     to the code    
+* [1.x.8]
+*           [2.x.80]  It must be possible to write into as many memory locations       starting at  [2.x.81]  as there are iterators between        [2.x.82]  and  [2.x.83]     
+* [0.x.41]*
+     Read access to the data field specified by  [2.x.84]  When you     access elements in the order in which they are stored, it is necessary     that you know in which they are stored. In other words, you need to     know the map between the global indices of the elements this class     stores, and the local indices into the contiguous array of these global     elements. For this, see the general documentation of this class.         Performance: Direct array access (fast).    
+* [0.x.42]*
+     Read and write access to the data field specified by  [2.x.85]      When you access elements in the order in which they are stored, it is     necessary that you know in which they are stored. In other words, you     need to know the map between the global indices of the elements this     class stores, and the local indices into the contiguous array of these     global elements. For this, see the general documentation of this class.         Performance: Direct array access (fast).    
+* [0.x.43]*
+      [2.x.86]  3: Modification of vectors    
+* [0.x.44]*
+     This function adds a whole set of values stored in  [2.x.87]  to the     vector components specified by  [2.x.88]     
+* [0.x.45]*
+     This function is similar to the previous one but takes a     ReadWriteVector of values.    
+* [0.x.46]*
+     Take an address where <tt>n_elements</tt> are stored contiguously and     add them into the vector. Handles all cases which are not covered by     the other two <tt>add()</tt> functions above.    
+* [0.x.47]*
+     Prints the vector to the output stream  [2.x.89]     
+* [0.x.48]*
+     Return the memory consumption of this class in bytes.    
+* [0.x.49]*
+     Import all the elements present in the vector's IndexSet from the input     vector  [2.x.90]  This is an helper function and it should not be     used directly.    
+* [0.x.50]*
+     Import all the elements present in the vector's IndexSet from the input     vector  [2.x.91]  This is an helper function and it should not be     used directly.    
+* [0.x.51]*
+     Return the local position of  [2.x.92]     
+* [0.x.52]*
+     A helper function that is used to resize the val array.    
+* [0.x.53]*
+     Return a  [2.x.93]  and store it for future     use.    
+* [0.x.54]*
+     Return a  [2.x.94]  and store it for future     use.    
+* [0.x.55]*
+     Indices of the elements stored.    
+* [0.x.56]*
+     IndexSet of the elements of the last imported vector;    
+* [0.x.57]*
+     CommunicationPattern for the communication between the     source_stored_elements IndexSet and the current vector.    
+* [0.x.58]*
+     Pointer to the array of local elements of this vector.    
+* [0.x.59]*
+     For parallel loops with TBB, this member variable stores the affinity     information of loops.    
+* [0.x.60]*
+     This class provides a wrapper around a Functor which acts on     single elements of the vector. This is necessary to use      [2.x.95]  which requires a TBBForFunctor.    
+* [0.x.61]*
+       Constructor. Take a functor and store a copy of it.      
+* [0.x.62]*
+       Evaluate the element with the stored copy of the functor.      
+* [0.x.63]*
+       Alias to the ReadWriteVector object that owns the FunctorTemplate.      
+* [0.x.64]*
+       Copy of the functor.      
+* [0.x.65]*
+ Global function  [2.x.96]  which overloads the default implementation of the C++ standard library which uses a temporary object. The function simply exchanges the data of the two vectors.
+*   [2.x.97]  Vector
+
+* 
+* [0.x.66]

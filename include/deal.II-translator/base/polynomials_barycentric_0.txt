@@ -1,0 +1,116 @@
+[0.x.0]*
+ Polynomial implemented in barycentric coordinates.
+*  Barycentric coordinates are a coordinate system defined on simplices that are particularly easy to work with since they express coordinates in the simplex as convex combinations of the vertices. For example, any point in a triangle can be written as
+*  [1.x.0]
+*  where each value  [2.x.0]  is the relative weight of each vertex (so the centroid is, in 2D, where each  [2.x.1] ). Since we only consider convex combinations we can rewrite this equation as
+*  [1.x.1]
+*  This results in three polynomials that are equivalent to  [2.x.2]  in 2D. More exactly, this class implements a polynomial space defined with the basis, in 2D, of
+
+* 
+* [1.x.2]
+*  and, in 3D,
+
+* 
+* [1.x.3]
+* 
+*  which is, in practice, a very convenient basis for defining simplex polynomials: for example, the fourth basis function of a TRI6 element is
+*  [1.x.4]
+*  Barycentric polynomials in  [2.x.3] -dimensional space have  [2.x.4]  can be written in terms of the other monomials.
+*  Monomials can be conveniently constructed with  [2.x.5] 
+* 
+
+* 
+*  [2.x.6] 
+
+* 
+* [0.x.1]*
+   Constructor for the zero polynomial.  
+* [0.x.2]*
+   Constructor for a monomial.  
+* [0.x.3]*
+   Return the specified monomial.  
+* [0.x.4]*
+   Print the polynomial to the output stream with lowest-order terms first.   For example, the first P6 basis function is printed as    [2.x.7]  is the first   barycentric variable,  [2.x.8]  is the second, etc.  
+* [0.x.5]*
+   Degree of each barycentric polynomial.  
+* [0.x.6]*
+   Unary minus.  
+* [0.x.7]*
+   Add a scalar.  
+* [0.x.8]*
+   Subtract a scalar.  
+* [0.x.9]*
+   Multiply by a scalar.  
+* [0.x.10]*
+   Divide by a scalar.  
+* [0.x.11]*
+   Add another barycentric polynomial.  
+* [0.x.12]*
+   Subtract another barycentric polynomial.  
+* [0.x.13]*
+   Multiply by another barycentric polynomial.  
+* [0.x.14]*
+   Differentiate in barycentric coordinates.  
+* [0.x.15]*
+   Differentiate in Cartesian coordinates.  
+* [0.x.16]*
+   Evaluate the polynomial.  
+* [0.x.17]*
+   Return an estimate, in bytes, of the memory usage of the object.  
+* [0.x.18]*
+   Coefficients of the polynomial. The exponents are the integer indexes.  
+* [0.x.19]*
+   Utility function for barycentric polynomials
+* 
+*  - its convenient to loop   over all the indices at once in a dimension-independent way, but we also   need to access the actual indices of the underlying Table object. This   utility function converts an integral index into the equivalent   TableIndices array (which are also the implicitly stored polynomial   exponents).  
+* [0.x.20]*
+ Scalar polynomial space based on barycentric polynomials.
+
+* 
+* [0.x.21]*
+   Make the dimension available to the outside.  
+* [0.x.22]*
+   Get the standard Lagrange basis for a specified degree.  
+* [0.x.23]*
+   Constructor taking the polynomial  [2.x.9]  as input.  
+* [0.x.24]*
+   Access operator.  
+* [0.x.25]*
+    [2.x.10]   [2.x.11]   
+* [0.x.26]*
+    [2.x.12]   [2.x.13]   
+* [0.x.27]*
+    [2.x.14]   [2.x.15]   
+* [0.x.28]*
+    [2.x.16]   [2.x.17]   
+* [0.x.29]*
+    [2.x.18]   [2.x.19]   
+* [0.x.30]*
+    [2.x.20]   [2.x.21]   
+* [0.x.31]*
+    [2.x.22]   [2.x.23]   
+* [0.x.32]*
+    [2.x.24]   [2.x.25]   
+* [0.x.33]*
+    [2.x.26]   [2.x.27]   
+* [0.x.34]*
+    [2.x.28]   [2.x.29]   
+* [0.x.35]*
+    [2.x.30]   [2.x.31]   
+* [0.x.36]*
+ Multiply a BarycentricPolynomial by a constant.
+
+* 
+* [0.x.37]*
+ Add a constant to a BarycentricPolynomial.
+
+* 
+* [0.x.38]*
+ Subtract a BarycentricPolynomial from a constant.
+
+* 
+* [0.x.39]*
+ Write a BarycentricPolynomial to the provided output stream.
+
+* 
+* [0.x.40]

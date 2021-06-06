@@ -1,0 +1,46 @@
+[0.x.0]*
+ [1.x.0]
+*  The SQMR (symmetric quasi-minimal residual) method is supposed to solve symmetric indefinite linear systems with symmetric, not necessarily definite preconditioners. It is a variant of the original quasi-minimal residual method (QMR) and produces the same iterative solution. This version of SQMR is adapted from the respective symmetric QMR-from-BiCG algorithm given by both Freund/Nachtigal: A new Krylov-subspace method for symmetric indefinite linear systems, NASA STI/Recon Technical Report N, 95 (1994) and Freund/Nachtigal: Software for simplified Lanczos and QMR algorithms, Appl. Num. Math. 19 (1995), pp. 319-341 and provides both right and left (but not split) preconditioning.
+* 
+
+*  [1.x.1]
+*  Note, that the QMR implementation that the given algorithm is based on is derived from classical BiCG. It can be shown (Freund/Szeto: A transpose-free quasi-minimal residual squared algorithm for non-Hermitian linear systems, Advances in Computer Methods for Partial Differential Equations VII (IMACS, New Brunswick, NJ, 1992) pp. 258-264) that the QMR iterates can be generated from the BiCG iteration through one additional vector and some scalar updates. Possible breakdowns (or precisely, divisions by zero) of BiCG therefore obviously transfer to this simple no-look-ahead algorithm.
+*  In return the algorithm is cheap compared to classical QMR or BiCGStab, using only one matrix-vector product with the system matrix and one application of the preconditioner per iteration respectively.
+*  The residual used for measuring convergence is only approximately calculated by an upper bound. If this value comes below a threshold prescribed within the AdditionalData struct, then the exact residual of the current QMR iterate will be calculated using another multiplication with the system matrix. By experience (according to Freund and Nachtigal) this technique is useful for a threshold that is ten times the solving tolerance, and in that case will be only used in the last one or two steps of the complete iteration.
+*  For the requirements on matrices and vectors in order to work with this class, see the documentation of the Solver base class.
+*  Like all other solver classes, this class has a local structure called  [2.x.0]  AdditionalData which is used to pass additional parameters to the solver, like damping parameters or the number of temporary vectors. We use this additional structure instead of passing these values directly to the constructor because this makes the use of the  [2.x.1]  and other classes much easier and guarantees that these will continue to work even if number or type of the additional parameters for a certain solver changes.
+* 
+
+*  [1.x.2]
+*  The solve() function of this class uses the mechanism described in the Solver base class to determine convergence. This mechanism can also be used to observe the progress of the iteration.
+
+* 
+* [0.x.1]*
+   Standardized data struct to pipe additional data to the solver.     The user is able to switch between right and left preconditioning, that   means solving the systems [1.x.3] and [1.x.4]   respectively, using the corresponding parameter. Note that left   preconditioning means to employ the preconditioned (BiCG-)residual and   otherwise the unpreconditioned one. The default is the application from the   right side.     The  [2.x.2]  threshold is used to define the said bound below which the residual   is computed exactly. See the class documentation for more information. The   default value is 1e-9, that is the default solving precision multiplied by   ten.     SQMR is susceptible to breakdowns (divisions by zero), so we need a   parameter telling us which numbers are considered zero. The proper   breakdown criterion is very unclear, so experiments may be necessary here.   It is even possible to achieve convergence despite of dividing through by   small numbers. There are even cases in which it is advantageous to accept   such divisions because the cheap iteration cost makes the algorithm the   fastest of all available indefinite iterative solvers. Nonetheless, the   default breakdown threshold value is 1e-16.  
+* [0.x.2]*
+     Constructor.         The default is right preconditioning, with the  [2.x.3]  chosen to be 1e-9 and     the  [2.x.4]  set at 1e-16.    
+* [0.x.3]*
+     Flag for using a left-preconditioned version.    
+* [0.x.4]*
+     The threshold below which the current residual is computed exactly.    
+* [0.x.5]*
+     Flag for breakdown testing.    
+* [0.x.6]*
+     Breakdown threshold. Scalars measured to this bound are used for     divisions.    
+* [0.x.7]*
+   Constructor.  
+* [0.x.8]*
+   Constructor. Use an object of type GrowingVectorMemory as a default to   allocate memory.  
+* [0.x.9]*
+   Solve the linear system  [2.x.5]  for x.  
+* [0.x.10]*
+   Interface for derived class. This function gets the current iteration   vector, the residual and the update vector in each step. It can be used   for a graphical output of the convergence history.  
+* [0.x.11]*
+   Additional parameters.  
+* [0.x.12]*
+   A structure returned by the iterate() function representing what it found   is happening during the iteration.  
+* [0.x.13]*
+   The iteration loop itself. The function returns a structure indicating   what happened in this function.  
+* [0.x.14]*
+   Number of the current iteration (accumulated over restarts)  
+* [0.x.15]

@@ -7,5 +7,5 @@ digraph "include/deal.II-translator/arborx" {
   dir_f3320fa8d5b74c7a22186b75e45d8869 [shape=box, label="arborx", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_f3320fa8d5b74c7a22186b75e45d8869.html"];
   }
   dir_ee90d91a514b839c31faec7a1d916f67 [shape=box label="deal.II" fillcolor="white" style="filled" color="red" URL="dir_ee90d91a514b839c31faec7a1d916f67.html"];
-  dir_f3320fa8d5b74c7a22186b75e45d8869->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="4", labeldistance=1.5 headhref="dir_000069_000009.html"];
+  dir_f3320fa8d5b74c7a22186b75e45d8869->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="4", labeldistance=1.5 headhref="dir_000067_000009.html"];
 }

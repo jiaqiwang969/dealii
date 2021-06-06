@@ -1,0 +1,55 @@
+[0.x.0]*
+ A class providing a mapping from the reference cell to cells that are axiparallel, i.e., that have the shape of rectangles (in 2d) or boxes (in 3d) with edges parallel to the coordinate directions. The class therefore provides functionality that is equivalent to what, for example, MappingQ would provide for such cells. However, knowledge of the shape of cells allows this class to be substantially more efficient.
+*  Specifically, the mapping is meant for cells for which the mapping from the reference to the real cell is a scaling along the coordinate directions: The transformation from reference coordinates  [2.x.0]  to real coordinates  [2.x.1]  on each cell is of the form
+
+* 
+* [1.x.0]
+*  in 2d, and
+
+* 
+* [1.x.1]
+*  in 3d, where  [2.x.2]  is the bottom left vertex and  [2.x.3]  are the extents of the cell along the axes.
+*  The class is intended for efficiency, and it does not do a whole lot of error checking. If you apply this mapping to a cell that does not conform to the requirements above, you will get strange results.
+
+* 
+* [0.x.1]*
+   Return  [2.x.4]  because MappingCartesian preserves vertex   locations.  
+* [0.x.2]*
+    [2.x.5]  Mapping points between reference and real cells    [2.x.6]   
+* [0.x.3]*
+    [2.x.7]   
+* [0.x.4]*
+    [2.x.8]  Functions to transform tensors from reference to real coordinates    [2.x.9]   
+* [0.x.5]*
+    [2.x.10]   
+* [0.x.6]*
+    [2.x.11]  Interface with FEValues    [2.x.12]   
+* [0.x.7]*
+   Storage for internal data of the mapping. See  [2.x.13]    for an extensive description.     This includes data that is computed once when the object is created (in   get_data()) as well as data the class wants to store from between the   call to fill_fe_values(), fill_fe_face_values(), or   fill_fe_subface_values() until possible later calls from the finite   element to functions such as transform(). The latter class of member   variables are marked as 'mutable'.  
+* [0.x.8]*
+     Constructor.    
+* [0.x.9]*
+     Return an estimate (in bytes) for the memory consumption of this object.    
+* [0.x.10]*
+     Extents of the last cell we have seen in the coordinate directions,     i.e., [1.x.2], [1.x.3], [1.x.4].    
+* [0.x.11]*
+     The volume element    
+* [0.x.12]*
+     Vector of all quadrature points. Especially, all points on all faces.    
+* [0.x.13]*
+    [2.x.14]   
+* [0.x.14]*
+   Update the cell_extents field of the incoming InternalData object with the   size of the incoming cell.  
+* [0.x.15]*
+   Compute the quadrature points if the UpdateFlags of the incoming   InternalData object say that they should be updated.     Called from fill_fe_values.  
+* [0.x.16]*
+   Compute the quadrature points if the UpdateFlags of the incoming   InternalData object say that they should be updated.     Called from fill_fe_face_values.  
+* [0.x.17]*
+   Compute the quadrature points if the UpdateFlags of the incoming   InternalData object say that they should be updated.     Called from fill_fe_subface_values.  
+* [0.x.18]*
+   Transform quadrature points in InternalData to real space by scaling unit   coordinates with cell_extends in each direction.     Called from the various maybe_update_*_quadrature_points functions.  
+* [0.x.19]*
+   Compute the normal vectors if the UpdateFlags of the incoming InternalData   object say that they should be updated.  
+* [0.x.20]*
+   Since the Jacobian is constant for this mapping all derivatives of the   Jacobian are identically zero. Fill these quantities with zeros if the   corresponding update flags say that they should be updated.  
+* [0.x.21]

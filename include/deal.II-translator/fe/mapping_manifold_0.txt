@@ -1,0 +1,61 @@
+[0.x.0]*
+ This class implements the functionality for Manifold conforming mappings. This Mapping computes the transformation between the reference and real cell by exploiting the geometrical information coming from the underlying Manifold object.
+*  Quadrature points computed using this mapping lie on the exact geometrical objects, and tangent and normal vectors computed using this class are tangent and normal to the underlying geometry. This is in contrast with the MappingQ class, which approximates the geometry using a polynomial of some order, and then computes the normals and tangents using the approximated surface.
+*   [2.x.0]  It is not possible, for mathematical reasons, for one to use this class with a geometry described by a SphericalManifold: see the note in that class for more information.
+
+* 
+* [0.x.1]*
+   Constructor.  
+* [0.x.2]*
+   Copy constructor.  
+* [0.x.3]*
+   Always returns  [2.x.1]  because this class assumes that the   vertices always lies on the underlying Manifold.  
+* [0.x.4]*
+    [2.x.2]  Mapping points between reference and real cells    [2.x.3]   
+* [0.x.5]*
+    [2.x.4]   
+* [0.x.6]*
+    [2.x.5]  Functions to transform tensors from reference to real coordinates    [2.x.6]   
+* [0.x.7]*
+    [2.x.7]   
+* [0.x.8]*
+    [2.x.8]  Interface with FEValues    [2.x.9]   
+* [0.x.9]*
+   Storage for internal data of polynomial mappings. See    [2.x.10]  for an extensive description.     For the current class, the InternalData class stores data that is   computed once when the object is created (in get_data()) as well as data   the class wants to store from between the call to fill_fe_values(),   fill_fe_face_values(), or fill_fe_subface_values() until possible later   calls from the finite element to functions such as transform(). The   latter class of member variables are marked as 'mutable'.  
+* [0.x.10]*
+     Constructor.    
+* [0.x.11]*
+     Initialize the object's member variables related to cell data based on     the given arguments.         The function also calls compute_shape_function_values() to actually set     the member variables related to the values and derivatives of the     mapping shape functions.    
+* [0.x.12]*
+     Initialize the object's member variables related to cell and face data     based on the given arguments. In order to initialize cell data, this     function calls initialize().    
+* [0.x.13]*
+     Compute the weights associated to the Manifold object, that     need to be passed when computing the location of the quadrature     points.    
+* [0.x.14]*
+     Store vertices internally.    
+* [0.x.15]*
+     Return an estimate (in bytes) for the memory consumption of this object.    
+* [0.x.16]*
+     The current cell vertices.         Computed each.    
+* [0.x.17]*
+     The current cell.         Computed each.    
+* [0.x.18]*
+     The actual quadrature on the reference cell.         Computed once.    
+* [0.x.19]*
+     Values of quadrature weights for manifold quadrature     formulas.         The Manifold class has a function  [2.x.11]      that returns new points according to a weighted average of some     surrounding points on the Manifold. For each quadrature point,     we call this function with a Quadrature formula constructed     using the vertices of the current cell, and the values of the     basis functions of an FE_Q(1) finite element evaluated at the     quadrature point itself. While the vertices of the cell change     for every cell, the weights can be computed once for each     quadrature point. We store this information in the following     variable, where the first index runs through the quadrature     points, and the second index runs through the vertex indices.         Computed once.    
+* [0.x.20]*
+     A vector of weights for use in  [2.x.12]  For     each point (interior to a cell), we compute the weight each     vertex has for this point. If the point lies at a vertex, then     this vertex has weight one and all others have weight zero. If     the point lies interior to a cell, then the weight every vertex     has is just the  [2.x.13] -linear shape functions associated with each     vertex evaluated at that point.         This array has size  [2.x.14]  but it     can't be converted into a fixed size array because it is used     as input for  [2.x.15]  which wants to see a      [2.x.16]  for the weights.    
+* [0.x.21]*
+     Unit tangential vectors. Used for the computation of boundary forms and     normal vectors.         This array has `(dim-1)  [2.x.17]  entries. The     first  [2.x.18]  contain the vectors in the first     tangential direction for each face; the second set of      [2.x.19]  entries contain the vectors in the     second tangential direction (only in 3d, since there we have 2 tangential     directions per face), etc.         Filled once.    
+* [0.x.22]*
+     Tensors of covariant transformation at each of the quadrature points.     The matrix stored is the Jacobian G^{-1}, where G = Jacobian^{t}     Jacobian, is the first fundamental form of the map; if dim=spacedim     then it reduces to the transpose of the inverse of the Jacobian matrix,     which itself is stored in the  [2.x.20]  field of this structure.         Computed on each cell.    
+* [0.x.23]*
+     Tensors of contravariant transformation at each of the quadrature     points. The contravariant matrix is the Jacobian of the transformation,     i.e.  [2.x.21] .         Computed on each cell.    
+* [0.x.24]*
+     Auxiliary vectors for internal use.    
+* [0.x.25]*
+     The determinant of the Jacobian in each quadrature point. Filled if     #update_volume_elements.    
+* [0.x.26]*
+     A pointer to the Manifold in use.         Updated each.    
+* [0.x.27]*
+    [2.x.22]   
+* [0.x.28]

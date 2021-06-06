@@ -1,0 +1,72 @@
+[0.x.0]*
+ Selects a solver by changing a parameter.
+*  By calling the  [2.x.0]  function of this  [2.x.1]  it selects the  [2.x.2]  function of that  [2.x.3]  that was specified in the constructor of this class.
+*  [1.x.0] The simplest use of this class is the following:
+
+* 
+* [1.x.1]
+*  But the full usefulness of the  [2.x.4]  class is not clear until the presentation of the following example that assumes the user using the  [2.x.5]  class and having declared a "solver" entry, e.g. with
+
+* 
+* [1.x.2]
+*  Assuming that in the users parameter file there exists the line
+
+* 
+* [1.x.3]
+*  then the constructor call in the above example can be written as
+
+* 
+* [1.x.4]
+* 
+* 
+
+*  If at some time there exists a new solver "xyz" then the user does not need to change their program. Only in the implementation of the  [2.x.6]  the calling of this solver has to be added and each user with program lines quoted above only needs to 'set solver = xyz' in their parameter file to get access to that new solver.
+
+* 
+* [0.x.1]*
+   An alias for the underlying vector type  
+* [0.x.2]*
+   Constructor, filling in default values  
+* [0.x.3]*
+   Constructor, selecting the solver  [2.x.7]    and the SolverControl object  [2.x.8]  already.  
+* [0.x.4]*
+   Destructor  
+* [0.x.5]*
+   Solver procedure. Calls the  [2.x.9]  function of the  [2.x.10]  whose  [2.x.11]    SolverName was specified in the constructor.  
+* [0.x.6]*
+   Select a new solver. Note that all solver names used in this class are   all lower case.  
+* [0.x.7]*
+   Set a new SolverControl. This needs to be set before solving.  
+* [0.x.8]*
+   Set the additional data. For more information see the  [2.x.12]  class.  
+* [0.x.9]*
+   Set the additional data. For more information see the  [2.x.13]  class.  
+* [0.x.10]*
+   Set the additional data. For more information see the  [2.x.14]  class.  
+* [0.x.11]*
+   Set the additional data. For more information see the  [2.x.15]  class.  
+* [0.x.12]*
+   Set the additional data. For more information see the  [2.x.16]  class.  
+* [0.x.13]*
+   Set the additional data. For more information see the  [2.x.17]  class.  
+* [0.x.14]*
+   Get the names of all implemented solvers. The list of possible   options includes:    [2.x.18]     [2.x.19]   "richardson"  [2.x.20]     [2.x.21]   "cg"  [2.x.22]     [2.x.23]   "bicgstab"  [2.x.24]     [2.x.25]   "gmres"  [2.x.26]     [2.x.27]   "fgmres"  [2.x.28]     [2.x.29]   "minres"  [2.x.30]     [2.x.31]   
+* [0.x.15]*
+   Exception.  
+* [0.x.16]*
+   Stores the  [2.x.32]  that is needed in the constructor of each  [2.x.33]    Solver class. This can be changed with  [2.x.34]   
+* [0.x.17]*
+   Stores the name of the solver.  
+* [0.x.18]*
+   Stores the additional data.  
+* [0.x.19]*
+   Stores the additional data.  
+* [0.x.20]*
+   Stores the additional data.  
+* [0.x.21]*
+   Stores the additional data.  
+* [0.x.22]*
+   Stores the additional data.  
+* [0.x.23]*
+   Stores the additional data.  
+* [0.x.24]

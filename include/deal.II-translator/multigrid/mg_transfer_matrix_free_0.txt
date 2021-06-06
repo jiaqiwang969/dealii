@@ -1,0 +1,103 @@
+[0.x.0]*
+ Implementation of the MGTransferBase interface for which the transfer operations is implemented in a matrix-free way based on the interpolation matrices of the underlying finite element. This requires considerably less memory than MGTransferPrebuilt and can also be considerably faster than that variant.
+*  This class currently only works for tensor-product finite elements based on FE_Q and FE_DGQ elements, including systems involving multiple components of one of these elements. Systems with different elements or other elements are currently not implemented.
+
+* 
+* [0.x.1]*
+   Constructor without constraint matrices. Use this constructor only with   discontinuous finite elements or with no local refinement.  
+* [0.x.2]*
+   Constructor with constraints. Equivalent to the default constructor   followed by initialize_constraints().  
+* [0.x.3]*
+   Destructor.  
+* [0.x.4]*
+   Initialize the constraints to be used in build().  
+* [0.x.5]*
+   Reset the object to the state it had right after the default constructor.  
+* [0.x.6]*
+   Actually build the information for the prolongation for each level.     The optional second argument of external partitioners allows the user to   suggest vector partitioning on the levels. In case the partitioners   are found to contain all ghost unknowns that are visited through the   transfer, the given partitioners are chosen. This ensures compatibility   of vectors during prolongate and restrict with external partitioners as   given by the user, which in turn saves some copy operations. However, in   case there are unknowns missing
+* 
+*  -  and this is typically the case at some   point during h-coarsening since processors will need to drop out and   thus children's unknowns on some processor will be needed as ghosts to a   parent cell on another processor
+* 
+*  -  the provided external partitioners are   ignored and internal variants are used instead.  
+* [0.x.7]*
+   Prolongate a vector from level <tt>to_level-1</tt> to level   <tt>to_level</tt> using the embedding matrices of the underlying finite   element. The previous content of <tt>dst</tt> is overwritten.      [2.x.0]  to_level The index of the level to prolongate to, which is the   level of  [2.x.1]       [2.x.2]  src is a vector with as many elements as there are degrees of   freedom on the coarser level involved.      [2.x.3]  dst has as many elements as there are degrees of freedom on the   finer level.  
+* [0.x.8]*
+   Restrict a vector from level <tt>from_level</tt> to level   <tt>from_level-1</tt> using the transpose operation of the prolongate()   method. If the region covered by cells on level <tt>from_level</tt> is   smaller than that of level <tt>from_level-1</tt> (local refinement), then   some degrees of freedom in <tt>dst</tt> are active and will not be   altered. For the other degrees of freedom, the result of the restriction   is added.      [2.x.4]  from_level The index of the level to restrict from, which is the   level of  [2.x.5]       [2.x.6]  src is a vector with as many elements as there are degrees of   freedom on the finer level involved.      [2.x.7]  dst has as many elements as there are degrees of freedom on the   coarser level.  
+* [0.x.9]*
+   Interpolate fine-mesh field  [2.x.8]  to each multigrid level in    [2.x.9]  and store the result in  [2.x.10]  This function is different   from restriction, where a weighted residual is   transferred to a coarser level (transposition of prolongation matrix).     The argument  [2.x.11]  has to be initialized with the correct size according   to the number of levels of the triangulation.     If an inner vector of  [2.x.12]  is empty or has incorrect locally owned size,   it will be resized to locally relevant degrees of freedom on each level.     The use of this function is demonstrated in  [2.x.13] .  
+* [0.x.10]*
+   Finite element does not provide prolongation matrices.  
+* [0.x.11]*
+   Memory used by this object.  
+* [0.x.12]*
+   A variable storing the degree of the finite element contained in the   DoFHandler passed to build(). The selection of the computational kernel is   based on this number.  
+* [0.x.13]*
+   A variable storing whether the element is continuous and there is a joint   degree of freedom in the center of the 1D line.  
+* [0.x.14]*
+   A variable storing the number of components in the finite element contained   in the DoFHandler passed to build().  
+* [0.x.15]*
+   A variable storing the number of degrees of freedom on all child cells. It   is <tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt> for DG elements and   somewhat less for continuous elements.  
+* [0.x.16]*
+   This variable holds the indices for cells on a given level, extracted from   DoFHandler for fast access. All DoF indices on a given level are stored as   a plain array (since this class assumes constant DoFs per cell). To index   into this array, use the cell number times dofs_per_cell.     This array first is arranged such that all locally owned level cells come   first (found in the variable n_owned_level_cells) and then other cells   necessary for the transfer to the next level.  
+* [0.x.17]*
+   A variable storing the connectivity from parent to child cell numbers for   each level.  
+* [0.x.18]*
+   A variable storing the number of cells owned on a given process (sets the   bounds for the worker loops) for each level.  
+* [0.x.19]*
+   This variable holds the one-dimensional embedding (prolongation) matrix   from mother element to all the children.  
+* [0.x.20]*
+   This variable holds the temporary values for the tensor evaluation  
+* [0.x.21]*
+   For continuous elements, restriction is not additive and we need to   weight the result at the end of prolongation (and at the start of   restriction) by the valence of the degrees of freedom, i.e., on how many   elements they appear. We store the data in vectorized form to allow for   cheap access. Moreover, we utilize the fact that we only need to store   <tt>3<sup>dim</sup></tt> indices.     Data is organized in terms of each level (outer vector) and the cells on   each level (inner vector).  
+* [0.x.22]*
+   A variable storing the local indices of Dirichlet boundary conditions on   cells for all levels (outer index), the cells within the levels (second   index), and the indices on the cell (inner index).  
+* [0.x.23]*
+   A vector that holds shared pointers to the partitioners of the   transfer. These partitioners might be shared with what was passed in from   the outside through build() or be shared with the level vectors inherited   from MGLevelGlobalTransfer.  
+* [0.x.24]*
+   Perform the prolongation operation.  
+* [0.x.25]*
+   Performs the restriction operation.  
+* [0.x.26]*
+ Implementation of the MGTransferBase interface for which the transfer operations is implemented in a matrix-free way based on the interpolation matrices of the underlying finite element. This requires considerably less memory than MGTransferPrebuilt and can also be considerably faster than that variant.
+*  This class works with  [2.x.14]  and performs exactly the same transfer operations for each block as MGTransferMatrixFree. Both the cases that the same DoFHandler is used for all the blocks and that each block uses its own DoFHandler are supported.
+
+* 
+* [0.x.27]*
+   Constructor without constraint matrices. Use this constructor only with   discontinuous finite elements or with no local refinement.  
+* [0.x.28]*
+   Constructor with constraints. Equivalent to the default constructor   followed by initialize_constraints().  
+* [0.x.29]*
+   Same as above for the case that each block has its own DoFHandler.  
+* [0.x.30]*
+   Destructor.  
+* [0.x.31]*
+   Initialize the constraints to be used in build().  
+* [0.x.32]*
+   Same as above for the case that each block has its own DoFHandler.  
+* [0.x.33]*
+   Reset the object to the state it had right after the default constructor.  
+* [0.x.34]*
+   Actually build the information for the prolongation for each level.  
+* [0.x.35]*
+   Same as above for the case that each block has its own DoFHandler.  
+* [0.x.36]*
+   Prolongate a vector from level <tt>to_level-1</tt> to level   <tt>to_level</tt> using the embedding matrices of the underlying finite   element. The previous content of <tt>dst</tt> is overwritten.      [2.x.15]  to_level The index of the level to prolongate to, which is the   level of  [2.x.16]       [2.x.17]  src is a vector with as many elements as there are degrees of   freedom on the coarser level involved.      [2.x.18]  dst has as many elements as there are degrees of freedom on the   finer level.  
+* [0.x.37]*
+   Restrict a vector from level <tt>from_level</tt> to level   <tt>from_level-1</tt> using the transpose operation of the prolongate()   method. If the region covered by cells on level <tt>from_level</tt> is   smaller than that of level <tt>from_level-1</tt> (local refinement), then   some degrees of freedom in <tt>dst</tt> are active and will not be   altered. For the other degrees of freedom, the result of the restriction   is added.      [2.x.19]  from_level The index of the level to restrict from, which is the   level of  [2.x.20]       [2.x.21]  src is a vector with as many elements as there are degrees of   freedom on the finer level involved.      [2.x.22]  dst has as many elements as there are degrees of freedom on the   coarser level.  
+* [0.x.38]*
+   Transfer from a block-vector on the global grid to block-vectors defined   on each of the levels separately for active degrees of freedom.   In particular, for a globally refined mesh only the finest level in  [2.x.23]    is filled as a plain copy of  [2.x.24]  All the other level objects are left   untouched.     This function will initialize  [2.x.25]  accordingly if needed as required by   the Multigrid class.  
+* [0.x.39]*
+   Same as above for the case that each block has its own DoFHandler.  
+* [0.x.40]*
+   Transfer from multi-level block-vector to normal vector.  
+* [0.x.41]*
+   Same as above for the case that each block has its own DoFHandler.  
+* [0.x.42]*
+   Memory used by this object.  
+* [0.x.43]*
+   This class can both be used with a single DoFHandler   or a separate DoFHandler for each block.  
+* [0.x.44]*
+   Non-block matrix-free versions of transfer operation.  
+* [0.x.45]*
+   A flag to indicate whether the same DoFHandler is used for all   the components or if each block has its own DoFHandler.  
+* [0.x.46]

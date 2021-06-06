@@ -1,0 +1,100 @@
+[0.x.0]*
+ A class that simplifies the process of execution logging. It does so by providing  [2.x.0]   [2.x.1]  a push and pop mechanism for prefixes, and  [2.x.2]  the possibility of distributing information to files and the console.  [2.x.3] 
+*  The usual usage of this class is through the pregenerated object <tt>deallog</tt>. Typical setup steps are:  [2.x.4]   [2.x.5]  <tt>deallog.depth_console(n)</tt>: restrict output on screen to outer loops.  [2.x.6]   [2.x.7]  write logging information into a file.  [2.x.8]  <tt>deallog.depth_file(n)</tt>: restrict output to file to outer loops.  [2.x.9] 
+*  Before entering a new phase of your program, e.g. a new loop, a new prefix can be set via  [2.x.10]  p("loopname");</tt>. The destructor of the prefix will pop the prefix text from the stack.
+*  Write via the <tt>&lt;&lt;</tt> operator, <tt> deallog << "This is a log notice";</tt> will be buffered thread locally until a  [2.x.11]  or  [2.x.12]  is encountered, which will trigger a writeout to the console and, if set up, the log file.
+*  [1.x.0]
+*  In the vicinity of concurrent threads, LogStream behaves in the following manner:  [2.x.13]   [2.x.14]  Every write to a Logstream with operator <tt>&lt;&lt;</tt> (or with one of the special member functions) is buffered in a thread-local storage.  [2.x.15]  An  [2.x.16]  or  [2.x.17]  will trigger a writeout to the console and (if attached) to the file stream. This writeout is sequentialized so that output from concurrent threads don't interleave.  [2.x.18]  On a new thread, invoking a writeout, as well as a call to #push or #pop will copy the current prefix of the "blessed" thread that created the LogStream instance to a thread-local storage. After that prefixes are thread-local.  [2.x.19] 
+* 
+
+* 
+*  [2.x.20] 
+
+* 
+* [0.x.1]*
+   A subclass allowing for the safe generation and removal of prefixes.     Somewhere at the beginning of a block, create one of these objects, and   it will appear as a prefix in LogStream output like  [2.x.21]  At the   end of the block, the prefix will automatically be removed, when this   object is destroyed.     In other words, the scope of the object so created determines the   lifetime of the prefix. The advantage of using such an object is that the   prefix is removed whichever way you exit the scope
+* 
+*  -  by    [2.x.22] ,    [2.x.23] , or by simply reaching the closing brace. In all of   these cases, it is not necessary to remember to pop the prefix manually   using  [2.x.24]  In this, it works just like the better known    [2.x.25]  and  [2.x.26]  classes.  
+* [0.x.2]*
+     Set a new prefix for  [2.x.27]  which will be removed when the     variable is destroyed.    
+* [0.x.3]*
+     Set a new prefix for the given stream, which will be removed when the     variable is destroyed.    
+* [0.x.4]*
+     Remove the prefix associated with this variable.    
+* [0.x.5]*
+     A pointer to the LogStream object to which the prefix is     applied.    
+* [0.x.6]*
+   Standard constructor. The constructor sets the output stream to    [2.x.28]  and the depth to zero. (Use attach() and   depth_console() to change this.)  
+* [0.x.7]*
+   Destructor.  
+* [0.x.8]*
+   Enable output to a second stream <tt>o</tt>.      [2.x.29]  o Attach this output stream.      [2.x.30]  print_job_id Whether or not the JobIdentifier for the current   process should be printed to the stream.      [2.x.31]  flags Format flags to set on the output stream  [2.x.32]   
+* [0.x.9]*
+   Disable output to the second stream. You may want to call <tt>close</tt>   on the stream that was previously attached to this object.  
+* [0.x.10]*
+   Return the default stream (<tt>std_out</tt>).  
+* [0.x.11]*
+   Return the file stream.  
+* [0.x.12]*
+   Return  [2.x.33]  if file stream has already been attached,    [2.x.34]  otherwise.  
+* [0.x.13]*
+   Return the prefix string.  
+* [0.x.14]*
+   Push another prefix on the stack. Prefixes are automatically separated by   a colon and there is a double colon after the last prefix.     A simpler way to add a prefix (without the manual need to add the   corresponding pop()) is to use the  [2.x.35]  class. Using   that class has the advantage that the corresponding pop() call is   issued whenever the Prefix object goes out of scope
+* 
+*  -  either at   the end of the code block, at the nearest  [2.x.36]  statement, or   because an intermediate function call results in an exception that   is not immediately caught.  
+* [0.x.15]*
+   Remove the last prefix added with push().  
+* [0.x.16]*
+   Maximum number of levels to be printed on the console. The default is 0,   which will not generate any output. This function allows one to restrict   console output to the highest levels of iterations. Only output with less   than <tt>n</tt> prefixes is printed. By calling this function with   <tt>n=0</tt>, no console output will be written. See  [2.x.37]  for an   example usage of this method.     The previous value of this parameter is returned.  
+* [0.x.17]*
+   Maximum number of levels to be written to the log file. The functionality   is the same as <tt>depth_console</tt>, nevertheless, this function should   be used with care, since it may spoil the value of a log file.     The previous value of this parameter is returned.  
+* [0.x.18]*
+   Log the thread id.  
+* [0.x.19]*
+   set the precision for the underlying stream and returns the previous   stream precision. This function mimics   http://www.cplusplus.com/reference/ios/ios_base/precision/  
+* [0.x.20]*
+   set the width for the underlying stream and returns the previous stream   width. This function mimics   http://www.cplusplus.com/reference/ios/ios_base/width/  
+* [0.x.21]*
+   set the flags for the underlying stream and returns the previous stream   flags. This function mimics   http://www.cplusplus.com/reference/ios/ios_base/flags/  
+* [0.x.22]*
+   Treat ostream manipulators. This passes on the whole thing to the   template function with the exception of the  [2.x.38]    manipulator, for which special action is performed: write the temporary   stream buffer including a header to the file and  [2.x.39]  and   empty the buffer.     An overload of this function is needed anyway, since the compiler can't   bind manipulators like  [2.x.40]  directly to template arguments  [2.x.41]    like in the previous general template. This is due to the fact that  [2.x.42]     [2.x.43]  is actually an overloaded set of functions for  [2.x.44]     [2.x.45]  and potentially more of this kind. This function is   therefore necessary to pick one element from this overload set.  
+* [0.x.23]*
+   Return an estimate for the memory consumption, in bytes, of this object.   This is not exact (but will usually be close) because calculating the   memory usage of trees (e.g.,  [2.x.46]  is difficult.  
+* [0.x.24]*
+   Internal wrapper around thread-local prefixes. This private function will   return the correct internal prefix stack. More important, a new thread-   local stack will be copied from the current stack of the "blessed" thread   that created this LogStream instance (usually, in the case of deallog,   the "main" thread).  
+* [0.x.25]*
+   Stack of strings which are printed at the beginning of each line to allow   identification where the output was generated.  
+* [0.x.26]*
+   We record the thread id of the thread creating this object. We need   this information to "steal" the current prefix from this "parent"   thread on first use of deallog on a new thread.  
+* [0.x.27]*
+   Default stream, where the output is to go to. This stream defaults to    [2.x.47]  but can be set to another stream through the   constructor.  
+* [0.x.28]*
+   Pointer to a stream, where a copy of the output is to go to. Usually,   this will be a file stream.     You can set and reset this stream by the <tt>attach</tt> function.  
+* [0.x.29]*
+   Value denoting the number of prefixes to be printed to the standard   output. If more than this number of prefixes is pushed to the stack, then   no output will be generated until the number of prefixes shrinks back   below this number.  
+* [0.x.30]*
+   Same for the maximum depth of prefixes for output to a file.  
+* [0.x.31]*
+   Flag for printing thread id.  
+* [0.x.32]*
+   A flag indicating whether output is currently at a new line  
+* [0.x.33]*
+   Print head of line.  
+* [0.x.34]*
+   Internal wrapper around "thread local" outstreams. This private function   will return the correct internal ostringstream buffer for operator<<.  
+* [0.x.35]*
+   We use our thread local storage facility to generate a stringstream for   every thread that sends log messages.  
+* [0.x.36]*
+ Output a constant something through LogStream:
+* 
+
+* 
+*  [2.x.48]  We declare this operator as a non-member function so that it is possible to overload it with more specialized templated versions under C++11 overload resolution rules
+
+* 
+* [0.x.37]*
+ The standard log object of deal.II:
+
+* 
+* [0.x.38]

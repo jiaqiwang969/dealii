@@ -1,0 +1,11 @@
+[0.x.0]*
+     This class creates the mask used in the treatment of hanging nodes in      [2.x.0]      The implementation of this class is explained in  [2.x.1] Section 3 of     Matrix-Free Finite-Element Computations On Graphics Processors With     Adaptively Refined Unstructured Meshes [2.x.2]  by Karl Ljungkvist,     SpringSim-HPC, 2017 April 23-26.    
+* [0.x.1]*
+       Constructor.      
+* [0.x.2]*
+       Compute the value of the constraint mask for a given cell.      
+* [0.x.3]*
+       Set up line-to-cell mapping for edge constraints in 3D.      
+* [0.x.4]*
+     This function resolves the hanging nodes using tensor product.         The implementation of this class is explained in  [2.x.3] Matrix-Free     Finite-Element Computations On Graphics Processors With Adaptively     Refined Unstructured Meshes [2.x.4]  by Karl Ljungkvist, SpringSim-HPC, 2017     April 23-26.    
+* [0.x.5]

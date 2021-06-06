@@ -1,0 +1,66 @@
+[0.x.0]*
+ This class represents a mask that can be used to select individual vector components of a finite element (see also  [2.x.0]  "this glossary entry"). It will typically have as many elements as the finite element has vector components, and one can use  [2.x.1]  to query whether a particular component has been selected.
+* 
+
+* 
+*  [2.x.2]  A "mask" represents a data structure with  [2.x.3]  and  [2.x.4]    entries that is generally used to enable or disable an operation   for a particular vector component. By this definition, disabled   vector components still exist
+* 
+*  -  they are simply not touched. As   a consequence, when you apply a component mask for interpolating   boundary values (to choose just one example) of a problem with    [2.x.5]  vector components, the input argument that describes the   boundary values will still have to provide  [2.x.6]  components even   if the mask says that we only want to interpolate a subset of   these components onto the finite element space. In other words,   a component mask does not represent a [1.x.0] operation;   it represents a [1.x.1].
+*  Objects of this kind are used in many places where one wants to restrict operations to a certain subset of components, e.g. in  [2.x.7]  or  [2.x.8]  These objects can either be created by hand, or, simpler, by asking the finite element to generate a component mask from certain selected components using code such as this where we create a mask that only denotes the velocity components of a Stokes element (see  [2.x.9] ):
+
+* 
+* [1.x.2]
+*  The result is a component mask that, in 2d, would have values <code>[false, false, true]</code>. Similarly, using
+
+* 
+* [1.x.3]
+*  would result in a mask  [2.x.10]  in 2d. Of course, in 3d, the result would be  [2.x.11] .
+* 
+
+* 
+*  [2.x.12] 
+
+* 
+*  [2.x.13] 
+
+* 
+* [0.x.1]*
+   Initialize a component mask. The default is that a component mask   represents a set of components that are [1.x.4] selected, i.e.,   calling this constructor results in a component mask that always returns    [2.x.14]  whenever asked whether a component is selected.  
+* [0.x.2]*
+   Initialize an object of this type with a set of selected components   specified by the argument.      [2.x.15]  component_mask A vector of  [2.x.16]  entries that   determine which components of a finite element are selected. If the   length of the given vector is zero, then this interpreted as the case   where [1.x.5] component is selected.  
+* [0.x.3]*
+   Initialize the component mask with a number of elements that are either   all true or false.      [2.x.17]  n_components The number of elements of this mask    [2.x.18]  initializer The value each of these elements is supposed to have:   either true or false.  
+* [0.x.4]*
+   Set a particular entry in the mask to a value.  
+* [0.x.5]*
+   If this component mask has been initialized with a mask of size greater   than zero, then return the size of the mask represented by this object.   On the other hand, if this mask has been initialized as an empty object   that represents a mask that is true for every element (i.e., if this   object would return true when calling represents_the_all_selected_mask())   then return zero since no definite size is known.  
+* [0.x.6]*
+   Return whether a particular component is selected by this mask. If this   mask represents the case of an object that selects [1.x.6]   (e.g. if it is created using the default constructor or is converted from   an empty vector of type bool) then this function returns true regardless   of the given argument.      [2.x.19]  component_index The index for which the function should return   whether the component is selected. If this object represents a mask in   which all components are always selected then any index is allowed here.   Otherwise, the given index needs to be between zero and the number of   components that this mask represents.  
+* [0.x.7]*
+   Return whether this component mask represents a mask with exactly    [2.x.20]  components. This is true if either it was initialized with   a vector with exactly  [2.x.21]    (in this case,  [2.x.22]  must equal the result of size()) or if it was   initialized with an empty vector (or using the default constructor) in   which case it can represent a mask with an arbitrary number of components   and will always say that a component is selected.  
+* [0.x.8]*
+   Return the number of components that are selected by this mask.     Since empty component masks represent a component mask that would return    [2.x.23]  for every component, this function may not know the   true size of the component mask and it therefore requires an argument   that denotes the overall number of components.     If the object has been initialized with a non-empty mask (i.e., if the   size() function returns something greater than zero, or equivalently if   represents_the_all_selected_mask() returns false) then the argument can   be omitted and the result of size() is taken.  
+* [0.x.9]*
+   Return the index of the first selected component. The argument is there   for the same reason it exists with the n_selected_components() function.     The function throws an exception if no component is selected at all.  
+* [0.x.10]*
+   Return true if this mask represents a default constructed mask that   corresponds to one in which all components are selected. If true, then   the size() function will return zero.  
+* [0.x.11]*
+   Return a component mask that contains the union of the components   selected by the current object and the one passed as an argument.  
+* [0.x.12]*
+   Return a component mask that has only those elements set that are set   both in the current object as well as the one passed as an argument.  
+* [0.x.13]*
+   Return whether this object and the argument are identical.  
+* [0.x.14]*
+   Return whether this object and the argument are not identical.  
+* [0.x.15]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.16]*
+   Exception  
+* [0.x.17]*
+   The actual component mask.  
+* [0.x.18]*
+ Write a component mask to an output stream. If the component mask represents one where all components are selected without specifying a particular size of the mask, then it writes the string <code>[all components selected]</code> to the stream. Otherwise, it prints the component mask in a form like  [2.x.24] .
+*   [2.x.25]  out The stream to write to.  [2.x.26]  mask The mask to write.  [2.x.27]  A reference to the first argument.
+
+* 
+* [0.x.19]

@@ -1,0 +1,186 @@
+[0.x.0]*
+ Helper macro to remove const from the pointer arguments to some MPI_*
+ functions.
+*  This is needed as the input arguments of functions like MPI_Allgather() are not marked as const in OpenMPI 1.6.5. If using MPI 3 or newer, this macro is a NOOP, while we do the following otherwise:
+*  1. remove from type of  [2.x.0]  2. remove const from resulting type 3. add to resulting type 4. const_cast the given expression  [2.x.1]  to this new type.
+
+* 
+* [0.x.1]*
+   Given the total number of elements  [2.x.2]  create an evenly   distributed 1:1 partitioning of the elements for across  [2.x.3]    The local sizes will be equal to the  [2.x.4]  divided by the number   of partitions plus the remainder being divided amongst the first   processes. Each process will store a contiguous subset of indices, and the   index set on process p+1 starts at the index one larger than the last one   stored on process p.   For example, a  [2.x.5]  of 11 with 3 processes will result   in the IndexSets { [0,4), [4,8), [8,11)] }, and this function will   return the  [2.x.6]  's IndexSet.  
+* [0.x.2]*
+   A namespace for utility functions that abstract certain operations using   the Message Passing Interface (MPI) or provide fallback operations in   case deal.II is configured not to use MPI at all.    
+*  [2.x.7]   
+* [0.x.3]*
+     Return the number of MPI processes there exist in the given      [2.x.8]  "communicator"     object. If this is a sequential job (i.e., the program     is not using MPI at all, or is using MPI but has been started with     only one MPI process), then the communicator necessarily involves     only one process and the function returns 1.    
+* [0.x.4]*
+     Return the      [2.x.9]  "rank of the present MPI process"     in the space of processes described by the given      [2.x.10]  "communicator".     This will be a unique value for each process between zero and (less     than) the number of all processes (given by get_n_mpi_processes()).    
+* [0.x.5]*
+     Return a vector of the ranks (within  [2.x.11]  of a subset of     processes specified by  [2.x.12]     
+* [0.x.6]*
+     Consider an unstructured communication pattern where every process in     an MPI universe wants to send some data to a subset of the other     processors. To do that, the other processors need to know who to expect     messages from. This function computes this information.          [2.x.13]  mpi_comm A      [2.x.14]  "communicator"     that describes the processors that are going to communicate with each     other.          [2.x.15]  destinations The list of processors the current process wants to     send information to. This list need not be sorted in any way. If it     contains duplicate entries that means that multiple messages are     intended for a given destination.          [2.x.16]  A list of processors that have indicated that they want to send     something to the current processor. The resulting list is not sorted.     It may contain duplicate entries if processors enter the same     destination more than once in their destinations list.    
+* [0.x.7]*
+     Simplified (for efficiency) version of the     compute_point_to_point_communication_pattern()     which only computes the number of processes in an MPI universe to expect     communication from.          [2.x.17]  mpi_comm A      [2.x.18]  "communicator"     that describes the processors that are going to communicate with each     other.          [2.x.19]  destinations The list of processors the current process wants to     send information to. This list need not be sorted in any way. If it     contains duplicate entries that means that multiple messages are     intended for a given destination.          [2.x.20]  A number of processors that want to send something to the current     processor.    
+* [0.x.8]*
+     Given a      [2.x.21]  "communicator",     generate a new communicator that contains the same set of processors     but that has a different, unique identifier.         This functionality can be used to ensure that different objects, such     as distributed matrices, each have unique communicators over which they     can interact without interfering with each other.         When no longer needed, the communicator created here needs to be     destroyed using free_communicator().         This function is equivalent to calling      [2.x.22] .    
+* [0.x.9]*
+     Free the given      [2.x.23]  "communicator"      [2.x.24]  that was duplicated using duplicate_communicator().         The argument is passed by reference and will be invalidated and set to     the MPI null handle. This function is equivalent to calling      [2.x.25] .    
+* [0.x.10]*
+     Helper class to automatically duplicate and free an MPI      [2.x.26]  "communicator".         This class duplicates the communicator given in the constructor     using duplicate_communicator() and frees it automatically when     this object gets destroyed by calling free_communicator(). You     can access the wrapped communicator using operator*.         This class exists to easily allow duplicating communicators without     having to worry when and how to free it after usage.    
+* [0.x.11]*
+       Create a duplicate of the given  [2.x.27]       
+* [0.x.12]*
+       Do not allow making copies.      
+* [0.x.13]*
+       The destructor will free the communicator automatically.      
+* [0.x.14]*
+       Access the stored communicator.      
+* [0.x.15]*
+       Do not allow assignment of this class.      
+* [0.x.16]*
+       The communicator of course.      
+* [0.x.17]*
+     This class represents a mutex to guard a critical section for a set of     processors in a parallel computation using MPI.         The lock() commands waits until all MPI ranks in the communicator have     released a previous lock using unlock().         A typical usage involves guarding a critical section using a lock guard:    
+* [1.x.0]
+*          Here, the critical code will finish on all processors before the mutex     can be acquired again (for example by a second execution of the block     above. The critical code block typically involves MPI communication that     would yield incorrect results without the lock. For example, if the code     contains nonblocking receives with MPI_ANY_SOURCE, packets can be     confused between iterations.         Note that the mutex needs to be the same instance between calls to the     same critical region. While not required, this can be achieved by making     the instance static (like in the example above). The variable can also be     a global variable, or a member variable of the object to which the     executing function belongs.    
+* [0.x.18]*
+       This helper class provides a scoped lock for the CollectiveMutex.             See the class documentation of CollectiveMutex for details.      
+* [0.x.19]*
+         Constructor. Blocks until it can acquire the lock.        
+* [0.x.20]*
+         Destructor. Releases the lock.        
+* [0.x.21]*
+         A reference to the mutex.        
+* [0.x.22]*
+         The communicator.        
+* [0.x.23]*
+       Constructor of this class.      
+* [0.x.24]*
+       Destroy the mutex. Assumes the lock is not currently held.      
+* [0.x.25]*
+       Acquire the mutex and, if necessary, wait until we can do so.             This is a collective call that needs to be executed by all processors       in the communicator.      
+* [0.x.26]*
+       Release the lock.             This is a collective call that needs to be executed by all processors       in the communicator.      
+* [0.x.27]*
+       Keep track if we have this lock right now.      
+* [0.x.28]*
+       The request to keep track of the non-blocking barrier.      
+* [0.x.29]*
+     If  [2.x.28]  is an intracommunicator, this function returns a new     communicator  [2.x.29]  with communication group defined by the      [2.x.30]  argument. The function is only collective over the group of     processes that actually want to create the communicator, i.e., that     are named in the  [2.x.31]  argument. If multiple threads at a given     process perform concurrent create_group() operations, the user must     distinguish these operations by providing different  [2.x.32]  or  [2.x.33]      arguments.         This function was introduced in the MPI-3.0 standard. If available,     the corresponding function in the provided MPI implementation is used.     Otherwise, the implementation follows the one described in the     following publication:    
+* [1.x.1]
+*     
+* [0.x.30]*
+     Given the number of locally owned elements  [2.x.34]      create a 1:1 partitioning of the of elements across the MPI     communicator  [2.x.35]  The total size of elements is the sum of      [2.x.36]  across the MPI communicator.  Each process will     store contiguous subset of indices, and the index set on process p+1     starts at the index one larger than the last one stored on process p.    
+* [0.x.31]*
+     Given the total number of elements  [2.x.37]  create an evenly     distributed 1:1 partitioning of the elements across the     MPI communicator  [2.x.38]      Uses  [2.x.39]  to determine number of partitions and processor ID to call the      [2.x.40]  function above.    
+* [0.x.32]*
+     Calculate mean and standard deviation across the MPI communicator  [2.x.41]      for values provided as a range `[begin,end)`.     The mean is computed as  [2.x.42]  where the  [2.x.43]  are     the elements pointed to by the `begin` and `end` iterators on all     processors (i.e., each processor's `[begin,end)` range points to a subset     of the overall number of elements). The standard deviation is calculated     as  [2.x.44] , which is known as     unbiased sample variance.          [2.x.45]  Number specifies the type to store the mean value.     The standard deviation is stored as the corresponding real type.     This allows, for example, to calculate statistics from integer input     values.    
+* [0.x.33]*
+     Return the sum over all processors of the value  [2.x.46]  This function is     collective over all processors given in the      [2.x.47]  "communicator".     If deal.II is not configured for use of MPI, this function simply     returns the value of  [2.x.48]  This function corresponds to the      [2.x.49]  function, i.e. all processors receive the     result of this operation.        
+*  [2.x.50]  Sometimes, not all processors need a result and in that case one     would call the  [2.x.51]  function instead of the      [2.x.52]  function. The latter is at most twice as     expensive, so if you are concerned about performance, it may be     worthwhile investigating whether your algorithm indeed needs the result     everywhere.        
+*  [2.x.53]  This function is only implemented for certain template arguments      [2.x.54] .    
+* [0.x.34]*
+     Like the previous function, but take the sums over the elements of an     array of type T. In other words, the i-th element of the results     array is the sum over the i-th entries of the input arrays from each     processor. T and U must decay to the same type, e.g. they just differ by     one of them having a const type qualifier and the other not.         Input and output arrays may be the same.    
+* [0.x.35]*
+     Like the previous function, but take the sums over the elements of an     array as specified by the ArrayView arguments.     In other words, the i-th element of the results     array is the sum over the i-th entries of the input arrays from each     processor.         Input and output arrays may be the same.    
+* [0.x.36]*
+     Perform an MPI sum of the entries of a symmetric tensor.          [2.x.55]  SymmetricTensor    
+* [0.x.37]*
+     Perform an MPI sum of the entries of a tensor.          [2.x.56]  Tensor    
+* [0.x.38]*
+     Perform an MPI sum of the entries of a SparseMatrix.        
+*  [2.x.57]   [2.x.58]  and  [2.x.59]  should have the same sparsity     pattern and it should be the same for all MPI processes.          [2.x.60]  SparseMatrix    
+* [0.x.39]*
+     Return the maximum over all processors of the value  [2.x.61]  This function     is collective over all processors given in the      [2.x.62]  "communicator".     If deal.II is not configured for use of MPI, this function simply     returns the value of  [2.x.63]  This function corresponds to the      [2.x.64]  function, i.e. all processors receive the     result of this operation.        
+*  [2.x.65]  Sometimes, not all processors need a result and in that case one     would call the  [2.x.66]  function instead of the      [2.x.67]  function. The latter is at most twice as     expensive, so if you are concerned about performance, it may be     worthwhile investigating whether your algorithm indeed needs the result     everywhere.        
+*  [2.x.68]  This function is only implemented for certain template arguments      [2.x.69] .    
+* [0.x.40]*
+     Like the previous function, but take the maximum over the elements of an     array of type T. In other words, the i-th element of the results array is     the maximum over the i-th entries of the input arrays from each     processor. T and U must decay to the same type, e.g. they just differ by     one of them having a const type qualifier and the other not.         Input and output vectors may be the same.    
+* [0.x.41]*
+     Like the previous function, but take the maximum over the elements of an     array as specified by the ArrayView arguments.     In other words, the i-th element of the results     array is the maximum over the i-th entries of the input arrays from each     processor.         Input and output arrays may be the same.    
+* [0.x.42]*
+     Return the minimum over all processors of the value  [2.x.70]  This function     is collective over all processors given in the      [2.x.71]  "communicator".     If deal.II is not configured for use of MPI, this function simply     returns the value of  [2.x.72]  This function corresponds to the      [2.x.73]  function, i.e. all processors receive the     result of this operation.        
+*  [2.x.74]  Sometimes, not all processors need a result and in that case one     would call the  [2.x.75]  function instead of the      [2.x.76]  function. The latter is at most twice as     expensive, so if you are concerned about performance, it may be     worthwhile investigating whether your algorithm indeed needs the result     everywhere.        
+*  [2.x.77]  This function is only implemented for certain template arguments      [2.x.78] .    
+* [0.x.43]*
+     Like the previous function, but take the minima over the elements of an     array of type T. In other words, the i-th element of the results     array is the minimum of the i-th entries of the input arrays from each     processor. T and U must decay to the same type, e.g. they just differ by     one of them having a const type qualifier and the other not.         Input and output arrays may be the same.    
+* [0.x.44]*
+     Like the previous function, but take the minimum over the elements of an     array as specified by the ArrayView arguments.     In other words, the i-th element of the results     array is the minimum over the i-th entries of the input arrays from each     processor.         Input and output arrays may be the same.    
+* [0.x.45]*
+     Performs a [1.x.2] operation over all processors of the value      [2.x.79]  The [1.x.3] operator `||` returns the boolean value     `true` if either or all operands are `true` and returns `false`     otherwise. If the provided value  [2.x.80]  corresponds to `0` in its     associated data type `T`, it will be interpreted as `false`, and `true`     otherwise. Data type `T` must be of type `integral`, i.e., `bool`,     `char`, `short`, `int`, `long`, or any of their variations.         This function is collective over all processors given in the      [2.x.81]  "communicator".     If deal.II is not configured for use of MPI, this function simply     returns the value of  [2.x.82]  This function corresponds to the      [2.x.83]  function, i.e., all processors receive the     result of this operation.        
+*  [2.x.84]  Sometimes, not all processors need a result and in that case one     would call the  [2.x.85]  function instead of the      [2.x.86]  function. The latter is at most twice as     expensive, so if you are concerned about performance, it may be     worthwhile investigating whether your algorithm indeed needs the result     everywhere.    
+* [0.x.46]*
+     Like the previous function, but performs the [1.x.4] operation     on each element of an array. In other words, the i-th element of the     results array is the result of the [1.x.5] operation applied on     the i-th entries of the input arrays from each processor. T and U must     decay to the same type, e.g., they just differ by one of them having a     const type qualifier and the other not.         Input and output arrays may be the same.        
+*  [2.x.87]  Depending on your standard library, this function may not work with       specializations of  [2.x.88]  for the data type `bool`. In that       case, use a different container or data type.    
+* [0.x.47]*
+     Like the previous function, but performs the [1.x.6] operation     on each element of an array as specified by the ArrayView arguments.     In other words, the i-th element of the results array is the result of     the [1.x.7] operation applied on the i-th entries of the input     arrays from each processor.         Input and output arrays may be the same.    
+* [0.x.48]*
+     A data structure to store the result of the min_max_avg() function.     The structure stores the minimum, maximum, and average of one     value contributed by each processor that participates in an      [2.x.89]  "MPI communicator".     The structure also stores     the indices (or, more precisely, the      [2.x.90]  "MPI rank")     of the processors that hold the minimum and maximum values,     as well as the sum over all values.        
+*  [2.x.91]  This structure has no constructors because MPI requires it       to be a POD type.    
+* [0.x.49]*
+       The sum over all values contributed by the processors that       participate in the call to min_max_avg().      
+* [0.x.50]*
+       The minimum value over all values contributed by the processors that       participate in the call to min_max_avg().      
+* [0.x.51]*
+       The maximum value over all values contributed by the processors that       participate in the call to min_max_avg().      
+* [0.x.52]*
+       One of the ranks (i.e.,        [2.x.92]  "MPI rank"       within an        [2.x.93]  "MPI communicator")       of the       processors that hold the minimal value.      
+* [0.x.53]*
+       One of the ranks (i.e.,        [2.x.94]  "MPI rank"       within an        [2.x.95]  "MPI communicator")       of the       processors that hold the maximal value.      
+* [0.x.54]*
+       The average of the values contributed by the processors that       participate in the call to min_max_avg().      
+* [0.x.55]*
+     Return sum, average, minimum, maximum, processor id of minimum and     maximum as a collective operation of on the given MPI      [2.x.96]  "communicator"      [2.x.97]  Each processor's value is given in  [2.x.98]  and     the result will be returned. The result is available on all machines.        
+*  [2.x.99]  Sometimes, not all processors need a result and in that case one     would call the  [2.x.100]  function instead of the      [2.x.101]  function. The latter is at most twice as     expensive, so if you are concerned about performance, it may be     worthwhile investigating whether your algorithm indeed needs the result     everywhere.    
+* [0.x.56]*
+     Same as above but returning the sum, average, minimum, maximum,     process id of minimum and maximum as a collective operation on the     given MPI      [2.x.102]  "communicator"      [2.x.103]  for each entry of the vector.        
+*  [2.x.104]  This function performs a single reduction sweep.          [2.x.105]  Size of the input vector has to be the same on all processes.    
+* [0.x.57]*
+     Same as above but returning the sum, average, minimum, maximum,     process id of minimum and maximum as a collective operation on the     given MPI      [2.x.106]  "communicator"      [2.x.107]  for each entry of the ArrayView.        
+*  [2.x.108]  This function performs a single reduction sweep.          [2.x.109]  Size of the input ArrayView has to be the same on all processes       and the input and output ArrayVew have to have the same size.    
+* [0.x.58]*
+     A class that is used to initialize the MPI system at the beginning of a     program and to shut it down again at the end. It also allows you to     control the number of threads used within each MPI process.         If deal.II is configured with PETSc, PETSc will be initialized     via `PetscInitialize` in the beginning (constructor of this     class) and de-initialized via `PetscFinalize` at the end (i.e.,     in the destructor of this class). The same is true for SLEPc.         If deal.II is configured with p4est, that library will also be     initialized in the beginning, and de-initialized at the end     (by calling sc_init(), p4est_init(), and sc_finalize()).         If a program uses MPI one would typically just create an object     of this type at the beginning of  [2.x.110] . The     constructor of this class then runs  [2.x.111]      with the given arguments and also initializes the other     libraries mentioned above. At the end of the program, the     compiler will invoke the destructor of this object which in     turns calls  [2.x.112]  to shut down the MPI     system.         This class is used in  [2.x.113] ,  [2.x.114] ,  [2.x.115] ,  [2.x.116] , and     several others.        
+*  [2.x.117]  This class performs initialization of the MPI subsystem     as well as the dependent libraries listed above through the     `MPI_COMM_WORLD` communicator. This means that you will have to     create an MPI_InitFinalize object on [1.x.8] MPI processes,     whether or not you intend to use deal.II on a given     processor. In most use cases, one will of course want to work     on all MPI processes using essentially the same program, and so     this is not an issue. But if you plan to run deal.II-based work     on only a subset of MPI processes, using an @ ref     GlossMPICommunicator "MPI communicator" that is a subset of     `MPI_COMM_WORLD` (for example, in client-server settings where     only a subset of processes is responsible for the finite     element communications and the remaining processes do other     things), then you still need to create this object here on all     MPI processes at the beginning of the program because it uses     `MPI_COMM_WORLD` during initialization.    
+* [0.x.59]*
+       Initialize MPI (and, if deal.II was configured to use it, PETSc) and       set the number of threads used by deal.II (via the underlying       Threading Building Blocks library) to the given parameter.              [2.x.118]  argc A reference to the 'argc' argument passed to       main. This argument is used to initialize MPI (and, possibly, PETSc)       as they read arguments from the command line.        [2.x.119]  argv A reference to the 'argv' argument passed to       main.        [2.x.120]  max_num_threads The maximal number of threads this MPI       process should utilize. If this argument is set to        [2.x.121]  (the default value), then the number of       threads is determined automatically in the following way: the number       of threads to run on this MPI process is set in such a way that all       of the cores in your node are spoken for. In other words, if you have       started one MPI process per node, setting this argument is equivalent       to setting it to the number of cores present in the node this MPI       process runs on. If you have started as many MPI processes per node       as there are cores on each node, then this is equivalent to passing 1       as the argument. On the other hand, if, for example, you start 4 MPI       processes on each 16-core node, then this option will start 4 worker       threads for each node. If you start 3 processes on an 8 core node,       then they will start 3, 3 and 2 threads, respectively.            
+*  [2.x.122]  This function calls  [2.x.123]  with       either  [2.x.124]  or, following the discussion above, a       number of threads equal to the number of cores allocated to this MPI       process. However,  [2.x.125]  in turn also       evaluates the environment variable DEAL_II_NUM_THREADS. Finally, the       worker threads can only be created on cores to which the current MPI       process has access to; some MPI implementations limit the number of       cores each process may access to one or a subset of cores in order to       ensure better cache behavior. Consequently, the number of threads       that will really be created will be the minimum of the argument       passed here, the environment variable (if set), and the number of       cores accessible to the thread.            
+*  [2.x.126]   [2.x.127]  can only work if it is       called before any threads are created. The safest place for a call to       it is therefore at the beginning of  [2.x.128] .       Consequently, this extends to the current class: the best place to       create an object of this type is also at or close to the top of        [2.x.129] .      
+* [0.x.60]*
+       Destructor. Calls <tt>MPI_Finalize()</tt> in case this class owns the       MPI process.      
+* [0.x.61]*
+       Register a reference to an MPI_Request       on which we need to call `MPI_Wait` before calling `MPI_Finalize`.             The object  [2.x.130]  needs to exist when MPI_Finalize is called, which means the       request is typically statically allocated. Otherwise, you need to call       unregister_request() before the request goes out of scope. Note that it       is acceptable for a request to be already waited on (and consequently       reset to MPI_REQUEST_NULL).             It is acceptable to call this function more than once with the same       instance (as it is done in the example below).             Typically, this function is used by CollectiveMutex and not directly,       but it can also be used directly like this:      
+* [1.x.9]
+*       
+* [0.x.62]*
+       Unregister a request previously added using register_request().      
+* [0.x.63]*
+       A structure that has  [2.x.131]  objects to register a call back       to run after MPI init or finalize.             For documentation on signals, see       http://www.boost.org/doc/libs/release/libs/signals2 .      
+* [0.x.64]*
+         A signal that is triggered immediately after we have         initialized the MPI context with  [2.x.132] .        
+* [0.x.65]*
+         A signal that is triggered just before we close the MPI context         with  [2.x.133] . It can be used to deallocate         statically allocated MPI resources that need to be deallocated         before  [2.x.134]  is called.        
+* [0.x.66]*
+       Requests to MPI_Wait before finalizing      
+* [0.x.67]*
+     Return whether (i) deal.II has been compiled to support MPI (for     example by compiling with  [2.x.135] ) and if so whether     (ii)  [2.x.136]  has been called (for example using the      [2.x.137]  class). In other words, the result     indicates whether the current job is running under MPI.        
+*  [2.x.138]  The function does not take into account whether an MPI job     actually runs on more than one processor or is, in fact, a single-node     job that happens to run under MPI.    
+* [0.x.68]*
+     Initiate a some-to-some communication, and exchange arbitrary objects     (the class T should be serializable using  [2.x.139]  between     processors.          [2.x.140]  comm MPI communicator.          [2.x.141]  objects_to_send A map from the rank (unsigned int) of the      process meant to receive the data and the object to send (the type `T`      must be serializable for this function to work properly). If this      map contains an entry with a key equal to the rank of the current      process (i.e., an instruction to a process to send data to itself),      then this data item is simply copied to the returned object.          [2.x.142]  A map from the rank (unsigned int) of the process      which sent the data and object received.    
+* [0.x.69]*
+     A generalization of the classic MPI_Allgather function, that accepts     arbitrary data types T, as long as  [2.x.143]  accepts T as an     argument.          [2.x.144]  comm MPI communicator.      [2.x.145]  object_to_send An object to send to all other processes          [2.x.146]  A vector of objects, with size equal to the number of      processes in the MPI communicator. Each entry contains the object      received from the processor with the corresponding rank within the      communicator.    
+* [0.x.70]*
+     A generalization of the classic MPI_Gather function, that accepts     arbitrary data types T, as long as  [2.x.147]  accepts T as an     argument.          [2.x.148]  comm MPI communicator.      [2.x.149]  object_to_send an object to send to the root process      [2.x.150]  root_process The process, which receives the objects from all     processes. By default the process with rank 0 is the root process.          [2.x.151]  The  [2.x.152]  receives a vector of objects, with size equal to the number of      processes in the MPI communicator. Each entry contains the object      received from the processor with the corresponding rank within the      communicator. All other processes receive an empty vector.    
+* [0.x.71]*
+     Sends an object  [2.x.153]  from the process  [2.x.154]      to all other processes.         A generalization of the classic `MPI_Bcast` function that accepts     arbitrary data types `T`, as long as  [2.x.155]  (which in turn     uses  [2.x.156]  see in  [2.x.157]  for details) accepts     `T` as an argument.          [2.x.158]  comm MPI communicator.      [2.x.159]  object_to_send An object to send to all processes.      [2.x.160]  root_process The process that sends the object to all     processes. By default the process with rank 0 is the root process.          [2.x.161]  On the root process, return a copy of  [2.x.162]        On every other process, return a copy of the object sent by       the  [2.x.163]     
+* [0.x.72]*
+     A function that combines values  [2.x.164]  from all processes     via a user-specified binary operation  [2.x.165]  on the  [2.x.166]      As such this function is similar to MPI_Reduce (and      [2.x.167]  however on the one hand due to the     user-specified binary operation it is slower for built-in types but     on the other hand general object types, including ones that store     variable amounts of data, can be handled.         In contrast to all_reduce, the result will be only available on a     single rank. On all other processes, the returned value is undefined.    
+* [0.x.73]*
+     A function that combines values  [2.x.168]  from all processes     via a user-specified binary operation  [2.x.169]  and distributes the     result back to all processes. As such this function is similar to     MPI_Allreduce (if it were implemented by a global reduction followed     by a broadcast step) but due to the user-specified binary operation also     general object types, including ones that store variable amounts of data,     can be handled.    
+* [0.x.74]*
+     Given a partitioned index set space, compute the owning MPI process rank     of each element of a second index set according to the partitioned index     set. A natural usage of this function is to compute for each ghosted     degree of freedom the MPI rank of the process owning that index.         One might think: "But we know which rank a ghost DoF belongs to based on     the subdomain id of the cell it is on". But this heuristic fails for DoFs     on interfaces between ghost cells with different subdomain_ids, or     between a ghost cell and an artificial cell. Furthermore, this function     enables a completely abstract exchange of information without the help of     the mesh in terms of neighbors.         The first argument passed to this function,  [2.x.170]  must     uniquely partition an index space between all processes.     Otherwise, there are no limitations on this argument: In particular,     there is no need in partitioning     the index space into contiguous subsets. Furthermore, there are no     limitations     on the second index set  [2.x.171]  as long as the size matches     the first one. It can be chosen arbitrarily and independently on each     process. In the case that the second index set also contains locally     owned indices, these indices will be treated correctly and the rank of     this process is returned for those entries.        
+*  [2.x.172]  This is a collective operation: all processes within the given     communicator have to call this function. Since this function does not     use MPI_Alltoall or MPI_Allgather, but instead uses non-blocking     point-to-point communication instead, and only a single non-blocking     barrier, it reduces the memory consumption significantly. This function     is suited for large-scale simulations with >100k MPI ranks.          [2.x.173]  owned_indices Index set with indices locally owned by this                process.      [2.x.174]  indices_to_look_up Index set containing indices of which the                user is interested the rank of the owning process.      [2.x.175]  comm MPI communicator.          [2.x.176]  List containing the MPI process rank for each entry in the index             set  [2.x.177]  The order coincides with the order             within the ElementIterator.    
+* [0.x.75]*
+     Compute the union of the input vectors  [2.x.178]  of all processes in the       MPI communicator  [2.x.179]         
+*  [2.x.180]  This is a collective operation. The result will available on all       processes.    
+* [0.x.76]*
+     The same as above but for  [2.x.181]     
+* [0.x.77]

@@ -1,0 +1,11 @@
+[0.x.0] The functions in this file are based on an implementation distributed within the SUNDIALS package, see the license here: https://computing.llnl.gov/projects/sundials/license.
+* 
+
+* 
+* 
+*  - --------------------------------------------------------------- Programmer(s): Daniel Reynolds @ SMU                David J. Gardner, Carol S. Woodward, and                Slaven Peles @ LLNL
+* 
+
+* 
+* 
+*  - ---------------------------------------------------------------[0.x.1]

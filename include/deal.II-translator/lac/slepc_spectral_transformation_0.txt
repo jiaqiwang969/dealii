@@ -1,0 +1,73 @@
+[0.x.0]*
+   Base class for spectral transformation classes using the SLEPc solvers   which are selected based on flags passed to the spectral transformation.      [2.x.0]  is   your favourite transformation type, can then be implemented in   application codes in the following way for  [2.x.1]  with   the solver object  [2.x.2] :  
+* [1.x.0]
+*    and later calling the  [2.x.3]  function as usual:  
+* [1.x.1]
+*     
+*  [2.x.4]  These options can also be set at the command line.    
+*  [2.x.5]   
+* [0.x.1]*
+     Constructor.    
+* [0.x.2]*
+     Destructor.    
+* [0.x.3]*
+     Set a flag to indicate how the transformed matrices are being stored in     the spectral transformations.         The possible values are given by the enumerator STMatMode in the SLEPc     library     http://www.grycap.upv.es/slepc/documentation/current/docs/manualpages/ST/STMatMode.html    
+* [0.x.4]*
+     Set solver to be used when solving a system of linear algebraic     equations inside the eigensolver.    
+* [0.x.5]*
+     SLEPc spectral transformation object.    
+* [0.x.6]*
+   An implementation of the transformation interface using the SLEPc Shift.    
+*  [2.x.6]   
+* [0.x.7]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.8]*
+       Constructor. By default, set the shift parameter to zero.      
+* [0.x.9]*
+       Shift parameter.      
+* [0.x.10]*
+     Constructor.    
+* [0.x.11]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.12]*
+   An implementation of the transformation interface using the SLEPc Shift   and Invert.    
+*  [2.x.7]   
+* [0.x.13]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.14]*
+       Constructor. By default, set the shift parameter to zero.      
+* [0.x.15]*
+       Shift parameter.      
+* [0.x.16]*
+     Constructor.    
+* [0.x.17]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.18]*
+   An implementation of the transformation interface using the SLEPc   Spectrum Folding. This transformation type has been removed in SLEPc   3.5.0 and thus cannot be used in the newer versions.    
+*  [2.x.8]   
+* [0.x.19]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.20]*
+       Constructor. By default, set the shift parameter to zero.      
+* [0.x.21]*
+       Shift parameter.      
+* [0.x.22]*
+     Constructor.    
+* [0.x.23]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.24]*
+   An implementation of the transformation interface using the SLEPc Cayley.    
+*  [2.x.9]   
+* [0.x.25]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.26]*
+       Constructor. Requires two shift parameters      
+* [0.x.27]*
+       Shift parameter.      
+* [0.x.28]*
+       Antishift parameter.      
+* [0.x.29]*
+     Constructor.    
+* [0.x.30]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.31]

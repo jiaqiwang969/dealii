@@ -1,0 +1,77 @@
+[0.x.0]!  [2.x.0]  TrilinosWrappers   [2.x.1]   
+* [0.x.1]*
+   Blocked sparse matrix based on the  [2.x.2]  class.   This class implements the functions that are specific to the Trilinos   SparseMatrix base objects for a blocked sparse matrix, and leaves the   actual work relaying most of the calls to the individual blocks to the   functions implemented in the base class. See there also for a description   of when this class is useful.     In contrast to the deal.II-type SparseMatrix class, the Trilinos matrices   do not have external objects for the sparsity patterns. Thus, one does   not determine the size of the individual blocks of a block matrix of this   type by attaching a block sparsity pattern, but by calling reinit() to   set the number of blocks and then by setting the size of each block   separately. In order to fix the data structures of the block matrix, it   is then necessary to let it know that we have changed the sizes of the   underlying matrices. For this, one has to call the collect_sizes()   function, for much the same reason as is documented with the   BlockSparsityPattern class.    
+*  [2.x.3]     [2.x.4]  "Block (linear algebra)"  
+* [0.x.2]*
+     Typedef the base class for simpler access to its own alias.    
+* [0.x.3]*
+     Typedef the type of the underlying matrix.    
+* [0.x.4]*
+     Import the alias from the base class.    
+* [0.x.5]*
+     Constructor; initializes the matrix to be empty, without any structure,     i.e.  the matrix is not usable at all. This constructor is therefore     only useful for matrices which are members of a class. All other     matrices should be created at a point in the data flow where all     necessary information is available.         You have to initialize the matrix before usage with     reinit(BlockSparsityPattern). The number of blocks per row and column     are then determined by that function.    
+* [0.x.6]*
+     Destructor.    
+* [0.x.7]*
+     Pseudo copy operator only copying empty objects. The sizes of the block     matrices need to be the same.    
+* [0.x.8]*
+     This operator assigns a scalar to a matrix. Since this does usually not     make much sense (should we set all matrix entries to this value? Only     the nonzero entries of the sparsity pattern?), this operation is only     allowed if the actual value to be assigned is zero. This operator only     exists to allow for the obvious notation <tt>matrix=0</tt>, which sets     all elements of the matrix to zero, but keep the sparsity pattern     previously used.    
+* [0.x.9]*
+     Resize the matrix, by setting the number of block rows and columns.     This deletes all blocks and replaces them with uninitialized ones, i.e.     ones for which also the sizes are not yet set. You have to do that by     calling the  [2.x.5]  functions of the blocks themselves. Do not forget     to call collect_sizes() after that on this object.         The reason that you have to set sizes of the blocks yourself is that     the sizes may be varying, the maximum number of elements per row may be     varying, etc. It is simpler not to reproduce the interface of the  [2.x.6]      SparsityPattern class here but rather let the user call whatever     function they desire.    
+* [0.x.10]*
+     Resize the matrix, by using an array of index sets to determine the     %parallel distribution of the individual matrices. This function     assumes that a quadratic block matrix is generated.    
+* [0.x.11]*
+     Resize the matrix and initialize it by the given sparsity pattern.     Since no distribution map is given, the result is a block matrix for     which all elements are stored locally.    
+* [0.x.12]*
+     This function initializes the Trilinos matrix using the deal.II sparse     matrix and the entries stored therein. It uses a threshold to copy only     elements whose modulus is larger than the threshold (so zeros in the     deal.II matrix can be filtered away).    
+* [0.x.13]*
+     This function initializes the Trilinos matrix using the deal.II sparse     matrix and the entries stored therein. It uses a threshold to copy only     elements whose modulus is larger than the threshold (so zeros in the     deal.II matrix can be filtered away). Since no Epetra_Map is given, all     the elements will be locally stored.    
+* [0.x.14]*
+     Return the state of the matrix, i.e., whether compress() needs to be     called after an operation requiring data exchange. Does only return     non-true values when used in <tt>debug</tt> mode, since it is quite     expensive to keep track of all operations that lead to the need for     compress().    
+* [0.x.15]*
+     This function collects the sizes of the sub-objects and stores them in     internal arrays, in order to be able to relay global indices into the     matrix to indices into the subobjects. Youmust* call this function     each time after you have changed the size of the sub-objects. Note that     this is a collective operation, i.e., it needs to be called on all MPI     processes. This command internally calls the method     <tt>compress()</tt>, so you don't need to call that function in case     you use <tt>collect_sizes()</tt>.    
+* [0.x.16]*
+     Return the total number of nonzero elements of this matrix (summed     over all MPI processes).    
+* [0.x.17]*
+     Return the MPI communicator object in use with this matrix.    
+* [0.x.18]*
+     Return the partitioning of the domain space for the individual blocks of     this matrix, i.e., the partitioning of the block vectors this matrix has     to be multiplied with.    
+* [0.x.19]*
+     Return the partitioning of the range space for the individual blocks of     this matrix, i.e., the partitioning of the block vectors that result     from matrix-vector products.    
+* [0.x.20]*
+     Matrix-vector multiplication: let  [2.x.7]  with  [2.x.8]  being this     matrix. The vector types can be block vectors or non-block vectors     (only if the matrix has only one row or column, respectively), and need     to define  [2.x.9]     
+* [0.x.21]*
+     Matrix-vector multiplication: let  [2.x.10]  with  [2.x.11]  being this     matrix. This function does the same as vmult() but takes the transposed     matrix.    
+* [0.x.22]*
+     Compute the residual of an equation [1.x.0], where the residual is     defined to be [1.x.1]. Write the residual into  [2.x.12]  The     [1.x.2] norm of the residual vector is returned.         Source [1.x.3] and destination [1.x.4] must not be the same vector.         Note that both vectors have to be distributed vectors generated using     the same Map as was used for the matrix.         This function only applicable if the matrix only has one block row.    
+* [0.x.23]*
+     Compute the residual of an equation [1.x.5], where the residual is     defined to be [1.x.6]. Write the residual into  [2.x.13]  The     [1.x.7] norm of the residual vector is returned.         This function is only applicable if the matrix only has one block row.    
+* [0.x.24]*
+     Compute the residual of an equation [1.x.8], where the residual is     defined to be [1.x.9]. Write the residual into  [2.x.14]  The     [1.x.10] norm of the residual vector is returned.         This function is only applicable if the matrix only has one block column.    
+* [0.x.25]*
+     Compute the residual of an equation [1.x.11], where the residual is     defined to be [1.x.12]. Write the residual into  [2.x.15]  The     [1.x.13] norm of the residual vector is returned.         This function is only applicable if the matrix only has one block.    
+* [0.x.26]*
+     Make the clear() function in the base class visible, though it is     protected.    
+* [0.x.27]*
+      [2.x.16]  Exceptions      [2.x.17]     
+* [0.x.28]*
+     Exception    
+* [0.x.29]*
+     Exception    
+* [0.x.30]*
+     Internal version of (T)vmult with two block vectors    
+* [0.x.31]*
+     Internal version of (T)vmult where the source vector is a block vector     but the destination vector is a non-block vector    
+* [0.x.32]*
+     Internal version of (T)vmult where the source vector is a non-block     vector but the destination vector is a block vector    
+* [0.x.33]*
+     Internal version of (T)vmult where both source vector and the     destination vector are non-block vectors (only defined if the matrix     consists of only one block)    
+* [0.x.34]*
+       This is an extension class to BlockLinearOperators for Trilinos block       sparse matrices.            
+*  [2.x.18]  This class does very little at the moment other than to check       that the correct Payload type for each subblock has been chosen       correctly. Further extensions to the class may be necessary in the       future in order to add further functionality to BlockLinearOperators       while retaining compatibility with the Trilinos sparse matrix and       preconditioner classes.                  
+*  [2.x.19]       
+* [0.x.35]*
+         Type of payload held by each subblock        
+* [0.x.36]*
+         Default constructor                 This simply checks that the payload for each block has been chosen         correctly (i.e. is of type TrilinosPayload). Apart from this, this         class does not do anything in particular and needs no special         configuration, we have only one generic constructor that can be         called under any conditions.        
+* [0.x.37]

@@ -18,10 +18,6 @@ digraph "FlatManifold&lt; dim, spacedim &gt;"
   Node6 [label="OpenCASCADE::NormalProjection\lManifold\< dim, spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classOpenCASCADE_1_1NormalProjectionManifold.html",tooltip=" "];
   Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node7 [label="OpenCASCADE::NormalToMesh\lProjectionManifold\< dim,\l spacedim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classOpenCASCADE_1_1NormalToMeshProjectionManifold.html",tooltip=" "];
-  Node1 -> Node8 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, dim \>" ,fontname="Helvetica"];
-  Node8 [label="FlatManifold\< dim,\l dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFlatManifold.html",tooltip=" "];
-  Node1 -> Node9 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< chartdim, chartdim \>" ,fontname="Helvetica"];
-  Node9 [label="FlatManifold\< chartdim,\l chartdim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFlatManifold.html",tooltip=" "];
-  Node1 -> Node10 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
-  Node10 [label="FlatManifold\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFlatManifold.html",tooltip=" "];
+  Node1 -> Node8 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
+  Node8 [label="FlatManifold\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFlatManifold.html",tooltip=" "];
 }

@@ -7,7 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>The deal.II Library: Integrators</title>
+<title>The deal.II Library: Integrators A collection of namespaces and functions</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -89,14 +89,14 @@ $(function() {
 <a href="#groups">Modules</a> &#124;
 <a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
-<div class="title">Integrators</div>  </div>
+<div class="title">Integrators A collection of namespaces and functions</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>A collection of namespaces and functions which simplify the coding of forms and bilinear forms on finite element spaces. <a class="el" href="namespaceFunctions.html">Functions</a> for two different purposes are gathered here: the abstract integration on finite element meshes in <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> and actual implementations of the integration of cell and face terms for concrete problems in <a class="el" href="namespaceLocalIntegrators.html" title="Library of integrals over cells and faces This namespace contains application specific local integral...">LocalIntegrators</a>.  
+<p>which simplify the coding of forms and bilinear forms on finite element spaces. <a class="el" href="namespaceFunctions.html">Functions</a> for two different purposes are gathered here: the abstract integration on finite element meshes in <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> and actual implementations of the integration of cell and face terms for concrete problems in <a class="el" href="namespaceLocalIntegrators.html" title="Library of integrals over cells and faces This namespace contains application specific local integral...">LocalIntegrators</a>.  
 <a href="#details">More...</a></p>
 <div class="dynheader">
-Collaboration diagram for Integrators:</div>
+Collaboration diagram for Integrators A collection of namespaces and functions:</div>
 <div class="dyncontent">
 <div class="center"><!-- SVG 0 -->
 </div>
@@ -104,8 +104,8 @@ Collaboration diagram for Integrators:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group__MeshWorker"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html">The MeshWorker interface</a></td></tr>
-<tr class="memdesc:group__MeshWorker"><td class="mdescLeft">&#160;</td><td class="mdescRight">A collection of classes and functions simplifying the coding of loops over all cells and faces. All classes and functions of this module are in the <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> namespace, which also contains documentation on the usage. <br /></td></tr>
+<tr class="memitem:group__MeshWorker"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html">The MeshWorker interface A collection of classes and</a></td></tr>
+<tr class="memdesc:group__MeshWorker"><td class="mdescLeft">&#160;</td><td class="mdescRight">functions simplifying the coding of loops over all cells and faces. All classes and functions of this module are in the <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> namespace, which also contains documentation on the usage. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -137,8 +137,23 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>A collection of namespaces and functions which simplify the coding of forms and bilinear forms on finite element spaces. <a class="el" href="namespaceFunctions.html">Functions</a> for two different purposes are gathered here: the abstract integration on finite element meshes in <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> and actual implementations of the integration of cell and face terms for concrete problems in <a class="el" href="namespaceLocalIntegrators.html" title="Library of integrals over cells and faces This namespace contains application specific local integral...">LocalIntegrators</a>. </p>
-<p>which simplify the coding of forms and bilinear forms on finite element spaces. <a class="el" href="namespaceFunctions.html">Functions</a> for two different purposes are gathered here: the abstract integration on finite element meshes in <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> and actual implementations of the integration of cell and face terms for concrete problems in <a class="el" href="namespaceLocalIntegrators.html" title="Library of integrals over cells and faces This namespace contains application specific local integral...">LocalIntegrators</a>.</p>
+<p>which simplify the coding of forms and bilinear forms on finite element spaces. <a class="el" href="namespaceFunctions.html">Functions</a> for two different purposes are gathered here: the abstract integration on finite element meshes in <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> and actual implementations of the integration of cell and face terms for concrete problems in <a class="el" href="namespaceLocalIntegrators.html" title="Library of integrals over cells and faces This namespace contains application specific local integral...">LocalIntegrators</a>. </p>
+<p>A collection of namespaces and functions which simplify the coding of forms and bilinear forms on finite element spaces. <a class="el" href="namespaceFunctions.html">Functions</a> for two different purposes are gathered here: the abstract integration on finite element meshes in <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> and actual implementations of the integration of cell and face terms for concrete problems in <a class="el" href="namespaceLocalIntegrators.html" title="Library of integrals over cells and faces This namespace contains application specific local integral...">LocalIntegrators</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>Documentation on coding conventions, relations between classes, and details of the implementation is found in the documentation of namespaces in this module. <h3>Integration on finite element meshes</h3>
+</dd></dl>
+<p>When we integrate a function or a functional on a finite element space, the structure of the integration loop is always the same. We have between 3 and 5 nested loops, from outside to inside: </p><ol>
+<li>
+Loop over all cells </li>
+<li>
+Optionally, loop over all faces to compute fluxes </li>
+<li>
+Loop over all quadrature points of the cell/face </li>
+<li>
+Optionally, loop over all test functions to compute forms </li>
+<li>
+Optionally, loop over all trial functions to compute bilinear forms </li>
+</ol>
+<p>These loops naturally fall into two classes, namely the computation of cell and face contributions (loops 3 to 5), and the outer loops over the mesh objects, often referred to as <em> assembling </em> . Support for the outer loop in deal.II can be found in the namespace <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> (see the documentation there). In order to support the cell and face contributions (referred to as local contributions from now on), deal.II offers <a class="el" href="classFEValuesBase.html">FEValuesBase</a> and its derived classes. While the outer loop is generic (with exception of the data types), the computation of local contributions is problem dependent. Therefore, no generic algorithm is possible here. Nevertheless, we can define a generic interface for functions for this purpose and provide a library of local integrators for use in applications. These are collected in the namespace <a class="el" href="namespaceLocalIntegrators.html" title="Library of integrals over cells and faces This namespace contains application specific local integral...">LocalIntegrators</a></p>
 <dl class="section note"><dt>Note</dt><dd>Documentation on coding conventions, relations between classes, and details of the implementation is found in the documentation of namespaces in this module.</dd></dl>
 <h3>Integration on finite element meshes</h3>
 <p>When we integrate a function or a functional on a finite element space, the structure of the integration loop is always the same. We have between 3 and 5 nested loops, from outside to inside: </p><ol>
@@ -154,22 +169,7 @@ Optionally, loop over all test functions to compute forms </li>
 Optionally, loop over all trial functions to compute bilinear forms </li>
 </ol>
 <p>These loops naturally fall into two classes, namely the computation of cell and face contributions (loops 3 to 5), and the outer loops over the mesh objects, often referred to as <em>assembling</em>.</p>
-<p>Support for the outer loop in deal.II can be found in the namespace <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> (see the documentation there). In order to support the cell and face contributions (referred to as local contributions from now on), deal.II offers <a class="el" href="classFEValuesBase.html">FEValuesBase</a> and its derived classes. While the outer loop is generic (with exception of the data types), the computation of local contributions is problem dependent. Therefore, no generic algorithm is possible here. Nevertheless, we can define a generic interface for functions for this purpose and provide a library of local integrators for use in applications. These are collected in the namespace <a class="el" href="namespaceLocalIntegrators.html" title="Library of integrals over cells and faces This namespace contains application specific local integral...">LocalIntegrators</a></p>
-<dl class="section note"><dt>Note</dt><dd>Documentation on coding conventions, relations between classes, and details of the implementation is found in the documentation of namespaces in this module. <h3>Integration on finite element meshes</h3>
-</dd></dl>
-<p>When we integrate a function or a functional on a finite element space, the structure of the integration loop is always the same. We have between 3 and 5 nested loops, from outside to inside: </p><ol>
-<li>
-Loop over all cells </li>
-<li>
-Optionally, loop over all faces to compute fluxes </li>
-<li>
-Loop over all quadrature points of the cell/face </li>
-<li>
-Optionally, loop over all test functions to compute forms </li>
-<li>
-Optionally, loop over all trial functions to compute bilinear forms </li>
-</ol>
-<p>These loops naturally fall into two classes, namely the computation of cell and face contributions (loops 3 to 5), and the outer loops over the mesh objects, often referred to as <em> assembling </em> . Support for the outer loop in deal.II can be found in the namespace <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> (see the documentation there). In order to support the cell and face contributions (referred to as local contributions from now on), deal.II offers <a class="el" href="classFEValuesBase.html">FEValuesBase</a> and its derived classes. While the outer loop is generic (with exception of the data types), the computation of local contributions is problem dependent. Therefore, no generic algorithm is possible here. Nevertheless, we can define a generic interface for functions for this purpose and provide a library of local integrators for use in applications. These are collected in the namespace <a class="el" href="namespaceLocalIntegrators.html" title="Library of integrals over cells and faces This namespace contains application specific local integral...">LocalIntegrators</a> </p>
+<p>Support for the outer loop in deal.II can be found in the namespace <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> (see the documentation there). In order to support the cell and face contributions (referred to as local contributions from now on), deal.II offers <a class="el" href="classFEValuesBase.html">FEValuesBase</a> and its derived classes. While the outer loop is generic (with exception of the data types), the computation of local contributions is problem dependent. Therefore, no generic algorithm is possible here. Nevertheless, we can define a generic interface for functions for this purpose and provide a library of local integrators for use in applications. These are collected in the namespace <a class="el" href="namespaceLocalIntegrators.html" title="Library of integrals over cells and faces This namespace contains application specific local integral...">LocalIntegrators</a> </p>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->

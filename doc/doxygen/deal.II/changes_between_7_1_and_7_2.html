@@ -224,7 +224,7 @@ The member functions Triangulation::set_boundary and Triangulation::get_boundary
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: It has long been a nuisance that the deal.II vector classes could only be accessed using <code>operator()</code> whereas the C++ <code>std::vector</code> class required <code>operator[]</code>. This diminished the usefulness of template code. Historically, the reason was that the deal.II vector classes should use the same operator as the matrix classes, and C++ does not allow to use <code>operator[]</code> for matrices since this operator can only take a single argument. <br  />
+<p class="startli">New: It has long been a nuisance that the deal.II vector classes could only be accessed using <code><a class="el" href="precondition__selector__0_8txt.html#a1400415a03f0fadabafb87fd8e6287cc">operator()</a></code> whereas the C++ <code>std::vector</code> class required <code>operator[]</code>. This diminished the usefulness of template code. Historically, the reason was that the deal.II vector classes should use the same operator as the matrix classes, and C++ does not allow to use <code>operator[]</code> for matrices since this operator can only take a single argument. <br  />
  In any case, all deal.II vector classes now support both kinds of access operators interchangeably. <br  />
  (Wolfgang Bangerth, 2012/02/12)</p>
 <p class="endli"></p>
@@ -416,7 +416,7 @@ Fixed: deal.II could not be compiled with gcc 4.6.1 when MPI is enabled due to a
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed: <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html#acd318718e6553731139718aa7f30307a">parallel::distributed::Triangulation::clear()</a> forgot to update the number cache of this class, leading to wrong results when calling functions like <a class="el" href="classTriangulation.html#a584733c8499dbd140694bfe04e0963ca">parallel::distributed::Triangulation::n_global_active_cells()</a>; <br  />
+<p class="startli">Fixed: <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html#acd318718e6553731139718aa7f30307a">parallel::distributed::Triangulation::clear()</a> forgot to update the number cache of this class, leading to wrong results when calling functions like <a class="el" href="classparallel_1_1TriangulationBase.html#a0fedf8c5b9488f5f82dfbe3d04c3bc0f">parallel::distributed::Triangulation::n_global_active_cells()</a>; <br  />
  (Wolfgang Bangerth, 2012/02/20)</p>
 <p class="endli"></p>
 </li>
@@ -577,7 +577,7 @@ Fixed: deal.II could not be compiled with gcc 4.6.1 when MPI is enabled due to a
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html#a0f5f69b2f422595604c9317ea7f15c13a99e75f41790e1a7e45e9e80ca3fa0df1">parallel::distributed::Triangulation::mesh_reconstruction_after_repartitioning</a> setting which is necessary for save()/load() to be deterministic. Otherwise the matrix assembly is done in a different order depending on the order of old refinements. <br  />
+<p class="startli">New: <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html#a0f5f69b2f422595604c9317ea7f15c13a99e75f41790e1a7e45e9e80ca3fa0df1">parallel::distributed::Triangulation::mesh_reconstruction_after_repartitioning</a> setting which is necessary for <a class="el" href="distributed_2tria__0_8txt.html#a87e8a51cf002220591b681044c8135dc">save()</a>/load() to be deterministic. Otherwise the matrix assembly is done in a different order depending on the order of old refinements. <br  />
  (Timo Heister, 2011/10/26)</p>
 <p class="endli"></p>
 </li>

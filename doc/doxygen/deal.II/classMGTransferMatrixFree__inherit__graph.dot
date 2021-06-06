@@ -13,4 +13,6 @@ digraph "MGTransferMatrixFree&lt; dim, Number &gt;"
   Node5 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< LinearAlgebra::distributed\l::Vector\< Number \> \>" ,fontname="Helvetica"];
   Node5 [label="MGTransferBase\< VectorType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGTransferBase.html",tooltip=" "];
   Node4 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, float \>" ,fontname="Helvetica"];
+  Node6 [label="MGTransferMatrixFree\l\< dim, float \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMGTransferMatrixFree.html",tooltip=" "];
 }

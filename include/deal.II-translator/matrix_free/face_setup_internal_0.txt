@@ -1,0 +1,19 @@
+[0.x.0]*
+     A struct that is used to represent a collection of faces of a process     with one of its neighbor within the setup done in struct FaceInfo.    
+* [0.x.1]*
+     A struct that extracts the faces relevant to a given set of cells,     including the assignment of which of the two neighboring processors at     a subdomain boundary with MPI should do the integration (from both     sides). This data structure is used for the setup of the connectivity     between faces and cells and for identification of the dof indices to be     used for face integrals.    
+* [0.x.2]*
+       Perform the initial detection of faces before reading the indices on       the cells. This does not add the faces yet but only decides on       whether some of the faces should be considered for processing       locally.      
+* [0.x.3]*
+       Upon completion of the dof indices, this function extracts the       information relevant for FaceToCellTopology and categorizes the faces       into interior faces, boundary faces, and ghost faces (not processed       locally but adjacent to some of the cells present locally).      
+* [0.x.4]*
+       Fills the information about the cell, the face number, and numbers       within the plain array representation in MatrixFree into       FaceToCellTopology (without vectorization, which is something applied       later).      
+* [0.x.5]*
+       A type that categorizes faces in the first initialize() function such       that we can later get their correct value in generate_faces().      
+* [0.x.6]*
+     Actually form the batches for vectorized execution of face integrals.    
+* [0.x.7]*
+     This simple comparison for collect_faces_vectorization() identifies     faces of the same type, i.e., where all of the interior and exterior     face number, subface index and orientation are the same. This is used     to batch similar faces together for vectorization.    
+* [0.x.8]*
+     This comparator is used within collect_faces_vectorization() to create     a sorting of FaceToCellTopology objects based on their     identifiers. This is used to obtain a good data locality when     processing the face integrals.    
+* [0.x.9]

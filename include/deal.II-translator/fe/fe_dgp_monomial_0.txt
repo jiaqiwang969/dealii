@@ -1,0 +1,63 @@
+[0.x.0]*
+ Discontinuous finite elements based on monomials.
+*  This finite element implements complete polynomial spaces, that is, dim- dimensional polynomials of degree p. For example, in 2d the element FE_DGP(1) would represent the span of the functions  [2.x.0] , which is in contrast to the element FE_DGQ(1) that is formed by the span of  [2.x.1] . Since the DGP space has only three unknowns for each quadrilateral, it is immediately clear that this element can not be continuous.
+*  The basis functions for this element are chosen to be the monomials listed above. Note that this is the main difference to the FE_DGP class that uses a set of polynomials of complete degree  [2.x.2]  that form a Legendre basis on the unit square. Thus, there, the mass matrix is diagonal, if the grid cells are parallelograms. The basis here does not have this property; however, it is simpler to compute. On the other hand, this element has the additional disadvantage that the local cell matrices usually have a worse condition number than the ones originating from the FE_DGP element.
+*  This class is not implemented for the codimension one case (<tt>spacedim != dim</tt>).
+*  [1.x.0]
+*  It is worth noting that under a (bi-, tri-)linear mapping, the space described by this element does not contain  [2.x.3] , even if we use a basis of polynomials of degree  [2.x.4] . Consequently, for example, on meshes with non-affine cells, a linear function can not be exactly represented by elements of type FE_DGP(1) or FE_DGPMonomial(1).
+*  This can be understood by the following 2-d example: consider the cell with vertices at  [2.x.5] :  [2.x.6] 
+*  For this cell, a bilinear transformation  [2.x.7]  produces the relations  [2.x.8]  and  [2.x.9]  that correlate reference coordinates  [2.x.10]  and coordinates in real space  [2.x.11] . Under this mapping, the constant function is clearly mapped onto itself, but the two other shape functions of the  [2.x.12]  space, namely  [2.x.13]  and  [2.x.14]  are mapped onto  [2.x.15]  where  [2.x.16] .
+*  For the simple case that  [2.x.17] , i.e. if the real cell is the unit square, the expressions can be simplified to  [2.x.18]  and  [2.x.19] . However, for all other cases, the functions  [2.x.20]  are not linear any more, and neither is any linear combination of them. Consequently, the linear functions are not within the range of the mapped  [2.x.21]  polynomials.
+* 
+
+*  [1.x.1] In 2d, the shape functions of this element look as follows.
+*  [1.x.2]
+*   [2.x.22] 
+*  [1.x.3]
+*   [2.x.23] 
+* 
+
+*  [1.x.4]
+*   [2.x.24] 
+* 
+
+*  [1.x.5]
+*   [2.x.25] 
+* 
+
+*  [1.x.6]  [2.x.26] 
+
+* 
+* [0.x.1]*
+   Constructor for the polynomial space of degree <tt>p</tt>.  
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGPMonomial<dim>(degree)</tt>, with <tt>dim</tt> and   <tt>p</tt> replaced by appropriate values.  
+* [0.x.3]*
+    [2.x.27]  Functions to support hp    [2.x.28]   
+* [0.x.4]*
+   If, on a vertex, several finite elements are active, the hp-code first   assigns the degrees of freedom of each of these FEs different global   indices. It then calls this function to find out which of them should get   identical values, and consequently can receive the same global DoF index.   This function therefore returns a list of identities between DoFs of the   present finite element object with the DoFs of  [2.x.29]  which is a   reference to a finite element object representing one of the other finite   elements active on this particular vertex. The function computes which of   the degrees of freedom of the two finite element objects are equivalent,   both numbered between zero and the corresponding value of   n_dofs_per_vertex() of the two finite elements. The first index of each   pair denotes one of the vertex dofs of the present element, whereas the   second is the corresponding index of the other finite element.     This being a discontinuous element, the set of such constraints is of   course empty.  
+* [0.x.5]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on lines.     This being a discontinuous element, the set of such constraints is of   course empty.  
+* [0.x.6]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on quads.     This being a discontinuous element, the set of such constraints is of   course empty.  
+* [0.x.7]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".     For the FE_DGPMonomial class the result is always true (independent of   the degree of the element), as it has no hanging nodes (being a   discontinuous element).  
+* [0.x.8]*
+    [2.x.30]   [2.x.31]   
+* [0.x.9]*
+    [2.x.32]   
+* [0.x.10]*
+   Return the matrix interpolating from the given finite element to the   present one. The size of the matrix is then  [2.x.33]  times   <tt>source.n_dofs_per_cell()</tt>.     These matrices are only available if the source element is also a  [2.x.34]    element. Otherwise, an exception of type    [2.x.35]  is thrown.  
+* [0.x.11]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element. The size of the matrix is then  [2.x.36]    dofs_per_face times <tt>source.dofs_per_face</tt>.     Derived elements will have to implement this function. They may only   provide interpolation matrices for certain source finite elements, for   example those from the same family. If they don't implement interpolation   from a given element, then they must throw an exception of type    [2.x.37]   
+* [0.x.12]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element. The size of the matrix is then  [2.x.38]    dofs_per_face times <tt>source.dofs_per_face</tt>.     Derived elements will have to implement this function. They may only   provide interpolation matrices for certain source finite elements, for   example those from the same family. If they don't implement interpolation   from a given element, then they must throw an exception of type    [2.x.39]   
+* [0.x.13]*
+   This function returns  [2.x.40]  if the shape function  [2.x.41]  has   non-zero function values somewhere on the face  [2.x.42]   
+* [0.x.14]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.     This function is made virtual, since finite element objects are usually   accessed through pointers to their base class, rather than the class   itself.  
+* [0.x.15]*
+   Only for internal use. Its full name is  [2.x.43]    function and it creates the  [2.x.44]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.45]    FiniteElementData.  
+* [0.x.16]*
+   Initialize the restriction matrices. Called from the constructor.  
+* [0.x.17]

@@ -108,56 +108,56 @@ Inheritance diagram for internal::DataOutImplementation::ParallelData&lt; dim, s
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aae720bafad41edfb67335e749bc81f87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#aae720bafad41edfb67335e749bc81f87">ParallelData</a> (const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a3bd2928b155b0310a1446114db964507">n_datasets</a>, const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a40a75dfe6a06f4d028091ab1ae6371d6">n_subdivisions</a>, const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;n_postprocessor_outputs, const ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; dim, spacedim &gt; &amp;mapping, const std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a0aa2e8eb6db7226257152f095d0f55de">finite_elements</a>, const <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#acde7c7a5d99c3e795c3ace8386950b9e">update_flags</a>, const std::vector&lt; std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#abcde0075b6ee2ea51a881690f516bf37">cell_to_patch_index_map</a>)</td></tr>
+<tr class="memitem:aae720bafad41edfb67335e749bc81f87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#aae720bafad41edfb67335e749bc81f87">ParallelData</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a3bd2928b155b0310a1446114db964507">n_datasets</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a40a75dfe6a06f4d028091ab1ae6371d6">n_subdivisions</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;n_postprocessor_outputs, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;<a class="el" href="mapping__data__on__the__fly__0_8txt.html#a76818ed30da9d93332946da6eead1e70">mapping</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a0aa2e8eb6db7226257152f095d0f55de">finite_elements</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#acde7c7a5d99c3e795c3ace8386950b9e">update_flags</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#abcde0075b6ee2ea51a881690f516bf37">cell_to_patch_index_map</a>)</td></tr>
 <tr class="separator:aae720bafad41edfb67335e749bc81f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae720bafad41edfb67335e749bc81f87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#aae720bafad41edfb67335e749bc81f87">ParallelData</a> (const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a3bd2928b155b0310a1446114db964507">n_datasets</a>, const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a40a75dfe6a06f4d028091ab1ae6371d6">n_subdivisions</a>, const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;n_postprocessor_outputs, const ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; dim, spacedim &gt; &amp;mapping, const std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a0aa2e8eb6db7226257152f095d0f55de">finite_elements</a>, const <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#acde7c7a5d99c3e795c3ace8386950b9e">update_flags</a>, const std::vector&lt; std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#abcde0075b6ee2ea51a881690f516bf37">cell_to_patch_index_map</a>)</td></tr>
+<tr class="memitem:aae720bafad41edfb67335e749bc81f87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#aae720bafad41edfb67335e749bc81f87">ParallelData</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a3bd2928b155b0310a1446114db964507">n_datasets</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a40a75dfe6a06f4d028091ab1ae6371d6">n_subdivisions</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;n_postprocessor_outputs, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;<a class="el" href="mapping__data__on__the__fly__0_8txt.html#a76818ed30da9d93332946da6eead1e70">mapping</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a0aa2e8eb6db7226257152f095d0f55de">finite_elements</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#acde7c7a5d99c3e795c3ace8386950b9e">update_flags</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#abcde0075b6ee2ea51a881690f516bf37">cell_to_patch_index_map</a>)</td></tr>
 <tr class="separator:aae720bafad41edfb67335e749bc81f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae720bafad41edfb67335e749bc81f87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#aae720bafad41edfb67335e749bc81f87">ParallelData</a> (const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a3bd2928b155b0310a1446114db964507">n_datasets</a>, const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a40a75dfe6a06f4d028091ab1ae6371d6">n_subdivisions</a>, const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;n_postprocessor_outputs, const ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; dim, spacedim &gt; &amp;mapping, const std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a0aa2e8eb6db7226257152f095d0f55de">finite_elements</a>, const <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#acde7c7a5d99c3e795c3ace8386950b9e">update_flags</a>, const std::vector&lt; std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#abcde0075b6ee2ea51a881690f516bf37">cell_to_patch_index_map</a>)</td></tr>
+<tr class="memitem:aae720bafad41edfb67335e749bc81f87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#aae720bafad41edfb67335e749bc81f87">ParallelData</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a3bd2928b155b0310a1446114db964507">n_datasets</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a40a75dfe6a06f4d028091ab1ae6371d6">n_subdivisions</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;n_postprocessor_outputs, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;<a class="el" href="mapping__data__on__the__fly__0_8txt.html#a76818ed30da9d93332946da6eead1e70">mapping</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a0aa2e8eb6db7226257152f095d0f55de">finite_elements</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#acde7c7a5d99c3e795c3ace8386950b9e">update_flags</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt;&gt; &amp;<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#abcde0075b6ee2ea51a881690f516bf37">cell_to_patch_index_map</a>)</td></tr>
 <tr class="separator:aae720bafad41edfb67335e749bc81f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8fa3fe37eb76a51cd40ab8a7e977cea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ab8fa3fe37eb76a51cd40ab8a7e977cea">reinit_all_fe_values</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;dof_data, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;cell, const unsigned <a class="el" href="classint.html">int</a> face=<a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a>)</td></tr>
+<tr class="memitem:ab8fa3fe37eb76a51cd40ab8a7e977cea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ab8fa3fe37eb76a51cd40ab8a7e977cea">reinit_all_fe_values</a> (<a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;dof_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="error__estimator__0_8txt.html#ae50ea60388edab4bd2cc7666e95ae797">face</a>=<a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a>)</td></tr>
 <tr class="separator:ab8fa3fe37eb76a51cd40ab8a7e977cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8fa3fe37eb76a51cd40ab8a7e977cea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ab8fa3fe37eb76a51cd40ab8a7e977cea">reinit_all_fe_values</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;dof_data, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;cell, const unsigned <a class="el" href="classint.html">int</a> face=<a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a>)</td></tr>
+<tr class="memitem:ab8fa3fe37eb76a51cd40ab8a7e977cea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ab8fa3fe37eb76a51cd40ab8a7e977cea">reinit_all_fe_values</a> (<a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;dof_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="error__estimator__0_8txt.html#ae50ea60388edab4bd2cc7666e95ae797">face</a>=<a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a>)</td></tr>
 <tr class="separator:ab8fa3fe37eb76a51cd40ab8a7e977cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8fa3fe37eb76a51cd40ab8a7e977cea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ab8fa3fe37eb76a51cd40ab8a7e977cea">reinit_all_fe_values</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;dof_data, const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;cell, const unsigned <a class="el" href="classint.html">int</a> face=<a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a>)</td></tr>
+<tr class="memitem:ab8fa3fe37eb76a51cd40ab8a7e977cea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ab8fa3fe37eb76a51cd40ab8a7e977cea">reinit_all_fe_values</a> (<a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;dof_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="error__estimator__0_8txt.html#ae50ea60388edab4bd2cc7666e95ae797">face</a>=<a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a>)</td></tr>
 <tr class="separator:ab8fa3fe37eb76a51cd40ab8a7e977cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae59d2fdc08cd2f16226391e410fd977e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; dim, spacedim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ae59d2fdc08cd2f16226391e410fd977e">get_present_fe_values</a> (const unsigned <a class="el" href="classint.html">int</a> dataset) const</td></tr>
+<tr class="memitem:ae59d2fdc08cd2f16226391e410fd977e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ae59d2fdc08cd2f16226391e410fd977e">get_present_fe_values</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dataset) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ae59d2fdc08cd2f16226391e410fd977e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae59d2fdc08cd2f16226391e410fd977e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; dim, spacedim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ae59d2fdc08cd2f16226391e410fd977e">get_present_fe_values</a> (const unsigned <a class="el" href="classint.html">int</a> dataset) const</td></tr>
+<tr class="memitem:ae59d2fdc08cd2f16226391e410fd977e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ae59d2fdc08cd2f16226391e410fd977e">get_present_fe_values</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dataset) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ae59d2fdc08cd2f16226391e410fd977e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae59d2fdc08cd2f16226391e410fd977e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; dim, spacedim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ae59d2fdc08cd2f16226391e410fd977e">get_present_fe_values</a> (const unsigned <a class="el" href="classint.html">int</a> dataset) const</td></tr>
+<tr class="memitem:ae59d2fdc08cd2f16226391e410fd977e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ae59d2fdc08cd2f16226391e410fd977e">get_present_fe_values</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dataset) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ae59d2fdc08cd2f16226391e410fd977e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcaf4b92095bba81f654793df384ee28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#afcaf4b92095bba81f654793df384ee28">resize_system_vectors</a> (const unsigned <a class="el" href="classint.html">int</a> n_components)</td></tr>
+<tr class="memitem:afcaf4b92095bba81f654793df384ee28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#afcaf4b92095bba81f654793df384ee28">resize_system_vectors</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>)</td></tr>
 <tr class="separator:afcaf4b92095bba81f654793df384ee28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcaf4b92095bba81f654793df384ee28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#afcaf4b92095bba81f654793df384ee28">resize_system_vectors</a> (const unsigned <a class="el" href="classint.html">int</a> n_components)</td></tr>
+<tr class="memitem:afcaf4b92095bba81f654793df384ee28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#afcaf4b92095bba81f654793df384ee28">resize_system_vectors</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>)</td></tr>
 <tr class="separator:afcaf4b92095bba81f654793df384ee28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcaf4b92095bba81f654793df384ee28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#afcaf4b92095bba81f654793df384ee28">resize_system_vectors</a> (const unsigned <a class="el" href="classint.html">int</a> n_components)</td></tr>
+<tr class="memitem:afcaf4b92095bba81f654793df384ee28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#afcaf4b92095bba81f654793df384ee28">resize_system_vectors</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>)</td></tr>
 <tr class="separator:afcaf4b92095bba81f654793df384ee28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:acc29247346dd4a4a1dfa99bd23fba853"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classPoint.html">Point</a>&lt; spacedim &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#acc29247346dd4a4a1dfa99bd23fba853">patch_evaluation_points</a></td></tr>
+<tr class="memitem:acc29247346dd4a4a1dfa99bd23fba853"><td class="memItemLeft" align="right" valign="top"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#acc29247346dd4a4a1dfa99bd23fba853">patch_evaluation_points</a></td></tr>
 <tr class="separator:acc29247346dd4a4a1dfa99bd23fba853"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcde0075b6ee2ea51a881690f516bf37"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#abcde0075b6ee2ea51a881690f516bf37">cell_to_patch_index_map</a></td></tr>
+<tr class="memitem:abcde0075b6ee2ea51a881690f516bf37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html#abcde0075b6ee2ea51a881690f516bf37">cell_to_patch_index_map</a></td></tr>
 <tr class="separator:abcde0075b6ee2ea51a881690f516bf37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bd2928b155b0310a1446114db964507"><td class="memItemLeft" align="right" valign="top">const unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a3bd2928b155b0310a1446114db964507">n_datasets</a></td></tr>
+<tr class="memitem:a3bd2928b155b0310a1446114db964507"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a3bd2928b155b0310a1446114db964507">n_datasets</a></td></tr>
 <tr class="separator:a3bd2928b155b0310a1446114db964507"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40a75dfe6a06f4d028091ab1ae6371d6"><td class="memItemLeft" align="right" valign="top">const unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a40a75dfe6a06f4d028091ab1ae6371d6">n_subdivisions</a></td></tr>
+<tr class="memitem:a40a75dfe6a06f4d028091ab1ae6371d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a40a75dfe6a06f4d028091ab1ae6371d6">n_subdivisions</a></td></tr>
 <tr class="separator:a40a75dfe6a06f4d028091ab1ae6371d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95ee0b618869e2bf8c16e2d1481e383f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDataPostprocessorInputs_1_1Scalar.html">DataPostprocessorInputs::Scalar</a>&lt; spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a95ee0b618869e2bf8c16e2d1481e383f">patch_values_scalar</a></td></tr>
+<tr class="memitem:a95ee0b618869e2bf8c16e2d1481e383f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDataPostprocessorInputs_1_1Scalar.html">DataPostprocessorInputs::Scalar</a>&lt; <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a95ee0b618869e2bf8c16e2d1481e383f">patch_values_scalar</a></td></tr>
 <tr class="separator:a95ee0b618869e2bf8c16e2d1481e383f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24752b7ef858b2af8db76d83a1ff5a20"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDataPostprocessorInputs_1_1Vector.html">DataPostprocessorInputs::Vector</a>&lt; spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a24752b7ef858b2af8db76d83a1ff5a20">patch_values_system</a></td></tr>
+<tr class="memitem:a24752b7ef858b2af8db76d83a1ff5a20"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDataPostprocessorInputs_1_1Vector.html">DataPostprocessorInputs::Vector</a>&lt; <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a24752b7ef858b2af8db76d83a1ff5a20">patch_values_system</a></td></tr>
 <tr class="separator:a24752b7ef858b2af8db76d83a1ff5a20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad88a2be8e6aae2d047d7baeea7eac3fd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt;::<a class="el" href="classVector.html">Vector</a>&lt; <a class="el" href="classdouble.html">double</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ad88a2be8e6aae2d047d7baeea7eac3fd">postprocessed_values</a></td></tr>
+<tr class="memitem:ad88a2be8e6aae2d047d7baeea7eac3fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt;::<a class="el" href="classVector.html">Vector</a>&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#ad88a2be8e6aae2d047d7baeea7eac3fd">postprocessed_values</a></td></tr>
 <tr class="separator:ad88a2be8e6aae2d047d7baeea7eac3fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a283df7c428022fd8b4f5a0eb469054a3"><td class="memItemLeft" align="right" valign="top">const ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; dim, spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a283df7c428022fd8b4f5a0eb469054a3">mapping_collection</a></td></tr>
+<tr class="memitem:a283df7c428022fd8b4f5a0eb469054a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a283df7c428022fd8b4f5a0eb469054a3">mapping_collection</a></td></tr>
 <tr class="separator:a283df7c428022fd8b4f5a0eb469054a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0aa2e8eb6db7226257152f095d0f55de"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; dim, spacedim &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a0aa2e8eb6db7226257152f095d0f55de">finite_elements</a></td></tr>
+<tr class="memitem:a0aa2e8eb6db7226257152f095d0f55de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a0aa2e8eb6db7226257152f095d0f55de">finite_elements</a></td></tr>
 <tr class="separator:a0aa2e8eb6db7226257152f095d0f55de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acde7c7a5d99c3e795c3ace8386950b9e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#acde7c7a5d99c3e795c3ace8386950b9e">update_flags</a></td></tr>
+<tr class="memitem:acde7c7a5d99c3e795c3ace8386950b9e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#acde7c7a5d99c3e795c3ace8386950b9e">update_flags</a></td></tr>
 <tr class="separator:acde7c7a5d99c3e795c3ace8386950b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1de22e0a4beca0895941478bc9718eb6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FEValues.html">hp::FEValues</a>&lt; dim, spacedim &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a1de22e0a4beca0895941478bc9718eb6">x_fe_values</a></td></tr>
+<tr class="memitem:a1de22e0a4beca0895941478bc9718eb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FEValues.html">hp::FEValues</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a1de22e0a4beca0895941478bc9718eb6">x_fe_values</a></td></tr>
 <tr class="separator:a1de22e0a4beca0895941478bc9718eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a010982fa0f64fb4879ae880812c1babb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FEFaceValues.html">hp::FEFaceValues</a>&lt; dim, spacedim &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a010982fa0f64fb4879ae880812c1babb">x_fe_face_values</a></td></tr>
+<tr class="memitem:a010982fa0f64fb4879ae880812c1babb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FEFaceValues.html">hp::FEFaceValues</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html#a010982fa0f64fb4879ae880812c1babb">x_fe_face_values</a></td></tr>
 <tr class="separator:a010982fa0f64fb4879ae880812c1babb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -177,45 +177,45 @@ struct internal::DataOutImplementation::ParallelData&lt; dim, spacedim &gt;</h3>
 template&lt;int dim, int spacedim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">internal::DataOutImplementation::ParallelData</a>&lt; dim, spacedim &gt;::<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">ParallelData</a> </td>
+          <td class="memname"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">internal::DataOutImplementation::ParallelData</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">ParallelData</a> </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_datasets</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_subdivisions</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>n_postprocessor_outputs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>mapping</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>finite_elements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a>&#160;</td>
           <td class="paramname"><em>update_flags</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>cell_to_patch_index_map</em>&#160;</td>
         </tr>
         <tr>
@@ -239,45 +239,45 @@ template&lt;int dim, int spacedim&gt; </div>
 template&lt;int dim, int spacedim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">internal::DataOutImplementation::ParallelData</a>&lt; dim, spacedim &gt;::<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">ParallelData</a> </td>
+          <td class="memname"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">internal::DataOutImplementation::ParallelData</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">ParallelData</a> </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_datasets</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_subdivisions</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>n_postprocessor_outputs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>mapping</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>finite_elements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a>&#160;</td>
           <td class="paramname"><em>update_flags</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>cell_to_patch_index_map</em>&#160;</td>
         </tr>
         <tr>
@@ -299,45 +299,45 @@ template&lt;int dim, int spacedim&gt; </div>
 template&lt;int dim, int spacedim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">internal::DataOutImplementation::ParallelData</a>&lt; dim, spacedim &gt;::<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">ParallelData</a> </td>
+          <td class="memname"><a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">internal::DataOutImplementation::ParallelData</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::<a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">ParallelData</a> </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_datasets</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_subdivisions</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>n_postprocessor_outputs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>mapping</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>finite_elements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a>&#160;</td>
           <td class="paramname"><em>update_flags</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>cell_to_patch_index_map</em>&#160;</td>
         </tr>
         <tr>
@@ -363,21 +363,21 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::reinit_all_fe_values </td>
+          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::reinit_all_fe_values </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>face</em> = <code><a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a></code>&#160;</td>
         </tr>
         <tr>
@@ -407,21 +407,21 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::reinit_all_fe_values </td>
+          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::reinit_all_fe_values </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>face</em> = <code><a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a></code>&#160;</td>
         </tr>
         <tr>
@@ -451,21 +451,21 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::reinit_all_fe_values </td>
+          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::reinit_all_fe_values </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; dim, spacedim &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt; <a class="el" href="classinternal_1_1DataOutImplementation_1_1DataEntryBase.html">DataEntryBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt;::cell_iterator &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename ::<a class="el" href="classTriangulation.html">Triangulation</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_iterator &amp;&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>face</em> = <code><a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a></code>&#160;</td>
         </tr>
         <tr>
@@ -495,9 +495,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt;dim, spacedim&gt;&amp; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::get_present_fe_values </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;&amp; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::get_present_fe_values </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dataset</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -523,9 +523,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt;dim, spacedim&gt;&amp; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::get_present_fe_values </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;&amp; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::get_present_fe_values </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dataset</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -551,9 +551,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt;dim, spacedim&gt;&amp; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::get_present_fe_values </td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classFEValuesBase.html">FEValuesBase</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a>&gt;&amp; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::get_present_fe_values </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dataset</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -579,9 +579,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::resize_system_vectors </td>
+          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::resize_system_vectors </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_components</em></td><td>)</td>
           <td></td>
         </tr>
@@ -607,9 +607,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::resize_system_vectors </td>
+          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::resize_system_vectors </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_components</em></td><td>)</td>
           <td></td>
         </tr>
@@ -635,9 +635,9 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::resize_system_vectors </td>
+          <td class="memname">void <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::resize_system_vectors </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_components</em></td><td>)</td>
           <td></td>
         </tr>
@@ -661,7 +661,7 @@ template&lt;int dim, int spacedim&gt; </div>
 template&lt;int dim, int spacedim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="classPoint.html">Point</a>&lt; spacedim &gt; &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">internal::DataOutImplementation::ParallelData</a>&lt; dim, spacedim &gt;::patch_evaluation_points</td>
+          <td class="memname"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="classPoint.html">Point</a>&lt; <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">internal::DataOutImplementation::ParallelData</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::patch_evaluation_points</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -679,7 +679,7 @@ template&lt;int dim, int spacedim&gt; </div>
 template&lt;int dim, int spacedim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">const std::vector&lt; std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &gt; * <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">internal::DataOutImplementation::ParallelData</a>&lt; dim, spacedim &gt;::cell_to_patch_index_map</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &gt; * <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelData.html">internal::DataOutImplementation::ParallelData</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::cell_to_patch_index_map</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -700,7 +700,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::n_datasets</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::n_datasets</td>
         </tr>
       </table>
   </td>
@@ -726,7 +726,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::n_subdivisions</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::n_subdivisions</td>
         </tr>
       </table>
   </td>
@@ -752,7 +752,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structDataPostprocessorInputs_1_1Scalar.html">DataPostprocessorInputs::Scalar</a>&lt; spacedim &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::patch_values_scalar</td>
+          <td class="memname"><a class="el" href="structDataPostprocessorInputs_1_1Scalar.html">DataPostprocessorInputs::Scalar</a>&lt; <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::patch_values_scalar</td>
         </tr>
       </table>
   </td>
@@ -778,7 +778,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structDataPostprocessorInputs_1_1Vector.html">DataPostprocessorInputs::Vector</a>&lt; spacedim &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::patch_values_system</td>
+          <td class="memname"><a class="el" href="structDataPostprocessorInputs_1_1Vector.html">DataPostprocessorInputs::Vector</a>&lt; <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::patch_values_system</td>
         </tr>
       </table>
   </td>
@@ -804,7 +804,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; std::vector&lt;::<a class="el" href="classVector.html">Vector</a>&lt; <a class="el" href="classdouble.html">double</a> &gt; &gt; &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::postprocessed_values</td>
+          <td class="memname"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt;::<a class="el" href="classVector.html">Vector</a>&lt; <a class="el" href="data__out__base__0_8txt.html#ac4cda81e9f07624b451614e55da075bf">double</a> &gt; &gt; &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::postprocessed_values</td>
         </tr>
       </table>
   </td>
@@ -830,7 +830,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; dim, spacedim &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::mapping_collection</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> ::<a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::mapping_collection</td>
         </tr>
       </table>
   </td>
@@ -856,7 +856,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; dim, spacedim &gt; &gt; &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::finite_elements</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &gt; &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::finite_elements</td>
         </tr>
       </table>
   </td>
@@ -882,7 +882,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::update_flags</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="fe_2fe__update__flags_8h.html#aa94b67d2fdcc390690c523f28019e52f">UpdateFlags</a> <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::update_flags</td>
         </tr>
       </table>
   </td>
@@ -908,7 +908,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FEValues.html">hp::FEValues</a>&lt; dim, spacedim &gt; &gt; &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::x_fe_values</td>
+          <td class="memname"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FEValues.html">hp::FEValues</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &gt; &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::x_fe_values</td>
         </tr>
       </table>
   </td>
@@ -934,7 +934,7 @@ template&lt;int dim, int spacedim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FEFaceValues.html">hp::FEFaceValues</a>&lt; dim, spacedim &gt; &gt; &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; dim, spacedim &gt;::x_fe_face_values</td>
+          <td class="memname"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::shared_ptr&lt;::<a class="el" href="classhp_1_1FEFaceValues.html">hp::FEFaceValues</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &gt; &gt; <a class="el" href="structinternal_1_1DataOutImplementation_1_1ParallelDataBase.html">internal::DataOutImplementation::ParallelDataBase</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt;::x_fe_face_values</td>
         </tr>
       </table>
   </td>

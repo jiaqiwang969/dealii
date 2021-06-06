@@ -1,0 +1,22 @@
+[0.x.0]*
+   This class generates graphical output for the particles stored by a   ParticleHandler object. From a particle handler, it generates patches which   can then be used to write traditional output files. This class currently   only supports witing the particle position and their ID and does not allow   to write the properties attached to the particles    
+*  [2.x.0]   
+* [0.x.1]*
+     Default constructor for the  [2.x.1]  class.    
+* [0.x.2]*
+     Destructor for the  [2.x.2]  class.    
+* [0.x.3]*
+     Build the patches for a given particle handler.          [2.x.3]  [in] particles A particle handler for which the patches will be built.     A dim=0 patch is built for each particle. The position of the particle is     used to build the node position and the ID of the particle is added as a     single data element.      [2.x.4]  [in] data_component_names An optional vector of strings that     describe the properties of each particle. Particle properties will only     be written if this vector     is provided.      [2.x.5]  [in] data_component_interpretations An optional vector that     controls if the particle properties are interpreted as scalars, vectors,     or tensors. Has to be of the same length as  [2.x.6]     
+* [0.x.4]*
+     Returns the patches built by the data_out class which was previously     built using a particle handler    
+* [0.x.5]*
+     Virtual function through which the names of data sets are obtained from     this class    
+* [0.x.6]*
+     Overload of the respective  [2.x.7]      function. See there for a more extensive documentation.     This function is a reimplementation of the function      [2.x.8]     
+* [0.x.7]*
+     This is a vector of patches that is created each time build_patches() is     called. These patches are used in the output routines of the base     classes.    
+* [0.x.8]*
+     A vector of field names for all data components stored in patches.    
+* [0.x.9]*
+     A vector that for each of the data components of the     current data set indicates whether they are scalar fields, parts of a     vector-field, or any of the other supported kinds of data.    
+* [0.x.10]

@@ -1,0 +1,75 @@
+[0.x.0]*
+ A namespace in which the deal.II linear algebra classes are aliased to generic names. There are similar namespaces LinearAlgebraPETSc and LinearAlgebraTrilinos for alias to classes that interface with the PETSc and Trilinos libraries.
+
+* 
+* [0.x.1]*
+   Typedef for the vector type used  
+* [0.x.2]*
+   Typedef for the block-vector type used  
+* [0.x.3]*
+   Typedef for sparse matrix type used  
+* [0.x.4]*
+   Typedef describing sparse matrices that consist of multiple blocks.  
+* [0.x.5]*
+   Typedef for the SSOR preconditioner used  
+* [0.x.6]*
+ A namespace in which the wrappers to the PETSc linear algebra classes are aliased to generic names. There are similar namespaces LinearAlgebraDealII and LinearAlgebraTrilinos for alias to deal.II's own classes and classes that interface with Trilinos.
+
+* 
+* [0.x.7]*
+   Typedef for the CG solver type used.  
+* [0.x.8]*
+   Typedef for the GMRES solver type used.  
+* [0.x.9]*
+   A namespace with alias to generic names for parallel PETSc linear   algebra objects.  
+* [0.x.10]*
+     Typedef for the vector type used.    
+* [0.x.11]*
+     Typedef for the type used to describe vectors that consist of multiple     blocks.    
+* [0.x.12]*
+     Typedef for the sparse matrix type used.    
+* [0.x.13]*
+     Typedef for the type used to describe sparse matrices that consist of     multiple blocks.    
+* [0.x.14]*
+     Typedef for the compressed block sparsity pattern used.    
+* [0.x.15]*
+     Typedef for the AMG preconditioner type.    
+* [0.x.16]*
+     Typedef for the Incomplete Cholesky preconditioner.    
+* [0.x.17]*
+     Typedef for the Incomplete LU decomposition preconditioner.    
+* [0.x.18]*
+     Typedef for the Incomplete Jacobi decomposition preconditioner.    
+* [0.x.19]*
+     Typedef for the SSOR preconditioner.    
+* [0.x.20]*
+ A namespace in which the wrappers to the Trilinos linear algebra classes are aliased to generic names. There are similar namespaces LinearAlgebraDealII and LinearAlgebraPETSc for alias to deal.II's own classes and classes that interface with PETSc.
+
+* 
+* [0.x.21]*
+   Typedef for the CG solver type used.  
+* [0.x.22]*
+   Typdef for the GMRES solver type used.  
+* [0.x.23]*
+   A namespace with alias to generic names for parallel Trilinos linear   algebra objects.  
+* [0.x.24]*
+     Typedef for the vector type used.    
+* [0.x.25]*
+     Typedef for the type used to describe vectors that consist of multiple     blocks.    
+* [0.x.26]*
+     Typedef for the sparse matrix type used.    
+* [0.x.27]*
+     Typedef for the type used to describe sparse matrices that consist of     multiple blocks.    
+* [0.x.28]*
+     Typedef for the type used for compressed block sparsity pattern.    
+* [0.x.29]*
+     Typedef for the AMG preconditioner type.    
+* [0.x.30]*
+     Typedef for the Incomplete Cholesky preconditioner.    
+* [0.x.31]*
+     Typedef for the Incomplete LU decomposition preconditioner.    
+* [0.x.32]*
+     Typedef for the Incomplete Jacobi decomposition preconditioner.    
+* [0.x.33]*
+     Typedef for the SSOR preconditioner    
+* [0.x.34]

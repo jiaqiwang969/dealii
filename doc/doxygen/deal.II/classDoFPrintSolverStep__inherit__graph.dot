@@ -5,5 +5,5 @@ digraph "DoFPrintSolverStep&lt; dim, SolverType, VectorType &gt;"
   node [fontname="Helvetica",fontsize="10",shape=record];
   Node1 [label="DoFPrintSolverStep\l\< dim, SolverType, VectorType \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
   Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node2 [label="SolverType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSolverType.html",tooltip=" "];
+  Node2 [label="SolverType",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
 }

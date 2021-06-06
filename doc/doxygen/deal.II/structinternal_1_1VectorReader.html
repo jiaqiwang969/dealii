@@ -102,130 +102,130 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad752e4a1dde7e24f6fb6937811661b34"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:ad752e4a1dde7e24f6fb6937811661b34"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ad752e4a1dde7e24f6fb6937811661b34">process_dof</a> (const unsigned <a class="el" href="classint.html">int</a> index, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, Number &amp;res) const</td></tr>
+<tr class="memitem:ad752e4a1dde7e24f6fb6937811661b34"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ad752e4a1dde7e24f6fb6937811661b34">process_dof</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="scalapack__0_8txt.html#abc6ecee32660d1fa6d6157325220179a">index</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ad752e4a1dde7e24f6fb6937811661b34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memTemplParams" colspan="2">template&lt;typename VectorNumberType &gt; </td></tr>
-<tr class="memitem:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa738bdd3085f0bde8c74e0acef3ae3ba">process_dof</a> (const VectorNumberType &amp;global, Number &amp;local) const</td></tr>
+<tr class="memitem:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa738bdd3085f0bde8c74e0acef3ae3ba">process_dof</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorNumberType &amp;<a class="el" href="block__info__0_8txt.html#adf3728ee2be920ec28e2f66b5a04a213">global</a>, Number &amp;<a class="el" href="block__info__0_8txt.html#a6e40fe1b2d784c06fbd9ad45ce139aac">local</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17483c9a82e089967b0162ab02348083"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a17483c9a82e089967b0162ab02348083"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a17483c9a82e089967b0162ab02348083">process_dofs_vectorized</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> dof_index, <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:a17483c9a82e089967b0162ab02348083"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a17483c9a82e089967b0162ab02348083">process_dofs_vectorized</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dof_index, VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a17483c9a82e089967b0162ab02348083"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83b0c94887b0f609650a6ca4b21258ce"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a83b0c94887b0f609650a6ca4b21258ce"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a83b0c94887b0f609650a6ca4b21258ce">process_dofs_vectorized</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> dof_index, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:a83b0c94887b0f609650a6ca4b21258ce"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a83b0c94887b0f609650a6ca4b21258ce">process_dofs_vectorized</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dof_index, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a83b0c94887b0f609650a6ca4b21258ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a5d67ba7db05bd1a9c7169faa321aebcb">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> *dof_indices, <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a5d67ba7db05bd1a9c7169faa321aebcb">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *dof_indices, VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2aacc042df8ef0d14ddc5a892a943003"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a2aacc042df8ef0d14ddc5a892a943003"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a2aacc042df8ef0d14ddc5a892a943003">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> *dof_indices, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:a2aacc042df8ef0d14ddc5a892a943003"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a2aacc042df8ef0d14ddc5a892a943003">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *dof_indices, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a2aacc042df8ef0d14ddc5a892a943003"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa91c759b7cc96cca855c6f3c9f29ffd0">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;global_ptr, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa91c759b7cc96cca855c6f3c9f29ffd0">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;global_ptr, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7a35efb2de568a04401ec63c1f74b39"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:ac7a35efb2de568a04401ec63c1f74b39"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ac7a35efb2de568a04401ec63c1f74b39">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a>, const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;, VectorizedArrayType *, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:ac7a35efb2de568a04401ec63c1f74b39"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ac7a35efb2de568a04401ec63c1f74b39">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;, VectorizedArrayType *, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ac7a35efb2de568a04401ec63c1f74b39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a03f9742f76af0e086e9e73cc5a1a30ab">process_dof_gather</a> (const unsigned <a class="el" href="classint.html">int</a> *indices, <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, const unsigned <a class="el" href="classint.html">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a03f9742f76af0e086e9e73cc5a1a30ab">process_dof_gather</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *<a class="el" href="block__indices__0_8txt.html#a209f8c4dfa20066a28a366a152192ed8">indices</a>, VectorType &amp;vec, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a091c358d3599f08e60517cf8cf852116"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a091c358d3599f08e60517cf8cf852116"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a091c358d3599f08e60517cf8cf852116">process_dof_gather</a> (const unsigned <a class="el" href="classint.html">int</a> *indices, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, const unsigned <a class="el" href="classint.html">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:a091c358d3599f08e60517cf8cf852116"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a091c358d3599f08e60517cf8cf852116">process_dof_gather</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *<a class="el" href="block__indices__0_8txt.html#a209f8c4dfa20066a28a366a152192ed8">indices</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a091c358d3599f08e60517cf8cf852116"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a502a8ce373fbea96a4c7b25b9baf1441">process_dof_global</a> (const <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> index, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, Number &amp;res) const</td></tr>
+<tr class="memitem:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a502a8ce373fbea96a4c7b25b9baf1441">process_dof_global</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> <a class="el" href="scalapack__0_8txt.html#abc6ecee32660d1fa6d6157325220179a">index</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18cd14f10683710dae7677a49448156f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a18cd14f10683710dae7677a49448156f">pre_constraints</a> (const Number &amp;, Number &amp;res) const</td></tr>
+<tr class="memitem:a18cd14f10683710dae7677a49448156f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a18cd14f10683710dae7677a49448156f">pre_constraints</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a18cd14f10683710dae7677a49448156f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a8f5ea3e8fecb70dffe98a47ceb0961d9">process_constraint</a> (const unsigned <a class="el" href="classint.html">int</a> index, const Number weight, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, Number &amp;res) const</td></tr>
+<tr class="memitem:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a8f5ea3e8fecb70dffe98a47ceb0961d9">process_constraint</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="scalapack__0_8txt.html#abc6ecee32660d1fa6d6157325220179a">index</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number <a class="el" href="vector__tools__integrate__difference__0_8txt.html#ac48c26008e4d64194a58eb408bfcb517">weight</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20414b969f4fc8a56218504a120357d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a20414b969f4fc8a56218504a120357d4">post_constraints</a> (const Number &amp;sum, Number &amp;write_pos) const</td></tr>
+<tr class="memitem:a20414b969f4fc8a56218504a120357d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a20414b969f4fc8a56218504a120357d4">post_constraints</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;sum, Number &amp;write_pos) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a20414b969f4fc8a56218504a120357d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab83cc00f81553d971673fb3c3d6e142b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ab83cc00f81553d971673fb3c3d6e142b">process_empty</a> (VectorizedArrayType &amp;res) const</td></tr>
+<tr class="memitem:ab83cc00f81553d971673fb3c3d6e142b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ab83cc00f81553d971673fb3c3d6e142b">process_empty</a> (VectorizedArrayType &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ab83cc00f81553d971673fb3c3d6e142b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad752e4a1dde7e24f6fb6937811661b34"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:ad752e4a1dde7e24f6fb6937811661b34"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ad752e4a1dde7e24f6fb6937811661b34">process_dof</a> (const unsigned <a class="el" href="classint.html">int</a> index, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, Number &amp;res) const</td></tr>
+<tr class="memitem:ad752e4a1dde7e24f6fb6937811661b34"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ad752e4a1dde7e24f6fb6937811661b34">process_dof</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="scalapack__0_8txt.html#abc6ecee32660d1fa6d6157325220179a">index</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ad752e4a1dde7e24f6fb6937811661b34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memTemplParams" colspan="2">template&lt;typename VectorNumberType &gt; </td></tr>
-<tr class="memitem:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa738bdd3085f0bde8c74e0acef3ae3ba">process_dof</a> (const VectorNumberType &amp;global, Number &amp;local) const</td></tr>
+<tr class="memitem:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa738bdd3085f0bde8c74e0acef3ae3ba">process_dof</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorNumberType &amp;<a class="el" href="block__info__0_8txt.html#adf3728ee2be920ec28e2f66b5a04a213">global</a>, Number &amp;<a class="el" href="block__info__0_8txt.html#a6e40fe1b2d784c06fbd9ad45ce139aac">local</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17483c9a82e089967b0162ab02348083"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a17483c9a82e089967b0162ab02348083"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a17483c9a82e089967b0162ab02348083">process_dofs_vectorized</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> dof_index, <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:a17483c9a82e089967b0162ab02348083"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a17483c9a82e089967b0162ab02348083">process_dofs_vectorized</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dof_index, VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a17483c9a82e089967b0162ab02348083"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83b0c94887b0f609650a6ca4b21258ce"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a83b0c94887b0f609650a6ca4b21258ce"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a83b0c94887b0f609650a6ca4b21258ce">process_dofs_vectorized</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> dof_index, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:a83b0c94887b0f609650a6ca4b21258ce"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a83b0c94887b0f609650a6ca4b21258ce">process_dofs_vectorized</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dof_index, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a83b0c94887b0f609650a6ca4b21258ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a5d67ba7db05bd1a9c7169faa321aebcb">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> *dof_indices, <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a5d67ba7db05bd1a9c7169faa321aebcb">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *dof_indices, VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2aacc042df8ef0d14ddc5a892a943003"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a2aacc042df8ef0d14ddc5a892a943003"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a2aacc042df8ef0d14ddc5a892a943003">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> *dof_indices, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:a2aacc042df8ef0d14ddc5a892a943003"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a2aacc042df8ef0d14ddc5a892a943003">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *dof_indices, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a2aacc042df8ef0d14ddc5a892a943003"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa91c759b7cc96cca855c6f3c9f29ffd0">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;global_ptr, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa91c759b7cc96cca855c6f3c9f29ffd0">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;global_ptr, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7a35efb2de568a04401ec63c1f74b39"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:ac7a35efb2de568a04401ec63c1f74b39"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ac7a35efb2de568a04401ec63c1f74b39">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a>, const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;, VectorizedArrayType *, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:ac7a35efb2de568a04401ec63c1f74b39"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ac7a35efb2de568a04401ec63c1f74b39">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;, VectorizedArrayType *, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ac7a35efb2de568a04401ec63c1f74b39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a03f9742f76af0e086e9e73cc5a1a30ab">process_dof_gather</a> (const unsigned <a class="el" href="classint.html">int</a> *indices, <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, const unsigned <a class="el" href="classint.html">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a03f9742f76af0e086e9e73cc5a1a30ab">process_dof_gather</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *<a class="el" href="block__indices__0_8txt.html#a209f8c4dfa20066a28a366a152192ed8">indices</a>, VectorType &amp;vec, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a091c358d3599f08e60517cf8cf852116"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a091c358d3599f08e60517cf8cf852116"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a091c358d3599f08e60517cf8cf852116">process_dof_gather</a> (const unsigned <a class="el" href="classint.html">int</a> *indices, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, const unsigned <a class="el" href="classint.html">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:a091c358d3599f08e60517cf8cf852116"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a091c358d3599f08e60517cf8cf852116">process_dof_gather</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *<a class="el" href="block__indices__0_8txt.html#a209f8c4dfa20066a28a366a152192ed8">indices</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a091c358d3599f08e60517cf8cf852116"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a502a8ce373fbea96a4c7b25b9baf1441">process_dof_global</a> (const <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> index, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, Number &amp;res) const</td></tr>
+<tr class="memitem:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a502a8ce373fbea96a4c7b25b9baf1441">process_dof_global</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> <a class="el" href="scalapack__0_8txt.html#abc6ecee32660d1fa6d6157325220179a">index</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18cd14f10683710dae7677a49448156f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a18cd14f10683710dae7677a49448156f">pre_constraints</a> (const Number &amp;, Number &amp;res) const</td></tr>
+<tr class="memitem:a18cd14f10683710dae7677a49448156f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a18cd14f10683710dae7677a49448156f">pre_constraints</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a18cd14f10683710dae7677a49448156f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a8f5ea3e8fecb70dffe98a47ceb0961d9">process_constraint</a> (const unsigned <a class="el" href="classint.html">int</a> index, const Number weight, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, Number &amp;res) const</td></tr>
+<tr class="memitem:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a8f5ea3e8fecb70dffe98a47ceb0961d9">process_constraint</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="scalapack__0_8txt.html#abc6ecee32660d1fa6d6157325220179a">index</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number <a class="el" href="vector__tools__integrate__difference__0_8txt.html#ac48c26008e4d64194a58eb408bfcb517">weight</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20414b969f4fc8a56218504a120357d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a20414b969f4fc8a56218504a120357d4">post_constraints</a> (const Number &amp;sum, Number &amp;write_pos) const</td></tr>
+<tr class="memitem:a20414b969f4fc8a56218504a120357d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a20414b969f4fc8a56218504a120357d4">post_constraints</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;sum, Number &amp;write_pos) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a20414b969f4fc8a56218504a120357d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab83cc00f81553d971673fb3c3d6e142b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ab83cc00f81553d971673fb3c3d6e142b">process_empty</a> (VectorizedArrayType &amp;res) const</td></tr>
+<tr class="memitem:ab83cc00f81553d971673fb3c3d6e142b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ab83cc00f81553d971673fb3c3d6e142b">process_empty</a> (VectorizedArrayType &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ab83cc00f81553d971673fb3c3d6e142b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad752e4a1dde7e24f6fb6937811661b34"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:ad752e4a1dde7e24f6fb6937811661b34"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ad752e4a1dde7e24f6fb6937811661b34">process_dof</a> (const unsigned <a class="el" href="classint.html">int</a> index, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, Number &amp;res) const</td></tr>
+<tr class="memitem:ad752e4a1dde7e24f6fb6937811661b34"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ad752e4a1dde7e24f6fb6937811661b34">process_dof</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="scalapack__0_8txt.html#abc6ecee32660d1fa6d6157325220179a">index</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ad752e4a1dde7e24f6fb6937811661b34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memTemplParams" colspan="2">template&lt;typename VectorNumberType &gt; </td></tr>
-<tr class="memitem:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa738bdd3085f0bde8c74e0acef3ae3ba">process_dof</a> (const VectorNumberType &amp;global, Number &amp;local) const</td></tr>
+<tr class="memitem:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa738bdd3085f0bde8c74e0acef3ae3ba">process_dof</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorNumberType &amp;<a class="el" href="block__info__0_8txt.html#adf3728ee2be920ec28e2f66b5a04a213">global</a>, Number &amp;<a class="el" href="block__info__0_8txt.html#a6e40fe1b2d784c06fbd9ad45ce139aac">local</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa738bdd3085f0bde8c74e0acef3ae3ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17483c9a82e089967b0162ab02348083"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a17483c9a82e089967b0162ab02348083"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a17483c9a82e089967b0162ab02348083">process_dofs_vectorized</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> dof_index, <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:a17483c9a82e089967b0162ab02348083"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a17483c9a82e089967b0162ab02348083">process_dofs_vectorized</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dof_index, VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a17483c9a82e089967b0162ab02348083"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83b0c94887b0f609650a6ca4b21258ce"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a83b0c94887b0f609650a6ca4b21258ce"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a83b0c94887b0f609650a6ca4b21258ce">process_dofs_vectorized</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> dof_index, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:a83b0c94887b0f609650a6ca4b21258ce"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a83b0c94887b0f609650a6ca4b21258ce">process_dofs_vectorized</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dof_index, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a83b0c94887b0f609650a6ca4b21258ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a5d67ba7db05bd1a9c7169faa321aebcb">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> *dof_indices, <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a5d67ba7db05bd1a9c7169faa321aebcb">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *dof_indices, VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a5d67ba7db05bd1a9c7169faa321aebcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2aacc042df8ef0d14ddc5a892a943003"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a2aacc042df8ef0d14ddc5a892a943003"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a2aacc042df8ef0d14ddc5a892a943003">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const unsigned <a class="el" href="classint.html">int</a> *dof_indices, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:a2aacc042df8ef0d14ddc5a892a943003"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a2aacc042df8ef0d14ddc5a892a943003">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *dof_indices, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a2aacc042df8ef0d14ddc5a892a943003"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa91c759b7cc96cca855c6f3c9f29ffd0">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a> dofs_per_cell, const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;global_ptr, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#aa91c759b7cc96cca855c6f3c9f29ffd0">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe_2fe__values__0_8txt.html#a15ff2e0c168966d6ae13c4faabcec165">dofs_per_cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;global_ptr, VectorizedArrayType *dof_values, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa91c759b7cc96cca855c6f3c9f29ffd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7a35efb2de568a04401ec63c1f74b39"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:ac7a35efb2de568a04401ec63c1f74b39"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ac7a35efb2de568a04401ec63c1f74b39">process_dofs_vectorized_transpose</a> (const unsigned <a class="el" href="classint.html">int</a>, const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;, VectorizedArrayType *, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:ac7a35efb2de568a04401ec63c1f74b39"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ac7a35efb2de568a04401ec63c1f74b39">process_dofs_vectorized_transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;, VectorizedArrayType *, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ac7a35efb2de568a04401ec63c1f74b39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a03f9742f76af0e086e9e73cc5a1a30ab">process_dof_gather</a> (const unsigned <a class="el" href="classint.html">int</a> *indices, <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, const unsigned <a class="el" href="classint.html">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;) const</td></tr>
+<tr class="memitem:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a03f9742f76af0e086e9e73cc5a1a30ab">process_dof_gather</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *<a class="el" href="block__indices__0_8txt.html#a209f8c4dfa20066a28a366a152192ed8">indices</a>, VectorType &amp;vec, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a03f9742f76af0e086e9e73cc5a1a30ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a091c358d3599f08e60517cf8cf852116"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a091c358d3599f08e60517cf8cf852116"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a091c358d3599f08e60517cf8cf852116">process_dof_gather</a> (const unsigned <a class="el" href="classint.html">int</a> *indices, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, const unsigned <a class="el" href="classint.html">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;) const</td></tr>
+<tr class="memitem:a091c358d3599f08e60517cf8cf852116"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a091c358d3599f08e60517cf8cf852116">process_dof_gather</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *<a class="el" href="block__indices__0_8txt.html#a209f8c4dfa20066a28a366a152192ed8">indices</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> constant_offset, VectorizedArrayType &amp;res, std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a091c358d3599f08e60517cf8cf852116"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a502a8ce373fbea96a4c7b25b9baf1441">process_dof_global</a> (const <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> index, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, Number &amp;res) const</td></tr>
+<tr class="memitem:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a502a8ce373fbea96a4c7b25b9baf1441">process_dof_global</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> <a class="el" href="scalapack__0_8txt.html#abc6ecee32660d1fa6d6157325220179a">index</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a502a8ce373fbea96a4c7b25b9baf1441"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18cd14f10683710dae7677a49448156f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a18cd14f10683710dae7677a49448156f">pre_constraints</a> (const Number &amp;, Number &amp;res) const</td></tr>
+<tr class="memitem:a18cd14f10683710dae7677a49448156f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a18cd14f10683710dae7677a49448156f">pre_constraints</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a18cd14f10683710dae7677a49448156f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
-<tr class="memitem:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a8f5ea3e8fecb70dffe98a47ceb0961d9">process_constraint</a> (const unsigned <a class="el" href="classint.html">int</a> index, const Number weight, const <a class="el" href="classVectorType.html">VectorType</a> &amp;vec, Number &amp;res) const</td></tr>
+<tr class="memitem:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a8f5ea3e8fecb70dffe98a47ceb0961d9">process_constraint</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="scalapack__0_8txt.html#abc6ecee32660d1fa6d6157325220179a">index</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number <a class="el" href="vector__tools__integrate__difference__0_8txt.html#ac48c26008e4d64194a58eb408bfcb517">weight</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;vec, Number &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a8f5ea3e8fecb70dffe98a47ceb0961d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20414b969f4fc8a56218504a120357d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a20414b969f4fc8a56218504a120357d4">post_constraints</a> (const Number &amp;sum, Number &amp;write_pos) const</td></tr>
+<tr class="memitem:a20414b969f4fc8a56218504a120357d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#a20414b969f4fc8a56218504a120357d4">post_constraints</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;sum, Number &amp;write_pos) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a20414b969f4fc8a56218504a120357d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab83cc00f81553d971673fb3c3d6e142b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ab83cc00f81553d971673fb3c3d6e142b">process_empty</a> (VectorizedArrayType &amp;res) const</td></tr>
+<tr class="memitem:ab83cc00f81553d971673fb3c3d6e142b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1VectorReader.html#ab83cc00f81553d971673fb3c3d6e142b">process_empty</a> (VectorizedArrayType &amp;res) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:ab83cc00f81553d971673fb3c3d6e142b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -251,13 +251,13 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -299,7 +299,7 @@ template&lt;typename VectorNumberType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof </td>
           <td>(</td>
-          <td class="paramtype">const VectorNumberType &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorNumberType &amp;&#160;</td>
           <td class="paramname"><em>global</em>, </td>
         </tr>
         <tr>
@@ -341,19 +341,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dof_index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype">VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -365,7 +365,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -401,19 +401,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dof_index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -425,7 +425,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -461,19 +461,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>dof_indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype">VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -485,7 +485,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -521,19 +521,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>dof_indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -545,7 +545,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -581,13 +581,13 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;&#160;</td>
           <td class="paramname"><em>global_ptr</em>, </td>
         </tr>
         <tr>
@@ -599,7 +599,7 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -635,13 +635,13 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
@@ -653,7 +653,7 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -689,19 +689,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof_gather </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype">VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>constant_offset</em>, </td>
         </tr>
         <tr>
@@ -713,7 +713,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -749,19 +749,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof_gather </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>constant_offset</em>, </td>
         </tr>
         <tr>
@@ -773,7 +773,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -809,13 +809,13 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof_global </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -855,7 +855,7 @@ template&lt;typename Number , typename VectorizedArrayType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::pre_constraints </td>
           <td>(</td>
-          <td class="paramtype">const Number &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
@@ -897,19 +897,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_constraint </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Number&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number&#160;</td>
           <td class="paramname"><em>weight</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -949,7 +949,7 @@ template&lt;typename Number , typename VectorizedArrayType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::post_constraints </td>
           <td>(</td>
-          <td class="paramtype">const Number &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;&#160;</td>
           <td class="paramname"><em>sum</em>, </td>
         </tr>
         <tr>
@@ -1021,13 +1021,13 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -1069,7 +1069,7 @@ template&lt;typename VectorNumberType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof </td>
           <td>(</td>
-          <td class="paramtype">const VectorNumberType &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorNumberType &amp;&#160;</td>
           <td class="paramname"><em>global</em>, </td>
         </tr>
         <tr>
@@ -1111,19 +1111,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dof_index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype">VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -1135,7 +1135,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1171,19 +1171,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dof_index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -1195,7 +1195,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1231,19 +1231,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>dof_indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype">VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -1255,7 +1255,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1291,19 +1291,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>dof_indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -1315,7 +1315,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1351,13 +1351,13 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;&#160;</td>
           <td class="paramname"><em>global_ptr</em>, </td>
         </tr>
         <tr>
@@ -1369,7 +1369,7 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1405,13 +1405,13 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
@@ -1423,7 +1423,7 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1459,19 +1459,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof_gather </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype">VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>constant_offset</em>, </td>
         </tr>
         <tr>
@@ -1483,7 +1483,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1519,19 +1519,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof_gather </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>constant_offset</em>, </td>
         </tr>
         <tr>
@@ -1543,7 +1543,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1579,13 +1579,13 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof_global </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -1625,7 +1625,7 @@ template&lt;typename Number , typename VectorizedArrayType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::pre_constraints </td>
           <td>(</td>
-          <td class="paramtype">const Number &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
@@ -1667,19 +1667,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_constraint </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Number&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number&#160;</td>
           <td class="paramname"><em>weight</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -1719,7 +1719,7 @@ template&lt;typename Number , typename VectorizedArrayType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::post_constraints </td>
           <td>(</td>
-          <td class="paramtype">const Number &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;&#160;</td>
           <td class="paramname"><em>sum</em>, </td>
         </tr>
         <tr>
@@ -1791,13 +1791,13 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -1839,7 +1839,7 @@ template&lt;typename VectorNumberType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof </td>
           <td>(</td>
-          <td class="paramtype">const VectorNumberType &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorNumberType &amp;&#160;</td>
           <td class="paramname"><em>global</em>, </td>
         </tr>
         <tr>
@@ -1881,19 +1881,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dof_index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype">VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -1905,7 +1905,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1941,19 +1941,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dof_index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -1965,7 +1965,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -2001,19 +2001,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>dof_indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype">VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -2025,7 +2025,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -2061,19 +2061,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>dof_indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -2085,7 +2085,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -2121,13 +2121,13 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dofs_per_cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;&#160;</td>
           <td class="paramname"><em>global_ptr</em>, </td>
         </tr>
         <tr>
@@ -2139,7 +2139,7 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -2175,13 +2175,13 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dofs_vectorized_transpose </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::array&lt; Number2 *, VectorizedArrayType::size()&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="matrix__free_2dof__info__0_8txt.html#a597165203ae66b8aa2d96f3bd238b626">std::array</a>&lt; Number2 *, <a class="el" href="particles_2partitioner__0_8txt.html#a1181a6d726887f89e803c051f97a64d9">VectorizedArrayType::size</a>()&gt; &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
@@ -2193,7 +2193,7 @@ template&lt;typename Number2 &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -2229,19 +2229,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof_gather </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype">VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>constant_offset</em>, </td>
         </tr>
         <tr>
@@ -2253,7 +2253,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, true &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="fe__q__base__0_8txt.html#a9601151adeb0e47ff412484e56e370d5">true</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -2289,19 +2289,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof_gather </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> *&#160;</td>
           <td class="paramname"><em>indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>constant_offset</em>, </td>
         </tr>
         <tr>
@@ -2313,7 +2313,7 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::integral_constant&lt; <a class="el" href="classbool.html">bool</a>, false &gt;&#160;</td>
+          <td class="paramtype">std::integral_constant&lt; <a class="el" href="hdf5__0_8txt.html#ab2d1d1742a4bbf5eb3519d1b615183fe">bool</a>, <a class="el" href="grid__reordering__0_8txt.html#a1acd522474ab485130d27acd3bbf5480">false</a> &gt;&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -2349,13 +2349,13 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_dof_global </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a>&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -2395,7 +2395,7 @@ template&lt;typename Number , typename VectorizedArrayType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::pre_constraints </td>
           <td>(</td>
-          <td class="paramtype">const Number &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
@@ -2437,19 +2437,19 @@ template&lt;typename VectorType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::process_constraint </td>
           <td>(</td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Number&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number&#160;</td>
           <td class="paramname"><em>weight</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classVectorType.html">VectorType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> VectorType &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>
         </tr>
         <tr>
@@ -2489,7 +2489,7 @@ template&lt;typename Number , typename VectorizedArrayType &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structinternal_1_1VectorReader.html">internal::VectorReader</a>&lt; Number, VectorizedArrayType &gt;::post_constraints </td>
           <td>(</td>
-          <td class="paramtype">const Number &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;&#160;</td>
           <td class="paramname"><em>sum</em>, </td>
         </tr>
         <tr>

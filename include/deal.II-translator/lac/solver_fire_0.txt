@@ -1,0 +1,87 @@
+[0.x.0]*
+ FIRE (Fast Inertial Relaxation Engine) for minimization of (potentially non-linear) objective function  [2.x.0] ,  [2.x.1]  is a vector of  [2.x.2]  variables ( [2.x.3]  is the number of variables of the objective function). Like all other solver classes, it can work on any kind of vector and matrix as long as they satisfy certain requirements (for the requirements on matrices and vectors in order to work with this class, see the documentation of the Solver base class). The type of the solution vector must be passed as template argument, and defaults to  [2.x.4] 
+*  FIRE is a damped dynamics method described in [1.x.0] by Bitzek et al. 2006, typically used to find stable equilibrium configurations of atomistic systems in computational material science. Starting from a given initial configuration of the atomistic system, the algorithm relies on inertia to obtain (nearest) configuration with least potential energy.
+*  Notation:
+* 
+
+* 
+* 
+
+* 
+* 
+*  - The global vector of unknown variables:  [2.x.5] .
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Objective function:                      [2.x.6] .
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Rate of change of unknowns:              [2.x.7] .
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Gradient of the objective    function w.r.t unknowns:                 [2.x.8] .
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Mass matrix:                             [2.x.9] .
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Initial guess of unknowns:               [2.x.10] .
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Time step:                               [2.x.11] .
+*  Given initial values for  [2.x.12] ,  [2.x.13] ,  [2.x.14] ,  [2.x.15]  and  [2.x.16]  along with a given mass matrix  [2.x.17] , FIRE algorithm is as follows, 1. Calculate  [2.x.18]  and check for convergence    ( [2.x.19] ). 2. Update  [2.x.20]  and  [2.x.21]  using simple (forward) Euler integration step,    <BR>         [2.x.22] ,                 <BR>         [2.x.23] . 3. Calculate  [2.x.24] . 4. Set  [2.x.25] . 5. If  [2.x.26]  and number of steps since  [2.x.27]  was last negative is larger    than certain value, then increase time step  [2.x.28]  and decrease     [2.x.29] . 6. If  [2.x.30] , then decrease the time step, freeze the system i.e.,     [2.x.31]  and reset  [2.x.32] . 7. Return to 1.
+*  Also see [1.x.1] by Eidel et al. 2011.
+
+* 
+* [0.x.1]*
+   Standardized data struct to pipe additional data to the solver.  
+* [0.x.2]*
+     Constructor. By default, set the initial time step for the (forward)     Euler integration step to 0.1, the maximum time step to 1 and the     maximum change allowed in any variable (per iteration) to 1.    
+* [0.x.3]*
+     Initial time step for the (forward) Euler integration step.    
+* [0.x.4]*
+     Maximum time step for the (forward) Euler integration step.    
+* [0.x.5]*
+     Maximum change allowed in any variable of the objective function.    
+* [0.x.6]*
+   Constructor.  
+* [0.x.7]*
+   Constructor. Use an object of type GrowingVectorMemory as a default to   allocate memory.  
+* [0.x.8]*
+   Obtain a set of variables  [2.x.33]  that minimize an objective function   described by the polymorphic function wrapper  [2.x.34]  with a given   preconditioner  [2.x.35]  and initial  [2.x.36]  values.   The function  [2.x.37]  returns the objective function's value and updates   the objective function's gradient (with respect to the variables) when   passed in as first argument based on the second argument-- the state of   variables.  
+* [0.x.9]*
+   Solve for x that minimizes  [2.x.38]  for the <EM>special case</EM>   when  [2.x.39] .  
+* [0.x.10]*
+   Interface for derived class. This function gets the current iteration    [2.x.40]  (variables),  [2.x.41]  (x's time derivative) and  [2.x.42]  (the gradient) in   each step.   It can be used for graphical output of the convergence history.  
+* [0.x.11]*
+   Additional data to the solver.  
+* [0.x.12]

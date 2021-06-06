@@ -1,0 +1,18 @@
+[0.x.0]*
+ Print intermediate solutions in solvers.  This is derived from a solver class provided as template argument.  It implements the  [2.x.0]  function of the solver using a DoFHandler. This way, the intermediate vectors can be viewed as finite element functions. This class might be used first to understand how solvers work (for example to visualize the smoothing properties of various solvers, e.g. in a multigrid context), and second to investigate why and how a solver fails to solve certain classes of problems.
+*  Objects of this class are provided with a solver class through a template argument, and with a file name (as a string), with which a new file is constructed in each iteration (named <tt>basename.[step].[suffix]</tt>) and into which the solution is written as a finite element field using the DataOut class. Please note that this class may produce enormous amounts of data!
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+   Constructor.  First, we take the arguments needed for the solver.  [2.x.2]    data_out is the object doing the output as a finite element function.     One output file with the name <tt>basename.[step].[suffix]</tt> will be   produced for each iteration step.  
+* [0.x.2]*
+   Call-back function for the iterative method.  
+* [0.x.3]*
+   Output object.  
+* [0.x.4]*
+   Base of filenames.  
+* [0.x.5]

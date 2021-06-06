@@ -1,0 +1,19 @@
+[0.x.0]*
+    [2.x.0]  Assembling of right hand sides  
+* [0.x.1]*
+   Create a right hand side vector. Prior content of the given  [2.x.1]    vector is deleted.     See the general documentation of this namespace for further information.  
+* [0.x.2]*
+   Call the create_right_hand_side() function, see above, with   <tt>mapping=MappingQGeneric [2.x.2]   
+* [0.x.3]*
+   Like the previous set of functions, but for hp-objects.  
+* [0.x.4]*
+   Like the previous set of functions, but for hp-objects.  
+* [0.x.5]*
+   Create a right hand side vector from boundary forces. Prior content of   the given  [2.x.3]  vector is deleted.     See the general documentation of this namespace for further information.      [2.x.4]     [2.x.5]  "Glossary entry on boundary indicators"  
+* [0.x.6]*
+   Call the create_boundary_right_hand_side() function, see above, with   <tt>mapping=MappingQGeneric [2.x.6]       [2.x.7]     [2.x.8]  "Glossary entry on boundary indicators"  
+* [0.x.7]*
+   Same as the set of functions above, but for hp-objects.      [2.x.9]     [2.x.10]  "Glossary entry on boundary indicators"  
+* [0.x.8]*
+   Call the create_boundary_right_hand_side() function, see above, with a   single Q1 mapping as collection. This function therefore will only work   if the only active FE index in use is zero.      [2.x.11]     [2.x.12]  "Glossary entry on boundary indicators"  
+* [0.x.9]

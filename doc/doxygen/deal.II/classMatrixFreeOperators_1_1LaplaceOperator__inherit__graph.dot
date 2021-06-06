@@ -12,4 +12,6 @@ digraph "MatrixFreeOperators::LaplaceOperator&lt; dim, fe_degree, n_q_points_1d,
   Node4 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, LinearAlgebra\l::distributed::Vector\l\< double \>, VectorizedArray\l\< typename LinearAlgebra::\ldistributed::Vector\< double\l \> ::value_type \> \>" ,fontname="Helvetica"];
   Node4 [label="MatrixFreeOperators\l::Base\< dim, VectorType,\l VectorizedArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMatrixFreeOperators_1_1Base.html",tooltip=" "];
   Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, degree, degree\l+1, 1, LinearAlgebra\l::distributed::Vector\l\< double \> \>" ,fontname="Helvetica"];
+  Node5 [label="MatrixFreeOperators\l::LaplaceOperator\< dim,\l degree, degree+1, 1,\l LinearAlgebra::distributed\l::Vector\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMatrixFreeOperators_1_1LaplaceOperator.html",tooltip=" "];
 }

@@ -1,0 +1,26 @@
+[0.x.0]*
+ When data is transferred during adaptation, it is not trivial to decide how to process data from former cells on the old mesh that have been changed into current cells on the new mesh. Or in other words, how data should be stored in the cells on the adapted mesh.
+*  In this namespace, we offer a few strategies that cope with this problem. Such strategies can be passed to the CellDataTransfer and  [2.x.0]  constructors.
+
+* 
+* [0.x.1]*
+   For refinement, all strategies take the parent cell and its associated   data. They return a vector containing data for each individual child that   the parent cell will be refined to.     The ordering of values in the vector for children data corresponds to the   index when calling  [2.x.1]   
+* [0.x.2]*
+     Return a vector containing copies of data of the parent cell for each     child.         [1.x.0]    
+* [0.x.3]*
+     Return a vector which contains data of the parent cell being equally     divided among all children.         [1.x.1]         This strategy preserves the  [2.x.2] -norm of the corresponding global data     Vector before and after adaptation.    
+* [0.x.4]*
+     Return a vector which contains squared data of the parent cell being     equally divided among the squares of all children.         [1.x.2]         This strategy preserves the  [2.x.3] -norm of the corresponding global data     Vector before and after adaptation.    
+* [0.x.5]*
+   For coarsening, all strategies take the parent cell and a vector of data   that belonged to its former children. They return the value that will be   assigned to the parent cell.     The ordering of values in the vector for children data corresponds to the   index when calling  [2.x.4]   
+* [0.x.6]*
+     Check if data on all children match, and return value of the first child.         [1.x.3]    
+* [0.x.7]*
+     Return sum of data on all children.         [1.x.4]         This strategy preserves the  [2.x.5] -norm of the corresponding global data     vector before and after adaptation.    
+* [0.x.8]*
+     Return  [2.x.6] -norm of data on all children.         [1.x.5]         This strategy preserves the  [2.x.7] -norm of the corresponding global data     vector before and after adaptation.    
+* [0.x.9]*
+     Return mean value of data on all children.         [1.x.6]    
+* [0.x.10]*
+     Return maximum value of data on all children.         [1.x.7]    
+* [0.x.11]

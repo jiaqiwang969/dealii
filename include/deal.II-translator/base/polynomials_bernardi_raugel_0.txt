@@ -1,0 +1,42 @@
+[0.x.0]*
+ This class implements the Bernardi-Raugel polynomials similarly to the description in the [1.x.0] paper from 1985 by Christine Bernardi and Geneviève Raugel.
+*  The Bernardi-Raugel polynomials are originally defined as an enrichment of the  [2.x.0]  elements on simplicial meshes for Stokes problems by the addition of bubble functions, yielding a locking-free finite element which is a subset of  [2.x.1]  elements. This implementation is an enrichment of  [2.x.2]  elements which is a subset of  [2.x.3]  elements for quadrilateral and hexahedral meshes.
+*  The  [2.x.4]  bubble functions are defined to have magnitude 1 at the center of face  [2.x.5]  and direction  [2.x.6]  normal to face  [2.x.7] , and magnitude 0 on all other vertices and faces. Ordering is consistent with the face numbering in GeometryInfo. The vector  [2.x.8]  points in the positive axis direction and not necessarily normal to the element for consistent orientation across edges. [2.x.9]    <dt> 2D bubble functions (in order)    [2.x.10]   [2.x.11]  edge:  [2.x.12] 
+*          [2.x.13]  edge:  [2.x.14] 
+*          [2.x.15]  edge:  [2.x.16] 
+*          [2.x.17]  edge:  [2.x.18] 
+*    <dt> 3D bubble functions (in order)    [2.x.19]   [2.x.20]  edge:  [2.x.21] 
+*          [2.x.22]  edge:  [2.x.23] 
+*          [2.x.24]  edge:  [2.x.25] 
+*          [2.x.26]  edge:  [2.x.27] 
+*          [2.x.28]  edge:  [2.x.29] 
+*          [2.x.30]  edge:  [2.x.31] 
+*  [2.x.32] 
+*  Then the  [2.x.33]  polynomials are defined on quadrilaterals and hexahedra by  [2.x.34] .
+* 
+
+* 
+
+* 
+*  [2.x.35] 
+
+* 
+* [0.x.1]*
+   Constructor. Creates all basis functions for Bernardi-Raugel polynomials   of given degree.      [2.x.36]  k The degree of the Bernardi-Raugel-space, which is currently   limited to the case <tt>k=1</tt>.  
+* [0.x.2]*
+   Return the name of the space, which is <tt>BernardiRaugel</tt>.  
+* [0.x.3]*
+   Compute the value and derivatives of each Bernardi-Raugel   polynomial at  [2.x.37]      The size of the vectors must either be zero or equal <tt>n()</tt>.  In   the first case, the function will not compute these values.     If you need values or derivatives of all tensor product polynomials then   use this function, rather than using any of the <tt>compute_value</tt>,   <tt>compute_grad</tt> or <tt>compute_grad_grad</tt> functions, see below,   in a loop over all tensor product polynomials.  
+* [0.x.4]*
+   Return the number of polynomials in the space <tt>BR(degree)</tt> without   requiring to build an object of PolynomialsBernardiRaugel. This is   required by the FiniteElement classes.  
+* [0.x.5]*
+    [2.x.38]   [2.x.39]   
+* [0.x.6]*
+   An object representing the polynomial space of Q   functions which forms the <tt>BR</tt> polynomials through   outer products of these with the corresponding unit ijk   vectors.  
+* [0.x.7]*
+   An object representing the polynomial space of bubble   functions which forms the <tt>BR</tt> polynomials through   outer products of these with the corresponding normals.  
+* [0.x.8]*
+   A static member function that creates the polynomial space we use to   initialize the #polynomial_space_Q member variable.  
+* [0.x.9]*
+   A static member function that creates the polynomial space we use to   initialize the #polynomial_space_bubble member variable.  
+* [0.x.10]

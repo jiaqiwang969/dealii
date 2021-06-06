@@ -1,0 +1,204 @@
+[0.x.0]*
+     Accessor class for iterators into sparsity patterns. This class is also     the base class for both const and non-const accessor classes into     sparse matrices.         Note that this class only allows read access to elements, providing     their row and column number. It does not allow modifying the sparsity     pattern itself.        
+*  [2.x.0]     
+* [0.x.1]*
+       Declare type for container size.      
+* [0.x.2]*
+       Constructor.      
+* [0.x.3]*
+       Row number of the element represented by this object.      
+* [0.x.4]*
+       Index in row of the element represented by this object.      
+* [0.x.5]*
+       Column number of the element represented by this object.      
+* [0.x.6]*
+       Exception      
+* [0.x.7]*
+       Exception      
+* [0.x.8]*
+       The matrix accessed.      
+* [0.x.9]*
+       Current row number.      
+* [0.x.10]*
+       Current index in row.      
+* [0.x.11]*
+       Cache where we store the column indices of the present row. This is       necessary, since Trilinos makes access to the elements of its       matrices rather hard, and it is much more efficient to copy all       column entries of a row once when we enter it than repeatedly asking       Trilinos for individual ones. This also makes some sense since it is       likely that we will access them sequentially anyway.             In order to make copying of iterators/accessor of acceptable       performance, we keep a shared pointer to these entries so that more       than one accessor can access this data if necessary.      
+* [0.x.12]*
+       Discard the old row caches (they may still be used by other       accessors) and generate new ones for the row pointed to presently by       this accessor.      
+* [0.x.13]*
+     Iterator class for sparsity patterns of type      [2.x.1]  Access to individual elements of the     sparsity pattern is handled by the Accessor class in this namespace.    
+* [0.x.14]*
+       Declare type for container size.      
+* [0.x.15]*
+       Constructor. Create an iterator into the matrix  [2.x.2]  for the       given row and the index within it.      
+* [0.x.16]*
+       Copy constructor.      
+* [0.x.17]*
+       Prefix increment.      
+* [0.x.18]*
+       Postfix increment.      
+* [0.x.19]*
+       Dereferencing operator.      
+* [0.x.20]*
+       Dereferencing operator.      
+* [0.x.21]*
+       Comparison. True, if both iterators point to the same matrix       position.      
+* [0.x.22]*
+       Inverse of <tt>==</tt>.      
+* [0.x.23]*
+       Comparison operator. Result is true if either the first row number is       smaller or if the row numbers are equal and the first index is       smaller.      
+* [0.x.24]*
+       Exception      
+* [0.x.25]*
+       Store an object of the accessor class.      
+* [0.x.26]*
+   This class implements a wrapper class to use the Trilinos distributed   sparsity pattern class Epetra_FECrsGraph. This class is designed to be   used for construction of %parallel Trilinos matrices. The functionality   of this class is modeled after the existing sparsity pattern classes,   with the difference that this class can work fully in %parallel according   to a partitioning of the sparsity pattern rows.     This class has many similarities to the  DynamicSparsityPattern, since it   can dynamically add elements to the pattern without any memory being   previously reserved for it. However, it also has a method    [2.x.3]  that finalizes the pattern and enables its   use with Trilinos sparse matrices.    
+*  [2.x.4]   
+*  [2.x.5]   
+* [0.x.27]*
+     Declare type for container size.    
+* [0.x.28]*
+     Declare an alias for the iterator class.    
+* [0.x.29]*
+      [2.x.6]  Basic constructors and initialization    
+* [0.x.30]*
+     Default constructor. Generates an empty (zero-size) sparsity pattern.    
+* [0.x.31]*
+     Generate a sparsity pattern that is completely stored locally, having      [2.x.7]  rows and  [2.x.8]  columns. The resulting matrix will be completely     stored locally, too.         It is possible to specify the number of columns entries per row using     the optional  [2.x.9]  argument. However, this value does     not need to be accurate or even given at all, since one does usually     not have this kind of information before building the sparsity pattern     (the usual case when the function  [2.x.10]  is     called). The entries are allocated dynamically in a similar manner as     for the deal.II DynamicSparsityPattern classes. However, a good     estimate will reduce the setup time of the sparsity pattern.    
+* [0.x.32]*
+     Generate a sparsity pattern that is completely stored locally, having      [2.x.11]  rows and  [2.x.12]  columns. The resulting matrix will be completely     stored locally, too.         The vector <tt>n_entries_per_row</tt> specifies the number of entries     in each row (an information usually not available, though).    
+* [0.x.33]*
+     Move constructor. Create a new sparse matrix by stealing the internal     data.    
+* [0.x.34]*
+     Copy constructor. Sets the calling sparsity pattern to be the same as     the input sparsity pattern.    
+* [0.x.35]*
+     Destructor. Made virtual so that one can use pointers to this class.    
+* [0.x.36]*
+     Initialize a sparsity pattern that is completely stored locally, having      [2.x.13]  rows and  [2.x.14]  columns. The resulting matrix will be completely     stored locally.         The number of columns entries per row is specified as the maximum     number of entries argument.  This does not need to be an accurate     number since the entries are allocated dynamically in a similar manner     as for the deal.II DynamicSparsityPattern classes, but a good estimate     will reduce the setup time of the sparsity pattern.    
+* [0.x.37]*
+     Initialize a sparsity pattern that is completely stored locally, having      [2.x.15]  rows and  [2.x.16]  columns. The resulting matrix will be completely     stored locally.         The vector <tt>n_entries_per_row</tt> specifies the number of entries     in each row.    
+* [0.x.38]*
+     Copy function. Sets the calling sparsity pattern to be the same as the     input sparsity pattern.    
+* [0.x.39]*
+     Copy function from one of the deal.II sparsity patterns. If used in     parallel, this function uses an ad-hoc partitioning of the rows and     columns.    
+* [0.x.40]*
+     Copy operator. This operation is only allowed for empty objects, to     avoid potentially very costly operations automatically synthesized by     the compiler. Use copy_from() instead if you know that you really want     to copy a sparsity pattern with non-trivial content.    
+* [0.x.41]*
+     Release all memory and return to a state just like after having called     the default constructor.         This is a collective operation that needs to be called on all     processors in order to avoid a dead lock.    
+* [0.x.42]*
+     In analogy to our own SparsityPattern class, this function compresses     the sparsity pattern and allows the resulting pattern to be used for     actually generating a (Trilinos-based) matrix. This function also     exchanges non-local data that might have accumulated during the     addition of new elements. This function must therefore be called once     the structure is fixed. This is a collective operation, i.e., it needs     to be run on all processors when used in parallel.    
+* [0.x.43]*
+      [2.x.17]  Constructors and initialization using an IndexSet description    
+* [0.x.44]*
+     Constructor for a square sparsity pattern using an IndexSet and an MPI     communicator for the description of the %parallel partitioning.     Moreover, the number of nonzero entries in the rows of the sparsity     pattern can be specified. Note that this number does not need to be     exact, and it is even allowed that the actual sparsity structure has     more nonzero entries than specified in the constructor. However it is     still advantageous to provide good estimates here since a good value     will avoid repeated allocation of memory, which considerably increases     the performance when creating the sparsity pattern.    
+* [0.x.45]*
+     Same as before, but now use the exact number of nonzeros in each m row.     Since we know the number of elements in the sparsity pattern exactly in     this case, we can already allocate the right amount of memory, which     makes the creation process by the respective  [2.x.18]      call considerably faster. However, this is a rather unusual situation,     since knowing the number of entries in each row is usually connected to     knowing the indices of nonzero entries, which the sparsity pattern is     designed to describe.    
+* [0.x.46]*
+     This constructor is similar to the one above, but it now takes two     different index sets to describe the %parallel partitioning of rows and     columns. This interface is meant to be used for generating rectangular     sparsity pattern. Note that there is no real parallelism along the     columns &ndash; the processor that owns a certain row always owns all     the column elements, no matter how far they might be spread out. The     second Epetra_Map is only used to specify the number of columns and for     internal arrangements when doing matrix-vector products with vectors     based on that column map.         The number of columns entries per row is specified as the maximum     number of entries argument.    
+* [0.x.47]*
+     This constructor is similar to the one above, but it now takes two     different index sets for rows and columns. This interface is meant to     be used for generating rectangular matrices, where one map specifies     the %parallel distribution of rows and the second one specifies the     distribution of degrees of freedom associated with matrix columns. This     second map is however not used for the distribution of the columns     themselves &ndash; rather, all column elements of a row are stored on     the same processor. The vector <tt>n_entries_per_row</tt> specifies the     number of entries in each row of the newly generated matrix.    
+* [0.x.48]*
+     This constructor constructs general sparsity patterns, possible non-     square ones. Constructing a sparsity pattern this way allows the user     to explicitly specify the rows into which we are going to add elements.     This set is required to be a superset of the first index set  [2.x.19]      row_parallel_partitioning that includes also rows that are owned by     another processor (ghost rows). Note that elements can only be added to     rows specified by  [2.x.20]          This method is beneficial when the rows to which a processor is going     to write can be determined before actually inserting elements into the     matrix. For the typical  [2.x.21]  class used     in deal.II, we know that a processor only will add row elements for     what we call the locally relevant dofs (see      [2.x.22]  The other constructors     methods use general Trilinos facilities that allow to add elements to     arbitrary rows (as done by all the other reinit functions). However,     this flexibility come at a cost, the most prominent being that adding     elements into the same matrix from multiple threads in shared memory is     not safe whenever MPI is used. For these settings, the current method     is the one to choose: It will store the off-processor data as an     additional sparsity pattern (that is then passed to the Trilinos matrix     via the reinit method) which can be organized in such a way that     thread-safety can be ensured (as long as the user makes sure to never     write into the same matrix row simultaneously, of course).    
+* [0.x.49]*
+     Reinitialization function for generating a square sparsity pattern     using an IndexSet and an MPI communicator for the description of the     %parallel partitioning and the number of nonzero entries in the rows of     the sparsity pattern. Note that this number does not need to be exact,     and it is even allowed that the actual sparsity structure has more     nonzero entries than specified in the constructor. However it is still     advantageous to provide good estimates here since this will     considerably increase the performance when creating the sparsity     pattern.         This function does not create any entries by itself, but provides the     correct data structures that can be used by the respective add()     function.    
+* [0.x.50]*
+     Same as before, but now use the exact number of nonzeros in each m row.     Since we know the number of elements in the sparsity pattern exactly in     this case, we can already allocate the right amount of memory, which     makes process of adding entries to the sparsity pattern considerably     faster. However, this is a rather unusual situation, since knowing the     number of entries in each row is usually connected to knowing the     indices of nonzero entries, which the sparsity pattern is designed to     describe.    
+* [0.x.51]*
+     This reinit function is similar to the one above, but it now takes two     different index sets for rows and columns. This interface is meant to     be used for generating rectangular sparsity pattern, where one index     set describes the %parallel partitioning of the dofs associated with     the sparsity pattern rows and the other one of the sparsity pattern     columns. Note that there is no real parallelism along the columns     &ndash; the processor that owns a certain row always owns all the     column elements, no matter how far they might be spread out. The second     IndexSet is only used to specify the number of columns and for internal     arrangements when doing matrix-vector products with vectors based on an     EpetraMap based on that IndexSet.         The number of columns entries per row is specified by the argument     <tt>n_entries_per_row</tt>.    
+* [0.x.52]*
+     This reinit function is used to specify general matrices, possibly non-     square ones. In addition to the arguments of the other reinit method     above, it allows the user to explicitly specify the rows into which we     are going to add elements. This set is a superset of the first index     set  [2.x.23]  that includes also rows that are owned     by another processor (ghost rows).         This method is beneficial when the rows to which a processor is going     to write can be determined before actually inserting elements into the     matrix. For the typical  [2.x.24]  class used     in deal.II, we know that a processor only will add row elements for     what we call the locally relevant dofs (see      [2.x.25]  Trilinos matrices allow to     add elements to arbitrary rows (as done by all the other reinit     functions) and this is what all the other reinit methods do, too.     However, this flexibility come at a cost, the most prominent being that     adding elements into the same matrix from multiple threads in shared     memory is not safe whenever MPI is used. For these settings, the     current method is the one to choose: It will store the off-processor     data as an additional sparsity pattern (that is then passed to the     Trilinos matrix via the reinit method) which can be organized in such a     way that thread-safety can be ensured (as long as the user makes sure     to never write into the same matrix row simultaneously, of course).    
+* [0.x.53]*
+     Same as before, but now using a vector <tt>n_entries_per_row</tt> for     specifying the number of entries in each row of the sparsity pattern.    
+* [0.x.54]*
+     Reinit function. Takes one of the deal.II sparsity patterns and the     %parallel partitioning of the rows and columns specified by two index     sets and a %parallel communicator for initializing the current Trilinos     sparsity pattern. The optional argument  [2.x.26]  can be used     for reinitialization with a sparsity pattern that is not fully     constructed. This feature is only implemented for input sparsity     patterns of type DynamicSparsityPattern.    
+* [0.x.55]*
+     Reinit function. Takes one of the deal.II sparsity patterns and a     %parallel partitioning of the rows and columns for initializing the     current Trilinos sparsity pattern. The optional argument  [2.x.27]      exchange_data can be used for reinitialization with a sparsity pattern     that is not fully constructed. This feature is only implemented for     input sparsity patterns of type DynamicSparsityPattern.    
+* [0.x.56]*
+      [2.x.28]  Information on the sparsity pattern    
+* [0.x.57]*
+     Return the state of the sparsity pattern, i.e., whether compress()     needs to be called after an operation requiring data exchange.    
+* [0.x.58]*
+     Return the maximum number of entries per row on the current processor.    
+* [0.x.59]*
+     Return the number of rows in this sparsity pattern.    
+* [0.x.60]*
+     Return the number of columns in this sparsity pattern.    
+* [0.x.61]*
+     Return the local dimension of the sparsity pattern, i.e. the number of     rows stored on the present MPI process. In the sequential case, this     number is the same as n_rows(), but for parallel matrices it may be     smaller.         To figure out which elements exactly are stored locally, use     local_range().    
+* [0.x.62]*
+     Return a pair of indices indicating which rows of this sparsity pattern     are stored locally. The first number is the index of the first row     stored, the second the index of the one past the last one that is     stored locally. If this is a sequential matrix, then the result will be     the pair (0,n_rows()), otherwise it will be a pair (i,i+n), where     <tt>n=local_size()</tt>.    
+* [0.x.63]*
+     Return whether  [2.x.29]  is in the local range or not, see also     local_range().    
+* [0.x.64]*
+     Return the number of nonzero elements of this sparsity pattern.    
+* [0.x.65]*
+     Return the number of entries in the given row.         In a parallel context, the row in question may of course not be     stored on the current processor, and in that case it is not     possible to query the number of entries in it. In that case,     the returned value is `static_cast<size_type>(-1)`.    
+* [0.x.66]*
+     Compute the bandwidth of the matrix represented by this structure. The     bandwidth is the maximum of  [2.x.30]  for which the index pair  [2.x.31]      represents a nonzero entry of the matrix. Consequently, the maximum     bandwidth a  [2.x.32]  matrix can have is  [2.x.33] .    
+* [0.x.67]*
+     Return whether the object is empty. It is empty if no memory is     allocated, which is the same as when both dimensions are zero.    
+* [0.x.68]*
+     Return whether the index ([1.x.0]) exists in the sparsity pattern     (i.e., it may be non-zero) or not.    
+* [0.x.69]*
+     Return whether a given  [2.x.34]  is stored in the current object     on this process.    
+* [0.x.70]*
+     Determine an estimate for the memory consumption (in bytes) of this     object. Currently not implemented for this class.    
+* [0.x.71]*
+      [2.x.35]  Adding entries    
+* [0.x.72]*
+     Add the element ([1.x.1]) to the sparsity pattern.    
+* [0.x.73]*
+     Add several elements in one row to the sparsity pattern.    
+* [0.x.74]*
+      [2.x.36]  Access of underlying Trilinos data    
+* [0.x.75]*
+     Return a const reference to the underlying Trilinos Epetra_CrsGraph     data that stores the sparsity pattern.    
+* [0.x.76]*
+     Return a const reference to the underlying Trilinos Epetra_Map that     sets the parallel partitioning of the domain space of this sparsity     pattern, i.e., the partitioning of the vectors matrices based on this     sparsity pattern are multiplied with.    
+* [0.x.77]*
+     Return a const reference to the underlying Trilinos Epetra_Map that     sets the partitioning of the range space of this sparsity pattern,     i.e., the partitioning of the vectors that are result from matrix-     vector products.    
+* [0.x.78]*
+     Return the MPI communicator object in use with this matrix.    
+* [0.x.79]*
+      [2.x.37]  Partitioners    
+* [0.x.80]*
+     Return the partitioning of the domain space of this pattern, i.e., the     partitioning of the vectors a matrix based on this sparsity pattern has     to be multiplied with.    
+* [0.x.81]*
+     Return the partitioning of the range space of this pattern, i.e., the     partitioning of the vectors that are the result from matrix-vector     products from a matrix based on this pattern.    
+* [0.x.82]*
+      [2.x.38]  Iterators    
+* [0.x.83]*
+     Iterator starting at the first entry.    
+* [0.x.84]*
+     Final iterator.    
+* [0.x.85]*
+     Iterator starting at the first entry of row  [2.x.39]          Note that if the given row is empty, i.e. does not contain any nonzero     entries, then the iterator returned by this function equals     <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable     in that case.    
+* [0.x.86]*
+     Final iterator of row <tt>r</tt>. It points to the first element past     the end of line  [2.x.40]  or past the end of the entire sparsity pattern.         Note that the end iterator is not necessarily dereferenceable. This is     in particular the case if it is the end iterator for the last row of a     matrix.    
+* [0.x.87]*
+      [2.x.41]  Input/Output    
+* [0.x.88]*
+     Abstract Trilinos object that helps view in ASCII other Trilinos     objects. Currently this function is not implemented.  TODO: Not     implemented.    
+* [0.x.89]*
+     Print (the locally owned part of) the sparsity pattern to the given     stream, using the format <tt>(line,col)</tt>. The optional flag outputs     the sparsity pattern in Trilinos style, where even the according     processor number is printed to the stream, as well as a summary before     actually writing the entries.    
+* [0.x.90]*
+     Print the sparsity of the matrix in a format that <tt>gnuplot</tt>     understands and which can be used to plot the sparsity pattern in a     graphical way. The format consists of pairs <tt>i j</tt> of nonzero     elements, each representing one entry of this matrix, one per line of     the output file. Indices are counted from zero on, as usual. Since     sparsity patterns are printed in the same way as matrices are     displayed, we print the negative of the column index, which means that     the <tt>(0,0)</tt> element is in the top left rather than in the bottom     left corner.         Print the sparsity pattern in gnuplot by setting the data style to dots     or points and use the <tt>plot</tt> command.    
+* [0.x.91]*
+      [2.x.42]  Exceptions      [2.x.43]     
+* [0.x.92]*
+     Exception    
+* [0.x.93]*
+     Exception    
+* [0.x.94]*
+     Exception    
+* [0.x.95]*
+     Exception    
+* [0.x.96]*
+     Exception    
+* [0.x.97]*
+     Pointer to the user-supplied Epetra Trilinos mapping of the matrix     columns that assigns parts of the matrix to the individual processes.    
+* [0.x.98]*
+     A sparsity pattern object in Trilinos to be used for finite element     based problems which allows for adding non-local elements to the     pattern.    
+* [0.x.99]*
+     A sparsity pattern object for the non-local part of the sparsity     pattern that is going to be sent to the owning processor. Only used     when the particular constructor or reinit method with writable_rows     argument is set    
+* [0.x.100]

@@ -1,0 +1,279 @@
+[0.x.0]*
+ This class is a model for a general function that, given a point at which to evaluate the function, returns a vector of values with one or more components.
+*  The class serves the purpose of representing both scalar and vector valued functions. To this end, we consider scalar functions as a special case of vector valued functions, in the former case only having a single component return vector. Since handling vectors is comparatively expensive, the interface of this class has functions which only ask for a single component of the vector-valued results (this is what you will usually need in case you know that your function is scalar-valued) as well as functions you can ask for an entire vector of results with as many components as the function object represents. Access to function objects therefore is through the following methods:
+
+* 
+* [1.x.0]
+* 
+*  For more efficiency, there are other functions returning one or all components at a list of points at once:
+
+* 
+* [1.x.1]
+* 
+*  Furthermore, there are functions returning the gradient of the function or even higher derivatives at one or several points.
+*  You will usually only overload those functions you need; the functions returning several values at a time (value_list(), vector_value_list(), and gradient analogs) will call those returning only one value (value(), vector_value(), and gradient analogs), while those ones will throw an exception when called but not overloaded.
+*  Conversely, the functions returning all components of the function at one or several points (i.e. vector_value(), vector_value_list()), will  [2.x.0] not [2.x.1]  call the function returning one component at one point repeatedly, once for each point and component. The reason is efficiency: this would amount to too many virtual function calls. If you have vector- valued functions, you should therefore also provide overloads of the virtual functions for all components at a time.
+*  Also note, that unless only called a very small number of times, you should overload all sets of functions (returning only one value, as well as those returning a whole array), since the cost of evaluation of a point value is often less than the virtual function call itself.
+*  Support for time dependent functions can be found in the base class FunctionTime.
+* 
+
+*  [1.x.2]
+*  If the functions you are dealing with have a number of components that are a priori known (for example, <tt>dim</tt> elements), you might consider using the TensorFunction class instead. This is, in particular, true if the objects you return have the properties of a tensor, i.e., they are for example dim-dimensional vectors or dim-by-dim matrices. On the other hand, functions like  [2.x.2]  or  [2.x.3]  definitely only want objects of the current type. You can use the VectorFunctionFromTensorFunction class to convert the former to the latter.
+* 
+
+*  [1.x.3]
+*  Most of the time, your functions will have the form  [2.x.4] . However, there are occasions where you want the function to return vectors (or scalars) over a different number field, for example functions that return complex numbers or vectors of complex numbers:  [2.x.5] . In such cases, you can choose a value different than the default  [2.x.6]  for the second template argument of this class: it describes the scalar type to be used for each component of your return values. It defaults to  [2.x.7]  but in the example above, it could be set to  [2.x.8] .  [2.x.9]  is an example of this.
+*   [2.x.10]  dim The space dimension of the range space within which the domain    [2.x.11]  of the function lies. Consequently, the function will be   evaluated at objects of type  [2.x.12]   [2.x.13]  RangeNumberType The scalar type of the vector space that is the range   (or image) of this function. As discussed above, objects of the current type represent functions from  [2.x.14]  to    [2.x.15]  where  [2.x.16]  is the underlying scalar type of   the vector space. The type of  [2.x.17]  is given by the  [2.x.18]  template   argument.
+* 
+
+* 
+*  [2.x.19] 
+
+* 
+* [0.x.1]*
+   Export the value of the template parameter as a static member constant.   Sometimes useful for some expression template programming.  
+* [0.x.2]*
+   Number of vector components.  
+* [0.x.3]*
+   The scalar-valued real type used for representing time.  
+* [0.x.4]*
+   Constructor. May take an initial value for the number of components   (which defaults to one, i.e. a scalar function), and the time variable,   which defaults to zero.  
+* [0.x.5]*
+   Copy constructor.  
+* [0.x.6]*
+   Virtual destructor; absolutely necessary in this case.     This destructor is declared pure virtual, such that objects of this class   cannot be created. Since all the other virtual functions have a pseudo-   implementation to avoid overhead in derived classes, they can not be   abstract. As a consequence, we could generate an object of this class   because none of this class's functions are abstract.     We circumvent this problem by making the destructor of this class   abstract virtual. This ensures that at least one member function is   abstract, and consequently, no objects of type Function can be created.   However, there is no need for derived classes to explicitly implement a   destructor: every class has a destructor, either explicitly implemented   or implicitly generated by the compiler, and this resolves the   abstractness of any derived class even if they do not have an explicitly   declared destructor.     Nonetheless, since derived classes want to call the destructor of a base   class, this destructor is implemented (despite it being pure virtual).  
+* [0.x.7]*
+   Assignment operator. This is here only so that you can have objects of   derived classes in containers, or assign them otherwise. It will raise an   exception if the object from which you assign has a different number of   components than the one being assigned to.  
+* [0.x.8]*
+   Return the value of the function at the given point. Unless there is only   one component (i.e. the function is scalar), you should state the   component you want to have evaluated; it defaults to zero, i.e. the first   component.  
+* [0.x.9]*
+   Return all components of a vector-valued function at a given point.     <tt>values</tt> shall have the right size beforehand, i.e. #n_components.     The default implementation will call value() for each component.  
+* [0.x.10]*
+   Set <tt>values</tt> to the point values of the specified component of the   function at the <tt>points</tt>.  It is assumed that <tt>values</tt>   already has the right size, i.e.  the same size as the <tt>points</tt>   array.     By default, this function repeatedly calls value() for each point   separately, to fill the output array.  
+* [0.x.11]*
+   Set <tt>values</tt> to the point values of the function at the   <tt>points</tt>.  It is assumed that <tt>values</tt> already has the   right size, i.e.  the same size as the <tt>points</tt> array, and that   all elements be vectors with the same number of components as this   function has.     By default, this function repeatedly calls vector_value() for each point   separately, to fill the output array.  
+* [0.x.12]*
+   For each component of the function, fill a vector of values, one for each   point.     The default implementation of this function in Function calls   value_list() for each component. In order to improve performance, this   can be reimplemented in derived classes to speed up performance.  
+* [0.x.13]*
+   Return the gradient of the specified component of the function at the   given point.  
+* [0.x.14]*
+   Return the gradient of all components of the function at the given point.  
+* [0.x.15]*
+   Set <tt>gradients</tt> to the gradients of the specified component of the   function at the <tt>points</tt>.  It is assumed that <tt>gradients</tt>   already has the right size, i.e.  the same size as the <tt>points</tt>   array.  
+* [0.x.16]*
+   For each component of the function, fill a vector of gradient values, one   for each point.     The default implementation of this function in Function calls   value_list() for each component. In order to improve performance, this   can be reimplemented in derived classes to speed up performance.  
+* [0.x.17]*
+   Set <tt>gradients</tt> to the gradients of the function at the   <tt>points</tt>, for all components. It is assumed that   <tt>gradients</tt> already has the right size, i.e. the same size as the   <tt>points</tt> array.     The outer loop over <tt>gradients</tt> is over the points in the list,   the inner loop over the different components of the function.  
+* [0.x.18]*
+   Compute the Laplacian of a given component at point <tt>p</tt>.  
+* [0.x.19]*
+   Compute the Laplacian of all components at point <tt>p</tt> and store   them in <tt>values</tt>.  
+* [0.x.20]*
+   Compute the Laplacian of one component at a set of points.  
+* [0.x.21]*
+   Compute the Laplacians of all components at a set of points.  
+* [0.x.22]*
+   Compute the Hessian of a given component at point <tt>p</tt>, that is the   gradient of the gradient of the function.  
+* [0.x.23]*
+   Compute the Hessian of all components at point <tt>p</tt> and store them   in <tt>values</tt>.  
+* [0.x.24]*
+   Compute the Hessian of one component at a set of points.  
+* [0.x.25]*
+   Compute the Hessians of all components at a set of points.  
+* [0.x.26]*
+   Return an estimate for the memory consumption, in bytes, of this object.     This function is virtual and can be overloaded by derived classes.  
+* [0.x.27]*
+   Provide a function which always returns the constant values handed to the   constructor.    
+*  [2.x.20]   
+* [0.x.28]*
+     Constructor; set values of all components to the provided one. The     default number of components is one.    
+* [0.x.29]*
+     Constructor; takes an  [2.x.21]  object as an     argument. The number of components is determined by     <tt>values.size()</tt>.    
+* [0.x.30]*
+     Constructor; takes an <tt>Vector<RangeNumberType></tt> object as an     argument. The number of components is determined by     <tt>values.size()</tt>.    
+* [0.x.31]*
+     Constructor; uses whatever stores in [begin_ptr, begin_ptr+n_components)     to initialize a new object.    
+* [0.x.32]*
+     Store the constant function value vector.    
+* [0.x.33]*
+   Provide a function which always returns zero. Obviously, also the   derivatives of this function are zero. Also, it returns zero on all   components in case the function is not a scalar one, which can be obtained   by passing the constructor the appropriate number of components.     This function is of use when you want to implement homogeneous boundary   conditions, or zero initial conditions.    
+*  [2.x.22]   
+* [0.x.34]*
+     Constructor. The number of components is preset to one.    
+* [0.x.35]*
+   A function whose output is also its input. One possible application of this   function is interpolating or projecting a finite element field that   represents spatial coordinates: e.g., one can set up a finite element field   to interpolate the positions of a Triangulation's cells with this function   (via  [2.x.23]  which is useful when doing calculations   in a Lagrangian reference frame.    
+*  [2.x.24]   
+* [0.x.36]*
+     Constructor. The number of components is set to dim.    
+* [0.x.37]*
+      [2.x.25]   [2.x.26]     
+* [0.x.38]*
+      [2.x.27]   [2.x.28]     
+* [0.x.39]*
+      [2.x.29]   [2.x.30]     
+* [0.x.40]*
+      [2.x.31]   [2.x.32]     
+* [0.x.41]*
+ Provide a function which always returns the constant values handed to the constructor.
+*   [2.x.33]  use  [2.x.34]  instead.
+
+* 
+* [0.x.42]*
+ Provide a function which always returns zero.
+*   [2.x.35]  use  [2.x.36]  instead.
+
+* 
+* [0.x.43]*
+ This is a constant vector-valued function, in which one or more components of the vector have a constant value and all other components are zero.  It is especially useful as a weight function for  [2.x.37]  where it allows to integrate only one or a few vector components, rather than the entire vector-valued solution. In other words, it acts as a component mask with a single component selected (see the  [2.x.38]  "the glossary entry on component masks"). See the  [2.x.39]  tutorial program for a detailed explanation and a use case.
+* 
+
+* 
+*  [2.x.40] 
+
+* 
+* [0.x.44]*
+   Constructor if only a single component shall be non-zero. Arguments   denote the component selected, the value for that component and the total   number of vector components.  
+* [0.x.45]*
+   Constructor. As before, but the value for the selected component is   assumed to be one. In essence, this function then works as a mask.  
+* [0.x.46]*
+   Constructor if multiple components shall have non-zero, unit values (i.e.   this should be a mask for multiple components). The first argument   denotes a half-open interval of components (for example  [2.x.41]    for the first dim components), and the second argument is the total   number of vector components.  
+* [0.x.47]*
+   Substitute function value with value of a <tt>ConstantFunction [2.x.42]    RangeNumberType [2.x.43]  object and keep the current selection pattern.     This is useful if you want to have different values in different   components since the provided constructors of   <tt>ComponentSelectFunction [2.x.44]  RangeNumberType [2.x.45]  class can only   have same value for all components.    
+*  [2.x.46]  We copy the underlying component value data from  [2.x.47]  from its   beginning. So the number of components of  [2.x.48]  cannot be less than the   calling object.  
+* [0.x.48]*
+   Return the value of the function at the given point for all components.  
+* [0.x.49]*
+   Set <tt>values</tt> to the point values of the function at the   <tt>points</tt>, for all components. It is assumed that <tt>values</tt>   already has the right size, i.e. the same size as the <tt>points</tt>   array.  
+* [0.x.50]*
+   Return an estimate for the memory consumption, in bytes, of this object.  
+* [0.x.51]*
+   Half-open interval of the indices of selected components.  
+* [0.x.52]*
+ This class provides a way to convert a scalar function of the kind
+
+* 
+* [1.x.4]
+*  into an object of type Function [2.x.49]  Since the argument returns a scalar, the result is clearly a Function object for which  [2.x.50] . The class works by storing a pointer to the given function and every time  [2.x.51]  is called, calls  [2.x.52]  and returns the corresponding value. It also makes sure that  [2.x.53]  is in fact zero, as needs be for scalar functions.
+*  The class provides an easy way to turn a simple global function into something that has the required Function [2.x.54]  interface for operations like  [2.x.55]  etc., and thereby allows for simpler experimenting without having to write all the boiler plate code of declaring a class that is derived from Function and implementing the  [2.x.56]  function. An example of this is given in the results section of  [2.x.57] .
+*  The class gains additional expressive power because the argument it takes does not have to be a pointer to an actual function. Rather, it is a function object, i.e., it can also be the result of a lambda function or some other object that can be called with a single argument. For example, if you need a Function object that returns the norm of a point, you could write it like so:
+
+* 
+* [1.x.5]
+*  and then pass the  [2.x.58]  around, or you could write it like so:
+
+* 
+* [1.x.6]
+* 
+*  Similarly, to generate an object that computes the distance to a point  [2.x.59] , we could do this:
+
+* 
+* [1.x.7]
+*  or we could write it like so:
+
+* 
+* [1.x.8]
+*  The savings in work to write this are apparent.
+* 
+
+* 
+*  [2.x.60] 
+
+* 
+* [0.x.53]*
+   Given a function object that takes a Point and returns a RangeNumberType   value, convert this into an object that matches the Function<dim,   RangeNumberType> interface.  
+* [0.x.54]*
+   Return the value of the function at the given point. Returns the value   the function given to the constructor produces for this point.  
+* [0.x.55]*
+   The function object which we call when this class's value() or   value_list() functions are called.  
+* [0.x.56]*
+ This class is similar to the ScalarFunctionFromFunctionObject class in that it allows for the easy conversion of a function object to something that satisfies the interface of the Function base class. The difference is that here, the given function object is still a scalar function (i.e. it has a single value at each space point) but that the Function object generated is vector valued. The number of vector components is specified in the constructor, where one also selects a single one of these vector components that should be filled by the passed object. The result is a vector Function object that returns zero in each component except the single selected one where it returns the value returned by the given as the first argument to the constructor.
+* 
+
+* 
+*  [2.x.61]  In the above discussion, note the difference between the (scalar) "function object" (i.e., a C++ object  [2.x.62]  that can be called as in  [2.x.63] ) and the capitalized (vector valued) "Function object" (i.e., an object of a class that is derived from the Function base class).
+*  To be more concrete, let us consider the following example:
+
+* 
+* [1.x.9]
+*  Here,  [2.x.64]  then represents a Function object that for every point returns the vector  [2.x.65] , i.e. a mask function that could, for example, be passed to  [2.x.66]  This effect can also be achieved using the ComponentSelectFunction class but is obviously easily extended to functions that are non-constant in their one component.
+* 
+
+* 
+*  [2.x.67] 
+
+* 
+* [0.x.57]*
+   Given a function object that takes a Point and returns a RangeNumberType   value, convert this into an object that matches the Function [2.x.68]    interface.      [2.x.69]  function_object The scalar function that will form one component   of the resulting Function object.    [2.x.70]  n_components The total number of vector components of the   resulting Function object.    [2.x.71]  selected_component The single component that should be filled by   the first argument.  
+* [0.x.58]*
+   Return the value of the function at the given point. Returns the value   the function given to the constructor produces for this point.  
+* [0.x.59]*
+   Return all components of a vector-valued function at a given point.     <tt>values</tt> shall have the right size beforehand, i.e. #n_components.  
+* [0.x.60]*
+   The function object which we call when this class's value() or   value_list() functions are called.  
+* [0.x.61]*
+   The vector component whose value is to be filled by the given scalar   function.  
+* [0.x.62]*
+ This class is similar to the ScalarFunctionFromFunctionObject and VectorFunctionFromFunctionObject classes in that it allows for the easy conversion of a vector of function objects to something that satisfies the interface of the Function base class.
+*  The difference is that here the Function object generated may be vector valued, and you can specify the gradients of the function. The number of vector components is deduced from the size of the vector in the constructor.
+*  To be more concrete, let us consider the following example:
+* 
+
+* 
+* [1.x.10]
+* 
+
+* 
+* [0.x.63]*
+   Default constructor.     This constructor does not initialize the internal methods. To have a   usable function, you need to call at least the set_function_values()   method. If you need also the gradients of the solution, then you must   also call the set_function_gradients() method.  
+* [0.x.64]*
+   Constructor for functions of which you only know the values.     The resulting function will have a number of components equal to the size   of the vector  [2.x.72]  A call to the  [2.x.73]    method will trigger an exception, unless you first call the   set_function_gradients() method.  
+* [0.x.65]*
+   Constructor for functions of which you know both the values and the   gradients.     The resulting function will have a number of components equal to the size   of the vector  [2.x.74]  If the size of  [2.x.75]  and  [2.x.76]  does not   match, an exception is triggered.  
+* [0.x.66]*
+   Return the value of the function at the given point. Unless there is only   one component (i.e. the function is scalar), you should state the   component you want to have evaluated; it defaults to zero, i.e. the first   component.  
+* [0.x.67]*
+   Return the gradient of the function at the given point. Unless there is   only one component (i.e. the function is scalar), you should state the   component you want to have evaluated; it defaults to zero, i.e. the first   component.  
+* [0.x.68]*
+   Reset the function values of this object. An assertion is thrown if the   size of the  [2.x.77]  parameter does not match the number of components of   this object.  
+* [0.x.69]*
+   Reset the function gradients of this object. An assertion is thrown if the   size of the  [2.x.78]  parameter does not match the number of components of   this object.  
+* [0.x.70]*
+   The actual function values.  
+* [0.x.71]*
+   The actual function gradients.  
+* [0.x.72]*
+ This class is built as a means of translating the <code>Tensor<1,dim, RangeNumberType> </code> values produced by objects of type TensorFunction and returning them as a multiple component version of the same thing as a Vector for use in, for example, the  [2.x.79]  or the many other functions taking Function objects. It allows the user to place the desired components into an <tt>n_components</tt> long vector starting at the <tt>selected_component</tt> location in that vector and have all other components be 0.
+*  For example: Say you created a class called
+
+* 
+* [1.x.11]
+*  which extends the TensorFunction class and you have an object
+
+* 
+* [1.x.12]
+*  of that class which you want to interpolate onto your mesh using the  [2.x.80]  function, but the finite element you use for the DoFHandler object has 3 copies of a finite element with <tt>dim</tt> components, for a total of 3*dim components. To interpolate onto that DoFHandler, you need an object of type Function that has 3*dim vector components. Creating such an object from the existing  [2.x.81]  object is done using this piece of code:
+
+* 
+* [1.x.13]
+*  where the  [2.x.82]  components of the tensor function are placed into the first  [2.x.83]  components of the function object.
+* 
+
+* 
+*  [2.x.84] 
+
+* 
+* [0.x.73]*
+   Given a TensorFunction object that takes a <tt>Point</tt> and returns a   <tt>Tensor<1,dim, RangeNumberType></tt> value, convert this into an object   that matches the Function [2.x.85]  interface.     By default, create a Vector object of the same size as   <tt>tensor_function</tt> returns, i.e., with <tt>dim</tt> components.      [2.x.86]  tensor_function The TensorFunction that will form one component of   the resulting Vector Function object.    [2.x.87]  n_components The total number of vector components of the   resulting TensorFunction object.    [2.x.88]  selected_component The first component that should be filled by   the first argument.  This should be such that the entire tensor_function   fits inside the <tt>n_component</tt> length return vector.  
+* [0.x.74]*
+   This destructor is defined as virtual so as to coincide with all other   aspects of class.  
+* [0.x.75]*
+   Return a single component of a vector-valued function at a given point.  
+* [0.x.76]*
+   Return all components of a vector-valued function at a given point.     <tt>values</tt> shall have the right size beforehand, i.e. #n_components.  
+* [0.x.77]*
+   Return all components of a vector-valued function at a list of points.     <tt>value_list</tt> shall be the same size as <tt>points</tt> and each   element of the vector will be passed to vector_value() to evaluate the   function  
+* [0.x.78]*
+   The TensorFunction object which we call when this class's vector_value()   or vector_value_list() functions are called.  
+* [0.x.79]*
+   The first vector component whose value is to be filled by the given   TensorFunction.  The values will be placed in components   selected_component to selected_component+dim-1 for a   <tt>TensorFunction<1,dim, RangeNumberType></tt> object.  
+* [0.x.80]

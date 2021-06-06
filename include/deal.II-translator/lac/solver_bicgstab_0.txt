@@ -1,0 +1,75 @@
+[0.x.0]*
+   Class containing the non-parameter non-template values used by the   SolverBicgstab class.  
+* [0.x.1]*
+     Auxiliary value.    
+* [0.x.2]*
+     Auxiliary value.    
+* [0.x.3]*
+     Auxiliary value.    
+* [0.x.4]*
+     Auxiliary value.    
+* [0.x.5]*
+     Auxiliary value.    
+* [0.x.6]*
+     Current iteration step.    
+* [0.x.7]*
+     Residual.    
+* [0.x.8]*
+     Default constructor. This is protected so that only SolverBicgstab can     create instances.    
+* [0.x.9]*
+ Bicgstab algorithm by van der Vorst.
+*  For the requirements on matrices and vectors in order to work with this class, see the documentation of the Solver base class.
+*  Like all other solver classes, this class has a local structure called  [2.x.0]  AdditionalData which is used to pass additional parameters to the solver, like damping parameters or the number of temporary vectors. We use this additional structure instead of passing these values directly to the constructor because this makes the use of the  [2.x.1]  and other classes much easier and guarantees that these will continue to work even if number or type of the additional parameters for a certain solver changes.
+*  The Bicgstab-method has two additional parameters: the first is a boolean, deciding whether to compute the actual residual in each step ( [2.x.2]  or to use the length of the computed orthogonal residual ( [2.x.3]  Note that computing the residual causes a third matrix-vector-multiplication, though no additional preconditioning, in each step. The reason for doing this is, that the size of the orthogonalized residual computed during the iteration may be larger by orders of magnitude than the true residual. This is due to numerical instabilities related to badly conditioned matrices. Since this instability results in a bad stopping criterion, the default for this parameter is  [2.x.4]  Whenever the user knows that the estimated residual works reasonably as well, the flag should be set to  [2.x.5]  in order to increase the performance of the solver.
+*  The second parameter is the size of a breakdown criterion. It is difficult to find a general good criterion, so if things do not work for you, try to change this value.
+* 
+
+*  [1.x.0]
+*  The solve() function of this class uses the mechanism described in the Solver base class to determine convergence. This mechanism can also be used to observe the progress of the iteration.
+
+* 
+* [0.x.10]*
+   There are two possibilities to compute the residual: one is an estimate   using the computed value  [2.x.6]  The other is exact computation using   another matrix vector multiplication. This increases the costs of the   algorithm, so it is should be set to false whenever the problem allows   it.     Bicgstab is susceptible to breakdowns, so we need a parameter telling us,   which numbers are considered zero.  
+* [0.x.11]*
+     Constructor.         The default is to perform an exact residual computation and breakdown     parameter is the minimum finite value representable by the value_type of     VectorType.    
+* [0.x.12]*
+     Flag for exact computation of residual.    
+* [0.x.13]*
+     Breakdown threshold.    
+* [0.x.14]*
+   Constructor.  
+* [0.x.15]*
+   Constructor. Use an object of type GrowingVectorMemory as a default to   allocate memory.  
+* [0.x.16]*
+   Virtual destructor.  
+* [0.x.17]*
+   Solve primal problem only.  
+* [0.x.18]*
+   A pointer to the solution vector passed to solve().  
+* [0.x.19]*
+   Auxiliary vector.  
+* [0.x.20]*
+   Auxiliary vector.  
+* [0.x.21]*
+   Auxiliary vector.  
+* [0.x.22]*
+   Auxiliary vector.  
+* [0.x.23]*
+   Auxiliary vector.  
+* [0.x.24]*
+   Auxiliary vector.  
+* [0.x.25]*
+   Auxiliary vector.  
+* [0.x.26]*
+   A pointer to the right hand side vector passed to solve().  
+* [0.x.27]*
+   Computation of the stopping criterion.  
+* [0.x.28]*
+   Interface for derived class.  This function gets the current iteration   vector, the residual and the update vector in each step. It can be used   for graphical output of the convergence history.  
+* [0.x.29]*
+   Additional parameters.  
+* [0.x.30]*
+   A structure returned by the iterate() function representing what it found   is happening during the iteration.  
+* [0.x.31]*
+   The iteration loop itself. The function returns a structure indicating   what happened in this function.  
+* [0.x.32]

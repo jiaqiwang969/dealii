@@ -80,7 +80,7 @@ for m in re.finditer(r'\*\/', text):
 for m in re.finditer(r'\/\*', text):
     end_values.append(m.end())
 nitems = len(start_values)
-assert(len(end_values) == nitems)
+assert len(end_values) == nitems,filebase
 if(nitems > 0):
     newtext = text[:start_values[0]]
     for neq in range(nitems-1):

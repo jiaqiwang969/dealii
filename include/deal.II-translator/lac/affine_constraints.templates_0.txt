@@ -1,0 +1,11 @@
+[0.x.0]*
+     This class is an accessor class to scratch data that is used     during calls to distribute_local_to_global and     add_entries_local_to_global. In order to avoid frequent memory     allocation, we keep the data alive from one call to the next in     a static variable. Since we want to allow for different number     types in matrices, this is a template.         Since each thread gets its private version of scratch data out of the     ThreadLocalStorage, no conflicting access can occur. For this to be     valid, we need to make sure that no call within     distribute_local_to_global is made that by itself can spawn tasks.     Otherwise, we might end up in a situation where several threads fight for     the data.    
+* [0.x.1]*
+       Constructor. Takes the scratch data object for the current       thread out of the provided object and marks it as used.      
+* [0.x.2]*
+       Destructor. Mark scratch data as available again.      
+* [0.x.3]*
+       Dereferencing operator.      
+* [0.x.4]*
+       Dereferencing operator.      
+* [0.x.5]

@@ -1,0 +1,379 @@
+[0.x.0]*
+ Given a triangulation and a description of a finite element, this class enumerates degrees of freedom on all vertices, edges, faces, and cells of the triangulation. As a result, it also provides a [1.x.0] for a discrete space  [2.x.0]  whose elements are finite element functions defined on each cell by a FiniteElement object. This class satisfies the  [2.x.1]  "MeshType concept" requirements.
+*  It is first used in the  [2.x.2]  tutorial program.
+*  For each vertex, line, quad, etc, this class stores a list of the indices of degrees of freedom living on this object. These indices refer to the unconstrained degrees of freedom, i.e. constrained degrees of freedom are numbered in the same way as unconstrained ones, and are only later eliminated.  This leads to the fact that indices in global vectors and matrices also refer to all degrees of freedom and some kind of condensation is needed to restrict the systems of equations to the unconstrained degrees of freedom only. The actual layout of storage of the indices is described in the  [2.x.3]  class documentation.
+*  The class offers iterators to traverse all cells, in much the same way as the Triangulation class does. Using the begin() and end() functions (and companions, like begin_active()), one can obtain iterators to walk over cells, and query the degree of freedom structures as well as the triangulation data. These iterators are built on top of those of the Triangulation class, but offer the additional information on degrees of freedom functionality compared to pure triangulation iterators. The order in which dof iterators are presented by the <tt>++</tt> and <tt>\--</tt> operators is the same as that for the corresponding iterators traversing the triangulation on which this DoFHandler is constructed.
+*  The <tt>spacedim</tt> parameter has to be used if one wants to solve problems on surfaces. If not specified, this parameter takes the default value <tt>=dim</tt> implying that we want to solve problems in a domain whose dimension equals the dimension of the space in which it is embedded.
+* 
+
+*  [1.x.1]
+*  The degrees of freedom (`dofs') are distributed on the given triangulation by the function distribute_dofs(). It gets passed a finite element object describing how many degrees of freedom are located on vertices, lines, etc. It traverses the triangulation cell by cell and numbers the dofs of that cell if not yet numbered. For non-multigrid algorithms, only active cells are considered. Active cells are defined to be those cells which have no children, i.e. they are the most refined ones.
+*  Since the triangulation is traversed starting with the cells of the coarsest active level and going to more refined levels, the lowest numbers for dofs are given to the largest cells as well as their bounding lines and vertices, with the dofs of more refined cells getting higher numbers.
+*  This numbering implies very large bandwidths of the resulting matrices and is thus vastly suboptimal for some solution algorithms. For this reason, the DoFRenumbering class offers several algorithms to reorder the dof numbering according. See there for a discussion of the implemented algorithms.
+* 
+
+*  [1.x.2]
+*  Upon construction, this class takes a reference to a triangulation object. In most cases, this will be a reference to an object of type Triangulation, i.e. the class that represents triangulations that entirely reside on a single processor. However, it can also be of type  [2.x.4]  (see, for example,  [2.x.5] ,  [2.x.6]  and in particular the  [2.x.7]  module) in which case the DoFHandler object will proceed to only manage degrees of freedom on locally owned and ghost cells. This process is entirely transparent to the used.
+* 
+
+*  [1.x.3]
+*  The DoFRenumbering class offers a number of renumbering schemes like the Cuthill-McKee scheme. Basically, the function sets up an array in which for each degree of freedom we store the new index this DoF should have after renumbering. Using this array, the renumber_dofs() function of the present class is called, which actually performs the change from old DoF indices to the ones given in the array. In some cases, however, a user may want to compute their own renumbering order; in this case, one can allocate an array with one element per degree of freedom and fill it with the number that the respective degree of freedom shall be assigned. This number may, for example, be obtained by sorting the support points of the degrees of freedom in downwind direction.  Then call the  [2.x.8]  function with the array, which converts old into new degree of freedom indices.
+* 
+
+*  [1.x.4]
+*  Like many other classes in deal.II, the DoFHandler class can stream its contents to an archive using BOOST's serialization facilities. The data so stored can later be retrieved again from the archive to restore the contents of this object. This facility is frequently used to save the state of a program to disk for possible later resurrection, often in the context of checkpoint/restart strategies for long running computations or on computers that aren't very reliable (e.g. on very large clusters where individual nodes occasionally fail and then bring down an entire MPI job).
+*  The model for doing so is similar for the DoFHandler class as it is for the Triangulation class (see the section in the general documentation of that class). In particular, the load() function does not exactly restore the same state as was stored previously using the save() function. Rather, the function assumes that you load data into a DoFHandler object that is already associated with a triangulation that has a content that matches the one that was used when the data was saved. Likewise, the load() function assumes that the current object is already associated with a finite element object that matches the one that was associated with it when data was saved; the latter can be achieved by calling  [2.x.9]  using the same kind of finite element before re-loading data from the serialization archive.
+* 
+
+*  [1.x.5]
+*  Instead of only using one particular FiniteElement on all cells, this class also allows for an enumeration of degrees of freedom on different finite elements on every cells. To this end, one assigns an  [2.x.10]  to every cell that indicates which element within a collection of finite elements (represented by an object of type  [2.x.11]  is the one that lives on this cell. The class then enumerates the degree of freedom associated with these finite elements on each cell of a triangulation and, if possible, identifies degrees of freedom at the interfaces of cells if they match. If neighboring cells have degrees of freedom along the common interface that do not immediate match (for example, if you have  [2.x.12]  and  [2.x.13]  elements meeting at a common face), then one needs to compute constraints to ensure that the resulting finite element space on the mesh remains conforming.
+*  The whole process of working with objects of this type is explained in  [2.x.14] . Many of the algorithms this class implements are described in the  [2.x.15]  "hp-paper".
+* 
+
+*  [1.x.6]
+*  The typical workflow for using this class is to create a mesh, assign an active FE index to every active cell, call  [2.x.16]  and then assemble a linear system and solve a problem on this finite element space.
+*  Active FE indices will be automatically transferred during mesh adaptation from the old to the new mesh. Future FE indices are meant to determine the active FE index after mesh adaptation, and are used to prepare data on the old mesh for the new one. If no future FE index is specified, the finite element prevails.
+*  In particular, the following rules apply during adaptation:
+* 
+
+* 
+* 
+*  - Upon mesh refinement, child cells inherit the future FE index of   the parent.
+* 
+
+* 
+* 
+*  - When coarsening cells, the (now active) parent cell will be assigned   a future FE index that is determined from its (no longer active)   children, following the FiniteElementDomination logic: Out of the set of   elements previously assigned to the former children, we choose the one   dominated by all children for the parent cell. If none was found, we pick   the most dominant element in the whole collection that is dominated by   all former children. See  [2.x.17]    for further information on this topic.
+*  Strategies for automatic hp-adaptation which will set future FE indices based on criteria are available in the  [2.x.18]  namespace.
+* 
+
+*  [1.x.7]
+*  When this class is used with either a  [2.x.19]  or a  [2.x.20]  you can only set active FE indices on cells that are locally owned, using a call such as  [2.x.21] . On the other hand, setting the active FE index on ghost or artificial cells is not allowed.
+*  Ghost cells do acquire the information what element is active on them, however: whenever you call  [2.x.22]  all processors that participate in the parallel mesh exchange information in such a way that the active FE index on ghost cells equals the active FE index that was set on that processor that owned that particular ghost cell. Consequently, one can [1.x.8] the  [2.x.23]  on ghost cells, just not set it by hand.
+*  On artificial cells, no information is available about the  [2.x.24]  used there. That's because we don't even know whether these cells exist at all, and even if they did, the current processor does not know anything specific about them. See  [2.x.25]  "the glossary entry on artificial cells" for more information.
+*  During refinement and coarsening, information about the  [2.x.26]  of each cell will be automatically transferred.
+*  However, using a  [2.x.27]  with a DoFHandler in hp-mode requires additional attention during serialization, since no information on active FE indices will be automatically transferred. This has to be done manually using the prepare_for_serialization_of_active_fe_indices() and deserialize_active_fe_indices() functions. The former has to be called before  [2.x.28]  is invoked, and the latter needs to be run after  [2.x.29]  If further data will be attached to the triangulation via the  [2.x.30]   [2.x.31]  or  [2.x.32]  classes, all corresponding preparation and deserialization function calls need to happen in the same order. Consult the documentation of  [2.x.33]  for more information.
+* 
+
+* 
+*  [2.x.34] 
+
+* 
+* [0.x.1]*
+   An alias that is used to identify cell iterators in DoFHandler objects.   The concept of iterators is discussed at length in the    [2.x.35]  "iterators documentation module".     The current alias works, in essence, like the corresponding    [2.x.36]  alias. However, it also makes available   the member functions of DoFCellAccessor, in addition to the ones   already available through the CellAccessor class.    
+*  [2.x.37]   
+* [0.x.2]*
+   An alias that is used to identify iterators that point to faces.   The concept of iterators is discussed at length in the    [2.x.38]  "iterators documentation module".     The current alias works, in essence, like the corresponding    [2.x.39]  alias. However, it also makes available   the member functions of DoFAccessor, in addition to the ones   already available through the TriaAccessor class.    
+*  [2.x.40]   
+* [0.x.3]*
+   An alias that defines an iterator over the (one-dimensional) lines   of a mesh. In one-dimensional meshes, these are the cells of the mesh,   whereas in two-dimensional meshes the lines are the faces of cells.    
+*  [2.x.41]   
+* [0.x.4]*
+   An alias that allows iterating over the [1.x.9] lines, i.e.,   that subset of lines that have no children. In one-dimensional meshes,   these are the cells of the mesh, whereas in two-dimensional   meshes the lines are the faces of cells.     In two- or three-dimensional meshes, lines without children (i.e.,   the active lines) are part of at least one active cell. Each such line may   additionally be a child of a line of a coarser cell adjacent to a cell   that is active. (This coarser neighbor would then also be active.)    
+*  [2.x.42]   
+* [0.x.5]*
+   An alias that defines an iterator over the (two-dimensional) quads   of a mesh. In two-dimensional meshes, these are the cells of the mesh,   whereas in three-dimensional meshes the quads are the faces of cells.    
+*  [2.x.43]   
+* [0.x.6]*
+   An alias that allows iterating over the [1.x.10] quads, i.e.,   that subset of quads that have no children. In two-dimensional meshes,   these are the cells of the mesh, whereas in three-dimensional   meshes the quads are the faces of cells.     In three-dimensional meshes, quads without children (i.e.,   the active quads) are faces of at least one active cell. Each such quad may   additionally be a child of a quad face of a coarser cell adjacent to a cell   that is active. (This coarser neighbor would then also be active.)    
+*  [2.x.44]   
+* [0.x.7]*
+   An alias that defines an iterator over the (three-dimensional) hexes   of a mesh. This iterator only makes sense in three-dimensional meshes,   where hexes are the cells of the mesh.    
+*  [2.x.45]   
+* [0.x.8]*
+   An alias that allows iterating over the [1.x.11] hexes of a mesh.   This iterator only makes sense in three-dimensional meshes,   where hexes are the cells of the mesh. Consequently, in these   three-dimensional meshes, this iterator is equivalent to the    [2.x.46]  alias.    
+*  [2.x.47]   
+* [0.x.9]*
+   An alias that is used to identify    [2.x.48]  "active cell iterators".   The concept of iterators is discussed at length in the    [2.x.49]  "iterators documentation module".     The current alias identifies active cells in a DoFHandler object. While   the actual data type of the alias is hidden behind a few layers of   (unfortunately necessary) indirections, it is in essence   TriaActiveIterator<DoFCellAccessor>. The TriaActiveIterator class works   like a pointer to active objects that when you dereference it yields an   object of type DoFCellAccessor. DoFCellAccessor is a class that   identifies properties that are specific to cells in a DoFHandler, but it   is derived (and consequently inherits) from both DoFAccessor,   TriaCellAccessor and TriaAccessor that describe what you can ask of more   general objects (lines, faces, as well as cells) in a triangulation and   DoFHandler objects.    
+*  [2.x.50]   
+* [0.x.10]*
+   An alias that is used to identify cell iterators. The concept of   iterators is discussed at length in the    [2.x.51]  "iterators documentation module".     The current alias identifies cells in a DoFHandler object. Some of   these cells may in fact be active (see    [2.x.52]  "active cell iterators")   in which case they can in fact be asked for the degrees of freedom that   live on them. On the other hand, if the cell is not active, any such   query will result in an error. Note that this is what distinguishes this   alias from the level_cell_iterator alias.     While the actual data type of the alias is hidden behind a few layers   of (unfortunately necessary) indirections, it is in essence   TriaIterator<DoFCellAccessor>. The TriaIterator class works like a   pointer to objects that when you dereference it yields an object of type   DoFCellAccessor. DoFCellAccessor is a class that identifies properties   that are specific to cells in a DoFHandler, but it is derived (and   consequently inherits) from both DoFAccessor, TriaCellAccessor and   TriaAccessor that describe what you can ask of more general objects   (lines, faces, as well as cells) in a triangulation and DoFHandler   objects.    
+*  [2.x.53]   
+* [0.x.11]*
+   An alias that is used to identify iterators that point to faces.   The concept of iterators is discussed at length in the    [2.x.54]  "iterators documentation module".     While the actual data type of the alias is hidden behind a few layers   of (unfortunately necessary) indirections, it is in essence   TriaIterator<DoFAccessor>. The   TriaIterator class works like a pointer to objects that when   you dereference it yields an object of type DoFAccessor. DoFAccessor,   in turn, is a class that can be used to query DoF indices on faces,   but it is also derived from TriaAccessor and consequently can be used   to query geometric properties such as vertices of faces, their area, etc.    
+*  [2.x.55]   
+* [0.x.12]*
+   An alias that is used to identify iterators that point to active faces,   i.e., to faces that have no children. Active faces must be faces of at   least one active cell.     Other than the "active" qualification, this alias is identical to the    [2.x.56]  alias. In particular, dereferencing either yields   the same kind of object.    
+*  [2.x.57]   
+* [0.x.13]*
+   Make the dimension available in function templates.  
+* [0.x.14]*
+   Make the space dimension available in function templates.  
+* [0.x.15]*
+   The default index of the finite element to be used on a given cell.  
+* [0.x.16]*
+   Invalid index of the finite element to be used on a given cell.  
+* [0.x.17]*
+   The type in which we store the active FE index.  
+* [0.x.18]*
+   The type in which we store the offsets in the CRS data structures.  
+* [0.x.19]*
+   Invalid active FE index which will be used as a default value to determine   whether a future FE index has been set or not.  
+* [0.x.20]*
+   Standard constructor, not initializing any data. After constructing an   object with this constructor, use reinit() to get a valid DoFHandler.  
+* [0.x.21]*
+   Constructor. Take  [2.x.58]  as the triangulation to work on.  
+* [0.x.22]*
+   Copy constructor. DoFHandler objects are large and expensive.   They should not be copied, in particular not by accident, but   rather deliberately constructed. As a consequence, this constructor   is explicitly removed from the interface of this class.  
+* [0.x.23]*
+   Destructor.  
+* [0.x.24]*
+   Copy operator. DoFHandler objects are large and expensive.   They should not be copied, in particular not by accident, but   rather deliberately constructed. As a consequence, this operator   is explicitly removed from the interface of this class.  
+* [0.x.25]*
+   Assign a Triangulation and a FiniteElement to the DoFHandler and compute   the distribution of degrees of freedom over the mesh.      [2.x.59]  Use reinit() and distribute_dofs() instead.  
+* [0.x.26]*
+   Same as above but taking an  [2.x.60]  object.      [2.x.61]  Use reinit() and distribute_dofs() instead.  
+* [0.x.27]*
+   Assign a FiniteElement  [2.x.62]  to this object.    
+*  [2.x.63]  This function makes a copy of the finite element given as   argument, and stores it as a member variable. Consequently, it is   possible to write code such as  
+* [1.x.12]
+*    You can then access the finite element later on by calling    [2.x.64]  However, it is often more convenient to   keep a named finite element object as a member variable in your   main class and refer to it directly whenever you need to access   properties of the finite element (such as    [2.x.65]  This is what all tutorial programs do.      [2.x.66]  This function only sets a FiniteElement. Degrees of freedom have   either not been distributed yet, or are distributed using a previously set   element. In both cases, accessing degrees of freedom will lead to invalid   results. To restore consistency, call distribute_dofs().      [2.x.67]  Use distribute_dofs() instead.  
+* [0.x.28]*
+   Same as above but taking an  [2.x.68]  object.      [2.x.69]  Use distribute_dofs() instead.  
+* [0.x.29]*
+   Go through the triangulation and set the active FE indices of all   active cells to the values given in  [2.x.70]   
+* [0.x.30]*
+   Go through the triangulation and store the active FE indices of all   active cells to the vector  [2.x.71]  This vector is   resized, if necessary.  
+* [0.x.31]*
+   Assign a Triangulation to the DoFHandler.     Remove all associations with the previous Triangulation object and   establish connections with the new one. All information about previous   degrees of freedom will be removed. Activates hp-mode.  
+* [0.x.32]*
+   Go through the triangulation and "distribute" the degrees of   freedom needed for the given finite element. "Distributing"   degrees of freedom involves allocating memory to store the   indices on all entities on which degrees of freedom can be   located (e.g., vertices, edges, faces, etc.) and to then enumerate   all degrees of freedom. In other words, while the mesh and the   finite element object by themselves simply define a finite   element space  [2.x.72] , the process of distributing degrees of   freedom makes sure that there is a basis for this space and that   the shape functions of this basis are enumerated in an indexable,   predictable way.     The exact order in which degrees of freedom on a mesh are   ordered, i.e., the order in which basis functions of the finite   element space are enumerated, is something that deal.II treats as   an implementation detail. By and large, degrees of freedom are   enumerated in the same order in which we traverse cells, but you   should not rely on any specific numbering. In contrast, if you   want a particular ordering, use the functions in namespace   DoFRenumbering.     This function is first discussed in the introduction to the    [2.x.73]  tutorial program.    
+*  [2.x.74]  This function makes a copy of the finite element given as   argument, and stores it as a member variable, similarly to the above   function set_fe().  
+* [0.x.33]*
+   Same as above but taking an  [2.x.75]  object.  
+* [0.x.34]*
+   Distribute level degrees of freedom on each level for geometric   multigrid. The active DoFs need to be distributed using distribute_dofs()   before calling this function.  
+* [0.x.35]*
+   Returns whether this DoFHandler has hp-capabilities.  
+* [0.x.36]*
+   This function returns whether this DoFHandler has DoFs distributed on   each multigrid level or in other words if distribute_mg_dofs() has been   called.  
+* [0.x.37]*
+   This function returns whether this DoFHandler has active DoFs. This is   equivalent to asking whether (i) distribute_dofs() has been called and   (ii) the finite element for which degrees of freedom have been   distributed actually has degrees of freedom (which is not the case for   FE_Nothing, for example).     If this object is based on a  [2.x.76]  then   the current function returns true if [1.x.13] partition of the parallel   DoFHandler object has any degrees of freedom. In other words, the   function returns true even if the Triangulation does not own any active   cells on the current MPI process, but at least one process owns cells and   at least this one process has any degrees of freedom associated with it.  
+* [0.x.38]*
+   After distribute_dofs() with an FESystem element, the block structure of   global and level vectors is stored in a BlockInfo object accessible with   block_info(). This function initializes the local block structure on each   cell in the same object.  
+* [0.x.39]*
+   Clear all data of this object.  
+* [0.x.40]*
+   Renumber degrees of freedom based on a list of new DoF indices for each   of the degrees of freedom.     This function is called by the functions in DoFRenumbering function after   computing a new ordering of the degree of freedom indices. However, it   can of course also be called from user code.      [2.x.77]  new_number This array must have a size equal to the number of   degrees of freedom owned by the current processor, i.e. the size must be   equal to what n_locally_owned_dofs() returns. If only one processor   participates in storing the current mesh, then this equals the total   number of degrees of freedom, i.e. the result of n_dofs(). The contents   of this array are the new global indices for each freedom listed in the   IndexSet returned by locally_owned_dofs(). In the case of a sequential   mesh this means that the array is a list of new indices for each of the   degrees of freedom on the current mesh. In the case that we have a    [2.x.78]  or    [2.x.79]  underlying this DoFHandler object,   the array is a list of new indices for all the locally owned degrees of   freedom, enumerated in the same order as the currently locally owned   DoFs. In other words, assume that degree of freedom  [2.x.80]  is   currently locally owned, then    [2.x.81]    returns the new global DoF index of  [2.x.82] . Since the IndexSet of   locally_owned_dofs() is complete in the sequential case, the latter   convention for the content of the array reduces to the former in the case   that only one processor participates in the mesh.    
+*  [2.x.83]  While it follows from the above, it may be surprising to know that     the [1.x.14] of locally owned degrees of freedom in a parallel     computation is an invariant     under renumbering, even if the [1.x.15] associated with these     locally owned degrees of freedom are not. At a fundamental level,     this invariant exists because the [1.x.16] whether a degree of     freedom is locally owned or not has nothing to do with that     degree of freedom's (old or new) index. Indeed, degrees of freedom     are locally owned if they are on a locally owned cell and not on     an interface between cells where the neighboring cell has a lower      [2.x.84]  "subdomain id". Since both of these conditions     are independent of the index associated with the DoF, a locally     owned degree of freedom will also be locally owned after renumbering.     On the other hand, properties such as whether the set of indices     of locally owned DoFs forms a contiguous range or not     (i.e., whether the locally_owned_dofs() returns an IndexSet object     for which  [2.x.85]  returns  [2.x.86]  are of     course affected by the exact renumbering performed here. For example,     while the initial numbering of DoF indices done in distribute_dofs()     yields a contiguous numbering, the renumbering performed by      [2.x.87]  will, in general, not yield     contiguous locally owned DoF indices.  
+* [0.x.41]*
+   The same function as above, but renumber the degrees of freedom of a   single level of a multigrid hierarchy.  
+* [0.x.42]*
+   Return the maximum number of degrees of freedom a degree of freedom in   the given triangulation with the given finite element may couple with.   This is the maximum number of entries per line in the system matrix; this   information can therefore be used upon construction of the   SparsityPattern object.     The returned number is not really the maximum number but an estimate   based on the finite element and the maximum number of cells meeting at a   vertex. The number holds for the constrained matrix as well.     The determination of the number of couplings can be done by simple   picture drawing. An example can be found in the implementation of this   function.    
+*  [2.x.88]  This function is most often used to determine the maximal row   length for sparsity patterns. Unfortunately, while the estimates returned   by this function are rather accurate in 1d and 2d, they are often   significantly too high in 3d, leading the SparsityPattern class to   allocate much too much memory in some cases. Unless someone comes around   to improving the present function for 3d, there is not very much one can   do about these cases. The typical way to work around this problem is to   use an intermediate compressed sparsity pattern that only allocates   memory on demand. Refer to the  [2.x.89]  and  [2.x.90]  example programs on how   to do this. The problem is also discussed in the documentation of the   module on    [2.x.91] .  
+* [0.x.43]*
+   Return the number of degrees of freedom located on the boundary another   dof on the boundary can couple with.     The number is the same as for max_couplings_between_dofs() in one   dimension less.    
+*  [2.x.92]  The same applies to this function as to max_couplings_per_dofs() as   regards the performance of this function. Think about one of the dynamic   sparsity pattern classes instead (see    [2.x.93] ).  
+* [0.x.44]*
+    [2.x.94]  Cell iterator functions  
+* [0.x.45]    [2.x.95]   
+* [0.x.46]*
+   Iterator to the first used cell on level  [2.x.96]   
+* [0.x.47]*
+   Iterator to the first active cell on level  [2.x.97]  If the given level   does not contain any active cells (i.e., all cells on this level are   further refined), then this function returns    [2.x.98]  so that loops of the kind  
+* [1.x.17]
+*    have zero iterations, as may be expected if there are no active cells on   this level.  
+* [0.x.48]*
+   Iterator past the end; this iterator serves for comparisons of iterators   with past-the-end or before-the-beginning states.  
+* [0.x.49]*
+   Return an iterator which is the first iterator not on the given level. If    [2.x.99]  is the last level, then this returns <tt>end()</tt>.  
+* [0.x.50]*
+   Return an active iterator which is the first active iterator not on the   given level. If  [2.x.100]  is the last level, then this returns   <tt>end()</tt>.  
+* [0.x.51]*
+   Iterator to the first used cell on level  [2.x.101]  This returns a   level_cell_iterator that returns level dofs when dof_indices() is called.  
+* [0.x.52]*
+   Iterator past the last cell on level  [2.x.102]  This returns a   level_cell_iterator that returns level dofs when dof_indices() is called.  
+* [0.x.53]*
+   Iterator past the end; this iterator serves for comparisons of iterators   with past-the-end or before-the-beginning states.  
+* [0.x.54]*
+    [2.x.103]  Cell iterator functions returning ranges of iterators  
+* [0.x.55]*
+   Return an iterator range that contains all cells (active or not) that   make up this DoFHandler. Such a range is useful to initialize range-based   for loops as supported by C++11. See the example in the documentation of   active_cell_iterators().      [2.x.104]  The half open range  [2.x.105]     
+*  [2.x.106]   
+* [0.x.56]*
+   Return an iterator range that contains all active cells that make up this   DoFHandler. Such a range is useful to initialize range-based for loops as   supported by C++11, see also    [2.x.107]  "C++11 standard".     Range-based for loops are useful in that they require much less code than   traditional loops (see [1.x.18] for a discussion of how they work). An   example is that without range-based for loops, one often writes code such   as the following:  
+* [1.x.19]
+*    Using C++11's range-based for loops, this is now entirely equivalent to   the following:  
+* [1.x.20]
+*       [2.x.108]  The half open range <code>[this->begin_active(),   this->end())</code>    
+*  [2.x.109]   
+* [0.x.57]*
+   Return an iterator range that contains all cells (active or not) that   make up this DoFHandler in their level-cell form. Such a range is useful   to initialize range-based for loops as supported by C++11. See the   example in the documentation of active_cell_iterators().      [2.x.110]  The half open range <code>[this->begin_mg(),   this->end_mg())</code>    
+*  [2.x.111]   
+* [0.x.58]*
+   Return an iterator range that contains all cells (active or not) that   make up the given level of this DoFHandler. Such a range is useful to   initialize range-based for loops as supported by C++11. See the example   in the documentation of active_cell_iterators().      [2.x.112]  level A given level in the refinement hierarchy of this   triangulation.    [2.x.113]  The half open range <code>[this->begin(level),   this->end(level))</code>      [2.x.114]  level must be less than this->n_levels().    
+*  [2.x.115]   
+* [0.x.59]*
+   Return an iterator range that contains all active cells that make up the   given level of this DoFHandler. Such a range is useful to initialize   range-based for loops as supported by C++11. See the example in the   documentation of active_cell_iterators().      [2.x.116]  level A given level in the refinement hierarchy of this   triangulation.    [2.x.117]  The half open range <code>[this->begin_active(level),   this->end(level))</code>      [2.x.118]  level must be less than this->n_levels().    
+*  [2.x.119]   
+* [0.x.60]*
+   Return an iterator range that contains all cells (active or not) that   make up the given level of this DoFHandler in their level-cell form. Such   a range is useful to initialize range-based for loops as supported by   C++11. See the example in the documentation of active_cell_iterators().      [2.x.120]  level A given level in the refinement hierarchy of this   triangulation.    [2.x.121]  The half open range <code>[this->begin_mg(level),   this->end_mg(level))</code>      [2.x.122]  level must be less than this->n_levels().    
+*  [2.x.123]   
+* [0.x.61]    [2.x.124]   
+* [0.x.62]*
+   Return the global number of degrees of freedom. If the current object   handles all degrees of freedom itself (even if you may intend to solve   your linear system in parallel, such as in  [2.x.125]  or  [2.x.126] ), then this   number equals the number of locally owned degrees of freedom since this   object doesn't know anything about what you want to do with it and   believes that it owns every degree of freedom it knows about.     On the other hand, if this object operates on a    [2.x.127]  object, then this function returns   the global number of degrees of freedom, accumulated over all processors.     In either case, included in the returned number are those DoFs which are   constrained by hanging nodes, see    [2.x.128] .     Mathematically speaking, the number returned by this function equals the   dimension of the finite element space (without taking into account   constraints) that corresponds to (i) the mesh on which it is defined,   and (ii) the finite element that is used by the current object. It   also, of course, equals the number of shape functions that span this   space.  
+* [0.x.63]*
+   The (global) number of multilevel degrees of freedom on a given level.     If no level degrees of freedom have been assigned to this level, returns    [2.x.129]  Else returns the number of degrees of freedom   on this level.  
+* [0.x.64]*
+   Return the number of locally owned degrees of freedom located on the   boundary.  
+* [0.x.65]*
+   Return the number of locally owned degrees of freedom located on those   parts of the boundary which have a boundary indicator listed in the given   set.   The reason that a  [2.x.130]  rather than a  [2.x.131]  is used is the same as   described in the documentation of that variant of    [2.x.132]  that takes a map.     There is, however, another overload of this function that takes   a  [2.x.133]  argument (see below).  
+* [0.x.66]*
+   Return the number of degrees of freedom located on those parts of the   boundary which have a boundary indicator listed in the given set. The  
+* [0.x.67]*
+   Access to an object informing of the block structure of the dof handler.     If an FESystem is used in distribute_dofs(), degrees of freedom naturally   split into several    [2.x.134]  "blocks".   For each base element as many blocks appear as its multiplicity.     At the end of distribute_dofs(), the number of degrees of freedom in each   block is counted, and stored in a BlockInfo object, which can be accessed   here. If you have previously called distribute_mg_dofs(), the same is   done on each level of the multigrid hierarchy. Additionally, the block   structure on each cell can be generated in this object by calling   initialize_local_block_info().  
+* [0.x.68]*
+   Return the number of degrees of freedom that belong to this process.     If this is a sequential DoFHandler, then the result equals that produced by   n_dofs(). (Here, "sequential" means that either   the whole program does not use MPI, or that it uses MPI   but only uses a single MPI process, or that there are multiple MPI   processes but the Triangulation on which this DoFHandler builds   works only on one MPI process.)   On the other hand, if we are operating on a    [2.x.135]  or  [2.x.136]    then it includes only the degrees   of freedom that the current processor owns. Note that in this case this   does not include all degrees of freedom that have been distributed on the   current processor's image of the mesh: in particular, some of the degrees   of freedom on the interface between the cells owned by this processor and   cells owned by other processors may be theirs, and degrees of freedom on   ghost cells are also not necessarily included.  
+* [0.x.69]*
+   Return an IndexSet describing the set of locally owned DoFs as a subset   of 0..n_dofs(). The number of elements of this set equals   n_locally_owned_dofs().  
+* [0.x.70]*
+   Return an IndexSet describing the set of locally owned DoFs used for the   given multigrid level as a subset of 0..n_dofs(level).  
+* [0.x.71]*
+   Return a constant reference to the indexth finite element object that is   used by this object.  
+* [0.x.72]*
+   Return a constant reference to the set of finite element objects that   are used by this object.  
+* [0.x.73]*
+   Return a constant reference to the triangulation underlying this object.  
+* [0.x.74]*
+   Return MPI communicator used by the underlying triangulation.  
+* [0.x.75]*
+   Whenever serialization with a  [2.x.137]  as the   underlying triangulation is considered, we also need to consider storing   the active FE indices on all active cells as well.     This function registers that these indices are to be stored whenever the    [2.x.138]  function is called on the   underlying triangulation.    
+*  [2.x.139]  Currently only implemented for triangulations of type      [2.x.140]  An assertion will be triggered if     a different type is registered.      [2.x.141]  The documentation of  [2.x.142]  has further     information on serialization.  
+* [0.x.76]*
+   Whenever serialization with a  [2.x.143]  as the   underlying triangulation is considered, we also need to consider storing   the active FE indices on all active cells as well.     This function deserializes and distributes the previously stored   active FE indices on all active cells.    
+*  [2.x.144]  Currently only implemented for triangulations of type      [2.x.145]  An assertion will be triggered if     a different type is registered.      [2.x.146]  The documentation of  [2.x.147]  has further     information on serialization.  
+* [0.x.77]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.     This function is made virtual, since a dof handler object might be   accessed through a pointers to this base class, although the actual   object might be a derived class.  
+* [0.x.78]*
+   Write the data of this object to a stream for the purpose of   serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.79]*
+   Read the data of this object from a stream for the purpose of   serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.80]*
+   Write and read the data of this object from a stream for the purpose   of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.81]*
+   Exception  
+* [0.x.82]*
+   Exception  
+*  [2.x.148]   
+* [0.x.83]*
+   Exception  
+*  [2.x.149]   
+* [0.x.84]*
+   Exception  
+*  [2.x.150]   
+* [0.x.85]*
+   Exception  
+* [0.x.86]*
+   Exception used when a certain feature doesn't make sense when   DoFHandler does not hp-capabilities.  
+* [0.x.87]*
+   Exception used when a certain feature is not implemented when the   DoFHandler has hp-capabilities.  
+* [0.x.88]*
+   A data structure that is used to store the DoF indices associated with a   particular vertex. Unlike cells, vertices live on several levels of a   multigrid hierarchy; consequently, we need to store DoF indices for each   vertex for each of the levels it lives on. This class does this.  
+* [0.x.89]*
+     Constructor.    
+* [0.x.90]*
+     A function that is called to allocate the necessary amount of memory to     store the indices of the DoFs that live on this vertex for the given     (inclusive) range of levels.    
+* [0.x.91]*
+     Return the coarsest level for which this structure stores data.    
+* [0.x.92]*
+     Return the finest level for which this structure stores data.    
+* [0.x.93]*
+     Return the index of the  [2.x.151] th degree of freedom for     the given level stored for the current vertex.    
+* [0.x.94]*
+     Set the index of the  [2.x.152] th degree of freedom for     the given level stored for the current vertex to  [2.x.153] .    
+* [0.x.95]*
+     Coarsest level for which this object stores DoF indices.    
+* [0.x.96]*
+     Finest level for which this object stores DoF indices.    
+* [0.x.97]*
+     A pointer to an array where we store the indices of the DoFs that live     on the various levels this vertex exists on.         The starting offset of the DoFs that belong to a  [2.x.154]  are given by      [2.x.155] .  [2.x.156]      must therefore be passed as an argument to the functions that set or     read an index.    
+* [0.x.98]*
+   Whenever the underlying triangulation changes by either   h/p-refinement/coarsening and serialization, the active FE index of cells   needs to be transferred. This structure stores all temporary information   required during that process.  
+* [0.x.99]*
+     Container to temporarily store the iterator and future active FE index     of cells that persist.    
+* [0.x.100]*
+     Container to temporarily store the iterator and future active FE index     of cells that will be refined.    
+* [0.x.101]*
+     Container to temporarily store the iterator and future active FE index     of parent cells that will remain after coarsening.    
+* [0.x.102]*
+     Container to temporarily store the active FE index of every locally     owned cell for transfer across  [2.x.157]      objects.    
+* [0.x.103]*
+     Helper object to transfer all active FE indices on      [2.x.158]  objects during     refinement/coarsening and serialization.    
+* [0.x.104]*
+   An object containing information on the block structure.  
+* [0.x.105]*
+   Boolean indicating whether or not the current DoFHandler has hp-   capabilities.  
+* [0.x.106]*
+   Address of the triangulation to work on.  
+* [0.x.107]*
+   Store a  [2.x.159]  object. If only a single FiniteElement is   used during initialization of this object, it contains the (one)   FiniteElement.  
+* [0.x.108]*
+   An object that describes how degrees of freedom should be distributed and   renumbered.  
+* [0.x.109]*
+   A structure that contains all sorts of numbers that characterize the   degrees of freedom this object works on.     For most members of this structure, there is an accessor function in this   class that returns its value.  
+* [0.x.110]*
+   Data structure like number_cache, but for each multigrid level.  
+* [0.x.111]*
+   Cached indices of the degrees of freedom of all active cell. Identification   of the appropriate position of a cell in the vectors is done via   cell_dof_cache_ptr (CRS scheme).  
+* [0.x.112]*
+   Pointer to the first cached degree of freedom of an active cell   (identified by level and level index) within cell_dof_cache_indices.  
+* [0.x.113]*
+   Indices of degree of freedom of each d+1 geometric object (3D: vertex,   line, quad, hex) for all relevant active finite elements. Identification   of the appropriate position is done via object_dof_ptr (CRS scheme).  
+* [0.x.114]*
+   Pointer to the first cached degree of freedom of a geometric object for all   relevant active finite elements.    
+*  [2.x.160]  In normal mode it is possible to access this data structure directly.     In hp-mode, an indirection via hp_object_fe_indices/hp_object_fe_ptr is   necessary.  
+* [0.x.115]*
+   Active FE indices of each geometric object. Identification   of the appropriate position of a cell in the vectors is done via   hp_object_fe_ptr (CRS scheme).  
+* [0.x.116]*
+   Pointer to the first FE index of a geometric object.  
+* [0.x.117]*
+   Active FE index of an active cell (identified by level and level index).   This vector is only used in hp-mode.  
+* [0.x.118]*
+   Future FE index of an active cell (identified by level and level index).   This vector is only used in hp-mode.  
+* [0.x.119]*
+   An array to store the indices for level degrees of freedom located at   vertices.  
+* [0.x.120]*
+   Space to store the DoF numbers for the different multigrid levels.  
+* [0.x.121]*
+   Space to store DoF numbers of faces in the multigrid context.  
+* [0.x.122]*
+   We embed our data structure into a pointer to control that   all transfer related data only exists during the actual transfer process.  
+* [0.x.123]*
+   A list of connections with which this object connects to the   triangulation to get information about when the triangulation changes.  
+* [0.x.124]*
+   A list of connections with which this object connects to the   triangulation. They get triggered specifically when data needs to be   transferred due to refinement or repartitioning. Only active in hp-mode.  
+* [0.x.125]*
+   Free all memory used for non-multigrid data structures.  
+* [0.x.126]*
+   Free all memory used for multigrid data structures.  
+* [0.x.127]*
+   Return dof index of specified object.  
+* [0.x.128]*
+   Return dof index of specified object.  
+* [0.x.129]*
+   Set up DoFHandler policy.  
+* [0.x.130]*
+   Set up connections to signals of the underlying triangulation.  
+* [0.x.131]*
+   Create default tables for the active and future fe_indices.     Active indices are initialized with a zero indicator, meaning that fe[0] is   going to be used by default. Future indices are initialized with an invalid   indicator, meaning that no p-adaptation is scheduled by default.     This method is called upon construction and whenever the underlying   triangulation gets created. This ensures that each cell has a valid active   and future fe_index.  
+* [0.x.132]*
+   Update tables for active and future fe_indices.     Whenever the underlying triangulation changes (either by adaptation or   deserialization), active and future FE index tables will be adjusted to the   current structure of the triangulation. Missing values of active and future   indices will be initialized with their defaults (see   create_active_fe_table()).     This method is called post refinement and post deserialization. This   ensures that each cell has a valid active and future fe_index.  
+* [0.x.133]*
+   A function that will be triggered through a triangulation   signal just before the associated Triangulation or    [2.x.161]  is modified.     The function that stores the active FE indices of all cells that will   be refined or coarsened before the refinement happens, so that   they can be set again after refinement.  
+* [0.x.134]*
+   A function that will be triggered through a triangulation   signal just after the associated Triangulation or    [2.x.162]  is modified.     The function that restores the active FE indices of all cells that   were refined or coarsened.  
+* [0.x.135]*
+   A function that will be triggered through a triangulation   signal just before the associated  [2.x.163]  is   modified.     The function that stores all active FE indices on locally owned cells for   distribution over all participating processors.  
+* [0.x.136]*
+   A function that will be triggered through a triangulation   signal just after the associated  [2.x.164]  is   modified.     The function that restores all active FE indices on locally owned cells   that have been communicated.  
+* [0.x.137]*
+       Given a DoFHandler object in hp-mode, make sure that the       future FE indices that a user has set for locally owned cells are       communicated to all other relevant cells as well.             For  [2.x.165]  objects,       this information is distributed on both ghost and artificial cells.             In case a  [2.x.166]  is used,       indices are communicated only to ghost cells.      
+* [0.x.138]*
+       Return the index of the finite element from the entire  [2.x.167]        that is dominated by those assigned as future finite elements to the       children of  [2.x.168]              We find the corresponding finite element among the future finite       elements on the children of this cell. If none of them qualify, we       extend our search on the whole  [2.x.169]  which is the element       that describes the smallest finite element space that includes all       future finite elements assigned to the children. If the function is not       able to find a finite element at all, an assertion will be triggered.             In this way, we determine the finite element of the parent cell in case       of h-coarsening in the hp-context.            
+*  [2.x.170]  This function can only be called on direct parent cells, i.e.,       non-active cells whose children are all active.            
+*  [2.x.171]  On  [2.x.172]  objects where sibling cells       can be ghost cells, make sure that future FE indices have been properly       communicated with communicate_future_fe_indices() first. Otherwise,       results might differ on different processors. There is no check for       consistency of future FE indices.      
+* [0.x.139]*
+       Exception      
+* [0.x.140]*
+   Return a string representing the dynamic type of the given argument.   This is basically the same what typeid(...).name() does, but it turns out   this is broken on Intel 13+.     Defined in dof_handler.cc.  
+* [0.x.141]

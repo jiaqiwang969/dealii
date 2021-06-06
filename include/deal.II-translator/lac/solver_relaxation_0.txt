@@ -1,0 +1,23 @@
+[0.x.0]*
+ Implementation of an iterative solver based on relaxation methods. The stopping criterion is the norm of the residual.
+*  For the requirements on matrices and vectors in order to work with this class, see the documentation of the Solver base class.
+*  Like all other solver classes, this class has a local structure called  [2.x.0]  AdditionalData which is used to pass additional parameters to the solver, like damping parameters or the number of temporary vectors. We use this additional structure instead of passing these values directly to the constructor because this makes the use of the  [2.x.1]  and other classes much easier and guarantees that these will continue to work even if number or type of the additional parameters for a certain solver changes. AdditionalData of this class currently does not contain any data.
+* 
+
+*  [1.x.0]
+*  The solve() function of this class uses the mechanism described in the Solver base class to determine convergence. This mechanism can also be used to observe the progress of the iteration.
+* 
+
+* 
+
+* 
+*  [2.x.2] 
+
+* 
+* [0.x.1]*
+   Standardized data struct to pipe additional data to the solver. There is   no data in here for relaxation methods.  
+* [0.x.2]*
+   Constructor.  
+* [0.x.3]*
+   Solve the system  [2.x.3]  using the relaxation method  [2.x.4] . The matrix [1.x.1] itself is only used to compute the   residual.  
+* [0.x.4]

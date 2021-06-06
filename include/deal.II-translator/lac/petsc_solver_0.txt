@@ -1,0 +1,219 @@
+[0.x.0]*
+   Base class for solver classes using the PETSc solvers. Since solvers in   PETSc are selected based on flags passed to a generic solver object,   basically all the actual solver calls happen in this class, and derived   classes simply set the right flags to select one solver or another, or to   set certain parameters for individual solvers.     Optionally, the user can create a solver derived from the SolverBase   class and can set the default arguments necessary to solve the linear   system of equations with SolverControl. These default options can be   overridden by specifying command line arguments of the form  [2.x.0] 
+* 
+*  - sp_*.   For example,  [2.x.1] 
+* 
+*  - sp_monitor_true_residual prints out true residual norm   (unpreconditioned) at each iteration and  [2.x.2] 
+* 
+*  - sp_view provides   information about the linear solver and the preconditioner used in the   current context. The type of the solver can also be changed during   runtime by specifying  [2.x.3] 
+* 
+*  - sp_type {richardson, cg, gmres, fgmres, ..} to   dynamically test the optimal solver along with a suitable preconditioner   set using  [2.x.4] 
+* 
+*  - c_type {jacobi, bjacobi, ilu, lu, ..}. There are several   other command line options available to modify the behavior of the PETSc   linear solver and can be obtained from the [1.x.0].    
+*  [2.x.5]  Repeated calls to solve() on a solver object with a Preconditioner   must be used with care. The preconditioner is initialized in the first   call to solve() and subsequent calls reuse the solver and preconditioner   object. This is done for performance reasons. The solver and   preconditioner can be reset by calling reset().     One of the gotchas of PETSc is that
+* 
+*  -  in particular in MPI mode
+* 
+*  -  it   often does not produce very helpful error messages. In order to save   other users some time in searching a hard to track down error, here is   one situation and the error message one gets there: when you don't   specify an MPI communicator to your solver's constructor. In this case,   you will get an error of the following form from each of your parallel   processes:  
+* [1.x.1]
+*      This error, on which one can spend a very long time figuring out what   exactly goes wrong, results from not specifying an MPI communicator. Note   that the communicator  [2.x.6]  must match that of the matrix and all vectors   in the linear system which we want to solve. Aggravating the situation is   the fact that the default argument to the solver classes,  [2.x.7]    PETSC_COMM_SELF, is the appropriate argument for the sequential case   (which is why it is the default argument), so this error only shows up in   parallel mode.    
+*  [2.x.8]   
+* [0.x.1]*
+     Constructor. Takes the solver control object and the MPI communicator     over which parallel computations are to happen.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.2]*
+     Destructor.    
+* [0.x.3]*
+     Solve the linear system <tt>Ax=b</tt>. Depending on the information     provided by derived classes and the object passed as a preconditioner,     one of the linear solvers and preconditioners of PETSc is chosen.     Repeated calls to solve() do not reconstruct the preconditioner for     performance reasons. See class Documentation.    
+* [0.x.4]*
+     Resets the contained preconditioner and solver object. See class     description for more details.    
+* [0.x.5]*
+     Sets a prefix name for the solver object. Useful when customizing the     PETSc KSP object with command-line options.    
+* [0.x.6]*
+     Access to object that controls convergence.    
+* [0.x.7]*
+     initialize the solver with the preconditioner. This function is     intended for use with SLEPc spectral transformation class.    
+* [0.x.8]*
+     Reference to the object that controls convergence of the iterative     solver. In fact, for these PETSc wrappers, PETSc does so itself, but we     copy the data from this object before starting the solution process,     and copy the data back into it afterwards.    
+* [0.x.9]*
+     Copy of the MPI communicator object to be used for the solver.    
+* [0.x.10]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is requested by the derived class.    
+* [0.x.11]*
+     Solver prefix name to qualify options specific to the PETSc KSP object     in the current context. Note: A hyphen (-) must NOT be given at the     beginning of the prefix name. The first character of all runtime     options is AUTOMATICALLY the hyphen.    
+* [0.x.12]*
+     A function that is used in PETSc as a callback to check on convergence.     It takes the information provided from PETSc and checks it against     deal.II's own SolverControl objects to see if convergence has been     reached.    
+* [0.x.13]*
+     A structure that contains the PETSc solver and preconditioner objects.     This object is preserved between subsequent calls to the solver if the     same preconditioner is used as in the previous solver step. This may     save some computation time, if setting up a preconditioner is     expensive, such as in the case of an ILU for example.         The actual declaration of this class is complicated by the fact that     PETSc changed its solver interface completely and incompatibly between     versions 2.1.6 and 2.2.0 :-(         Objects of this type are explicitly created, but are destroyed when the     surrounding solver object goes out of scope, or when we assign a new     value to the pointer to this object. The respectiveDestroy functions     are therefore written into the destructor of this object, even though     the object does not have a constructor.    
+* [0.x.14]*
+       Destructor      
+* [0.x.15]*
+       Object for Krylov subspace solvers.      
+* [0.x.16]*
+     Pointer to an object that stores the solver context. This is recreated     in the main solver routine if necessary.    
+* [0.x.17]*
+   An implementation of the solver interface using the PETSc Richardson   solver.    
+*  [2.x.9]   
+* [0.x.18]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.19]*
+       Constructor. By default, set the damping parameter to one.      
+* [0.x.20]*
+       Relaxation parameter.      
+* [0.x.21]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.10]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.22]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.23]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.24]*
+   An implementation of the solver interface using the PETSc Chebyshev (or,   prior version 3.3, Chebychev) solver.    
+*  [2.x.11]   
+* [0.x.25]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.26]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.12]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.27]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.28]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.29]*
+   An implementation of the solver interface using the PETSc CG solver.    
+*  [2.x.13]   
+* [0.x.30]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.31]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.14]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.32]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.33]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.34]*
+   An implementation of the solver interface using the PETSc BiCG solver.    
+*  [2.x.15]   
+* [0.x.35]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.36]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.16]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.37]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.38]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.39]*
+   An implementation of the solver interface using the PETSc GMRES solver.    
+*  [2.x.17]   
+* [0.x.40]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.41]*
+       Constructor. By default, set the number of temporary vectors to 30,       i.e. do a restart every 30 iterations.      
+* [0.x.42]*
+       Maximum number of tmp vectors.      
+* [0.x.43]*
+       Flag for right preconditioning.      
+* [0.x.44]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.18]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.45]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.46]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.47]*
+   An implementation of the solver interface using the PETSc BiCGStab   solver.    
+*  [2.x.19]   
+* [0.x.48]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.49]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.20]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.50]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.51]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.52]*
+   An implementation of the solver interface using the PETSc CG Squared   solver.    
+*  [2.x.21]   
+* [0.x.53]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.54]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.22]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.55]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.56]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.57]*
+   An implementation of the solver interface using the PETSc TFQMR solver.    
+*  [2.x.23]   
+* [0.x.58]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.59]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.24]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.60]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.61]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.62]*
+   An implementation of the solver interface using the PETSc TFQMR-2 solver   (called TCQMR in PETSc). Note that this solver had a serious bug in   versions up to and including PETSc 2.1.6, in that it did not check   convergence and always returned an error code. Thus, this class will   abort with an error indicating failure to converge with PETSc 2.1.6 and   prior. This should be fixed in later versions of PETSc, though.    
+*  [2.x.25]   
+* [0.x.63]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.64]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.26]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.65]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.66]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.67]*
+   An implementation of the solver interface using the PETSc CR solver.    
+*  [2.x.27]   
+* [0.x.68]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.69]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.28]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.70]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.71]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.72]*
+   An implementation of the solver interface using the PETSc Least Squares   solver.    
+*  [2.x.29]   
+* [0.x.73]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.74]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.30]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.75]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.76]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.77]*
+   An implementation of the solver interface using the PETSc PREONLY solver.   Actually this is NOT a real solution algorithm. solve() only applies the   preconditioner once and returns immediately. Its only purpose is to   provide a solver object, when the preconditioner should be used as a real   solver. It is very useful in conjunction with the complete LU   decomposition preconditioner <tt> PreconditionLU </tt>, which in   conjunction with this solver class becomes a direct solver.    
+*  [2.x.31]   
+* [0.x.78]*
+     Standardized data struct to pipe additional data to the solver.    
+* [0.x.79]*
+     Constructor. In contrast to deal.II's own solvers, there is no need to     give a vector memory object. However, PETSc solvers want to have an MPI     communicator context over which computations are parallelized. By     default,  [2.x.32]  is used here, but you can change this. Note     that for single processor (non-MPI) versions, this parameter does not     have any effect.         The last argument takes a structure with additional, solver dependent     flags for tuning.         Note that the communicator used here must match the communicator used     in the system matrix, solution, and right hand side object of the solve     to be done with this solver. Otherwise, PETSc will generate hard to     track down errors, see the documentation of the SolverBase class.    
+* [0.x.80]*
+     Store a copy of the flags for this particular solver.    
+* [0.x.81]*
+     %Function that takes a Krylov Subspace Solver context object, and sets     the type of solver that is appropriate for this class.    
+* [0.x.82]*
+   An implementation of the solver interface using the sparse direct MUMPS   solver through PETSc. This class has the usual interface of all other   solver classes but it is of course different in that it doesn't implement   an iterative solver. As a consequence, things like the SolverControl   object have no particular meaning here.     MUMPS allows to make use of symmetry in this matrix. In this class this   is made possible by the set_symmetric_mode() function. If your matrix is   symmetric, you can use this class as follows:  
+* [1.x.2]
+*     
+*  [2.x.33]  The class internally calls KSPSetFromOptions thus you are able to   use all the PETSc parameters for MATSOLVERMUMPS package. See   http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MATSOLVERMUMPS.html    
+*  [2.x.34]   
+* [0.x.83]*
+     Standardized data structure to pipe additional data to the solver.    
+* [0.x.84]*
+     Constructor    
+* [0.x.85]*
+     The method to solve the linear system.    
+* [0.x.86]*
+     The method allows to take advantage if the system matrix is symmetric     by using LDL^T decomposition instead of more expensive LU. The argument     indicates whether the matrix is symmetric or not.    
+* [0.x.87]*
+     Store a copy of flags for this particular solver.    
+* [0.x.88]*
+     A function that is used in PETSc as a callback to check convergence. It     takes the information provided from PETSc and checks it against     deal.II's own SolverControl objects to see if convergence has been     reached.    
+* [0.x.89]*
+     A structure that contains the PETSc solver and preconditioner objects.     Since the solve member function in the base is not used here, the     private SolverData struct located in the base could not be used either.    
+* [0.x.90]*
+       Destructor      
+* [0.x.91]*
+     Flag specifies whether matrix being factorized is symmetric or not. It     influences the type of the used preconditioner (PCLU or PCCHOLESKY)    
+* [0.x.92]

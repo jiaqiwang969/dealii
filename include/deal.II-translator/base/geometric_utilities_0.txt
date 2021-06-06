@@ -1,0 +1,19 @@
+[0.x.0]*
+ A namespace for geometric utility functions that are not particularly specific to finite element computing or numerical programs, but nevertheless are needed in various contexts when writing applications.
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   A namespace for coordinate transformations.  
+* [0.x.2]*
+     Return spherical coordinates of a Cartesian point  [2.x.1]      The returned array is filled with radius, azimuth angle  [2.x.2]      and polar/inclination angle  [2.x.3]  (omitted in 2D).         In 3D the transformation is given by    
+* [1.x.0]
+*          The use of this function is demonstrated in  [2.x.4] .    
+* [0.x.3]*
+     Return the Cartesian coordinates of a spherical point defined by  [2.x.5]      which is filled with radius  [2.x.6] , azimuth angle      [2.x.7]  and polar/inclination angle  [2.x.8]      (omitted in 2D).         In 3D the transformation is given by    
+* [1.x.1]
+*     
+* [0.x.4]

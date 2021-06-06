@@ -1,0 +1,34 @@
+[0.x.0]*
+ A class representing a fixed size array of indices.
+*  It is used in tensorial objects like the TableBase and SymmetricTensor classes to represent a nested choice of indices.
+*   [2.x.0]  N The number of indices stored in each object.
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+   Default constructor. This constructor sets all indices to zero.  
+* [0.x.2]*
+   Constructor. Initializes the indices stored by this object by the given   arguments  [2.x.2]      This constructor will result in a compiler error if   the template argument  [2.x.3]  is different from the number of the arguments.  
+* [0.x.3]*
+   Read-only access the value of the <tt>i</tt>th index.  
+* [0.x.4]*
+   Write access the value of the <tt>i</tt>th index.  
+* [0.x.5]*
+   Compare two index fields for equality.  
+* [0.x.6]*
+   Compare two index fields for inequality.  
+* [0.x.7]*
+   Sort the indices in ascending order. While this operation is not very   useful for Table objects, it is used for the SymmetricTensor class.  
+* [0.x.8]*
+   Write or read the data of this object to or from a stream for the purpose   of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.9]*
+   Store the indices in an array.  
+* [0.x.10]*
+ Output operator for TableIndices objects; reports them in a list like this:  [2.x.4] .
+*   [2.x.5]  TableIndices
+
+* 
+* [0.x.11]

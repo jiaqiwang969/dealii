@@ -1,0 +1,107 @@
+[0.x.0]*
+ Implementation of hierarchical  [2.x.0]  shape functions that yield the finite element space of continuous, piecewise polynomials of degree  [2.x.1]  This class is realized using tensor product polynomials based on a hierarchical basis  [2.x.2]  on the interval <tt>[0,1]</tt> which is suitable for building an  [2.x.3]  tensor product finite element if we assume that each element has a single degree.
+*  The constructor of this class takes the degree  [2.x.4]  of this finite element.
+*  This class is not implemented for the codimension one case (<tt>spacedim != dim</tt>).
+*  [1.x.0]
+*  The constructor creates a TensorProductPolynomials object that includes the tensor product of  [2.x.5]  polynomials of degree  [2.x.6]  This  [2.x.7]  TensorProductPolynomials object provides all values and derivatives of the shape functions.
+*  [1.x.1]
+*  The original ordering of the shape functions represented by the TensorProductPolynomials is a tensor product numbering. However, the shape functions on a cell are renumbered beginning with the shape functions whose support points are at the vertices, then on the line, on the quads, and finally (for 3d) on the hexes. To be explicit, these numberings are listed in the following:
+*  [1.x.2]
+*  The  [2.x.8]  element is of polynomial degree one and, consequently, is exactly the same as the  [2.x.9]  element in class FE_Q. In particular, the shape function are defined in the exact same way:
+*   [2.x.10]   [2.x.11]  1D case:  
+* [1.x.3]
+* 
+*   [2.x.12]  2D case:  
+* [1.x.4]
+* 
+*   [2.x.13]  3D case:  
+* [1.x.5]
+* 
+*  The respective coordinate values of the support points of the degrees of freedom are as follows:  [2.x.14]   [2.x.15]  Shape function 0: <tt>[0, 0, 0]</tt>;  [2.x.16]  Shape function 1: <tt>[1, 0, 0]</tt>;  [2.x.17]  Shape function 2: <tt>[0, 1, 0]</tt>;  [2.x.18]  Shape function 3: <tt>[1, 1, 0]</tt>;  [2.x.19]  Shape function 4: <tt>[0, 0, 1]</tt>;  [2.x.20]  Shape function 5: <tt>[1, 0, 1]</tt>;  [2.x.21]  Shape function 6: <tt>[0, 1, 1]</tt>;  [2.x.22]  Shape function 7: <tt>[1, 1, 1]</tt>;  [2.x.23]   [2.x.24] 
+*  In 2d, these shape functions look as follows:  [2.x.25] 
+* 
+
+*  [1.x.6]  [2.x.26]   [2.x.27]  1D case:  
+* [1.x.7]
+* 
+*   [2.x.28]  2D case:  
+* [1.x.8]
+* 
+*   [2.x.29]  3D case:  
+* [1.x.9]
+*  The center vertex has number 26.
+*  The respective coordinate values of the support points of the degrees of freedom are as follows:  [2.x.30]   [2.x.31]  Shape function 0: <tt>[0, 0, 0]</tt>;  [2.x.32]  Shape function 1: <tt>[1, 0, 0]</tt>;  [2.x.33]  Shape function 2: <tt>[0, 1, 0]</tt>;  [2.x.34]  Shape function 3: <tt>[1, 1, 0]</tt>;  [2.x.35]  Shape function 4: <tt>[0, 0, 1]</tt>;  [2.x.36]  Shape function 5: <tt>[1, 0, 1]</tt>;  [2.x.37]  Shape function 6: <tt>[0, 1, 1]</tt>;  [2.x.38]  Shape function 7: <tt>[1, 1, 1]</tt>;  [2.x.39]  Shape function 8: <tt>[0, 1/2, 0]</tt>;  [2.x.40]  Shape function 9: <tt>[1, 1/2, 0]</tt>;  [2.x.41]  Shape function 10: <tt>[1/2, 0, 0]</tt>;  [2.x.42]  Shape function 11: <tt>[1/2, 1, 0]</tt>;  [2.x.43]  Shape function 12: <tt>[0, 1/2, 1]</tt>;  [2.x.44]  Shape function 13: <tt>[1, 1/2, 1]</tt>;  [2.x.45]  Shape function 14: <tt>[1/2, 0, 1]</tt>;  [2.x.46]  Shape function 15: <tt>[1/2, 1, 1]</tt>;  [2.x.47]  Shape function 16: <tt>[0, 0, 1/2]</tt>;  [2.x.48]  Shape function 17: <tt>[1, 0, 1/2]</tt>;  [2.x.49]  Shape function 18: <tt>[0, 1, 1/2]</tt>;  [2.x.50]  Shape function 19: <tt>[1, 1, 1/2]</tt>;  [2.x.51]  Shape function 20: <tt>[0, 1/2, 1/2]</tt>;  [2.x.52]  Shape function 21: <tt>[1, 1/2, 1/2]</tt>;  [2.x.53]  Shape function 22: <tt>[1/2, 0, 1/2]</tt>;  [2.x.54]  Shape function 23: <tt>[1/2, 1, 1/2]</tt>;  [2.x.55]  Shape function 24: <tt>[1/2, 1/2, 0]</tt>;  [2.x.56]  Shape function 25: <tt>[1/2, 1/2, 1]</tt>;  [2.x.57]  Shape function 26: <tt>[1/2, 1/2, 1/2]</tt>;  [2.x.58]   [2.x.59] 
+* 
+
+*  In 2d, these shape functions look as follows (the black plane corresponds to zero; negative shape function values may not be visible):  [2.x.60] 
+* 
+
+*  [1.x.10]  [2.x.61]   [2.x.62]  1D case:  
+* [1.x.11]
+* 
+*   [2.x.63]  2D case:  
+* [1.x.12]
+*   [2.x.64] 
+*  In 2d, these shape functions look as follows (the black plane corresponds to zero; negative shape function values may not be visible):  [2.x.65] 
+* 
+
+*  [1.x.13]  [2.x.66]   [2.x.67]  1D case:  
+* [1.x.14]
+* 
+*   [2.x.68]  2D case:  
+* [1.x.15]
+*   [2.x.69] 
+*  In 2d, these shape functions look as follows (the black plane corresponds to zero; negative shape function values may not be visible):  [2.x.70] 
+
+* 
+* [0.x.1]*
+   Constructor for tensor product polynomials of degree  [2.x.71]   
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_Q_Hierarchical<dim>(degree)</tt>, with  [2.x.72]  and  [2.x.73]    degree replaced by appropriate values.  
+* [0.x.3]*
+   This function returns  [2.x.74]  if the shape function  [2.x.75]  has   non-zero function values somewhere on the face  [2.x.76]   
+* [0.x.4]*
+    [2.x.77]  Functions to support hp    [2.x.78]   
+* [0.x.5]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".     For the FE_Q_Hierarchical class the result is always true (independent of   the degree of the element), as it implements the complete set of   functions necessary for hp-capability.  
+* [0.x.6]*
+   Return the matrix interpolating from the given finite element to the   present one. Interpolation only between FE_Q_Hierarchical is supported.  
+* [0.x.7]*
+   Embedding matrix between grids. Only isotropic refinement is supported.  
+* [0.x.8]*
+   If, on a vertex, several finite elements are active, the hp-code first   assigns the degrees of freedom of each of these FEs different global   indices. It then calls this function to find out which of them should get   identical values, and consequently can receive the same global DoF index.   This function therefore returns a list of identities between DoFs of the   present finite element object with the DoFs of  [2.x.79]  which is a   reference to a finite element object representing one of the other finite   elements active on this particular vertex. The function computes which of   the degrees of freedom of the two finite element objects are equivalent,   both numbered between zero and the corresponding value of   n_dofs_per_vertex() of the two finite elements. The first index of each   pair denotes one of the vertex dofs of the present element, whereas the   second is the corresponding index of the other finite element.  
+* [0.x.9]*
+   Same as above but for lines.  
+* [0.x.10]*
+   Same as above but for faces.  
+* [0.x.11]*
+    [2.x.80]   [2.x.81]   
+* [0.x.12]*
+   Return the matrix interpolating from a face of one element to the face of   the neighboring element. The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Derived elements will have to implement this function. They may only   provide interpolation matrices for certain source finite elements, for   example those from the same family. If they don't implement interpolation   from a given element, then they must throw an exception of type    [2.x.82]   
+* [0.x.13]*
+   Return the matrix interpolating from a face of one element to the subface   of the neighboring element. The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Derived elements will have to implement this function. They may only   provide interpolation matrices for certain source finite elements, for   example those from the same family. If they don't implement interpolation   from a given element, then they must throw an exception of type   <tt>ExcInterpolationNotImplemented</tt>.  
+* [0.x.14]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.     This function is made virtual, since finite element objects are usually   accessed through pointers to their base class, rather than the class   itself.  
+* [0.x.15]*
+   For a finite element of degree  [2.x.83]  <  [2.x.84]  we return a   vector which maps the numbering on an FE of degree  [2.x.85]  into the   numbering on this element.  
+* [0.x.16]*
+   Return a list of constant modes of the element. For this element, the   list consists of true arguments for the first vertex shape functions and   false for the remaining ones.  
+* [0.x.17]*
+   Only for internal use. Its full name is  [2.x.86]    function and it creates the  [2.x.87]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.88]    FiniteElementData.  
+* [0.x.18]*
+   The numbering of the degrees of freedom in continuous finite elements is   hierarchic, i.e. in such a way that we first number the vertex dofs, in   the order of the vertices as defined by the triangulation, then the line   dofs in the order and respecting the direction of the lines, then the   dofs on quads, etc.     The dofs associated with 1d hierarchical polynomials are ordered with the   vertices first ( [2.x.89]  and  [2.x.90] ) and then the line dofs   (the higher degree polynomials).  The 2d and 3d hierarchical polynomials   originate from the 1d hierarchical polynomials by tensor product. In the   following, the resulting numbering of dofs will be denoted by   `fe_q_hierarchical numbering`.     This function constructs a table which fe_q_hierarchical index each   degree of freedom in the hierarchic numbering would have.     This function is analogous to the    [2.x.91]  function. However, in   contrast to the fe_q_hierarchical numbering defined above, the   lexicographic numbering originates from the tensor products of   consecutive numbered dofs (like for LagrangeEquidistant).     It is assumed that the size of the output argument already matches the   correct size, which is equal to the number of degrees of freedom in the   finite element.  
+* [0.x.19]*
+   This is an analogon to the previous function, but working on faces.  
+* [0.x.20]*
+   Initialize two auxiliary fields that will be used in setting up the   various matrices in the constructor.  
+* [0.x.21]*
+   Initialize the hanging node constraints matrices. Called from the   constructor.  
+* [0.x.22]*
+   Initialize the embedding matrices. Called from the constructor.  
+* [0.x.23]*
+   Initialize the  [2.x.92]  field of the FiniteElement class.   Called from the constructor.  
+* [0.x.24]*
+   Initialize the  [2.x.93]  field of the FiniteElement   class. Called from the constructor.  
+* [0.x.25]*
+   Mapping from lexicographic to shape function numbering on first face.  
+* [0.x.26]

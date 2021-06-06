@@ -1,0 +1,37 @@
+[0.x.0]!  [2.x.0]  Preconditioners [2.x.1] 
+
+* 
+* [0.x.1]*
+ This class computes an Incomplete LU (ILU) decomposition of a sparse matrix, using either the same sparsity pattern or a different one. By incomplete we mean that unlike the exact decomposition, the incomplete one is also computed using sparse factors, and entries in the decomposition that do not fit into the given sparsity structure are discarded.
+*  The algorithm used by this class is essentially a copy of the algorithm given in the book Y. Saad: "Iterative methods for sparse linear systems", second edition, in section 10.3.2.
+* 
+
+*  [1.x.0]
+*  Refer to SparseLUDecomposition documentation for suggested usage and state management. This class is used in the  [2.x.2]  " [2.x.3] " tutorial program.
+* 
+
+* 
+*  [2.x.4]  Instantiations for this template are provided for <tt> [2.x.5]  and  [2.x.6]  others can be generated in application programs (see the section on  [2.x.7]  in the manual).
+
+* 
+* [0.x.2]*
+   Declare type for container size.  
+* [0.x.3]*
+   Constructor. Does nothing.     Call the  [2.x.8]  function before using this object as   preconditioner.  
+* [0.x.4]*
+   Make  [2.x.9]  accessible to this class as   well.  
+* [0.x.5]*
+   Perform the incomplete LU factorization of the given matrix.     This function needs to be called before an object of this class is used   as preconditioner.     For more details about possible parameters, see the class documentation   of SparseLUDecomposition and the documentation of the  [2.x.10]     [2.x.11]  class.     According to the  [2.x.12]  this function creates a new   SparsityPattern or keeps the previous sparsity or takes the sparsity   given by the user to  [2.x.13]  Then, this function performs the LU   decomposition.     After this function is called the preconditioner is ready to be used.  
+* [0.x.6]*
+   Apply the incomplete decomposition, i.e. do one forward-backward step    [2.x.14] .     The initialize() function needs to be called before.  
+* [0.x.7]*
+   Apply the transpose of the incomplete decomposition, i.e. do one forward-   backward step  [2.x.15] .     The initialize() function needs to be called before.  
+* [0.x.8]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.9]*
+    [2.x.16]  Exceptions    [2.x.17]   
+* [0.x.10]*
+   Exception  
+* [0.x.11]*
+   Exception  
+* [0.x.12]

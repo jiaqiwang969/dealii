@@ -1,0 +1,17 @@
+[0.x.0]*
+ A collection of %Gmsh related utilities and classes.
+
+* 
+* [0.x.1]*
+   A parameter class used to pass options to the %Gmsh executable.  
+* [0.x.2]*
+     Set all additional parameters to their default values.    
+* [0.x.3]*
+     Call prm.add_parameter for each member of the AdditionalParameters class.    
+* [0.x.4]*
+     The characteristic length used for the definition of the %Gmsh grid.         %Gmsh will try to make sure that the size of each edge is as close as     possible to this value.    
+* [0.x.5]*
+     Basename for the output files.         If this is left empty, then temporary files are used, and removed when     not needed any more.    
+* [0.x.6]*
+   Given a smooth closed curve, create a triangulation from it using   %Gmsh.     The input curve  [2.x.0]  should be closed.  
+* [0.x.7]

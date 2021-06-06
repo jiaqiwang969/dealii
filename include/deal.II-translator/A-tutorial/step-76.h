@@ -92,15 +92,21 @@ MPI_Win          win;         // window
 T              data_this;   // pointer to locally-owned data
 std::vector<T> data_others; // pointers to shared data
 * 
-// configure shared memory
+
+
+* 
 MPI_Info info;
 MPI_Info_create(&info);
 MPI_Info_set(info, "alloc_shared_noncontig", "true");
 * 
-// allocate shared memory
+
+
+* 
 MPI_Win_allocate_shared(local_size sizeof(T), sizeof(T), info, comm_sm, &data_this, &win);
 * 
-// get pointers to the shared data owned by the processes in the same sm domain
+
+
+* 
 data_others.resize(size_sm);
 int disp_unit = 0; // displacement size
 * 
@@ -147,7 +153,9 @@ LinearAlgebra::distributed::Vector::shared_vector_data() const;
 * @code
 typename MatrixFree<dim, Number>::AdditionalData additional_data;
 * 
-// set flags as usual (not shown)
+
+
+* 
 * 
 additional_data.communicator_sm = comm_sm;
 * 
@@ -283,7 +291,9 @@ matrix_free.template loop_cell_centric<VectorType, VectorType>(
 * @code
 typename MatrixFree<dim, Number>::AdditionalData additional_data;
 * 
-// set flags as usual (not shown)
+
+
+* 
 * 
 additional_data.hold_all_faces_to_owned_cells       = true;
 additional_data.mapping_update_flags_faces_by_cells =
@@ -2551,10 +2561,12 @@ Time:       0, dt:   0.0003, norm rho:  5.385e-16, rho u:  1.916e-16, energy: 1.
 
 * Cell-centric loops could be used to create block Gauss-Seidel preconditionersthat are multiplicative within one process and additive over processes. Thesetype of preconditioners use during flux computation, in contrast to Jacobi-typepreconditioners, already updated values from neighboring cells. The followingpseudo-code visualizes how this could in principal be achieved:
 * @code
-// vector monitor if cells have been updated or not
+* 
 Vector<Number> visit_flags(data.n_cell_batches () + data.n_ghost_cell_batches ());
 * 
-// element centric loop with a modified kernel
+
+
+* 
 data.template loop_cell_centric<VectorType, VectorType>(
   [&](const auto &data, auto &dst, const auto &src, const auto cell_range) {
 * 

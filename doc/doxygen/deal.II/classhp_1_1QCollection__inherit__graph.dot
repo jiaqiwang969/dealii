@@ -13,8 +13,6 @@ digraph "hp::QCollection&lt; dim &gt;"
   Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node1 -> Node5 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim - 1 \>" ,fontname="Helvetica"];
   Node5 [label="hp::QCollection\< dim\l - 1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhp_1_1QCollection.html",tooltip=" "];
-  Node1 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< q_dim \>" ,fontname="Helvetica"];
-  Node6 [label="hp::QCollection\< q\l_dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhp_1_1QCollection.html",tooltip=" "];
-  Node1 -> Node7 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< structdim \>" ,fontname="Helvetica"];
-  Node7 [label="hp::QCollection\< structdim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhp_1_1QCollection.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< structdim \>" ,fontname="Helvetica"];
+  Node6 [label="hp::QCollection\< structdim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhp_1_1QCollection.html",tooltip=" "];
 }

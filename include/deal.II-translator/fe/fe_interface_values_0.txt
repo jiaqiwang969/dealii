@@ -1,0 +1,169 @@
+[0.x.0]*
+ Namespace for views you get from accessing FEInterfaceValues using an extractor.
+
+* 
+* [0.x.1]*
+   The base class for the views.  
+* [0.x.2]*
+     The constructor.   
+* [0.x.3]*
+     Store a pointer to the FEInterfaceValues instance.    
+* [0.x.4]*
+   The view of a scalar variable for FEInterfaceValues.  
+* [0.x.5]*
+     This is the type returned for values.    
+* [0.x.6]*
+     This is the type returned for gradients, for example from     average_gradient().    
+* [0.x.7]*
+     This is the type returned for hessians, for example from jump_hessian().    
+* [0.x.8]*
+     This is the type returned for third derivatives, for example from     jump_hessian().    
+* [0.x.9]*
+     Constructor for an object that represents a single scalar component    
+* [0.x.10]*
+     Return the value of the shape function     with interface dof index  [2.x.0]  in     quadrature point  [2.x.1]  of the component selected by this view.         The argument  [2.x.2]  selects between the upstream value and     the downstream value as defined by the direction of the normal vector     in this quadrature point. If  [2.x.3]  is true, the shape     functions from the first cell of the interface is used.         In other words, this function returns the limit of the value of the shape     function in the given quadrature point when approaching it from one of     the two cells of the interface.        
+*  [2.x.4]  This function is typically used to pick the upstream or downstream     value based on a direction. This can be achieved by using      [2.x.5]  as the first argument of this     function.    
+* [0.x.11]*
+     Return the jump  [2.x.6]  on the interface for the shape     function      [2.x.7]  in the quadrature point  [2.x.8]      of the component selected by this view.    
+* [0.x.12]*
+     Return the average value  [2.x.9]  on the     interface for the shape     function  [2.x.10]  in the quadrature point  [2.x.11]      of the component selected by this view.    
+* [0.x.13]*
+     Return the average of the gradient  [2.x.12]  on the interface     for the shape     function  [2.x.13]  in the quadrature point  [2.x.14]      of the component selected by this view.    
+* [0.x.14]*
+     Return the jump of the gradient  [2.x.15]  on the interface for     the shape     function  [2.x.16]  in the quadrature point  [2.x.17]      of the component selected by this view.    
+* [0.x.15]*
+     Return the average of the Hessian  [2.x.18]  on the interface     for the shape function  [2.x.19]  at the quadrature point  [2.x.20]      q_point of the component selected by this view.    
+* [0.x.16]*
+     Return the jump in the gradient  [2.x.21]  on the interface for the shape function  [2.x.22]      interface_dof_index at the quadrature point  [2.x.23]  of     the component selected by this view.    
+* [0.x.17]*
+     Return the jump in the third derivative  [2.x.24]  on the interface for the     shape function  [2.x.25]  at the quadrature point  [2.x.26]  of     the component selected by this view.    
+* [0.x.18]*
+     The extractor for this view.    
+* [0.x.19]*
+   The view of a vector-valued variable for FEInterfaceValues.  
+* [0.x.20]*
+     This is the type returned for values.    
+* [0.x.21]*
+     This is the type returned for gradients, for example from     average_gradient().    
+* [0.x.22]*
+     An alias for the type of second derivatives of the view this class     represents. Here, for a set of  [2.x.27]  components of the     finite element, the Hessian is a  [2.x.28] .    
+* [0.x.23]*
+     An alias for the type of third derivatives of the view this class     represents. Here, for a set of  [2.x.29]  components of the     finite element, the third derivative is a  [2.x.30] .    
+* [0.x.24]*
+     Constructor for an object that represents a vector component    
+* [0.x.25]*
+     Return the value of the vector components selected by this view     with interface dof index  [2.x.31]  in     quadrature point  [2.x.32]          The argument  [2.x.33]  selects between the upstream value and     the downstream value as defined by the direction of the normal vector     in this quadrature point. If  [2.x.34]  is true, the shape     functions from the first cell of the interface is used.         In other words, this function returns the limit of the value of the shape     function in the given quadrature point when approaching it from one of     the two cells of the interface.        
+*  [2.x.35]  This function is typically used to pick the upstream or downstream     value based on a direction. This can be achieved by using      [2.x.36]  as the first argument of this     function.    
+* [0.x.26]*
+     Return the jump vector  [2.x.37]  on the     interface for the shape function      [2.x.38]  in the quadrature point  [2.x.39]     
+* [0.x.27]*
+     Return the average vector  [2.x.40]  on the interface for the shape     function  [2.x.41]  in the quadrature point  [2.x.42]     
+* [0.x.28]*
+     Return the average of the gradient (a tensor of rank 2)  [2.x.43]  on the interface for the shape     function  [2.x.44]  in the quadrature point  [2.x.45]     
+* [0.x.29]*
+     Return the jump of the gradient (a tensor of rank 2)  [2.x.46]  on the interface for the shape     function  [2.x.47]  in the quadrature point  [2.x.48]     
+* [0.x.30]*
+     Return the average of the Hessian  [2.x.49]  on the interface     for the shape function  [2.x.50]  at the quadrature point  [2.x.51]      q_point of the component selected by this view.    
+* [0.x.31]*
+     Return the jump in the gradient  [2.x.52]  on the interface for the shape function  [2.x.53]      interface_dof_index at the quadrature point  [2.x.54]  of     the component selected by this view.    
+* [0.x.32]*
+     Return the jump in the third derivative  [2.x.55]  on the interface for the     shape function  [2.x.56]  at the quadrature point  [2.x.57]  of     the component selected by this view.    
+* [0.x.33]*
+     The extractor for this view.    
+* [0.x.34]*
+ FEInterfaceValues is a data structure to access and assemble finite element data on interfaces between two cells of a mesh.
+*  It provides a way to access averages, jump terms, and similar operations used in Discontinuous Galerkin methods on a face between two neighboring cells. This allows the computation of typical mesh-dependent linear or bilinear forms in a similar way as FEValues does for cells and FEFaceValues does for faces. In the literature, the faces between neighboring cells are called "inner interfaces" or "facets".
+*  Internally, this class provides an abstraction for two FEFaceValues objects (or FESubfaceValues when using adaptive refinement). The class introduces a new "interface dof index" that walks over the union of the dof indices of the two FEFaceValues objects. Helper functions allow translating between the new "interface dof index" and the corresponding "cell index" (0 for the first cell, 1 for the second cell) and "dof index" within that cell.
+*  The class is made to be used inside  [2.x.58]  It is intended to be a low level replacement for MeshWorker and LocalIntegrators and a higher level abstraction compared to assembling face terms manually.
+
+* 
+* [0.x.35]*
+   Number of quadrature points.  
+* [0.x.36]*
+   Construct the FEInterfaceValues with a single FiniteElement (same on both   sides of the facet). The FEFaceValues objects will be initialized with   the given  [2.x.59]   [2.x.60]  and  [2.x.61]   
+* [0.x.37]*
+   The same as above but taking a collection of quadrature rules   so that different quadrature rules can be assigned to different   faces.  
+* [0.x.38]*
+   Construct the FEInterfaceValues with a single FiniteElement and   a Q1 Mapping.     See the constructor above.  
+* [0.x.39]*
+   Re-initialize this object to be used on a new interface given by two faces   of two neighboring cells. The `cell` and `cell_neighbor` cells will be   referred to through `cell_index` zero and one after this call in all places   where one needs to identify the two cells adjacent to the interface.     Use  [2.x.62]  for  [2.x.63]  or  [2.x.64]    sub_face_no_neighbor to indicate that you want to work on the entire face,   not a sub-face.     The arguments (including their order) are identical to the  [2.x.65]    arguments in  [2.x.66]       [2.x.67]  cell An iterator to the first cell adjacent to the interface.    [2.x.68]  face_no An integer identifying which face of the first cell the     interface is on.    [2.x.69]  sub_face_no An integer identifying the subface (child) of the     face (identified by the previous two arguments) that the interface     corresponds to. If equal to  [2.x.70]  then the     interface is considered to be the entire face.    [2.x.71]  cell_neighbor An iterator to the second cell adjacent to     the interface. The type of this iterator does not have to equal that     of `cell`, but must be convertible to it. This allows using an     active cell iterator for `cell`, and `cell->neighbor(f)` for     `cell_neighbor`, since the return type of `cell->neighbor(f)` is     simply a cell iterator (not necessarily an active cell iterator).    [2.x.72]  face_no_neighbor Like `face_no`, just for the neighboring     cell.    [2.x.73]  sub_face_no_neighbor Like `sub_face_no`, just for the     neighboring cell.  
+* [0.x.40]*
+   Re-initialize this object to be used on an interface given by a single face    [2.x.74]  of the cell  [2.x.75]  This is useful to use FEInterfaceValues   on boundaries of the domain.     As a consequence, members like jump() will assume a value of zero for the   values on the "other" side. Note that no sub_face_number is needed as a   boundary face can not neighbor a finer cell.     After calling this function at_boundary() will return true.  
+* [0.x.41]*
+   Return a reference to the FEFaceValues or FESubfaceValues object   of the specified cell of the interface.     The  [2.x.76]  is either 0 or 1 and corresponds to the cell index   returned by interface_dof_to_cell_and_dof_index().  
+* [0.x.42]*
+   Constant reference to the selected mapping object.  
+* [0.x.43]*
+   Constant reference to the selected finite element object.  
+* [0.x.44]*
+   Return a reference to the quadrature object in use.  
+* [0.x.45]*
+   Return the update flags set.  
+* [0.x.46]*
+    [2.x.77]  Functions to query information on a given interface    [2.x.78]   
+* [0.x.47]*
+   Return if the current interface is a boundary face or an internal   face with two adjacent cells.     See the corresponding reinit() functions for details.  
+* [0.x.48]*
+   Mapped quadrature weight. This value equals the   mapped surface element times the weight of the quadrature   point.     You can think of the quantity returned by this function as the   surface element  [2.x.79]  in the integral that we implement here by   quadrature.      [2.x.80]   
+* [0.x.49]*
+   Return the vector of JxW values for each quadrature point.      [2.x.81]   
+* [0.x.50]*
+   Return the normal vector of the interface in each quadrature point.     The return value is identical to get_fe_face_values(0).get_normal_vectors()   and therefore, are outside normal vectors from the perspective of the   first cell of this interface.      [2.x.82]   
+* [0.x.51]*
+   Return a reference to the quadrature points in real space.      [2.x.83]   
+* [0.x.52]*
+   Return the number of DoFs (or shape functions) on the current interface.    
+*  [2.x.84]  This number is only available after a call to reinit() and can change   from one call to reinit() to the next. For example, on a boundary interface   it is equal to the number of dofs of the single FEFaceValues object, while   it is twice that for an interior interface for a DG element. For a   continuous element, it is slightly smaller because the two cells on the   interface share some of the dofs.  
+* [0.x.53]*
+   Return the set of joint DoF indices. This includes indices from both cells.   If reinit was called with an active cell iterator, the indices are based   on the active indices (returned by  [2.x.85]  ),   in case of level cell (that is, if is_level_cell() return true )   the mg dof indices are returned.    
+*  [2.x.86]  This function is only available after a call to reinit() and can   change from one call to reinit() to the next.  
+* [0.x.54]*
+   Convert an interface dof index into the corresponding local DoF indices of   the two cells. If an interface DoF is only active on one of the   cells, the other index will be  [2.x.87]      For discontinuous finite elements each interface dof will correspond to   exactly one DoF index.    
+*  [2.x.88]  This function is only available after a call to reinit() and can   change from one call to reinit() to the next.  
+* [0.x.55]*
+   Return the normal in a given quadrature point.     The normal points in outwards direction as seen from the first cell of   this interface.      [2.x.89]   
+* [0.x.56]*
+    [2.x.90]   
+* [0.x.57]*
+    [2.x.91]  Functions to evaluate data of the shape functions    [2.x.92]   
+* [0.x.58]*
+   Return component  [2.x.93]  of the value of the shape function   with interface dof index  [2.x.94]  in   quadrature point  [2.x.95]      The argument  [2.x.96]  selects between the value on cell 0 (here,  [2.x.97]    and cell 1 (there,  [2.x.98]  You can also interpret it as "upstream" ( [2.x.99]    and "downstream" ( [2.x.100]  as defined by the direction of the normal   vector   in this quadrature point. If  [2.x.101]  is true, the shape   functions from the first cell of the interface is used.     In other words, this function returns the limit of the value of the shape   function in the given quadrature point when approaching it from one of the   two cells of the interface.    
+*  [2.x.102]  This function is typically used to pick the upstream or downstream   value based on a direction. This can be achieved by using    [2.x.103]  as the first argument of this   function.  
+* [0.x.59]*
+   Return the jump  [2.x.104]  on the   interface   for the shape function  [2.x.105]  at the quadrature point    [2.x.106]  of component  [2.x.107]      Note that one can define the jump in   different ways (the value "there" minus the value "here", or the other way   around; both are used in the finite element literature). The definition   here uses "value here minus value there", as seen from the first cell.     If this is a boundary face (at_boundary() returns true), then    [2.x.108] .  
+* [0.x.60]*
+   Return the average  [2.x.109]  on the interface   for the shape function  [2.x.110]  at the quadrature point    [2.x.111]  of component  [2.x.112]      If this is a boundary face (at_boundary() returns true), then    [2.x.113] .  
+* [0.x.61]*
+   Return the average of the gradient  [2.x.114]  on the interface   for the shape function  [2.x.115]  at the quadrature point  [2.x.116]    q_point of component  [2.x.117]      If this is a boundary face (at_boundary() returns true), then    [2.x.118] .  
+* [0.x.62]*
+   Return the average of the Hessian  [2.x.119]  on the interface   for the shape function  [2.x.120]  at the quadrature point  [2.x.121]    q_point of component  [2.x.122]      If this is a boundary face (at_boundary() returns true), then    [2.x.123] .  
+* [0.x.63]*
+   Return the jump in the gradient  [2.x.124]  on the interface for the shape function  [2.x.125]    interface_dof_index at the quadrature point  [2.x.126]  of component  [2.x.127]    component.     If this is a boundary face (at_boundary() returns true), then    [2.x.128] .  
+* [0.x.64]*
+   Return the jump in the Hessian  [2.x.129]  on the interface for the   shape function    [2.x.130]  at the quadrature point  [2.x.131]  of component    [2.x.132]      If this is a boundary face (at_boundary() returns true), then    [2.x.133] .  
+* [0.x.65]*
+   Return the jump in the third derivative  [2.x.134]  on the interface for the   shape function  [2.x.135]  at the quadrature point  [2.x.136]  of   component  [2.x.137]      If this is a boundary face (at_boundary() returns true), then    [2.x.138] .  
+* [0.x.66]*
+   Create a view of the current FEInterfaceValues object that represents a   particular scalar component of the possibly vector-valued finite element.   The concept of views is explained in the documentation of the namespace   FEValuesViews.  
+* [0.x.67]*
+   Create a view of the current FEInterfaceValues object that represents a set   of  [2.x.139]  scalar components (i.e. a vector) of the vector-valued   finite element. The concept of views is explained in the documentation of   the namespace FEValuesViews.  
+* [0.x.68]*
+    [2.x.140]   
+* [0.x.69]*
+   The list of DoF indices for the current interface, filled in reinit().  
+* [0.x.70]*
+   The mapping from interface dof to the two local dof indices of the   FeFaceValues objects. If an interface DoF is only active on one of the   cells, the other one will have  [2.x.141]   
+* [0.x.71]*
+   The FEFaceValues object for the current cell.  
+* [0.x.72]*
+   The FEFaceValues object for the current cell if the cell is refined.  
+* [0.x.73]*
+   The FEFaceValues object for the neighboring cell.  
+* [0.x.74]*
+   The FEFaceValues object for the neighboring cell if the cell is refined.  
+* [0.x.75]*
+   Pointer to internal_fe_face_values or internal_fe_subface_values,   respectively as determined in reinit().  
+* [0.x.76]*
+   Pointer to internal_fe_face_values_neighbor,   internal_fe_subface_values_neighbor, or nullptr, respectively   as determined in reinit().  
+* [0.x.77] Make the view classes friends of this class, since they access internal   data.  
+* [0.x.78]

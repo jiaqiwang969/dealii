@@ -1,0 +1,29 @@
+[0.x.0]*
+  
+*  [2.x.0]    trace.    
+*  [2.x.1]   
+* [0.x.1]*
+     Cell matrix for divergence. The derivative is on the trial function.     [1.x.0] This is the strong     divergence operator and the trial space should be at least     [1.x.1]<sup>div</sup>. The test functions may be discontinuous.    
+* [0.x.2]*
+     The residual of the divergence operator in strong form. [1.x.2] This is the strong divergence operator     and the trial space should be at least [1.x.3]<sup>div</sup>. The test     functions may be discontinuous.         The function cell_matrix() is the Frechet derivative of this function     with respect to the test functions.    
+* [0.x.3]*
+     The residual of the divergence operator in weak form. [1.x.4] This is the weak divergence operator     and the test space should be at least [1.x.5]<sup>1</sup>. The trial     functions may be discontinuous.          [2.x.2]  Verify: The function cell_matrix() is the Frechet derivative of     this function with respect to the test functions.    
+* [0.x.4]*
+     Cell matrix for gradient. The derivative is on the trial function. [1.x.6]         This is the strong gradient and the trial space should be at least in     [1.x.7]<sup>1</sup>. The test functions can be discontinuous.    
+* [0.x.5]*
+     The residual of the gradient operator in strong form. [1.x.8] This is the strong gradient operator     and the trial space should be at least [1.x.9]<sup>1</sup>. The test     functions may be discontinuous.         The function gradient_matrix() is the Frechet derivative of this     function with respect to the test functions.    
+* [0.x.6]*
+     The residual of the gradient operator in weak form. [1.x.10] This is the weak gradient operator and     the test space should be at least [1.x.11]<sup>div</sup>. The trial     functions may be discontinuous.          [2.x.3]  Verify: The function gradient_matrix() is the Frechet derivative     of this function with respect to the test functions.    
+* [0.x.7]*
+     The trace of the divergence operator, namely the product of the normal     component of the vector valued trial space and the test space.     [1.x.12]    
+* [0.x.8]*
+     The trace of the divergence operator, namely the product of the normal     component of the vector valued trial space and the test space.     [1.x.13]    
+* [0.x.9]*
+     The trace of the gradient operator, namely the product of the normal     component of the vector valued test space and the trial space.     [1.x.14]    
+* [0.x.10]*
+     The trace of the divergence operator, namely the product of the jump of     the normal component of the vector valued trial function and the mean     value of the test function.     [1.x.15]    
+* [0.x.11]*
+     The jump of the normal component     [1.x.16]    
+* [0.x.12]*
+     The [1.x.17]<sup>2</sup>-norm of the divergence over the quadrature set     determined by the FEValuesBase object.         The vector is expected to consist of dim vectors of length equal to the     number of quadrature points. The number of components of the finite     element has to be equal to the space dimension.    
+* [0.x.13]

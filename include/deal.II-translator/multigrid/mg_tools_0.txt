@@ -1,0 +1,38 @@
+[0.x.0]*
+ This is a collection of functions operating on, and manipulating the numbers of degrees of freedom in a multilevel triangulation. It is similar in purpose and function to the  [2.x.0]  namespace, but operates on levels of DoFHandler objects. See there and the documentation of the member functions for more information.
+
+* 
+* [0.x.1]*
+   Compute row length vector for multilevel methods.  
+* [0.x.2]*
+   Compute row length vector for multilevel methods with optimization for   block couplings.  
+* [0.x.3]*
+   Write the sparsity structure of the matrix belonging to the specified  [2.x.1]    level. The sparsity pattern is not compressed, so before creating the   actual matrix you have to compress the matrix yourself, using    [2.x.2]      The optional AffineConstraints argument allows to define constraints of   the level matrices like Dirichlet boundary conditions. Note that there is   need to consider hanging nodes on the typical level matrices, since only   one level is considered. See  [2.x.3]  for more   details about the arguments.  
+* [0.x.4]*
+   Make a sparsity pattern including fluxes of discontinuous Galerkin   methods.    [2.x.4]     [2.x.5]    and    [2.x.6]   
+* [0.x.5]*
+   Create sparsity pattern for the fluxes at refinement edges. The matrix   maps a function of the fine level space  [2.x.7]  to the coarser space.     make_flux_sparsity_pattern()  
+* [0.x.6]*
+   This function does the same as the other with the same name, but it gets   two additional coefficient matrices. A matrix entry will only be   generated for two basis functions, if there is a non-zero entry linking   their associated components in the coefficient matrix.     There is one matrix for couplings in a cell and one for the couplings   occurring in fluxes.  
+* [0.x.7]*
+   Create sparsity pattern for the fluxes at refinement edges. The matrix   maps a function of the fine level space  [2.x.8]  to the coarser space.   This is the version restricting the pattern to the elements actually   needed.     make_flux_sparsity_pattern()  
+* [0.x.8]*
+   Create sparsity pattern for interface_in/out matrices used in a multigrid   computation. These matrices contain an entry representing the coupling of   degrees of freedom on a refinement edge to those not on the refinement edge   of a certain level.  
+* [0.x.9]*
+   Count the dofs block-wise on each level.     Result is a vector containing for each level a vector containing the   number of dofs for each block (access is <tt>result[level][block]</tt>).  
+* [0.x.10]*
+   Count the dofs component-wise on each level.     Result is a vector containing for each level a vector containing the   number of dofs for each component (access is   <tt>result[level][component]</tt>).  
+* [0.x.11]*
+   Generate a list of those degrees of freedom at the boundary of the domain   that should be eliminated from the matrix because they will be   constrained by Dirichlet boundary conditions.     This is the multilevel equivalent of    [2.x.9]  but since the multilevel method   does not have its own right hand side, the function values returned by   the function object that is part of the function_map argument are   ignored.      [2.x.10]  <tt>boundary_indices</tt> is a vector which on return contains all   indices of degrees of freedom for each level that are at the part of the   boundary identified by the function_map argument. Its length has to match   the number of levels in the dof handler object.     Previous content in  [2.x.11]  is not overwritten,   but added to.  
+* [0.x.12]*
+   The same function as above, but return an IndexSet rather than a    [2.x.12]  int> on each level.     Previous content in  [2.x.13]  is not overwritten,   but added to.  
+* [0.x.13]*
+   The same function as above, but return an IndexSet rather than a    [2.x.14]  int> on each level and use a  [2.x.15]  of boundary_ids   as input.     Previous content in  [2.x.16]  is not overwritten, but added to.  
+* [0.x.14]*
+   For each level in a multigrid hierarchy, produce an IndexSet that   indicates which of the degrees of freedom are along interfaces of this   level to cells that only exist on coarser levels.  
+* [0.x.15]*
+   Return the highest possible level that can be used as the coarsest level in   a Multigrid computation, that is, the highest level in the hierarchy whose   mesh covers the entire domain. This corresponds to the minimum level of a   cell on the active mesh. Since each processor only has a local view of the   mesh, each processor must call this function. Note that this is a global   minimum over the entire mesh and therefore each processor will return the   same value.  
+* [0.x.16]*
+   Return the imbalance of the parallel distribution of the multigrid   mesh hierarchy. Ideally this value is equal to 1 (every processor owns   the same number of cells on each level, approximately true for most   globally refined meshes). Values greater than 1 estimate the slowdown   one should see in a geometric multigrid v-cycle as compared with the same   computation on a perfectly distributed mesh hierarchy.     This function is a collective MPI call between all ranks of the   Triangulation and therefore needs to be called from all ranks.    
+*  [2.x.17]  This function requires that    [2.x.18]    is true, which can be controlled by setting the   construct_multigrid_hierarchy flag when constructing the   Triangulation.  
+* [0.x.17]

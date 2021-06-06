@@ -99,83 +99,77 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="matrix__free_2fe__point__evaluation_8h_source.html">deal.II/matrix_free/fe_point_evaluation.h</a>&gt;</code></p>
-<div class="dynheader">
-Inheritance diagram for internal::FEPointEvaluation::EvaluatorTypeTraits&lt; dim, n_components, Number &gt;:</div>
-<div class="dyncontent">
-<div class="center"><!-- SVG 0 -->
-</div>
-<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a706eb0d4af4af05291757f6441d3d09c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number &gt;</td></tr>
+<tr class="memitem:a706eb0d4af4af05291757f6441d3d09c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;</td></tr>
 <tr class="separator:a706eb0d4af4af05291757f6441d3d09c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ac915f9fa6235d29613c13414f04f5c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number &gt; &gt;</td></tr>
+<tr class="memitem:a9ac915f9fa6235d29613c13414f04f5c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &gt;</td></tr>
 <tr class="separator:a9ac915f9fa6235d29613c13414f04f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a706eb0d4af4af05291757f6441d3d09c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number &gt;</td></tr>
+<tr class="memitem:a706eb0d4af4af05291757f6441d3d09c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;</td></tr>
 <tr class="separator:a706eb0d4af4af05291757f6441d3d09c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ac915f9fa6235d29613c13414f04f5c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number &gt; &gt;</td></tr>
+<tr class="memitem:a9ac915f9fa6235d29613c13414f04f5c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &gt;</td></tr>
 <tr class="separator:a9ac915f9fa6235d29613c13414f04f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a706eb0d4af4af05291757f6441d3d09c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number &gt;</td></tr>
+<tr class="memitem:a706eb0d4af4af05291757f6441d3d09c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;</td></tr>
 <tr class="separator:a706eb0d4af4af05291757f6441d3d09c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ac915f9fa6235d29613c13414f04f5c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number &gt; &gt;</td></tr>
+<tr class="memitem:a9ac915f9fa6235d29613c13414f04f5c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> = <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &gt;</td></tr>
 <tr class="separator:a9ac915f9fa6235d29613c13414f04f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aa5287039e5718b6e7f2a3478ee203ded"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#aa5287039e5718b6e7f2a3478ee203ded">read_value</a> (const Number vector_entry, const unsigned <a class="el" href="classint.html">int</a> component, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:aa5287039e5718b6e7f2a3478ee203ded"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#aa5287039e5718b6e7f2a3478ee203ded">read_value</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number vector_entry, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:aa5287039e5718b6e7f2a3478ee203ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a804e05e9afefe0e411f46060ee2c8d68"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a804e05e9afefe0e411f46060ee2c8d68">write_value</a> (Number &amp;vector_entry, const unsigned <a class="el" href="classint.html">int</a> component, const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:a804e05e9afefe0e411f46060ee2c8d68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a804e05e9afefe0e411f46060ee2c8d68">write_value</a> (Number &amp;vector_entry, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a804e05e9afefe0e411f46060ee2c8d68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f0a627436551a5dd01490278155f08a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a4f0a627436551a5dd01490278155f08a">set_gradient</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;result)</td></tr>
+<tr class="memitem:a4f0a627436551a5dd01490278155f08a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a4f0a627436551a5dd01490278155f08a">set_gradient</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a4f0a627436551a5dd01490278155f08a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acca3a70e36e25c0363c1b268aae99cdb"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#acca3a70e36e25c0363c1b268aae99cdb">get_gradient</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;result)</td></tr>
+<tr class="memitem:acca3a70e36e25c0363c1b268aae99cdb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#acca3a70e36e25c0363c1b268aae99cdb">get_gradient</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:acca3a70e36e25c0363c1b268aae99cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a102c89c892c392c01fe66207933cd157"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a102c89c892c392c01fe66207933cd157">set_value</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:a102c89c892c392c01fe66207933cd157"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a102c89c892c392c01fe66207933cd157">set_value</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a102c89c892c392c01fe66207933cd157"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a048d9504b408c6bbce9e41595ffb491c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a048d9504b408c6bbce9e41595ffb491c">get_value</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:a048d9504b408c6bbce9e41595ffb491c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a048d9504b408c6bbce9e41595ffb491c">get_value</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a048d9504b408c6bbce9e41595ffb491c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3dd886950d9c29df11b0bf69431e257f"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:a3dd886950d9c29df11b0bf69431e257f"><td class="memTemplItemLeft" align="right" valign="top">static Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a3dd886950d9c29df11b0bf69431e257f">access</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> component)</td></tr>
+<tr class="memitem:a3dd886950d9c29df11b0bf69431e257f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a3dd886950d9c29df11b0bf69431e257f">access</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>)</td></tr>
 <tr class="separator:a3dd886950d9c29df11b0bf69431e257f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memTemplItemLeft" align="right" valign="top">static const Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a27d7c00bdba430bd3ba20a424488f6fb">access</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> component)</td></tr>
+<tr class="memitem:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a27d7c00bdba430bd3ba20a424488f6fb">access</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>)</td></tr>
 <tr class="separator:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5287039e5718b6e7f2a3478ee203ded"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#aa5287039e5718b6e7f2a3478ee203ded">read_value</a> (const Number vector_entry, const unsigned <a class="el" href="classint.html">int</a> component, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:aa5287039e5718b6e7f2a3478ee203ded"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#aa5287039e5718b6e7f2a3478ee203ded">read_value</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number vector_entry, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:aa5287039e5718b6e7f2a3478ee203ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a804e05e9afefe0e411f46060ee2c8d68"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a804e05e9afefe0e411f46060ee2c8d68">write_value</a> (Number &amp;vector_entry, const unsigned <a class="el" href="classint.html">int</a> component, const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:a804e05e9afefe0e411f46060ee2c8d68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a804e05e9afefe0e411f46060ee2c8d68">write_value</a> (Number &amp;vector_entry, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a804e05e9afefe0e411f46060ee2c8d68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f0a627436551a5dd01490278155f08a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a4f0a627436551a5dd01490278155f08a">set_gradient</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;result)</td></tr>
+<tr class="memitem:a4f0a627436551a5dd01490278155f08a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a4f0a627436551a5dd01490278155f08a">set_gradient</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a4f0a627436551a5dd01490278155f08a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acca3a70e36e25c0363c1b268aae99cdb"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#acca3a70e36e25c0363c1b268aae99cdb">get_gradient</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;result)</td></tr>
+<tr class="memitem:acca3a70e36e25c0363c1b268aae99cdb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#acca3a70e36e25c0363c1b268aae99cdb">get_gradient</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:acca3a70e36e25c0363c1b268aae99cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a102c89c892c392c01fe66207933cd157"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a102c89c892c392c01fe66207933cd157">set_value</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:a102c89c892c392c01fe66207933cd157"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a102c89c892c392c01fe66207933cd157">set_value</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a102c89c892c392c01fe66207933cd157"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a048d9504b408c6bbce9e41595ffb491c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a048d9504b408c6bbce9e41595ffb491c">get_value</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:a048d9504b408c6bbce9e41595ffb491c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a048d9504b408c6bbce9e41595ffb491c">get_value</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a048d9504b408c6bbce9e41595ffb491c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3dd886950d9c29df11b0bf69431e257f"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:a3dd886950d9c29df11b0bf69431e257f"><td class="memTemplItemLeft" align="right" valign="top">static Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a3dd886950d9c29df11b0bf69431e257f">access</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> component)</td></tr>
+<tr class="memitem:a3dd886950d9c29df11b0bf69431e257f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a3dd886950d9c29df11b0bf69431e257f">access</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>)</td></tr>
 <tr class="separator:a3dd886950d9c29df11b0bf69431e257f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memTemplItemLeft" align="right" valign="top">static const Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a27d7c00bdba430bd3ba20a424488f6fb">access</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> component)</td></tr>
+<tr class="memitem:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a27d7c00bdba430bd3ba20a424488f6fb">access</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>)</td></tr>
 <tr class="separator:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5287039e5718b6e7f2a3478ee203ded"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#aa5287039e5718b6e7f2a3478ee203ded">read_value</a> (const Number vector_entry, const unsigned <a class="el" href="classint.html">int</a> component, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:aa5287039e5718b6e7f2a3478ee203ded"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#aa5287039e5718b6e7f2a3478ee203ded">read_value</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number vector_entry, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:aa5287039e5718b6e7f2a3478ee203ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a804e05e9afefe0e411f46060ee2c8d68"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a804e05e9afefe0e411f46060ee2c8d68">write_value</a> (Number &amp;vector_entry, const unsigned <a class="el" href="classint.html">int</a> component, const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:a804e05e9afefe0e411f46060ee2c8d68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a804e05e9afefe0e411f46060ee2c8d68">write_value</a> (Number &amp;vector_entry, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a804e05e9afefe0e411f46060ee2c8d68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f0a627436551a5dd01490278155f08a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a4f0a627436551a5dd01490278155f08a">set_gradient</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;result)</td></tr>
+<tr class="memitem:a4f0a627436551a5dd01490278155f08a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a4f0a627436551a5dd01490278155f08a">set_gradient</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a4f0a627436551a5dd01490278155f08a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acca3a70e36e25c0363c1b268aae99cdb"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#acca3a70e36e25c0363c1b268aae99cdb">get_gradient</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;result)</td></tr>
+<tr class="memitem:acca3a70e36e25c0363c1b268aae99cdb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#acca3a70e36e25c0363c1b268aae99cdb">get_gradient</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:acca3a70e36e25c0363c1b268aae99cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a102c89c892c392c01fe66207933cd157"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a102c89c892c392c01fe66207933cd157">set_value</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:a102c89c892c392c01fe66207933cd157"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a102c89c892c392c01fe66207933cd157">set_value</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a102c89c892c392c01fe66207933cd157"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a048d9504b408c6bbce9e41595ffb491c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a048d9504b408c6bbce9e41595ffb491c">get_value</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> vector_lane, const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;result)</td></tr>
+<tr class="memitem:a048d9504b408c6bbce9e41595ffb491c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a048d9504b408c6bbce9e41595ffb491c">get_value</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> vector_lane, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;<a class="el" href="full__matrix__0_8txt.html#a7c638b6d25627b7e43d5ce877e3ef4e3">result</a>)</td></tr>
 <tr class="separator:a048d9504b408c6bbce9e41595ffb491c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3dd886950d9c29df11b0bf69431e257f"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:a3dd886950d9c29df11b0bf69431e257f"><td class="memTemplItemLeft" align="right" valign="top">static Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a3dd886950d9c29df11b0bf69431e257f">access</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> component)</td></tr>
+<tr class="memitem:a3dd886950d9c29df11b0bf69431e257f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a3dd886950d9c29df11b0bf69431e257f">access</a> (<a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>)</td></tr>
 <tr class="separator:a3dd886950d9c29df11b0bf69431e257f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memTemplParams" colspan="2">template&lt;typename Number2 &gt; </td></tr>
-<tr class="memitem:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memTemplItemLeft" align="right" valign="top">static const Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a27d7c00bdba430bd3ba20a424488f6fb">access</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;value, const unsigned <a class="el" href="classint.html">int</a> component)</td></tr>
+<tr class="memitem:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number2 &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a27d7c00bdba430bd3ba20a424488f6fb">access</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;value, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="vector__tools__boundary__0_8txt.html#ad5d74707449246401c828f2ad820ab69">component</a>)</td></tr>
 <tr class="separator:a27d7c00bdba430bd3ba20a424488f6fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -195,7 +189,7 @@ struct internal::FEPointEvaluation::EvaluatorTypeTraits&lt; dim, n_components, N
 template&lt;int dim, int n_components, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, n_components, Number&gt;</td>
+          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -213,7 +207,7 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
 template&lt;int dim, int n_components, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, n_components, <a class="el" href="classTensor.html">Tensor</a>&lt;1, dim, Number&gt; &gt;</td>
+          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -231,7 +225,7 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
 template&lt;int dim, int n_components, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, n_components, Number&gt;</td>
+          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -249,7 +243,7 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
 template&lt;int dim, int n_components, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, n_components, <a class="el" href="classTensor.html">Tensor</a>&lt;1, dim, Number&gt; &gt;</td>
+          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -267,7 +261,7 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
 template&lt;int dim, int n_components, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, n_components, Number&gt;</td>
+          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -285,7 +279,7 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
 template&lt;int dim, int n_components, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, n_components, <a class="el" href="classTensor.html">Tensor</a>&lt;1, dim, Number&gt; &gt;</td>
+          <td class="memname">using <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::<a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> =  <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -307,15 +301,15 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::read_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::read_value </td>
           <td>(</td>
-          <td class="paramtype">const Number&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number&#160;</td>
           <td class="paramname"><em>vector_entry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>, </td>
         </tr>
         <tr>
@@ -353,7 +347,7 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::write_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::write_value </td>
           <td>(</td>
           <td class="paramtype">Number &amp;&#160;</td>
           <td class="paramname"><em>vector_entry</em>, </td>
@@ -361,13 +355,13 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
           <td class="paramname"><em>result</em>&#160;</td>
         </tr>
         <tr>
@@ -399,15 +393,15 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::set_gradient </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::set_gradient </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
@@ -445,21 +439,21 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::get_gradient </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::get_gradient </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;&#160;</td>
           <td class="paramname"><em>result</em>&#160;</td>
         </tr>
         <tr>
@@ -491,15 +485,15 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::set_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::set_value </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
@@ -537,21 +531,21 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::get_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::get_value </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
           <td class="paramname"><em>result</em>&#160;</td>
         </tr>
         <tr>
@@ -585,15 +579,15 @@ template&lt;typename Number2 &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::access </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::access </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>&#160;</td>
         </tr>
         <tr>
@@ -627,15 +621,15 @@ template&lt;typename Number2 &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static const Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::access </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::access </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>&#160;</td>
         </tr>
         <tr>
@@ -667,15 +661,15 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::read_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::read_value </td>
           <td>(</td>
-          <td class="paramtype">const Number&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number&#160;</td>
           <td class="paramname"><em>vector_entry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>, </td>
         </tr>
         <tr>
@@ -713,7 +707,7 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::write_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::write_value </td>
           <td>(</td>
           <td class="paramtype">Number &amp;&#160;</td>
           <td class="paramname"><em>vector_entry</em>, </td>
@@ -721,13 +715,13 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
           <td class="paramname"><em>result</em>&#160;</td>
         </tr>
         <tr>
@@ -759,15 +753,15 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::set_gradient </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::set_gradient </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
@@ -805,21 +799,21 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::get_gradient </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::get_gradient </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;&#160;</td>
           <td class="paramname"><em>result</em>&#160;</td>
         </tr>
         <tr>
@@ -851,15 +845,15 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::set_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::set_value </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
@@ -897,21 +891,21 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::get_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::get_value </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
           <td class="paramname"><em>result</em>&#160;</td>
         </tr>
         <tr>
@@ -945,15 +939,15 @@ template&lt;typename Number2 &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::access </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::access </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>&#160;</td>
         </tr>
         <tr>
@@ -987,15 +981,15 @@ template&lt;typename Number2 &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static const Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::access </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::access </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>&#160;</td>
         </tr>
         <tr>
@@ -1027,15 +1021,15 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::read_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::read_value </td>
           <td>(</td>
-          <td class="paramtype">const Number&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number&#160;</td>
           <td class="paramname"><em>vector_entry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>, </td>
         </tr>
         <tr>
@@ -1073,7 +1067,7 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::write_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::write_value </td>
           <td>(</td>
           <td class="paramtype">Number &amp;&#160;</td>
           <td class="paramname"><em>vector_entry</em>, </td>
@@ -1081,13 +1075,13 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
           <td class="paramname"><em>result</em>&#160;</td>
         </tr>
         <tr>
@@ -1119,15 +1113,15 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::set_gradient </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::set_gradient </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
@@ -1165,21 +1159,21 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::get_gradient </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::get_gradient </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a9ac915f9fa6235d29613c13414f04f5c">gradient_type</a> &amp;&#160;</td>
           <td class="paramname"><em>result</em>&#160;</td>
         </tr>
         <tr>
@@ -1211,15 +1205,15 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::set_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::set_value </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
@@ -1257,21 +1251,21 @@ template&lt;int dim, int n_components, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::get_value </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> void <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::get_value </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, <a class="el" href="classVectorizedArray.html">VectorizedArray</a>&lt; Number &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>vector_lane</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html#a706eb0d4af4af05291757f6441d3d09c">value_type</a> &amp;&#160;</td>
           <td class="paramname"><em>result</em>&#160;</td>
         </tr>
         <tr>
@@ -1305,15 +1299,15 @@ template&lt;typename Number2 &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::access </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::access </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>&#160;</td>
         </tr>
         <tr>
@@ -1347,15 +1341,15 @@ template&lt;typename Number2 &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static const Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; dim, n_components, Number &gt;::access </td>
+          <td class="memname"><a class="el" href="sparsity__0_8txt.html#a9e8da5812fd9a4b6f626664964de293c">static</a> <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number2&amp; <a class="el" href="structinternal_1_1FEPointEvaluation_1_1EvaluatorTypeTraits.html">internal::FEPointEvaluation::EvaluatorTypeTraits</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number &gt;::access </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, n_components, Number2 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="fe__evaluation__0_8txt.html#ab4f278a625354b5a35c00f7e705ebf2f">n_components</a>, Number2 &gt; &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>component</em>&#160;</td>
         </tr>
         <tr>

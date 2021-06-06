@@ -1,0 +1,243 @@
+[0.x.0]*
+ A class that represents a subset of indices among a larger set. For example, it can be used to denote the set of degrees of freedom within the range  [2.x.0]  that belongs to a particular subdomain, or those among all degrees of freedom that are stored on a particular processor in a distributed parallel computation.
+*  This class can represent a collection of half-open ranges of indices as well as individual elements. For practical purposes it also stores the overall range these indices can assume. In other words, you need to specify the size of the index space  [2.x.1]  of which objects of this class are a subset.
+*  There are two ways to iterate over the IndexSets: First, begin() and end() allow iteration over individual indices in the set. Second, begin_interval() and end_interval() allow iteration over the half-open ranges as described above.
+*  The data structures used in this class along with a rationale can be found in the  [2.x.2]  "Distributed Computing paper".
+
+* 
+* [0.x.1]*
+    [2.x.3]  is the type used for storing the size and the individual   entries in the IndexSet.  
+* [0.x.2]*
+   One can see an IndexSet as a container of size size(), where the elements   of the containers are bool values that are either false or true,   depending on whether a particular index is an element of the IndexSet or   not. In other words, an IndexSet is a bit like a vector in which the   elements we store are booleans. In this view, the correct local alias   indicating the type of the elements of the vector would then be  [2.x.4]      On the other hand,  [2.x.5]  has the disadvantage that it is not a   numerical type that, for example, allows multiplication with a  [2.x.6]    In other words, one can not easily use a vector of booleans in a place   where other vectors are allowed. Consequently, we declare the type of the   elements of such a vector as a signed integer. This uses the fact that in   the C++ language, booleans are implicitly convertible to integers. In   other words, declaring the type of the elements of the vector as a signed   integer is only a small lie, but it is a useful one.  
+* [0.x.3]*
+   Default constructor.  
+* [0.x.4]*
+   Constructor that also sets the overall size of the index range.  
+* [0.x.5]*
+   Copy constructor.  
+* [0.x.6]*
+   Copy assignment operator.  
+* [0.x.7]*
+   Move constructor. Create a new IndexSet by transferring the internal data   of the input set.  
+* [0.x.8]*
+   Move assignment operator. Transfer the internal data of the input set into   the current one.  
+* [0.x.9]*
+   Constructor from a Trilinos Epetra_BlockMap.  
+* [0.x.10]*
+   Remove all indices from this index set. The index set retains its size,   however.  
+* [0.x.11]*
+   Set the maximal size of the indices upon which this object operates.     This function can only be called if the index set does not yet contain   any elements.  This can be achieved by calling clear(), for example.  
+* [0.x.12]*
+   Return the size of the index space of which this index set is a subset   of.     Note that the result is not equal to the number of indices within this   set. The latter information is returned by n_elements().  
+* [0.x.13]*
+   Add the half-open range  [2.x.7]  to the set of indices   represented by this class.    [2.x.8]  begin The first element of the range to be added.    [2.x.9]  end The past-the-end element of the range to be added.  
+* [0.x.14]*
+   Add an individual index to the set of indices.  
+* [0.x.15]*
+   Add a whole set of indices described by dereferencing every element of   the iterator range  [2.x.10] .      [2.x.11]  begin Iterator to the first element of range of indices to be   added    [2.x.12]  end The past-the-end iterator for the range of elements to be   added.  [2.x.13]  The condition  [2.x.14]  needs to be satisfied.  
+* [0.x.16]*
+   Add the given IndexSet  [2.x.15]  to the current one, constructing the   union ofthis and  [2.x.16]      If the  [2.x.17]  argument is nonzero, then every index in  [2.x.18]  is   shifted by  [2.x.19]  before being added to the current index set. This   allows to construct, for example, one index set from several others that   are supposed to represent index sets corresponding to different ranges   (e.g., when constructing the set of nonzero entries of a block vector   from the sets of nonzero elements of the individual blocks of a vector).     This function will generate an exception if any of the (possibly shifted)   indices of the  [2.x.20]  index set lie outside the range    [2.x.21]  represented by the current object.  
+* [0.x.17]*
+   Return whether the specified index is an element of the index set.  
+* [0.x.18]*
+   Return whether the index set stored by this object defines a contiguous   range. This is true also if no indices are stored at all.  
+* [0.x.19]*
+   Return whether the index set stored by this object contains no elements.   This is similar, but faster than checking  [2.x.22] .  
+* [0.x.20]*
+   Return whether the IndexSets are ascending with respect to MPI process   number and 1:1, i.e., each index is contained in exactly one IndexSet   (among those stored on the different processes), each process stores   contiguous subset of indices, and the index set on process  [2.x.23]  starts   at the index one larger than the last one stored on process  [2.x.24] .   In case there is only one MPI process, this just means that the IndexSet   is complete.  
+* [0.x.21]*
+   Return the number of elements stored in this index set.  
+* [0.x.22]*
+   Return the global index of the local index with number  [2.x.25]    stored in this index set.  [2.x.26]  obviously needs to be less than   n_elements().  
+* [0.x.23]*
+   Return the how-manyth element of this set (counted in ascending order)  [2.x.27]    global_index is.  [2.x.28]  needs to be less than the size(). This   function returns  [2.x.29]  if the index  [2.x.30]  is not actually   a member of this index set, i.e. if is_element(global_index) is false.  
+* [0.x.24]*
+   Each index set can be represented as the union of a number of contiguous   intervals of indices, where if necessary intervals may only consist of   individual elements to represent isolated members of the index set.     This function returns the minimal number of such intervals that are   needed to represent the index set under consideration.  
+* [0.x.25]*
+   This function returns the local index of the beginning of the largest   range.     In other words, the return value is nth_index_in_set(x), where x is the   first index of the largest contiguous range of indices in the   IndexSet. The return value is therefore equal to the number of elements   in the set that come before the largest range.     This call assumes that the IndexSet is nonempty.  
+* [0.x.26]*
+   Compress the internal representation by merging individual elements with   contiguous ranges, etc. This function does not have any external effect.  
+* [0.x.27]*
+   Comparison for equality of index sets. This operation is only allowed if   the size of the two sets is the same (though of course they do not have   to have the same number of indices).  
+* [0.x.28]*
+   Comparison for inequality of index sets. This operation is only allowed   if the size of the two sets is the same (though of course they do not   have to have the same number of indices).  
+* [0.x.29]*
+   Return the intersection of the current index set and the argument given,   i.e. a set of indices that are elements of both index sets. The two index   sets must have the same size (though of course they do not have to have   the same number of indices).  
+* [0.x.30]*
+   This command takes an interval <tt>[begin, end)</tt> and returns the   intersection of the current index set with the interval, shifted to the   range <tt>[0, end-begin)</tt>.     In other words, the result of this operation is the intersection of the   set represented by the current object and the interval <tt>[begin,   end)</tt>, as seen [1.x.0] by   shifting the result of the intersection operation to the left by   <tt>begin</tt>. This corresponds to the notion of a [1.x.1]: The   interval <tt>[begin, end)</tt> is a [1.x.2] through which we see   the set represented by the current object.  
+* [0.x.31]*
+   Split the set indices represented by this object into blocks given by the    [2.x.31]  structure. The sum of its entries must match the   global size of the current object.  
+* [0.x.32]*
+   Remove all elements contained in  [2.x.32]  from this set. In other words,   if  [2.x.33]  is the current object and  [2.x.34]  the argument, then we compute  [2.x.35] .  
+* [0.x.33]*
+   Return a new IndexSet, with global size equal to   `this->size()*other.size()`, containing for every element `n` of this   IndexSet, the entries in the half open range `[n*other.size(),   (n+1)*other.size())` of the  [2.x.36]  IndexSet.     The name results from the perspective that one starts with an IndexSet and   takes the tensor product with another IndexSet with `other.size()`   elements; this results in a matrix of size `this->size()` times   `other.size()` that has ones in exactly the rows for which this IndexSet   contained an index and in the columns for which the  [2.x.37]  IndexSet   contained an index. This matrix is then "unrolled" again by going through   each row one by one and reindexing the entries of the matrix in consecutive   order. A one in the matrix then corresponds to an entry in the reindexed   IndexSet that is returned by this function.  
+* [0.x.34]*
+   Remove and return the last element of the last range.   This function throws an exception if the IndexSet is empty.  
+* [0.x.35]*
+   Remove and return the first element of the first range.   This function throws an exception if the IndexSet is empty.  
+* [0.x.36]*
+   Fill the given vector with all indices contained in this IndexSet.  
+* [0.x.37]*
+   Fill the given vector with either zero or one elements, providing a   binary representation of this index set. The given vector is assumed to   already have the correct size.     The given argument is filled with integer values zero and one, using    [2.x.38] . Thus, any object that has such an   operator can be used as long as it allows conversion of integers zero and   one to elements of the vector. Specifically, this is the case for classes   Vector, BlockVector, but also  [2.x.39]   [2.x.40]    and  [2.x.41]   
+* [0.x.38]*
+   Output a text representation of this IndexSet to the given stream. Used   for testing.  
+* [0.x.39]*
+   Write the IndexSet into a text based file format, that can be read in   again using the read() function.  
+* [0.x.40]*
+   Construct the IndexSet from a text based representation given by the   stream  [2.x.42]  written by the write() function.  
+* [0.x.41]*
+   Write the IndexSet into a binary, compact representation, that can be   read in again using the block_read() function.  
+* [0.x.42]*
+   Construct the IndexSet from a binary representation given by the stream    [2.x.43]  written by the write_block() function.  
+* [0.x.43]*
+   Given an MPI communicator, create a Trilinos map object that represents a   distribution of vector elements or matrix rows in which we will locally   store those elements or rows for which we store the index in the current   index set, and all the other elements/rows elsewhere on one of the other   MPI processes.     The last argument only plays a role if the communicator is a parallel   one, distributing computations across multiple processors. In that case,   if the last argument is false, then it is assumed that the index sets   this function is called with on all processors are mutually exclusive but   together enumerate each index exactly once. In other words, if you call   this function on two processors, then the index sets this function is   called with must together have all possible indices from zero to   size()-1, and no index must appear in both index sets. This corresponds,   for example, to the case where we want to split the elements of vectors   into unique subsets to be stored on different processors
+* 
+*  -  no element   should be owned by more than one processor, but each element must be   owned by one.     On the other hand, if the second argument is true, then the index sets   can be overlapping, and they also do not need to span the whole index   set. This is a useful operation if we want to create vectors that not   only contain the locally owned indices, but for example also the elements   that correspond to degrees of freedom located on ghost cells. Another   application of this method is to select a subset of the elements of a   vector, e.g. for extracting only certain solution components.  
+* [0.x.44]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.45]*
+   Write or read the data of this object to or from a stream for the purpose   of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.46]*
+    [2.x.44]  Iterators    [2.x.45]   
+* [0.x.47]*
+   Dereferencing an IntervalIterator will return a reference to an object of   this type. It allows access to a contiguous interval  [2.x.46]  (also called   a range) of the IndexSet being iterated over.  
+* [0.x.48]*
+     Construct a valid accessor given an IndexSet and the index  [2.x.47]      of the range to point to.    
+* [0.x.49]*
+     Construct an invalid accessor for the IndexSet.    
+* [0.x.50]*
+     Number of elements in this interval.    
+* [0.x.51]*
+     If true, we are pointing at a valid interval in the IndexSet.    
+* [0.x.52]*
+     Return an iterator pointing at the first index in this interval.    
+* [0.x.53]*
+     Return an iterator pointing directly after the last index in this     interval.    
+* [0.x.54]*
+     Return the index of the last index in this interval.    
+* [0.x.55]*
+     Private copy constructor.    
+* [0.x.56]*
+     Private copy operator.    
+* [0.x.57]*
+     Test for equality, used by IntervalIterator.    
+* [0.x.58]*
+     Smaller-than operator, used by IntervalIterator.    
+* [0.x.59]*
+     Advance this accessor to point to the next interval in the  [2.x.48]      index_set.    
+* [0.x.60]*
+     Reference to the IndexSet.    
+* [0.x.61]*
+     Index into index_set.ranges[]. Set to  [2.x.49]  if     invalid or the end iterator.    
+* [0.x.62]*
+   Class that represents an iterator pointing to a contiguous interval    [2.x.50]  as returned by  [2.x.51]   
+* [0.x.63]*
+     Construct a valid iterator pointing to the interval with index  [2.x.52]      range_idx.    
+* [0.x.64]*
+     Construct an invalid iterator (used as end()).    
+* [0.x.65]*
+     Construct an empty iterator.    
+* [0.x.66]*
+     Copy constructor from  [2.x.53]  iterator.    
+* [0.x.67]*
+     Assignment of another iterator.    
+* [0.x.68]*
+     Prefix increment.    
+* [0.x.69]*
+     Postfix increment.    
+* [0.x.70]*
+     Dereferencing operator, returns an IntervalAccessor.    
+* [0.x.71]*
+     Dereferencing operator, returns a pointer to an IntervalAccessor.    
+* [0.x.72]*
+     Comparison.    
+* [0.x.73]*
+     Inverse of <tt>==</tt>.    
+* [0.x.74]*
+     Comparison operator.    
+* [0.x.75]*
+     Return the distance between the current iterator and the argument. The     distance is given by how many times one has to apply operator++ to the     current iterator to get the argument (for a positive return value), or     operator-- (for a negative return value).    
+* [0.x.76]*
+     Mark the class as forward iterator and declare some alias which are     standard for iterators and are used by algorithms to enquire about the     specifics of the iterators they work on.    
+* [0.x.77]*
+     Accessor that contains what IndexSet and interval we are pointing at.    
+* [0.x.78]*
+   Class that represents an iterator pointing to a single element in the   IndexSet as returned by  [2.x.54]   
+* [0.x.79]*
+     Construct an iterator pointing to the global index  [2.x.55]  in the     interval  [2.x.56]     
+* [0.x.80]*
+     Construct an iterator pointing to the end of the IndexSet.    
+* [0.x.81]*
+     Dereferencing operator. The returned value is the index of the element     inside the IndexSet.    
+* [0.x.82]*
+     Does this iterator point to an existing element?    
+* [0.x.83]*
+     Prefix increment.    
+* [0.x.84]*
+     Postfix increment.    
+* [0.x.85]*
+     Comparison.    
+* [0.x.86]*
+     Inverse of <tt>==</tt>.    
+* [0.x.87]*
+     Comparison operator.    
+* [0.x.88]*
+     Return the distance between the current iterator and the argument. In     the expression  [2.x.57]  the distance is given by     how many times one has to apply operator++ to the right operand  [2.x.58]      it_right to get the left operand  [2.x.59]  (for a positive return     value), or to  [2.x.60]  to get the  [2.x.61]  (for a negative return     value).    
+* [0.x.89]*
+     Mark the class as forward iterator and declare some alias which are     standard for iterators and are used by algorithms to enquire about the     specifics of the iterators they work on.    
+* [0.x.90]*
+     Advance iterator by one.    
+* [0.x.91]*
+     The parent IndexSet.    
+* [0.x.92]*
+     Index into index_set.ranges.    
+* [0.x.93]*
+     The global index this iterator is pointing at.    
+* [0.x.94]*
+   Return an iterator that points at the first index that is contained in   this IndexSet.  
+* [0.x.95]*
+   Return an element iterator pointing to the element with global index    [2.x.62]  or the next larger element if the index is not in the   set. This is equivalent to  
+* [1.x.3]
+*      If there is no element in this IndexSet at or behind  [2.x.63]    this method will return end().  
+* [0.x.96]*
+   Return an iterator that points one after the last index that is contained   in this IndexSet.  
+* [0.x.97]*
+   Return an Iterator that points at the first interval of this IndexSet.  
+* [0.x.98]*
+   Return an Iterator that points one after the last interval of this   IndexSet.  
+* [0.x.99]*
+    [2.x.64]   
+* [0.x.100]*
+   A type that denotes the half open index range  [2.x.65] .     The nth_index_in_set denotes the how many-th index within this IndexSet   the first element of the current range is. This information is only   accurate if  [2.x.66]  has been called after the last   insertion.  
+* [0.x.101]*
+     Default constructor. Since there is no useful choice for a default     constructed interval, this constructor simply creates something that     resembles an invalid range. We need this constructor for serialization     purposes, but the invalid range should be filled with something read     from the archive before it is used, so we should hopefully never get to     see an invalid range in the wild.    
+* [0.x.102]*
+     Constructor. Create a half-open interval with the given indices.          [2.x.67]  i1 Left end point of the interval.      [2.x.68]  i2 First index greater than the last index of the indicated     range.    
+* [0.x.103]*
+     Write or read the data of this object to or from a stream for the     purpose of serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.104]*
+   A set of contiguous ranges of indices that make up (part of) this index   set. This variable is always kept sorted.     The variable is marked "mutable" so that it can be changed by compress(),   though this of course doesn't change anything about the external   representation of this index set.  
+* [0.x.105]*
+   True if compress() has been called after the last change in the set of   indices.     The variable is marked "mutable" so that it can be changed by compress(),   though this of course doesn't change anything about the external   representation of this index set.  
+* [0.x.106]*
+   The overall size of the index range. Elements of this index set have to   have a smaller number than this value.  
+* [0.x.107]*
+   This integer caches the index of the largest range in  [2.x.69]  This   gives <tt>O(1)</tt> access to the range with most elements, while general   access costs <tt>O(log(n_ranges))</tt>. The largest range is needed for   the methods  [2.x.70]   [2.x.71]   [2.x.72]    In many applications, the largest range contains most elements (the   locally owned range), whereas there are only a few other elements   (ghosts).  
+* [0.x.108]*
+   A mutex that is used to synchronize operations of the do_compress()   function that is called from many 'const' functions via compress().  
+* [0.x.109]*
+   Actually perform the compress() operation.  
+* [0.x.110]*
+ Create and return an index set of size  [2.x.73]  that contains every single index within this range. In essence, this function returns an index set created by
+
+* 
+* [1.x.4]
+*  This function exists so that one can create and initialize index sets that are complete in one step, or so one can write code like
+
+* 
+* [1.x.5]
+* 
+*   [2.x.74]  IndexSet
+
+* 
+* [0.x.111]

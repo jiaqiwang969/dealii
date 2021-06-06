@@ -1,0 +1,66 @@
+[0.x.0]*
+   This is an interpolation function for the given dof handler and the given   solution vector. The points at which this function can be evaluated MUST   be inside the domain of the dof handler, but except from this, no other   requirement is given. This function is rather slow, as it needs to   construct a quadrature object for the point (or set of points) where you   want to evaluate your finite element function. In order to do so, it   needs to find out where the points lie.     If you know in advance in which cell your points lie, you can accelerate   things a bit, by calling set_active_cell() before asking for values or   gradients of the function. If you don't do this, and your points don't   lie in the cell that is currently stored, the function    [2.x.0]  is called to find out where the   point is.   You can specify an optional mapping to use when looking for points in   the grid. If you don't do so, this function uses a Q1 mapping.     Once the FEFieldFunction knows where the points lie, it creates a   quadrature formula for those points, and calls    [2.x.1]  or  [2.x.2]  with   the given quadrature points.     If you only need the quadrature points but not the values of the finite   element function (you might want this for the adjoint interpolation), you   can also use the function compute_point_locations() alone.     An example of how to use this function is the following:    
+* [1.x.0]
+*      The snippet of code above will work assuming that the second   triangulation is entirely included in the first one.     FEFieldFunction is designed to be an easy way to get the results of your   computations across different, possibly non matching, grids. No knowledge   of the location of the points is assumed in this class, which makes it   rely entirely on the  [2.x.3]  utility for   its job. However the class can be fed an "educated guess" of where the   points that will be computed actually are by using the    [2.x.4]  method, so if you have a smart way to   tell where your points are, you will save a lot of computational time by   letting this class know.       [1.x.1]     When using this class with a parallel distributed triangulation object   and evaluating the solution at a particular point, not every processor   will own the cell at which the solution is evaluated. Rather, it may be   that the cell in which this point is found is in fact a ghost or   artificial cell (see    [2.x.5]    and    [2.x.6] ).   The solution can be evaluated on ghost cells, but for artificial cells   we have no access to the solution there and   functions that evaluate the solution at such a point will trigger an   exception of type  [2.x.7]      To deal with this situation, you will want to use code as follows when,   for example, evaluating the solution at the origin (here using a parallel   TrilinosWrappers vector to hold the solution):  
+* [1.x.2]
+*     
+*  [2.x.8]   
+* [0.x.1]*
+     Construct a vector function. A smart pointers is stored to the dof     handler, so you have to make sure that it make sense for the entire     lifetime of this object. The number of components of this functions is     equal to the number of components of the finite element object. If a     mapping is specified, that is what is used to find out where the points     lay. Otherwise the standard Q1 mapping is used.    
+* [0.x.2]*
+     Set the current cell. If you know in advance where your points lie, you     can tell this object by calling this function. This will speed things     up a little.    
+* [0.x.3]*
+     Get one vector value at the given point. It is inefficient to use     single points. If you need more than one at a time, use the     vector_value_list() function. For efficiency reasons, it is better if     all the points lie on the same cell. This is not mandatory, however it     does speed things up.        
+*  [2.x.9]  When using this function on a      [2.x.10]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.11] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.4]*
+     Return the value of the function at the given point. Unless there is     only one component (i.e. the function is scalar), you should state the     component you want to have evaluated; it defaults to zero, i.e. the     first component. It is inefficient to use single points. If you need     more than one at a time, use the vector_value_list() function. For     efficiency reasons, it is better if all the points lie on the same     cell. This is not mandatory, however it does speed things up.        
+*  [2.x.12]  When using this function on a      [2.x.13]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.14] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.5]*
+     Set  [2.x.15]  to the point values of the specified component of the     function at the  [2.x.16]  It is assumed that  [2.x.17]  already has the     right size, i.e. the same size as the points array. This is rather     efficient if all the points lie on the same cell. If this is not the     case, things may slow down a bit.        
+*  [2.x.18]  When using this function on a      [2.x.19]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.20] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.6]*
+     Set  [2.x.21]  to the point values of the function at the  [2.x.22]  It     is assumed that  [2.x.23]  already has the right size, i.e. the same     size as the points array. This is rather efficient if all the points     lie on the same cell. If this is not the case, things may slow down a     bit.        
+*  [2.x.24]  When using this function on a      [2.x.25]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.26] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.7]*
+     Return the gradient of all components of the function at the given     point.  It is inefficient to use single points. If you need more than     one at a time, use the vector_value_list() function. For efficiency     reasons, it is better if all the points lie on the same cell. This is     not mandatory, however it does speed things up.        
+*  [2.x.27]  When using this function on a      [2.x.28]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.29] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.8]*
+     Return the gradient of the specified component of the function at the     given point. It is inefficient to use single points. If you need more     than one at a time, use the vector_value_list() function. For efficiency     reasons, it is better if all the points lie on the same cell. This is     not mandatory, however it does speed things up.        
+*  [2.x.30]  When using this function on a      [2.x.31]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.32] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.9]*
+     Return the gradient of all components of the function at all the given     points. This is rather efficient if all the points lie on the same     cell. If this is not the case, things may slow down a bit.        
+*  [2.x.33]  When using this function on a      [2.x.34]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.35] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.10]*
+     Return the gradient of the specified component of the function at all     the given points.  This is rather efficient if all the points lie on     the same cell. If this is not the case, things may slow down a bit.        
+*  [2.x.36]  When using this function on a      [2.x.37]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.38] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.11]*
+     Compute the Laplacian of a given component at point <tt>p</tt>.        
+*  [2.x.39]  When using this function on a      [2.x.40]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.41] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.12]*
+     Compute the Laplacian of all components at point <tt>p</tt> and store     them in <tt>values</tt>.        
+*  [2.x.42]  When using this function on a      [2.x.43]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.44] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.13]*
+     Compute the Laplacian of one component at a set of points.        
+*  [2.x.45]  When using this function on a      [2.x.46]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.47] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.14]*
+     Compute the Laplacians of all components at a set of points.        
+*  [2.x.48]  When using this function on a      [2.x.49]  you may get an exception when     trying to evaluate the solution at a point that lies on an artificial     cell (see      [2.x.50] ).     See the section in the general documentation of this class for more     information.    
+* [0.x.15]*
+     Given a set of points located in the domain (or, in the case of     a parallel Triangulation, in the locally owned part of the domain     or on the ghost cells for the current processor), sort these     points into buckets for each of the cells on which at least     one of the points is located.         This function fills three output vectors:  [2.x.51]   [2.x.52]      and  [2.x.53]  The first is a list of the cells that contain the     points, the second is a list of quadrature points matching each     cell of the first list, and the third contains the index of the     given quadrature points, i.e.,  [2.x.54]  ends up as     the 5th quadrature point in the 4th cell.          [2.x.55]  This function returns the number of cells that       collectively contain the set of points give as  [2.x.56]        points. This also equals the lengths of the output arrays.         This function simply calls  [2.x.57]  :     using the original function avoids computing a     new Cache at every function call.    
+* [0.x.16]*
+     Typedef holding the local cell_hint.    
+* [0.x.17]*
+     Pointer to the dof handler.    
+* [0.x.18]*
+     A reference to the actual data vector.    
+* [0.x.19]*
+     A reference to the mapping being used.    
+* [0.x.20]*
+     The Cache object    
+* [0.x.21]*
+     The latest cell hint.    
+* [0.x.22]*
+     Given a cell, return the reference coordinates of the given point     within this cell if it indeed lies within the cell. Otherwise return an     uninitialized  [2.x.58]  object.    
+* [0.x.23]*
+      [2.x.59]  Use  [2.x.60]  without the     DoFHandlerType template instead.    
+* [0.x.24]

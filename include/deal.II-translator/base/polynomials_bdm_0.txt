@@ -1,0 +1,50 @@
+[0.x.0]*
+ This class implements the [1.x.0]-conforming, vector-valued Brezzi-Douglas-Marini ([1.x.1]) polynomials described in Brezzi and Fortin's [1.x.2] (refer to pages 119
+* 
+*  - 124).
+*  The [1.x.3] polynomial space contain the entire   [2.x.0]  space (constructed with PolynomialSpace Legendre polynomials) as well as part of  [2.x.1]  (ie.  [2.x.2] ).  Furthermore,  [2.x.3]  elements are designed so that  [2.x.4]  and  [2.x.5] . More details of two and three dimensional  [2.x.6]  elements are given below. [2.x.7]    <dt> In 2D:    [2.x.8]   [2.x.9] .
+*    Note: the curl of a scalar function is given by  [2.x.10] .
+*    The basis used to construct the  [2.x.11]  shape functions is  
+* [1.x.4]
+* 
+*    The dimension of the  [2.x.12]  space is  [2.x.13] , with  [2.x.14]  unknowns per edge and  [2.x.15]  interior unknowns.
+*    <dt> In 3D:    [2.x.16]   [2.x.17] .
+*    Note: the 3D description of  [2.x.18]  is not unique.  See [1.x.5] page 122 for an alternative definition.
+*    The dimension of the  [2.x.19]  space is    [2.x.20] , with  [2.x.21]    unknowns per face and  [2.x.22]  interior unknowns.
+*  [2.x.23] 
+* 
+
+* 
+* 
+
+* 
+*  [2.x.24] 
+
+* 
+* [0.x.1]*
+   Constructor. Creates all basis functions for BDM polynomials of given   degree.      [2.x.25]  k: the degree of the BDM-space, which is the degree of the largest   complete polynomial space [1.x.6] contained in the BDM-   space.  
+* [0.x.2]*
+   Compute the value and the first and second derivatives of each BDM   polynomial at  [2.x.26]      The size of the vectors must either be zero or equal <tt>n()</tt>.  In   the first case, the function will not compute these values.     If you need values or derivatives of all tensor product polynomials then   use this function, rather than using any of the <tt>compute_value</tt>,   <tt>compute_grad</tt> or <tt>compute_grad_grad</tt> functions, see below,   in a loop over all tensor product polynomials.  
+* [0.x.3]*
+   Return the name of the space, which is <tt>BDM</tt>.  
+* [0.x.4]*
+   Return the number of polynomials in the space <tt>BDM(degree)</tt>   without requiring to build an object of PolynomialsBDM. This is required   by the FiniteElement classes.  
+* [0.x.5]*
+    [2.x.27]   [2.x.28]   
+* [0.x.6]*
+   An object representing the polynomial space used here. The constructor   fills this with the monomial basis.  
+* [0.x.7]*
+   Storage for monomials. In 2D, this is just the polynomial of order   [1.x.7]. In 3D, we need all polynomials from degree zero to [1.x.8].  
+* [0.x.8]*
+   A mutex that guards the following scratch arrays.  
+* [0.x.9]*
+   Auxiliary memory.  
+* [0.x.10]*
+   Auxiliary memory.  
+* [0.x.11]*
+   Auxiliary memory.  
+* [0.x.12]*
+   Auxiliary memory.  
+* [0.x.13]*
+   Auxiliary memory.  
+* [0.x.14]

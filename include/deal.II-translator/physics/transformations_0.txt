@@ -1,0 +1,103 @@
+[0.x.0]*
+     Transformation functions and tensors that are defined in terms of     rotation angles and axes of rotation.    
+* [0.x.1]*
+        [2.x.0]  Rotation matrices      
+* [0.x.2]*
+       Return the rotation matrix for 2-d Euclidean space, namely       [1.x.0]       where  [2.x.1]  is the rotation angle given in radians. In particular,       this describes the counter-clockwise rotation of a vector relative to       a [1.x.1].              [2.x.2]  angle The rotation angle (about the z-axis) in radians      
+* [0.x.3]*
+       Return the rotation matrix for 3-d Euclidean space. Most concisely       stated using the Rodrigues' rotation formula, this function returns       the equivalent of       [1.x.2]       where  [2.x.3]  is the axial vector (an axial vector) and  [2.x.4]        is the rotation angle given in radians,  [2.x.5]  is the identity       tensor and  [2.x.6]  is the skew symmetric tensor of  [2.x.7] .              [2.x.8]  This presents Rodrigues' rotation       formula, but the implementation used in this function is described in       this [1.x.3]. In particular, this describes the counter-clockwise       rotation of a vector [1.x.4]. defined by the  [2.x.9]  of rotation. An       alternative implementation is discussed at [1.x.5], but is inconsistent (sign-wise) with the Rodrigues'       rotation formula as it describes the rotation of a coordinate system.              [2.x.10]  axis  A unit vector that defines the axis of rotation        [2.x.11]  angle The rotation angle in radians      
+* [0.x.4]*
+     Transformation of tensors that are defined in terms of a set of     contravariant bases. Rank-1 and rank-2 contravariant tensors      [2.x.12]  (and its spatial     counterpart  [2.x.13] ) typically satisfy the relation     [1.x.6]     where  [2.x.14]  and  [2.x.15]  are respectively control volumes in the     reference and spatial configurations, and their surfaces  [2.x.16]  and  [2.x.17]  have the outwards facing normals      [2.x.18]  and  [2.x.19] .    
+* [0.x.5]*
+        [2.x.20]  Push forward operations      
+* [0.x.6]*
+       Return the result of the push forward transformation on a       contravariant vector, i.e.       [1.x.7]              [2.x.21]  V The (referential) vector to be operated on        [2.x.22]  F The deformation gradient tensor  [2.x.23]         [2.x.24]        [2.x.25]       
+* [0.x.7]*
+       Return the result of the push forward transformation on a rank-2       contravariant tensor, i.e.       [1.x.8]              [2.x.26]  T The (referential) rank-2 tensor to be operated on        [2.x.27]  F The deformation gradient tensor  [2.x.28]         [2.x.29]        [2.x.30]       
+* [0.x.8]*
+       Return the result of the push forward transformation on a rank-2       contravariant symmetric tensor, i.e.       [1.x.9]              [2.x.31]  T The (referential) rank-2 symmetric tensor to be operated       on        [2.x.32]  F The deformation gradient tensor  [2.x.33]         [2.x.34]        [2.x.35]       
+* [0.x.9]*
+       Return the result of the push forward transformation on a rank-4       contravariant tensor, i.e. (in index notation):       [1.x.10]              [2.x.36]  H The (referential) rank-4 tensor to be operated on        [2.x.37]  F The deformation gradient tensor  [2.x.38]         [2.x.39]        [2.x.40]       
+* [0.x.10]*
+       Return the result of the push forward transformation on a rank-4       contravariant symmetric tensor, i.e. (in index notation):       [1.x.11]              [2.x.41]  H The (referential) rank-4 symmetric tensor to be operated       on        [2.x.42]  F The deformation gradient tensor  [2.x.43]         [2.x.44]        [2.x.45]       
+* [0.x.11]*
+        [2.x.46]  Pull back operations      
+* [0.x.12]*
+       Return the result of the pull back transformation on a contravariant       vector, i.e.       [1.x.12]              [2.x.47]  v The (spatial) vector to be operated on        [2.x.48]  F The deformation gradient tensor  [2.x.49]         [2.x.50]        [2.x.51]       
+* [0.x.13]*
+       Return the result of the pull back transformation on a rank-2       contravariant tensor, i.e.       [1.x.13]              [2.x.52]  t The (spatial) tensor to be operated on        [2.x.53]  F The deformation gradient tensor  [2.x.54]         [2.x.55]        [2.x.56]       
+* [0.x.14]*
+       Return the result of the pull back transformation on a rank-2       contravariant symmetric tensor, i.e.       [1.x.14]              [2.x.57]  t The (spatial) symmetric tensor to be operated on        [2.x.58]  F The deformation gradient tensor  [2.x.59]         [2.x.60]        [2.x.61]       
+* [0.x.15]*
+       Return the result of the pull back transformation on a rank-4       contravariant tensor, i.e. (in index notation):       [1.x.15]              [2.x.62]  h The (spatial) tensor to be operated on        [2.x.63]  F The deformation gradient tensor  [2.x.64]         [2.x.65]        [2.x.66]       
+* [0.x.16]*
+       Return the result of the pull back transformation on a rank-4       contravariant symmetric tensor, i.e. (in index notation):       [1.x.16]              [2.x.67]  h The (spatial) symmetric tensor to be operated on        [2.x.68]  F The deformation gradient tensor  [2.x.69]         [2.x.70]        [2.x.71]       
+* [0.x.17]*
+     Transformation of tensors that are defined in terms of a set of     covariant basis vectors. Rank-1 and rank-2 covariant tensors      [2.x.72]  (and its spatial     counterpart  [2.x.73] ) typically satisfy the relation     [1.x.17]     where the control surfaces  [2.x.74]  and  [2.x.75]  with     outwards facing normals  [2.x.76]  and  [2.x.77]  are bounded by     the curves  [2.x.78]  and  [2.x.79]  that are,     respectively, associated with the line directors  [2.x.80]  and      [2.x.81] .    
+* [0.x.18]*
+        [2.x.82]  Push forward operations      
+* [0.x.19]*
+       Return the result of the push forward transformation on a covariant       vector, i.e.       [1.x.18]              [2.x.83]  V The (referential) vector to be operated on        [2.x.84]  F The deformation gradient tensor  [2.x.85]         [2.x.86]        [2.x.87]       
+* [0.x.20]*
+       Return the result of the push forward transformation on a rank-2       covariant tensor, i.e.       [1.x.19]              [2.x.88]  T The (referential) rank-2 tensor to be operated on        [2.x.89]  F The deformation gradient tensor  [2.x.90]         [2.x.91]        [2.x.92]       
+* [0.x.21]*
+       Return the result of the push forward transformation on a rank-2       covariant symmetric tensor, i.e.       [1.x.20]              [2.x.93]  T The (referential) rank-2 symmetric tensor to be operated       on        [2.x.94]  F The deformation gradient tensor  [2.x.95]         [2.x.96]        [2.x.97]       
+* [0.x.22]*
+       Return the result of the push forward transformation on a rank-4       covariant tensor, i.e. (in index notation):       [1.x.21]              [2.x.98]  H The (referential) rank-4 tensor to be operated on        [2.x.99]  F The deformation gradient tensor  [2.x.100]         [2.x.101]        [2.x.102]       
+* [0.x.23]*
+       Return the result of the push forward transformation on a rank-4       covariant symmetric tensor, i.e. (in index notation):       [1.x.22]              [2.x.103]  H The (referential) rank-4 symmetric tensor to be operated       on        [2.x.104]  F The deformation gradient tensor  [2.x.105]         [2.x.106]        [2.x.107]       
+* [0.x.24]*
+        [2.x.108]  Pull back operations      
+* [0.x.25]*
+       Return the result of the pull back transformation on a covariant       vector, i.e.       [1.x.23]              [2.x.109]  v The (spatial) vector to be operated on        [2.x.110]  F The deformation gradient tensor  [2.x.111]         [2.x.112]        [2.x.113]       
+* [0.x.26]*
+       Return the result of the pull back transformation on a rank-2       covariant tensor, i.e.       [1.x.24]              [2.x.114]  t The (spatial) tensor to be operated on        [2.x.115]  F The deformation gradient tensor  [2.x.116]         [2.x.117]        [2.x.118]       
+* [0.x.27]*
+       Return the result of the pull back transformation on a rank-2       covariant symmetric tensor, i.e.       [1.x.25]              [2.x.119]  t The (spatial) symmetric tensor to be operated on        [2.x.120]  F The deformation gradient tensor  [2.x.121]         [2.x.122]        [2.x.123]       
+* [0.x.28]*
+       Return the result of the pull back transformation on a rank-4       contravariant tensor, i.e. (in index notation):       [1.x.26]              [2.x.124]  h The (spatial) tensor to be operated on        [2.x.125]  F The deformation gradient tensor  [2.x.126]         [2.x.127]        [2.x.128]       
+* [0.x.29]*
+       Return the result of the pull back transformation on a rank-4       contravariant symmetric tensor, i.e. (in index notation):       [1.x.27]              [2.x.129]  h The (spatial) symmetric tensor to be operated on        [2.x.130]  F The deformation gradient tensor  [2.x.131]         [2.x.132]        [2.x.133]       
+* [0.x.30]*
+     Transformation of tensors that are defined in terms of a set of     contravariant basis vectors and scale with the inverse of the volume     change associated with the mapping.    
+* [0.x.31]*
+        [2.x.134]  Push forward operations      
+* [0.x.32]*
+       Return the result of the push forward transformation on a       contravariant vector, i.e.       [1.x.28]              [2.x.135]  V The (referential) vector to be operated on        [2.x.136]  F The deformation gradient tensor  [2.x.137]         [2.x.138]        [2.x.139]       
+* [0.x.33]*
+       Return the result of the push forward transformation on a rank-2       contravariant tensor, i.e.       [1.x.29]              [2.x.140]  T The (referential) rank-2 tensor to be operated on        [2.x.141]  F The deformation gradient tensor  [2.x.142]         [2.x.143]        [2.x.144]       
+* [0.x.34]*
+       Return the result of the push forward transformation on a rank-2       contravariant symmetric tensor, i.e.       [1.x.30]              [2.x.145]  T The (referential) rank-2 symmetric tensor to be operated       on        [2.x.146]  F The deformation gradient tensor  [2.x.147]         [2.x.148]        [2.x.149]       
+* [0.x.35]*
+       Return the result of the push forward transformation on a rank-4       contravariant tensor, i.e. (in index notation):       [1.x.31]              [2.x.150]  H The (referential) rank-4 tensor to be operated on        [2.x.151]  F The deformation gradient tensor  [2.x.152]         [2.x.153]        [2.x.154]       
+* [0.x.36]*
+       Return the result of the push forward transformation on a rank-4       contravariant symmetric tensor, i.e. (in index notation):       [1.x.32]              [2.x.155]  H The (referential) rank-4 symmetric tensor to be operated       on        [2.x.156]  F The deformation gradient tensor  [2.x.157]         [2.x.158]        [2.x.159]       
+* [0.x.37]*
+        [2.x.160]  Pull back operations      
+* [0.x.38]*
+       Return the result of the pull back transformation on a contravariant       vector, i.e.       [1.x.33]              [2.x.161]  v The (spatial) vector to be operated on        [2.x.162]  F The deformation gradient tensor  [2.x.163]         [2.x.164]        [2.x.165]       
+* [0.x.39]*
+       Return the result of the pull back transformation on a rank-2       contravariant tensor, i.e.       [1.x.34]              [2.x.166]  t The (spatial) tensor to be operated on        [2.x.167]  F The deformation gradient tensor  [2.x.168]         [2.x.169]        [2.x.170]       
+* [0.x.40]*
+       Return the result of the pull back transformation on a rank-2       contravariant symmetric tensor, i.e.       [1.x.35]              [2.x.171]  t The (spatial) symmetric tensor to be operated on        [2.x.172]  F The deformation gradient tensor  [2.x.173]         [2.x.174]        [2.x.175]       
+* [0.x.41]*
+       Return the result of the pull back transformation on a rank-4       contravariant tensor, i.e. (in index notation):       [1.x.36]              [2.x.176]  h The (spatial) tensor to be operated on        [2.x.177]  F The deformation gradient tensor  [2.x.178]         [2.x.179]        [2.x.180]       
+* [0.x.42]*
+       Return the result of the pull back transformation on a rank-4       contravariant symmetric tensor, i.e. (in index notation):       [1.x.37]              [2.x.181]  h The (spatial) symmetric tensor to be operated on        [2.x.182]  F The deformation gradient tensor  [2.x.183]         [2.x.184]        [2.x.185]       
+* [0.x.43]*
+      [2.x.186]  Special operations    
+* [0.x.44]*
+     Return the result of applying Nanson's formula for the transformation     of the material surface area element  [2.x.187]  to the current     surfaces area element  [2.x.188]  under the nonlinear transformation     map  [2.x.189] .         The returned result is the spatial normal scaled by the ratio of areas     between the reference and spatial surface elements, i.e.     [1.x.38]          [2.x.190]  N The referential normal unit vector  [2.x.191]       [2.x.192]  F The deformation gradient tensor  [2.x.193]       [2.x.194]       The scaled spatial normal vector  [2.x.195]           [2.x.196]   [2.x.197]     
+* [0.x.45]*
+      [2.x.198]  Basis transformations    
+* [0.x.46]*
+     Return a vector with a changed basis, i.e.     [1.x.39]          [2.x.199]  V The vector to be transformed  [2.x.200]       [2.x.201]  B The transformation matrix  [2.x.202]       [2.x.203]        [2.x.204]     
+* [0.x.47]*
+     Return a rank-2 tensor with a changed basis, i.e.     [1.x.40]          [2.x.205]  T The tensor to be transformed  [2.x.206]       [2.x.207]  B The transformation matrix  [2.x.208]       [2.x.209]        [2.x.210]     
+* [0.x.48]*
+     Return a symmetric rank-2 tensor with a changed basis, i.e.     [1.x.41]          [2.x.211]  T The tensor to be transformed  [2.x.212]       [2.x.213]  B The transformation matrix  [2.x.214]       [2.x.215]        [2.x.216]     
+* [0.x.49]*
+     Return a rank-4 tensor with a changed basis, i.e. (in index notation):     [1.x.42]          [2.x.217]  H The tensor to be transformed  [2.x.218]       [2.x.219]  B The transformation matrix  [2.x.220]       [2.x.221]        [2.x.222]     
+* [0.x.50]*
+     Return a symmetric rank-4 tensor with a changed basis, i.e. (in index     notation):     [1.x.43]          [2.x.223]  H The tensor to be transformed  [2.x.224]       [2.x.225]  B The transformation matrix  [2.x.226]       [2.x.227]        [2.x.228]     
+* [0.x.51]

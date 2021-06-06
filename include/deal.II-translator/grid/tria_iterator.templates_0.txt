@@ -1,0 +1,2 @@
+[0.x.0] Note: This file only contains template definitions and will thus   not produce an object file. It is rather thought to be included   into the_accessor.cc files.
+* [0.x.1]

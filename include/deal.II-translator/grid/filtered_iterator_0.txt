@@ -1,0 +1,257 @@
+[0.x.0]*
+ In this namespace a number of classes is declared that may be used as filters in the FilteredIterator class. The filters either check for binary information (for example, the  [2.x.0]  filter class checks whether the object pointed to is active), or for valued information by comparison with prescribed values (for example, the LevelEqualTo filter class checks whether the level of the object pointed to by the iterator under consideration is equal to a value that was given to the filter upon construction.
+*  For examples of use of these classes as well as requirements on filters see the general description of the FilteredIterator class.
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+   Filter that evaluates to true if either the iterator points to an active   object or an iterator past the end.    
+*  [2.x.2]   
+* [0.x.2]*
+     Evaluate the iterator and return true if the object is active or past     the end.    
+* [0.x.3]*
+   Filter that evaluates to true if either the iterator points to an object   for which the user flag is set or an iterator past the end. See    [2.x.3]    for information about user flags.    
+*  [2.x.4]   
+* [0.x.4]*
+     Evaluate the iterator and return true if the object has a set user flag     or past the end.    
+* [0.x.5]*
+   Filter that evaluates to true if either the iterator points to an object   for which the user flag is not set or an iterator past the end. Inverse   filter to the previous class.    
+*  [2.x.5]   
+* [0.x.6]*
+     Evaluate the iterator and return true if the object has an unset user     flag or past the end.    
+* [0.x.7]*
+   Filter for iterators that evaluates to true if either the iterator is   past the end or the level of the object pointed to is equal to a value   given to the constructor.    
+*  [2.x.6]   
+* [0.x.8]*
+     Constructor. Store the level which iterators shall have to be evaluated     to true.    
+* [0.x.9]*
+     Evaluation operator. Returns true if either the level of the object     pointed to is equal to the stored value or the iterator is past the     end.    
+* [0.x.10]*
+     Stored value to compare the level with.    
+* [0.x.11]*
+   Filter for iterators that evaluates to true if either the iterator is   past the end or the subdomain id of the object pointed to is equal to a   value given to the constructor, assuming that the iterator allows   querying for a subdomain id.    
+*  [2.x.7]   
+* [0.x.12]*
+     Constructor. Store the subdomain which iterators shall have to be     evaluated to true.    
+* [0.x.13]*
+     Evaluation operator. Returns true if either the subdomain of the object     pointed to is equal to the stored value or the iterator is past the     end.    
+* [0.x.14]*
+     Stored value to compare the subdomain with.    
+* [0.x.15]*
+   Filter for iterators that evaluates to true if a cell is owned by the   current processor, i.e., if it is a    [2.x.8]  "locally owned cell".     This class is used in  [2.x.9] , in connection with the methods of the    [2.x.10]    module.    
+*  [2.x.11]   
+* [0.x.16]*
+     Evaluation operator. Returns true if the cell is locally owned.    
+* [0.x.17]*
+   Filter for iterators that evaluates to true if the level subdomain id of   a cell is equal to the current processor id.    
+*  [2.x.12]   
+* [0.x.18]*
+     Evaluation operator. Returns true if the level subdomain id of the cell     is equal to the current processor id.    
+* [0.x.19]*
+   Filter for iterators that evaluates to true if the iterator of the object   pointed to is equal to a value or set of values given to the constructor,   assuming that the iterator allows querying for a material id.      
+*  [2.x.13]   
+* [0.x.20]*
+     Constructor. Store the material id which iterators shall have to be     evaluated to true and state if the iterator must be locally owned.    
+* [0.x.21]*
+     Constructor. Store a collection of material ids which iterators shall     have to be evaluated to true and state if the iterator must be locally     owned.    
+* [0.x.22]*
+     Evaluation operator. Returns true if the material id of the object     pointed to is equal within the stored set of value allowable values     and, if required, if the cell is locally owned.    
+* [0.x.23]*
+     Stored value to compare the material id with.    
+* [0.x.24]*
+     Flag stating whether only locally owned cells must return true.    
+* [0.x.25]*
+   Filter for iterators that evaluates to true if the iterator of the object   pointed to is equal to a value or set of values given to the constructor,   assuming that the iterator allows querying for an active FE index.      
+*  [2.x.14]   
+* [0.x.26]*
+     Constructor. Store the active FE index which iterators shall have to be     evaluated to true and state if the iterator must be locally owned.    
+* [0.x.27]*
+     Constructor. Store a collection of active FE indices which iterators     shall have to be evaluated to true and state if the iterator must be     locally owned.    
+* [0.x.28]*
+     Evaluation operator. Returns true if the active FE index of the object     pointed to is equal within the stored set of value allowable values     and, if required, if the cell is locally owned.    
+* [0.x.29]*
+     Stored value to compare the material id with.    
+* [0.x.30]*
+     Flag stating whether only locally owned cells must return true.    
+* [0.x.31]*
+   Filter for iterators that evaluates to true if the iterator of the object   pointed to is on the boundary.      
+*  [2.x.15]   
+* [0.x.32]*
+     Evaluate the iterator and return true if the object at the boundary.    
+* [0.x.33]*
+ This class provides a certain view on a range of triangulation or DoFHandler iterators by only iterating over elements that satisfy a given filter (called a  [2.x.16] predicate [2.x.17] , following the notation of the C++ standard library). Once initialized with a predicate and a value for the iterator, a filtered iterator hops to the next or previous element that satisfies the predicate if operators ++ or \-- are invoked. Intermediate iterator values that lie in between but do not satisfy the predicate are skipped. It is thus very simple to write loops over a certain class of objects without the need to explicitly write down the condition they have to satisfy in each loop iteration. This in particular is helpful if functions are called with a pair of iterators denoting a range on which they shall act, by choosing a filtered iterator instead of usual ones.
+*  This class is used in  [2.x.18] .
+* 
+
+*  [1.x.0]
+*  The object that represent the condition an iterator has to satisfy only have to provide an interface that allows to call the evaluation operator, i.e.  [2.x.19] . This includes function pointers as well as classes that implement an <code>bool operator ()(const BaseIterator&)</code>. Then, the FilteredIterator will skip all objects where the return value of this function is  [2.x.20] .
+* 
+
+*  An example of a simple valid predicate is the following: given the function
+
+* 
+* [1.x.1]
+*  then
+
+* 
+* [1.x.2]
+*  is a valid predicate.
+*  Likewise, given the following binary function
+
+* 
+* [1.x.3]
+*  then
+
+* 
+* [1.x.4]
+*  is another valid predicate (here: a function that returns true if either the iterator is past the end or the level is equal to the second argument; this second argument is taken considered fixed when creating the lambda function).
+*  Finally, classes can be predicates. The following class is one:
+
+* 
+* [1.x.5]
+*  and objects of this type can be used as predicates. Likewise, this more complicated one can also be used:
+
+* 
+* [1.x.6]
+*  Objects like  [2.x.21]  can then be used as predicates.
+*  Since whenever a predicate is evaluated it is checked that the iterator checked is actually valid (i.e. not past the end), no checks for this case have to be performed inside predicates.
+*  A number of filter classes are already implemented in the IteratorFilters namespace, but writing different ones is simple following the examples above.
+* 
+
+*  [1.x.7]
+*  Filtered iterators are given a predicate at construction time which cannot be changed any more. This behavior would be expected if the predicate would have been given as a template parameter to the class, but since that would make the declaration of filtered iterators a nightmare, we rather give the predicate as an unchangeable entity to the constructor. Note that one can assign a filtered iterator with one predicate to another filtered iterator with another type; yet, this does  [2.x.22] not [2.x.23]  change the predicate of the assigned-to iterator, only the pointer indicating the iterator is changed.
+*  If a filtered iterator is not assigned a value of the underlying (unfiltered) iterator type, the default value is taken. If, however, a value is given to the constructor, that value has either to be past the end, or has to satisfy the predicate. For example, if the predicate only evaluates to true if the level of an object is equal to three, then  [2.x.24]  would be a valid choice while  [2.x.25]  would not since the latter also returns iterators to non-active cells which always start at level 0.
+*  Since one often only has some iterator and wants to set a filtered iterator to the first one that satisfies a predicate (for example, the first one for which the user flag is set, or the first one with a given subdomain id), there are assignment functions #set_to_next_positive and #set_to_previous_positive that assign the next or last previous iterator that satisfies the predicate, i.e. they follow the list of iterators in either direction until they find a matching one (or the past-the-end iterator). Like the  [2.x.26]  they return the resulting value of the filtered iterator.
+* 
+
+*  [1.x.8]
+*  The following call counts the number of active cells that have a set user flag:
+
+* 
+* [1.x.9]
+*  Note that by the  [2.x.27]  call the first cell with a set user flag was assigned to the  [2.x.28]  iterator. For the end iterator, no such call was necessary, since the past-the-end iterator always satisfies all predicates.
+*  The same can be achieved by the following snippet, though harder to read:
+
+* 
+* [1.x.10]
+*  It relies on the fact that if we create an unnamed filtered iterator with a given predicate but no iterator value and assign it the next positive value with respect to this predicate, it returns itself which is then used as the first parameter to the  [2.x.29]  function. This procedure is not necessary for the end element to this function here, since the past-the-end iterator always satisfies the predicate so that we can assign this value to the filtered iterator directly in the constructor.
+*  Finally, the following loop only assembles the matrix on cells with subdomain id equal to three:
+
+* 
+* [1.x.11]
+* 
+*  Since comparison between filtered and unfiltered iterators is defined, we could as well have let the  [2.x.30]  variable in the last example be of type  [2.x.31]  since it is unchanged and its value does not depend on the filter.
+* 
+
+* 
+*  [2.x.32] 
+
+* 
+*  [2.x.33] 
+
+* 
+* [0.x.34]*
+   Typedef to the accessor type of the underlying iterator.  
+* [0.x.35]*
+   Constructor. Set the iterator to the default state and use the given   predicate for filtering subsequent assignment and iteration.  
+* [0.x.36]*
+   Constructor. Use the given predicate for filtering and initialize the   iterator with the given value.     If the initial value  [2.x.34]  does not satisfy the predicate  [2.x.35]  then it is   advanced until we either hit the past-the-end iterator, or the   predicate is satisfied. This allows, for example, to write code like  
+* [1.x.12]
+*      If the cell  [2.x.36]  does not have a   subdomain_id equal to 13, then the iterator will automatically be   advanced to the first cell that has.  
+* [0.x.37]*
+   Copy constructor. Copy the predicate and iterator value of the given   argument.  
+* [0.x.38]*
+   Assignment operator. Copy the iterator value of the argument, but as   discussed in the class documentation, the predicate of the argument is   not copied. The iterator value underlying the argument has to satisfy the   predicate of the object assigned to, as given at its construction time.  
+* [0.x.39]*
+   Assignment operator. Copy the iterator value of the argument, and keep   the predicate of this object. The given iterator value has to satisfy the   predicate of the object assigned to, as given at its construction time.  
+* [0.x.40]*
+   Search for the next iterator from  [2.x.37]  onwards that satisfies the   predicate of this object and assign it to this object.     Since filtered iterators are automatically converted to the underlying   base iterator type, you can also give a filtered iterator as argument to   this function.  
+* [0.x.41]*
+   As above, but search for the previous iterator from  [2.x.38]  backwards that   satisfies the predicate of this object and assign it to this object.     Since filtered iterators are automatically converted to the underlying   base iterator type, you can also give a filtered iterator as argument to   this function.  
+* [0.x.42]*
+   Compare for equality of the underlying iterator values of this and the   given object.     We do not compare for equality of the predicates.  
+* [0.x.43]*
+   Compare for equality of the underlying iterator value of this object with   the given object.     The predicate of this object is irrelevant for this operation.  
+* [0.x.44]*
+   Compare for inequality of the underlying iterator values of this and the   given object.     We do not compare for equality of the predicates.  
+* [0.x.45]*
+   Compare for inequality of the underlying iterator value of this object   with the given object.     The predicate of this object is irrelevant for this operation.  
+* [0.x.46]*
+   Compare for ordering of the underlying iterator values of this and the   given object.     We do not compare the predicates.  
+* [0.x.47]*
+   Compare for ordering of the underlying iterator value of this object with   the given object.     The predicate of this object is irrelevant for this operation.  
+* [0.x.48]*
+   Prefix advancement operator: move to the next iterator value satisfying   the predicate and return the new iterator value.  
+* [0.x.49]*
+   Postfix advancement operator: move to the next iterator value satisfying   the predicate and return the old iterator value.  
+* [0.x.50]*
+   Prefix decrement operator: move to the previous iterator value satisfying   the predicate and return the new iterator value.  
+* [0.x.51]*
+   Postfix advancement operator: move to the previous iterator value   satisfying the predicate and return the old iterator value.  
+* [0.x.52]*
+   Exception.  
+* [0.x.53]*
+   Base class to encapsulate a predicate object. Since predicates can be of   different types and we do not want to code these types into the template   parameter list of the filtered iterator class, we use a base class with   an abstract function and templatized derived classes that implement the   use of actual predicate types through the virtual function.    
+*  [2.x.39]   
+* [0.x.54]*
+     Mark the destructor virtual to allow destruction through pointers to     the base class.    
+* [0.x.55]*
+     Abstract function which in derived classes denotes the evaluation of     the predicate on the given iterator.    
+* [0.x.56]*
+     Generate a copy of this object, i.e. of the actual type of this     pointer.    
+* [0.x.57]*
+   Actual implementation of the above abstract base class. Use a template   parameter to denote the actual type of the predicate and store a copy of   it. When the virtual function is called evaluate the given iterator with   the stored copy of the predicate.    
+*  [2.x.40]   
+* [0.x.58]*
+     Constructor. Take a predicate and store a copy of it.    
+* [0.x.59]*
+     Evaluate the iterator with the stored copy of the predicate.    
+* [0.x.60]*
+     Generate a copy of this object, i.e. of the actual type of this     pointer.    
+* [0.x.61]*
+     Copy of the predicate.    
+* [0.x.62]*
+   Pointer to an object that encapsulated the actual data type of the   predicate given to the constructor.  
+* [0.x.63]*
+ Create an object of type FilteredIterator given the base iterator and predicate.  This function makes the creation of temporary objects (for example as function arguments) a lot simpler because one does not have to explicitly specify the type of the base iterator by hand
+* 
+*  -  it is deduced automatically here.
+*   [2.x.41]  FilteredIterator
+
+* 
+* [0.x.64]*
+ Filter the  given range of iterators using a Predicate. This allows to replace:
+
+* 
+* [1.x.13]
+*  by:
+
+* 
+* [1.x.14]
+* 
+*   [2.x.42]  FilteredIterator
+
+* 
+*  [2.x.43] 
+
+* 
+* [0.x.65]*
+ Filter the given range of iterators through an arbitrary number of Predicates. This allows to replace:
+
+* 
+* [1.x.15]
+*  by:
+
+* 
+* [1.x.16]
+* 
+*   [2.x.44]  FilteredIterator
+
+* 
+*  [2.x.45] 
+
+* 
+* [0.x.66]

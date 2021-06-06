@@ -1,0 +1,62 @@
+[0.x.0]*
+ This class provides some facilities to generate 2d and 3d histograms. It is used by giving it one or several data sets and a rule how to break the range of values therein into intervals (e.g. linear spacing or logarithmic spacing of intervals). The values are then sorted into the different intervals and the number of values in each interval is stored for output later. In case only one data set was given, the resulting histogram will be a 2d one, while it will be a 3d one if more than one data set was given. For more than one data set, the same intervals are used for each of them anyway, to make comparison easier.
+* 
+
+*  [1.x.0]
+*  At present, the following schemes for interval spacing are implemented:  [2.x.0]   [2.x.1]  Linear spacing: The intervals are distributed in constant steps between the minimum and maximum values of the data.  [2.x.2]  Logarithmic spacing: The intervals are distributed in constant steps between the minimum and maximum values of the logs of the values. This scheme is only useful if the data has only positive values. Negative and zero values are sorted into the leftmost interval.  [2.x.3] 
+*  To keep programs extensible, you can use the two functions  [2.x.4]  get_interval_spacing_names and  [2.x.5]  which always give you a complete list of spacing formats presently supported and are able to generate the respective value of the  [2.x.6]  If you use them, you can write your program in a way such that it only needs to be recompiled to take effect of newly added formats, without changing your code.
+* 
+
+*  [1.x.1]
+*  At present, only GNUPLOT output is supported.
+* 
+
+* 
+
+* 
+*  [2.x.7] 
+
+* 
+* [0.x.1]*
+   Definition of several ways to arrange the spacing of intervals.  
+* [0.x.2]*
+     Space intervals linearly.    
+* [0.x.3]*
+     Space intervals logarithmically.    
+* [0.x.4]*
+   Take several lists of values, each on to produce one histogram that will   then be arrange one behind each other.     Using several data sets at once allows to compare them more easily, since   the intervals into which the data is sorted is the same for all data   sets.     The histograms will be arranged such that the computed intervals of the   <tt>values[i][j]</tt> form the x-range, and the number of values in each   interval will be the y-range (for 2d plots) or the z-range (for 3d   plots). For 3d plots, the  [2.x.8]  parameter is used to assign each   data set a value in the y direction, which is the depth coordinate in the   resulting plot. For 2d plots, the  [2.x.9]  are ignored.     If you give only one data set, i.e. <tt>values.size()==1</tt>, then the   resulting histogram will be a 2d one.      [2.x.10]  denotes the number of intervals into which the data will   be sorted;  [2.x.11]  denotes the way the bounds of the   intervals are computed. Refer to the general documentation for more   information on this.  
+* [0.x.5]*
+   This function is only a wrapper to the above one in case you have only   one data set.  
+* [0.x.6]*
+   Write the histogram computed by the  [2.x.12]  function to a stream in a   format suitable to the GNUPLOT program. The function generates 2d or 3d   histograms.  
+* [0.x.7]*
+   Return allowed names for the interval spacing as string. At present this   is "linear|logarithmic".  
+* [0.x.8]*
+   Get a string containing one of the names returned by the above function   and return the respective value of  [2.x.13]  Throw an error if   the string is no valid one.  
+* [0.x.9]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.10]*
+   Exception.  
+* [0.x.11]*
+   Exception.  
+* [0.x.12]*
+   Exception.  
+* [0.x.13]*
+   Structure denoting one interval.  
+* [0.x.14]*
+     Constructor. Sets the bounds and sets the number of values in this     interval to zero.    
+* [0.x.15]*
+     Determine an estimate for the memory consumption (in bytes) of this     object.    
+* [0.x.16]*
+     Left bound of the interval.    
+* [0.x.17]*
+     Right bound of the interval.    
+* [0.x.18]*
+     Number of values in this interval.    
+* [0.x.19]*
+   "Less-than" operation which finds the minimal positive value by sorting   zero and negative value to be larger than the largest positive number.   Used to find the lower bound of the leftmost interval in the logarithmic   case interval spacing scheme.     Return  [2.x.14]  if (<tt>n1<n2</tt>, and (<tt>n1>0</tt> or   <tt>n2<0</tt>)), or (n2<n1 and n1>0 and n2<=0). This in effect sorts all   negative numbers to be larger than the largest positive number.  
+* [0.x.20]*
+   Vector holding one set of intervals for each data set given to the  [2.x.15]    evaluate function.  
+* [0.x.21]*
+   Values for the depth axis of 3d histograms. Stored in the  [2.x.16]    function.  
+* [0.x.22]

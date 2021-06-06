@@ -1,0 +1,70 @@
+[0.x.0]*
+ Many classes in deal.II, such as FullMatrix, TransposeTable, and SparseMatrix, store their data in contiguous buffers (though the  [2.x.0] interpretation [2.x.1]  of what the elements of these buffers represent can, of course, be complex). For example, FullMatrix and TransposeTable store their data in row major and column major order respectively, whereas for SparseMatrix the mapping from buffer location to matrix entry  [2.x.2]  is more complicated. In any case, however, the contiguous arrangements of elements enables random access iteration.
+*  LinearIndexIterator provides most of the functionality needed to write iterators for these classes. LinearIndexIterator is essentially a simplified version of  [2.x.3]  that assumes  [2.x.4]  provides certain members (documented below) that completely describe the state of the iterator. The intended use of this class is for containers to define their own accessor classes and then use the curiously recurring template pattern (CRTP) technique to define their iterators. For example, here is a container that uses LinearIndexIterator to define its own iterator classes:
+* 
+
+* 
+* [1.x.0]
+* 
+*   [2.x.5]  DerivedIterator As shown in the example above, concrete iterator classes should use this class with the CRTP technique: this provides the boiler-plate comparison and arithmetic operators for iterators. This is necessary for, e.g.,  [2.x.6]  to return the correct type.
+*   [2.x.7]  AccessorType LinearIndexIterator assumes that the  [2.x.8]  template parameter has the following members which completely describe the current state of the iterator:  [2.x.9]     [2.x.10] A pointer named  [2.x.11]  to the original container (e.g.,   the relevant SparseMatrix). This should be a  [2.x.12]  pointer   for  [2.x.13]  iterators. [2.x.14]     [2.x.15] An array index named  [2.x.16]  that stores the current   position in the container's storage buffer.  [2.x.17]  does   not need to be an integer: it could be a class type (convertible to the   correct index type of the container) that implements    [2.x.18] , and    [2.x.19] . For example, one could implement a strided   iterator by implementing  [2.x.20]  and    [2.x.21]  with multiplicative factors. [2.x.22]   [2.x.23]  In addition,  [2.x.24]  should declare the relevant LinearIndexIterator instantiation to be a  [2.x.25]  and define a  [2.x.26]  type.
+* 
+
+* 
+*  [2.x.27]  TransposeTable uses this template to implement its iterators.
+
+* 
+* [0.x.1]*
+   Iterator category.  
+* [0.x.2]*
+   An alias for the type you get when you dereference an iterator of the   current kind.  
+* [0.x.3]*
+   Difference type.  
+* [0.x.4]*
+   Reference type.  
+* [0.x.5]*
+   Pointer type.  
+* [0.x.6]*
+   Size type used by the underlying container.  
+* [0.x.7]*
+   Copy operator.  
+* [0.x.8]*
+   Prefix increment.  
+* [0.x.9]*
+   Postfix increment.  
+* [0.x.10]*
+   Prefix decrement.  
+* [0.x.11]*
+   Postfix decrement.  
+* [0.x.12]*
+   Return an iterator that is  [2.x.28]  entries ahead of the current one.  
+* [0.x.13]*
+   Return an iterator that is  [2.x.29]  entries behind the current one.  
+* [0.x.14]*
+   Increment the iterator position by  [2.x.30]   
+* [0.x.15]*
+   Decrement the iterator position by  [2.x.31]   
+* [0.x.16]*
+   Return the distance between the current iterator and the argument. The   distance is given by how many times one has to apply operator++() to the   current iterator to get the argument (for a positive return value), or   operator--() (for a negative return value).  
+* [0.x.17]*
+   Dereferencing operator.  
+* [0.x.18]*
+   Dereferencing operator.  
+* [0.x.19]*
+   Comparison operator. Returns  [2.x.32]  if both iterators point to   the same entry in the same container.  
+* [0.x.20]*
+   Opposite of operator==().  
+* [0.x.21]*
+   Comparison operator: uses the same ordering as operator<(), but also   checks for equality.     This function is only valid if both iterators point into the same   container.  
+* [0.x.22]*
+   Comparison operator: uses the same ordering as operator>(), but also   checks for equality.     This function is only valid if both iterators point into the same   container.  
+* [0.x.23]*
+   Comparison operator. Result is true if either the first row number is   smaller or if the row numbers are equal and the first index is smaller.     This function is only valid if both iterators point into the same   container.  
+* [0.x.24]*
+   Comparison operator. Works in the same way as operator<(), just the other   way round.  
+* [0.x.25]   The inheriting class should have a default constructor.  
+* [0.x.26]*
+   Constructor that copies an accessor.  
+* [0.x.27]*
+   Store an object of the accessor class.  
+* [0.x.28]

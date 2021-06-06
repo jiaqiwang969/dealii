@@ -1,0 +1,198 @@
+[0.x.0]*
+ A namespace in which wrapper classes for PETSc objects reside.
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+    [2.x.2]  internal  
+* [0.x.2]*
+   A namespace for internal implementation details of the PETScWrapper   members.  
+*  [2.x.3]   
+* [0.x.3]*
+     Since access to PETSc vectors only goes through functions, rather than     by obtaining a reference to a vector element, we need a wrapper class     that acts as if it was a reference, and basically redirects all     accesses (read and write) to member functions of this class.         This class implements such a wrapper: it is initialized with a vector     and an element within it, and has a conversion operator to extract the     scalar value of this element. It also has a variety of assignment     operator for writing to this one element.    
+*  [2.x.4]     
+* [0.x.4]*
+       Declare type for container size.      
+* [0.x.5]*
+       Constructor. It is made private so as to only allow the actual vector       class to create it.      
+* [0.x.6]       Copy constructor.      
+* [0.x.7]*
+       This looks like a copy operator, but does something different than       usual. In particular, it does not copy the member variables of this       reference. Rather, it handles the situation where we have two vectors        [2.x.5]  and  [2.x.6]  and assign elements like in <tt>v(i)=w(i)</tt>. Here,       both left and right hand side of the assignment have data type       VectorReference, but what we really mean is to assign the vector       elements represented by the two references. This operator implements       this operation. Note also that this allows us to make the assignment       operator const.      
+* [0.x.8]*
+       The same function as above, but for non-const reference objects. The       function is needed since the compiler might otherwise automatically       generate a copy operator for non-const objects.      
+* [0.x.9]*
+       Set the referenced element of the vector to <tt>s</tt>.      
+* [0.x.10]*
+       Add <tt>s</tt> to the referenced element of the vector.      
+* [0.x.11]*
+       Subtract <tt>s</tt> from the referenced element of the vector.      
+* [0.x.12]*
+       Multiply the referenced element of the vector by <tt>s</tt>.      
+* [0.x.13]*
+       Divide the referenced element of the vector by <tt>s</tt>.      
+* [0.x.14]*
+       Return the real part of the value of the referenced element.      
+* [0.x.15]*
+       Return the imaginary part of the value of the referenced element.            
+*  [2.x.7]  This operation is not defined for real numbers and an exception       is thrown.      
+* [0.x.16]*
+       Convert the reference to an actual value, i.e. return the value of       the referenced element of the vector.      
+* [0.x.17]*
+       Exception      
+* [0.x.18]*
+       Exception.      
+* [0.x.19]*
+       Point to the vector we are referencing.      
+* [0.x.20]*
+       Index of the referenced element of the vector.      
+* [0.x.21]*
+    [2.x.8]   
+* [0.x.22]*
+   Base class for all vector classes that are implemented on top of the   PETSc vector types. Since in PETSc all vector types (i.e. sequential and   parallel ones) are built by filling the contents of an abstract object   that is only referenced through a pointer of a type that is independent   of the actual vector type, we can implement almost all functionality of   vectors in this base class. As such, this class can also be used as a   deal.II-compatible wrapper for a PETSc  [2.x.9]  object of any   type. Derived classes will then only have to provide the functionality to   create one or the other kind of vector.     The interface of this class is modeled after the existing Vector class in   deal.II. It has almost the same member functions, and is often   exchangeable. However, since PETSc only supports a single scalar type   (either double, float, or a complex data type), it is not templated, and   only works with whatever your PETSc installation has defined the data   type  [2.x.10]  to.     Note that PETSc only guarantees that operations do what you expect if the   functions  [2.x.11]  and  [2.x.12]  have been called   after vector assembly. Therefore, you need to call  [2.x.13]    before you actually use the vector.    
+*  [2.x.14]   
+* [0.x.23]*
+     Declare some of the standard types used in all containers. These types     parallel those in the <tt>C++</tt> standard libraries     <tt>vector<...></tt> class.    
+* [0.x.24]*
+     Default constructor. It doesn't do anything, derived classes will have     to initialize the data.    
+* [0.x.25]*
+     Copy constructor. Sets the dimension to that of the given vector, and     copies all elements.    
+* [0.x.26]*
+     Initialize a Vector from a PETSc Vec object. Note that we do not copy     the vector and we do not obtain ownership, so we do not destroy the     PETSc object in the destructor.    
+* [0.x.27]*
+     The copy assignment operator is deleted to avoid accidental usage with     unexpected behavior.    
+* [0.x.28]*
+     Destructor.    
+* [0.x.29]*
+     Release all memory and return to a state just like after having called     the default constructor.    
+* [0.x.30]*
+     Compress the underlying representation of the PETSc object, i.e. flush     the buffers of the vector object if it has any. This function is     necessary after writing into a vector element-by-element and before     anything else can be done on it.         See      [2.x.15]  "Compressing distributed objects"     for more information.    
+* [0.x.31]*
+     Set all components of the vector to the given number  [2.x.16]  Simply pass     this down to the individual block objects, but we still need to declare     this function to make the example given in the discussion about making     the constructor explicit work.             Since the semantics of assigning a scalar to a vector are not     immediately clear, this operator should really only be used if you want     to set the entire vector to zero. This allows the intuitive notation     <tt>v=0</tt>. Assigning other values is deprecated and may be     disallowed in the future.    
+* [0.x.32]*
+     Test for equality. This function assumes that the present vector and     the one to compare with have the same size already, since comparing     vectors of different sizes makes not much sense anyway.    
+* [0.x.33]*
+     Test for inequality. This function assumes that the present vector and     the one to compare with have the same size already, since comparing     vectors of different sizes makes not much sense anyway.    
+* [0.x.34]*
+     Return the global dimension of the vector.    
+* [0.x.35]*
+     Return the local dimension of the vector, i.e. the number of elements     stored on the present MPI process. For sequential vectors, this number     is the same as size(), but for parallel vectors it may be smaller.         To figure out which elements exactly are stored locally, use     local_range() or locally_owned_elements().          [2.x.17]  use locally_owned_size() instead.    
+* [0.x.36]*
+     Return the local dimension of the vector, i.e. the number of elements     stored on the present MPI process. For sequential vectors, this number     is the same as size(), but for parallel vectors it may be smaller.         To figure out which elements exactly are stored locally, use     local_range() or locally_owned_elements().    
+* [0.x.37]*
+     Return a pair of indices indicating which elements of this vector are     stored locally. The first number is the index of the first element     stored, the second the index of the one past the last one that is     stored locally. If this is a sequential vector, then the result will be     the pair (0,N), otherwise it will be a pair (i,i+n), where     <tt>n=locally_owned_size()</tt>.    
+* [0.x.38]*
+     Return whether  [2.x.18]  is in the local range or not, see also     local_range().    
+* [0.x.39]*
+     Return an index set that describes which elements of this vector are     owned by the current processor. Note that this index set does not     include elements this vector may store locally as ghost elements but     that are in fact owned by another processor. As a consequence, the     index sets returned on different processors if this is a distributed     vector will form disjoint sets that add up to the complete index set.     Obviously, if a vector is created on only one processor, then the     result would satisfy    
+* [1.x.0]
+*     
+* [0.x.40]*
+     Return if the vector contains ghost elements.          [2.x.19]       [2.x.20]  "vectors with ghost elements"    
+* [0.x.41]*
+     This function only exists for compatibility with the  [2.x.21]       [2.x.22]  class and does nothing: this class     implements ghost value updates in a different way that is a better fit     with the underlying PETSc vector object.    
+* [0.x.42]*
+     Provide access to a given element, both read and write.    
+* [0.x.43]*
+     Provide read-only access to an element.    
+* [0.x.44]*
+     Provide access to a given element, both read and write.         Exactly the same as operator().    
+* [0.x.45]*
+     Provide read-only access to an element.         Exactly the same as operator().    
+* [0.x.46]*
+     A collective set operation: instead of setting individual elements of a     vector, this function allows to set a whole set of elements at once.     The indices of the elements to be set are stated in the first argument,     the corresponding values in the second.    
+* [0.x.47]*
+     Instead of getting individual elements of a vector via operator(),     this function allows getting a whole set of elements at once. The     indices of the elements to be read are stated in the first argument, the     corresponding values are returned in the second.         If the current vector is called  [2.x.23]  then this function is the equivalent     to the code    
+* [1.x.1]
+*           [2.x.24]  The sizes of the  [2.x.25]  and  [2.x.26]  arrays must be identical.    
+* [0.x.48]*
+     Instead of getting individual elements of a vector via operator(),     this function allows getting a whole set of elements at once. In     contrast to the previous function, this function obtains the     indices of the elements by dereferencing all elements of the iterator     range provided by the first two arguments, and puts the vector     values into memory locations obtained by dereferencing a range     of iterators starting at the location pointed to by the third     argument.         If the current vector is called  [2.x.27]  then this function is the equivalent     to the code    
+* [1.x.2]
+*           [2.x.28]  It must be possible to write into as many memory locations       starting at  [2.x.29]  as there are iterators between        [2.x.30]  and  [2.x.31]     
+* [0.x.49]*
+     A collective add operation: This function adds a whole set of values     stored in  [2.x.32]  to the vector components specified by  [2.x.33]     
+* [0.x.50]*
+     This is a second collective add operation. As a difference, this     function takes a deal.II vector of values.    
+* [0.x.51]*
+     Take an address where <tt>n_elements</tt> are stored contiguously and     add them into the vector. Handles all cases which are not covered by     the other two <tt>add()</tt> functions above.    
+* [0.x.52]*
+     Return the scalar product of two vectors. The vectors must have the     same size.         For complex valued vector, this gives [2.x.34] .    
+* [0.x.53]*
+     Return the square of the  [2.x.35] -norm.    
+* [0.x.54]*
+     Return the mean value of the elements of this vector.    
+* [0.x.55]*
+      [2.x.36] -norm of the vector. The sum of the absolute values.        
+*  [2.x.37]  In complex-valued PETSc priori to 3.7.0 this norm is implemented     as the sum of absolute values of real and imaginary parts of elements     of a complex vector.    
+* [0.x.56]*
+      [2.x.38] -norm of the vector.  The square root of the sum of the squares of     the elements.    
+* [0.x.57]*
+      [2.x.39] -norm of the vector. The pth root of the sum of the pth powers of     the absolute values of the elements.    
+* [0.x.58]*
+      [2.x.40] -norm of the vector. Return the value of the vector element     with the maximum absolute value.    
+* [0.x.59]*
+     Performs a combined operation of a vector addition and a subsequent     inner product, returning the value of the inner product. In other     words, the result of this function is the same as if the user called    
+* [1.x.3]
+*          The reason this function exists is for compatibility with deal.II's own     vector classes which can implement this functionality with less memory     transfer. However, for PETSc vectors such a combined operation is not     natively supported and thus the cost is completely equivalent as     calling the two methods separately.         For complex-valued vectors, the scalar product in the second step is     implemented as      [2.x.41] .    
+* [0.x.60]*
+     Return the value of the vector element with the largest negative value.          [2.x.42]  This function has been deprecated to improve compatibility     with other classes inheriting from VectorSpaceVector. If you need to     use this functionality then use the PETSc function VecMin instead.    
+* [0.x.61]*
+     Return the value of the vector element with the largest positive value.          [2.x.43]  This function has been deprecated to improve compatibility     with other classes inheriting from VectorSpaceVector. If you need to     use this functionality then use the PETSc function VecMax instead.    
+* [0.x.62]*
+     Return whether the vector contains only elements with value zero. This     is a collective operation. This function is expensive, because     potentially all elements have to be checked.    
+* [0.x.63]*
+     Return  [2.x.44]  if the vector has no negative entries, i.e. all entries     are zero or positive. This function is used, for example, to check     whether refinement indicators are really all positive (or zero).          [2.x.45]  This function has been deprecated to improve compatibility     with other classes inheriting from VectorSpaceVector.    
+* [0.x.64]*
+     Multiply the entire vector by a fixed factor.    
+* [0.x.65]*
+     Divide the entire vector by a fixed factor.    
+* [0.x.66]*
+     Add the given vector to the present one.    
+* [0.x.67]*
+     Subtract the given vector from the present one.    
+* [0.x.68]*
+     Addition of  [2.x.46]  to all components. Note that  [2.x.47]  is a scalar and not     a vector.    
+* [0.x.69]*
+     Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.    
+* [0.x.70]*
+     Multiple addition of scaled vectors, i.e. <tt>*this += a*V+b*W</tt>.    
+* [0.x.71]*
+     Scaling and simple vector addition, i.e. <tt>*this = s*(*this)+V</tt>.    
+* [0.x.72]*
+     Scaling and simple addition, i.e. <tt>*this = s*(*this)+a*V</tt>.    
+* [0.x.73]*
+     Scale each element of this vector by the corresponding element in the     argument. This function is mostly meant to simulate multiplication (and     immediate re-assignment) by a diagonal scaling matrix.    
+* [0.x.74]*
+     Assignment <tt>*this = a*V</tt>.    
+* [0.x.75]*
+     Prints the PETSc vector object values using PETSc internal vector     viewer function <tt>VecView</tt>. The default format prints the     vector's contents, including indices of vector elements. For other     valid view formats, consult     http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Vec/VecView.html    
+* [0.x.76]*
+     Print to a stream.  [2.x.48]  denotes the desired precision with     which values shall be printed,  [2.x.49]  whether scientific     notation shall be used. If  [2.x.50]  is  [2.x.51]  then the vector is     printed in a line, while if  [2.x.52]  then the elements are printed on a     separate line each.    
+* [0.x.77]*
+     Swap the contents of this vector and the other vector  [2.x.53]  One could     do this operation with a temporary variable and copying over the data     elements, but this function is significantly more efficient since it     only swaps the pointers to the data of the two vectors and therefore     does not need to allocate temporary storage and move data around.         This function is analogous to the  [2.x.54]  function of all C++     standard containers. Also, there is a global function     <tt>swap(u,v)</tt> that simply calls <tt>u.swap(v)</tt>, again in     analogy to standard functions.    
+* [0.x.78]*
+     Conversion operator to gain access to the underlying PETSc type. If you     do this, you cut this class off some information it may need, so this     conversion operator should only be used if you know what you do. In     particular, it should only be used for read-only operations into the     vector.    
+* [0.x.79]*
+     Estimate for the memory consumption (not implemented for this class).    
+* [0.x.80]*
+     Return a reference to the MPI communicator object in use with this     object.    
+* [0.x.81]*
+     A generic vector object in PETSc. The actual type, a sequential vector,     is set in the constructor.    
+* [0.x.82]*
+     Denotes if this vector has ghost indices associated with it. This means     that at least one of the processes in a parallel program has at least     one ghost index.    
+* [0.x.83]*
+     This vector contains the global indices of the ghost values. The     location in this vector denotes the local numbering, which is used in     PETSc.    
+* [0.x.84]*
+     Store whether the last action was a write or add operation. This     variable is  [2.x.55]  so that the accessor classes can write to it,     even though the vector object they refer to is constant.    
+* [0.x.85]*
+     Specifies if the vector is the owner of the PETSc Vec. This is true if     it got created by this class and determines if it gets destroyed in     the destructor.    
+* [0.x.86]*
+     Collective set or add operation: This function is invoked by the     collective  [2.x.56]  and  [2.x.57]  with the  [2.x.58]  flag set to the     corresponding value.    
+* [0.x.87]*
+   Global function  [2.x.59]  which overloads the default implementation of the   C++ standard library which uses a temporary object. The function simply   exchanges the data of the two vectors.      [2.x.60]   [2.x.61]   
+* [0.x.88]

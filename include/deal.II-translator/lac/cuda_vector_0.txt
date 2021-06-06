@@ -1,0 +1,89 @@
+[0.x.0]*
+   A Namespace for the CUDA vectors.  
+* [0.x.1]*
+     This class implements a vector using CUDA for use on Nvidia GPUs. This     class is derived from the  [2.x.0]  class.        
+*  [2.x.1]  Only float and double are supported.          [2.x.2]  CUDAWrappers    
+*  [2.x.3]     
+* [0.x.2]*
+       Constructor. Create a vector of dimension zero.      
+* [0.x.3]*
+       Copy constructor.      
+* [0.x.4]*
+       Move constructor.      
+* [0.x.5]*
+       Constructor. Set dimension to  [2.x.4]  and initialize all elements with       zero.             The constructor is made explicit to avoid accident like this:       <tt>v=0;</tt>. Presumably, the user wants to set every elements of       the vector to zero, but instead, what happens is this call:       <tt>v=Vector [2.x.5]  i.e. the vector is replaced by one       of length zero.      
+* [0.x.6]*
+       Copy assignment operator.      
+* [0.x.7]*
+       Move assignment operator.      
+* [0.x.8]*
+       Swap the contents of this vector and the other vector  [2.x.6]  One could do       this operation with a temporary variable and copying over the data       elements, but this function is significantly more efficient since it       only swaps the pointers to the data of the two vectors and therefore       does not need to allocate temporary storage and move data around.             This function is analogous to the  [2.x.7]  function of all C++       standard containers. Also, there is a global function       <tt>swap(u,v)</tt> that simply calls <tt>u.swap(v)</tt>, again in       analogy to standard functions.             This function is virtual in order to allow for derived classes to       handle memory separately.      
+* [0.x.9]*
+       Reinit functionality. The flag <tt>omit_zeroing_entries</tt>       determines whether the vector should be filled with zero (false) or       left untouched (true).      
+* [0.x.10]*
+       Change the dimension to that of the vector V. The elements of V are not       copied.      
+* [0.x.11]*
+       Import all the element from the input vector  [2.x.8]         [2.x.9]   [2.x.10]  is used to decide if the       elements int  [2.x.11]  should be added to the current vector or replace       the current elements. The last parameter is not used. It is only used       for distributed vectors. This is the function that should be used to       copy a vector to the GPU.      
+* [0.x.12]*
+       Sets all elements of the vector to the scalar  [2.x.12]  This operation is       only allowed if  [2.x.13]  is equal to zero.      
+* [0.x.13]*
+       Multiply the entive vector by a fixed factor.      
+* [0.x.14]*
+       Divide the entire vector by a fixed factor.      
+* [0.x.15]*
+       Add the vector  [2.x.14]  to the present one.      
+* [0.x.16]*
+       Subtract the vector  [2.x.15]  from the present one.      
+* [0.x.17]*
+       Return the scalar product of two vectors.      
+* [0.x.18]*
+       Add  [2.x.16]  all components. Note that  [2.x.17]  is a scalar not a vector.      
+* [0.x.19]*
+       Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.      
+* [0.x.20]*
+       Multiple additions of scaled vectors, i.e. <tt>*this += a*V+b*W</tt>.      
+* [0.x.21]*
+       Scaling and simple addition of a multiple of a vector, i.e. <tt>*this       = s*(*this)+a*V</tt>      
+* [0.x.22]*
+       Scale each element of this vector by the corresponding element in the       argument. This function is mostly meant to simulate multiplication       (and immediate re-assignment) by a diagonal scaling matrix.      
+* [0.x.23]*
+       Assignment <tt>*this = a*V</tt>.      
+* [0.x.24]*
+       Return whether the vector contains only elements with value zero.      
+* [0.x.25]*
+       Return the mean value of all the entries of this vector.      
+* [0.x.26]*
+       Return the l<sub>1</sub> norm of the vector (i.e., the sum of the       absolute values of all entries among all processors).      
+* [0.x.27]*
+       Return the l<sub>2</sub> norm of the vector (i.e., the square root of       the sum of the square of all entries among all processors).      
+* [0.x.28]*
+       Return the square of the  [2.x.18] -norm.      
+* [0.x.29]*
+       Return the maximum norm of the vector (i.e., the maximum absolute       value among all entries and among all processors).      
+* [0.x.30]*
+       Perform a combined operation of a vector addition and a subsequent       inner product, returning the value of the inner product. In other       words, the result of this function is the same as if the user called      
+* [1.x.0]
+*              The reason this function exists is that this operation involves less       memory transfer than calling the two functions separately. This       method only needs to load three vectors,  [2.x.19]   [2.x.20]   [2.x.21]  whereas       calling separate methods means to load the calling vector  [2.x.22]        twice. Since most vector operations are memory transfer limited, this       reduces the time by 25\% (or 50\% if  [2.x.23]  equals  [2.x.24]              For complex-valued vectors, the scalar product in the second step is       implemented as  [2.x.25] .      
+* [0.x.31]*
+       Return the pointer to the underlying array. Ownership still resides       with this class.      
+* [0.x.32]*
+       Return the size of the vector.      
+* [0.x.33]*
+       Return an index set that describe which elements of this vector are       owned by the current processor, i.e. [0, size).      
+* [0.x.34]*
+       Print the vector to the output stream  [2.x.26]       
+* [0.x.35]*
+       Return the memory consumption of this class in bytes.      
+* [0.x.36]*
+       Attempt to perform an operation between two incompatible vector types.            
+*  [2.x.27]       
+* [0.x.37]*
+       Pointer to the array of elements of this vector.      
+* [0.x.38]*
+       Number of elements in the vector.      
+* [0.x.39]*
+ Global function  [2.x.28]  which overloads the default implementation of the C++ standard library which uses a temporary object. The function simply exchanges the data of the two vectors.
+*   [2.x.29]  Vector
+
+* 
+* [0.x.40]

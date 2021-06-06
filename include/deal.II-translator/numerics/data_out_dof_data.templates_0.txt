@@ -1,0 +1,65 @@
+[0.x.0]*
+     Generate evaluation points on a simplex with arbitrary number of     subdivisions.    
+* [0.x.1]*
+     Helper function to create evaluation points recursively with     subdivisions=0,1,2 being the base case:                                            +                                            |\                                +           +-+                                |\          |\|\                      +         +-+         +-+-+                      |\        |\|\        |\|\|\              +       +-+       +-+-+       +-+-+-+              |\      |\|\      |\|\|\      |\|\|\|\        +     +-+     +-+-+     +-+-+-+     +-+-+-+-+            0      1        2          3            4        ^      ^                   |            |        |      |                   |            |        +--------------------------+            |               |                                |               +--------------------------------+    
+* [0.x.2]*
+     Specialization for triangles.    
+* [0.x.3]*
+     Set up vectors of FEValues and FEFaceValues needed inside of     ParallelDataBase and return the maximum number of quadrature points     needed to allocate enough memory for the scratch data.    
+* [0.x.4]*
+     In a WorkStream context, use this function to append the patch computed     by the parallel stage to the array of patches.    
+* [0.x.5]*
+     Extract the specified component of a number. This template is used when     the given value is assumed to be a real scalar, so asking for the real     part is the only valid choice for the second argument.    
+* [0.x.6]*
+     Extract the specified component of a number. This template is used when     the given value is a complex number    
+* [0.x.7]*
+     Helper class templated on vector type to allow different implementations     to extract information from a vector.    
+* [0.x.8]*
+       extract the  [2.x.0]  from  [2.x.1]  and put them into  [2.x.2]       
+* [0.x.9]*
+     Class that stores a pointer to a vector of type equal to the template     argument, and provides the functions to extract data from it.    
+* [0.x.10]*
+       Constructor. Give a list of names for the individual components of       the vector and their interpretation as scalar or vector data. This       constructor assumes that no postprocessor is going to be used.      
+* [0.x.11]*
+       Constructor when a data postprocessor is going to be used. In that       case, the names and vector declarations are going to be acquired from       the postprocessor.      
+* [0.x.12]*
+       Assuming that the stored vector is a cell vector, extract the given       element from it.      
+* [0.x.13]*
+       Given a FEValuesBase object, extract the values on the present cell       from the vector we actually store.      
+* [0.x.14]*
+       Given a FEValuesBase object, extract the values on the present cell       from the vector we actually store. This function does the same as the       one above but for vector-valued finite elements.      
+* [0.x.15]*
+       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store.      
+* [0.x.16]*
+       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store. This function does the same       as the one above but for vector-valued finite elements.      
+* [0.x.17]*
+       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store.      
+* [0.x.18]*
+       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store. This function does       the same as the one above but for vector-valued finite elements.      
+* [0.x.19]*
+       Return whether the data represented by (a derived class of) this object       represents a complex-valued (as opposed to real-valued) information.      
+* [0.x.20]*
+       Clear all references to the vectors.      
+* [0.x.21]*
+       Determine an estimate for the memory consumption (in bytes) of this       object.      
+* [0.x.22]*
+       Pointer to the data vector. Note that ownership of the vector pointed       to remains with the caller of this class.      
+* [0.x.23]*
+     Like DataEntry, but used to look up data from multigrid computations.     Data will use level-DoF indices to look up in a     MGLevelObject<VectorType> given on the specific level instead of     interpolating data to coarser cells.    
+* [0.x.24]*
+       Given a FEValuesBase object, extract the values on the present cell       from the vector we actually store. This function does the same as the       one above but for vector-valued finite elements.      
+* [0.x.25]*
+       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store.      
+* [0.x.26]*
+       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store. This function does the same       as the one above but for vector-valued finite elements.      
+* [0.x.27]*
+       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store.      
+* [0.x.28]*
+       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store. This function does       the same as the one above but for vector-valued finite elements.      
+* [0.x.29]*
+       Return whether the data represented by (a derived class of) this object       represents a complex-valued (as opposed to real-valued) information.      
+* [0.x.30]*
+       Clear all references to the vectors.      
+* [0.x.31]*
+       Determine an estimate for the memory consumption (in bytes) of this       object.      
+* [0.x.32]

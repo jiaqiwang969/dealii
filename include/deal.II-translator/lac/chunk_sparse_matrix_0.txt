@@ -1,0 +1,293 @@
+[0.x.0]!  [2.x.0]  Matrix1 [2.x.1] 
+
+* 
+* [0.x.1]*
+ A namespace in which we declare iterators over the elements of sparse matrices.
+
+* 
+* [0.x.2]*
+   General template for sparse matrix accessors. The first template argument   denotes the underlying numeric type, the second the constness of the   matrix.     The general template is not implemented, only the specializations for the   two possible values of the second template argument. Therefore, the   interface listed here only serves as a template provided since doxygen   does not link the specializations.  
+* [0.x.3]*
+     Value of this matrix entry.    
+* [0.x.4]*
+     Value of this matrix entry.    
+* [0.x.5]*
+     Return a reference to the matrix into which this accessor points. Note     that in the present case, this is a constant reference.    
+* [0.x.6]*
+   Accessor class for constant matrices, used in the const_iterators. This   class builds on the accessor classes used for sparsity patterns to loop   over all nonzero entries, and only adds the accessor functions to gain   access to the actual value stored at a certain location.  
+* [0.x.7]*
+     Typedef for the type (including constness) of the matrix to be used     here.    
+* [0.x.8]*
+     Constructor.    
+* [0.x.9]*
+     Constructor. Construct the end accessor for the given matrix.    
+* [0.x.10]*
+     Copy constructor to get from a non-const accessor to a const accessor.    
+* [0.x.11]*
+     Value of this matrix entry.    
+* [0.x.12]*
+     Return a reference to the matrix into which this accessor points. Note     that in the present case, this is a constant reference.    
+* [0.x.13]*
+     Pointer to the matrix we use.    
+* [0.x.14]*
+     Make the advance function of the base class available.    
+* [0.x.15]*
+   Accessor class for non-constant matrices, used in the iterators. This   class builds on the accessor classes used for sparsity patterns to loop   over all nonzero entries, and only adds the accessor functions to gain   access to the actual value stored at a certain location.  
+* [0.x.16]*
+     Reference class. This is what the accessor class returns when you call     the value() function. The reference acts just as if it were a reference     to the actual value of a matrix entry, i.e. you can read and write it,     you can add and multiply to it, etc, but since the matrix does not give     away the address of this matrix entry, we have to go through functions     to do all this.         The constructor takes a pointer to an accessor object that describes     which element of the matrix it points to. This creates an ambiguity     when one writes code like iterator->value()=0 (instead of     iterator->value()=0.0), since the right hand side is an integer that     can both be converted to a <tt>number</tt> (i.e., most commonly a     double) or to another object of type <tt>Reference</tt>. The compiler     then complains about not knowing which conversion to take.         For some reason, adding another overload operator=(int) doesn't seem to     cure the problem. We avoid it, however, by adding a second, dummy     argument to the Reference constructor, that is unused, but makes sure     there is no second matching conversion sequence using a one-argument     right hand side.    
+* [0.x.17]*
+       Constructor. For the second argument, see the general class       documentation.      
+* [0.x.18]*
+       Conversion operator to the data type of the matrix.      
+* [0.x.19]*
+       Set the element of the matrix we presently point to to  [2.x.2]       
+* [0.x.20]*
+       Add  [2.x.3]  to the element of the matrix we presently point to.      
+* [0.x.21]*
+       Subtract  [2.x.4]  from the element of the matrix we presently point to.      
+* [0.x.22]*
+       Multiply the element of the matrix we presently point to by  [2.x.5]       
+* [0.x.23]*
+       Divide the element of the matrix we presently point to by  [2.x.6]       
+* [0.x.24]*
+       Pointer to the accessor that denotes which element we presently point       to.      
+* [0.x.25]*
+     Typedef for the type (including constness) of the matrix to be used     here.    
+* [0.x.26]*
+     Constructor.    
+* [0.x.27]*
+     Constructor. Construct the end accessor for the given matrix.    
+* [0.x.28]*
+     Value of this matrix entry, returned as a read- and writable reference.    
+* [0.x.29]*
+     Return a reference to the matrix into which this accessor points. Note     that in the present case, this is a non-constant reference.    
+* [0.x.30]*
+     Pointer to the matrix we use.    
+* [0.x.31]*
+     Make the advance function of the base class available.    
+* [0.x.32]*
+   Iterator for constant and non-constant matrices.     The first template argument denotes the underlying numeric type, the   second the constness of the matrix.     Since there is a specialization of this class for   <tt>Constness=false</tt>, this class is for iterators to constant   matrices.  
+* [0.x.33]*
+     Typedef for the matrix type (including constness) we are to operate on.    
+* [0.x.34]*
+     An alias for the type you get when you dereference an iterator of the     current kind.    
+* [0.x.35]*
+     Constructor. Create an iterator into the matrix  [2.x.7]  for the given     row and the index within it.    
+* [0.x.36]*
+     Constructor. Create the end iterator for the given matrix.    
+* [0.x.37]*
+     Conversion constructor to get from a non-const iterator to a const     iterator.    
+* [0.x.38]*
+     Prefix increment.    
+* [0.x.39]*
+     Postfix increment.    
+* [0.x.40]*
+     Dereferencing operator.    
+* [0.x.41]*
+     Dereferencing operator.    
+* [0.x.42]*
+     Comparison. True, if both iterators point to the same matrix position.    
+* [0.x.43]*
+     Inverse of <tt>==</tt>.    
+* [0.x.44]*
+     Comparison operator. Result is true if either the first row number is     smaller or if the row numbers are equal and the first index is smaller.         This function is only valid if both iterators point into the same     matrix.    
+* [0.x.45]*
+     Comparison operator. Works in the same way as above operator, just the     other way round.    
+* [0.x.46]*
+     Return the distance between the current iterator and the argument. The     distance is given by how many times one has to apply operator++ to the     current iterator to get the argument (for a positive return value), or     operator-- (for a negative return value).    
+* [0.x.47]*
+     Return an iterator that is  [2.x.8]  ahead of the current one.    
+* [0.x.48]*
+     Store an object of the accessor class.    
+* [0.x.49]*
+ Sparse matrix. This class implements the function to store values in the locations of a sparse matrix denoted by a SparsityPattern. The separation of sparsity pattern and values is done since one can store data elements of different type in these locations without the SparsityPattern having to know this, and more importantly one can associate more than one matrix with the same sparsity pattern.
+*  The use of this class is demonstrated in  [2.x.9] .
+* 
+
+* 
+*  [2.x.10]  Instantiations for this template are provided for <tt> [2.x.11]  and  [2.x.12]  others can be generated in application programs (see the section on  [2.x.13]  in the manual).
+
+* 
+* [0.x.50]*
+   Declare the type for container size.  
+* [0.x.51]*
+   Type of matrix entries. This alias is analogous to <tt>value_type</tt>   in the standard library containers.  
+* [0.x.52]*
+   Declare a type that has holds real-valued numbers with the same precision   as the template argument to this class. If the template argument of this   class is a real data type, then real_type equals the template argument.   If the template argument is a  [2.x.14]  type then real_type equals the   type underlying the complex numbers.     This alias is used to represent the return type of norms.  
+* [0.x.53]*
+   Typedef of an iterator class walking over all the nonzero entries of this   matrix. This iterator cannot change the values of the matrix.  
+* [0.x.54]*
+   Typedef of an iterator class walking over all the nonzero entries of this   matrix. This iterator  [2.x.15]  can change the values of the matrix, but of   course can't change the sparsity pattern as this is fixed once a sparse   matrix is attached to it.  
+* [0.x.55]*
+   A structure that describes some of the traits of this class in terms of   its run-time behavior. Some other classes (such as the block matrix   classes) that take one or other of the matrix classes as its template   parameters can tune their behavior based on the variables in this class.  
+* [0.x.56]*
+     It is safe to elide additions of zeros to individual elements of this     matrix.    
+* [0.x.57]*
+    [2.x.16]  Constructors and initialization.  
+* [0.x.58]*
+   Constructor; initializes the matrix to be empty, without any structure,   i.e.  the matrix is not usable at all. This constructor is therefore only   useful for matrices which are members of a class. All other matrices   should be created at a point in the data flow where all necessary   information is available.     You have to initialize the matrix before usage with reinit(const   ChunkSparsityPattern&).  
+* [0.x.59]*
+   Copy constructor. This constructor is only allowed to be called if the   matrix to be copied is empty. This is for the same reason as for the   ChunkSparsityPattern, see there for the details.     If you really want to copy a whole matrix, you can do so by using the   copy_from() function.  
+* [0.x.60]*
+   Constructor. Takes the given matrix sparsity structure to represent the   sparsity pattern of this matrix. You can change the sparsity pattern   later on by calling the reinit(const ChunkSparsityPattern&) function.     You have to make sure that the lifetime of the sparsity structure is at   least as long as that of this matrix or as long as reinit(const   ChunkSparsityPattern&) is not called with a new sparsity pattern.     The constructor is marked explicit so as to disallow that someone passes   a sparsity pattern in place of a sparse matrix to some function, where an   empty matrix would be generated then.  
+* [0.x.61]*
+   Copy constructor: initialize the matrix with the identity matrix. This   constructor will throw an exception if the sizes of the sparsity pattern   and the identity matrix do not coincide, or if the sparsity pattern does   not provide for nonzero entries on the entire diagonal.  
+* [0.x.62]*
+   Destructor. Free all memory, but do not release the memory of the   sparsity structure.  
+* [0.x.63]*
+   Copy operator. Since copying entire sparse matrices is a very expensive   operation, we disallow doing so except for the special case of empty   matrices of size zero. This doesn't seem particularly useful, but is   exactly what one needs if one wanted to have a    [2.x.17] : in that case,   one can create a vector (which needs the ability to copy objects) of   empty matrices that are then later filled with something useful.  
+* [0.x.64]*
+   Copy operator: initialize the matrix with the identity matrix. This   operator will throw an exception if the sizes of the sparsity pattern and   the identity matrix do not coincide, or if the sparsity pattern does not   provide for nonzero entries on the entire diagonal.  
+* [0.x.65]*
+   This operator assigns a scalar to a matrix. Since this does usually not   make much sense (should we set all matrix entries to this value?  Only   the nonzero entries of the sparsity pattern?), this operation is only   allowed if the actual value to be assigned is zero. This operator only   exists to allow for the obvious notation <tt>matrix=0</tt>, which sets   all elements of the matrix to zero, but keep the sparsity pattern   previously used.  
+* [0.x.66]*
+   Reinitialize the sparse matrix with the given sparsity pattern. The   latter tells the matrix how many nonzero elements there need to be   reserved.     Regarding memory allocation, the same applies as said above.     You have to make sure that the lifetime of the sparsity structure is at   least as long as that of this matrix or as long as reinit(const   ChunkSparsityPattern &) is not called with a new sparsity structure.     The elements of the matrix are set to zero by this function.  
+* [0.x.67]*
+   Release all memory and return to a state just like after having called   the default constructor. It also forgets the sparsity pattern it was   previously tied to.  
+* [0.x.68]*
+    [2.x.18]  Information on the matrix  
+* [0.x.69]*
+   Return whether the object is empty. It is empty if either both dimensions   are zero or no ChunkSparsityPattern is associated.  
+* [0.x.70]*
+   Return the dimension of the codomain (or range) space. Note that the   matrix is of dimension  [2.x.19] .  
+* [0.x.71]*
+   Return the dimension of the domain space. Note that the matrix is of   dimension  [2.x.20] .  
+* [0.x.72]*
+   Return the number of nonzero elements of this matrix. Actually, it   returns the number of entries in the sparsity pattern; if any of the   entries should happen to be zero, it is counted anyway.  
+* [0.x.73]*
+   Return the number of actually nonzero elements of this matrix.     Note, that this function does (in contrary to n_nonzero_elements()) not   count all entries of the sparsity pattern but only the ones that are   nonzero.  
+* [0.x.74]*
+   Return a (constant) reference to the underlying sparsity pattern of this   matrix.     Though the return value is declared <tt>const</tt>, you should be aware   that it may change if you call any nonconstant function of objects which   operate on it.  
+* [0.x.75]*
+   Determine an estimate for the memory consumption (in bytes) of this   object. See MemoryConsumption.  
+* [0.x.76]*
+    [2.x.21]  Modifying entries  
+* [0.x.77]*
+   Set the element ([1.x.0]) to <tt>value</tt>. Throws an error if the   entry does not exist or if <tt>value</tt> is not a finite number. Still,   it is allowed to store zero values in non-existent fields.  
+* [0.x.78]*
+   Add <tt>value</tt> to the element ([1.x.1]).  Throws an error if the   entry does not exist or if <tt>value</tt> is not a finite number. Still,   it is allowed to store zero values in non-existent fields.  
+* [0.x.79]*
+   Add an array of values given by <tt>values</tt> in the given global   matrix row at columns specified by col_indices in the sparse matrix.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.80]*
+   Multiply the entire matrix by a fixed factor.  
+* [0.x.81]*
+   Divide the entire matrix by a fixed factor.  
+* [0.x.82]*
+   Symmetrize the matrix by forming the mean value between the existing   matrix and its transpose,  [2.x.22] .     This operation assumes that the underlying sparsity pattern represents a   symmetric object. If this is not the case, then the result of this   operation will not be a symmetric matrix, since it only explicitly   symmetrizes by looping over the lower left triangular part for efficiency   reasons; if there are entries in the upper right triangle, then these   elements are missed in the symmetrization. Symmetrization of the sparsity   pattern can be obtain by  [2.x.23]   
+* [0.x.83]*
+   Copy the matrix given as argument into the current object.     Copying matrices is an expensive operation that we do not want to happen   by accident through compiler generated code for  [2.x.24] .   (This would happen, for example, if one accidentally declared a function   argument of the current type [1.x.2] rather than [1.x.3].) The functionality of copying matrices is implemented in   this member function instead. All copy operations of objects of this type   therefore require an explicit function call.     The source matrix may be a matrix of arbitrary type, as long as its data   type is convertible to the data type of this matrix.     The function returns a reference to <tt>*this</tt>.  
+* [0.x.84]*
+   This function is complete analogous to the    [2.x.25]  function in that it allows to   initialize a whole matrix in one step. See there for more information on   argument types and their meaning. You can also find a small example on   how to use this function there.     The only difference to the cited function is that the objects which the   inner iterator points to need to be of type  [2.x.26]  int,   value</tt>, where <tt>value</tt> needs to be convertible to the element   type of this class, as specified by the <tt>number</tt> template   argument.     Previous content of the matrix is overwritten. Note that the entries   specified by the input parameters need not necessarily cover all elements   of the matrix. Elements not covered remain untouched.  
+* [0.x.85]*
+   Copy the nonzero entries of a full matrix into this object. Previous   content is deleted. Note that the underlying sparsity pattern must be   appropriate to hold the nonzero entries of the full matrix.  
+* [0.x.86]*
+   Add <tt>matrix</tt> scaled by <tt>factor</tt> to this matrix, i.e. the   matrix <tt>factor*matrix</tt> is added to <tt>this</tt>. This function   throws an error if the sparsity patterns of the two involved matrices do   not point to the same object, since in this case the operation is   cheaper.     The source matrix may be a sparse matrix over an arbitrary underlying   scalar type, as long as its data type is convertible to the data type of   this matrix.  
+* [0.x.87]*
+    [2.x.27]  Entry Access  
+* [0.x.88]*
+   Return the value of the entry ([1.x.4]).  This may be an expensive   operation and you should always take care where to call this function. In   order to avoid abuse, this function throws an exception if the required   element does not exist in the matrix.     In case you want a function that returns zero instead (for entries that   are not in the sparsity pattern of the matrix), use the el() function.     If you are looping over all elements, consider using one of the iterator   classes instead, since they are tailored better to a sparse matrix   structure.  
+* [0.x.89]*
+   This function is mostly like operator()() in that it returns the value of   the matrix entry ([1.x.5]). The only difference is that if this entry   does not exist in the sparsity pattern, then instead of raising an   exception, zero is returned. While this may be convenient in some cases,   note that it is simple to write algorithms that are slow compared to an   optimal solution, since the sparsity of the matrix is not used.     If you are looping over all elements, consider using one of the iterator   classes instead, since they are tailored better to a sparse matrix   structure.  
+* [0.x.90]*
+   Return the main diagonal element in the [1.x.6]th row. This function   throws an error if the matrix is not quadratic.     This function is considerably faster than the operator()(), since for   quadratic matrices, the diagonal entry may be the first to be stored in   each row and access therefore does not involve searching for the right   column number.  
+* [0.x.91]*
+   Extracts a copy of the values and indices in the given matrix row.     The user is expected to pass the length of the arrays column_indices and   values, which gives a means for checking that we do not write to   unallocated memory. This method is motivated by a similar method in   Trilinos row matrices and gives faster access to entries in the matrix as   compared to iterators which are quite slow for this matrix type.  
+* [0.x.92]*
+    [2.x.28]  Matrix vector multiplications  
+* [0.x.93]*
+   Matrix-vector multiplication: let [1.x.7] with [1.x.8] being   this matrix.     Note that while this function can operate on all vectors that offer   iterator classes, it is only really effective for objects of type    [2.x.29] .   For all classes for which iterating over elements, or random member   access is expensive, this function is not efficient. In particular, if   you want to multiply with BlockVector objects, you should consider using   a BlockChunkSparseMatrix as well.     Source and destination must not be the same vector.  
+* [0.x.94]*
+   Matrix-vector multiplication: let [1.x.9] with   [1.x.10] being this matrix. This function does the same as vmult() but   takes the transposed matrix.     Note that while this function can operate on all vectors that offer   iterator classes, it is only really effective for objects of type    [2.x.30] .   For all classes for which iterating over elements, or random member   access is expensive, this function is not efficient. In particular, if   you want to multiply with BlockVector objects, you should consider using   a BlockChunkSparseMatrix as well.     Source and destination must not be the same vector.  
+* [0.x.95]*
+   Adding Matrix-vector multiplication. Add [1.x.11] on [1.x.12] with   [1.x.13] being this matrix.     Note that while this function can operate on all vectors that offer   iterator classes, it is only really effective for objects of type    [2.x.31] .   For all classes for which iterating over elements, or random member   access is expensive, this function is not efficient. In particular, if   you want to multiply with BlockVector objects, you should consider using   a BlockChunkSparseMatrix as well.     Source and destination must not be the same vector.  
+* [0.x.96]*
+   Adding Matrix-vector multiplication. Add [1.x.14] to   [1.x.15] with [1.x.16] being this matrix. This function does the same   as vmult_add() but takes the transposed matrix.     Note that while this function can operate on all vectors that offer   iterator classes, it is only really effective for objects of type    [2.x.32] .   For all classes for which iterating over elements, or random member   access is expensive, this function is not efficient. In particular, if   you want to multiply with BlockVector objects, you should consider using   a BlockChunkSparseMatrix as well.     Source and destination must not be the same vector.  
+* [0.x.97]*
+   Return the square of the norm of the vector  [2.x.33]  with respect to the norm   induced by this matrix, i.e.  [2.x.34] . This is useful, e.g. in   the finite element context, where the  [2.x.35]  norm of a function equals the   matrix norm with respect to the mass matrix of the vector representing   the nodal values of the finite element function.     Obviously, the matrix needs to be quadratic for this operation, and for   the result to actually be a norm it also needs to be either real   symmetric or complex hermitian.     The underlying template types of both this matrix and the given vector   should either both be real or complex-valued, but not mixed, for this   function to make sense.  
+* [0.x.98]*
+   Compute the matrix scalar product  [2.x.36] .  
+* [0.x.99]*
+   Compute the residual of an equation [1.x.17], where the residual is   defined to be [1.x.18]. Write the residual into <tt>dst</tt>. The   [1.x.19] norm of the residual vector is returned.     Source [1.x.20] and destination [1.x.21] must not be the same vector.  
+* [0.x.100]*
+    [2.x.37]  Matrix norms  
+* [0.x.101]*
+   Return the l1-norm of the matrix, that is  [2.x.38] , (max. sum of columns).  This is the natural   matrix norm that is compatible to the l1-norm for vectors, i.e.    [2.x.39] .  (cf. Haemmerlin-Hoffmann : Numerische   Mathematik)  
+* [0.x.102]*
+   Return the linfty-norm of the matrix, that is  [2.x.40] , (max. sum of rows).  This is the natural   matrix norm that is compatible to the linfty-norm of vectors, i.e.    [2.x.41] .  (cf. Haemmerlin-Hoffmann :   Numerische Mathematik)  
+* [0.x.103]*
+   Return the frobenius norm of the matrix, i.e. the square root of the sum   of squares of all entries in the matrix.  
+* [0.x.104]*
+    [2.x.42]  Preconditioning methods  
+* [0.x.105]*
+   Apply the Jacobi preconditioner, which multiplies every element of the   <tt>src</tt> vector by the inverse of the respective diagonal element and   multiplies the result with the relaxation factor <tt>omega</tt>.  
+* [0.x.106]*
+   Apply SSOR preconditioning to <tt>src</tt>.  
+* [0.x.107]*
+   Apply SOR preconditioning matrix to <tt>src</tt>.  
+* [0.x.108]*
+   Apply transpose SOR preconditioning matrix to <tt>src</tt>.  
+* [0.x.109]*
+   Perform SSOR preconditioning in-place.  Apply the preconditioner matrix   without copying to a second vector.  <tt>omega</tt> is the relaxation   parameter.  
+* [0.x.110]*
+   Perform an SOR preconditioning in-place.  <tt>omega</tt> is the   relaxation parameter.  
+* [0.x.111]*
+   Perform a transpose SOR preconditioning in-place.  <tt>omega</tt> is the   relaxation parameter.  
+* [0.x.112]*
+   Perform a permuted SOR preconditioning in-place.     The standard SOR method is applied in the order prescribed by   <tt>permutation</tt>, that is, first the row <tt>permutation[0]</tt>,   then <tt>permutation[1]</tt> and so on. For efficiency reasons, the   permutation as well as its inverse are required.     <tt>omega</tt> is the relaxation parameter.  
+* [0.x.113]*
+   Perform a transposed permuted SOR preconditioning in-place.     The transposed SOR method is applied in the order prescribed by   <tt>permutation</tt>, that is, first the row <tt>permutation[m()-1]</tt>,   then <tt>permutation[m()-2]</tt> and so on. For efficiency reasons, the   permutation as well as its inverse are required.     <tt>omega</tt> is the relaxation parameter.  
+* [0.x.114]*
+   Do one SOR step on <tt>v</tt>.  Performs a direct SOR step with right   hand side <tt>b</tt>.  
+* [0.x.115]*
+   Do one adjoint SOR step on <tt>v</tt>.  Performs a direct TSOR step with   right hand side <tt>b</tt>.  
+* [0.x.116]*
+   Do one SSOR step on <tt>v</tt>.  Performs a direct SSOR step with right   hand side <tt>b</tt> by performing TSOR after SOR.  
+* [0.x.117]*
+    [2.x.43]  Iterators  
+* [0.x.118]*
+   Iterator starting at first entry of the matrix. This is the version for   constant matrices.     Note that due to the layout in ChunkSparseMatrix, iterating over matrix   entries is considerably slower than for a sparse matrix, as the iterator   is travels row-by-row, whereas data is stored in chunks of several rows   and columns.  
+* [0.x.119]*
+   Final iterator. This is the version for constant matrices.     Note that due to the layout in ChunkSparseMatrix, iterating over matrix   entries is considerably slower than for a sparse matrix, as the iterator   is travels row-by-row, whereas data is stored in chunks of several rows   and columns.  
+* [0.x.120]*
+   Iterator starting at the first entry of the matrix. This is the version   for non-constant matrices.     Note that due to the layout in ChunkSparseMatrix, iterating over matrix   entries is considerably slower than for a sparse matrix, as the iterator   is travels row-by-row, whereas data is stored in chunks of several rows   and columns.  
+* [0.x.121]*
+   Final iterator. This is the version for non-constant matrices.     Note that due to the layout in ChunkSparseMatrix, iterating over matrix   entries is considerably slower than for a sparse matrix, as the iterator   is travels row-by-row, whereas data is stored in chunks of several rows   and columns.  
+* [0.x.122]*
+   Iterator starting at the first entry of row <tt>r</tt>. This is the   version for constant matrices.     Note that if the given row is empty, i.e. does not contain any nonzero   entries, then the iterator returned by this function equals   <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable in   that case.     Note that due to the layout in ChunkSparseMatrix, iterating over matrix   entries is considerably slower than for a sparse matrix, as the iterator   is travels row-by-row, whereas data is stored in chunks of several rows   and columns.  
+* [0.x.123]*
+   Final iterator of row <tt>r</tt>. It points to the first element past the   end of line  [2.x.44]  or past the end of the entire sparsity pattern. This is   the version for constant matrices.     Note that the end iterator is not necessarily dereferenceable. This is in   particular the case if it is the end iterator for the last row of a   matrix.     Note that due to the layout in ChunkSparseMatrix, iterating over matrix   entries is considerably slower than for a sparse matrix, as the iterator   is travels row-by-row, whereas data is stored in chunks of several rows   and columns.  
+* [0.x.124]*
+   Iterator starting at the first entry of row <tt>r</tt>. This is the   version for non-constant matrices.     Note that if the given row is empty, i.e. does not contain any nonzero   entries, then the iterator returned by this function equals   <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable in   that case.     Note that due to the layout in ChunkSparseMatrix, iterating over matrix   entries is considerably slower than for a sparse matrix, as the iterator   is travels row-by-row, whereas data is stored in chunks of several rows   and columns.  
+* [0.x.125]*
+   Final iterator of row <tt>r</tt>. It points to the first element past the   end of line  [2.x.45]  or past the end of the entire sparsity pattern. This is   the version for non-constant matrices.     Note that the end iterator is not necessarily dereferenceable. This is in   particular the case if it is the end iterator for the last row of a   matrix.     Note that due to the layout in ChunkSparseMatrix, iterating over matrix   entries is considerably slower than for a sparse matrix, as the iterator   is travels row-by-row, whereas data is stored in chunks of several rows   and columns.  
+* [0.x.126]*
+    [2.x.46]  Input/Output  
+* [0.x.127]*
+   Print the matrix to the given stream, using the format <tt>(line,col)   value</tt>, i.e. one nonzero entry of the matrix per line.  
+* [0.x.128]*
+   Print the matrix in the usual format, i.e. as a matrix and not as a list   of nonzero elements. For better readability, elements not in the matrix   are displayed as empty space, while matrix elements which are explicitly   set to zero are displayed as such.     The parameters allow for a flexible setting of the output format:   <tt>precision</tt> and <tt>scientific</tt> are used to determine the   number format, where <tt>scientific = false</tt> means fixed point   notation.  A zero entry for <tt>width</tt> makes the function compute a   width, but it may be changed to a positive value, if output is crude.     Additionally, a character for an empty value may be specified.     Finally, the whole matrix can be multiplied with a common denominator to   produce more readable output, even integers.      [2.x.47]  This function may produce [1.x.22] amounts of output if   applied to a large matrix!  
+* [0.x.129]*
+   Print the actual pattern of the matrix. For each entry with an absolute   value larger than threshold, a '*' is printed, a ':' for every value   smaller and a '.' for every entry not allocated.  
+* [0.x.130]*
+   Write the data of this object en bloc to a file. This is done in a binary   mode, so the output is neither readable by humans nor (probably) by other   computers using a different operating system or number format.     The purpose of this function is that you can swap out matrices and   sparsity pattern if you are short of memory, want to communicate between   different programs, or allow objects to be persistent across different   runs of the program.  
+* [0.x.131]*
+   Read data that has previously been written by block_write() from a file.   This is done using the inverse operations to the above function, so it is   reasonably fast because the bitstream is not interpreted except for a few   numbers up front.     The object is resized on this operation, and all previous contents are   lost. Note, however, that no checks are performed whether new data and   the underlying ChunkSparsityPattern object fit together. It is your   responsibility to make sure that the sparsity pattern and the data to be   read match.     A primitive form of error checking is performed which will recognize the   bluntest attempts to interpret some data as a matrix stored bitwise to a   file that wasn't actually created that way, but not more.  
+* [0.x.132]*
+    [2.x.48]  Exceptions    [2.x.49]   
+* [0.x.133]*
+   Exception  
+* [0.x.134]*
+   Exception  
+* [0.x.135]*
+   Exception  
+* [0.x.136]*
+   Exception  
+* [0.x.137]*
+   Pointer to the sparsity pattern used for this matrix. In order to   guarantee that it is not deleted while still in use, we subscribe to it   using the SmartPointer class.  
+* [0.x.138]*
+   Array of values for all the nonzero entries. The position of an   entry within the matrix, i.e., the row and column number for a   given value in this array can only be deduced using the sparsity   pattern. The same holds for the more common operation of finding   an entry by its coordinates.  
+* [0.x.139]*
+   Allocated size of #val. This can be larger than the actually used part if   the size of the matrix was reduced sometime in the past by associating a   sparsity pattern with a smaller size to this object, using the reinit()   function.  
+* [0.x.140]*
+   Return the location of entry  [2.x.50]  within the val array.  
+* [0.x.141]

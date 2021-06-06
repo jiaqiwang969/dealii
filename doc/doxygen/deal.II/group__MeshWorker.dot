@@ -1,10 +1,10 @@
-digraph "The MeshWorker interface"
+digraph "The MeshWorker interface A collection of classes and"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
-  Node1 [label="The MeshWorker interface",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="A collection of classes and functions simplifying the coding of loops over all cells and faces...."];
-  Node2 [label="Integrators",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Integrators.html",tooltip="A collection of namespaces and functions which simplify the coding of forms and bilinear forms on fin..."];
+  Node1 [label="The MeshWorker interface\l A collection of classes and",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="functions simplifying the coding of loops over all cells and faces. All classes and functions of this..."];
+  Node2 [label="Integrators A collection\l of namespaces and functions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Integrators.html",tooltip="which simplify the coding of forms and bilinear forms on finite element spaces. Functions for two dif..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
   Node1->Node2 [shape=plaintext, label="MeshWorker", color="blueviolet", dir="none", style="dashed"];
 }

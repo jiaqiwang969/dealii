@@ -1,0 +1,21 @@
+[0.x.0]*
+     Internal function for filling the copy indices from global to level     indices         If  [2.x.0]  is false, the mapping will also contain     DoFs at the interface between levels. This is desirable when     transferring solution vectors instead of residuals.    
+* [0.x.1]*
+     Given the collection of child cells in lexicographic ordering as seen     from the parent, this function computes the first index of the given     child    
+* [0.x.2]*
+     A structure that stores data related to the finite element contained in     the DoFHandler. Used only for the initialization using     <tt>setup_transfer</tt>.    
+* [0.x.3]*
+       A variable storing the degree of the finite element. The selection of       the computational kernel is based on this number.      
+* [0.x.4]*
+       A variable storing whether the element is continuous and there is a       joint degree of freedom in the center of the 1D line.      
+* [0.x.5]*
+       A variable storing the number of components in the finite element.      
+* [0.x.6]*
+       A variable storing the number of degrees of freedom on all child cells.       It is <tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt> for DG elements and       somewhat less for continuous elements.      
+* [0.x.7]*
+       An array that holds the numbering between the numbering of degrees of       freedom in the finite element and the lexicographic numbering needed       for the tensor product application.      
+* [0.x.8]*
+       This variable holds the one-dimensional embedding (prolongation) matrix       from mother element to all the children.      
+* [0.x.9]*
+     Set up most of the internal data structures of MGTransferMatrixFree    
+* [0.x.10]

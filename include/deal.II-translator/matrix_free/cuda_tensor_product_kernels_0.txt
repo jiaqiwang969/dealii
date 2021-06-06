@@ -1,0 +1,28 @@
+[0.x.0]*
+     In this namespace, the evaluator routines that evaluate the tensor     products are implemented.        
+*  [2.x.0]     
+* [0.x.1]*
+     Generic evaluator framework.        
+*  [2.x.1]     
+* [0.x.2]*
+     Internal evaluator for 1d-3d shape function using the tensor product form     of the basis functions.        
+*  [2.x.2]     
+* [0.x.3]*
+       Evaluate the values of a finite element function at the quadrature       points.      
+* [0.x.4]*
+       Evaluate the gradient of a finite element function at the quadrature       points for a given  [2.x.3]       
+* [0.x.5]*
+       Helper function for values() and gradients().      
+* [0.x.6]*
+       Evaluate the finite element function at the quadrature points.      
+* [0.x.7]*
+       Helper function for integrate(). Integrate the finite element function.      
+* [0.x.8]*
+       Evaluate the gradients of the finite element function at the quadrature       points.      
+* [0.x.9]*
+       Evaluate the values and the gradients of the finite element function at        the quadrature points.      
+* [0.x.10]*
+       Helper function for integrate(). Integrate the gradients of the finite       element function.      
+* [0.x.11]*
+       Helper function for integrate(). Integrate the values and the gradients       of the finite element function.      
+* [0.x.12]

@@ -1,0 +1,83 @@
+[0.x.0]*
+  [2.x.0]  Indirectly applying constraints to LinearOperator
+
+* 
+* [0.x.1]*
+ This function takes an AffineConstraints object  [2.x.1]  and an operator exemplar  [2.x.2]  (this exemplar is usually a linear operator that describes the system matrix
+* 
+*  - it is only used to create domain and range vectors of appropriate sizes, its action <tt>vmult</tt> is never used). A LinearOperator object associated with the "homogeneous action" of the underlying AffineConstraints object is returned:
+*  Applying the LinearOperator object on a vector  [2.x.3]  results in a vector  [2.x.4]  that stores the result of calling  [2.x.5]  on  [2.x.6] 
+* 
+*  - with one important difference: inhomogeneities are not applied, but always treated as 0 instead.
+*  The LinearOperator object created by this function is primarily used internally in constrained_linear_operator() to build up a modified system of linear equations. How to solve a linear system of equations with this approach is explained in detail in the  [2.x.7]  module.
+* 
+
+* 
+
+* 
+*  [2.x.8]  Currently, this function may not work correctly for distributed data structures.
+*   [2.x.9]  LinearOperator
+
+* 
+*  [2.x.10] 
+
+* 
+* [0.x.2]*
+ Given a AffineConstraints  [2.x.11]  and an operator exemplar  [2.x.12]  exemplar, return a LinearOperator that is the projection to the subspace of constrained degrees of freedom, i.e. all entries of the result vector that correspond to unconstrained degrees of freedom are set to zero.
+* 
+
+*   [2.x.13]  LinearOperator
+
+* 
+*  [2.x.14] 
+
+* 
+* [0.x.3]*
+ Given a AffineConstraints object  [2.x.15]  and a LinearOperator  [2.x.16]  this function creates a LinearOperator object consisting of the composition of three operations and a regularization:
+
+* 
+* [1.x.0]
+*  with
+
+* 
+* [1.x.1]
+*  and  [2.x.17]  is the projection to the subspace consisting of all vector entries associated with constrained degrees of freedom.
+*  This LinearOperator object is used together with constrained_right_hand_side() to build up the following modified system of linear equations: [1.x.2] with a given (unconstrained) system matrix  [2.x.18] , right hand side  [2.x.19] , and linear constraints  [2.x.20]  with inhomogeneities  [2.x.21] .
+*  A detailed explanation of this approach is given in the  [2.x.22]  module.
+* 
+
+* 
+
+* 
+*  [2.x.23]  Currently, this function may not work correctly for distributed data structures.
+*   [2.x.24]  LinearOperator
+
+* 
+*  [2.x.25] 
+
+* 
+* [0.x.4]*
+ Given a AffineConstraints object  [2.x.26]  a LinearOperator  [2.x.27]  linop and a right-hand side  [2.x.28]  this function creates a PackagedOperation that stores the following computation:
+
+* 
+* [1.x.3]
+*  with
+
+* 
+* [1.x.4]
+* 
+*  This LinearOperator object is used together with constrained_right_hand_side() to build up the following modified system of linear equations: [1.x.5] with a given (unconstrained) system matrix  [2.x.29] , right hand side  [2.x.30] , and linear constraints  [2.x.31]  with inhomogeneities  [2.x.32] .
+*  A detailed explanation of this approach is given in the  [2.x.33]  module.
+* 
+
+* 
+
+* 
+*  [2.x.34]  Currently, this function may not work correctly for distributed data structures.
+*   [2.x.35]  LinearOperator
+
+* 
+*  [2.x.36] 
+
+* 
+* [0.x.5]

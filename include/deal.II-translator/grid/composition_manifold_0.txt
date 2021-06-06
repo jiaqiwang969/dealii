@@ -1,0 +1,27 @@
+[0.x.0]*
+ CompositionManifold.  Take two ChartManifold objects, and make their composition. The CompositionManifold object is a ChartManifold going from the chart of the first ChartManifold to the embedding space of the second ChartManifold. If the first ChartManifold is periodic, so is the resulting ChartManifold, with the same periodicity. Periodicity on the second ChartManifold is not allowed, and the constructor will throw an exception if the second Manifold is periodic.
+*  This class only works for dim <= chartdim <= intermediate_spacedim <= spacedim. If you try to instantiate anything different, an Exception will be thrown in one of the ChartManifold classes that violates this condition.
+*  Given the ChartManifold F and the ChartManifold G, this class represents the composition of G after F.
+*  The template parameters have the following meaning:
+*   [2.x.0]  dim The dimension of the resulting ChartManifold  [2.x.1]  spacedim The space dimension of the resulting ChartManifold  [2.x.2]  chartdim The chart dimension of the resulting ChartManifold  [2.x.3]  intermediate_dim The space dimension of the first ChartManifold  [2.x.4]  dim1 The dimension of the first ChartManifold, which coincides also with the chart dimension of the second ChartManifold  [2.x.5]  dim2 The dimension of the second ChartManifold
+* 
+
+* 
+*  [2.x.6] 
+
+* 
+* [0.x.1]*
+   Construct the composition of the two given manifolds.  
+* [0.x.2]*
+   Make a clone of this Manifold.  
+* [0.x.3]*
+   Pull back the given point in spacedim to the Euclidean chartdim   dimensional space. This function calls the pull_back() function   of G, and then the pull_back() function of F.  
+* [0.x.4]*
+   Push forward the chartdim dimensional point to a spacedim   Euclidean point. The function calls first the push_forward() of   F, and then the push_forward() of G.  
+* [0.x.5]*
+   Return the derivative of the composition of G after F.  
+* [0.x.6]*
+   The first ChartManifold.  
+* [0.x.7]*
+   The second ChartManifold.  
+* [0.x.8]

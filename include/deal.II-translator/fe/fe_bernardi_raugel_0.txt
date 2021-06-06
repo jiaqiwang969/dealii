@@ -1,0 +1,29 @@
+[0.x.0]*
+ The Bernardi-Raugel element.
+*  This class implements the non-standard Bernardi-Raugel (BR) element that can be used as one part of a stable velocity/pressure pair for the Stokes equation. The BR element can be seen as either an enriched version of the  [2.x.0]  element with added bubble functions on each edge (in 2d) or face (in 3d), or as a reduced version of the  [2.x.1]  element. It addresses the fact that the  [2.x.2]  combination is not inf-sup stable (requiring a larger velocity space), and that the  [2.x.3]  combination is stable but sub-optimal since the velocity space is too large relative to the pressure space to provide additional accuracy commensurate with the cost of the large number of velocity unknowns.
+*  The element was introduced in the following paper:
+
+* 
+* [1.x.0]
+* 
+* 
+
+*  [1.x.1]
+*  The BR1 element has [1.x.2] degrees of freedom on each vertex and 1 on each face. The shape functions are ordered by the  [2.x.4]  shape functions supported on each vertex, increasing according to vertex ordering on the element in GeometryInfo, then the bubble functions follow in the ordering given in PolynomialsBernardiRaugel.
+*  This element only has 1 degree (degree  [2.x.5] ) because it yields an LBB stable pair BR1-P0 for Stokes problems which is lower degree than the Taylor-Hood element. The pair is sometimes referred to as an enriched P1-P0 element or a reduced P2-P0 element.
+*  This element does not support hanging nodes or multigrid in the current implementation.
+*  Some numerical experiments have shown that this element may converge with first-order accuracy when using the BR1-Q0 pair for the mixed Laplace equation in  [2.x.6] .
+
+* 
+* [0.x.1]*
+   Constructor for the Bernardi-Raugel element of degree  [2.x.7]  The only   supported degree is 1.      [2.x.8]  p: The degree of the element  [2.x.9]  for  [2.x.10] .  
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_BR<dim>(degree)</tt>, with  [2.x.11]  and  [2.x.12]  replaced   by appropriate values.  
+* [0.x.3]*
+   Only for internal use. Its full name is  [2.x.13]    function and it creates the  [2.x.14]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.15]    FiniteElementData.  
+* [0.x.4]*
+   Initialize the  [2.x.16]  and    [2.x.17]  fields. Called from   the constructor. See the    [2.x.18]  "glossary entry on generalized support points"   for more information.  
+* [0.x.5]*
+   Initialize the permutation pattern and the pattern of sign change.    
+*  [2.x.19]  This function is not fully filled with the correct implementation   yet. It needs to be consistently implemented in a future release to work   on meshes that contain cells with flipped faces.  
+* [0.x.6]

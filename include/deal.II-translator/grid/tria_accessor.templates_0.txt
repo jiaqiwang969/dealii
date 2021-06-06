@@ -1,0 +1,30 @@
+[0.x.0]*
+     Compute the diameter for a given set of vertices. The vertices are     interpreted, depending on their count, as the vertices of a particular     reference cell.    
+* [0.x.1]*
+     A class with the same purpose as the similarly named class of the     Triangulation class. See there for more information.    
+* [0.x.2]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.3]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.4]*
+       Implementation of the function of some name in the mother class      
+* [0.x.5]         Default implementation used in 1d                 In 1d, face_orientation is always true        
+* [0.x.6]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.7]         Default implementation used in 1d and 2d                 In 1d, face_flip is always false as there is no such concept as         "flipped" faces in 1d.                 In 2d, we currently only support meshes where all faces are in         standard orientation, so the result is also false. This also         matches the fact that one canalways* orient faces in 2d in such a         way that the don't need to be flipped        
+* [0.x.8]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.9]         Default implementation used in 1d and 2d                 In 1d and 2d, face_rotation is always false as there is no such         concept as "rotated" faces in 1d and 2d.        
+* [0.x.10]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.11]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.12]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.13]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.14]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.15]*
+       Implementation of the function of same name in the enclosing class.      
+* [0.x.16]

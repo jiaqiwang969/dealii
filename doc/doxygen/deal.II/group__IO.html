@@ -7,7 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>The deal.II Library: Input/Output</title>
+<title>The deal.II Library: Input/Output This module collects the classes used for reading</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,14 +88,14 @@ $(function() {
   <div class="summary">
 <a href="#groups">Modules</a>  </div>
   <div class="headertitle">
-<div class="title">Input/Output</div>  </div>
+<div class="title">Input/Output This module collects the classes used for reading</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This module collects the classes used for reading and writing meshes and data. There are two sub-modules for each of these operations.  
+<p>and writing meshes and data. There are two sub-modules for each of these operations.  
 <a href="#details">More...</a></p>
 <div class="dynheader">
-Collaboration diagram for Input/Output:</div>
+Collaboration diagram for Input/Output This module collects the classes used for reading:</div>
 <div class="dyncontent">
 <div class="center"><!-- SVG 0 -->
 </div>
@@ -103,19 +103,19 @@ Collaboration diagram for Input/Output:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group__input"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__input.html">Input</a></td></tr>
-<tr class="memdesc:group__input"><td class="mdescLeft">&#160;</td><td class="mdescRight">deal.II can read meshes in a number of different formats. However, all of them are constrained to so-called "coarse meshes", i.e. meshes that have no refinement hierarchy and in particular no hanging nodes. The <a class="el" href="classGridIn.html">GridIn</a> class describes in detail what formats are supported. <br /></td></tr>
+<tr class="memitem:group__input"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__input.html">Input deal.II can read meshes in a number of different</a></td></tr>
+<tr class="memdesc:group__input"><td class="mdescLeft">&#160;</td><td class="mdescRight">formats. However, all of them are constrained to so-called "coarse meshes", i.e. meshes that have no refinement hierarchy and in particular no hanging nodes. The <a class="el" href="classGridIn.html">GridIn</a> class describes in detail what formats are supported. In addition, deal.II can read an intermediate graphics format using the <a class="el" href="classDataOutReader.html">DataOutReader</a>. This format is used as an intermediate step between data associated with a simulation and is written by the <a class="el" href="namespaceDataOutBase.html">DataOutBase</a> class (or through the more derived classes described in the <a class="el" href="group__output.html">Graphical output deal.II generates three types of output:</a> module). The <a class="el" href="classDataOutReader.html">DataOutReader</a> class reads this data back in, and it can then be converted to any of a number of data formats supported by visualization programs. Finally, the <a class="el" href="classParameterHandler.html">ParameterHandler</a> and <a class="el" href="classMultipleParameterLoop.html">MultipleParameterLoop</a> classes (and the associated <a class="el" href="namespacePatterns.html">Patterns</a> namespace) are used to deal with parameter files describing run-time parameters to a program that one doesn't want to hard-code within the program source. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group__output"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__output.html">Graphical output</a></td></tr>
-<tr class="memdesc:group__output"><td class="mdescLeft">&#160;</td><td class="mdescRight">deal.II generates three types of output: it can write triangulations/meshes in formats understood by several mesh readers (including those of deal.II itself), and it can create output used for visualization of data. Finally, it can output matrices in a graphical format. <br /></td></tr>
+<tr class="memitem:group__output"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__output.html">Graphical output deal.II generates three types of output:</a></td></tr>
+<tr class="memdesc:group__output"><td class="mdescLeft">&#160;</td><td class="mdescRight">it can write triangulations/meshes in formats understood by several mesh readers (including those of deal.II itself), and it can create output used for visualization of data. Finally, it can output matrices in a graphical format. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:group__textoutput"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__textoutput.html">Textual output</a></td></tr>
-<tr class="memdesc:group__textoutput"><td class="mdescLeft">&#160;</td><td class="mdescRight">In addition to classes that provide graphical output formats (see the <a class="el" href="group__output.html">Graphical output</a> module), deal.II has a number of classes that facilitate textual output in a number of ways. They are collected in this module. See the documentation of these classes for more details. <br /></td></tr>
+<tr class="memdesc:group__textoutput"><td class="mdescLeft">&#160;</td><td class="mdescRight">In addition to classes that provide graphical output formats (see the <a class="el" href="group__output.html">Graphical output deal.II generates three types of output:</a> module), deal.II has a number of classes that facilitate textual output in a number of ways. They are collected in this module. See the documentation of these classes for more details. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>This module collects the classes used for reading and writing meshes and data. There are two sub-modules for each of these operations. </p>
-<p>and writing meshes and data. There are two sub-modules for each of these operations.</p>
+<p>and writing meshes and data. There are two sub-modules for each of these operations. </p>
+<p>This module collects the classes used for reading and writing meshes and data. There are two sub-modules for each of these operations.</p>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->

@@ -1,0 +1,62 @@
+[0.x.0]!  [2.x.0]  Vectors   [2.x.1]   
+* [0.x.1]*
+   VectorSpaceVector is an abstract class that is used to define the   interface that vector classes need to implement when they want to   implement global operations. This class is complementary of   ReadWriteVector which allows the access of individual elements but does   not allow global operations.  
+* [0.x.2]*
+     Change the dimension to that of the vector V. The elements of V are not     copied.    
+* [0.x.3]*
+     Sets all elements of the vector to the scalar  [2.x.2]  This operation is     only allowed if  [2.x.3]  is equal to zero.    
+* [0.x.4]*
+     Multiply the entire vector by a fixed factor.    
+* [0.x.5]*
+     Divide the entire vector by a fixed factor.    
+* [0.x.6]*
+     Add the vector  [2.x.4]  to the present one.    
+* [0.x.7]*
+     Subtract the vector  [2.x.5]  from the present one.    
+* [0.x.8]*
+     Import all the elements present in the vector's IndexSet from the input     vector  [2.x.6]   [2.x.7]   [2.x.8]  is used to decide if     the elements in  [2.x.9]  should be added to the current vector or replace the     current elements. The last parameter can be used if the same     communication pattern is used multiple times. This can be used to improve     performance.    
+* [0.x.9]*
+     Return the scalar product of two vectors.    
+* [0.x.10]*
+     Add  [2.x.10]  to all components. Note that  [2.x.11]  is a scalar not a vector.    
+* [0.x.11]*
+     Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.    
+* [0.x.12]*
+     Multiple addition of scaled vectors, i.e. <tt>*this += a*V+b*W</tt>.    
+* [0.x.13]*
+     Scaling and simple addition of a multiple of a vector, i.e. <tt>*this =     s*(*this)+a*V</tt>.    
+* [0.x.14]*
+     Scale each element of this vector by the corresponding element in the     argument. This function is mostly meant to simulate multiplication (and     immediate re-assignment) by a diagonal scaling matrix.    
+* [0.x.15]*
+     Assignment <tt>*this = a*V</tt>.    
+* [0.x.16]*
+     Return whether the vector contains only elements with value zero.    
+* [0.x.17]*
+     Return the mean value of all the entries of this vector.    
+* [0.x.18]*
+     Return the l<sub>1</sub> norm of the vector (i.e., the sum of the     absolute values of all entries among all processors).    
+* [0.x.19]*
+     Return the l<sub>2</sub> norm of the vector (i.e., the square root of     the sum of the square of all entries among all processors).    
+* [0.x.20]*
+     Return the maximum norm of the vector (i.e., the maximum absolute value     among all entries and among all processors).    
+* [0.x.21]*
+     Perform a combined operation of a vector addition and a subsequent     inner product, returning the value of the inner product. In other     words, the result of this function is the same as if the user called    
+* [1.x.0]
+*          The reason this function exists is that this operation involves less     memory transfer than calling the two functions separately. This method     only needs to load three vectors,  [2.x.12]   [2.x.13]   [2.x.14]  whereas calling     separate methods means to load the calling vector  [2.x.15]  twice. Since     most vector operations are memory transfer limited, this reduces the     time by 25\% (or 50\% if  [2.x.16]  equals  [2.x.17]          For complex-valued vectors, the scalar product in the second step is     implemented as      [2.x.18] .    
+* [0.x.22]*
+     This function does nothing and only exists for backward compatibility.    
+* [0.x.23]*
+     Return the global size of the vector, equal to the sum of the number of     locally owned indices among all processors.    
+* [0.x.24]*
+     Return an index set that describes which elements of this vector are     owned by the current processor. As a consequence, the index sets     returned on different processors if this is a distributed vector will     form disjoint sets that add up to the complete index set. Obviously, if     a vector is created on only one processor, then the result would     satisfy    
+* [1.x.1]
+*     
+* [0.x.25]*
+     Print the vector to the output stream  [2.x.19]     
+* [0.x.26]*
+     Return the memory consumption of this class in bytes.    
+* [0.x.27]*
+     Destructor. Declared as virtual so that inheriting classes (which may     manage their own memory) are destroyed correctly.    
+* [0.x.28]*
+   Shift all entries of the vector by a constant factor so that the mean   value of the vector becomes zero.  
+* [0.x.29]

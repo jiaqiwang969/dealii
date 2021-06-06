@@ -1,0 +1,87 @@
+[0.x.0]*
+ Implementation of scalar, discontinuous tensor product elements based on equidistant support points.
+*  This is a discontinuous finite element based on tensor products of Lagrangian polynomials. The shape functions are Lagrangian interpolants of an equidistant grid of points on the unit cell. The points are numbered in lexicographical order, with [1.x.0] running fastest, then [1.x.1], then [1.x.2] (if these coordinates are present for a given space dimension at all). For example, these are the node orderings for <tt>FE_DGQ(1)</tt> in 3d: 
+* [1.x.3]
+*  and <tt>FE_DGQ(2)</tt>: 
+* [1.x.4]
+*  with node 13 being placed in the interior of the hex.
+*  Note, however, that these are just the Lagrange interpolation points of the shape functions. Even though they may physically be on the boundary of the cell, they are logically in the interior since there are no continuity requirements for these shape functions across cell boundaries. While discontinuous, when restricted to a single cell the shape functions of this element are exactly the same as those of the FE_Q element where they are shown visually.
+*  [1.x.5]
+*  When constructing an FE_DGQ element at polynomial degrees one or two, equidistant support points at 0 and 1 (linear case) or 0, 0.5, and 1 (quadratic case) are used. The unit support or nodal points [1.x.6] are those points where the [1.x.7]th Lagrange polynomial satisfies the  [2.x.0]  property, i.e., where one polynomial is one and all the others are zero.  For higher polynomial degrees, the support points are non-equidistant by default, and chosen to be the support points of the <tt>(degree+1)</tt>-order Gauss-Lobatto quadrature rule. This point distribution yields well-conditioned Lagrange interpolation at arbitrary polynomial degrees. By contrast, polynomials based on equidistant points get increasingly ill-conditioned as the polynomial degree increases. In interpolation, this effect is known as the Runge phenomenon. For Galerkin methods, the Runge phenomenon is typically not visible in the solution quality but rather in the condition number of the associated system matrices. For example, the elemental mass matrix of equidistant points at degree 10 has condition number 2.6e6, whereas the condition number for Gauss-Lobatto points is around 400.
+*  The Gauss-Lobatto points in 1D include the end points 0 and +1 of the unit interval. The interior points are shifted towards the end points, which gives a denser point distribution close to the element boundary.
+
+* 
+* [0.x.1]*
+   Constructor for tensor product polynomials of degree <tt>p</tt>. The   shape functions created using this constructor correspond to Lagrange   interpolation polynomials for Gauss-Lobatto support (node) points in each   coordinate direction.  
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGQ<dim>(degree)</tt>, with <tt>dim</tt> and   <tt>degree</tt> replaced by appropriate values.  
+* [0.x.3]*
+   Return the matrix interpolating from the given finite element to the   present one. The size of the matrix is then  [2.x.1]  times   <tt>source.n_dofs_per_cell()</tt>.     These matrices are only available if the source element is also a  [2.x.2]    FE_DGQ element. Otherwise, an exception of type    [2.x.3]  is thrown.  
+* [0.x.4]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element. The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Derived elements will have to implement this function. They may only   provide interpolation matrices for certain source finite elements, for   example those from the same family. If they don't implement interpolation   from a given element, then they must throw an exception of type    [2.x.4]   
+* [0.x.5]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element. The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Derived elements will have to implement this function. They may only   provide interpolation matrices for certain source finite elements, for   example those from the same family. If they don't implement interpolation   from a given element, then they must throw an exception of type    [2.x.5]   
+* [0.x.6]*
+   Projection from a fine grid space onto a coarse grid space. Overrides the   respective method in FiniteElement, implementing lazy evaluation   (initialize when requested).     If this projection operator is associated with a matrix  [2.x.6]  then the   restriction of this matrix  [2.x.7]  to a single child cell is returned   here.     The matrix  [2.x.8]  is the concatenation or the sum of the cell matrices  [2.x.9]    P_i, depending on the #restriction_is_additive_flags. This distinguishes   interpolation (concatenation) and projection with respect to scalar   products (summation).     Row and column indices are related to coarse grid and fine grid spaces,   respectively, consistent with the definition of the associated operator.  
+* [0.x.7]*
+   Embedding matrix between grids. Overrides the respective method in   FiniteElement, implementing lazy evaluation (initialize when queried).     The identity operator from a coarse grid space into a fine grid space is   associated with a matrix  [2.x.10]  The restriction of this matrix  [2.x.11]  to a   single child cell is returned here.     The matrix  [2.x.12]  is the concatenation, not the sum of the cell matrices  [2.x.13]    P_i. That is, if the same non-zero entry <tt>j,k</tt> exists in two   different child matrices  [2.x.14]  the value should be the same in both   matrices and it is copied into the matrix  [2.x.15]  only once.     Row and column indices are related to fine grid and coarse grid spaces,   respectively, consistent with the definition of the associated operator.     These matrices are used by routines assembling the prolongation matrix   for multi-level methods.  Upon assembling the transfer matrix between   cells using this matrix array, zero elements in the prolongation matrix   are discarded and will not fill up the transfer matrix.  
+* [0.x.8]*
+    [2.x.16]  Functions to support hp    [2.x.17]   
+* [0.x.9]*
+   If, on a vertex, several finite elements are active, the hp-code first   assigns the degrees of freedom of each of these FEs different global   indices. It then calls this function to find out which of them should get   identical values, and consequently can receive the same global DoF index.   This function therefore returns a list of identities between DoFs of the   present finite element object with the DoFs of  [2.x.18]  which is a   reference to a finite element object representing one of the other finite   elements active on this particular vertex. The function computes which of   the degrees of freedom of the two finite element objects are equivalent,   both numbered between zero and the corresponding value of   n_dofs_per_vertex() of the two finite elements. The first index of each   pair denotes one of the vertex dofs of the present element, whereas the   second is the corresponding index of the other finite element.     This being a discontinuous element, the set of such constraints is of   course empty.  
+* [0.x.10]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on lines.     This being a discontinuous element, the set of such constraints is of   course empty.  
+* [0.x.11]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on quads.     This being a discontinuous element, the set of such constraints is of   course empty.  
+* [0.x.12]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".     For the FE_DGQ class the result is always true (independent of the degree   of the element), as it has no hanging nodes (being a discontinuous   element).  
+* [0.x.13]*
+    [2.x.19]   [2.x.20]   
+* [0.x.14]*
+    [2.x.21]   
+* [0.x.15]*
+   This function returns  [2.x.22]  if the shape function  [2.x.23]  has   non-zero function values somewhere on the face  [2.x.24]   
+* [0.x.16]*
+   Return a list of constant modes of the element. For this element, it   simply returns one row with all entries set to true.  
+* [0.x.17]*
+   Implementation of the corresponding function in the FiniteElement   class.  Since the current element is interpolatory, the nodal   values are exactly the support point values. Furthermore, since   the current element is scalar, the support point values need to   be vectors of length 1.  
+* [0.x.18]*
+   Constructor for tensor product polynomials based on an arbitrary vector   of polynomials. This constructor is used in derived classes to construct   e.g. elements with arbitrary nodes or elements based on Legendre   polynomials.     The degree of these polynomials is <tt>polynomials.size()-1</tt>.  
+* [0.x.19]*
+   Only for internal use. Its full name is  [2.x.25]    function and it creates the  [2.x.26]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.27]    FiniteElementData.  
+* [0.x.20]*
+   Compute renumbering for rotation of degrees of freedom.     This function rotates a tensor product numbering of degrees of   freedom by 90 degrees.  It is used to compute the transfer   matrices of the children by using only the matrix for the first   child.     The direction parameter determines the type of rotation. It is one   character of  [2.x.28]  The character determines the axis of rotation,   case determines the direction. Lower case is counter-clockwise seen in   direction of the axis.     Since rotation around the y-axis is not used, it is not implemented   either.  
+* [0.x.21]   Mutex for protecting initialization of restriction and embedding matrix.  
+* [0.x.22]*
+ Implementation of scalar, discontinuous tensor product elements based on Lagrange polynomials with arbitrary nodes. The primary purpose of this class is to provide an element for which the mass matrix can be made diagonal by choosing basis functions that are not either zero or one at the vertices of the cell, but instead are zero or one at a given set of quadrature points. If this set of quadrature points is then also used in integrating the mass matrix, then it will be diagonal. The number of quadrature points automatically determines the polynomial degree chosen for this element. The typical applications are the Gauss quadrature or the Gauss-Lobatto quadrature (provided through the base class).
+*  See the base class documentation in FE_DGQ for details.
+
+* 
+* [0.x.23]*
+   Constructor for tensor product polynomials based on  [2.x.29]    interpolation of the support points in the quadrature rule   <tt>points</tt>. The degree of these polynomials is   <tt>points.size()-1</tt>.  
+* [0.x.24]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGQArbitraryNodes<dim>(degree)</tt>, with <tt>dim</tt> and   <tt>degree</tt> replaced by appropriate values.  
+* [0.x.25]*
+   Implementation of the corresponding function in the FiniteElement   class.  Since the current element is interpolatory, the nodal   values are exactly the support point values. Furthermore, since   the current element is scalar, the support point values need to   be vectors of length 1.  
+* [0.x.26]*
+ Implementation of scalar, discontinuous tensor product elements based on Legendre polynomials, described by the tensor product of the polynomial space  [2.x.30]  The tensor product is achieved using TensorProductPolynomials and the ordering of shape functions, like in TensorProductPolynomials, is lexicographic. For instance, the ordering in 2d is  [2.x.31]  when <tt>degree=n</tt> where  [2.x.32]  are the one-dimensional Legendre polynomials defined on  [2.x.33] . As opposed to the basic FE_DGQ element, these elements are not interpolatory and no support points are defined.
+*  See the base class documentation in FE_DGQ for details.
+
+* 
+* [0.x.27]*
+   Constructor for tensor product polynomials based on  [2.x.34]    interpolation.  
+* [0.x.28]*
+   Return a list of constant modes of the element. For the Legendre basis,   it returns one row where the first element (corresponding to the constant   mode) is set to true and all other elements are set to false.  
+* [0.x.29]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGQLegendre<dim>(degree)</tt> with <tt>dim</tt> and   <tt>degree</tt> replaced by the values given by the template parameter   and the argument passed to the constructor, respectively.  
+* [0.x.30]*
+ Implementation of scalar, discontinuous tensor product elements based on Hermite-like polynomials, described by the polynomial space  [2.x.35]  As opposed to the basic FE_DGQ element, these elements are not interpolatory and no support points are defined.
+*  Note that Hermite polynomials are only available for degrees larger or equal to three, and thus the beneficial properties of  [2.x.36]  with only two basis functions having a non-trivial value or derivative on a face per dimension is only present for higher degrees. To facilitate usage also for degrees zero to two, a usual Lagrange basis is constructed by this class.
+*  See the base class documentation in FE_DGQ for details.
+
+* 
+* [0.x.31]*
+   Constructor for tensor product polynomials based on    [2.x.37]   
+* [0.x.32]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGQHermite<dim>(degree)</tt>, with <tt>dim</tt> and   <tt>degree</tt> replaced by the values given by the template parameter   and the argument passed to the constructor, respectively.  
+* [0.x.33]

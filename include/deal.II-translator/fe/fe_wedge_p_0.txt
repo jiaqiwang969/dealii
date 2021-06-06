@@ -1,0 +1,51 @@
+[0.x.0]*
+ Base class of FE_WedgeP and FE_WedgeDGP.
+* 
+
+* 
+*  [2.x.0]  Only implemented for 3D.
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+   Constructor.  
+* [0.x.2]*
+ Implementation of a scalar Lagrange finite element on a wedge that yields the finite element space of continuous, piecewise polynomials of degree  [2.x.2] .
+* 
+
+* 
+*  [2.x.3] 
+
+* 
+* [0.x.3]*
+   Constructor.  
+* [0.x.4]*
+    [2.x.4]   [2.x.5]   
+* [0.x.5]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_WedgeP<dim>(degree)</tt>, with  [2.x.6]  and  [2.x.7]    replaced by appropriate values.  
+* [0.x.6]*
+    [2.x.8]   [2.x.9]   
+* [0.x.7]*
+    [2.x.10]   [2.x.11]   
+* [0.x.8]*
+    [2.x.12]   [2.x.13]   
+* [0.x.9]*
+    [2.x.14]   [2.x.15]   
+* [0.x.10]*
+ Implementation of a scalar Lagrange finite element on a wedge that yields the finite element space of discontinuous, piecewise polynomials of degree  [2.x.16] .
+* 
+
+* 
+*  [2.x.17] 
+
+* 
+* [0.x.11]*
+   Constructor.  
+* [0.x.12]*
+    [2.x.18]   [2.x.19]   
+* [0.x.13]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_WedgeDGP<dim>(degree)</tt>, with  [2.x.20]  and  [2.x.21]    replaced by appropriate values.  
+* [0.x.14]

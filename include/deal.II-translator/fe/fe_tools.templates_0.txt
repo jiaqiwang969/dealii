@@ -1,0 +1,5 @@
+[0.x.0]*
+     Take a  [2.x.0]  object     and return an boolean vector including the  [2.x.1]      restriction_is_additive_flags of the mixed element consisting of  [2.x.2]      elements of the sub-element  [2.x.3]     
+* [0.x.1]*
+     Compute the non-zero vector components of a composed finite element.    
+* [0.x.2]

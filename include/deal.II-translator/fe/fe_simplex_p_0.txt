@@ -1,0 +1,71 @@
+[0.x.0]*
+ Base class of FE_SimplexP and FE_SimplexDGP.
+* 
+
+* 
+*  [2.x.0]  Only implemented for 2D and 3D.
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+   Constructor.  
+* [0.x.2]*
+   Return a list of constant modes of the element. For this element, the   list consists of true arguments for all components.  
+* [0.x.3]*
+    [2.x.2]   [2.x.3]     
+*  [2.x.4]  Only implemented for  [2.x.5]   
+* [0.x.4]*
+    [2.x.6]   [2.x.7]     
+*  [2.x.8]  Only implemented for  [2.x.9]   
+* [0.x.5]*
+    [2.x.10]   [2.x.11]   
+* [0.x.6]*
+    [2.x.12]   [2.x.13]   
+* [0.x.7]*
+    [2.x.14]   [2.x.15]   
+* [0.x.8]*
+    [2.x.16]   [2.x.17]   
+* [0.x.9]*
+ Implementation of a scalar Lagrange finite element  [2.x.18]  that yields the finite element space of continuous, piecewise polynomials of degree  [2.x.19] .
+* 
+
+* 
+*  [2.x.20] 
+
+* 
+* [0.x.10]*
+   Constructor.  
+* [0.x.11]*
+    [2.x.21]   [2.x.22]   
+* [0.x.12]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_SimplexP<dim>(degree)</tt>, with  [2.x.23]  and  [2.x.24]    replaced by appropriate values.  
+* [0.x.13]*
+    [2.x.25]   [2.x.26]   
+* [0.x.14]*
+    [2.x.27]   [2.x.28]   
+* [0.x.15]*
+    [2.x.29]   [2.x.30]   
+* [0.x.16]*
+ Implementation of a scalar discontinuous Lagrange finite element  [2.x.31] , sometimes denoted as  [2.x.32] , that yields the finite element space of discontinuous, piecewise polynomials of degree  [2.x.33] .
+* 
+
+* 
+*  [2.x.34] 
+
+* 
+* [0.x.17]*
+   Constructor.  
+* [0.x.18]*
+    [2.x.35]   [2.x.36]   
+* [0.x.19]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_SimplexDGP<dim>(degree)</tt>, with  [2.x.37]  and  [2.x.38]    replaced by appropriate values.  
+* [0.x.20]*
+    [2.x.39]   [2.x.40]   
+* [0.x.21]*
+    [2.x.41]   [2.x.42]   
+* [0.x.22]*
+    [2.x.43]   [2.x.44]   
+* [0.x.23]

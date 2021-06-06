@@ -1,0 +1,85 @@
+[0.x.0]*
+   A class that selects vectors from a list of named vectors.     Since the number of vectors in an AnyData object may grow with every   nesting of applications or loops, it is important to be able to select   those, which are actually used in computing residuals etc. This class   organizes the selection.     It is used for instance in IntegrationWorker to determine which values,   derivatives or second derivatives are actually computed.    
+*  [2.x.0]   
+* [0.x.1]*
+     Add a vector to the selection of finite element functions. The     arguments are the name of the vector and indicators, which information     is to be extracted from the vector. The name refers to an entry in a     AnyData object, which will be identified by initialize().  The three     bool parameters indicate, whether values, gradients and Hessians of the     finite element function are to be computed on each cell or face.    
+* [0.x.2]*
+     Does the same as the function above but it is possible to select a     block of the global vector.    
+* [0.x.3]*
+     Initialize the selection field with a data vector. While add() only     enters the names of vectors, which will be used in the integration loop     over cells and faces, this function links the names to actual vectos in     a AnyData object.        
+*  [2.x.1]  This function caches the index associated with a name. Therefore,     it must be called every time after the AnyData object has changed.    
+* [0.x.4]*
+     Check whether any vector is selected.    
+* [0.x.5]*
+     Return true if values are selected for any vector.    
+* [0.x.6]*
+     Return true if gradients are selected for any vector.    
+* [0.x.7]*
+     Return true if hessians are selected for any vector.    
+* [0.x.8]*
+     Number of vectors for values    
+* [0.x.9]*
+     Number of vectors for gradients    
+* [0.x.10]*
+     Number of vectors for Hessians    
+* [0.x.11]*
+     The vector index for the ith value    
+* [0.x.12]*
+     The vector index for the ith gradient    
+* [0.x.13]*
+     The vector index for the ith Hessian    
+* [0.x.14]*
+     Print the contents of the selection to the stream.    
+* [0.x.15]*
+     Print the number of selections to the stream.    
+* [0.x.16]*
+     The memory used by this object.    
+* [0.x.17]*
+     Selection of the vectors used to compute values.    
+* [0.x.18]*
+     Selection of the vectors used to compute gradients.    
+* [0.x.19]*
+     Selection of the vectors used to compute hessians.    
+* [0.x.20]*
+   Based on VectorSelector, this is the class used by IntegrationInfo to   compute values of source vectors in quadrature points.    
+*  [2.x.2]   
+* [0.x.21]*
+     Constructor    
+* [0.x.22]*
+     Constructor from a base class object    
+* [0.x.23]*
+     Initialize with a AnyData object and cache the indices in the     VectorSelector base class.        
+*  [2.x.3]  Make sure the VectorSelector base class was filled with     reasonable data before calling this function.    
+* [0.x.24]*
+     Virtual, but empty destructor.    
+* [0.x.25]*
+     The only function added to VectorSelector is an abstract virtual     function implemented in the derived class template and called by     IntegrationInfo.         Depending on the selections made in our base class, this fills the     first three arguments with the local data of the finite element     functions. It is usually called either for the whole FESystem, or for     each base element separately.          [2.x.4]  values is the vector filled with the values of the finite     element function in the quadrature points.          [2.x.5]  gradients is the vector filled with the derivatives of the     finite element function in the quadrature points.          [2.x.6]  hessians is the vector filled with the second derivatives of the     finite element function in the quadrature points.          [2.x.7]  fe is the FEValuesBase object which is used to compute the     function values. Its UpdateFlags must have been set appropriately.          [2.x.8]  index is the local index vector. If  [2.x.9]  refers to base     elements of the system, this vector should be sorted by block and the     arguments  [2.x.10]  and  [2.x.11]  below specify the subset of  [2.x.12]      used.          [2.x.13]  component is the first index in  [2.x.14]   [2.x.15]  and  [2.x.16]      hessians entered in this function.          [2.x.17]  n_comp is the number of components to be filled.          [2.x.18]  start is the first index of this block in  [2.x.19]  or zero if     no base elements are used.          [2.x.20]  size is the number of dofs per cell of the current element or     base element.    
+* [0.x.26]*
+     Fill the local data vector from level vectors. Performs exactly what     the other fill() does, but uses the cell level to access a single level     out of a hierarchy of level vectors, instead of a global data vector on     the active cells.    
+* [0.x.27]*
+   Based on VectorSelector, this is the class that implements the function    [2.x.21]  for a certain type of vector, using AnyData to   identify vectors by name.    
+*  [2.x.22]   
+* [0.x.28]*
+     Constructor.    
+* [0.x.29]*
+     Constructor using a prefilled VectorSelector    
+* [0.x.30]*
+     Initialize with an object of named vectors.    
+* [0.x.31]*
+     Initialize with a single vector and cache the indices in the     VectorSelector base class.        
+*  [2.x.23]  Make sure the VectorSelector base class was filled with     reasonable data before calling this function.    
+* [0.x.32]*
+     The memory used by this object.    
+* [0.x.33]*
+   Based on VectorSelector, this is the class that implements the function    [2.x.24]  for a certain type of multilevel vectors, using   AnyData to identify vectors by name.    
+*  [2.x.25]   
+* [0.x.34]*
+     Constructor.    
+* [0.x.35]*
+     Constructor using a prefilled VectorSelector    
+* [0.x.36]*
+     Initialize with an object of named vectors    
+* [0.x.37]*
+     Initialize with a single vector and cache the indices in the     VectorSelector base class.        
+*  [2.x.26]  Make sure the VectorSelector base class was filled with     reasonable data before calling this function.    
+* [0.x.38]

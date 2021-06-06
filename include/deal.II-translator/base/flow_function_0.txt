@@ -1,0 +1,50 @@
+[0.x.0]*
+   Base class for analytic solutions to incompressible flow problems.     Additional to the Function interface, this function provides for an   offset of the pressure: if the pressure of the computed solution has an   integral mean value different from zero, this value can be given to   pressure_adjustment() in order to compute correct pressure errors.    
+*  [2.x.0]  Derived classes should implement pressures with integral mean value   zero always.    
+*  [2.x.1]  Thread safety: Some of the functions make use of internal data to   compute values. Therefore, every thread should obtain its own object of   derived classes.    
+*  [2.x.2]   
+* [0.x.1]*
+     Constructor, setting up some internal data structures.    
+* [0.x.2]*
+     Virtual destructor.    
+* [0.x.3]*
+     Store an adjustment for the pressure function, such that its mean value     is <tt>p</tt>.    
+* [0.x.4]*
+     Values in a structure more suitable for vector valued functions. The     outer vector is indexed by solution component, the inner by quadrature     point.    
+* [0.x.5]*
+     Gradients in a structure more suitable for vector valued functions. The     outer vector is indexed by solution component, the inner by quadrature     point.    
+* [0.x.6]*
+     Force terms in a structure more suitable for vector valued functions.     The outer vector is indexed by solution component, the inner by     quadrature point.          [2.x.3]  This is not the true Laplacian, but the force term to be used     as right hand side in Stokes' equations    
+* [0.x.7]*
+     The force term in the momentum equation.    
+* [0.x.8]*
+     Return an estimate for the memory consumption, in bytes, of this object.    
+* [0.x.9]*
+     Mean value of the pressure to be added by derived classes.    
+* [0.x.10]*
+     A mutex that guards the following scratch arrays.    
+* [0.x.11]*
+     Auxiliary values for the usual Function interface.    
+* [0.x.12]*
+     Auxiliary values for the usual Function interface.    
+* [0.x.13]*
+   Laminar pipe flow in two and three dimensions. The channel stretches   along the [1.x.0]-axis and has radius  [2.x.4]  The  [2.x.5]  number   is used to scale the pressure properly for a Navier-Stokes problem.    
+*  [2.x.6]   
+* [0.x.14]*
+     Construct an object for the given channel radius <tt>r</tt> and the     Reynolds number <tt>Re</tt>.    
+* [0.x.15]*
+   Artificial divergence free function with homogeneous boundary conditions   on the cube [-1,1]<sup>dim</sup>.     The function in 2D is   [1.x.1]  
+*  [2.x.7]   
+* [0.x.16]*
+     Constructor setting the Reynolds number required for pressure     computation and scaling of the right hand side.    
+* [0.x.17]*
+     Change the viscosity and the reaction parameter.    
+* [0.x.18]*
+   A singular solution to Stokes' equations on a 2d L-shaped domain.     This function satisfies  [2.x.8]  and   represents a typical singular solution around a reentrant corner of an   L-shaped domain that can be created using  [2.x.9]  The   velocity vanishes on the two faces of the re-entrant corner and    [2.x.10]  and  [2.x.11]  are singular at the origin while they are   smooth in the rest of the domain because they can be written as a product   of a smooth function and the term  [2.x.12]  where  [2.x.13]  is the radius   and  [2.x.14]  is a fixed parameter.     Taken from Houston, Sch&ouml;tzau, Wihler, proceeding ENUMATH 2003.    
+*  [2.x.15]   
+* [0.x.19]*
+   Flow solution in 2D by Kovasznay (1947).     This function is valid on the half plane right of the line [1.x.2].    
+*  [2.x.16]   
+* [0.x.20]*
+     Construct an object for the give Reynolds number <tt>Re</tt>. If the     parameter <tt>Stokes</tt> is true, the right hand side of the momentum     equation returned by vector_laplacians() contains the nonlinearity,     such that the Kovasznay solution can be obtained as the solution to a     Stokes problem.    
+* [0.x.21]

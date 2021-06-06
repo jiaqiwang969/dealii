@@ -5,7 +5,7 @@ digraph "Manifold description for triangulations"
   rankdir=LR;
   Node3 [label="@\{",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__OpenCASCADE.html",tooltip=" "];
   Node1 [label="Manifold description\l for triangulations",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
-  Node2 [label="Grids and Triangulations",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="This module groups functions and classes that have to do with the topology and geometry of meshes...."];
+  Node2 [label="Grids and Triangulations\l This module groups functions and",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__grid.html",tooltip="classes that have to do with the topology and geometry of meshes. A mesh can be thought of as a colle..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
   Node1->Node3 [shape=plaintext, label="OpenCASCADE::NURBSPatchManifold", color="orange", dir="none", style="dashed"];
 }

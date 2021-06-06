@@ -1,0 +1,253 @@
+[0.x.0]*
+   A <tt>TableEntry</tt> stores the value of a table entry. It can either be   of type int, unsigned int,  [2.x.0]  double or  [2.x.1]  In   essence, this structure is the same as  [2.x.2]     [2.x.3]  but we wrap this object in a   structure for which we can write a function that can serialize it. This is   also why the function is not in fact of type  [2.x.4]   
+* [0.x.1]*
+     Default constructor.    
+* [0.x.2]*
+     Constructor. Initialize this table element with the value      [2.x.5] .    
+* [0.x.3]*
+     Return the value stored by this object. The template type T must be one     of  [2.x.6]  and it     must match the data type of the object originally stored in this     TableEntry object.    
+* [0.x.4]*
+     Return the numeric value of this object if data has been stored in it     either as an integer, an unsigned  [2.x.7]  or a double.          [2.x.8]  double    
+* [0.x.5]*
+     Cache the contained value with the given formatting and return it. The     given parameters from the column definition are used for the     formatting. The value is cached as a string internally in cached_value.     The cache needs to be invalidated with this routine if the formatting     of the column changes.    
+* [0.x.6]*
+     Return the value cached using cache_string(). This is just a wrapper     around cached_value.    
+* [0.x.7]*
+     Return a TableEntry object that has the same data type of the stored     value but with a value that is default constructed for this data type.     This is used to pad columns below previously set ones.    
+* [0.x.8]*
+     Write the data of this object to a stream for the purpose of     serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.9]*
+     Read the data of this object from a stream for the purpose of     serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.10]*
+     Write and read the data of this object from a stream for the purpose     of serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.11]*
+     Abbreviation for the data type stored by this object.    
+* [0.x.12]*
+     Stored value.    
+* [0.x.13]*
+     Cache the current value as a string.    
+* [0.x.14]*
+ The TableHandler stores TableEntries of arbitrary value type and writes the table as text or in tex format to an output stream. The value type actually may vary from column to column and from row to row.
+*  [1.x.0]
+*  The most important function is the templatized function  [2.x.9]  that adds a column with the name <tt>key</tt> to the table if this column does not yet exist and adds the given value of type <tt>T</tt> (which must be one of <tt>int</tt>, <tt>unsigned int</tt>, <tt>double</tt>,  [2.x.10]  to this column.  After the table is complete there are different possibilities of output, e.g., into a latex file with write_tex() or as text with write_text().
+*  Two (or more) columns may be merged into a "supercolumn" by twice (or multiple) calling add_column_to_supercolumn(), see there. Additionally there is a function to set for each column the precision of the output of numbers, and there are several functions to prescribe the format and the captions the columns are written with in tex mode.
+*  A detailed explanation of this class is also given in the  [2.x.11]  tutorial program.
+* 
+
+*  [1.x.1]
+*  This is a simple example demonstrating the usage of this class. The first column includes the numbers  [2.x.12] , the second  [2.x.13] , the third  [2.x.14] , where the second and third columns are merged into one supercolumn with the superkey <tt>squares and roots</tt>. Additionally the first column is aligned to the right (the default was <tt>centered</tt>) and the precision of the square roots are set to be 6 (instead of 4 as default).
+* 
+
+* 
+* [1.x.2]
+* 
+* 
+
+*  [1.x.3]
+*  When generating output, TableHandler expects that all columns have the exact same number of elements in it so that the result is in fact a table. This assumes that in each of the iterations (time steps, nonlinear iterations, etc) you fill every single column. On the other hand, this may not always be what you want to do. For example, it could be that the function that computes the nonlinear residual is only called every few time steps; or, a function computing statistics of the mesh is only called whenever the mesh is in fact refined. In these cases, the add_value() function will be called less often for some columns and the column would therefore have fewer elements; furthermore, these elements would not be aligned with the rows that contain the other data elements that were produced during this iteration. An entirely different scenario is that the table is filled and at a later time we use the data in there to compute the elements of other rows; the ConvergenceTable class does something like this.
+*  To support both scenarios, the TableHandler class has a property called [1.x.4]. By default, auto-fill mode is off, but it can be enabled by calling set_auto_fill_mode(). If auto-fill mode is enabled we use the following algorithm:
+* 
+
+* 
+* 
+*  - When calling  [2.x.15] , we count the number of elements in the column corresponding to  [2.x.16] . Let's call this number  [2.x.17] .
+* 
+
+* 
+* 
+*  - We also determine the maximal number of elements in the other columns; call it  [2.x.18] .
+* 
+
+* 
+* 
+*  - If  [2.x.19]  then we add  [2.x.20]  copies of the object  [2.x.21]  to this column. Here,  [2.x.22]  is the data type of the given  [2.x.23]  is a numeric type, then  [2.x.24]  is  [2.x.25]  is the empty string  [2.x.26] .
+* 
+
+* 
+* 
+*  - Add the given value to this column.
+*  Padding the column with default elements makes sure that after the addition the column has as many entries as the longest other column. In other words, if we have skipped previous invocations of add_value() for a given key, then the padding will enter default values into this column.
+*  The algorithm as described will fail if you try to skip adding values for a key if adding an element for this key is the first thing you want to do for a given iteration or time step, since we would then pad to the length of the longest column of the [1.x.5] iteration or time step. You may have to re-order adding to this column to a different spot in your program, after adding to a column that will always be added to; or, you may want to start every iteration by adding the number of the iteration to the table, for example in column 1.
+*  In the case above, we have always padded columns [1.x.6] the element that is being added to a column. However, there is also a case where we have to pad [1.x.7]. Namely, if a previous row has been completely filled using  [2.x.27]  subsequent rows have been filled partially, and we then ask for output via write_text() or write_tex(). In that case, the last few rows that have been filled only partially need to be padded below the last element that has been added to them. As before, we do that by using default constructed objects of the same type as the last element of that column.
+* 
+
+* 
+*  [2.x.28] 
+
+* 
+* [0.x.15]*
+   Set of options how a table should be formatted when output with the   write_text() function. The following possibilities exist:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.29] : The table is formatted in such a way   that the contents are aligned under the key of each column, i.e. the key   sits atop each column. This is suitable for tables with few columns where   the entire table can be displayed on the screen. Output looks like this:    
+* [1.x.8]
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.30] : This is a better   format when there are many columns and the table as a whole can not be   displayed on the screen. Here, the column keys are first listed one-by-   one on lines of their own, and are numbered for better readability. In   addition, each of these description lines are prefixed by '#' to mark   these lines as comments for programs that want to read the following   table as data and should ignore these descriptive lines. GNUPLOT is one   such program that will automatically ignore lines so prefixed. Output   with this option looks like this:    
+* [1.x.9]
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.31] : This format   is very similar to  [2.x.32] ,   but it skips aligning the columns with additional white space. This   increases the performance of write_text() for large tables. Example   output:    
+* [1.x.10]
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.33] : Outputs to org-mode (http://orgmode.org/)   table format. It is easy to convert org-mode tables to HTML/LaTeX/csv.   Example output:    
+* [1.x.11]
+*   
+* [0.x.16]*
+     Print the table with headers.    
+* [0.x.17]*
+     Print the table with separate lines for each column label.    
+* [0.x.18]*
+     Like table_with_separate_column_description, but without aligning the     column containing the column labels.    
+* [0.x.19]*
+     Print the table in org mode format.    
+* [0.x.20]*
+   Constructor.  
+* [0.x.21]*
+   Declare the existence of a column in the table by giving it a name.   As discussed in the documentation of the class, this is not usually   necessary
+* 
+*  -  just adding a value for a given column key via the   add_value() function also declares the column. This function is   therefore only necessary in cases where you want a column to   also show up even if you never add an entry to any row in this column;   or, more likely, if you want to prescribe the order in which columns   are later printed by declaring columns in a particular order before   entries are ever put into them.     (The latter objective can also be achieved by adding entries to   the table in whatever order they are produced by a program,   and later calling set_column_order(). However, this approach   requires knowing
+* 
+*  -  in one central place of your software
+* 
+*  -    all of the columns keys that other parts of the software have   written into, and how they should be sorted. This is easily   possible for small programs, but may not be feasible for   large code bases in which parts of the code base are only   executed based on run-time parameters.)  
+* [0.x.22]*
+   Adds a column (if not yet existent) with the key <tt>key</tt> and adds   the value of type <tt>T</tt> to the column. Values of type <tt>T</tt>   must be convertible to one of <code>int, unsigned int, double,    [2.x.34]   [2.x.35]  or a compiler error will result.  
+* [0.x.23]*
+   If a row is only partially filled, then set all elements of that   row for which no elements exist in a particular column to the   empty string. This is akin to the 'auto_fill_mode' described in   the introduction, but more general because it allows you to start   writing into a column for a new row without having to know that   that column had been written to in the previous row.     If all columns have been written into in the current row, then   this function doesn't do anything at all. In other words,   conceptually the function "completes" the current row, though its   use case is to "start" a new row.  
+* [0.x.24]*
+   Switch auto-fill mode on or off. See the general documentation of this   class for a description of what auto-fill mode does.  
+* [0.x.25]*
+   Creates a supercolumn (if not yet existent) and includes column to it.   The keys of the column and the supercolumn are <tt>key</tt> and   <tt>superkey</tt>, respectively.  To merge two columns <tt>c1</tt> and   <tt>c2</tt> to a supercolumn <tt>sc</tt> hence call   <tt>add_column_to_supercolumn(c1,sc)</tt> and   <tt>add_column_to_supercolumn(c2,sc)</tt>.     Concerning the order of the columns, the supercolumn replaces the first   column that is added to the supercolumn. Within the supercolumn the order   of output follows the order the columns are added to the supercolumn.  
+* [0.x.26]*
+   Change the order of columns and supercolumns in the table.     <tt>new_order</tt> includes the keys and superkeys of the columns and   supercolumns in the order the user would like them to be output. If a   superkey is included the keys of the subcolumns need not be explicitly   mentioned in this vector.  The order of subcolumns within a supercolumn   is not changeable and remains in the order in which the columns are added   to the supercolumn.     This function may also be used to break big tables with too many columns   into smaller ones. For example, you can call this function with the first   five columns and then call one of the <tt>write_*</tt> functions, then   call this function with the next five columns and again <tt>write_*</tt>,   and so on.  
+* [0.x.27]*
+   Set the <tt>precision</tt> e.g. double or float variables are written   with. <tt>precision</tt> is the same as in calling   <tt>out<<setprecision(precision)</tt>.  
+* [0.x.28]*
+   Set the <tt>scientific_flag</tt>. True means scientific, false means   fixed point notation.  
+* [0.x.29]*
+   Set the caption of the column <tt>key</tt> for tex output. You may want   to chose this different from <tt>key</tt>, if it contains formulas or   similar constructs.  
+* [0.x.30]*
+   Set the tex caption of the entire <tt>table</tt> for tex output.  
+* [0.x.31]*
+   Set the label of this <tt>table</tt> for tex output.  
+* [0.x.32]*
+   Set the caption the supercolumn <tt>superkey</tt> for tex output.   You may want to chose this different from <tt>superkey</tt>, if it   contains formulas or similar constructs.  
+* [0.x.33]*
+   Set the tex output format of a column, e.g. <tt>c</tt>, <tt>r</tt>,   <tt>l</tt>, or <tt>p{3cm}</tt>. The default is <tt>c</tt>. Also if this   function is not called for a column, the default is preset to be   <tt>c</tt>.  
+* [0.x.34]*
+   Write table as formatted text to the given stream. The text is formatted   in such as way that it represents data as formatted columns of text. To   avoid problems when reading these tables automatically, for example for   postprocessing, if an entry in a cell of this table is empty (i.e. it has   been created by calling the add_value() function with an empty string),   then the entry of the table is printed as  [2.x.36] .     The second argument indicates how column keys are to be displayed. See   the description of TextOutputFormat for more information.  
+* [0.x.35]*
+   Write table as a tex file. If  [2.x.37]  is set to false, then no    [2.x.38]  and    [2.x.39]  are used. In this way the file can be   included into an existing tex file using a command like    [2.x.40] .  
+* [0.x.36]*
+   Clear the rows of the table, i.e. calls clear() on all the underlying   storage data structures.  
+* [0.x.37]*
+   Remove all values added at the current row. This is useful when, for   example, a time-step is rejected and all data recorded about it needs to   be discarded.  
+* [0.x.38]*
+   Read or write the data of this object to or from a stream for the purpose   of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.39]*
+    [2.x.41]  Exceptions    [2.x.42]   
+* [0.x.40]*
+   Exception  
+* [0.x.41]*
+   Exception  
+* [0.x.42]*
+   Exception  
+* [0.x.43]*
+   Exception  
+* [0.x.44]*
+   Exception  
+* [0.x.45]*
+   Structure encapsulating all the data that is needed to describe one   column of a table.  
+* [0.x.46]*
+     Constructor needed by  [2.x.43]     
+* [0.x.47]*
+     Constructor.    
+* [0.x.48]*
+     Pad this column with default constructed elements to the number of rows     given by the argument.    
+* [0.x.49]*
+     Write the data of this object to a stream for the purpose of     serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.50]*
+     Read the data of this object from a stream for the purpose of     serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.51]*
+     Write and read the data of this object from a stream for the purpose     of serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.52]*
+     Invalidates the string cache of all the entries and recomputes the     maximum length max_length.    
+* [0.x.53]*
+     List of entries within this column. Values are always immediately     converted to strings to provide a uniform method of lookup.    
+* [0.x.54]*
+     The caption of the column in tex output.  By default, this is the key     string that is given to the <tt>TableHandler</tt> by      [2.x.44]  This may be changed by calling      [2.x.45]     
+* [0.x.55]*
+     The column format in tex output.  By default, this is <tt>"c"</tt>,     meaning `centered'. This may be changed by calling      [2.x.46]  with <tt>"c", "r", "l"</tt>     for centered, right or left.    
+* [0.x.56]*
+     Double or float entries are written with this precision (set by the     user).  The default is 4.    
+* [0.x.57]*
+     <tt>scientific</tt>=false means fixed point notation.    
+* [0.x.58]*
+     Flag that may be used by derived classes for arbitrary purposes.         In particular, the ConvergenceTable class uses the flag to denote     columns for which convergence information has already been computed, or     should not be computed at all.    
+* [0.x.59]*
+     This entry caches the maximum length in characters for all entries in     this table.    
+* [0.x.60]*
+   Help function that gives a vector of the keys of all columns that are   mentioned in <tt>column_order</tt>, where each supercolumn key is   replaced by its subcolumn keys.     This function implicitly checks the consistency of the data. The result   is returned in <tt>sel_columns</tt>.  
+* [0.x.61]*
+   Builtin function, that gives the number of rows in the table and that   checks if the number of rows is equal in every column. This function is   e.g. called before writing output.  
+* [0.x.62]*
+   A variable storing the column and supercolumn keys in the order desired by   the user. By default this is the order of adding the columns. This order   may be changed by set_column_order().  
+* [0.x.63]*
+   A map from the column keys to the columns (not supercolumns).     The field is declared mutable so that the write_text() and write_tex()   functions can be const, even though they may pad columns below if   'auto_fill_mode' is on.  
+* [0.x.64]*
+   A map from each supercolumn key to the keys of its subcolumns in the right   order.  It is allowed that a supercolumn has got the same key as a   column.     Note that we do not use a <tt>multimap</tt> here since the order of   column keys for each supercolumn key is relevant.  
+* [0.x.65]*
+   A map from the supercolumn keys to the captions of the supercolumns that   are used in tex output.     By default these are just the supercolumn keys but they may be changed by   <tt>set_tex_supercaptions(...)</tt>.  
+* [0.x.66]*
+   The caption of the table itself.  
+* [0.x.67]*
+   The label of the table.  
+* [0.x.68]*
+   Flag indicating whether auto-fill mode should be used.  
+* [0.x.69]

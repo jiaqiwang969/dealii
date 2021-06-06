@@ -1,0 +1,66 @@
+[0.x.0]*
+  [2.x.0]  Creation of a LinearOperator related to the Schur Complement
+
+* 
+* [0.x.1]*
+  [2.x.1]  LinearOperator
+*  Return a LinearOperator that performs the operations associated with the Schur complement. There are two additional helper functions, condense_schur_rhs() and postprocess_schur_solution(), that are likely necessary to be used in order to perform any useful tasks in linear algebra with this operator.
+*  We construct the definition of the Schur complement in the following way:
+*  Consider a general system of linear equations that can be decomposed into two major sets of equations: [1.x.0]
+*  where  [2.x.2]   represent general subblocks of the matrix  [2.x.3]  and, similarly, general subvectors of  [2.x.4]  are given by  [2.x.5]  .
+*  This is equivalent to the following two statements: [1.x.1]
+* 
+*  Assuming that  [2.x.6]  are both square and invertible, we could then perform one of two possible substitutions, [1.x.2]
+*  which amount to performing block Gaussian elimination on this system of equations.
+*  For the purpose of the current implementation, we choose to substitute (3) into (2) [1.x.3]
+*  This leads to the result [1.x.4] with  [2.x.7]  being the Schur complement and the modified right-hand side vector  [2.x.8]  arising from the condensation step. Note that for this choice of  [2.x.9] , submatrix  [2.x.10]  need not be invertible and may thus be the null matrix. Ideally  [2.x.11]  should be well-conditioned.
+*  So for any arbitrary vector  [2.x.12] , the Schur complement performs the following operation: [1.x.5]
+*  A typical set of steps needed the solve a linear system (1),(2) would be: 1. Define the inverse matrix  [2.x.13]  (using inverse_operator()). 2. Define the Schur complement  [2.x.14]  (using schur_complement()). 3. Define iterative inverse matrix  [2.x.15]  such that (6) holds. It is necessary to use a solver with a preconditioner to compute the approximate inverse operation of  [2.x.16]  since we never compute  [2.x.17]  directly, but rather the result of its operation. To achieve this, one may again use the inverse_operator() in conjunction with the Schur complement that we've just constructed. Observe that the both  [2.x.18]  and its preconditioner operate over the same space as  [2.x.19] . 4. Perform pre-processing step on the RHS of (5) using condense_schur_rhs():    [1.x.6] 5. Solve for  [2.x.20]  in (5):    [1.x.7] 6. Perform the post-processing step from (3) using postprocess_schur_solution():    [1.x.8]
+*  An illustration of typical usage of this operator for a fully coupled system is given below.
+
+* 
+* [1.x.9]
+* 
+*  In the above example, the preconditioner for  [2.x.21]  was defined as the preconditioner for  [2.x.22] , which is valid since they operate on the same space. However, if  [2.x.23]  and  [2.x.24]  are too dissimilar, then this may lead to a large number of solver iterations as  [2.x.25]  is not a good approximation for  [2.x.26] .
+*  A better preconditioner in such a case would be one that provides a more representative approximation for  [2.x.27] . One approach is shown in  [2.x.28] , where  [2.x.29]  is the null matrix and the preconditioner for  [2.x.30]  is derived from the mass matrix over this space.
+*  From another viewpoint, a similar result can be achieved by first constructing an object that represents an approximation for  [2.x.31]  wherein expensive operation, namely  [2.x.32] , is approximated. Thereafter we construct the approximate inverse operator  [2.x.33]  which is then used as the preconditioner for computing  [2.x.34] .
+
+* 
+* [1.x.10]
+*  Note that due to the construction of  [2.x.35]  S_inv_approx and subsequently  [2.x.36]  S_inv, there are a pair of nested iterative solvers which could collectively consume a lot of resources. Therefore care should be taken in the choices leading to the construction of the iterative inverse_operators. One might consider the use of a IterationNumberControl (or a similar mechanism) to limit the number of inner solver iterations. This controls the accuracy of the approximate inverse operation  [2.x.37]  which acts only as the preconditioner for  [2.x.38] . Furthermore, the preconditioner to  [2.x.39] , which in this example is  [2.x.40] , should ideally be computationally inexpensive.
+*  However, if an iterative solver based on IterationNumberControl is used as a preconditioner then the preconditioning operation is not a linear operation. Here a flexible solver like SolverFGMRES (flexible GMRES) is best employed as an outer solver in order to deal with the variable behavior of the preconditioner. Otherwise the iterative solver can stagnate somewhere near the tolerance of the preconditioner or generally behave erratically. Alternatively, using a ReductionControl would ensure that the preconditioner always solves to the same tolerance, thereby rendering its behavior constant.
+*  Further examples of this functionality can be found in the test-suite, such as  [2.x.41]  . The solution of a multi- component problem (namely  [2.x.42] ) using the schur_complement can be found in  [2.x.43]  .
+*   [2.x.44]   [2.x.45]  "Block (linear algebra)"
+* 
+
+* 
+*  [2.x.46] 
+
+* 
+* [0.x.2]*
+  [2.x.47]  Creation of PackagedOperation objects related to the Schur Complement
+
+* 
+* [0.x.3]*
+  [2.x.48]  PackagedOperation
+*  For the system of equations [1.x.11]
+*  this operation performs the pre-processing (condensation) step on the RHS subvector  [2.x.49]  so that the Schur complement can be used to solve this system of equations. More specifically, it produces an object that represents the condensed form of the subvector  [2.x.50]  namely [1.x.12]
+*   [2.x.51]   [2.x.52]  "Block (linear algebra)"
+* 
+
+* 
+*  [2.x.53] 
+
+* 
+* [0.x.4]*
+  [2.x.54]  PackagedOperation
+*  For the system of equations [1.x.13]
+*  this operation performs the post-processing step of the Schur complement to solve for the second subvector  [2.x.55]  once subvector  [2.x.56]  is known, with the result that [1.x.14]
+*   [2.x.57]   [2.x.58]  "Block (linear algebra)"
+* 
+
+* 
+*  [2.x.59] 
+
+* 
+* [0.x.5]

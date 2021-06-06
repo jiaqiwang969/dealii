@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['dataoutimplementation_12153',['DataOutImplementation',['../namespaceExceptions_1_1DataOutImplementation.html',1,'Exceptions']]],
-  ['evaluationflags_12154',['EvaluationFlags',['../namespaceEvaluationFlags.html',1,'']]],
-  ['exceptions_12155',['Exceptions',['../namespaceExceptions.html',1,'']]]
+  ['dataoutimplementation_15905',['DataOutImplementation',['../namespaceExceptions_1_1DataOutImplementation.html',1,'Exceptions']]],
+  ['euler_5fdg_15906',['Euler_DG',['../namespaceEuler__DG.html',1,'']]],
+  ['evaluationflags_15907',['EvaluationFlags',['../namespaceEvaluationFlags.html',1,'']]],
+  ['exceptions_15908',['Exceptions',['../namespaceExceptions.html',1,'']]]
 ];

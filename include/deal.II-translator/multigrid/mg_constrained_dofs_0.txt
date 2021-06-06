@@ -1,0 +1,44 @@
+[0.x.0]*
+ Collection of boundary constraints and refinement edge constraints for level vectors.
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   Fill the internal data structures with hanging node constraints extracted   from the dof handler object. Works with natural boundary conditions only.   There exists a sister function setting up boundary constraints as well.     This function ensures that on every level, degrees of freedom at interior   edges of a refinement level are treated corrected but leaves degrees of   freedom at the boundary of the domain untouched assuming that no   Dirichlet boundary conditions for them exist.     Furthermore, this call sets up an AffineConstraints object on each   level that contains possible periodicity constraints in case those   have been added to the underlying triangulation. The AffineConstraints   object can be queried by get_level_constraints(level). Note that the   current implementation of periodicity constraints in this class does   not support rotation matrices in the periodicity definition, i.e., the   respective argument in the  [2.x.1]  may not   be different from the identity matrix.   If no level_relevant_dofs are passed as the second argument, the function   uses the locally relevant level DoFs, extracted by    [2.x.2]  Otherwise, the   user-provided IndexSets, which should define a superset of locally relevant   DoFs, are used on each level to allow the user to add additional indices to   the set of constrained DoFs.  
+* [0.x.2]*
+   Fill the internal data structures with information   about Dirichlet boundary dofs.     The initialize() function has to be called before   to set hanging node constraints.     This function can be called multiple times to allow considering   different sets of boundary_ids for different components.  
+* [0.x.3]*
+   Add user defined constraints to be used on level  [2.x.3]      The user can call this function multiple times and any new,   conflicting constraints will overwrite the previous constraints   for that DoF.     Before the transfer, the user defined constraints will be distributed   to the source vector, and then any DoF index set using   make_zero_boundary_constraints() will be overwritten with   value zero.    
+*  [2.x.4]  This is currently only implemented for MGTransferMatrixFree.  
+* [0.x.4]*
+   Fill the internal data structures with information   about no normal flux boundary dofs.     This function is limited to meshes whose no normal flux boundaries   have faces which are normal to the x-, y-, or z-axis. Also, for a   specific boundary id, all faces must be facing in the same direction,   i.e., a boundary normal to the x-axis must have a different boundary   id than a boundary normal to the y- or z-axis and so on. If the mesh   was produced, for example, using the  [2.x.5]    function, setting <tt>colorize=true</tt> during mesh generation and calling   make_no_normal_flux_constraints() for each no normal flux boundary is   sufficient.  
+* [0.x.5]*
+   Reset the data structures.  
+* [0.x.6]*
+   Determine whether a dof index is subject to a boundary constraint.  
+* [0.x.7]*
+   Determine whether a dof index is at the refinement edge.  
+* [0.x.8]*
+   Determine whether the (i,j) entry of the interface matrix   on a given level should be set. This is taken in terms of   dof i, that is, return true if i is at a refinement edge,   j is not, and both are not on the external boundary.  
+* [0.x.9]*
+   Return the indices of level dofs on the given level that are subject to   Dirichlet boundary conditions (as set by the  [2.x.6]  parameter in   initialize()).  The indices are restricted to the set of locally relevant   level dofs.  
+* [0.x.10]*
+   Return the indices of dofs on the given level that lie on an refinement   edge (dofs on faces to neighbors that are coarser).  
+* [0.x.11]*
+   Return if Dirichlet boundary indices are set in initialize().  
+* [0.x.12]*
+   Return the AffineConstraints object for a given level, containing   periodicity constraints (if enabled on the triangulation).  
+* [0.x.13]*
+   Return the user defined constraint matrix for a given level. These   constraints are set using the function add_user_constraints() and   should not contain constraints for DoF indices set in   make_zero_boundary_constraints() as they will be overwritten during   the transfer.  
+* [0.x.14]*
+   The indices of boundary dofs for each level.  
+* [0.x.15]*
+   The degrees of freedom on a given level that live on the refinement edge   between the level and cells on a coarser level.  
+* [0.x.16]*
+   Constraint matrices containing information regarding potential   periodic boundary conditions for each level .  
+* [0.x.17]*
+   Constraint matrices defined by user.  
+* [0.x.18]

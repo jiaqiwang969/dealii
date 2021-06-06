@@ -1,11 +1,11 @@
-digraph "Data storage primitives"
+digraph "Data storage primitives Here are a few simple classes that"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
-  Node2 [label="Utility functions and\l classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__utilities.html",tooltip="This module simply collects a number of functions and classes that provide general tools for tasks th..."];
-  Node1 [label="Data storage primitives",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Here are a few simple classes that help in storage and viewing data. For example, the Table templates..."];
-  Node3 [label="Multilevel support",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__mg.html",tooltip="Classes that have to do with multigrid algorithms."];
+  Node2 [label="Utility functions and\l classes This module\l simply",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__utilities.html",tooltip="collects a number of functions and classes that provide general tools for tasks that do not usually h..."];
+  Node1 [label="Data storage primitives\l Here are a few simple\l classes that",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="help in storage and viewing data. For example, the Table templates allow to use not only arrays of ob..."];
+  Node3 [label="Multilevel support\l Classes that have to\l do with multigrid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__mg.html",tooltip="algorithms. The main class with implementation of the multigrid scheme is Multigrid with its function..."];
   Node2->Node1 [shape=plaintext, dir="back", style="solid"];
   Node1->Node3 [shape=plaintext, label="MGLevelObject", color="orange", dir="none", style="dashed"];
 }

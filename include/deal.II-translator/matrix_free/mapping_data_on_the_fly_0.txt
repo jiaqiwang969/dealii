@@ -1,0 +1,29 @@
+[0.x.0]*
+     This class provides evaluated mapping information using standard     deal.II information in a form that FEEvaluation and friends can use for     vectorized access. Since no vectorization over cells is available with     the DoFHandler/Triangulation cell iterators, the interface to     FEEvaluation's vectorization model is to use  [2.x.0]       [2.x.1]  copies of the same element. This     interface is thus primarily useful for evaluating several operators on     the same cell, e.g., when assembling cell matrices.         As opposed to the Mapping classes in deal.II, this class does not     actually provide a boundary description that can be used to evaluate     the geometry, but it rather provides the evaluated geometry from a     given deal.II mapping (as passed to the constructor of this class) in a     form accessible to FEEvaluation.    
+* [0.x.1]*
+       Constructor, similar to FEValues. Since this class only evaluates the       geometry, no finite element has to be specified and the simplest       element, FE_Nothing, is used internally for the underlying FEValues       object.      
+* [0.x.2]*
+       Constructor. This constructor is equivalent to the other one except       that it makes the object use a  [2.x.2]  mapping (i.e., an object of type       MappingQGeneric(1)) implicitly.      
+* [0.x.3]*
+       Initialize with the given cell iterator.      
+* [0.x.4]*
+       Return whether reinit() has been called at least once, i.e., a cell       has been set.      
+* [0.x.5]*
+       Return a triangulation iterator to the current cell.      
+* [0.x.6]*
+       Return a reference to the underlying FEValues object that evaluates       certain quantities (only mapping-related ones like Jacobians or       mapped quadrature points are accessible, as no finite element data is       actually used).      
+* [0.x.7]*
+       Return a reference to the underlying storage field of type       MappingInfoStorage of the same format as the data fields in       MappingInfo. This ensures compatibility with the precomputed data       fields in the MappingInfo class.      
+* [0.x.8]*
+       Return a reference to 1D quadrature underlying this object.      
+* [0.x.9]*
+       A cell iterator in case we generate the data on the fly to be able to       check if we need to re-generate the information stored in this class.      
+* [0.x.10]*
+       Dummy finite element object necessary for initializing the FEValues       object.      
+* [0.x.11]*
+       An underlying FEValues object that performs the (scalar) evaluation.      
+* [0.x.12]*
+       Get 1D quadrature formula to be used for reinitializing shape info.      
+* [0.x.13]*
+       The storage part created for a single cell and held in analogy to       MappingInfo.      
+* [0.x.14]

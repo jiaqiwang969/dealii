@@ -1,16 +1,16 @@
-digraph "Grids and Triangulations"
+digraph "Grids and Triangulations This module groups functions and"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
   Node3 [label="Manifold description\l for triangulations",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__manifold.html",tooltip=" "];
   Node4 [label="Grid reordering and\l cell orientation",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__reordering.html",tooltip="A module describing how deal.II consistently orients Triangulation objects."];
-  Node7 [label="Graphical output",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__output.html",tooltip="deal.II generates three types of output: it can write triangulations/meshes in formats understood by ..."];
+  Node7 [label="Graphical output deal.II\l generates three types\l of output:",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__output.html",tooltip="it can write triangulations/meshes in formats understood by several mesh readers (including those of ..."];
   Node8 [label="Accessor classes of\l the mesh iterators",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Accessors.html",tooltip=" "];
-  Node5 [label="Geometric and other\l primitives",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__geomprimitives.html",tooltip="This group contains a number of classes that act as geometric primitives or primitives for other math..."];
-  Node2 [label="Iterators on mesh-like\l containers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Iterators.html",tooltip="deal.II has several classes which are understood conceptually as meshes. Apart from the obvious Trian..."];
-  Node1 [label="Grids and Triangulations",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="This module groups functions and classes that have to do with the topology and geometry of meshes...."];
-  Node6 [label="Input",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__input.html",tooltip="deal.II can read meshes in a number of different formats. However, all of them are constrained to so-..."];
+  Node5 [label="Geometric and other\l primitives This group\l contains",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__geomprimitives.html",tooltip="a number of classes that act as geometric primitives or primitives for other mathematical objects...."];
+  Node2 [label="Iterators on mesh-like\l containers     @\{",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Iterators.html",tooltip="deal.II has several classes which are understood conceptually asmeshes. Apart from the obvious Triang..."];
+  Node1 [label="Grids and Triangulations\l This module groups functions and",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="classes that have to do with the topology and geometry of meshes. A mesh can be thought of as a colle..."];
+  Node6 [label="Input deal.II can read\l meshes in a number of\l different",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__input.html",tooltip="formats. However, all of them are constrained to so-called \"coarse meshes\", i.e. meshes that have no ..."];
   Node1->Node2 [shape=plaintext, dir="back", style="solid"];
   Node1->Node3 [shape=plaintext, dir="back", style="solid"];
   Node1->Node4 [shape=plaintext, dir="back", style="solid"];

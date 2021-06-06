@@ -7,5 +7,5 @@ digraph "include/deal.II-origin/algorithms" {
   dir_65b8ec18948bdad5bb2e1c72ed795889 [shape=box, label="algorithms", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_65b8ec18948bdad5bb2e1c72ed795889.html"];
   }
   dir_ee90d91a514b839c31faec7a1d916f67 [shape=box label="deal.II" fillcolor="white" style="filled" color="red" URL="dir_ee90d91a514b839c31faec7a1d916f67.html"];
-  dir_65b8ec18948bdad5bb2e1c72ed795889->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="24", labeldistance=1.5 headhref="dir_000065_000009.html"];
+  dir_65b8ec18948bdad5bb2e1c72ed795889->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="24", labeldistance=1.5 headhref="dir_000083_000009.html"];
 }

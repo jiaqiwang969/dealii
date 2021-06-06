@@ -1,0 +1,239 @@
+[0.x.0]!  [2.x.0]  Matrix1 [2.x.1] 
+
+* 
+* [0.x.1]*
+ Namespace in which iterators in block matrices are implemented.
+
+* 
+* [0.x.2]*
+   Base class for block matrix accessors, implementing the stepping through   a matrix.  
+* [0.x.3]*
+     Declare type for container size.    
+* [0.x.4]*
+     Typedef the value type of the matrix we point into.    
+* [0.x.5]*
+     Initialize data fields to default values.    
+* [0.x.6]*
+     Block row of the element represented by this object.    
+* [0.x.7]*
+     Block column of the element represented by this object.    
+* [0.x.8]*
+     Block row into which we presently point.    
+* [0.x.9]*
+     Block column into which we presently point.    
+* [0.x.10]*
+   Accessor classes in block matrices.  
+* [0.x.11]*
+   Block matrix accessor for non const matrices.  
+* [0.x.12]*
+     Declare type for container size.    
+* [0.x.13]*
+     Type of the matrix used in this accessor.    
+* [0.x.14]*
+     Typedef the value type of the matrix we point into.    
+* [0.x.15]*
+     Constructor. Since we use accessors only for read access, a const     matrix pointer is sufficient.         Place the iterator at the beginning of the given row of the matrix, or     create the end pointer if  [2.x.2]  equals the total number of rows in the     matrix.    
+* [0.x.16]*
+     Row number of the element represented by this object.    
+* [0.x.17]*
+     Column number of the element represented by this object.    
+* [0.x.18]*
+     Value of the entry at the current position.    
+* [0.x.19]*
+     Set new value.    
+* [0.x.20]*
+     The matrix accessed.    
+* [0.x.21]*
+     Iterator of the underlying matrix class.    
+* [0.x.22]*
+     Move ahead one element.    
+* [0.x.23]*
+     Compare this accessor with another one for equality.    
+* [0.x.24]*
+   Block matrix accessor for constant matrices, implementing the stepping   through a matrix.  
+* [0.x.25]*
+     Declare type for container size.    
+* [0.x.26]*
+     Type of the matrix used in this accessor.    
+* [0.x.27]*
+     Typedef the value type of the matrix we point into.    
+* [0.x.28]*
+     Constructor. Since we use accessors only for read access, a const     matrix pointer is sufficient.         Place the iterator at the beginning of the given row of the matrix, or     create the end pointer if  [2.x.3]  equals the total number of rows in the     matrix.    
+* [0.x.29]*
+     Initialize const accessor from non const accessor.    
+* [0.x.30]*
+     Row number of the element represented by this object.    
+* [0.x.31]*
+     Column number of the element represented by this object.    
+* [0.x.32]*
+     Value of the entry at the current position.    
+* [0.x.33]*
+     The matrix accessed.    
+* [0.x.34]*
+     Iterator of the underlying matrix class.    
+* [0.x.35]*
+     Move ahead one element.    
+* [0.x.36]*
+     Compare this accessor with another one for equality.    
+* [0.x.37]*
+ Blocked matrix class. The behavior of objects of this type is almost as for the usual matrix objects, with most of the functions being implemented in both classes. The main difference is that the matrix represented by this object is composed of an array of matrices (e.g. of type SparseMatrix<number>) and all accesses to the elements of this object are relayed to accesses of the base matrices. The actual type of the individual blocks of this matrix is the type of the template argument, and can, for example be the usual SparseMatrix or  [2.x.4] 
+*  In addition to the usual matrix access and linear algebra functions, there are functions block() which allow access to the different blocks of the matrix. This may, for example, be of help when you want to implement Schur complement methods, or block preconditioners, where each block belongs to a specific component of the equation you are presently discretizing.
+*  Note that the numbers of blocks and rows are implicitly determined by the sparsity pattern objects used.
+*  Objects of this type are frequently used when a system of differential equations has solutions with variables that fall into different classes. For example, solutions of the Stokes or Navier-Stokes equations have  [2.x.5]  velocity components and one pressure component. In this case, it may make sense to consider the linear system of equations as a system of 2x2 blocks, and one can construct preconditioners or solvers based on this 2x2 block structure. This class can help you in these cases, as it allows to view the matrix alternatively as one big matrix, or as a number of individual blocks.
+* 
+
+*  [1.x.0]
+*  Since this class simply forwards its calls to the subobjects (if necessary after adjusting indices denoting which subobject is meant), this class is completely independent of the actual type of the subobject. The functions that set up block matrices and destroy them, however, have to be implemented in derived classes. These functions also have to fill the data members provided by this base class, as they are only used passively in this class.
+* 
+
+*  Most of the functions take a vector or block vector argument. These functions can, in general, only successfully be compiled if the individual blocks of this matrix implement the respective functions operating on the vector type in question. For example, if you have a block sparse matrix over deal.II SparseMatrix objects, then you will likely not be able to form the matrix-vector multiplication with a block vector over  [2.x.6]  objects. If you attempt anyway, you will likely get a number of compiler errors.
+* 
+
+* 
+*  [2.x.7]  Instantiations for this template are provided for <tt> [2.x.8]  and  [2.x.9]  others can be generated in application programs (see the section on  [2.x.10]  in the manual).
+*   [2.x.11]   [2.x.12]  "Block (linear algebra)"
+
+* 
+* [0.x.38]*
+   Typedef the type of the underlying matrix.  
+* [0.x.39]*
+   Type of matrix entries. These are analogous to alias in the standard   library containers.  
+* [0.x.40]*
+   Default constructor.  
+* [0.x.41]*
+   Destructor.  
+* [0.x.42]*
+   Copy the matrix given as argument into the current object.     Copying matrices is an expensive operation that we do not want to happen   by accident through compiler generated code for  [2.x.13] .   (This would happen, for example, if one accidentally declared a function   argument of the current type [1.x.1] rather than [1.x.2].) The functionality of copying matrices is implemented in   this member function instead. All copy operations of objects of this type   therefore require an explicit function call.     The source matrix may be a matrix of arbitrary type, as long as its data   type is convertible to the data type of this matrix.     The function returns a reference to <tt>this</tt>.  
+* [0.x.43]*
+   Access the block with the given coordinates.  
+* [0.x.44]*
+   Access the block with the given coordinates. Version for constant   objects.  
+* [0.x.45]*
+   Return the dimension of the codomain (or range) space. Note that the   matrix is of dimension  [2.x.14] .  
+* [0.x.46]*
+   Return the dimension of the domain space. Note that the matrix is of   dimension  [2.x.15] .  
+* [0.x.47]*
+   Return the number of blocks in a column. Returns zero if no sparsity   pattern is presently associated to this matrix.  
+* [0.x.48]*
+   Return the number of blocks in a row. Returns zero if no sparsity pattern   is presently associated to this matrix.  
+* [0.x.49]*
+   Set the element <tt>(i,j)</tt> to <tt>value</tt>. Throws an error if the   entry does not exist or if <tt>value</tt> is not a finite number. Still,   it is allowed to store zero values in non-existent fields.  
+* [0.x.50]*
+   Set all elements given in a FullMatrix into the sparse matrix locations   given by <tt>indices</tt>. In other words, this function writes the   elements in <tt>full_matrix</tt> into the calling matrix, using the   local-to-global indexing specified by <tt>indices</tt> for both the rows   and the columns of the matrix. This function assumes a quadratic sparse   matrix and a quadratic full_matrix, the usual situation in FE   calculations.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be set anyway or they should be filtered away   (and not change the previous content in the respective element if it   exists). The default value is <tt>false</tt>, i.e., even zero values are   treated.  
+* [0.x.51]*
+   Same function as before, but now including the possibility to use   rectangular full_matrices and different local-to-global indexing on rows   and columns, respectively.  
+* [0.x.52]*
+   Set several elements in the specified row of the matrix with column   indices as given by <tt>col_indices</tt> to the respective value.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be set anyway or they should be filtered away   (and not change the previous content in the respective element if it   exists). The default value is <tt>false</tt>, i.e., even zero values are   treated.  
+* [0.x.53]*
+   Set several elements to values given by <tt>values</tt> in a given row in   columns given by col_indices into the sparse matrix.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be inserted anyway or they should be filtered   away. The default value is <tt>false</tt>, i.e., even zero values are   inserted/replaced.  
+* [0.x.54]*
+   Add <tt>value</tt> to the element ([1.x.3]).  Throws an error if the   entry does not exist or if <tt>value</tt> is not a finite number. Still,   it is allowed to store zero values in non-existent fields.  
+* [0.x.55]*
+   Add all elements given in a FullMatrix<double> into sparse matrix   locations given by <tt>indices</tt>. In other words, this function adds   the elements in <tt>full_matrix</tt> to the respective entries in calling   matrix, using the local-to-global indexing specified by <tt>indices</tt>   for both the rows and the columns of the matrix. This function assumes a   quadratic sparse matrix and a quadratic full_matrix, the usual situation   in FE calculations.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.56]*
+   Same function as before, but now including the possibility to use   rectangular full_matrices and different local-to-global indexing on rows   and columns, respectively.  
+* [0.x.57]*
+   Set several elements in the specified row of the matrix with column   indices as given by <tt>col_indices</tt> to the respective value.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.58]*
+   Add an array of values given by <tt>values</tt> in the given global   matrix row at columns specified by col_indices in the sparse matrix.     The optional parameter <tt>elide_zero_values</tt> can be used to specify   whether zero values should be added anyway or these should be filtered   away and only non-zero data is added. The default value is <tt>true</tt>,   i.e., zero values won't be added into the matrix.  
+* [0.x.59]*
+   Add <tt>matrix</tt> scaled by <tt>factor</tt> to this matrix, i.e. the   matrix <tt>factor*matrix</tt> is added to <tt>this</tt>. If the sparsity   pattern of the calling matrix does not contain all the elements in the   sparsity pattern of the input matrix, this function will throw an   exception.     Depending on MatrixType, however, additional restrictions might arise.   Some sparse matrix formats require <tt>matrix</tt> to be based on the   same sparsity pattern as the calling matrix.  
+* [0.x.60]*
+   Return the value of the entry (i,j).  This may be an expensive operation   and you should always take care where to call this function.  In order to   avoid abuse, this function throws an exception if the wanted element does   not exist in the matrix.  
+* [0.x.61]*
+   This function is mostly like operator()() in that it returns the value of   the matrix entry <tt>(i,j)</tt>. The only difference is that if this   entry does not exist in the sparsity pattern, then instead of raising an   exception, zero is returned. While this may be convenient in some cases,   note that it is simple to write algorithms that are slow compared to an   optimal solution, since the sparsity of the matrix is not used.  
+* [0.x.62]*
+   Return the main diagonal element in the [1.x.4]th row. This function   throws an error if the matrix is not quadratic and also if the diagonal   blocks of the matrix are not quadratic.     This function is considerably faster than the operator()(), since for   quadratic matrices, the diagonal entry may be the first to be stored in   each row and access therefore does not involve searching for the right   column number.  
+* [0.x.63]*
+   Call the compress() function on all the subblocks of the matrix.       See    [2.x.16]  "Compressing distributed objects"   for more information.  
+* [0.x.64]*
+   Multiply the entire matrix by a fixed factor.  
+* [0.x.65]*
+   Divide the entire matrix by a fixed factor.  
+* [0.x.66]*
+   Adding Matrix-vector multiplication. Add  [2.x.17]  on  [2.x.18]  with  [2.x.19]  being   this matrix.  
+* [0.x.67]*
+   Adding Matrix-vector multiplication. Add [1.x.5] to   [1.x.6] with [1.x.7] being this matrix. This function does the same   as vmult_add() but takes the transposed matrix.  
+* [0.x.68]*
+   Return the norm of the vector [1.x.8] with respect to the norm induced   by this matrix, i.e. [1.x.9]. This is useful, e.g. in the   finite element context, where the [1.x.10]-norm of a function   equals the matrix norm with respect to the mass matrix of the vector   representing the nodal values of the finite element function. Note that   even though the function's name might suggest something different, for   historic reasons not the norm but its square is returned, as defined   above by the scalar product.     Obviously, the matrix needs to be square for this operation.  
+* [0.x.69]*
+   Return the frobenius norm of the matrix, i.e. the square root of the sum   of squares of all entries in the matrix.  
+* [0.x.70]*
+   Compute the matrix scalar product  [2.x.20] .  
+* [0.x.71]*
+   Compute the residual [1.x.11]. Write the residual into <tt>dst</tt>.  
+* [0.x.72]*
+   Print the matrix to the given stream, using the format <tt>(line,col)   value</tt>, i.e. one nonzero entry of the matrix per line. The optional   flag outputs the sparsity pattern in a different style according to the   underlying sparse matrix type.  
+* [0.x.73]*
+   Iterator starting at the first entry.  
+* [0.x.74]*
+   Final iterator.  
+* [0.x.75]*
+   Iterator starting at the first entry of row <tt>r</tt>.  
+* [0.x.76]*
+   Final iterator of row <tt>r</tt>.  
+* [0.x.77]*
+   Iterator starting at the first entry.  
+* [0.x.78]*
+   Final iterator.  
+* [0.x.79]*
+   Iterator starting at the first entry of row <tt>r</tt>.  
+* [0.x.80]*
+   Final iterator of row <tt>r</tt>.  
+* [0.x.81]*
+   Return a reference to the underlying BlockIndices data of the rows.  
+* [0.x.82]*
+   Return a reference to the underlying BlockIndices data of the columns.  
+* [0.x.83]*
+   Determine an estimate for the memory consumption (in bytes) of this   object. Note that only the memory reserved on the current processor is   returned in case this is called in an MPI-based program.  
+* [0.x.84]*
+    [2.x.21]  Exceptions    [2.x.22]   
+* [0.x.85]*
+   Exception  
+* [0.x.86]*
+   Exception  
+* [0.x.87]*
+   Release all memory and return to a state just like after having called   the default constructor. It also forgets the sparsity pattern it was   previously tied to.     This calls clear for all sub-matrices and then resets this object to have   no blocks at all.     This function is protected since it may be necessary to release   additional structures. A derived class can make it public again, if it is   sufficient.  
+* [0.x.88]*
+   Index arrays for rows and columns.  
+* [0.x.89]*
+   Array of sub-matrices.  
+* [0.x.90]*
+   This function collects the sizes of the sub-objects and stores them in   internal arrays, in order to be able to relay global indices into the   matrix to indices into the subobjects. Youmust* call this function each   time after you have changed the size of the sub-objects.     Derived classes should call this function whenever the size of the sub-   objects has changed and the  [2.x.23]  arrays need to be updated.     Note that this function is not public since not all derived classes need   to export its interface. For example, for the usual deal.II SparseMatrix   class, the sizes are implicitly determined whenever reinit() is called,   and individual blocks cannot be resized. For that class, this function   therefore does not have to be public. On the other hand, for the PETSc   classes, there is no associated sparsity pattern object that determines   the block sizes, and for these the function needs to be publicly   available. These classes therefore export this function.  
+* [0.x.91]*
+   Matrix-vector multiplication: let  [2.x.24]  with  [2.x.25]  being this   matrix.     Due to problems with deriving template arguments between the block and   non-block versions of the vmult/Tvmult functions, the actual functions   are implemented in derived classes, with implementations forwarding the   calls to the implementations provided here under a unique name for which   template arguments can be derived by the compiler.  
+* [0.x.92]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block column.     Due to problems with deriving template arguments between the block and   non-block versions of the vmult/Tvmult functions, the actual functions   are implemented in derived classes, with implementations forwarding the   calls to the implementations provided here under a unique name for which   template arguments can be derived by the compiler.  
+* [0.x.93]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block row.     Due to problems with deriving template arguments between the block and   non-block versions of the vmult/Tvmult functions, the actual functions   are implemented in derived classes, with implementations forwarding the   calls to the implementations provided here under a unique name for which   template arguments can be derived by the compiler.  
+* [0.x.94]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block.     Due to problems with deriving template arguments between the block and   non-block versions of the vmult/Tvmult functions, the actual functions   are implemented in derived classes, with implementations forwarding the   calls to the implementations provided here under a unique name for which   template arguments can be derived by the compiler.  
+* [0.x.95]*
+   Matrix-vector multiplication: let  [2.x.26]  with  [2.x.27]  being this   matrix. This function does the same as vmult() but takes the transposed   matrix.     Due to problems with deriving template arguments between the block and   non-block versions of the vmult/Tvmult functions, the actual functions   are implemented in derived classes, with implementations forwarding the   calls to the implementations provided here under a unique name for which   template arguments can be derived by the compiler.  
+* [0.x.96]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block row.     Due to problems with deriving template arguments between the block and   non-block versions of the vmult/Tvmult functions, the actual functions   are implemented in derived classes, with implementations forwarding the   calls to the implementations provided here under a unique name for which   template arguments can be derived by the compiler.  
+* [0.x.97]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block column.     Due to problems with deriving template arguments between the block and   non-block versions of the vmult/Tvmult functions, the actual functions   are implemented in derived classes, with implementations forwarding the   calls to the implementations provided here under a unique name for which   template arguments can be derived by the compiler.  
+* [0.x.98]*
+   Matrix-vector multiplication. Just like the previous function, but only   applicable if the matrix has only one block.     Due to problems with deriving template arguments between the block and   non-block versions of the vmult/Tvmult functions, the actual functions   are implemented in derived classes, with implementations forwarding the   calls to the implementations provided here under a unique name for which   template arguments can be derived by the compiler.  
+* [0.x.99]*
+   Some matrix types, in particular PETSc, need to synchronize set and add   operations. This has to be done for all matrices in the BlockMatrix. This   routine prepares adding of elements by notifying all blocks. Called by   all internal routines before adding elements.  
+* [0.x.100]*
+   Notifies all blocks to let them prepare for setting elements, see   prepare_add_operation().  
+* [0.x.101]*
+   A structure containing some fields used by the set() and add() functions   that is used to pre-sort the input fields. Since one can reasonably   expect to call set() and add() from multiple threads at once as long as   the matrix indices that are touched are disjoint, these temporary data   fields need to be guarded by a mutex; the structure therefore contains   such a mutex as a member variable.  
+* [0.x.102]*
+     Temporary vector for counting the elements written into the individual     blocks when doing a collective add or set.    
+* [0.x.103]*
+     Temporary vector for column indices on each block when writing local to     global data on each sparse matrix.    
+* [0.x.104]*
+     Temporary vector for storing the local values (they need to be     reordered when writing local to global).    
+* [0.x.105]*
+     A mutex variable used to guard access to the member variables of this     structure;    
+* [0.x.106]*
+     Copy operator. This is needed because the default copy operator of this     class is deleted (since  [2.x.28]  is not copyable) and hence the     default copy operator of the enclosing class is also deleted.         The implementation here simply does nothing
+* 
+*  -  TemporaryData objects     are just scratch objects that are resized at the beginning of their     use, so there is no point actually copying anything.    
+* [0.x.107]*
+   A set of scratch arrays that can be used by the add() and set() functions   that take pointers to data to pre-sort indices before use. Access from   multiple threads is synchronized via the mutex variable that is part of   the structure.  
+* [0.x.108]

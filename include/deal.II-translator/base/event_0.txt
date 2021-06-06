@@ -1,0 +1,47 @@
+[0.x.0]*
+   Objects of this kind are used to notify interior applications of changes   provoked by an outer loop. They are handed to the application through    [2.x.0]  and it is up to the actual application how to handle   them.     Event is organized as an extensible binary enumerator. Every class can   add its own events using assign(). A typical code example is    
+* [1.x.0]
+*   
+* [0.x.1]*
+     This function registers a new event type and assigns a unique     identifier to it. The result of this function should be stored for     later use.    
+* [0.x.2]*
+     If you forgot to store the result of assign, here is how to retrieve it     knowing the name.    
+* [0.x.3]*
+     Constructor, generating a clear Event.    
+* [0.x.4]*
+     Clear all flags    
+* [0.x.5]*
+     Set all flags    
+* [0.x.6]*
+     Add the flags of the other event    
+* [0.x.7]*
+     Clear the flags of the other event    
+* [0.x.8]*
+     Test whether all the flags set in the other Event are also set in this     one.    
+* [0.x.9]*
+     Return <tt>true</tt> if any event is set.    
+* [0.x.10]*
+     List the flags to a stream.    
+* [0.x.11]*
+     List all assigned events.    
+* [0.x.12]*
+     Sometimes, actions have to be taken by all means. Therefore, if this     value is true, test() always returns true.    
+* [0.x.13]*
+     The actual list of events    
+* [0.x.14]*
+     The names of registered events    
+* [0.x.15]*
+   Events used by library operators  
+* [0.x.16]*
+     The program has just started and everything should be new.    
+* [0.x.17]*
+     The mesh has changed.    
+* [0.x.18]*
+     The current derivative leads to slow convergence of Newton's method.    
+* [0.x.19]*
+     The time stepping scheme starts a new time step.    
+* [0.x.20]*
+     The time stepping scheme has changed the time step size.    
+* [0.x.21]*
+   Output shift operator for events. Calls  [2.x.1]       [2.x.2]  Event  
+* [0.x.22]

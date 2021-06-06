@@ -1,0 +1,29 @@
+[0.x.0]*
+   Namespace for the flags for point_values() and point_gradients().  
+* [0.x.1]*
+     Flags for point_values() and point_gradients().    
+* [0.x.2]*
+       Compute average.      
+* [0.x.3]*
+       Compute maximum.            
+*  [2.x.0]  Only available for scalar values.      
+* [0.x.4]*
+       Compute minimum.            
+*  [2.x.1]  Only available for scalar values.      
+* [0.x.5]*
+       Take any value.      
+* [0.x.6]*
+   Given a (distributed) solution vector  [2.x.2]  evaluate the values at   the (arbitrary and even remote) points specified by  [2.x.3]       [2.x.4]  This is a collective call that needs to be executed by all     processors in the communicator.  
+* [0.x.7]*
+   Given a (distributed) solution vector  [2.x.5]  evaluate the values at   the points specified by  [2.x.6]  which might have been set up by the   above function.    
+*  [2.x.7]  Refinement/coarsening/repartitioning leads to the invalidation of the     cache so that the above function has to be called again.      [2.x.8]  This is a collective call that needs to be executed by all     processors in the communicator.  
+* [0.x.8]*
+   Given a (distributed) solution vector  [2.x.9]  evaluate the gradients at   the (arbitrary and even remote) points specified by  [2.x.10]   
+* [0.x.9]*
+   Given a (distributed) solution vector  [2.x.11]  evaluate the gradients at   the points specified by  [2.x.12]  which might have been set up by the   above function.    
+*  [2.x.13]  Refinement/coarsening/repartitioning leads to the invalidation of the     cache so that the above function has to be called again.  
+* [0.x.10]*
+     Perform reduction for scalars.    
+* [0.x.11]*
+     Perform reduction for tensors.    
+* [0.x.12]

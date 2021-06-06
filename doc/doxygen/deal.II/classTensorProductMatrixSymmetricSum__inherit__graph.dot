@@ -8,4 +8,6 @@ digraph "TensorProductMatrixSymmetricSum&lt; dim, Number, n_rows_1d &gt;"
   Node2 [label="TensorProductMatrixSymmetric\lSumBase\< dim, Number, -1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTensorProductMatrixSymmetricSumBase.html",tooltip=" "];
   Node3 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, Number, -1 \>" ,fontname="Helvetica"];
   Node3 [label="TensorProductMatrixSymmetric\lSumBase\< dim, Number, n\l_rows_1d \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTensorProductMatrixSymmetricSumBase.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, VectorizedArray\l\< number \>, fe_degree+1 \>" ,fontname="Helvetica"];
+  Node4 [label="TensorProductMatrixSymmetric\lSum\< dim, VectorizedArray\l\< number \>, fe_degree+1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTensorProductMatrixSymmetricSum.html",tooltip=" "];
 }

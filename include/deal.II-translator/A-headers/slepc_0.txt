@@ -1,0 +1,15 @@
+[0.x.0]*
+
+
+* 
+*  [2.x.0] 
+*  The classes in this module are wrappers around functionality provided by the SLEPc library. All classes and functions in this group reside in a namespace  [2.x.1] 
+*  These classes are only available if a SLEPc installation and a PETSc installation was detected during configuration of deal.II. Refer to the README file for more details about this.
+*   [2.x.2]  Toby D. Young, 2011
+* 
+
+* 
+*  [2.x.3] 
+
+* 
+* [0.x.1]

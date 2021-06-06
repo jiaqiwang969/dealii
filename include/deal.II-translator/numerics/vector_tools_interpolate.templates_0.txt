@@ -1,0 +1,3 @@
+[0.x.0]*
+     Return whether the cell and all of its descendants are locally owned.    
+* [0.x.1]

@@ -1,0 +1,17 @@
+[0.x.0]*
+       Tag adaptor for  [2.x.0]       
+* [0.x.1]*
+       Point type adaptor for  [2.x.1]       
+* [0.x.2]*
+       Access to the D-th coordinate of the lower left  corner of a        [2.x.2]       
+* [0.x.3]*
+         Getter function for the D-th coordinate of the lower left corner of         a  [2.x.3]         
+* [0.x.4]*
+         Setter function for the D-th coordinate of the lower left corner of         a  [2.x.4]         
+* [0.x.5]*
+       Access to the D-th coordinate of the upper right corner of a        [2.x.5]       
+* [0.x.6]*
+         Getter function for the D-th coordinate of the upper right corner of         a  [2.x.6]         
+* [0.x.7]*
+         Setter function for the D-th coordinate of the upper right corner of         a  [2.x.7]         
+* [0.x.8]

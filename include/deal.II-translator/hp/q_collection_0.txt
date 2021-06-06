@@ -1,0 +1,22 @@
+[0.x.0]*
+   This class implements a collection of quadrature objects in the same way   as the  [2.x.0]  implements a collection of finite element   classes.     It implements the concepts stated in the    [2.x.1]    module described in the doxygen documentation.    
+*  [2.x.2]   
+* [0.x.1]*
+     Default constructor. Leads to an empty collection that can later be     filled using push_back().    
+* [0.x.2]*
+     Copy constructor.    
+* [0.x.3]*
+     Conversion constructor. This constructor creates a QCollection from a     single quadrature rule. More quadrature formulas can be added with     push_back(), if desired, though it would probably be clearer to add all     mappings the same way.    
+* [0.x.4]*
+     Constructor. This constructor creates a QCollection from one or     more quadrature objects passed to the constructor. For this     call to be valid, all arguments need to be of types derived     from class Quadrature<dim>.    
+* [0.x.5]*
+     Add a new quadrature rule to the QCollection. In most cases, you will     want to add quadrature rules in the same order as the elements were     added to the  [2.x.3]  for which this quadrature rule collection     is meant. If done this way, the  [2.x.4]  objects with which you will     use both  [2.x.5]  and  [2.x.6]  objects will automatically     choose corresponding elements and quadrature formulas. On the other hand,     it is possible to use arbitrary combinations of elements and quadrature     formulas in  [2.x.7]  and  [2.x.8]  objects when     specifically specifying appropriate indices in calls to      [2.x.9]  or  [2.x.10]  In those cases,     there need not be a correspondence between elements of the      [2.x.11]  and  [2.x.12]  objects; they need not even be of     the same size in this case.         The same arguments about the order of elements of collections can, by     the way, also be made about the elements of  [2.x.13]      objects.         This class creates a copy of the given quadrature object, i.e., you can     do things like <tt>push_back(QGauss<dim>(3));</tt>. The internal copy     is later destroyed by this object upon destruction of the entire     collection.    
+* [0.x.6]*
+     Equality comparison operator. All stored Quadrature objects are compared     in order.    
+* [0.x.7]*
+     Return the maximum number of quadrature points over all the elements of     the collection. This is mostly useful to initialize arrays to allocate     the maximum amount of memory that may be used when re-sizing later on     to a articular quadrature formula from within this collection.    
+* [0.x.8]*
+     Exception    
+* [0.x.9]*
+     The real container, which stores pointers to the different quadrature     objects.    
+* [0.x.10]

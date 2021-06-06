@@ -1,0 +1,64 @@
+[0.x.0]!  [2.x.0]  TrilinosWrappers [2.x.1] 
+
+* 
+* [0.x.1]*
+     An implementation of block vectors based on the vector class     implemented in TrilinosWrappers. While the base class provides for most     of the interface, this class handles the actual allocation of vectors     and provides functions that are specific to the underlying vector type.         The model of distribution of data is such that each of the blocks is     distributed across all MPI processes named in the MPI communicator.     I.e. we don't just distribute the whole vector, but each component. In     the constructors and reinit() functions, one therefore not only has to     specify the sizes of the individual blocks, but also the number of     elements of each of these blocks to be stored on the local process.        
+*  [2.x.2]     
+*  [2.x.3]       [2.x.4]  "Block (linear algebra)"    
+* [0.x.2]*
+       Typedef the base class for simpler access to its own alias.      
+* [0.x.3]*
+       Typedef the type of the underlying vector.      
+* [0.x.4]*
+       Import the alias from the base class.      
+* [0.x.5]*
+       Default constructor. Generate an empty vector without any blocks.      
+* [0.x.6]*
+       Constructor. Generate a block vector with as many blocks as there are       entries in  [2.x.5]   Each IndexSet together with the MPI       communicator contains the layout of the distribution of data among       the MPI processes.      
+* [0.x.7]*
+       Creates a BlockVector with ghost elements. See the respective       reinit() method for more details.  [2.x.6]  may contain any       elements in  [2.x.7]  they will be ignored.      
+* [0.x.8]*
+       Copy-Constructor. Set all the properties of the parallel vector to       those of the given argument and copy the elements.      
+* [0.x.9]*
+       Move constructor. Creates a new vector by stealing the internal data       of the vector  [2.x.8]       
+* [0.x.10]*
+       Creates a block vector consisting of <tt>num_blocks</tt> components,       but there is no content in the individual components and the user has       to fill appropriate data using a reinit of the blocks.      
+* [0.x.11]*
+       Destructor. Clears memory      
+* [0.x.12]*
+       Copy operator: fill all components of the vector that are locally       stored with the given scalar value.      
+* [0.x.13]*
+       Copy operator for arguments of the same type.      
+* [0.x.14]*
+       Move the given vector. This operator replaces the present vector with        [2.x.9]  by efficiently swapping the internal data structures.      
+* [0.x.15]*
+       Another copy function. This one takes a deal.II block vector and       copies it into a TrilinosWrappers block vector. Note that the number       of blocks has to be the same in the vector as in the input vector.       Use the reinit() command for resizing the BlockVector or for changing       the internal structure of the block components.             Since Trilinos only works on doubles, this function is limited to       accept only one possible number type in the deal.II vector.      
+* [0.x.16]*
+       Reinitialize the BlockVector to contain as many blocks as there are       index sets given in the input argument, according to the parallel       distribution of the individual components described in the maps.             If <tt>omit_zeroing_entries==false</tt>, the vector is filled with       zeros.      
+* [0.x.17]*
+       Reinit functionality. This function destroys the old vector content       and generates a new one based on the input partitioning. In addition       to just specifying one index set as in all the other methods above,       this method allows to supply an additional set of ghost entries.       There are two different versions of a vector that can be created. If       the flag  [2.x.10]  is set to  [2.x.11]  the vector only       allows read access to the joint set of  [2.x.12]  and        [2.x.13]  The effect of the reinit method is then equivalent       to calling the other reinit method with an index set containing both       the locally owned entries and the ghost entries.             If the flag  [2.x.14]  is set to true, this creates an       alternative storage scheme for ghost elements that allows multiple       threads to write into the vector (for the other reinit methods, only       one thread is allowed to write into the ghost entries at a time).      
+* [0.x.18]*
+       Change the dimension to that of the vector <tt>V</tt>. The same       applies as for the other reinit() function.             The elements of <tt>V</tt> are not copied, i.e.  this function is the       same as calling <tt>reinit (V.size(), omit_zeroing_entries)</tt>.             Note that you must call this (or the other reinit() functions)       function, rather than calling the reinit() functions of an individual       block, to allow the block vector to update its caches of vector       sizes. If you call reinit() on one of the blocks, then subsequent       actions on this object may yield unpredictable results since they may       be routed to the wrong block.      
+* [0.x.19]*
+       Change the number of blocks to <tt>num_blocks</tt>. The individual       blocks will get initialized with zero size, so it is assumed that the       user resizes the individual blocks by herself in an appropriate way,       and calls <tt>collect_sizes</tt> afterwards.      
+* [0.x.20]*
+       This reinit function is meant to be used for parallel calculations       where some non-local data has to be used. The typical situation where       one needs this function is the call of the        [2.x.15]  function (or of some derivatives)       in parallel. Since it is usually faster to retrieve the data in       advance, this function can be called before the assembly forks out to       the different processors. What this function does is the following:       It takes the information in the columns of the given matrix and looks       which data couples between the different processors. That data is       then queried from the input vector. Note that you should not write to       the resulting vector any more, since the some data can be stored       several times on different processors, leading to unpredictable       results. In particular, such a vector cannot be used for matrix-       vector products as for example done during the solution of linear       systems.      
+* [0.x.21]*
+       Return if this Vector contains ghost elements.              [2.x.16]         [2.x.17]  "vectors with ghost elements"      
+* [0.x.22]*
+       Swap the contents of this vector and the other vector <tt>v</tt>. One       could do this operation with a temporary variable and copying over       the data elements, but this function is significantly more efficient       since it only swaps the pointers to the data of the two vectors and       therefore does not need to allocate temporary storage and move data       around.             Limitation: right now this function only works if both vectors have       the same number of blocks. If needed, the numbers of blocks should be       exchanged, too.             This function is analogous to the swap() function of all C++       standard containers. Also, there is a global function swap(u,v) that       simply calls <tt>u.swap(v)</tt>, again in analogy to standard       functions.      
+* [0.x.23]*
+       Print to a stream.      
+* [0.x.24]*
+       Exception      
+* [0.x.25]*
+       Exception      
+* [0.x.26]*
+     Global function which overloads the default implementation of the C++     standard library which uses a temporary object. The function simply     exchanges the data of the two vectors.          [2.x.18]   [2.x.19]     
+* [0.x.27]*
+     A helper class used internally in linear_operator.h. Specialization for      [2.x.20]     
+* [0.x.28]*
+ Declare  [2.x.21]  as distributed vector.
+
+* 
+* [0.x.29]

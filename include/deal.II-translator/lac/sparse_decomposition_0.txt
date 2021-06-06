@@ -1,0 +1,84 @@
+[0.x.0]!  [2.x.0]  Preconditioners [2.x.1] 
+
+* 
+* [0.x.1]*
+ Abstract base class for incomplete decompositions of a sparse matrix into sparse factors. This class can't be used by itself, but only as the base class of derived classes that actually implement particular decompositions such as SparseILU or SparseMIC.
+*  The decomposition is stored as a sparse matrix which is why this class is derived from the SparseMatrix. Since it is not a matrix in the usual sense (the stored entries are not those of a matrix, but of the two factors of the original matrix), the derivation is <tt>protected</tt> rather than <tt>public</tt>.
+* 
+
+*  [1.x.0]
+*  Sparse decompositions are frequently used with additional fill-in, i.e., the sparsity structure of the decomposition is denser than that of the matrix to be decomposed. The initialize() function of this class allows this fill-in via the AdditionalData object as long as all entries present in the original matrix are present in the decomposition also, i.e. the sparsity pattern of the decomposition is a superset of the sparsity pattern in the original matrix.
+*  Such fill-in can be accomplished by various ways, one of which is the copy- constructor of the SparsityPattern class that allows the addition of side- diagonals to a given sparsity structure.
+* 
+
+*  [1.x.1]
+*  While objects of this class can not be used directly (this class is only a base class for others implementing actual decompositions), derived classes such as SparseILU and SparseMIC can be used in the usual form as preconditioners. For example, this works:
+
+* 
+* [1.x.2]
+* 
+*  Through the AdditionalData object it is possible to specify additional parameters of the LU decomposition.
+*  1/ The matrix diagonal can be strengthened by adding  [2.x.2]  times the sum of the absolute row entries of each row to the respective diagonal entries. By default no strengthening is performed.
+*  2/ By default, each initialize() function call creates its own sparsity. For that, it copies the sparsity of  [2.x.3]  and adds a specific number of extra off diagonal entries specified by  [2.x.4] .
+*  3/ By setting  [2.x.5]  the sparsity is not recreated but the sparsity of the previous initialize() call is reused (recycled). This might be useful when several linear problems on the same sparsity need to solved, as for example several Newton iteration steps on the same triangulation. The default is  [2.x.6] .
+*  4/ It is possible to give a user defined sparsity to  [2.x.7] . Then, no sparsity is created but  [2.x.8]  is used to store the decomposed matrix. For restrictions on the sparsity see section `Fill-in' above).
+* 
+
+*  [1.x.3]
+*  It is enough to override the initialize() and vmult() methods to implement particular LU decompositions, like the true LU, or the Cholesky decomposition. Additionally, if that decomposition needs fine tuned diagonal strengthening on a per row basis, it may override the get_strengthen_diagonal() method.
+
+* 
+* [0.x.2]*
+   Constructor. Does nothing.     Call the initialize() function before using this object as preconditioner   (vmult()).  
+* [0.x.3]*
+   Declare type for container size.  
+* [0.x.4]*
+   Destruction. Mark the destructor pure to ensure that this class isn't   used directly, but only its derived classes.  
+* [0.x.5]*
+   Deletes all member variables. Leaves the class in the state that it had   directly after calling the constructor  
+* [0.x.6]*
+   Parameters for SparseDecomposition.  
+* [0.x.7]*
+     Constructor. For the parameters' description, see below.    
+* [0.x.8]*
+      [2.x.9]  times the sum of absolute row entries is     added to the diagonal entries.         Per default, this value is zero, i.e. the diagonal is not strengthened.    
+* [0.x.9]*
+     By default, the  [2.x.10]  function creates     its own sparsity. This sparsity has the same SparsityPattern as      [2.x.11]  with some extra off diagonals the number of which     is specified by  [2.x.12] .         The user can give a SparsityPattern to  [2.x.13] .     Then this sparsity is used and the  [2.x.14]      argument is ignored.    
+* [0.x.10]*
+     If this flag is true the initialize() function uses the same sparsity     that was used during the previous initialize() call.         This might be useful when several linear problems on the same sparsity     need to solved, as for example several Newton iteration steps on the     same triangulation.    
+* [0.x.11]*
+     When a SparsityPattern is given to this argument, the initialize()     function calls  [2.x.15]  causing this     sparsity to be used.         Note that the sparsity structures of  [2.x.16]      and the matrix passed to the initialize function need not be equal.     Fill-in is allowed, as well as filtering out some elements in the     matrix.    
+* [0.x.12]*
+   This function needs to be called before an object of this class is used   as preconditioner.     For more detail about possible parameters, see the class documentation   and the documentation of the  [2.x.17]  class.     According to the  [2.x.18] , this function creates a new   SparsityPattern or keeps the previous sparsity or takes the sparsity   given by the user to  [2.x.19] . Then, this function performs the   LU decomposition.     After this function is called the preconditioner is ready to be used   (using the  [2.x.20]  function of derived classes).  
+* [0.x.13]*
+   Return whether the object is empty. It calls the inherited    [2.x.21]  function.  
+* [0.x.14]*
+   Return the dimension of the codomain (or range) space. It calls the   inherited  [2.x.22]  function. Note that the matrix is of   dimension  [2.x.23] .  
+* [0.x.15]*
+   Return the dimension of the domain space. It calls the  inherited    [2.x.24]  function. Note that the matrix is of dimension  [2.x.25] .  
+* [0.x.16]*
+   Adding Matrix-vector multiplication. Add [1.x.4] on [1.x.5] with   [1.x.6] being this matrix.     Source and destination must not be the same vector.  
+* [0.x.17]*
+   Adding Matrix-vector multiplication. Add [1.x.7] to   [1.x.8] with [1.x.9] being this matrix. This function does the same   as vmult_add() but takes the transposed matrix.     Source and destination must not be the same vector.  
+* [0.x.18]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.19]*
+    [2.x.26]  Exceptions    [2.x.27]   
+* [0.x.20]*
+   Exception  
+* [0.x.21]*
+   Copies the passed SparseMatrix onto this object. This object's sparsity   pattern remains unchanged.  
+* [0.x.22]*
+   Performs the strengthening loop. For each row calculates the sum of   absolute values of its elements, determines the strengthening factor   (through get_strengthen_diagonal()) sf and multiplies the diagonal entry   with  [2.x.28] .  
+* [0.x.23]*
+   In the decomposition phase, computes a strengthening factor for the   diagonal entry in row  [2.x.29]  with sum of absolute values of its   elements  [2.x.30] .    
+*  [2.x.31]  The default implementation in SparseLUDecomposition returns    [2.x.32] 's value. This variable is set to   a nonzero value in several of the derived classes.  
+* [0.x.24]*
+   The default strengthening value, returned by get_strengthen_diagonal().  
+* [0.x.25]*
+   For every row in the underlying SparsityPattern, this array contains a   pointer to the row's first afterdiagonal entry. Becomes available after   invocation of prebuild_lower_bound().  
+* [0.x.26]*
+   Fills the #prebuilt_lower_bound array.  
+* [0.x.27]*
+   In general this pointer is zero except for the case that no   SparsityPattern is given to this class. Then, a SparsityPattern is   created and is passed down to the SparseMatrix base class.     Nevertheless, the SparseLUDecomposition needs to keep ownership of this   sparsity. It keeps this pointer to it enabling it to delete this sparsity   at destruction time.  
+* [0.x.28]

@@ -1,0 +1,21 @@
+[0.x.0]*
+  [2.x.0]  Polynomials  [2.x.1] 
+
+* 
+* [0.x.1]*
+ This class implements the polynomial space of degree <tt>p</tt> based on the monomials  [2.x.2] . I.e. in <tt>d</tt> dimensions it constructs all polynomials of the form  [2.x.3] , where  [2.x.4] . The base polynomials are given a specific ordering, e.g. in 2 dimensions:  [2.x.5] . The ordering of the monomials in  [2.x.6]  matches the ordering of the monomials in  [2.x.7]  for  [2.x.8] .
+
+* 
+* [0.x.2]*
+   Access to the dimension of this object, for checking and automatic   setting of dimension in other classes.  
+* [0.x.3]*
+   Constructor. Creates all basis functions of  [2.x.9] .  [2.x.10]  p: the degree of   the polynomial space  
+* [0.x.4]*
+   Return the degree <tt>p</tt> of the polynomial space <tt>P_p</tt>.     Note, that this number is  [2.x.11]  compare   definition in PolynomialSpace.  
+* [0.x.5]*
+   For the <tt>n</tt>th polynomial  [2.x.12]  this function   gives the degrees i,j,k in the x,y,z directions.     In 1d and 2d, obviously only i and i,j are returned.  
+* [0.x.6]*
+   Fills the <tt>index_map</tt>.  
+* [0.x.7]*
+   Degree <tt>p</tt> of the polynomial space  [2.x.13] , i.e. the number   <tt>p</tt> which was given to the constructor.  
+* [0.x.8]

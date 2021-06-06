@@ -1,0 +1,211 @@
+[0.x.0]*
+ This class provides an interface to group several elements together into one, vector-valued element. As example, consider the Taylor-Hood element that is used for the solution of the Stokes and Navier-Stokes equations: There, the velocity (of which there are as many components as the dimension  [2.x.0]  of the domain) is discretized with  [2.x.1]  elements and the pressure with  [2.x.2]  elements. Mathematically, the finite element space for the coupled problem is then often written as  [2.x.3]  where the exponentiation is understood to be the tensor product of spaces
+* 
+*  -  i.e., in 2d, we have  [2.x.4] 
+* 
+*  -  and tensor products lead to vectors where each component of the vector-valued function space corresponds to a scalar function in one of the  [2.x.5]  or  [2.x.6]  spaces. Using the FESystem class, this space is created using
+
+* 
+* [1.x.0]
+*  The creation of this element here corresponds to taking tensor-product powers of the  [2.x.7]  element in the first line of the list of arguments to the FESystem constructor, and then concatenation via another tensor product with the element in the second line. This kind of construction is used, for example, in the  [2.x.8]  tutorial program.
+*  Similarly,  [2.x.9]  solves an elasticity equation where we need to solve for the displacement of a solid object. The displacement again has  [2.x.10]  components if the domain is  [2.x.11] -dimensional, and so the combined finite element is created using
+
+* 
+* [1.x.1]
+*  where now each (vector) component of the combined element corresponds to a  [2.x.12]  space.
+*  To the outside world, FESystem objects look just like a usual finite element object, they just happen to be composed of several other finite elements that are possibly of different type. These "base elements" can themselves have multiple components and, in particular, could also be vector-valued
+* 
+*  -  for example, if one of the base elements is an FESystem itself (see also below). An example is given in the documentation of namespace  [2.x.13]  when using the "tensor product" strategy.
+*  %Vector valued elements are discussed in a number of tutorial programs, for example  [2.x.14] ,  [2.x.15] ,  [2.x.16] ,  [2.x.17] , and in particular in the  [2.x.18]  module.
+*   [2.x.19] 
+* 
+
+*  [1.x.2]
+*  An FESystem, except in the most trivial case, produces a vector-valued finite element with several components. The number of components n_components() corresponds to the dimension of the solution function in the PDE system, and correspondingly also to the number of equations your PDE system has. For example, the mixed Laplace system covered in  [2.x.20]  has  [2.x.21]  components in  [2.x.22]  space dimensions: the scalar pressure and the  [2.x.23]  components of the velocity vector. Similarly, the elasticity equation covered in  [2.x.24]  has  [2.x.25]  components in  [2.x.26]  space dimensions. In general, the number of components of a FESystem element is the accumulated number of components of all base elements times their multiplicities. A bit more on components is also given in the  [2.x.27]  "glossary entry on components".
+*  While the concept of components is important from the viewpoint of a partial differential equation, the finite element side looks a bit different Since not only FESystem, but also vector-valued elements like FE_RaviartThomas, have several components. The concept needed here is a  [2.x.28]  "block". Each block encompasses the set of degrees of freedom associated with a single base element of an FESystem, where base elements with multiplicities count multiple times. These blocks are usually addressed using the information in  [2.x.29]  The number of blocks of a FESystem object is simply the sum of all multiplicities of base elements and is given by n_blocks().
+*  For example, the FESystem for the Taylor-Hood element for the three-dimensional Stokes problem can be built using the code
+
+* 
+* [1.x.3]
+*  or more concisely via
+
+* 
+* [1.x.4]
+*  or even shorter (mimicking the mathematical notation that we are dealing with a  [2.x.30]  element):
+
+* 
+* [1.x.5]
+* 
+*  This example creates an FESystem  [2.x.31]  with four components, three for the velocity components and one for the pressure, and also four blocks with the degrees of freedom of each of the velocity components and the pressure in a separate block each. The number of blocks is four since the first base element is repeated three times.
+*  On the other hand, a Taylor-Hood element can also be constructed using
+* 
+
+* 
+* [1.x.6]
+* 
+*  The FESystem  [2.x.32]  created here has the same four components, but the degrees of freedom are distributed into only two blocks. The first block has all velocity degrees of freedom from  [2.x.33]  while the second block contains the pressure degrees of freedom. Note that while  [2.x.34]  itself has 3 blocks, the FESystem  [2.x.35]  does not attempt to split  [2.x.36]  into its base elements but considers it a block of its own. By blocking all velocities into one system first as in  [2.x.37]  we achieve the same block structure that would be generated if instead of using a  [2.x.38]  element for the velocities we had used vector-valued base elements, for instance like using a mixed discretization of Darcy's law using
+* 
+
+* 
+* [1.x.7]
+* 
+*  This example also produces a system with four components, but only two blocks.
+*  In most cases, the composed element behaves as if it were a usual element. It just has more degrees of freedom than most of the "common" elements. However the underlying structure is visible in the restriction, prolongation and interface constraint matrices, which do not couple the degrees of freedom of the base elements. E.g. the continuity requirement is imposed for the shape functions of the subobjects separately; no requirement exist between shape functions of different subobjects, i.e. in the above example: on a hanging node, the respective value of the  [2.x.39]  velocity is only coupled to  [2.x.40]  at the vertices and the line on the larger cell next to this vertex, but there is no interaction with  [2.x.41]  and  [2.x.42]  of this or the other cell.
+* 
+
+*  [1.x.8]
+*  The overall numbering of degrees of freedom is as follows: for each subobject (vertex, line, quad, or hex), the degrees of freedom are numbered such that we run over all subelements first, before turning for the next dof on this subobject or for the next subobject. For example, for an element of three components in one space dimension, the first two components being cubic lagrange elements and the third being a quadratic lagrange element, the ordering for the system <tt>s=(u,v,p)</tt> is:
+*   [2.x.43]   [2.x.44]  First vertex: <tt>u0, v0, p0 = s0, s1, s2</tt>  [2.x.45]  Second vertex: <tt>u1, v1, p1 = s3, s4, s5</tt>  [2.x.46]  First component on the line: <tt>u2, u3 = s4, s5</tt>  [2.x.47]  Second component on the line: <tt>v2, v3 = s6, s7</tt>.  [2.x.48]  Third component on the line: <tt>p2 = s8</tt>.  [2.x.49]  That said, you should not rely on this numbering in your application as these %internals might change in future. Rather use the functions system_to_component_index() and component_to_system_index().
+*  For more information on the template parameter <tt>spacedim</tt> see the documentation of Triangulation.
+* 
+
+* 
+*  [2.x.50] 
+* 
+
+* 
+* [0.x.1]*
+   Delete default constructor so that `FESystem(FEPairs &&... fe_pairs)` is   not accidentally picked if no FiniteElement is provided.  
+* [0.x.2]*
+   Constructor. Take a finite element and the number of elements you want to   group together using this class.     The object  [2.x.51]  is not actually used for anything other than creating a   copy that will then be owned by the current object. In other words, it is   completely fine to call this constructor with a temporary object for the   finite element, as in this code snippet:  
+* [1.x.9]
+*    Here,  [2.x.52]  constructs an unnamed, temporary object   that is passed to the FESystem constructor to create a finite element   that consists of two components, both of which are quadratic FE_Q   elements. The temporary is destroyed again at the end of the code that   corresponds to this line, but this does not matter because FESystem   creates its own copy of the FE_Q object.     This constructor (or its variants below) is used in essentially all   tutorial programs that deal with vector valued problems. See  [2.x.53] ,    [2.x.54] ,  [2.x.55]  and others for use cases. Also see the module on    [2.x.56]  "Handling vector valued problems".      [2.x.57]       [2.x.58]  fe The finite element that will be used to represent the   components of this composed element.    [2.x.59]  n_elements An integer denoting how many copies of  [2.x.60]  this   element should consist of.  
+* [0.x.3]*
+   Constructor for mixed discretizations with two base elements.     See the other constructor above for an explanation of the general idea of   composing elements.  
+* [0.x.4]*
+   Constructor for mixed discretizations with three base elements.     See the other constructor above for an explanation of the general idea of   composing elements.  
+* [0.x.5]*
+   Constructor for mixed discretizations with four base elements.     See the first of the other constructors above for an explanation of the   general idea of composing elements.  
+* [0.x.6]*
+   Constructor for mixed discretizations with five base elements.     See the first of the other constructors above for an explanation of the   general idea of composing elements.  
+* [0.x.7]*
+   Same as above but for any number of base elements. Pointers to the base   elements and their multiplicities are passed as vectors to this   constructor. The lengths of these vectors are assumed to be equal.     As above, the finite element objects pointed to by the first argument are   not actually used other than to create copies internally. Consequently,   you can delete these pointers immediately again after calling this   constructor.     [1.x.10]     Using this constructor is a bit awkward at times because you need to pass   two vectors in a place where it may not be straightforward to construct   such a vector
+* 
+*  -  for example, in the member initializer list of a class   with an FESystem member variable. For example, if your main class looks   like this:  
+* [1.x.11]
+*      Using the C++11 language standard (or later) you could do something like   this to create an element with four base elements and multiplicities 1,   2, 3 and 4:  
+* [1.x.12]
+*    This creates two vectors in place and initializes them using the   initializer list enclosed in braces  [2.x.61] .     This code has a problem: it creates four memory leaks because the first   vector above is created with pointers to elements that are allocated with    [2.x.62]  but never destroyed.     The solution to the second of these problems is to create two static   member functions that can create vectors. Here is an example:  
+* [1.x.13]
+*      The way this works is that we have two static member functions that   create the necessary vectors to pass to the constructor of the member   variable  [2.x.63] . They need to be static because they are called   during the constructor of  [2.x.64]  at a time when the    [2.x.65]  object isn't fully constructed and, consequently,   regular member functions cannot be called yet.     The code above does not solve the problem with the memory leak yet,   though: the  [2.x.66]  function creates a vector of   pointers, but nothing destroys these. This is the solution:  
+* [1.x.14]
+*      In other words, the vector we receive from the    [2.x.67]  is packed into a temporary object of type    [2.x.68] ; we then get the vector from this   temporary object immediately to pass it to the constructor of    [2.x.69]    destructor is called at the end of the entire expression (after the   constructor of  [2.x.70]  has finished) and destroys the elements of   the temporary vector. Voila: not short nor elegant, but it works!  
+* [0.x.8]*
+   Constructor taking an arbitrary number of parameters of type    [2.x.71]  spacedim>>, unsigned   int></code>. In combination with  [2.x.72]  this allows to   construct FESystem objects as follows:  
+* [1.x.15]
+*      The `fe_1` and `fe_2` objects are not actually used for anything other than   creating a copy that will then be owned by the current object. In other   words, it is completely fine to call this constructor with a temporary   object for the finite element, as in this code snippet:  
+* [1.x.16]
+*    Here,  [2.x.73]  constructs an unnamed, temporary object   that is passed to the FESystem constructor to create a finite element   that consists of two components, both of which are quadratic FE_Q   elements. The temporary is destroyed again at the end of the code that   corresponds to this line, but this does not matter because FESystem   creates its own copy of the FE_Q object.     As a shortcut, this constructor also allows calling  
+* [1.x.17]
+*    instead of the more explicit  
+* [1.x.18]
+*    In other words, if no multiplicity for an element is explicitly specified   via the exponentiation operation, then it is assumed to be one (as one   would have expected).      [2.x.74]  This feature is not available for Intel compilers   prior to version 19.0. Defining this   constructor leads to internal compiler errors for Intel compilers prior   to 18.0.  
+* [0.x.9]*
+   Same as above allowing the following syntax:  
+* [1.x.19]
+*       [2.x.75]  This feature is not available for Intel compilers   prior to version 19.0. The constructor is just not selected for overload   resolution.  
+* [0.x.10]*
+   Copy constructor. This constructor is deleted, i.e., copying   FESystem objects is not allowed.  
+* [0.x.11]*
+   Move constructor.  
+* [0.x.12]*
+   Destructor.  
+* [0.x.13]*
+   Return a string that uniquely identifies a finite element. This element   returns a string that is composed of the strings  [2.x.76]  nameN   returned by the basis elements. From these, we create a sequence   <tt>FESystem<dim>[name1^m1-name2^m2-...-nameN^mN]</tt>, where  [2.x.77]  are   the multiplicities of the basis elements. If a multiplicity is equal to   one, then the superscript is omitted.  
+* [0.x.14]*
+    [2.x.78]   [2.x.79]   
+* [0.x.15]*
+   Return the value of the  [2.x.80]  shape function at the point  [2.x.81]    [2.x.82]  is   a point on the reference element. Since this finite element is always   vector-valued, we return the value of the only non-zero component of the   vector value of this shape function. If the shape function has more than   one non-zero component (which we refer to with the term non-primitive),   then throw an exception of type  [2.x.83]      An  [2.x.84]  is thrown if the shape values of the    [2.x.85]  (corresponding to the  [2.x.86]  shape function) depend on   the shape of the cell in real space.  
+* [0.x.16]*
+   Return the value of the  [2.x.87]  vector component of the  [2.x.88]    shape function at the point  [2.x.89]  See the FiniteElement base class for   more information about the semantics of this function.     Since this element is vector valued in general, it relays the computation   of these values to the base elements.  
+* [0.x.17]*
+   Return the gradient of the  [2.x.90]  shape function at the point  [2.x.91]   [2.x.92]    is a point on the reference element, and likewise the gradient is the   gradient on the unit cell with respect to unit cell coordinates. Since   this finite element is always vector-valued, we return the value of the   only non-zero component of the vector value of this shape function. If   the shape function has more than one non-zero component (which we refer   to with the term non-primitive), then throw an exception of type  [2.x.93]    ExcShapeFunctionNotPrimitive.     An  [2.x.94]  is thrown if the shape values of the    [2.x.95]  (corresponding to the  [2.x.96]  shape function) depend on   the shape of the cell in real space.  
+* [0.x.18]*
+   Return the gradient of the  [2.x.97]  vector component of the  [2.x.98]    shape function at the point  [2.x.99]  See the FiniteElement base class for   more information about the semantics of this function.     Since this element is vector valued in general, it relays the computation   of these values to the base elements.  
+* [0.x.19]*
+   Return the tensor of second derivatives of the  [2.x.100]  shape function at   point  [2.x.101]  on the unit cell. The derivatives are derivatives on the unit   cell with respect to unit cell coordinates. Since this finite element is   always vector-valued, we return the value of the only non-zero component   of the vector value of this shape function. If the shape function has   more than one non-zero component (which we refer to with the term non-   primitive), then throw an exception of type  [2.x.102]    ExcShapeFunctionNotPrimitive.     An  [2.x.103]  is thrown if the shape values of the    [2.x.104]  (corresponding to the  [2.x.105]  shape function) depend on   the shape of the cell in real space.  
+* [0.x.20]*
+   Return the second derivatives of the  [2.x.106]  vector component of   the  [2.x.107]  shape function at the point  [2.x.108]  See the FiniteElement base   class for more information about the semantics of this function.     Since this element is vector valued in general, it relays the computation   of these values to the base elements.  
+* [0.x.21]*
+   Return the tensor of third derivatives of the  [2.x.109]  shape function at   point  [2.x.110]  on the unit cell. The derivatives are derivatives on the unit   cell with respect to unit cell coordinates. Since this finite element is   always vector-valued, we return the value of the only non-zero component   of the vector value of this shape function. If the shape function has   more than one non-zero component (which we refer to with the term non-   primitive), then throw an exception of type  [2.x.111]    ExcShapeFunctionNotPrimitive.     An  [2.x.112]  is thrown if the shape values of the    [2.x.113]  (corresponding to the  [2.x.114]  shape function) depend on   the shape of the cell in real space.  
+* [0.x.22]*
+   Return the third derivatives of the  [2.x.115]  vector component of   the  [2.x.116]  shape function at the point  [2.x.117]  See the FiniteElement base   class for more information about the semantics of this function.     Since this element is vector valued in general, it relays the computation   of these values to the base elements.  
+* [0.x.23]*
+   Return the tensor of fourth derivatives of the  [2.x.118]  shape function at   point  [2.x.119]  on the unit cell. The derivatives are derivatives on the unit   cell with respect to unit cell coordinates. Since this finite element is   always vector-valued, we return the value of the only non-zero component   of the vector value of this shape function. If the shape function has   more than one non-zero component (which we refer to with the term non-   primitive), then throw an exception of type  [2.x.120]    ExcShapeFunctionNotPrimitive.     An  [2.x.121]  is thrown if the shape values of the    [2.x.122]  (corresponding to the  [2.x.123]  shape function) depend on   the shape of the cell in real space.  
+* [0.x.24]*
+   Return the fourth derivatives of the  [2.x.124]  vector component of   the  [2.x.125]  shape function at the point  [2.x.126]  See the FiniteElement base   class for more information about the semantics of this function.     Since this element is vector valued in general, it relays the computation   of these values to the base elements.  
+* [0.x.25]*
+   Return the matrix interpolating from the given finite element to the   present one. The size of the matrix is then  [2.x.127]  times   <tt>source.n_dofs_per_cell()</tt>.     These matrices are available if source and destination element are both    [2.x.128]  elements, have the same number of base elements with same   element multiplicity, and if these base elements also implement their  [2.x.129]    get_interpolation_matrix functions. Otherwise, an exception of type    [2.x.130]  is thrown.  
+* [0.x.26]*
+   Access to a composing element. The index needs to be smaller than the   number of base elements. Note that the number of base elements may in   turn be smaller than the number of components of the system element, if   the multiplicities are greater than one.  
+* [0.x.27]*
+   This function returns  [2.x.131]  if the shape function  [2.x.132]  has   non-zero function values somewhere on the face  [2.x.133]   
+* [0.x.28]*
+   Projection from a fine grid space onto a coarse grid space. Overrides the   respective method in FiniteElement, implementing lazy evaluation   (initialize when requested).     If this projection operator is associated with a matrix  [2.x.134]  then the   restriction of this matrix  [2.x.135]  to a single child cell is returned   here.     The matrix  [2.x.136]  is the concatenation or the sum of the cell matrices  [2.x.137]    P_i, depending on the value of  [2.x.138]    This distinguishes interpolation (concatenation) and projection with   respect to scalar products (summation).     Row and column indices are related to coarse grid and fine grid spaces,   respectively, consistent with the definition of the associated operator.     If projection matrices are not implemented in the derived finite element   class, this function aborts with an exception of type    [2.x.139]  You can check whether this would happen   by first calling the restriction_is_implemented() or the   isotropic_restriction_is_implemented() function.  
+* [0.x.29]*
+   Embedding matrix between grids. Overrides the respective method in   FiniteElement, implementing lazy evaluation (initialize when queried).     The identity operator from a coarse grid space into a fine grid space is   associated with a matrix  [2.x.140]  The restriction of this matrix  [2.x.141]  to a   single child cell is returned here.     The matrix  [2.x.142]  is the concatenation, not the sum of the cell matrices  [2.x.143]    P_i. That is, if the same non-zero entry <tt>j,k</tt> exists in two   different child matrices  [2.x.144]  the value should be the same in both   matrices and it is copied into the matrix  [2.x.145]  only once.     Row and column indices are related to fine grid and coarse grid spaces,   respectively, consistent with the definition of the associated operator.     These matrices are used by routines assembling the prolongation matrix   for multi-level methods.  Upon assembling the transfer matrix between   cells using this matrix array, zero elements in the prolongation matrix   are discarded and will not fill up the transfer matrix.     If prolongation matrices are not implemented in one of the base finite   element classes, this function aborts with an exception of type    [2.x.146]  You can check whether this would happen   by first calling the prolongation_is_implemented() or the   isotropic_prolongation_is_implemented() function.  
+* [0.x.30]*
+   Given an index in the natural ordering of indices on a face, return the   index of the same degree of freedom on the cell.     To explain the concept, consider the case where we would like to know   whether a degree of freedom on a face, for example as part of an FESystem   element, is primitive. Unfortunately, the is_primitive() function in the   FiniteElement class takes a cell index, so we would need to find the cell   index of the shape function that corresponds to the present face index.   This function does that.     Code implementing this would then look like this:  
+* [1.x.20]
+*    The function takes additional arguments that account for the fact that   actual faces can be in their standard ordering with respect to the cell   under consideration, or can be flipped, oriented, etc.      [2.x.147]  face_dof_index The index of the degree of freedom on a face. This   index must be between zero and dofs_per_face.    [2.x.148]  face The number of the face this degree of freedom lives on. This   number must be between zero and  [2.x.149]     [2.x.150]  face_orientation One part of the description of the orientation of   the face. See    [2.x.151] .    [2.x.152]  face_flip One part of the description of the orientation of the   face. See    [2.x.153] .    [2.x.154]  face_rotation One part of the description of the orientation of   the face. See    [2.x.155] .    [2.x.156]  The index of this degree of freedom within the set of degrees of   freedom on the entire cell. The returned value will be between zero and   dofs_per_cell.  
+* [0.x.31]*
+   Implementation of the respective function in the base class.  
+* [0.x.32]*
+   Implementation of the respective function in the base class.  
+* [0.x.33]*
+   Return a list of constant modes of the element. The returns table has as   many rows as there are components in the element and dofs_per_cell   columns. To each component of the finite element, the row in the returned   table contains a basis representation of the constant function 1 on the   element. Concatenates the constant modes of each base element.  
+* [0.x.34]*
+    [2.x.157]  Functions to support hp    [2.x.158]   
+* [0.x.35]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".     This function returns  [2.x.159]  if and only if all its base elements return    [2.x.160]  for this function.  
+* [0.x.36]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Base elements of this element will have to implement this function. They   may only provide interpolation matrices for certain source finite   elements, for example those from the same family. If they don't implement   interpolation from a given element, then they must throw an exception of   type  [2.x.161]  which   will get propagated out from this element.  
+* [0.x.37]*
+   Return the matrix interpolating from a face of one element to the   subface of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.     Base elements of this element will have to implement this function. They   may only provide interpolation matrices for certain source finite   elements, for example those from the same family. If they don't implement   interpolation from a given element, then they must throw an exception of   type  [2.x.162]  which   will get propagated out from this element.  
+* [0.x.38]*
+   If, on a vertex, several finite elements are active, the hp-code first   assigns the degrees of freedom of each of these FEs different global   indices. It then calls this function to find out which of them should get   identical values, and consequently can receive the same global DoF index.   This function therefore returns a list of identities between DoFs of the   present finite element object with the DoFs of  [2.x.163]  which is a   reference to a finite element object representing one of the other finite   elements active on this particular vertex. The function computes which of   the degrees of freedom of the two finite element objects are equivalent,   both numbered between zero and the corresponding value of   n_dofs_per_vertex() of the two finite elements. The first index of each   pair denotes one of the vertex dofs of the present element, whereas the   second is the corresponding index of the other finite element.  
+* [0.x.39]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on lines.  
+* [0.x.40]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on quads.  
+* [0.x.41]*
+    [2.x.164]   [2.x.165]   
+* [0.x.42]*
+   Implementation of the    [2.x.166]    function.     This function simply calls    [2.x.167]    of the base elements and re-assembles everything into the output   argument. If a base element is non-interpolatory the corresponding dof   values are filled with "signaling" NaNs instead.     The function fails if none of the base elements of the FESystem are   interpolatory.  
+* [0.x.43]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.     This function is made virtual, since finite element objects are usually   accessed through pointers to their base class, rather than the class   itself.  
+* [0.x.44]*
+   Do the work for the three <tt>fill_fe*_values</tt> functions.     Calls (among other things) <tt>fill_fe_([sub]face)_values</tt> of the   base elements. Calls  [2.x.168]  if   <tt>face_no==invalid_face_no</tt> and <tt>sub_no==invalid_face_no</tt>;   calls  [2.x.169]  if <tt>face_no==invalid_face_no</tt> and   <tt>sub_no!=invalid_face_no</tt>; and calls  [2.x.170]  if   <tt>face_no!=invalid_face_no</tt> and <tt>sub_no!=invalid_face_no</tt>.  
+* [0.x.45]*
+   Value to indicate that a given face or subface number is invalid.  
+* [0.x.46]*
+   Pointers to underlying finite element objects.     This object contains a pointer to each contributing element of a mixed   discretization and its multiplicity. It is created by the constructor and   constant afterwards.  
+* [0.x.47]*
+   An index table that maps generalized support points of a base element   to the vector of generalized support points of the FE System.   It holds true that  
+* [1.x.21]
+*    for each base element (indexed by i) and each g. s. point of the base   element (index by j).  
+* [0.x.48]*
+   This function is simply singled out of the constructors since there are   several of them. It sets up the index table for the system as well as  [2.x.171]    restriction and  [2.x.172]  matrices.  
+* [0.x.49]*
+   Used by  [2.x.173]   
+* [0.x.50]*
+   A function that computes the hp_vertex_dof_identities(),   hp_line_dof_identities(), or hp_quad_dof_identities(), depending on the   value of the template parameter.  
+* [0.x.51]*
+   Usually: Fields of cell-independent data.     However, here, this class does not itself store the data but only   pointers to  [2.x.174]  objects for each of the base elements.  
+* [0.x.52]*
+     Constructor. Is called by the  [2.x.175]  function. Sets the size of     the  [2.x.176]  vector to  [2.x.177]     
+* [0.x.53]*
+     Destructor. Deletes all  [2.x.178]  whose pointers are stored by     the  [2.x.179]  vector.    
+* [0.x.54]*
+     Give write-access to the pointer to a  [2.x.180]  of the  [2.x.181]      base_noth base element.    
+* [0.x.55]*
+     Give read-access to the pointer to a  [2.x.182]  of the  [2.x.183]      base_noth base element.    
+* [0.x.56]*
+     Give read-access to the pointer to an object to which into which the      [2.x.184] th base element will write its output when calling      [2.x.185]  and similar functions.    
+* [0.x.57]*
+     Pointers to  [2.x.186]  objects for each of the base elements. They     are accessed to by the  [2.x.187]  and  [2.x.188]  functions.         The size of this vector is set to  [2.x.189]  by the     InternalData constructor.  It is filled by the  [2.x.190]  function.     Note that since the data for each instance of a base class is     necessarily the same, we only need as many of these objects as there     are base elements, irrespective of their multiplicity.    
+* [0.x.58]*
+     A collection of objects to which the base elements will write their     output when we call  [2.x.191]  and related     functions on them.         The size of this vector is set to  [2.x.192]  by the     InternalData constructor.    
+* [0.x.59]*
+   Mutex for protecting initialization of restriction and embedding matrix.  
+* [0.x.60]

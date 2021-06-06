@@ -1,0 +1,192 @@
+[0.x.0]*
+ A class to store the concept of a block linear operator.
+*  This class increases the interface of LinearOperator (which encapsulates the   [2.x.0]  interface) by three additional functions:
+
+* 
+* [1.x.0]
+*  that describe the underlying block structure (of an otherwise opaque) linear operator.
+*  Objects of type BlockLinearOperator can be created similarly to LinearOperator with a wrapper function:
+
+* 
+* [1.x.1]
+* 
+*  Alternatively, there are several helper functions available for creating instances from multiple independent matrices of possibly different types. Here is an example of a block diagonal matrix created from a FullMatrix and a SparseMatrixEZ:
+* 
+
+* 
+* [1.x.2]
+* 
+* 
+
+*  A BlockLinearOperator can be sliced to a LinearOperator at any time. This removes all information about the underlying block structure (because above  [2.x.1]  objects are no longer available)
+* 
+*  - the linear operator interface, however, remains intact.
+* 
+
+* 
+*  [2.x.2]  This class makes heavy use of  [2.x.3]  objects and lambda functions. This flexibility comes with a run-time penalty. Only use this object to encapsulate object with medium to large individual block sizes, and small block structure (as a rule of thumb, matrix blocks greater than  [2.x.4] ).
+* 
+
+* 
+
+* 
+*  [2.x.5] 
+
+* 
+* [0.x.1]*
+   Create an empty BlockLinearOperator object.      [2.x.6]  member objects of this class and its base   class LinearOperator are initialized with default variants that throw an   exception upon invocation.  
+* [0.x.2]*
+   Default copy constructor.  
+* [0.x.3]*
+   Templated copy constructor that creates a BlockLinearOperator object from   an object  [2.x.7]  for which the conversion function    [2.x.8]  is defined.  
+* [0.x.4]*
+   Create a BlockLinearOperator from a two-dimensional array  [2.x.9]  of   LinearOperator. This constructor calls the corresponding block_operator()   specialization.  
+* [0.x.5]*
+   Create a block-diagonal BlockLinearOperator from a one-dimensional array    [2.x.10]  of LinearOperator. This constructor calls the corresponding   block_operator() specialization.  
+* [0.x.6]*
+   Default copy assignment operator.  
+* [0.x.7]*
+   Templated copy assignment operator for an object  [2.x.11]  for which the   conversion function  [2.x.12]  is defined.  
+* [0.x.8]*
+   Copy assignment from a two-dimensional array  [2.x.13]  of LinearOperator.   This assignment operator calls the corresponding block_operator()   specialization.  
+* [0.x.9]*
+   Copy assignment from a one-dimensional array  [2.x.14]  of LinearOperator   that creates a block-diagonal BlockLinearOperator. This assignment   operator calls the corresponding block_operator() specialization.  
+* [0.x.10]*
+   Return the number of blocks in a column (i.e, the number of "block rows",   or the number  [2.x.15] , if interpreted as a  [2.x.16]  block system).  
+* [0.x.11]*
+   Return the number of blocks in a row (i.e, the number of "block columns",   or the number  [2.x.17] , if interpreted as a  [2.x.18]  block system).  
+* [0.x.12]*
+   Access the block with the given coordinates. This    [2.x.19]  object returns a LinearOperator representing   the  [2.x.20] -th block of the BlockLinearOperator.  
+* [0.x.13]*
+     A dummy class for BlockLinearOperators that do not require any     extensions to facilitate the operations of the block matrix or its     subblocks.         This is the Payload class typically associated with deal.II's native     BlockSparseMatrix. To use either  [2.x.21]  or      [2.x.22]  one must initialize a     BlockLinearOperator with their associated BlockPayload.            
+*  [2.x.23]     
+* [0.x.14]*
+       Type of payload held by each subblock      
+* [0.x.15]*
+       Default constructor             Since this class does not do anything in particular and needs no       special configuration, we have only one generic constructor that can       be called under any conditions.      
+* [0.x.16]*
+  [2.x.24]  Creation of a BlockLinearOperator
+
+* 
+* [0.x.17]*
+  [2.x.25]  BlockLinearOperator
+*  A function that encapsulates a  [2.x.26]  into a BlockLinearOperator.
+*  All changes made on the block structure and individual blocks of  [2.x.27]  block_matrix after the creation of the BlockLinearOperator object are reflected by the operator object.
+* 
+
+* 
+*  [2.x.28] 
+
+* 
+* [0.x.18]*
+  [2.x.29]  BlockLinearOperator
+*  A variant of above function that encapsulates a given collection  [2.x.30]  of LinearOperators into a block structure. Here, it is assumed that Range and Domain are block vectors, i.e., derived from  [2.x.31] . The individual linear operators in  [2.x.32]  must act on the underlying vector type of the block vectors, i.e., on  [2.x.33]  yielding a result in  [2.x.34] 
+*  The list  [2.x.35]  is best passed as an initializer list. Consider for example a linear operator block (acting on Vector<double>)
+
+* 
+* [1.x.3]
+*  The corresponding block_operator invocation takes the form
+
+* 
+* [1.x.4]
+* 
+* 
+
+* 
+*  [2.x.36] 
+
+* 
+* [0.x.19]*
+  [2.x.37]  BlockLinearOperator
+*  This function extracts the diagonal blocks of  [2.x.38]  (either a block matrix type or a BlockLinearOperator) and creates a BlockLinearOperator with the diagonal. Off-diagonal elements are initialized as null_operator (with correct reinit_range_vector and reinit_domain_vector methods).
+*  All changes made on the individual diagonal blocks of  [2.x.39]  after the creation of the BlockLinearOperator object are reflected by the operator object.
+* 
+
+* 
+*  [2.x.40] 
+
+* 
+* [0.x.20]*
+  [2.x.41]  BlockLinearOperator
+*  A variant of above function that builds up a block diagonal linear operator from an array  [2.x.42]  of diagonal elements (off-diagonal blocks are assumed to be 0).
+*  The list  [2.x.43]  is best passed as an initializer list. Consider for example a linear operator block (acting on Vector<double>) <code>diag(op_a0, op_a1, ..., op_am)</code>. The corresponding block_operator invocation takes the form
+
+* 
+* [1.x.5]
+* 
+* 
+
+* 
+*  [2.x.44] 
+
+* 
+* [0.x.21]*
+  [2.x.45]  BlockLinearOperator
+*  A variant of above function that only takes a single LinearOperator argument  [2.x.46]  and creates a blockdiagonal linear operator with  [2.x.47]  copies of it.
+* 
+
+* 
+*  [2.x.48] 
+
+* 
+* [0.x.22]*
+  [2.x.49]  Manipulation of a BlockLinearOperator
+
+* 
+* [0.x.23]*
+  [2.x.50]  LinearOperator  [2.x.51]  BlockLinearOperator
+*  This function implements forward substitution to invert a lower block triangular matrix. As arguments, it takes a BlockLinearOperator  [2.x.52]  block_operator representing a block lower triangular matrix, as well as a BlockLinearOperator  [2.x.53]  representing inverses of diagonal blocks of  [2.x.54] 
+*  Let us assume we have a linear system with the following block structure:
+* 
+
+* 
+* [1.x.6]
+* 
+*  First of all,  [2.x.55] . Then, we can use x0 to recover x1:
+
+* 
+* [1.x.7]
+*  and therefore:
+
+* 
+* [1.x.8]
+* 
+* 
+
+* 
+*  [2.x.56]  We are not using all blocks of the BlockLinearOperator arguments: Just the lower triangular block matrix of  [2.x.57]  is used as well as the diagonal of  [2.x.58] 
+* 
+
+* 
+*  [2.x.59] 
+
+* 
+* [0.x.24]*
+  [2.x.60]  LinearOperator  [2.x.61]  BlockLinearOperator
+*  This function implements back substitution to invert an upper block triangular matrix. As arguments, it takes a BlockLinearOperator  [2.x.62]  block_operator representing an upper block triangular matrix, as well as a BlockLinearOperator  [2.x.63]  representing inverses of diagonal blocks of  [2.x.64] 
+*  Let us assume we have a linear system with the following block structure:
+* 
+
+* 
+* [1.x.9]
+* 
+*  First of all,  [2.x.65] . Then, we can use xn to recover x(n-1):
+
+* 
+* [1.x.10]
+*  and therefore:
+
+* 
+* [1.x.11]
+* 
+* 
+
+* 
+*  [2.x.66]  We are not using all blocks of the BlockLinearOperator arguments: Just the upper triangular block matrix of  [2.x.67]  is used as well as the diagonal of  [2.x.68] 
+* 
+
+* 
+*  [2.x.69] 
+
+* 
+* [0.x.25]

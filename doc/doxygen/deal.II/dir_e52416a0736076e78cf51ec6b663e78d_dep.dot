@@ -7,6 +7,6 @@ digraph "include/deal.II/boost_adaptors" {
   dir_e52416a0736076e78cf51ec6b663e78d [shape=box, label="boost_adaptors", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_e52416a0736076e78cf51ec6b663e78d.html"];
   }
   dir_90a2ad6518b731f1dc196d14153b8b6b [shape=box label="base" fillcolor="white" style="filled" color="red" URL="dir_90a2ad6518b731f1dc196d14153b8b6b.html"];
-  dir_e52416a0736076e78cf51ec6b663e78d->dir_90a2ad6518b731f1dc196d14153b8b6b [headlabel="6", labeldistance=1.5 headhref="dir_000070_000010.html"];
-  dir_90a2ad6518b731f1dc196d14153b8b6b->dir_e52416a0736076e78cf51ec6b663e78d [headlabel="3", labeldistance=1.5 headhref="dir_000010_000070.html"];
+  dir_e52416a0736076e78cf51ec6b663e78d->dir_90a2ad6518b731f1dc196d14153b8b6b [headlabel="6", labeldistance=1.5 headhref="dir_000086_000010.html"];
+  dir_90a2ad6518b731f1dc196d14153b8b6b->dir_e52416a0736076e78cf51ec6b663e78d [headlabel="3", labeldistance=1.5 headhref="dir_000010_000086.html"];
 }

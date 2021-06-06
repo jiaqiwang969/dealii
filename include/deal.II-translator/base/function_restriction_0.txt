@@ -1,0 +1,15 @@
+[0.x.0]*
+   This class takes a function in `dim + 1` dimensions and creates a new   function in one dimension lower by restricting one of the coordinates to a   given value. Mathematically this corresponds to taking a function    [2.x.0] ,   a fixed value,  [2.x.1] , and defining a new function (the restriction)    [2.x.2] .   Using this class, this translates to  
+* [1.x.0]
+*      The `dim`-dimensional coordinates on the restriction are ordered starting   from the restricted (`dim + 1`)-coordinate. In particular, this means that   if the  [2.x.3] -coordinate is locked to  [2.x.4]  in 3D, the coordinates are ordered   as  [2.x.5]  on the restriction:    [2.x.6] .   This is the same convention as in  [2.x.7]   
+* [0.x.1]*
+     Constructor, takes the (`dim + 1`)-coordinate direction and the value     that the incoming function should be restricted to.         A pointer to the incoming function is stored internally, so the function     must have a longer lifetime than the created restriction.    
+* [0.x.2]*
+   This class creates a 1-dimensional function from a `dim + 1` dimensional   function by restricting `dim` of the coordinate values to a given point.   Mathematically this corresponds to taking a function,  [2.x.8] , and   a point  [2.x.9] , and defining a new function  [2.x.10] .   Using this class, this translates to  
+* [1.x.1]
+*      The coordinates of the point will be expanded in the higher-dimensional   functions coordinates starting from the open-direction (and wrapping   around). In particular, if we restrict to a point  [2.x.11]  and choose to   keep the y-direction open, the restriction that is created is the function    [2.x.12] .   This is consistent with the convention in  [2.x.13]   
+* [0.x.3]*
+     Constructor, takes the point that the incoming function should be     restricted to and which (`dim + 1`)-dimensional coordinate direction     should be kept "open".         A pointer to the incoming function is stored internally, so the function     must have a longer lifetime than the created restriction.    
+* [0.x.4]*
+   Creates a (`dim + 1`)-dimensional point by copying over the coordinates of   the incoming `dim`-dimensional point and setting the "missing"   (`dim + 1`)-dimensional component to the incoming coordinate value.     For example, given the input    [2.x.14]  this function creates the point  [2.x.15] .     The coordinates of the `dim`-dimensional point are written to the   coordinates of the (`dim + 1`)-dimensional point in the order of the   convention given by the function coordinate_to_one_dim_higher. Thus, the   order of coordinates on the lower-dimensional point are not preserved:    [2.x.16]  creates the point  [2.x.17] .  
+* [0.x.5]

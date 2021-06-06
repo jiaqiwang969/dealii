@@ -155,7 +155,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Deprecated: MGLevelObject::clear() deprecated in favor of <a class="el" href="classMGLevelObject.html#a893309bf2277dd46c003787f29de59e4">MGLevelObject::clear_elements()</a> due to clear() being inconsistent with behavior of other container objects. <br  />
+<p class="startli">Deprecated: MGLevelObject::clear() deprecated in favor of <a class="el" href="classMGLevelObject.html#a893309bf2277dd46c003787f29de59e4">MGLevelObject::clear_elements()</a> due to <a class="el" href="table__0_8txt.html#a7f24305532768edc889062eefd4b28cf">clear()</a> being inconsistent with behavior of other container objects. <br  />
  (Jonathan Robey, 2016/08/08) </p>
 <p class="endli"></p>
 </li>
@@ -196,7 +196,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Changed: The default nodal point distribution of <a class="el" href="classFE__Q.html">FE_Q</a>, <a class="el" href="classFE__DGQ.html">FE_DGQ</a>, <a class="el" href="classFE__Q__DG0.html">FE_Q_DG0</a>, <a class="el" href="classFE__Q__Bubbles.html">FE_Q_Bubbles</a>, and <a class="el" href="classFE__TraceQ.html">FE_TraceQ</a> has been changed from equidistant points to the node points of the corresponding Gauss-Lobatto quadrature formula. For degrees one and two, the Gauss-Lobatto quadrature is equidistant and thus the unit support points are as before. However, the Gauss-Lobatto points are more dense towards the element boundaries at higher degrees. This gives well-conditioned interpolation at arbitrary orders and much more stable computations. While these node distribution was available before, it was not very visible and often lead to misunderstandings by inexperienced users. Most codes will not be affected by this change, even those using cubic and higher degree polynomials, apart from slightly different (better) interpolation behavior and different entries in solution vectors. If you explicitly need equidistant points, use the constructors <code>FE_Q&lt;dim&gt;(QIterated&lt;1&gt;(QTrapez&lt;1&gt;(),degree))</code> or <code>FE_DGQArbitraryNodes&lt;dim&gt;(QIterated&lt;1&gt;(QTrapez&lt;1&gt;(),degree))</code>. <br  />
+<p class="startli">Changed: The default nodal point distribution of <a class="el" href="classFE__Q.html">FE_Q</a>, <a class="el" href="classFE__DGQ.html">FE_DGQ</a>, <a class="el" href="classFE__Q__DG0.html">FE_Q_DG0</a>, <a class="el" href="classFE__Q__Bubbles.html">FE_Q_Bubbles</a>, and <a class="el" href="classFE__TraceQ.html">FE_TraceQ</a> has been changed from equidistant points to the node points of the corresponding Gauss-Lobatto quadrature formula. For degrees one and two, the Gauss-Lobatto quadrature is equidistant and thus the unit support points are as before. However, the Gauss-Lobatto points are more dense towards the element boundaries at higher degrees. This gives well-conditioned interpolation at arbitrary orders and much more stable computations. While these node distribution was available before, it was not very visible and often lead to misunderstandings by inexperienced users. Most codes will not be affected by this change, even those using cubic and higher degree polynomials, apart from slightly different (better) interpolation behavior and different entries in solution vectors. If you explicitly need equidistant points, use the constructors <code><a class="el" href="classFE__Q.html">FE_Q&lt;dim&gt;</a>(QIterated&lt;1&gt;(QTrapez&lt;1&gt;(),degree))</code> or <code>FE_DGQArbitraryNodes&lt;dim&gt;(QIterated&lt;1&gt;(QTrapez&lt;1&gt;(),degree))</code>. <br  />
  (Martin Kronbichler, 2016/04/05) </p>
 <p class="endli"></p>
 </li>
@@ -422,7 +422,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed: By moving a forward declaration of <a class="el" href="classVectorizedArray.html">VectorizedArray</a> to a more central place, it is now possible to use the <a class="el" href="namespaceLocalIntegrators_1_1Divergence.html#a8bcfc37d2a2be8faa18628a601ecf112">norm()</a> methods of <a class="el" href="classTensor.html">Tensor</a>, <a class="el" href="classPoint.html">Point</a> or <a class="el" href="classSymmetricTensor.html">SymmetricTensor</a> objects of <a class="el" href="classVectorizedArray.html">VectorizedArray</a> classes without particular order of include files. <br  />
+<p class="startli">Fixed: By moving a forward declaration of <a class="el" href="classVectorizedArray.html">VectorizedArray</a> to a more central place, it is now possible to use the <a class="el" href="multithreading__0_8txt.html#a0759c0124e216ec36f063ad051f4dba0">norm()</a> methods of <a class="el" href="classTensor.html">Tensor</a>, <a class="el" href="classPoint.html">Point</a> or <a class="el" href="classSymmetricTensor.html">SymmetricTensor</a> objects of <a class="el" href="classVectorizedArray.html">VectorizedArray</a> classes without particular order of include files. <br  />
  (Martin Kronbichler, 2017/03/12) </p>
 <p class="endli"></p>
 </li>
@@ -612,7 +612,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: Additional solve() functions have been added to the Trilinos solver classes, which provide the necessary extension for them to be compatible with LinearOperators. <br  />
+<p class="startli">New: Additional <a class="el" href="vector__tools__point__value__0_8txt.html#ac7a5c2ceb5c739d5b51cc7e0eee8100a">solve()</a> functions have been added to the Trilinos solver classes, which provide the necessary extension for them to be compatible with LinearOperators. <br  />
  (Jean-Paul Pelteret, 2017/01/04) </p>
 <p class="endli"></p>
 </li>
@@ -697,7 +697,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: Automatically recreate <a class="el" href="changes_8h.html">changes.h</a> from files in subfolders of ./doc/news <br  />
+<p class="startli">New: Automatically recreate changes.h from files in subfolders of ./doc/news <br  />
  (Daniel Arndt, 2016/11/18) </p>
 <p class="endli"></p>
 </li>
@@ -1327,7 +1327,7 @@ $(function() {
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Fixed: Double contraction of two <a class="el" href="classSymmetricTensor.html">SymmetricTensor</a>&lt;..,VectorizedArray&lt;T&gt;&gt; now works. Introduced internal::NumberType&lt;T&gt; with static member internal::Numbertype::value to be called instead of the constructor Number() in symmetric_tensor.h. <br  />
+<p class="startli">Fixed: Double contraction of two <a class="el" href="classSymmetricTensor.html">SymmetricTensor</a>&lt;..,VectorizedArray&lt;T&gt;&gt; now works. Introduced internal::NumberType&lt;T&gt; with static member internal::Numbertype::value to be called instead of the constructor <a class="el" href="namespaceEuler__DG.html#a143bc64b6fa6ced9f11c148a2af3ff09">Number()</a> in symmetric_tensor.h. <br  />
  (Mathias Mentler, 2016/02/14) </p>
 <p class="endli"></p>
 </li>

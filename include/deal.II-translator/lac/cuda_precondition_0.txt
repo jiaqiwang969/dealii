@@ -1,0 +1,135 @@
+[0.x.0]*
+   This class implements an incomplete Cholesky factorization (IC)   preconditioner for  [2.x.0]  symmetric  [2.x.1]  matrices.     The implementation closely follows the one documented in the cuSPARSE   documentation   (https://docs.nvidia.com/cuda/cusparse/index.html#cusparse-lt-t-gt-csric02).    
+*  [2.x.2]  Instantiations for this template are provided for <tt> [2.x.3]  and    [2.x.4]     
+*  [2.x.5]   
+* [0.x.1]*
+     Declare the type for container size.    
+* [0.x.2]*
+     Standardized data struct to pipe additional flags to the     preconditioner.    
+* [0.x.3]*
+       Constructor. cuSPARSE allows to compute and use level information.       According to the documentation this might improve performance.       It is suggested to try both options.      
+* [0.x.4]*
+       Flag that determines if level information is used when creating and       applying the preconditioner. See the documentation for       cusparseSolvePolicy_t at       https://docs.nvidia.com/cuda/cusparse/index.html#cusparsesolvepolicy_t       for more information.      
+* [0.x.5]*
+     Constructor.    
+* [0.x.6]*
+     The copy constructor is deleted.    
+* [0.x.7]*
+     The copy assignment operator is deleted.    
+* [0.x.8]*
+     Destructor. Free all resources that were initialized in this class.    
+* [0.x.9]*
+     Initialize this object. In particular, the given matrix is copied to be     modified in-place. For the underlying sparsity pattern pointers are     stored. Specifically, this means     that the current object can only be used reliably as long as  [2.x.6]  is valid     and has not been changed since calling this function.         The  [2.x.7]  determines if level information are used.    
+* [0.x.10]*
+     Apply the preconditioner.    
+* [0.x.11]*
+     Apply the preconditioner. Since the preconditioner is symmetric, this     is the same as vmult().    
+* [0.x.12]*
+     Return the dimension of the codomain (or range) space. Note that the     matrix is square and has dimension  [2.x.8] .        
+*  [2.x.9]  This function should only be called if the preconditioner has been     initialized.    
+* [0.x.13]*
+     Return the dimension of the codomain (or range) space. Note that the     matrix is square and has dimension  [2.x.10] .        
+*  [2.x.11]  This function should only be called if the preconditioner has been     initialized.    
+* [0.x.14]*
+     cuSPARSE handle used to call cuSPARSE functions.    
+* [0.x.15]*
+     cuSPARSE description of the sparse matrix  [2.x.12] .    
+* [0.x.16]*
+     cuSPARSE description of the lower triangular matrix  [2.x.13] .    
+* [0.x.17]*
+     Solve and analysis structure for  [2.x.14] .    
+* [0.x.18]*
+     Solve and analysis structure for the lower triangular matrix  [2.x.15] .    
+* [0.x.19]*
+     Solve and analysis structure for the upper triangular matrix  [2.x.16] .    
+* [0.x.20]*
+     Pointer to the matrix this object was initialized with.    
+* [0.x.21]*
+     Pointer to the values (on the device) of the computed preconditioning     matrix.    
+* [0.x.22]*
+     Pointer to the row pointer (on the device) of the sparse matrix this     object was initialized with. Guarded by matrix_pointer.    
+* [0.x.23]*
+     Pointer to the column indices (on the device) of the sparse matrix this     object was initialized with. Guarded by matrix_pointer.    
+* [0.x.24]*
+     Pointer to the value (on the device) for a temporary (helper) vector     used in vmult().    
+* [0.x.25]*
+     Pointer to an internal buffer (on the device) that is used for     computing the decomposition.    
+* [0.x.26]*
+     Determine if level information should be generated for the lower     triangular matrix  [2.x.17] . This value can be modified through an     AdditionalData object.    
+* [0.x.27]*
+     Determine if level information should be generated for the upper     triangular matrix  [2.x.18] . This value can be modified through an     AdditionalData object.    
+* [0.x.28]*
+     Determine if level information should be generated for  [2.x.19] . This     value can be modified through an AdditionalData object.    
+* [0.x.29]*
+     The number of rows is the same as for the matrix this object has been     initialized with.    
+* [0.x.30]*
+     The number of non-zero elements is the same as for the matrix this     object has been initialized with.    
+* [0.x.31]*
+   This class implements an incomplete LU factorization preconditioner for    [2.x.20]  matrices.     The implementation closely follows the one documented in the cuSPARSE   documentation   (https://docs.nvidia.com/cuda/cusparse/index.html#cusparse-lt-t-gt-csrilu02).    
+*  [2.x.21]  Instantiations for this template are provided for <tt> [2.x.22]  and    [2.x.23]     
+*  [2.x.24]   
+* [0.x.32]*
+     Declare the type for container size.    
+* [0.x.33]*
+     Standardized data struct to pipe additional flags to the     preconditioner.    
+* [0.x.34]*
+       Constructor. cuSPARSE allows to compute and use level information.        to the documentation this might improve performance.       It is suggested to try both options.      
+* [0.x.35]*
+       Flag that determines if level information is used when creating and       applying the preconditioner. See the documentation for       cusparseSolvePolicy_t at       https://docs.nvidia.com/cuda/cusparse/index.html#cusparsesolvepolicy_t       for more information.      
+* [0.x.36]*
+     Constructor.    
+* [0.x.37]*
+     The copy constructor is deleted.    
+* [0.x.38]*
+     The copy assignment operator is deleted.    
+* [0.x.39]*
+     Destructor. Free all resources that were initialized in this class.    
+* [0.x.40]*
+     Initialize this object. In particular, the given matrix is copied to be     modified in-place. For the underlying sparsity pattern pointers are     stored. Specifically, this means     that the current object can only be used reliably as long as  [2.x.25]  is valid     and has not been changed since calling this function.         The  [2.x.26]  determines if level information are used.    
+* [0.x.41]*
+     Apply the preconditioner.    
+* [0.x.42]*
+     Apply the transposed preconditioner. Not yet implemented.    
+* [0.x.43]*
+     Return the dimension of the codomain (or range) space. Note that the     matrix is square and has dimension  [2.x.27] .        
+*  [2.x.28]  This function should only be called if the preconditioner has been     initialized.    
+* [0.x.44]*
+     Return the dimension of the codomain (or range) space. Note that the     matrix is square and has dimension  [2.x.29] .        
+*  [2.x.30]  This function should only be called if the preconditioner has been     initialized.    
+* [0.x.45]*
+     cuSPARSE handle used to call cuSPARSE functions.    
+* [0.x.46]*
+     cuSPARSE description of the sparse matrix  [2.x.31] .    
+* [0.x.47]*
+     cuSPARSE description of the lower triangular matrix  [2.x.32] .    
+* [0.x.48]*
+     cuSPARSE description of the upper triangular matrix  [2.x.33] .    
+* [0.x.49]*
+     Solve and analysis structure for  [2.x.34] .    
+* [0.x.50]*
+     Solve and analysis structure for the lower triangular matrix  [2.x.35] .    
+* [0.x.51]*
+     Solve and analysis structure for the upper triangular matrix  [2.x.36] .    
+* [0.x.52]*
+     Pointer to the matrix this object was initialized with.    
+* [0.x.53]*
+     Pointer to the values (on the device) of the computed preconditioning     matrix.    
+* [0.x.54]*
+     Pointer to the row pointer (on the device) of the sparse matrix this     object was initialized with. Guarded by matrix_pointer.    
+* [0.x.55]*
+     Pointer to the column indices (on the device) of the sparse matrix this     object was initialized with. Guarded by matrix_pointer.    
+* [0.x.56]*
+     Pointer to the value (on the device) for a temporary (helper) vector     used in vmult().    
+* [0.x.57]*
+     Pointer to an internal buffer (on the device) that is used for     computing the decomposition.    
+* [0.x.58]*
+     Determine if level information should be generated for the lower     triangular matrix  [2.x.37] . This value can be modified through an     AdditionalData object.    
+* [0.x.59]*
+     Determine if level information should be generated for the upper     triangular matrix  [2.x.38] . This value can be modified through an     AdditionalData object.    
+* [0.x.60]*
+     Determine if level information should be generated for  [2.x.39] . This     value can be modified through an AdditionalData object.    
+* [0.x.61]*
+     The number of rows is the same as for the matrix this object has been     initialized with.    
+* [0.x.62]*
+     The number of non-zero elements is the same as for the matrix this     object has been initialized with.    
+* [0.x.63]

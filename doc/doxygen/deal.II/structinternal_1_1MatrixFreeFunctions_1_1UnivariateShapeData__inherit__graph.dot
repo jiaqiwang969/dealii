@@ -3,12 +3,7 @@ digraph "internal::MatrixFreeFunctions::UnivariateShapeData&lt; Number &gt;"
  // LATEX_PDF_SIZE
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
   Node1 [label="internal::MatrixFreeFunctions\l::UnivariateShapeData\< Number \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
   Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< VectorizedArray\<\l double \> \>" ,fontname="Helvetica"];
   Node2 [label="internal::MatrixFreeFunctions\l::UnivariateShapeData\< Vectorized\lArray\< double \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1UnivariateShapeData.html",tooltip=" "];
-  Node1 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< VectorizedArrayType \>" ,fontname="Helvetica"];
-  Node3 [label="internal::MatrixFreeFunctions\l::UnivariateShapeData\< Vectorized\lArrayType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1UnivariateShapeData.html",tooltip=" "];
-  Node1 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< VectorizedArray\<\l Number \> \>" ,fontname="Helvetica"];
-  Node4 [label="internal::MatrixFreeFunctions\l::UnivariateShapeData\< Vectorized\lArray\< Number \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structinternal_1_1MatrixFreeFunctions_1_1UnivariateShapeData.html",tooltip=" "];
 }

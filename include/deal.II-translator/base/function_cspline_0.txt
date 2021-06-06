@@ -1,0 +1,19 @@
+[0.x.0]*
+   The cubic spline function using GNU Scientific Library.   The resulting curve is piecewise cubic on each interval, with matching   first and second derivatives at the supplied data-points. The second   derivative is chosen to be zero at the first point and last point.    
+*  [2.x.0]  This function is only implemented for dim==1 .    
+*  [2.x.1]   
+* [0.x.1]*
+     Constructor which should be provided with a set of points at which     interpolation is to be done  [2.x.2]  and a set of function     values  [2.x.3]  .    
+* [0.x.2]*
+     Return an estimate for the memory consumption, in bytes, of this object.    
+* [0.x.3]*
+     Points at which interpolation is provided    
+* [0.x.4]*
+     Values of the function at interpolation points    
+* [0.x.5]*
+     GSL accelerator for spline interpolation    
+* [0.x.6]*
+     GSL cubic spline interpolator    
+* [0.x.7]*
+     A mutex for accelerator object.    
+* [0.x.8]

@@ -1,0 +1,62 @@
+[0.x.0]*
+ Coarse grid solver using smoother only. This is a little wrapper, transforming a smoother into a coarse grid solver.
+
+* 
+* [0.x.1]*
+   Default constructor.  
+* [0.x.2]*
+   Constructor. Store a pointer to the smoother for later use.  
+* [0.x.3]*
+   Clear the pointer.  
+* [0.x.4]*
+   Initialize new data.  
+* [0.x.5]*
+   Implementation of the abstract function.  
+* [0.x.6]*
+   Reference to the smoother.  
+* [0.x.7]*
+ Coarse grid multigrid operator for an iterative solver.
+*  This class provides a wrapper for a deal.II iterative solver with a given matrix and preconditioner as a coarse grid operator.
+
+* 
+* [0.x.8]*
+   Default constructor.  
+* [0.x.9]*
+   Constructor. Only a reference to these objects is stored, so   their lifetime needs to exceed the usage in this class.  
+* [0.x.10]*
+   Initialize with new data, see the corresponding constructor for more   details.  
+* [0.x.11]*
+   Clear all pointers.  
+* [0.x.12]*
+   Implementation of the abstract function. Calls the solve method of the   given solver with matrix, vectors, and preconditioner.  
+* [0.x.13]*
+   Reference to the solver.  
+* [0.x.14]*
+   Reference to the matrix.  
+* [0.x.15]*
+   Reference to the preconditioner.  
+* [0.x.16]*
+ Coarse grid solver by QR factorization implemented in the class Householder.
+*  Upon initialization, the QR decomposition of the matrix is computed. then, the operator() uses  [2.x.0]  to compute the action of the inverse.
+
+* 
+* [0.x.17]*
+   Constructor, taking the coarse grid matrix.  
+* [0.x.18]*
+   Initialize for a new matrix.  
+* [0.x.19]*
+   Matrix for QR-factorization.  
+* [0.x.20]*
+ Coarse grid solver using singular value decomposition of LAPACK matrices.
+*  Upon initialization, the singular value decomposition of the matrix is computed. then, the operator() uses
+
+* 
+* [0.x.21]*
+   Constructor leaving an uninitialized object.  
+* [0.x.22]*
+   Initialize for a new matrix. This resets the dimensions to the  
+* [0.x.23]*
+   Write the singular values to  [2.x.1]   
+* [0.x.24]*
+   Matrix for singular value decomposition.  
+* [0.x.25]

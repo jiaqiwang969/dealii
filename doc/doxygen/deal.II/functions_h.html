@@ -110,6 +110,15 @@ $(function() {
 <li>h5_sol_filename
 : <a class="el" href="group__Exceptions.html#ga819432f3837dad220b24cf780e5e95eb">XDMFEntry</a>
 </li>
+<li>H_2
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1RheologicalExperimentParameters.html#a12fb84818d3d1488d650748e34d11f15">Step71::CoupledConstitutiveLaws::RheologicalExperimentParameters</a>
+</li>
+<li>H_components
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoelastic__Constitutive__Law__AD.html#ad605d3fef2819da0edbe882fa2a180c1">Step71::CoupledConstitutiveLaws::Magnetoelastic_Constitutive_Law_AD&lt; dim, ADTypeCode &gt;</a>
+</li>
+<li>H_sd
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law__SD.html#a0c87cdb7b2be0af88dc94296e0ae058c">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law_SD&lt; dim &gt;</a>
+</li>
 <li>handle
 : <a class="el" href="classparallel_1_1distributed_1_1CellDataTransfer.html#a7b93d780cf16ab55b1dc6cb7278c84df">parallel::distributed::CellDataTransfer&lt; dim, spacedim, VectorType &gt;</a>
 , <a class="el" href="classparallel_1_1distributed_1_1ContinuousQuadratureDataTransfer.html#a71b74b906b6954d96bb0a5b477cf2d06">parallel::distributed::ContinuousQuadratureDataTransfer&lt; dim, DataType &gt;</a>
@@ -119,6 +128,18 @@ $(function() {
 <li>Handle
 : <a class="el" href="classParticles_1_1PropertyPool.html#a87754ccfd154373079314be2bbfb7dcc">Particles::PropertyPool&lt; dim, spacedim &gt;</a>
 , <a class="el" href="structUtilities_1_1CUDA_1_1Handle.html#a91f1fcf99a2264afe823e9e1824bbf32">Utilities::CUDA::Handle</a>
+</li>
+<li>hanging_node_constraints
+: <a class="el" href="structStep13_1_1LaplaceSolver_1_1Solver_1_1LinearSystem.html#a1c9d886eca02345a235771cb5dea25e8">Step13::LaplaceSolver::Solver&lt; dim &gt;::LinearSystem</a>
+, <a class="el" href="structStep14_1_1LaplaceSolver_1_1Solver_1_1LinearSystem.html#a5c329dce0ce4b1a771082dd5a9570808">Step14::LaplaceSolver::Solver&lt; dim &gt;::LinearSystem</a>
+, <a class="el" href="classStep15_1_1MinimalSurfaceProblem.html#a36e4f2bc59e14cce9e639fe24236460d">Step15::MinimalSurfaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep17_1_1ElasticProblem.html#a61a7d875b19b0d05248ab825bc8677fc">Step17::ElasticProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep18_1_1TopLevel.html#abada49299dc7f95ba966e7387138ba2f">Step18::TopLevel&lt; dim &gt;</a>
+, <a class="el" href="classStep28_1_1EnergyGroup.html#a1e51d617fd79e2a664ceff68637e01ce">Step28::EnergyGroup&lt; dim &gt;</a>
+, <a class="el" href="classStep72_1_1MinimalSurfaceProblem.html#a57b3e77a3d1d91dc62e370ffc5057d72">Step72::MinimalSurfaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep77_1_1MinimalSurfaceProblem.html#ad134de607bbd8a616f08adb26923ed0a">Step77::MinimalSurfaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep7_1_1HelmholtzProblem.html#a07840f6c792f6f4f11e7e11e33ca6c28">Step7::HelmholtzProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep9_1_1AdvectionProblem.html#aa2e743ed650fe5be23320480ef386634">Step9::AdvectionProblem&lt; dim &gt;</a>
 </li>
 <li>HangingNodes()
 : <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ae9cd43f829d4f0ee866b07a0de4e530f">CUDAWrappers::internal::HangingNodes&lt; dim &gt;</a>
@@ -148,15 +169,15 @@ $(function() {
 : <a class="el" href="group__Exceptions.html#ga4d7a3e41b44869ce600ae0b3a98b5b4e">FiniteElement&lt; dim, spacedim &gt;</a>
 </li>
 <li>has_ghost_elements()
-: <a class="el" href="group__Vectors.html#ga3ddd3ad89fdeadf962828ee0c6d74b6f">BlockVector&lt; Number &gt;</a>
-, <a class="el" href="group__Vectors.html#ga0ac470622adef2b2aec45be681112de3">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
-, <a class="el" href="group__Vectors.html#ga17719d884e60b2ad0077a03b92382975">LinearAlgebra::distributed::Vector&lt; Number, MemorySpace &gt;</a>
-, <a class="el" href="classLinearAlgebra_1_1EpetraWrappers_1_1Vector.html#a0bc0b500ecb11bddf8865154d03aa250">LinearAlgebra::EpetraWrappers::Vector</a>
-, <a class="el" href="classLinearAlgebra_1_1TpetraWrappers_1_1Vector.html#a50a7b83df5e9e1539c5675eda55c5092">LinearAlgebra::TpetraWrappers::Vector&lt; Number &gt;</a>
-, <a class="el" href="group__Vectors.html#gaf010746729396790ea5444245bd7e87b">LinearAlgebra::Vector&lt; Number &gt;</a>
-, <a class="el" href="group__PETScWrappers.html#ga47f11d3a533591fb547e0768cd992892">PETScWrappers::MPI::BlockVector</a>
+: <a class="el" href="classBlockVector.html#a3ddd3ad89fdeadf962828ee0c6d74b6f">BlockVector&lt; Number &gt;</a>
+, <a class="el" href="classLinearAlgebra_1_1distributed_1_1BlockVector.html#a0ac470622adef2b2aec45be681112de3">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
+, <a class="el" href="classLinearAlgebra_1_1distributed_1_1Vector.html#a17719d884e60b2ad0077a03b92382975">LinearAlgebra::distributed::Vector&lt; Number, MemorySpace &gt;</a>
+, <a class="el" href="classLinearAlgebra_1_1EpetraWrappers_1_1Vector.html#a0ca33f52511daa54531089f98b316458">LinearAlgebra::EpetraWrappers::Vector</a>
+, <a class="el" href="classLinearAlgebra_1_1TpetraWrappers_1_1Vector.html#a0ca33f52511daa54531089f98b316458">LinearAlgebra::TpetraWrappers::Vector&lt; Number &gt;</a>
+, <a class="el" href="classLinearAlgebra_1_1Vector.html#af010746729396790ea5444245bd7e87b">LinearAlgebra::Vector&lt; Number &gt;</a>
+, <a class="el" href="classPETScWrappers_1_1MPI_1_1BlockVector.html#ga47f11d3a533591fb547e0768cd992892">PETScWrappers::MPI::BlockVector</a>
 , <a class="el" href="classPETScWrappers_1_1VectorBase.html#ac825d05c684a560c996101ad0efef2c6">PETScWrappers::VectorBase</a>
-, <a class="el" href="group__TrilinosWrappers.html#gaf7060276619b5483e448f5e943d5cb02">TrilinosWrappers::MPI::BlockVector</a>
+, <a class="el" href="classTrilinosWrappers_1_1MPI_1_1BlockVector.html#gaf7060276619b5483e448f5e943d5cb02">TrilinosWrappers::MPI::BlockVector</a>
 , <a class="el" href="classTrilinosWrappers_1_1MPI_1_1Vector.html#a68f28d2bf6737db19cd076abbb1aee51">TrilinosWrappers::MPI::Vector</a>
 , <a class="el" href="group__Vectors.html#ga0ca33f52511daa54531089f98b316458">Vector&lt; Number &gt;</a>
 </li>
@@ -191,10 +212,10 @@ $(function() {
 , <a class="el" href="classParticles_1_1ParticleAccessor.html#aebc30b6e5622350b49a5ba7bb399ae3c">Particles::ParticleAccessor&lt; dim, spacedim &gt;</a>
 </li>
 <li>has_support_on_face()
-: <a class="el" href="classFE__ABF.html#a88ea52f79f122bac0889aaedfcc2c2a5">FE_ABF&lt; dim &gt;</a>
-, <a class="el" href="classFE__DGP.html#aa70c0d66288f4f337f357fad7ce63155">FE_DGP&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classFE__ABF.html#a7dd0a2bf33e33f78b2e2e743e4454a6f">FE_ABF&lt; dim &gt;</a>
+, <a class="el" href="classFE__DGP.html#a1742a828be387016da16e1586eb1b7ef">FE_DGP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGPMonomial.html#afa7f4dfdfd238fa46fe06f363cbb181e">FE_DGPMonomial&lt; dim &gt;</a>
-, <a class="el" href="classFE__DGPNonparametric.html#aaa00a5bd92cbcad910597273aaee9a07">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__DGPNonparametric.html#a239bfd3c6d814bc7bcded895123c1209">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGQ.html#a1344817369119e8d681c58fc6e5c6675">FE_DGQ&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGVector.html#a1c9f11c1bb7778b0384867a3b1ca4d19">FE_DGVector&lt; PolynomialType, dim, spacedim &gt;</a>
 , <a class="el" href="classFE__FaceP.html#a3902bd790fa5225d4bb366d218a450b1">FE_FaceP&lt; dim, spacedim &gt;</a>
@@ -209,7 +230,7 @@ $(function() {
 , <a class="el" href="classFE__RaviartThomasNodal.html#a2c9502ef420edb6df893d45b40101f3d">FE_RaviartThomasNodal&lt; dim &gt;</a>
 , <a class="el" href="classFE__TraceQ.html#a3eb407089eb4e714fd9d0f32a006258e">FE_TraceQ&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFESystem.html#a85e86b6adc43346cae19f40e6d626a32">FESystem&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFiniteElement.html#a68dc9f085edbcd92f8d0703d3e5fce6f">FiniteElement&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFiniteElement.html#ab275cbead21bb11b1208222b6d662357">FiniteElement&lt; dim, spacedim &gt;</a>
 </li>
 <li>has_support_points()
 : <a class="el" href="group__Exceptions.html#ga47f25ecdd4c356032bd44e3e6571d983">FiniteElement&lt; dim, spacedim &gt;</a>
@@ -244,8 +265,14 @@ $(function() {
 <li>HDF5Object()
 : <a class="el" href="classHDF5_1_1HDF5Object.html#a86c2cb054d60b2aa30865ed73a591634">HDF5::HDF5Object</a>
 </li>
+<li>HDG()
+: <a class="el" href="classStep51_1_1HDG.html#acc2e30f93ab039df59fbe9da0d24e8c9">Step51::HDG&lt; dim &gt;</a>
+</li>
 <li>Hdiv
 : <a class="el" href="classFiniteElementData.html#a0cd5f34c3ab828fac31004f3b52921a1a90dc12964e57f6aec9a0e3ae422f3ea1">FiniteElementData&lt; dim &gt;</a>
+</li>
+<li>HeatEquation()
+: <a class="el" href="classStep26_1_1HeatEquation.html#ac1e126aad098058ebfcc8f9297e7e8fd">Step26::HeatEquation&lt; dim &gt;</a>
 </li>
 <li>height
 : <a class="el" href="group__Exceptions.html#gaa7e57ae4034c9cafe9474e5ea71b7ba2aabd3484f083953540caa6e869745286b">DataOutBase::EpsFlags</a>
@@ -253,10 +280,14 @@ $(function() {
 , <a class="el" href="structGridGenerator_1_1Airfoil_1_1AdditionalData.html#a40d279ded1794bbb39161e45c61abd12">GridGenerator::Airfoil::AdditionalData</a>
 , <a class="el" href="structGridOutFlags_1_1EpsFlagsBase.html#a32c762440065566901cddf967a1d9b65adb5d815049b7e99299087e5a72fa0df1">GridOutFlags::EpsFlagsBase</a>
 , <a class="el" href="structGridOutFlags_1_1Svg.html#a5784c5dfa680998b95ebfe70aa8d53f1">GridOutFlags::Svg</a>
+, <a class="el" href="classStep69_1_1Discretization.html#ae2d7397bd602ae1703b80a3affdd844c">Step69::Discretization&lt; dim &gt;</a>
 </li>
 <li>height_vector
 : <a class="el" href="group__Exceptions.html#gabe52babba75c0c56ab11bdd467cffbf5">DataOutBase::EpsFlags</a>
 , <a class="el" href="group__Exceptions.html#ga5f593f3153c71bf34ea3c4ebdd76f0a5">DataOutBase::SvgFlags</a>
+</li>
+<li>HelmholtzProblem()
+: <a class="el" href="classStep7_1_1HelmholtzProblem.html#ade1ed797e4cd2bc1114a8e32bb51ab24">Step7::HelmholtzProblem&lt; dim &gt;</a>
 </li>
 <li>Helper()
 : <a class="el" href="structColorEnriched_1_1Helper.html#a6b2723d803f856e70a3e68c272eb5c69">ColorEnriched::Helper&lt; dim, spacedim &gt;</a>
@@ -292,14 +323,14 @@ $(function() {
 , <a class="el" href="classFEValuesViews_1_1Vector.html#a3325f8fda646f04be50c9a6d404297fd">FEValuesViews::Vector&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFunction.html#a8aa2ec8f2270bdee842413805c4d7442">Function&lt; dim, RangeNumberType &gt;</a>
 , <a class="el" href="classFunctions_1_1ConstantFunction.html#af91f7eb367158a8c7a9d5e6a0ed97d92">Functions::ConstantFunction&lt; dim, RangeNumberType &gt;</a>
-, <a class="el" href="classFunctions_1_1CoordinateRestriction.html#a52c71422ef8b2fbe01026a0ea0bf7b17">Functions::CoordinateRestriction&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1CosineFunction.html#a4beeac031c0442cc1dc1ca0210199235">Functions::CosineFunction&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1CSpline.html#a7cf7d280919aad4603133247829420dd">Functions::CSpline&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1CoordinateRestriction.html#ac43e2d4f41e2e24fc87d1bcd60a2dd28">Functions::CoordinateRestriction&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1CosineFunction.html#af17f8b49ba7bf00bbc0803db89684194">Functions::CosineFunction&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1CSpline.html#a006fd7fde5ff629e1b6f5b6c6b3cee06">Functions::CSpline&lt; dim &gt;</a>
 , <a class="el" href="classFunctions_1_1IdentityFunction.html#aa5463b8c36c6288b2a4256846414c15b">Functions::IdentityFunction&lt; dim, RangeNumberType &gt;</a>
-, <a class="el" href="classFunctions_1_1LevelSet_1_1Plane.html#af09cabe014335ebf434273afd67fbc61">Functions::LevelSet::Plane&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1LevelSet_1_1Sphere.html#ac201166643b1b659167d594fb41b6371">Functions::LevelSet::Sphere&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1PointRestriction.html#ae5a96050484b096e4bbb236b5ec85dd4">Functions::PointRestriction&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1Spherical.html#a920c18faf652ca484d307b37231d2c88">Functions::Spherical&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1LevelSet_1_1Plane.html#a6e15a26375f2ac4b4ad05781c1d3ca85">Functions::LevelSet::Plane&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1LevelSet_1_1Sphere.html#a096f75aea491f26f139b41b5f1803489">Functions::LevelSet::Sphere&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1PointRestriction.html#aff16df27bf37eb2d6bed1890a6e2e74e">Functions::PointRestriction&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1Spherical.html#a1ac78d3127e9082877938962a86c6a32">Functions::Spherical&lt; dim &gt;</a>
 , <a class="el" href="classFunctions_1_1SymbolicFunction.html#aa99c28ed9485acf9222de2d79b738cd0">Functions::SymbolicFunction&lt; dim, RangeNumberType &gt;</a>
 </li>
 <li>hessian_index()
@@ -308,6 +339,7 @@ $(function() {
 <li>hessian_list()
 : <a class="el" href="classFunction.html#a2e69625d9daf07615270d65d97dfebde">Function&lt; dim, RangeNumberType &gt;</a>
 , <a class="el" href="classFunctions_1_1CosineFunction.html#a6d4d7d066968ed97ce427c00f9ff01f8">Functions::CosineFunction&lt; dim &gt;</a>
+, <a class="el" href="classStep47_1_1ExactSolution_1_1Solution.html#a434fdca529f60343e1cd9c0e1663a015">Step47::ExactSolution::Solution&lt; dim &gt;</a>
 </li>
 <li>hessian_selection
 : <a class="el" href="classMeshWorker_1_1VectorSelector.html#ac925bbe7d058f85f908056be1cf935ec">MeshWorker::VectorSelector</a>
@@ -365,8 +397,15 @@ $(function() {
 : <a class="el" href="structGeometryInfo.html#a6e3c139c94b4d9e54371400514a102f4">GeometryInfo&lt; dim &gt;</a>
 , <a class="el" href="structGeometryInfo_3_010_01_4.html#a772e41935f45a02733102906f8c5fb08">GeometryInfo&lt; 0 &gt;</a>
 </li>
+<li>HH
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoelastic__Constitutive__Law.html#a723e63de033f97162314cef969bd8678">Step71::CoupledConstitutiveLaws::Magnetoelastic_Constitutive_Law&lt; dim &gt;</a>
+, <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law.html#ae8682503466a4f209db661437ed1cd07">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law&lt; dim &gt;</a>
+</li>
+<li>HH_sd
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law__SD.html#a7db655ddf9d359716a872a06eb19571a">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law_SD&lt; dim &gt;</a>
+</li>
 <li>hierarchic_to_fe_q_hierarchical_numbering()
-: <a class="el" href="classFE__Q__Hierarchical.html#a27df19a784c00bb268d0f4341e79cf1d">FE_Q_Hierarchical&lt; dim &gt;</a>
+: <a class="el" href="classFE__Q__Hierarchical.html#a7e9890475231a331c1f72b7e7b2da0b8">FE_Q_Hierarchical&lt; dim &gt;</a>
 </li>
 <li>Hierarchical()
 : <a class="el" href="classPolynomials_1_1Hierarchical.html#a3b1bba2d5327185e1d7681eda4772243">Polynomials::Hierarchical</a>
@@ -389,6 +428,10 @@ $(function() {
 <li>hold_all_faces_to_owned_cells
 : <a class="el" href="structMatrixFree_1_1AdditionalData.html#a1b94beb12bfea048e9fbbdf52c36ecb4">MatrixFree&lt; dim, Number, VectorizedArrayType &gt;::AdditionalData</a>
 </li>
+<li>homogeneous_dirichlet_ids
+: <a class="el" href="classStep60_1_1DistributedLagrangeProblem_1_1Parameters.html#a5b7a5214efea6cd4ab0ba561a637820d">Step60::DistributedLagrangeProblem&lt; dim, spacedim &gt;::Parameters</a>
+, <a class="el" href="classStep70_1_1StokesImmersedProblemParameters.html#a7137ad6d762fed882fbf2d1043bb9062">Step70::StokesImmersedProblemParameters&lt; dim, spacedim &gt;</a>
+</li>
 <li>Householder()
 : <a class="el" href="classHouseholder.html#aed387a68a6624321bb4724e61f11c699">Householder&lt; number &gt;</a>
 </li>
@@ -406,46 +449,49 @@ $(function() {
 : <a class="el" href="classDoFHandler.html#a463e496bc73acde6efa3a9266aab6cb7">DoFHandler&lt; dim, spacedim &gt;</a>
 </li>
 <li>hp_constraints_are_implemented()
-: <a class="el" href="classFE__Bernstein.html#a6c768591bf1ffc08d0102686595564d1">FE_Bernstein&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__DGP.html#a549d90fd0662bcf266df60c89617f3f7">FE_DGP&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__DGPMonomial.html#a0496ddcffece15cb1936fc3b460bc3ef">FE_DGPMonomial&lt; dim &gt;</a>
-, <a class="el" href="classFE__DGPNonparametric.html#a752ab095e3724fe3f379427f175f3e2d">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classFE__Bernstein.html#a50063743e7fb3d5c756ca5094299c37f">FE_Bernstein&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__DGP.html#af4b80e5fdf5a47cbf5ecfa0757d577ba">FE_DGP&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__DGPMonomial.html#ac346899d214522ecbbc9d851c92afd95">FE_DGPMonomial&lt; dim &gt;</a>
+, <a class="el" href="classFE__DGPNonparametric.html#af4401a334d75921e0583b3440af1591e">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGQ.html#a775a1d1729b81ed51313b9318b73a502">FE_DGQ&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__Enriched.html#a6ae5e77df08a40e80a2e4e15bcab8e67">FE_Enriched&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__FaceP.html#a34bd94b51956b7060544ae723a4f1e98">FE_FaceP&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__Enriched.html#a00daf2b77ac87926c3f460775f1ebfac">FE_Enriched&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__FaceP.html#a1f14d8a077b9d57b7e612fb510c97eb6">FE_FaceP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__FaceQ.html#afba8ff945c78c1ab6563e1c571d33bbd">FE_FaceQ&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__FaceQ_3_011_00_01spacedim_01_4.html#a2f8a4b02a03fa3fac59833c9faf0e784">FE_FaceQ&lt; 1, spacedim &gt;</a>
-, <a class="el" href="classFE__Nedelec.html#a2e41211f3aace7e620c887da08fd6e4e">FE_Nedelec&lt; dim &gt;</a>
+, <a class="el" href="classFE__Nedelec.html#a7b68c5032c17efb156d7e0d230a123c5">FE_Nedelec&lt; dim &gt;</a>
 , <a class="el" href="classFE__Nothing.html#a73718e36a622f048596353915a7658ca">FE_Nothing&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Q__Base.html#a2a82426707f0dc868ba397fbf2fc6427">FE_Q_Base&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__Q__Hierarchical.html#aea2a8648f7576fd483dbd1dda7945117">FE_Q_Hierarchical&lt; dim &gt;</a>
+, <a class="el" href="classFE__Q__Hierarchical.html#a01cf16597b416fc16b40a9db86f5b496">FE_Q_Hierarchical&lt; dim &gt;</a>
 , <a class="el" href="classFE__RaviartThomasNodal.html#a53b70cded478ad4b67b8cd71939f28d8">FE_RaviartThomasNodal&lt; dim &gt;</a>
 , <a class="el" href="classFE__SimplexPoly.html#a5690b0959afe1c9cba6c5e33e631d02f">FE_SimplexPoly&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__TraceQ.html#a537ec3fb24b2bbc3fb54306613abc68a">FE_TraceQ&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__TraceQ.html#a8568c47b80c0ba7ac6be65fd9268e94c">FE_TraceQ&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFESystem.html#a928be8e2a0821ee9ce6b49d8e6af31e4">FESystem&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFiniteElement.html#af92fb4945b3dd83fc513abd3e612f022">FiniteElement&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFiniteElement.html#ae5d64f4a56fb9fefc55a68fb7ac5e71a">FiniteElement&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classhp_1_1FECollection.html#a29a5f7c2639e467e2192d6eb0c97b468">hp::FECollection&lt; dim, spacedim &gt;</a>
 </li>
+<li>hp_decision_indicators
+: <a class="el" href="classStep75_1_1LaplaceProblem.html#a1394a03f9939f4dfad3d5f93f4a2e193">Step75::LaplaceProblem&lt; dim &gt;</a>
+</li>
 <li>hp_line_dof_identities()
-: <a class="el" href="classFE__Bernstein.html#afce52c8fd8f94362cbed8b8c5e24be83">FE_Bernstein&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__DGP.html#aa1227ce926d6a9f0754807a30b24784a">FE_DGP&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classFE__Bernstein.html#aad37a9421e43944ff14d2b7e9d25dd37">FE_Bernstein&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__DGP.html#a016184923f178608fc6461680bf4b29a">FE_DGP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGPMonomial.html#a2179cd463e6f4a32666da39eca65f16b">FE_DGPMonomial&lt; dim &gt;</a>
 , <a class="el" href="classFE__DGPNonparametric.html#aa564fd7b2dc013fdf46ea3708a066256">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGQ.html#a8662c262f4fea25489cd0182a7f1535d">FE_DGQ&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Enriched.html#aef4e08256c6fe6a4a7312db3691e8643">FE_Enriched&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__FaceQ.html#a76fd836c43e2d7c151fdef0820186199">FE_FaceQ&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__FaceQ_3_011_00_01spacedim_01_4.html#ac2c12343e40bf342fbd7d4f3d7f212ec">FE_FaceQ&lt; 1, spacedim &gt;</a>
+, <a class="el" href="classFE__FaceQ_3_011_00_01spacedim_01_4.html#a3f3e8178360506028b76bb10ae13c9e4">FE_FaceQ&lt; 1, spacedim &gt;</a>
 , <a class="el" href="classFE__Nedelec.html#a66a6fdfcfec334bc563d46deba3a66a4">FE_Nedelec&lt; dim &gt;</a>
-, <a class="el" href="classFE__Nothing.html#a087307bdae6234335b1ae17a31bf8483">FE_Nothing&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__Nothing.html#a5a2f524f5f69d7aecf21a3d861665b22">FE_Nothing&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__PyramidP.html#a2f1869c06310fb74867c9bc0d54376f1">FE_PyramidP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Q__Base.html#ac5c443be5255eaec0fa5f9d72bf6e708">FE_Q_Base&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Q__Hierarchical.html#af5b723a5cab7c9eb3166fa061738245d">FE_Q_Hierarchical&lt; dim &gt;</a>
-, <a class="el" href="classFE__RaviartThomasNodal.html#a6ba0875e5a0dcfa6b26ed943682ad378">FE_RaviartThomasNodal&lt; dim &gt;</a>
+, <a class="el" href="classFE__RaviartThomasNodal.html#ab6711306d92ef8a815807d7e2f3e51c9">FE_RaviartThomasNodal&lt; dim &gt;</a>
 , <a class="el" href="classFE__SimplexDGP.html#a23410d3fdd7591bf25afdf242253fda1">FE_SimplexDGP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__SimplexP.html#a0c60f57182b849bf3cf64606fdbccf08">FE_SimplexP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__WedgeP.html#a478c46a4007c7c5fd1f9628adc8bbc88">FE_WedgeP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFESystem.html#a2376198fb1a52db80d3eb59bdaa19d27">FESystem&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFiniteElement.html#a0580b57287997a3aaa682d993bc952c1">FiniteElement&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFiniteElement.html#ace71f6d638de257e5791bfa7cd43e083">FiniteElement&lt; dim, spacedim &gt;</a>
 </li>
 <li>hp_object_dof_identities()
 : <a class="el" href="classFESystem.html#ada617df314b4577743306e837533bb20">FESystem&lt; dim, spacedim &gt;</a>
@@ -460,44 +506,50 @@ $(function() {
 : <a class="el" href="classFE__Bernstein.html#a7c96292ca65dc684888c11a7abd9e7c7">FE_Bernstein&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGP.html#af47a61dec958dae30ed7bbfd6e23adeb">FE_DGP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGPMonomial.html#a74f1348ba3f24be309ecda32dbb0ef58">FE_DGPMonomial&lt; dim &gt;</a>
-, <a class="el" href="classFE__DGPNonparametric.html#a75aedd580bac6d0cf3dc738e9943b3a0">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__DGQ.html#a42a4ca85d7148f7159b4dda514216057">FE_DGQ&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__DGPNonparametric.html#a4cce11b554c0c96c6bf788cfe6c117bd">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__DGQ.html#a7191ca9e75734ddc3c98f372a427faf9">FE_DGQ&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Enriched.html#a7bb9762296d6954d558db8146ab51164">FE_Enriched&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__FaceQ.html#aa3b0fde12d0707fcf8e060241556239e">FE_FaceQ&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__FaceQ.html#ade75fae0f41295d254ae18faeb6387cb">FE_FaceQ&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__FaceQ_3_011_00_01spacedim_01_4.html#a4b1722b6d450e3c110575456df6ec92b">FE_FaceQ&lt; 1, spacedim &gt;</a>
 , <a class="el" href="classFE__Nedelec.html#a9e49c52504107b9a542df4ee6e74000f">FE_Nedelec&lt; dim &gt;</a>
 , <a class="el" href="classFE__Nothing.html#a994da8a3c93aa7bc092900f8220a5221">FE_Nothing&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__PyramidP.html#aaca8b30c90346ebd06d0a01caee338a3">FE_PyramidP&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__PyramidP.html#ac40eaaf61da2e5934beae18c11469cf6">FE_PyramidP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Q__Base.html#ae4025e69f78655106e4d5ba1e103c5c0">FE_Q_Base&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Q__Hierarchical.html#a523b3585db256859cdd4f09d55b34412">FE_Q_Hierarchical&lt; dim &gt;</a>
-, <a class="el" href="classFE__RaviartThomasNodal.html#afc056f5d3309dd0f4768fc910361c911">FE_RaviartThomasNodal&lt; dim &gt;</a>
+, <a class="el" href="classFE__RaviartThomasNodal.html#a3c5e9ae1e4324130fddbb457140469a9">FE_RaviartThomasNodal&lt; dim &gt;</a>
 , <a class="el" href="classFE__WedgeP.html#a2b338c10de93c58f0d50cff2ceeadedb">FE_WedgeP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFESystem.html#a5bd093ee5bdcbc956d49307f6a905975">FESystem&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFiniteElement.html#a34df541fc9614840c6c428cbe9ffa68e">FiniteElement&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFiniteElement.html#ac728e4ad74d39b32883ef76dd5b99b61">FiniteElement&lt; dim, spacedim &gt;</a>
 </li>
 <li>hp_vertex_dof_identities()
-: <a class="el" href="classFE__Bernstein.html#a737367715c3ac1c2569c614149925dee">FE_Bernstein&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__DGP.html#a6937c42e4dd88f4d4f808559d6b49890">FE_DGP&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classFE__Bernstein.html#aa20943d38a1ae639e0794b7495aeb1d4">FE_Bernstein&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__DGP.html#a80b06d0a5145e342aa13d08ae5496bc1">FE_DGP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGPMonomial.html#a0d2a04778cee5cf0efcd2282d70f5a01">FE_DGPMonomial&lt; dim &gt;</a>
 , <a class="el" href="classFE__DGPNonparametric.html#ab82d20af6d3556ec3f9c06a698489baf">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGQ.html#a58d01b9bd0d76666f186c2908349bcbb">FE_DGQ&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__Enriched.html#a7cf0cae49c6a3e64aa071ac3d661f0b1">FE_Enriched&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__Enriched.html#aef7e0b6f5ac3238463ca9a4edadf9341">FE_Enriched&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__FaceQ.html#a83c43530d42e470b830ac0a5bb56abfd">FE_FaceQ&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__FaceQ_3_011_00_01spacedim_01_4.html#a1598e004a5c110ea44f576b8ea041206">FE_FaceQ&lt; 1, spacedim &gt;</a>
-, <a class="el" href="classFE__Nedelec.html#a925b01ec80b35a6d648722cf675b7031">FE_Nedelec&lt; dim &gt;</a>
+, <a class="el" href="classFE__Nedelec.html#af7ab94825d757d86b3524f1e3ffc0b66">FE_Nedelec&lt; dim &gt;</a>
 , <a class="el" href="classFE__Nothing.html#a556fb9fe441331dfa939727023a96ab1">FE_Nothing&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__PyramidP.html#aace3dc6359f20277149614974aa2f764">FE_PyramidP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Q__Base.html#aa00400957f6cc38e4accba02edb0ad2f">FE_Q_Base&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__Q__Hierarchical.html#aa178d42c9924f2fdb5d85ea29cca11a8">FE_Q_Hierarchical&lt; dim &gt;</a>
-, <a class="el" href="classFE__RaviartThomasNodal.html#a256d51b7cdbaaff7f196ee353bdbbd1e">FE_RaviartThomasNodal&lt; dim &gt;</a>
+, <a class="el" href="classFE__Q__Hierarchical.html#ae663329364d236d78fabf8be3a921029">FE_Q_Hierarchical&lt; dim &gt;</a>
+, <a class="el" href="classFE__RaviartThomasNodal.html#aefb0adad8e193d224c940df1e71eea12">FE_RaviartThomasNodal&lt; dim &gt;</a>
 , <a class="el" href="classFE__SimplexDGP.html#a433b40c2bab352c9a5cad9aa770ac6df">FE_SimplexDGP&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__SimplexP.html#a4e1d10bafafc25c0c65d58273ecf1c11">FE_SimplexP&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__SimplexP.html#a9a0ba37154492fae13d526cba4936d66">FE_SimplexP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__WedgeP.html#ac92df3ca985fc0a0f1ac8ee42832e430">FE_WedgeP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFESystem.html#a2743be5a59591e0746df95a660ca868e">FESystem&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFiniteElement.html#a2dd93e3d4f1f81301e6ae5f1b4832b26">FiniteElement&lt; dim, spacedim &gt;</a>
 </li>
 <li>ht
 : <a class="el" href="classAutoDerivativeFunction.html#a76094e8be7a2bc77b25e1fbd12ad4f74">AutoDerivativeFunction&lt; dim &gt;</a>
+</li>
+<li>hx
+: <a class="el" href="classStep42_1_1EquationData_1_1BitmapFile.html#a12534277ea310e72721a586f8873051f">Step42::EquationData::BitmapFile&lt; dim &gt;</a>
+</li>
+<li>hy
+: <a class="el" href="classStep42_1_1EquationData_1_1BitmapFile.html#a0bf8c4894c5721dde6a0323c4f7df28f">Step42::EquationData::BitmapFile&lt; dim &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->

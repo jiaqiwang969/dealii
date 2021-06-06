@@ -1,0 +1,19 @@
+[0.x.0]*
+ A namespace for utility functions in the context of matrix-free operator evaluation.
+
+* 
+* [0.x.1]*
+   Modify  [2.x.0]  so that cells are categorized   according to their boundary IDs, making face integrals in the case of   cell-centric loop simpler.  
+* [0.x.2]*
+   Compute the diagonal of a linear operator ( [2.x.1]  given    [2.x.2]  and the local cell integral operation  [2.x.3]  The   vector is initialized to the right size in the function.     The parameters  [2.x.4]   [2.x.5]  and  [2.x.6]  are   passed to the constructor of the FEEvaluation that is internally set up.  
+* [0.x.3]*
+   Same as above but with a class and a function pointer.  
+* [0.x.4]*
+   Compute the matrix representation of a linear operator ( [2.x.7]  given    [2.x.8]  and the local cell integral operation  [2.x.9]    Constrained entries on the diagonal are set to one.     The parameters  [2.x.10]   [2.x.11]  and  [2.x.12]  are   passed to the constructor of the FEEvaluation that is internally set up.  
+* [0.x.5]*
+   Same as above but with a class and a function pointer.  
+* [0.x.6]*
+     If value type of matrix and constrains equals, return a reference     to the given AffineConstraint instance.    
+* [0.x.7]*
+     If value type of matrix and constrains do not equal, a new     AffineConstraint instance with the value type of the matrix is     created and a reference to it is returned.    
+* [0.x.8]

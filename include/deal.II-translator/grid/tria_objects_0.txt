@@ -1,0 +1,80 @@
+[0.x.0]*
+     General template for information belonging to the geometrical objects     of a triangulation, i.e. lines, quads, hexahedra...  Apart from the     vector of objects additional information is included, namely vectors     indicating the children, the used-status, user-flags, material-ids..         Objects of these classes are included in the TriaLevel and TriaFaces     classes.    
+* [0.x.1]*
+       Constructor resetting some data.      
+* [0.x.2]*
+       Constructor for a specific dimension.      
+* [0.x.3]*
+       Vector of the objects belonging to this level. The index of the       object equals the index in this container.      
+* [0.x.4]*
+       Return number of geometric objects stored by this class.      
+* [0.x.5]*
+       Return a view on the indices of the objects that bound the  [2.x.0]        index-th object stored by the current object. For example, if       the current object stores cells, then this function returns       the equivalent of an array containing the indices of the       faces that bound the  [2.x.1]  cell.      
+* [0.x.6]*
+       Index of the even children of an object. Since when objects are       refined, all children are created at the same time, they are appended       to the list at least in pairs after each other. We therefore only       store the index of the even children, the uneven follow immediately       afterwards.             If an object has no children,
+* 
+*  -  is stored in this list. An object is       called active if it has no children. The function        [2.x.2]  tests for this.      
+* [0.x.7]*
+       Store the refinement case each of the cells is refined with. This       vector might be replaced by vector<vector<bool> > (dim, vector<bool>       (n_cells)) which is more memory efficient.      
+* [0.x.8]*
+       Vector storing whether an object is used in the  [2.x.3]  vector.             Since it is difficult to delete elements in a  [2.x.4]  when an       element is not needed any more (e.g. after derefinement), it is not       deleted from the list, but rather the according  [2.x.5]  flag is set       to  [2.x.6]       
+* [0.x.9]*
+       Make available a field for user data, one bit per object. This field       is usually used when an operation runs over all cells and needs       information whether another cell (e.g. a neighbor) has already been       processed.             You can clear all used flags using        [2.x.7]       
+* [0.x.10]*
+       We use this union to store boundary and material data. Because only       one out of these two is actually needed here, we use an union.      
+* [0.x.11]*
+         Default constructor.        
+* [0.x.12]*
+         Return the size of objects of this kind.        
+* [0.x.13]*
+         Read or write the data of this object to or from a stream for the         purpose of serialization using the [BOOST serialization         library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).        
+* [0.x.14]*
+       Store boundary and material data. For example, in one dimension, this       field stores the material id of a line, which is a number between 0       and  [2.x.8]  In more than one dimension, lines       have no material id, but they may be at the boundary; then, we store       the boundary indicator in this field, which denotes to which part of       the boundary this line belongs and which boundary conditions hold on       this part. The boundary indicator also is a number between zero and        [2.x.9]  the id        [2.x.10]  is reserved for lines in the       interior and may be used to check whether a line is at the boundary       or not, which otherwise is not possible if you don't know which cell       it belongs to.      
+* [0.x.15]*
+       Store manifold ids. This field stores the manifold id of each object,       which is a number between 0 and  [2.x.11]       
+* [0.x.16]*
+       Return an iterator to the next free slot for a single object. This       function is only used by  [2.x.12]        in 3D.              [2.x.13]  Interestingly, this function is not used for 1D or 2D       triangulations, where it seems the authors of the refinement function       insist on reimplementing its contents.              [2.x.14]  This function is not instantiated for the codim-one case      
+* [0.x.17]*
+       Return an iterator to the next free slot for a pair of objects. This       function is only used by  [2.x.15]        in 3D.              [2.x.16]  Interestingly, this function is not used for 1D or 2D       triangulations, where it seems the authors of the refinement function       insist on reimplementing its contents.              [2.x.17]  This function is not instantiated for the codim-one case      
+* [0.x.18]*
+       Return an iterator to the next free slot for a pair of hexes. Only       implemented for  [2.x.18] .      
+* [0.x.19]*
+       Access to user pointers.      
+* [0.x.20]*
+       Read-only access to user pointers.      
+* [0.x.21]*
+       Access to user indices.      
+* [0.x.22]*
+       Read-only access to user pointers.      
+* [0.x.23]*
+       Reset user data to zero.      
+* [0.x.24]*
+       Clear all user pointers or indices and reset their type, such that       the next access may be either or.      
+* [0.x.25]*
+       Clear all user flags.      
+* [0.x.26]*
+       Determine an estimate for the memory consumption (in bytes) of this       object.      
+* [0.x.27]*
+       Read or write the data of this object to or from a stream for the       purpose of serialization using the [BOOST serialization       library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).      
+* [0.x.28]*
+       Triangulation objects can either access a user pointer or a       user index. What you tried to do is trying to access one of those       after using the other.            
+*  [2.x.19]       
+* [0.x.29]*
+       Counter for next_free_single_* functions      
+* [0.x.30]*
+       Counter for next_free_pair_* functions      
+* [0.x.31]*
+       Bool flag for next_free_single_* functions      
+* [0.x.32]*
+       The data type storing user pointers or user indices.      
+* [0.x.33]*
+         Default constructor.        
+* [0.x.34]*
+         Write the data of this object to a stream for the purpose of         serialization using the [BOOST serialization         library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).        
+* [0.x.35]*
+       Enum describing the possible types of userdata.      
+* [0.x.36]*
+       Pointer which is not used by the library but may be accessed and set       by the user to handle data local to a line/quad/etc.      
+* [0.x.37]*
+       In order to avoid confusion between user pointers and indices, this       enum is set by the first function accessing either and subsequent       access will not be allowed to change the type of data accessed.      
+* [0.x.38]

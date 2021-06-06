@@ -1,0 +1,26 @@
+[0.x.0]*
+     A namespace for the implementation of functions that create signaling     NaN objects. This is where the  [2.x.0]  function     calls into.    
+* [0.x.1]*
+       A general template for classes that know how to initialize objects of       type  [2.x.1]  with signaling NaNs to denote invalid values.             The real implementation of this class happens in (partial)       specializations for particular values of the template argument  [2.x.2]       
+* [0.x.2]*
+       A specialization of the general NaNInitializer class that provides a       function that returns a  [2.x.3]  value equal to the invalid signaling       NaN.      
+* [0.x.3]*
+       A specialization of the general NaNInitializer class that provides a       function that returns a  [2.x.4]  value equal to the invalid       signaling NaN.      
+* [0.x.4]*
+       A specialization of the general NaNInitializer class that provides a       function that returns a Tensor<1,dim> value whose components are       invalid signaling NaN values.      
+* [0.x.5]*
+       A specialization of the general NaNInitializer class that provides a       function that returns a Tensor<rank,dim> value whose components are       invalid signaling NaN values.      
+* [0.x.6]*
+       A specialization of the general NaNInitializer class that provides a       function that returns a Tensor<rank,dim> value whose components are       invalid signaling NaN values.      
+* [0.x.7]*
+       A specialization of the general NaNInitializer class that provides a       function that returns a SymmetricTensor<rank,dim> value whose       components are invalid signaling NaN values.      
+* [0.x.8]*
+       A specialization of the general NaNInitializer class that provides a       function that returns a DerivativeForm<order,dim,spacedim> value       whose components are invalid signaling NaN values.      
+* [0.x.9]*
+   Provide an object of type  [2.x.5]  filled with a signaling NaN that will   cause an exception when used in a computation. The content of these   objects is a "signaling NaN" ("NaN" stands for "not a number", and   "signaling" implies that at least on platforms where this is supported,   any arithmetic operation using them terminates the program). The purpose   of such objects is to use them as markers for invalid objects and   arrays that are required to be initialized to valid values at some point,   and to trigger an error when this later initialization does not happen   before the first use. An example is code such as this:  
+* [1.x.0]
+*    The bug is that the `else` branch forgot to write a value into the `x`   variable. If your platform supports signaling NaNs, then this mistake   will become apparent in the last line above because the program is   going to be terminated by a floating point exception: The processor   realizes that the code is attempting to do an operation on the signaling   NaN still stored in `x` and aborts the program, thereby facilitating   an easy way to find what the problem is. This would not have been an easy   bug to find if one had just initialized `x` to zero in the first line   (or just left it uninitialized altogether): In that case, the call to    [2.x.6]  in the last line would have simply computed the sine of   "something" if `some condition == false`, but this invalid results may   not have been obvious to the calling site and would have required   a substantial amount of debugging to uncover because downstream   computations would simply have been wrong, without any indication of  why* they are wrong.      [2.x.7]  T The type of the returned invalid object. This type can either   be a scalar, or of type Tensor, SymmetricTensor, or DerivativeForm. Other   types may be supported if there is a corresponding specialization of the    [2.x.8]  class for this type.    
+*  [2.x.9]  Because the type  [2.x.10]  is not used as a function argument, the   compiler cannot deduce it from the type of arguments. Consequently, you   have to provide it explicitly. For example, the line    
+* [1.x.1]
+*    initializes a tensor with invalid values.  
+* [0.x.10]

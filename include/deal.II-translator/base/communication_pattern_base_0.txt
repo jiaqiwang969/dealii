@@ -1,0 +1,9 @@
+[0.x.0]*
+     CommunicationPattern is an abstract class that is used to define a     communication plan that can be called repeatedly to efficiently obtain     off-processor elements. The idea is to decouple the communication pattern     from the data that needs to be communicated. The goal is to reuse the     same communication pattern for different containers. This is similar to     the way SparseMatrix and SparsityPattern works.    
+* [0.x.1]*
+       Destructor.      
+* [0.x.2]*
+       Reinitialize the communication pattern. The first argument       `vector_space_vector_index_set` is the index set associated to a       VectorSpaceVector object. The second argument       `read_write_vector_index_set` is the index set associated to a       ReadWriteVector object.      
+* [0.x.3]*
+       Return a constant reference to the underlying MPI communicator.      
+* [0.x.4]

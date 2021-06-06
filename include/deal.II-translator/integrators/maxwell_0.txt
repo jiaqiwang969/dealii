@@ -1,0 +1,21 @@
+[0.x.0]*
+  
+*  [2.x.0]      We use the following conventions for curl operators. First, in three   space dimensions     [1.x.0]     In two space dimensions, the curl is obtained by extending a vector   [1.x.1] to  [2.x.1]  and a scalar [1.x.2] to  [2.x.2] .   Computing the nonzero components, we obtain the scalar curl of a vector   function and the vector curl of a scalar function. The current   implementation exchanges the sign and we have:   [1.x.3]    
+*  [2.x.3]   
+* [0.x.1]*
+     Auxiliary function. Given the tensors of <tt>dim</tt> second     derivatives, compute the curl of the curl of a vector function. The     result in two and three dimensions is:     [1.x.4]        
+*  [2.x.4]  The third tensor argument is not used in two dimensions and can     for instance duplicate one of the previous.    
+* [0.x.2]*
+     Auxiliary function. Given <tt>dim</tt> tensors of first derivatives and     a normal vector, compute the tangential curl     [1.x.5]        
+*  [2.x.5]  The third tensor argument is not used in two dimensions and can     for instance duplicate one of the previous.    
+* [0.x.3]*
+     The curl-curl operator     [1.x.6]     in weak form.    
+* [0.x.4]*
+     The matrix for the curl operator     [1.x.7]         This is the standard curl operator in 3D and the scalar curl in 2D. The     vector curl operator can be obtained by exchanging test and trial     functions.    
+* [0.x.5]*
+     The matrix for weak boundary condition of Nitsche type for the     tangential component in Maxwell systems.         [1.x.8]    
+* [0.x.6]*
+     The product of two tangential traces,     [1.x.9]    
+* [0.x.7]*
+     The interior penalty fluxes for Maxwell systems.         [1.x.10]    
+* [0.x.8]

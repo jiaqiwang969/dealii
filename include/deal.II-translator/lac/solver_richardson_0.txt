@@ -1,0 +1,38 @@
+[0.x.0]*
+ Implementation of the preconditioned Richardson iteration method. The stopping criterion is the norm of the residual.
+*  For the requirements on matrices and vectors in order to work with this class, see the documentation of the Solver base class.
+*  Like all other solver classes, this class has a local structure called  [2.x.0]  AdditionalData which is used to pass additional parameters to the solver, like damping parameters or the number of temporary vectors. We use this additional structure instead of passing these values directly to the constructor because this makes the use of the  [2.x.1]  and other classes much easier and guarantees that these will continue to work even if number or type of the additional parameters for a certain solver changes.
+*  For the Richardson method, the additional data is the damping parameter, which is the only content of the  [2.x.2]  structure. By default, the constructor of the structure sets it to one.
+* 
+
+*  [1.x.0]
+*  The solve() function of this class uses the mechanism described in the Solver base class to determine convergence. This mechanism can also be used to observe the progress of the iteration.
+
+* 
+* [0.x.1]*
+   Standardized data struct to pipe additional data to the solver.  
+* [0.x.2]*
+     Constructor. By default, set the damping parameter to one.    
+* [0.x.3]*
+     Relaxation parameter.    
+* [0.x.4]*
+     Parameter for stopping criterion.    
+* [0.x.5]*
+   Constructor.  
+* [0.x.6]*
+   Constructor. Use an object of type GrowingVectorMemory as a default to   allocate memory.  
+* [0.x.7]*
+   Virtual destructor.  
+* [0.x.8]*
+   Solve the linear system  [2.x.3]  for x.  
+* [0.x.9]*
+   Solve  [2.x.4]  for  [2.x.5] .  
+* [0.x.10]*
+   Set the damping-coefficient. Default is 1., i.e. no damping.  
+* [0.x.11]*
+   Interface for derived class. This function gets the current iteration   vector, the residual and the update vector in each step. It can be used   for graphical output of the convergence history.  
+* [0.x.12]*
+   Implementation of the computation of the norm of the residual.   Depending on the flags given to the solver, the default   implementation of this function uses either the actual   residual,  [2.x.6]  or the preconditioned residual,  [2.x.7]   
+* [0.x.13]*
+   Control parameters.  
+* [0.x.14]

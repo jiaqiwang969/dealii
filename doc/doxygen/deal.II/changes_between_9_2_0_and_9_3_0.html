@@ -223,7 +223,7 @@ X &rarr; Legacy::X </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Deprecated: The DoFHandlerType template argument for the functions <a class="el" href="structDataPostprocessorInputs_1_1CommonInputs.html#afd23efb2ff00fb3080ff9792c84a0c4e">DataPostprocessorInputs::CommonInputs::set_cell()</a> and <a class="el" href="structDataPostprocessorInputs_1_1CommonInputs.html#a2bc88342acd8e41314c8c1328bd98a67">DataPostprocessorInputs::CommonInputs::get_cell()</a> has been deprecated. These functions now only work with the basic <code><a class="el" href="classDoFHandler.html">DoFHandler</a></code> class. As a consequence, the get_cell() function requires an additional dim template. For example, write: cell=common_inputs.template get_cell&lt;dim&gt;() <br  />
+<p class="startli">Deprecated: The DoFHandlerType template argument for the functions <a class="el" href="structDataPostprocessorInputs_1_1CommonInputs.html#afd23efb2ff00fb3080ff9792c84a0c4e">DataPostprocessorInputs::CommonInputs::set_cell()</a> and <a class="el" href="structDataPostprocessorInputs_1_1CommonInputs.html#a2bc88342acd8e41314c8c1328bd98a67">DataPostprocessorInputs::CommonInputs::get_cell()</a> has been deprecated. These functions now only work with the basic <code><a class="el" href="classDoFHandler.html">DoFHandler</a></code> class. As a consequence, the <a class="el" href="data__postprocessor__0_8txt.html#ae520ecd82f673341ea8c12b748a6346b">get_cell()</a> function requires an additional dim template. For example, write: cell=common_inputs.template <a class="el" href="data__postprocessor__0_8txt.html#ae520ecd82f673341ea8c12b748a6346b">get_cell&lt;dim&gt;()</a> <br  />
  (Marc Fehling, 2020/11/15) </p>
 <p class="endli"></p>
 </li>
@@ -298,7 +298,7 @@ X &rarr; Legacy::X </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Changed: The binary representation of the <a class="el" href="classTriangulation.html">Triangulation</a> and <a class="el" href="classDoFHandler.html">DoFHandler</a> classes created by the function <code>save()</code> with release 9.2 cannot be read anymore with <code>load()</code> due to major internal changes of these classes. This change also affects, i.a., the functions <code><a class="el" href="classGridIn.html#aa80d89ec984220daf840b0a34e3d216d">GridIn::read_vtu()</a></code> and <code><a class="el" href="classGridOut.html#a8bd3a74b86d7c0eb792d2efca7f945f1">GridOut::write_vtu()</a></code>. <br  />
+<p class="startli">Changed: The binary representation of the <a class="el" href="classTriangulation.html">Triangulation</a> and <a class="el" href="classDoFHandler.html">DoFHandler</a> classes created by the function <code><a class="el" href="distributed_2tria__0_8txt.html#a87e8a51cf002220591b681044c8135dc">save()</a></code> with release 9.2 cannot be read anymore with <code><a class="el" href="distributed_2tria__0_8txt.html#ac3dc29f828db6ca06adf1c44744047df">load()</a></code> due to major internal changes of these classes. This change also affects, i.a., the functions <code><a class="el" href="classGridIn.html#aa80d89ec984220daf840b0a34e3d216d">GridIn::read_vtu()</a></code> and <code><a class="el" href="classGridOut.html#a8bd3a74b86d7c0eb792d2efca7f945f1">GridOut::write_vtu()</a></code>. <br  />
  (Peter Munch, 2020/06/03) </p>
 <p class="endli"></p>
 </li>
@@ -499,7 +499,7 @@ X &rarr; Legacy::X </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Improved: There is now a cache for <a class="el" href="classTriaAccessor.html#a81afd26d765a4cec094b25767b8dd42a">TriaAccessor::vertex_index()</a> for the cells of a mesh, which considerably speeds up operations with intensive use of <code>cell-&gt;vertex()</code> or <code>cell-&gt;vertex_index()</code>. <br  />
+<p class="startli">Improved: There is now a cache for <a class="el" href="classTriaAccessor.html#a81afd26d765a4cec094b25767b8dd42a">TriaAccessor::vertex_index()</a> for the cells of a mesh, which considerably speeds up operations with intensive use of <code>cell-&gt;<a class="el" href="mpi__remote__point__evaluation__0_8txt.html#a07bb39fb970c095c229ed653f6be7030">vertex()</a></code> or <code>cell-&gt;vertex_index()</code>. <br  />
  (Martin Kronbichler, 2021/05/04) </p>
 <p class="endli"></p>
 </li>
@@ -634,7 +634,7 @@ X &rarr; Legacy::X </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">Improved: The <a class="el" href="classMeshWorker_1_1ScratchData.html#a35004fbf70fa5ffa412a618c6512c8fe">MeshWorker::ScratchData::get_general_data_storage()</a> method now has a <code>const</code> variant. <br  />
+<p class="startli">Improved: The <a class="el" href="classMeshWorker_1_1ScratchData.html#ade6b7c55cbac24fb52995b585814ec2b">MeshWorker::ScratchData::get_general_data_storage()</a> method now has a <code>const</code> variant. <br  />
  (Jean-Paul Pelteret, 2021/03/13) </p>
 <p class="endli"></p>
 </li>
@@ -1063,7 +1063,7 @@ X &rarr; Legacy::X </li>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli">New: The class <a class="el" href="classTriaAccessor.html">TriaAccessor</a> provides now the capability to query the number of vertices, lines, and faces (with n_vertices(), n_lines(), n_faces(), <a class="el" href="grid__tools_8cc.html#a9bb17554c06536e62c37d90eb7a28d6a">vertex_indices()</a>, line_indices(), face_indices()). The new methods can be used as an alternative to the methods in <a class="el" href="structGeometryInfo.html">GeometryInfo</a>. <br  />
+<p class="startli">New: The class <a class="el" href="classTriaAccessor.html">TriaAccessor</a> provides now the capability to query the number of vertices, lines, and faces (with <a class="el" href="distributed_2tria__0_8txt.html#a7a64162bc6c76ef03e4963ab8e6dafed">n_vertices()</a>, n_lines(), n_faces(), <a class="el" href="grid__tools_8cc.html#a9bb17554c06536e62c37d90eb7a28d6a">vertex_indices()</a>, line_indices(), face_indices()). The new methods can be used as an alternative to the methods in <a class="el" href="structGeometryInfo.html">GeometryInfo</a>. <br  />
  (Peter Munch, 2020/06/23) </p>
 <p class="endli"></p>
 </li>

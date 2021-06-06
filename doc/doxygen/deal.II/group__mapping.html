@@ -7,7 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>The deal.II Library: Mappings between reference and real cell</title>
+<title>The deal.II Library: Mappings between reference and real cell The classes in</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -89,14 +89,14 @@ $(function() {
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Mappings between reference and real cell<div class="ingroups"><a class="el" href="group__feall.html">Finite elements</a></div></div>  </div>
+<div class="title">Mappings between reference and real cell The classes in<div class="ingroups"><a class="el" href="group__feall.html">Finite elements</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>The classes in this module are used to map from unit coordinates to the coordinates of a cell in real cell. Most commonly, one uses the <a class="el" href="classMappingQ1.html">MappingQ1</a> class that provides a Q1 (bi-/trilinear) mapping (i.e. a mapping that is isoparametric for the usual Q1 elements). However, there are other classes that implement higher-order mappings as well to provide for curvilinear elements. These are discussed in the <a class="el" href="step_11.html">step-11</a> and <a class="el" href="step_12.html">step-12</a> tutorial programs.  
+<p>this module are used to map from unit coordinates to the coordinates of a cell in real cell. Most commonly, one uses the <a class="el" href="classMappingQ1.html">MappingQ1</a> class that provides a Q1 (bi-/trilinear) mapping (i.e. a mapping that is isoparametric for the usual Q1 elements). However, there are other classes that implement higher-order mappings as well to provide for curvilinear elements. These are discussed in the <a class="el" href="step_11.html">step-11</a> and <a class="el" href="step_12.html">step-12</a> tutorial programs. The <a class="el" href="classMappingQ1Eulerian.html">MappingQ1Eulerian</a> class is an extension to the <a class="el" href="classMappingQ1.html">MappingQ1</a> class in that it accepts a vector that describes a displacement field for each position of the domain. This is used in Eulerian computations without the need to actually move vertices after each time step. In addition, the <a class="el" href="classMappingC1.html">MappingC1</a> class provides for a boundary of the computational domain that is not only curved, but also has a continuous derivative at the interface between two cells on the boundary. Finally, the <a class="el" href="classMappingCartesian.html">MappingCartesian</a> class is an optimization for elements that are brick-shaped and with edges parallel to the coordinate axes. In the grand scheme of things, the pieces of this module interact with a variety of other parts of the library:  
 <a href="#details">More...</a></p>
 <div class="dynheader">
-Collaboration diagram for Mappings between reference and real cell:</div>
+Collaboration diagram for Mappings between reference and real cell The classes in:</div>
 <div class="dyncontent">
 <div class="center"><!-- SVG 0 -->
 </div>
@@ -268,16 +268,16 @@ Enumerations</h2></td></tr>
 <tr class="separator:gac6eaf900d562c52002dbccc6bdd89275"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>The classes in this module are used to map from unit coordinates to the coordinates of a cell in real cell. Most commonly, one uses the <a class="el" href="classMappingQ1.html">MappingQ1</a> class that provides a Q1 (bi-/trilinear) mapping (i.e. a mapping that is isoparametric for the usual Q1 elements). However, there are other classes that implement higher-order mappings as well to provide for curvilinear elements. These are discussed in the <a class="el" href="step_11.html">step-11</a> and <a class="el" href="step_12.html">step-12</a> tutorial programs. </p>
-<p>this module are used to map from unit coordinates to the coordinates of a cell in real cell. Most commonly, one uses the <a class="el" href="classMappingQ1.html">MappingQ1</a> class that provides a Q1 (bi-/trilinear) mapping (i.e. a mapping that is isoparametric for the usual Q1 elements). However, there are other classes that implement higher-order mappings as well to provide for curvilinear elements. These are discussed in the <a class="el" href="step_11.html">step-11</a> and <a class="el" href="step_12.html">step-12</a> tutorial programs. The <a class="el" href="classMappingQ1Eulerian.html">MappingQ1Eulerian</a> class is an extension to the <a class="el" href="classMappingQ1.html">MappingQ1</a> class in that it accepts a vector that describes a displacement field for each position of the domain. This is used in Eulerian computations without the need to actually move vertices after each time step. In addition, the <a class="el" href="classMappingC1.html">MappingC1</a> class provides for a boundary of the computational domain that is not only curved, but also has a continuous derivative at the interface between two cells on the boundary. Finally, the <a class="el" href="classMappingCartesian.html">MappingCartesian</a> class is an optimization for elements that are brick-shaped and with edges parallel to the coordinate axes. In the grand scheme of things, the pieces of this module interact with a variety of other parts of the library:</p>
+<p>this module are used to map from unit coordinates to the coordinates of a cell in real cell. Most commonly, one uses the <a class="el" href="classMappingQ1.html">MappingQ1</a> class that provides a Q1 (bi-/trilinear) mapping (i.e. a mapping that is isoparametric for the usual Q1 elements). However, there are other classes that implement higher-order mappings as well to provide for curvilinear elements. These are discussed in the <a class="el" href="step_11.html">step-11</a> and <a class="el" href="step_12.html">step-12</a> tutorial programs. The <a class="el" href="classMappingQ1Eulerian.html">MappingQ1Eulerian</a> class is an extension to the <a class="el" href="classMappingQ1.html">MappingQ1</a> class in that it accepts a vector that describes a displacement field for each position of the domain. This is used in Eulerian computations without the need to actually move vertices after each time step. In addition, the <a class="el" href="classMappingC1.html">MappingC1</a> class provides for a boundary of the computational domain that is not only curved, but also has a continuous derivative at the interface between two cells on the boundary. Finally, the <a class="el" href="classMappingCartesian.html">MappingCartesian</a> class is an optimization for elements that are brick-shaped and with edges parallel to the coordinate axes. In the grand scheme of things, the pieces of this module interact with a variety of other parts of the library: </p>
+<p>The classes in this module are used to map from unit coordinates to the coordinates of a cell in real cell. Most commonly, one uses the <a class="el" href="classMappingQ1.html">MappingQ1</a> class that provides a Q1 (bi-/trilinear) mapping (i.e. a mapping that is isoparametric for the usual Q1 elements). However, there are other classes that implement higher-order mappings as well to provide for curvilinear elements. These are discussed in the <a class="el" href="step_11.html">step-11</a> and <a class="el" href="step_12.html">step-12</a> tutorial programs.</p>
+<div class="dotgraph">
+<div class="caption">
+digraph G { graph[rankdir="TB",bgcolor="transparent"];</div>
+</div>
 <p>The <a class="el" href="classMappingQ1Eulerian.html">MappingQ1Eulerian</a> class is an extension to the <a class="el" href="classMappingQ1.html">MappingQ1</a> class in that it accepts a vector that describes a displacement field for each position of the domain. This is used in Eulerian computations without the need to actually move vertices after each time step.</p>
 <p>In addition, the <a class="el" href="classMappingC1.html">MappingC1</a> class provides for a boundary of the computational domain that is not only curved, but also has a continuous derivative at the interface between two cells on the boundary.</p>
 <p>Finally, the <a class="el" href="classMappingCartesian.html">MappingCartesian</a> class is an optimization for elements that are brick-shaped and with edges parallel to the coordinate axes.</p>
 <p>In the grand scheme of things, the pieces of this module interact with a variety of other parts of the library: </p><div class="dotgraph">
-</div>
-<div class="dotgraph">
-<div class="caption">
-digraph G { graph[rankdir="TB",bgcolor="transparent"];</div>
 </div>
  <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="gac6eaf900d562c52002dbccc6bdd89275"></a>
@@ -287,11 +287,11 @@ digraph G { graph[rankdir="TB",bgcolor="transparent"];</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group__mapping.html#gac6eaf900d562c52002dbccc6bdd89275">MappingKind</a></td>
+          <td class="memname"><a class="el" href="shared__tria__0_8txt.html#abcd3e97091f492496aa258c912ae135b">enum</a> <a class="el" href="group__mapping.html#gac6eaf900d562c52002dbccc6bdd89275">MappingKind</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The transformation kind used for the <a class="el" href="classMapping.html#a74e30e87fe9ab3716231384db8053c19">Mapping::transform()</a> functions. Special finite elements may need special <a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a> from the reference cell to the actual mesh cell. In order to be most flexible, this enum provides an extensible interface for arbitrary transformations. Nevertheless, these must be implemented in the <a class="el" href="namespaceparallel.html#acff5a80eecf505943d8abbec0658ae93">transform()</a> functions of inheriting classes in order to work. </p>
+<p>The transformation kind used for the <a class="el" href="classMapping.html#a74e30e87fe9ab3716231384db8053c19">Mapping::transform()</a> functions. Special finite elements may need special <a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a> from the reference cell to the actual mesh cell. In order to be most flexible, this enum provides an extensible interface for arbitrary transformations. Nevertheless, these must be implemented in the <a class="el" href="mapping__0_8txt.html#a28a619b0a0aadf597b92caaf617af5ed">transform()</a> functions of inheriting classes in order to work. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggac6eaf900d562c52002dbccc6bdd89275adf1d77147c4674d6a8e5f79e0c2ef6f7"></a>mapping_none&#160;</td><td class="fielddoc"><p>No mapping, i.e., shape functions are not mapped from a reference cell but instead are defined right on the real-space cell. </p>
 </td></tr>
@@ -387,12 +387,12 @@ digraph G { graph[rankdir="TB",bgcolor="transparent"];</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group__mapping.html#gac6eaf900d562c52002dbccc6bdd89275">MappingKind</a></td>
+          <td class="memname"><a class="el" href="shared__tria__0_8txt.html#abcd3e97091f492496aa258c912ae135b">enum</a> <a class="el" href="group__mapping.html#gac6eaf900d562c52002dbccc6bdd89275">MappingKind</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>The transformation kind used for the <a class="el" href="classMapping.html#a74e30e87fe9ab3716231384db8053c19">Mapping::transform()</a> functions.</p>
-<p>Special finite elements may need special <a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a> from the reference cell to the actual mesh cell. In order to be most flexible, this enum provides an extensible interface for arbitrary transformations. Nevertheless, these must be implemented in the <a class="el" href="namespaceparallel.html#acff5a80eecf505943d8abbec0658ae93">transform()</a> functions of inheriting classes in order to work. </p>
+<p>Special finite elements may need special <a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a> from the reference cell to the actual mesh cell. In order to be most flexible, this enum provides an extensible interface for arbitrary transformations. Nevertheless, these must be implemented in the <a class="el" href="mapping__0_8txt.html#a28a619b0a0aadf597b92caaf617af5ed">transform()</a> functions of inheriting classes in order to work. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggac6eaf900d562c52002dbccc6bdd89275adf1d77147c4674d6a8e5f79e0c2ef6f7"></a>mapping_none&#160;</td><td class="fielddoc"><p>No mapping, i.e., shape functions are not mapped from a reference cell but instead are defined right on the real-space cell. </p>
 </td></tr>
@@ -488,11 +488,11 @@ digraph G { graph[rankdir="TB",bgcolor="transparent"];</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group__mapping.html#gac6eaf900d562c52002dbccc6bdd89275">MappingKind</a></td>
+          <td class="memname"><a class="el" href="shared__tria__0_8txt.html#abcd3e97091f492496aa258c912ae135b">enum</a> <a class="el" href="group__mapping.html#gac6eaf900d562c52002dbccc6bdd89275">MappingKind</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The transformation kind used for the <a class="el" href="classMapping.html#a74e30e87fe9ab3716231384db8053c19">Mapping::transform()</a> functions. Special finite elements may need special <a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a> from the reference cell to the actual mesh cell. In order to be most flexible, this enum provides an extensible interface for arbitrary transformations. Nevertheless, these must be implemented in the <a class="el" href="namespaceparallel.html#acff5a80eecf505943d8abbec0658ae93">transform()</a> functions of inheriting classes in order to work. </p>
+<p>The transformation kind used for the <a class="el" href="classMapping.html#a74e30e87fe9ab3716231384db8053c19">Mapping::transform()</a> functions. Special finite elements may need special <a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a> from the reference cell to the actual mesh cell. In order to be most flexible, this enum provides an extensible interface for arbitrary transformations. Nevertheless, these must be implemented in the <a class="el" href="mapping__0_8txt.html#a28a619b0a0aadf597b92caaf617af5ed">transform()</a> functions of inheriting classes in order to work. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggac6eaf900d562c52002dbccc6bdd89275adf1d77147c4674d6a8e5f79e0c2ef6f7"></a>mapping_none&#160;</td><td class="fielddoc"><p>No mapping, i.e., shape functions are not mapped from a reference cell but instead are defined right on the real-space cell. </p>
 </td></tr>

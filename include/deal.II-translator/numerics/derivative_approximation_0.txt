@@ -1,0 +1,50 @@
+[0.x.0]*
+ This namespace provides functions that compute a cell-wise approximation of the norm of a derivative of a finite element field by taking difference quotients between neighboring cells. This is a rather simple but efficient form to get an error indicator, since it can be computed with relatively little numerical effort and yet gives a reasonable approximation.
+*  The way the difference quotients are computed on cell  [2.x.0]  is the following (here described for the approximation of the gradient of a finite element field, but see below for higher derivatives): let  [2.x.1]  be a neighboring cell, and let  [2.x.2]  be the distance vector between the centers of the two cells, then  [2.x.3]  is an approximation of the directional derivative  [2.x.4]  By multiplying both terms by  [2.x.5]  from the left and summing over all neighbors  [2.x.6] , we obtain  [2.x.7] 
+*  Thus, if the matrix  [2.x.8]  is regular (which is the case when the vectors  [2.x.9]  to all neighbors span the whole space), we can obtain an approximation to the true gradient by  [2.x.10]  This is a quantity that is easily computed. The value returned for each cell when calling the  [2.x.11]  function of this class is the  [2.x.12]  norm of this approximation to the gradient. To make this a useful quantity, you may want to scale each element by the correct power of the respective cell size.
+*  The computation of this quantity must fail if a cell has only neighbors for which the direction vectors  [2.x.13]  do not span the whole space, since then the matrix  [2.x.14]  is no longer invertible. If this happens, you will get an error similar to this one:
+
+* 
+* [1.x.0]
+*  As can easily be verified, this can only happen on very coarse grids, when some cells and all their neighbors have not been refined even once. You should therefore only call the functions of this class if all cells are at least once refined. In practice this is not much of a restriction.
+* 
+
+*  [1.x.1]
+*  Similar to the reasoning above, approximations to higher derivatives can be computed in a similar fashion. For example, the tensor of second derivatives is approximated by the formula  [2.x.15]  where  [2.x.16]  denotes the outer product of two vectors. Note that unlike the true tensor of second derivatives, its approximation is not necessarily symmetric. This is due to the fact that in the derivation, it is not clear whether we shall consider as projected second derivative the term  [2.x.17]  or  [2.x.18] . Depending on which choice we take, we obtain one approximation of the tensor of second derivatives or its transpose. To avoid this ambiguity, as result we take the symmetrized form, which is the mean value of the approximation and its transpose.
+*  The returned value on each cell is the spectral norm of the approximated tensor of second derivatives, i.e. the largest eigenvalue by absolute value. This equals the largest curvature of the finite element field at each cell, and the spectral norm is the matrix norm associated to the  [2.x.19]  vector norm.
+*  Even higher than the second derivative can be obtained along the same lines as exposed above.
+* 
+
+*  [1.x.2]
+*  If you would like to base a refinement criterion upon these approximation of the derivatives, you will have to scale the results of this class by an appropriate power of the mesh width. For example, since  [2.x.20] , it might be the right thing to scale the indicators as  [2.x.21] , i.e.  [2.x.22] , i.e. the right power is  [2.x.23] .
+*  Likewise, for the second derivative, one should choose a power of the mesh size  [2.x.24]  one higher than for the gradient.
+* 
+
+*  [1.x.3]
+*  The formulae for the computation of approximations to the gradient and to the tensor of second derivatives shown above are very much alike. The basic difference is that in one case the finite difference quotient is a scalar, while in the other case it is a vector. For higher derivatives, this would be a tensor of even higher rank. We then have to form the outer product of this difference quotient with the distance vector  [2.x.25] , symmetrize it, contract it with the matrix  [2.x.26]  and compute its norm. To make the implementation simpler and to allow for code reuse, all these operations that are dependent on the actual order of the derivatives to be approximated, as well as the computation of the quantities entering the difference quotient, have been separated into auxiliary nested classes (names  [2.x.27]  and  [2.x.28]  and the main algorithm is simply passed one or the other data types and asks them to perform the order dependent operations. The main framework that is independent of this, such as finding all active neighbors, or setting up the matrix  [2.x.29]  is done in the main function  [2.x.30] 
+*  Due to this way of operation, the class may be easily extended for higher order derivatives than are presently implemented. Basically, only an additional class along the lines of the derivative descriptor classes  [2.x.31]  Gradient and  [2.x.32]  has to be implemented, with the respective alias and functions replaced by the appropriate analogues for the derivative that is to be approximated.
+* 
+
+* 
+*  [2.x.33] 
+
+* 
+* [0.x.1]*
+   This function is used to obtain an approximation of the gradient. Pass it   the DoF handler object that describes the finite element field, a nodal   value vector, and receive the cell-wise Euclidean norm of the   approximated gradient.     The last parameter denotes the solution component, for which the gradient   is to be computed. It defaults to the first component. For scalar   elements, this is the only valid choice; for vector-valued ones, any   component between zero and the number of vector components can be given   here.     In a parallel computation the  [2.x.34]  vector needs to contain the   locally relevant unknowns.  
+* [0.x.2]*
+   Call the function above with <tt>mapping=MappingQGeneric [2.x.35]   
+* [0.x.3]*
+   This function is the analogue to the one above, computing finite   difference approximations of the tensor of second derivatives. Pass it   the DoF handler object that describes the finite element field, a nodal   value vector, and receive the cell-wise spectral norm of the approximated   tensor of second derivatives. The spectral norm is the matrix norm   associated to the  [2.x.36]  vector norm.     The last parameter denotes the solution component, for which the gradient   is to be computed. It defaults to the first component. For scalar   elements, this is the only valid choice; for vector-valued ones, any   component between zero and the number of vector components can be given   here.     In a parallel computation the  [2.x.37]  vector needs to contain the   locally relevant unknowns.  
+* [0.x.4]*
+   Call the function above with <tt>mapping=MappingQGeneric [2.x.38]   
+* [0.x.5]*
+   This function calculates the <tt>order</tt>-th order approximate   derivative and returns the full tensor for a single cell.     The last parameter denotes the solution component, for which the gradient   is to be computed. It defaults to the first component. For scalar   elements, this is the only valid choice; for vector-valued ones, any   component between zero and the number of vector components can be given   here.     In a parallel computation the  [2.x.39]  vector needs to contain the   locally relevant unknowns.  
+* [0.x.6]*
+   Same as above, with <tt>mapping=MappingQGeneric [2.x.40]   
+* [0.x.7]*
+   Return the norm of the derivative.  
+* [0.x.8]*
+   Exception  
+* [0.x.9]*
+   Exception  
+* [0.x.10]

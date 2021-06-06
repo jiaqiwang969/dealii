@@ -1,0 +1,59 @@
+[0.x.0]*
+   Accessor class used by ParticleIterator to access particle data.  
+* [0.x.1]*
+      [2.x.0]   [2.x.1]     
+* [0.x.2]*
+      [2.x.2]   [2.x.3]     
+* [0.x.3]*
+     Set the location of this particle. Note that this does not check     whether this is a valid location in the simulation domain.          [2.x.4]  [in] new_location The new location for this particle.        
+*  [2.x.5]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.6]  "vectors with ghost elements"       or  [2.x.7]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.4]*
+     Get the location of this particle.          [2.x.8]  The location of this particle.    
+* [0.x.5]*
+     Set the reference location of this particle.          [2.x.9]  [in] new_reference_location The new reference location for     this particle.        
+*  [2.x.10]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.11]  "vectors with ghost elements"       or  [2.x.12]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.6]*
+     Return the reference location of this particle in its current cell.    
+* [0.x.7]*
+     Return the ID number of this particle.    
+* [0.x.8]*
+     Tell the particle where to store its properties (even if it does not     own properties). Usually this is only done once per particle, but     since the particle generator does not know about the properties     we want to do it not at construction time. Another use for this     function is after particle transfer to a new process.    
+* [0.x.9]*
+     Return whether this particle has a valid property pool and a valid     handle to properties.    
+* [0.x.10]*
+     Set the properties of this particle.          [2.x.13]  [in] new_properties A vector containing the     new properties for this particle.        
+*  [2.x.14]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.15]  "vectors with ghost elements"       or  [2.x.16]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.11]*
+     Set the properties of this particle.          [2.x.17]  [in] new_properties An ArrayView pointing to memory locations     containing the new properties for this particle.        
+*  [2.x.18]  In parallel programs, the ParticleHandler class stores particles       on both the locally owned cells, as well as on ghost cells. The       particles on the latter arecopies* of particles owned on other       processors, and should therefore be treated in the same way as       ghost entries in  [2.x.19]  "vectors with ghost elements"       or  [2.x.20]  "ghost cells": In both cases, one should       treat the ghost elements or cells as `const` objects that shouldn't       be modified even if the objects allow for calls that modify       properties. Rather, properties should only be modified on processors       that actuallyown* the particle.    
+* [0.x.12]*
+     Get write-access to properties of this particle.          [2.x.21]  An ArrayView of the properties of this particle.    
+* [0.x.13]*
+     Get read-access to properties of this particle.          [2.x.22]  An ArrayView of the properties of this particle.    
+* [0.x.14]*
+     Return the size in bytes this particle occupies if all of its data is     serialized (i.e. the number of bytes that is written by the write_data     function of this class).    
+* [0.x.15]*
+     Get a cell iterator to the cell surrounding the current particle.     As particles are organized in the structure of a triangulation,     but the triangulation itself is not stored in the particle this     operation requires a reference to the triangulation.    
+* [0.x.16]*
+     Serialize the contents of this class using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.17]*
+     Advance the ParticleAccessor to the next particle.    
+* [0.x.18]*
+     Move the ParticleAccessor to the previous particle.    
+* [0.x.19]*
+     Inequality operator.    
+* [0.x.20]*
+     Equality operator.    
+* [0.x.21]*
+     Construct an invalid accessor. Such an object is not usable.    
+* [0.x.22]*
+     Construct an accessor from a reference to a map and an iterator to the     map. This constructor is `private` so that it can only be accessed by     friend classes.    
+* [0.x.23]*
+     A pointer to the container that stores the particles. Obviously,     this accessor is invalidated if the container changes.    
+* [0.x.24]*
+     An iterator into the container of particles. Obviously,     this accessor is invalidated if the container changes.    
+* [0.x.25]*
+       Make sure we can construct an RTree from  [2.x.23]        objects.      
+* [0.x.26]*
+          [2.x.24]  expects a const reference to an indexable object. For         a  [2.x.25]  object, this is its reference location.        
+* [0.x.27]

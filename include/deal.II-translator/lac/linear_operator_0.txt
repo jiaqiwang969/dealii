@@ -1,0 +1,331 @@
+[0.x.0]*
+ A class to store the abstract concept of a linear operator.
+*  The class essentially consists of  [2.x.0]  objects that store the knowledge of how to apply the linear operator by implementing the abstract  [2.x.1]  interface:
+
+* 
+* [1.x.0]
+* 
+*  But, in contrast to a usual matrix object, the domain and range of the linear operator are also bound to the LinearOperator class on the type level. Because of this,  [2.x.2]  has two additional function objects
+
+* 
+* [1.x.1]
+*  that store the knowledge how to initialize (resize + internal data structures) an arbitrary vector of the  [2.x.3]  and  [2.x.4]  space.
+*  The primary purpose of this class is to provide syntactic sugar for complex matrix-vector operations and free the user from having to create, set up and handle intermediate storage locations by hand.
+*  As an example consider the operation  [2.x.5] , where  [2.x.6] ,  [2.x.7]  and  [2.x.8]  denote (possible different) matrices. In order to construct a LinearOperator  [2.x.9]  that stores the knowledge of this operation, one can write:
+* 
+
+* 
+* [1.x.2]
+* 
+* 
+
+* 
+*  [2.x.10]  This class makes heavy use of  [2.x.11]  objects and lambda functions. This flexibility comes with a run-time penalty. Only use this object to encapsulate matrix object of medium to large size (as a rule of thumb, sparse matrices with a size  [2.x.12] , or larger).
+* 
+
+* 
+*  [2.x.13]  In order to use Trilinos or PETSc sparse matrices and preconditioners in conjunction with the LinearOperator class, it is necessary to extend the functionality of the LinearOperator class by means of an additional Payload.
+*  For example: LinearOperator instances representing matrix inverses usually require calling some linear solver. These solvers may not have interfaces to the LinearOperator (which, for example, may represent a composite operation). The  [2.x.14]  therefore provides an interface extension to the LinearOperator so that it can be passed to the solver and used by the solver as if it were a Trilinos operator. This implies that all of the necessary functionality of the specific Trilinos operator has been overloaded within the Payload class. This includes operator-vector multiplication and inverse operator-vector multiplication, where the operator can be either a  [2.x.15]  or a  [2.x.16]  and the vector is a native Trilinos vector.
+*  Another case where payloads provide a crucial supplement to the LinearOperator class are when composite operations are constructed (via operator overloading). In this instance, it is again necessary to provide an interface that produces the result of this composite operation that is compatible with Trilinos operator used by Trilinos solvers.
+* 
+
+* 
+*  [2.x.17]  Many use cases of LinearOperator lead to intermediate expressions requiring a PackagedOperation. In order to include all necessary header files in one go consider using
+
+* 
+* [1.x.3]
+* 
+*  In order to use the full LinearOperator and PackagedOperation
+* 
+
+* 
+*  [2.x.18]  To ensure that the correct payload is provided, wrapper functions for linear operators have been provided within the respective TrilinosWrappers (and, in the future, PETScWrappers) namespaces.
+* 
+
+* 
+*  [2.x.19]  The  [2.x.20]  tutorial program has a detailed usage example of the LinearOperator class.
+* 
+
+* 
+
+* 
+*  [2.x.21] 
+
+* 
+* [0.x.1]*
+   Create an empty LinearOperator object.   When a payload is passed to this constructor, the resulting operator is   constructed with a functional payload.   In either case, this constructor yields an object that can not actually   be used for any linear operator operations, and will throw an exception   upon invocation.  
+* [0.x.2]*
+   Default copy constructor.  
+* [0.x.3]*
+   Templated copy constructor that creates a LinearOperator object from an   object  [2.x.22]  for which the conversion function    [2.x.23]  is defined.  
+* [0.x.4]*
+   Default copy assignment operator.  
+* [0.x.5]*
+   Templated copy assignment operator for an object  [2.x.24]  for which the   conversion function  [2.x.25]  is defined.  
+* [0.x.6]*
+   Application of the LinearOperator object to a vector u of the  [2.x.26]    space giving a vector v of the  [2.x.27]  space.  
+* [0.x.7]*
+   Application of the LinearOperator object to a vector u of the  [2.x.28]    space. The result is added to the vector v.  
+* [0.x.8]*
+   Application of the transpose LinearOperator object to a vector u of the    [2.x.29]  space giving a vector v of the  [2.x.30]  space.  
+* [0.x.9]*
+   Application of the transpose LinearOperator object to a vector  [2.x.31]  of   the  [2.x.32]  space.The result is added to the vector  [2.x.33]   
+* [0.x.10]*
+   Initializes a vector v of the Range space to be directly usable as the   destination parameter in an application of vmult. Similar to the reinit   functions of the vector classes, the boolean determines whether a fast   initialization is done, i.e., if it is set to false the content of the   vector is set to 0.  
+* [0.x.11]*
+   Initializes a vector of the Domain space to be directly usable as the   source parameter in an application of vmult. Similar to the reinit   functions of the vector classes, the boolean determines whether a fast   initialization is done, i.e., if it is set to false the content of the   vector is set to 0.  
+* [0.x.12]*
+    [2.x.34]  In-place vector space operations  
+* [0.x.13]*
+   Addition with a LinearOperator  [2.x.35]  with the same  [2.x.36]  and    [2.x.37]   
+* [0.x.14]*
+   Subtraction with a LinearOperator  [2.x.38]  with the same  [2.x.39]    and  [2.x.40]   
+* [0.x.15]*
+   Composition of the LinearOperator with an endomorphism  [2.x.41]  of   the  [2.x.42]  space.  
+* [0.x.16]*
+   Scalar multiplication of the LinearOperator with  [2.x.43]  from the   right.  
+* [0.x.17]*
+   This bool is used to determine whether a linear operator is a null   operator. In this case the class is able to optimize some operations like   multiplication or addition.  
+* [0.x.18]*
+  [2.x.44]  Vector space operations
+
+* 
+* [0.x.19]*
+  [2.x.45]  LinearOperator
+*  Addition of two linear operators  [2.x.46]  and  [2.x.47]  given by  [2.x.48] 
+* 
+
+* 
+*  [2.x.49] 
+
+* 
+* [0.x.20]*
+  [2.x.50]  LinearOperator
+*  Subtraction of two linear operators  [2.x.51]  and  [2.x.52]  given by  [2.x.53] 
+* 
+
+* 
+*  [2.x.54] 
+
+* 
+* [0.x.21]*
+  [2.x.55]  LinearOperator
+*  Scalar multiplication of a ScalarOperator object  [2.x.56]  with  [2.x.57]  from the left.
+*  The  [2.x.58]  and  [2.x.59]  types must implement the following  [2.x.60]  member functions accepting the appropriate scalar Number type for rescaling:
+* 
+
+* 
+* [1.x.4]
+* 
+* 
+
+* 
+*  [2.x.61] 
+
+* 
+* [0.x.22]*
+  [2.x.62]  LinearOperator
+*  Scalar multiplication of a ScalarOperator object from the right.
+*  The  [2.x.63]  and  [2.x.64]  types must implement the following  [2.x.65]  member functions for rescaling:
+* 
+
+* 
+* [1.x.5]
+* 
+* 
+
+* 
+*  [2.x.66] 
+
+* 
+* [0.x.23]*
+  [2.x.67]  Composition and manipulation of a LinearOperator
+
+* 
+* [0.x.24]*
+  [2.x.68]  LinearOperator
+*  Composition of two linear operators  [2.x.69]  and  [2.x.70]  given by  [2.x.71] 
+* 
+
+* 
+*  [2.x.72] 
+
+* 
+* [0.x.25]*
+  [2.x.73]  LinearOperator
+*  Return the transpose linear operations of  [2.x.74] 
+* 
+
+* 
+
+* 
+*  [2.x.75] 
+
+* 
+* [0.x.26]*
+  [2.x.76]  LinearOperator
+*  Return an object representing the inverse of the LinearOperator  [2.x.77] 
+*  The function takes references  [2.x.78]  and  [2.x.79]  to an iterative solver and a preconditioner that are used in the  [2.x.80]  implementations of the LinearOperator object.
+*  The LinearOperator object that is created stores a reference to  [2.x.81]  and  [2.x.82]  Thus, both objects must remain a valid reference for the whole lifetime of the LinearOperator object. Internal data structures of the  [2.x.83]  object will be modified upon invocation of  [2.x.84] .
+* 
+
+* 
+
+* 
+*  [2.x.85] 
+
+* 
+* [0.x.27]*
+  [2.x.86]  LinearOperator
+*  Variant of above function that takes a LinearOperator  [2.x.87]  as preconditioner argument.
+* 
+
+* 
+*  [2.x.88] 
+
+* 
+* [0.x.28]*
+  [2.x.89]  LinearOperator
+*  Variant of above function without a preconditioner argument. In this case the identity_operator() of the  [2.x.90]  argument is used as a preconditioner. This is equivalent to using PreconditionIdentity.
+* 
+
+* 
+*  [2.x.91] 
+
+* 
+* [0.x.29]*
+  [2.x.92]  LinearOperator
+*  Special overload of above function that takes a PreconditionIdentity argument.
+* 
+
+* 
+*  [2.x.93] 
+
+* 
+* [0.x.30]*
+  [2.x.94]  Creation of a LinearOperator
+
+* 
+* [0.x.31]*
+  [2.x.95]  LinearOperator
+*  Return a LinearOperator that is the identity of the vector space  [2.x.96] 
+*  The function takes an  [2.x.97]  object  [2.x.98]  as an argument to initialize the  [2.x.99]  and  [2.x.100]  objects of the LinearOperator object.
+* 
+
+* 
+*  [2.x.101] 
+
+* 
+* [0.x.32]*
+  [2.x.102]  LinearOperator
+*  Return a LinearOperator that is the identity of the vector space  [2.x.103] 
+*  The function takes a LinearOperator  [2.x.104]  and uses its range initializer to create an identity operator. In contrast to the function above, this function also ensures that the underlying Payload matches that of the input  [2.x.105] 
+* 
+
+* 
+*  [2.x.106] 
+
+* 
+* [0.x.33]*
+  [2.x.107]  LinearOperator
+*  Return a nulled variant of the LinearOperator  [2.x.108]  i.e. with optimized  [2.x.109]   [2.x.110]  etc. functions and with  [2.x.111]  set to true.
+* 
+
+* 
+*  [2.x.112] 
+
+* 
+* [0.x.34]*
+  [2.x.113]  LinearOperator
+*  Return a LinearOperator that acts as a mean value filter. The vmult() functions of this matrix subtract the mean values of the vector.
+*  The function takes an  [2.x.114]  object  [2.x.115]  as an argument to initialize the  [2.x.116]  and  [2.x.117]  objects of the LinearOperator object.
+* 
+
+* 
+*  [2.x.118] 
+
+* 
+* [0.x.35]*
+  [2.x.119]  LinearOperator
+*  Return a LinearOperator that acts as a mean value filter. The vmult() functions of this matrix subtract the mean values of the vector.
+*  The function takes a LinearOperator  [2.x.120]  and uses its range initializer to create an mean value filter operator. The function also ensures that the underlying Payload matches that of the input  [2.x.121] 
+* 
+
+* 
+*  [2.x.122] 
+
+* 
+* [0.x.36]*
+     A helper class that is responsible for the initialization of a vector     to be directly usable as the destination parameter, or source parameter     in an application of vmult of a matrix.         The generic version of this class just calls      [2.x.123]  with the result of      [2.x.124] , respectively.     This class is specialized for more complicated data structures, such as      [2.x.125]  etc.    
+* [0.x.37]*
+       Initializes a vector v of the Range space to be directly usable as       the destination parameter in an application of vmult. Similar to the       reinit functions of the vector classes, the boolean determines       whether a fast initialization is done, i.e., if it is set to false the       content of the vector is set to 0.             The generic version of this class just calls        [2.x.126]  with the result of        [2.x.127] .      
+* [0.x.38]*
+       Initializes a vector of the Domain space to be directly usable as the       source parameter in an application of vmult. Similar to the reinit       functions of the vector classes, the boolean determines whether a       fast initialization is done, i.e., if it is set to false the content       of the vector is set to 0.             The generic version of this class just calls        [2.x.128]  with the result of        [2.x.129] .      
+* [0.x.39]*
+     A dummy class for LinearOperators that do not require any extensions to     facilitate the operations of the matrix.         This is the Payload class typically associated with deal.II's native     SparseMatrix. To use Trilinos and PETSc sparse matrix classes it is     necessary to initialize a LinearOperator with their associated Payload.            
+*  [2.x.130]     
+* [0.x.40]*
+       Default constructor             Since this class does not do anything in particular and needs no       special configuration, we have only one generic constructor that can       be called under any conditions.      
+* [0.x.41]*
+       Return a payload configured for identity operations      
+* [0.x.42]*
+       Return a payload configured for null operations      
+* [0.x.43]*
+       Return a payload configured for transpose operations      
+* [0.x.44]*
+       Return a payload configured for inverse operations      
+* [0.x.45]*
+     Operator that returns a payload configured to support the addition of     two LinearOperators    
+* [0.x.46]*
+     Operator that returns a payload configured to support the     multiplication of two LinearOperators    
+* [0.x.47]*
+  [2.x.131]  LinearOperator
+*  A function that encapsulates generic  [2.x.132]  objects that act on a compatible Vector type into a LinearOperator. The LinearOperator object that is created stores a reference to the matrix object. Thus,  [2.x.133]  must remain a valid reference for the whole lifetime of the LinearOperator object.
+*  All changes made on  [2.x.134]  after the creation of the LinearOperator object are reflected by the operator object. For example, it is a valid procedure to first create a LinearOperator and resize, reassemble the matrix later.
+*  The Matrix class in question must provide the following minimal interface:
+* 
+
+* 
+* [1.x.6]
+* 
+*  The following (optional) interface is used if available:
+* 
+
+* 
+* [1.x.7]
+* 
+*  If the Matrix does not provide  [2.x.135]  and  [2.x.136] , they are implemented in terms of  [2.x.137]  (requiring intermediate storage).
+* 
+
+* 
+
+* 
+*  [2.x.138] 
+
+* 
+* [0.x.48]*
+  [2.x.139]  LinearOperator
+*  Variant of above function that takes an operator object  [2.x.140]  operator_exemplar as an additional reference. This object is used to populate the reinit_domain_vector and reinit_range_vector function objects. The reference  [2.x.141]  is used to construct vmult, Tvmult, etc.
+*  This variant can, for example, be used to encapsulate preconditioners (that typically do not expose any information about the underlying matrix).
+* 
+
+* 
+
+* 
+*  [2.x.142] 
+
+* 
+* [0.x.49]*
+  [2.x.143]  LinearOperator
+*  Variant of above function that takes a LinearOperator  [2.x.144]  operator_exemplar as an additional reference. The reinit_domain_vector and reinit_range_vector function are copied from the  [2.x.145]  object.
+*  The reference  [2.x.146]  is used to construct vmult, Tvmult, etc.
+*  This variant can, for example, be used to encapsulate preconditioners (that typically do not expose any information about the underlying matrix).
+* 
+
+* 
+
+* 
+*  [2.x.147] 
+
+* 
+* [0.x.50]

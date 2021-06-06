@@ -1,0 +1,134 @@
+[0.x.0]*
+  [2.x.0]  Polynomials  [2.x.1] 
+
+* 
+* [0.x.1]*
+ A namespace in which classes relating to the description of 1d polynomial spaces are declared.
+
+* 
+* [0.x.2]*
+   Base class for all 1D polynomials. A polynomial is represented in this   class by its coefficients, which are set through the constructor or by   derived classes.     There are two paths for evaluation of polynomials. One is based on the   coefficients which are evaluated through the Horner scheme which is a   robust general-purpose scheme. An alternative and more stable evaluation   of high-degree polynomials with roots in the unit interval is provided by   a product in terms of the roots. This form is available for special   polynomials such as Lagrange polynomials or Legendre polynomials and used   with the respective constructor. To obtain this more stable evaluation   form, the constructor with the roots in form of a Lagrange polynomial   must be used. In case a manipulation is done that changes the roots, the   representation is switched to the coefficient form.     This class is a typical example of a possible template argument for the   TensorProductPolynomials class.  
+* [0.x.3]*
+     Constructor. The coefficients of the polynomial are passed as     arguments, and denote the polynomial  [2.x.2] , i.e. the first     element of the array denotes the constant term, the second the linear     one, and so on. The degree of the polynomial represented by this object     is thus the number of elements in the <tt>coefficient</tt> array minus     one.    
+* [0.x.4]*
+     Constructor creating a zero polynomial of degree  [2.x.3]     
+* [0.x.5]*
+     Constructor for a Lagrange polynomial and its point of evaluation. The     idea is to construct  [2.x.4] , where j     is the evaluation point specified as argument and the support points     contain all points (including x_j, which will internally not be     stored).    
+* [0.x.6]*
+     Default constructor creating an illegal object.    
+* [0.x.7]*
+     Return the value of this polynomial at the given point.         This function uses the most numerically stable evaluation     algorithm for the provided form of the polynomial. If the     polynomial is in the product form of roots, the evaluation is     based on products of the form (x
+* 
+*  - x_i), whereas the Horner     scheme is used for polynomials in the coefficient form.    
+* [0.x.8]*
+     Return the values and the derivatives of the Polynomial at point     <tt>x</tt>.  <tt>values[i], i=0,...,values.size()-1</tt> includes the     <tt>i</tt>th derivative. The number of derivatives to be computed is     thus determined by the size of the array passed.         This function uses the Horner scheme for numerical stability of the     evaluation for polynomials in the coefficient form or the product of     terms involving the roots if that representation is used.    
+* [0.x.9]*
+     Return the values and the derivatives of the Polynomial at point     <tt>x</tt>.  <tt>values[i], i=0,...,n_derivatives</tt> includes the     <tt>i</tt>th derivative. The number of derivatives to be computed is     determined by  [2.x.5]  and  [2.x.6]  has to provide sufficient     space for  [2.x.7]  + 1 values.         This function uses the most numerically stable evaluation     algorithm for the provided form of the polynomial. If the     polynomial is in the product form of roots, the evaluation is     based on products of the form (x
+* 
+*  - x_i), whereas the Horner     scheme is used for polynomials in the coefficient form.         The template type `Number2` must implement arithmetic     operations such as additions or multiplication with the type     `number` of the polynomial, and must be convertible from     `number` by `operator=`.    
+* [0.x.10]*
+     Degree of the polynomial. This is the degree reflected by the number of     coefficients provided by the constructor. Leading non-zero coefficients     are not treated separately.    
+* [0.x.11]*
+     Scale the abscissa of the polynomial.  Given the polynomial [1.x.0]     and the scaling [1.x.1], then the result of this operation is the     polynomial [1.x.2], such that [1.x.3].         The operation is performed in place.    
+* [0.x.12]*
+     Shift the abscissa oft the polynomial.  Given the polynomial     [1.x.4] and the shift [1.x.5], then the result of this     operation is the polynomial [1.x.6], such that [1.x.7].         The template parameter allows to compute the new coefficients with     higher accuracy, since all computations are performed with type     <tt>number2</tt>. This may be necessary, since this operation involves     a big number of additions. On a Sun Sparc Ultra with Solaris 2.8, the     difference between <tt>double</tt> and <tt>long double</tt> was not     significant, though.         The operation is performed in place, i.e. the coefficients of the     present object are changed.    
+* [0.x.13]*
+     Compute the derivative of a polynomial.    
+* [0.x.14]*
+     Compute the primitive of a polynomial. the coefficient of the zero     order term of the polynomial is zero.    
+* [0.x.15]*
+     Multiply with a scalar.    
+* [0.x.16]*
+     Multiply with another polynomial.    
+* [0.x.17]*
+     Add a second polynomial.    
+* [0.x.18]*
+     Subtract a second polynomial.    
+* [0.x.19]*
+     Test for equality of two polynomials.    
+* [0.x.20]*
+     Print coefficients.    
+* [0.x.21]*
+     Write or read the data of this object to or from a stream for the     purpose of serialization using the [BOOST serialization     library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).    
+* [0.x.22]*
+     Return an estimate (in bytes) for the memory consumption of this object.    
+* [0.x.23]*
+     This function performs the actual scaling.    
+* [0.x.24]*
+     This function performs the actual shift    
+* [0.x.25]*
+     Multiply polynomial by a factor.    
+* [0.x.26]*
+     Transform polynomial form of product of linear factors into standard     form,  [2.x.8] . Deletes all data structures related to the     product form.    
+* [0.x.27]*
+     Coefficients of the polynomial  [2.x.9] . This vector is filled     by the constructor of this class and may be passed down by derived     classes.         This vector cannot be constant since we want to allow copying of     polynomials.    
+* [0.x.28]*
+     Stores whether the polynomial is in Lagrange product form, i.e.,     constructed as a product  [2.x.10] , or not.    
+* [0.x.29]*
+     If the polynomial is in Lagrange product form, i.e., constructed as a     product  [2.x.11] , store the shifts  [2.x.12] .    
+* [0.x.30]*
+     If the polynomial is in Lagrange product form, i.e., constructed as a     product  [2.x.13] , store the weight c.    
+* [0.x.31]*
+   Class generates Polynomial objects representing a monomial of degree n,   that is, the function  [2.x.14] .  
+* [0.x.32]*
+     Constructor, taking the degree of the monomial and an optional     coefficient as arguments.    
+* [0.x.33]*
+     Return a vector of Monomial objects of degree zero through     <tt>degree</tt>, which then spans the full space of polynomials up to     the given degree. This function may be used to initialize the     TensorProductPolynomials and PolynomialSpace classes.    
+* [0.x.34]*
+     Needed by constructor.    
+* [0.x.35]*
+   Lagrange polynomials with equidistant interpolation points in [0,1]. The   polynomial of degree <tt>n</tt> has got <tt>n+1</tt> interpolation   points. The interpolation points are sorted in ascending order. This   order gives an index to each interpolation point.  A Lagrangian   polynomial equals to 1 at its `support point', and 0 at all other   interpolation points. For example, if the degree is 3, and the support   point is 1, then the polynomial represented by this object is cubic and   its value is 1 at the point <tt>x=1/3</tt>, and zero at the point   <tt>x=0</tt>, <tt>x=2/3</tt>, and <tt>x=1</tt>. All the polynomials have   polynomial degree equal to <tt>degree</tt>, but together they span the   entire space of polynomials of degree less than or equal <tt>degree</tt>.     The Lagrange polynomials are implemented up to degree 10.  
+* [0.x.36]*
+     Constructor. Takes the degree <tt>n</tt> of the Lagrangian polynomial     and the index <tt>support_point</tt> of the support point. Fills the     <tt>coefficients</tt> of the base class Polynomial.    
+* [0.x.37]*
+     Return a vector of polynomial objects of degree <tt>degree</tt>, which     then spans the full space of polynomials up to the given degree. The     polynomials are generated by calling the constructor of this class with     the same degree but support point running from zero to <tt>degree</tt>.     This function may be used to initialize the TensorProductPolynomials     and PolynomialSpace classes.    
+* [0.x.38]*
+     Compute the <tt>coefficients</tt> of the base class Polynomial. This     function is <tt>static</tt> to allow to be called in the constructor.    
+* [0.x.39]*
+   Given a set of points along the real axis, this function returns all   Lagrange polynomials for interpolation of these points. The number of   polynomials is equal to the number of points and the maximum degree is   one less.  
+* [0.x.40]*
+   Legendre polynomials of arbitrary degree. Constructing a Legendre   polynomial of degree <tt>p</tt>, the roots will be computed by the Gauss   formula of the respective number of points and a representation of the   polynomial by its roots.    
+*  [2.x.15]  The polynomials defined by this class differ in two aspects by what   is usually referred to as Legendre polynomials: (i) This classes defines   them on the reference interval  [2.x.16] , rather than the commonly used   interval  [2.x.17] . (ii) The polynomials have been scaled in such a way   that they are orthonormal, not just orthogonal; consequently, the   polynomials do not necessarily have boundary values equal to one.  
+* [0.x.41]*
+     Constructor for polynomial of degree <tt>p</tt>.    
+* [0.x.42]*
+     Return a vector of Legendre polynomial objects of degrees zero through     <tt>degree</tt>, which then spans the full space of polynomials up to     the given degree. This function may be used to initialize the     TensorProductPolynomials and PolynomialSpace classes.    
+* [0.x.43]*
+   Lobatto polynomials of arbitrary degree on <tt>[0,1]</tt>.     These polynomials are the integrated Legendre polynomials on [0,1]. The   first two polynomials are the standard linear shape functions given by    [2.x.18]  and  [2.x.19] . For  [2.x.20]  we use the definition    [2.x.21] , where    [2.x.22]  denotes the  [2.x.23] -th Legendre polynomial on  [2.x.24] . The Lobatto   polynomials  [2.x.25]  form a complete basis of the polynomials   space of degree  [2.x.26] .     Calling the constructor with a given index <tt>k</tt> will generate the   polynomial with index <tt>k</tt>. But only for  [2.x.27]  the index equals   the degree of the polynomial. For <tt>k==0</tt> also a polynomial of   degree 1 is generated.     These polynomials are used for the construction of the shape functions of   N&eacute;d&eacute;lec elements of arbitrary order.  
+* [0.x.44]*
+     Constructor for polynomial of degree <tt>p</tt>. There is an exception     for <tt>p==0</tt>, see the general documentation.    
+* [0.x.45]*
+     Return the polynomials with index <tt>0</tt> up to <tt>degree</tt>.     There is an exception for <tt>p==0</tt>, see the general documentation.    
+* [0.x.46]*
+     Compute coefficients recursively.    
+* [0.x.47]*
+   Hierarchical polynomials of arbitrary degree on <tt>[0,1]</tt>.     When Constructing a Hierarchical polynomial of degree <tt>p</tt>, the   coefficients will be computed by a recursion formula.  The coefficients   are stored in a static data vector to be available when needed next time.     These hierarchical polynomials are based on those of Demkowicz, Oden,   Rachowicz, and Hardy (CMAME 77 (1989) 79-112, Sec. 4). The first two   polynomials are the standard linear shape functions given by  [2.x.28]  and  [2.x.29] . For  [2.x.30]  we use the definitions    [2.x.31]  and  [2.x.32] . These satisfy the recursion relations    [2.x.33]  and  [2.x.34] .     The degrees of freedom are the values at the vertices and the derivatives   at the midpoint. Currently, we do not scale the polynomials in any way,   although better conditioning of the element stiffness matrix could   possibly be achieved with scaling.     Calling the constructor with a given index <tt>p</tt> will generate the   following: if <tt>p==0</tt>, then the resulting polynomial is the linear   function associated with the left vertex, if <tt>p==1</tt> the one   associated with the right vertex. For higher values of <tt>p</tt>, you   get the polynomial of degree <tt>p</tt> that is orthogonal to all   previous ones. Note that for <tt>p==0</tt> you therefore do [1.x.8]   get a polynomial of degree zero, but one of degree one. This is to allow   generating a complete basis for polynomial spaces, by just iterating over   the indices given to the constructor.     On the other hand, the function generate_complete_basis() creates a   complete basis of given degree. In order to be consistent with the   concept of a polynomial degree, if the given argument is zero, it does   [1.x.9] return the linear polynomial described above, but rather a   constant polynomial.  
+* [0.x.48]*
+     Constructor for polynomial of degree <tt>p</tt>. There is an exception     for <tt>p==0</tt>, see the general documentation.    
+* [0.x.49]*
+     Return a vector of Hierarchical polynomial objects of degrees zero     through <tt>degree</tt>, which then spans the full space of polynomials     up to the given degree. Note that there is an exception if the given     <tt>degree</tt> equals zero, see the general documentation of this     class.         This function may be used to initialize the TensorProductPolynomials,     AnisotropicPolynomials, and PolynomialSpace classes.    
+* [0.x.50]*
+     Compute coefficients recursively.    
+* [0.x.51]*
+     Get coefficients for constructor.  This way, it can use the non-     standard constructor of Polynomial.    
+* [0.x.52]*
+     Vector with already computed coefficients. For each degree of the     polynomial, we keep one pointer to the list of coefficients; we do so     rather than keeping a vector of vectors in order to simplify     programming multithread-safe. In order to avoid memory leak, we use a     unique_ptr in order to correctly free the memory of the vectors when     the global destructor is called.    
+* [0.x.53]*
+   Polynomials for Hermite interpolation condition.     This is the set of polynomials of degree at least three, such that the   following interpolation conditions are met: the polynomials and their   first derivatives vanish at the values [1.x.10]=0 and [1.x.11]=1, with   the exceptions [1.x.12]<sub>0</sub>(0)=1,   [1.x.13]<sub>[1.x.14]</sub>(1)=1, [1.x.15]'<sub>2</sub>(0)=1,   [1.x.16]<sub>3</sub>(1)=1.     For degree three, we obtain the standard four Hermitian interpolation   polynomials, see for instance [1.x.17].   For higher degrees, these are augmented first, by the polynomial of   degree four with vanishing values and derivatives at [1.x.18]=0 and   [1.x.19]=1, then by the product of this fourth order polynomial with   Legendre polynomials of increasing order. The implementation is  
+* [1.x.20]
+*   
+* [0.x.54]*
+     Constructor for polynomial with index <tt>p</tt>. See the class     documentation on the definition of the sequence of polynomials.    
+* [0.x.55]*
+     Return the polynomials with index <tt>0</tt> up to <tt>p+1</tt> in a     space of degree up to <tt>p</tt>. Here, <tt>p</tt> has to be at least     3.    
+* [0.x.56]*
+   Polynomials for a variant of Hermite polynomials with better condition   number in the interpolation than the basis from HermiteInterpolation.     In analogy to the proper Hermite polynomials, this basis evaluates the   first polynomial  [2.x.35]  to 1 at  [2.x.36]  and has both a zero value and zero   derivative at  [2.x.37] . Likewise, the last polynomial  [2.x.38]  evaluates to 1   at  [2.x.39]  with a zero value and zero derivative at  [2.x.40] . The second   polynomial  [2.x.41]  and the second to last polynomial  [2.x.42]  represent   the derivative degree of freedom at  [2.x.43]  and  [2.x.44] , respectively.   They are zero at both the end points  [2.x.45]  and have zero   derivative at the opposite end,  [2.x.46]  and  [2.x.47] . As   opposed to the original Hermite polynomials,  [2.x.48]  does not have zero   derivative at  [2.x.49] . The additional degree of freedom is used to make    [2.x.50]  and  [2.x.51]  orthogonal, which for  [2.x.52]  results in a root at    [2.x.53]  for  [2.x.54]  and at  [2.x.55]  for  [2.x.56] ,   respectively. Furthermore, the extension of these polynomials to higher   degrees  [2.x.57]  is constructed by adding additional nodes inside the unit   interval, again ensuring better conditioning. The nodes are computed as   the roots of the Jacobi polynomials for  [2.x.58] , which are   orthogonal against the square of the generating function  [2.x.59]    with the Hermite   property. Then, these polynomials are constructed in the usual way as   Lagrange polynomials with double roots at  [2.x.60]  and  [2.x.61] . For example   with  [2.x.62] , all of  [2.x.63]  get an additional root at  [2.x.64]    through the factor  [2.x.65] . In summary, this basis is dominated by   nodal contributions, but it is not a nodal one because the second and   second to last polynomials that are non-nodal, and due to the presence of   double nodes in  [2.x.66]  and  [2.x.67] . The weights of the basis functions are   set such that the sum of all polynomials with unit weight represents the   constant function 1, similarly to Lagrange polynomials.     The basis only contains Hermite information for  [2.x.68] ,   but it is also implemented for degrees between 0 and two. For the linear   case, the usual hat functions are implemented, whereas the polynomials   for  [2.x.69]  are  [2.x.70] ,  [2.x.71] , and    [2.x.72] , in accordance with the construction principle for degree 3.     These two relaxations improve the condition number of the mass matrix   (i.e., interpolation) significantly, as can be seen from the following   table:      [2.x.73]      This polynomial inherits the advantageous property of Hermite polynomials   where only two functions have value and/or derivative nonzero on a face   advantageous for discontinuous Galerkin methods   but gives better condition numbers of interpolation, which improves the   performance of some iterative schemes like conjugate gradients with   point-Jacobi. This polynomial is used in FE_DGQHermite.  
+* [0.x.57]*
+     Constructor for the polynomial with index <tt>index</tt> within the set     up polynomials of degree  [2.x.74]     
+* [0.x.58]*
+     Return the polynomials with index <tt>0</tt> up to <tt>degree+1</tt> in     a space of degree up to <tt>degree</tt>.    
+* [0.x.59]   Evaluate a Jacobi polynomial  [2.x.75]  specified by the   parameters  [2.x.76]   [2.x.77]   [2.x.78]  where  [2.x.79]  is the degree of the   Jacobi polynomial.    
+*  [2.x.80]  The Jacobi polynomials are not orthonormal and are defined on the   unit interval  [2.x.81]  as usual for deal.II, rather than  [2.x.82]  often   used in literature.  [2.x.83]  is the point of evaluation.  
+* [0.x.60]*
+   Compute the roots of the Jacobi polynomials on the unit interval  [2.x.84]    of the given degree. These roots are used in several places inside the   deal.II library, such as the Gauss-Lobatto quadrature formula or for the   Hermite-like interpolation.     The algorithm uses a Newton algorithm, using the zeros of the Chebyshev   polynomials as an initial guess. This code has been tested for alpha and   beta equal to zero (Legendre case), one (Gauss-Lobatto case) as well as   two, so be careful when using it for other values as the Newton iteration   might or might not converge.  
+* [0.x.61]

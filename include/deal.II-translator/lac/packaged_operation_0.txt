@@ -1,0 +1,231 @@
+[0.x.0]*
+ A class to store a computation.
+*  The PackagedOperation class allows lazy evaluation of expressions involving vectors and linear operators. This is done by storing the computational expression and only performing the computation when either the object is implicitly converted to a vector object, or  [2.x.0]  (or  [2.x.1] ) is invoked by hand. This avoids unnecessary temporary storage of intermediate results.
+*  The class essentially consists of  [2.x.2]  objects that store the knowledge of how to generate the result of a computation and store it in a vector:
+
+* 
+* [1.x.0]
+* 
+*  Similar to the LinearOperator class it also has knowledge about how to initialize a vector of the  [2.x.3]  space:
+
+* 
+* [1.x.1]
+* 
+*  As an example consider the addition of multiple vectors
+
+* 
+* [1.x.2]
+*  or the computation of a residual  [2.x.4] :
+
+* 
+* [1.x.3]
+*  The expression  [2.x.5]  is of type  [2.x.6] . It stores references to  [2.x.7]  and defers the actual computation until  [2.x.8]  are explicitly invoked,
+
+* 
+* [1.x.4]
+*  or until the  [2.x.9]  object is implicitly converted:
+
+* 
+* [1.x.5]
+* 
+* 
+
+* 
+*  [2.x.10]  The  [2.x.11]  tutorial program has a detailed usage example of the LinearOperator class.
+* 
+
+* 
+
+* 
+*  [2.x.12] 
+
+* 
+* [0.x.1]*
+   Create an empty PackagedOperation object. All  [2.x.13]    member objects are initialized with default variants that throw an   exception upon invocation.  
+* [0.x.2]*
+   Default copy constructor.  
+* [0.x.3]*
+   Constructor that creates a PackagedOperation object from a reference   vector  [2.x.14]  The PackagedOperation returns  [2.x.15]      The PackagedOperation object that is created stores a reference to  [2.x.16]    Thus, the vector must remain a valid reference for the whole lifetime of   the PackagedOperation object. All changes made on  [2.x.17]  after the creation   of the PackagedOperation object are reflected by the operator object.  
+* [0.x.4]*
+   Default copy assignment operator.  
+* [0.x.5]*
+   Copy assignment operator that creates a PackagedOperation object from a   reference vector  [2.x.18]  The PackagedOperation returns  [2.x.19]      The PackagedOperation object that is created stores a reference to  [2.x.20]    Thus, the vector must remain a valid reference for the whole lifetime of   the PackagedOperation object. All changes made on  [2.x.21]  after the creation   of the PackagedOperation object are reflected by the operator object.  
+* [0.x.6]*
+   Convert a PackagedOperation to its result.     This conversion operator creates a vector of the Range space and calls    [2.x.22]  on it.  
+* [0.x.7]*
+    [2.x.23]  In-place vector space operations  
+* [0.x.8]*
+   Addition with a PackagedOperation  [2.x.24]  with the same  [2.x.25]   
+* [0.x.9]*
+   Subtraction with a PackagedOperation  [2.x.26]  with the same  [2.x.27]    Range.  
+* [0.x.10]*
+   Add a constant  [2.x.28]  (of the  [2.x.29]  space) to the result of a   PackagedOperation.  
+* [0.x.11]*
+   Subtract a constant  [2.x.30]  (of the  [2.x.31]  space) from the result of   a PackagedOperation.  
+* [0.x.12]*
+   Scalar multiplication of the PackagedOperation with a  [2.x.32]   
+* [0.x.13]*
+   Store the result of the PackagedOperation in a vector v of the  [2.x.33]    space.  
+* [0.x.14]*
+   Add the result of the PackagedOperation to a vector v of the  [2.x.34]    space.  
+* [0.x.15]*
+   Initializes a vector v of the Range space to be directly usable as the   destination parameter in an application of apply, or apply_add. Similar   to the reinit functions of the vector classes, the boolean determines   whether a fast initialization is done, i.e., if it is set to false the   content of the vector is set to 0.  
+* [0.x.16]*
+  [2.x.35]  Vector space operations
+
+* 
+* [0.x.17]*
+  [2.x.36]  PackagedOperation
+*  Addition of two PackagedOperation objects  [2.x.37]  and  [2.x.38]  given by vector space addition of the corresponding results.
+* 
+
+* 
+*  [2.x.39] 
+
+* 
+* [0.x.18]*
+  [2.x.40]  PackagedOperation
+*  Subtraction of two PackagedOperation objects  [2.x.41]  and  [2.x.42]  second_comp given by vector space addition of the corresponding results.
+* 
+
+* 
+*  [2.x.43] 
+
+* 
+* [0.x.19]*
+  [2.x.44]  PackagedOperation
+*  Scalar multiplication of a PackagedOperation objects  [2.x.45]  with a scalar  [2.x.46]  given by a scaling PackagedOperation result with  [2.x.47] 
+* 
+
+* 
+*  [2.x.48] 
+
+* 
+* [0.x.20]*
+  [2.x.49]  PackagedOperation
+*  Scalar multiplication of a PackagedOperation objects  [2.x.50]  with a scalar  [2.x.51]  given by a scaling PackagedOperation result with  [2.x.52] 
+* 
+
+* 
+*  [2.x.53] 
+
+* 
+* [0.x.21]*
+  [2.x.54]  PackagedOperation
+*  Add a constant  [2.x.55]  (of the  [2.x.56]  space) to the result of a PackagedOperation.
+* 
+
+* 
+*  [2.x.57] 
+
+* 
+* [0.x.22]*
+  [2.x.58]  PackagedOperation
+*  Add a constant  [2.x.59]  (of the  [2.x.60]  space) to the result of a PackagedOperation.
+* 
+
+* 
+*  [2.x.61] 
+
+* 
+* [0.x.23]*
+  [2.x.62]  PackagedOperation
+*  Subtract a constant  [2.x.63]  (of the  [2.x.64]  space) from the result of a PackagedOperation.
+* 
+
+* 
+*  [2.x.65] 
+
+* 
+* [0.x.24]*
+  [2.x.66]  PackagedOperation
+*  Subtract a computational result from a constant  [2.x.67]  (of the  [2.x.68]  space). The result is a PackagedOperation object that applies this computation.
+* 
+
+* 
+*  [2.x.69] 
+
+* 
+* [0.x.25]*
+  [2.x.70]  Creation of a PackagedOperation object
+
+* 
+* [0.x.26]*
+  [2.x.71]  PackagedOperation
+*  Create a PackagedOperation object that stores the addition of two vectors.
+*  The PackagedOperation object that is created stores a reference to  [2.x.72]  and  [2.x.73]  Thus, the vectors must remain valid references for the whole lifetime of the PackagedOperation object. All changes made on  [2.x.74]  or  [2.x.75]  after the creation of the PackagedOperation object are reflected by the operator object.
+* 
+
+* 
+*  [2.x.76] 
+
+* 
+* [0.x.27]*
+  [2.x.77]  PackagedOperation
+*  Create a PackagedOperation object that stores the subtraction of two vectors.
+*  The PackagedOperation object that is created stores a reference to  [2.x.78]  and  [2.x.79]  Thus, the vectors must remain valid references for the whole lifetime of the PackagedOperation object. All changes made on  [2.x.80]  or  [2.x.81]  after the creation of the PackagedOperation object are reflected by the operator object.
+* 
+
+* 
+*  [2.x.82] 
+
+* 
+* [0.x.28]*
+  [2.x.83]  PackagedOperation
+*  Create a PackagedOperation object that stores the scaling of a vector with a  [2.x.84] 
+*  The PackagedOperation object that is created stores a reference to  [2.x.85]  Thus, the vectors must remain valid references for the whole lifetime of the PackagedOperation object. All changes made on  [2.x.86]  or  [2.x.87]  after the creation of the PackagedOperation object are reflected by the operator object.
+* 
+
+* 
+*  [2.x.88] 
+
+* 
+* [0.x.29]*
+  [2.x.89]  PackagedOperation
+*  Create a PackagedOperation object that stores the scaling of a vector with a  [2.x.90] 
+*  The PackagedOperation object that is created stores a reference to  [2.x.91]  Thus, the vectors must remain valid references for the whole lifetime of the PackagedOperation object. All changes made on  [2.x.92]  or  [2.x.93]  after the creation of the PackagedOperation object are reflected by the operator object.
+* 
+
+* 
+*  [2.x.94] 
+
+* 
+* [0.x.30]*
+  [2.x.95]  PackagedOperation
+*  Create a PackagedOperation object from a LinearOperator and a reference to a vector  [2.x.96]  of the Domain space. The object stores the PackagedOperation  [2.x.97]  (in matrix notation).  [2.x.98]  ( [2.x.99]  ( [2.x.100] ).
+*  The PackagedOperation object that is created stores a reference to  [2.x.101]  Thus, the vector must remain a valid reference for the whole lifetime of the PackagedOperation object. All changes made on  [2.x.102]  after the creation of the PackagedOperation object are reflected by the operator object.
+* 
+
+* 
+*  [2.x.103] 
+
+* 
+* [0.x.31]*
+  [2.x.104]  PackagedOperation
+*  Create a PackagedOperation object from a LinearOperator and a reference to a vector  [2.x.105]  of the Range space. The object stores the PackagedOperation  [2.x.106]  (in matrix notation).  [2.x.107]  ( [2.x.108]  ( [2.x.109] ).
+*  The PackagedOperation object that is created stores a reference to  [2.x.110]  Thus, the vector must remain a valid reference for the whole lifetime of the PackagedOperation object. All changes made on  [2.x.111]  after the creation of the PackagedOperation object are reflected by the operator object.
+* 
+
+* 
+*  [2.x.112] 
+
+* 
+* [0.x.32]*
+  [2.x.113]  PackagedOperation
+*  Composition of a PackagedOperation object with a LinearOperator. The object stores the computation  [2.x.114]  (in matrix notation).
+* 
+
+* 
+*  [2.x.115] 
+
+* 
+* [0.x.33]*
+  [2.x.116]  PackagedOperation
+*  Composition of a PackagedOperation object with a LinearOperator. The object stores the computation  [2.x.117]  (in matrix notation).
+* 
+
+* 
+*  [2.x.118] 
+
+* 
+* [0.x.34]

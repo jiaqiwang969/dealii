@@ -1,0 +1,162 @@
+[0.x.0]*
+     A helper function to create a ReferenceCell object from an     integer. ReferenceCell objects are "singletons" (actually,     "multitons"
+* 
+*  -  there are multiple, but they are only a handful and     these are all that can be used). What is then necessary is to     have a way to create these with their internal id to distinguish     the few possible ones in existence. We could do this via a public     constructor of ReferenceCell, but that would allow users     to create ones outside the range we envision, and we don't want to do     that. Rather, the constructor that takes an integer is made `private`     but we have this one function in an internal namespace that is a friend     of the class and can be used to create the objects.    
+* [0.x.1]*
+ A type that describes the kinds of reference cells that can be used. This includes quadrilaterals and hexahedra (i.e., "hypercubes"), triangles and tetrahedra (simplices), and the pyramids and wedges necessary when using mixed 3d meshes.
+*  Objects of this type should not be created in user code, and as a consequence the class does not have a user-accessible constructor other than the default constructor (which creates an invalid object). Rather, there is a finite number of specific reference cell objects defined in the ReferenceCells namespace that completely enumerate all of the possible values. User codes should therefore rely exclusively on assigning ReferenceCell objects from these special objects, and comparing against those special objects.
+*  The purposes and intents of this class are described in the  [2.x.0]  "reference cell" glossary entry.
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.2]*
+   Return the correct ReferenceCell for a given structural   dimension and number of vertices. For example, if `dim==2` and   `n_vertices==4`, this function will return  [2.x.2]    But if `dim==3` and `n_vertices==4`, it will return    [2.x.3]   
+* [0.x.3]*
+   Default constructor. Initialize this object as an invalid object. The   end result is that the current object equals  [2.x.4]      Generally, ReferenceCell objects are created by assignment from   the special objects in namespace ReferenceCells, which is the only   way to obtain a valid object.  
+* [0.x.4]*
+    [2.x.5]  Querying information about the kind of reference cells    [2.x.6]   
+* [0.x.5]*
+   Return `true` if the object is a  [2.x.7]     [2.x.8]   [2.x.9]  or    [2.x.10]   
+* [0.x.6]*
+   Return true if the object is a Vertex, Line, Triangle, or Tetrahedron.  
+* [0.x.7]*
+   Return the dimension of the reference cell represented by the current   object.  
+* [0.x.8]*
+    [2.x.11]   
+* [0.x.9]*
+    [2.x.12]  Shape functions, mappings, quadratures defined on a reference cell    [2.x.13]   
+* [0.x.10]*
+   Compute the value of the  [2.x.14] -th linear shape function at location  [2.x.15]    for the current reference-cell type.  
+* [0.x.11]*
+   Compute the gradient of the  [2.x.16] -th linear shape function at location    [2.x.17]  for the current reference-cell type.  
+* [0.x.12]*
+   Return a default mapping of degree  [2.x.18]  matching the current   reference cell. If this reference cell is a hypercube, then the returned   mapping is a MappingQGeneric; otherwise, it is an object of type   MappingFE initialized with FE_SimplexP (if the reference cell is a   triangle or tetrahedron), with FE_PyramidP (if the reference   cell is a pyramid), or with FE_WedgeP (if the reference cell is   a wedge).  
+* [0.x.13]*
+   Return a default linear mapping matching the current reference cell.   If this reference cell is a hypercube, then the returned mapping   is a MappingQ1; otherwise, it is an object of type MappingFE   initialized with FE_SimplexP (if the reference cell is a triangle or   tetrahedron), with FE_PyramidP (if the reference cell is a   pyramid), or with FE_WedgeP (if the reference cell is a wedge).   In other words, the term "linear" in the name of the function has to be   understood as  [2.x.19] -linear (i.e., bilinear or trilinear) for some of the   coordinate directions.  
+* [0.x.14]*
+   Return a Gauss-type quadrature matching the given reference cell (QGauss,   QGaussSimplex, QGaussPyramid, QGaussWedge).      [2.x.20]  n_points_1D The number of quadrature points in each direction   (QGauss) or an indication of what polynomial degree needs to be   integrated exactly for the other types.  
+* [0.x.15]*
+   Return a quadrature rule with the support points of the given reference   cell.    
+*  [2.x.21]  The weights of the quadrature object are left unfilled.  
+* [0.x.16]*
+    [2.x.22]   
+* [0.x.17]*
+    [2.x.23]  Querying the number of building blocks of a reference cell    [2.x.24]   
+* [0.x.18]*
+   Return the number of vertices that make up the reference   cell in question. A vertex is a "corner" (a zero-dimensional   object) of the reference cell.  
+* [0.x.19]*
+   Return an object that can be thought of as an array containing all   indices from zero to n_vertices().  
+* [0.x.20]*
+   Return the number of lines that make up the reference   cell in question. A line is an "edge" (a one-dimensional   object) of the reference cell.  
+* [0.x.21]*
+   Return an object that can be thought of as an array containing all   indices from zero to n_lines().  
+* [0.x.22]*
+   Return the number of faces that make up the reference   cell in question. A face is a `(dim-1)`-dimensional   object bounding the reference cell.  
+* [0.x.23]*
+   Return an object that can be thought of as an array containing all   indices from zero to n_faces().  
+* [0.x.24]*
+   Return the reference-cell type of face  [2.x.25]  of the current   object. For example, if the current object is    [2.x.26]  then `face_no` must be between   in the interval  [2.x.27]  and the function will always return    [2.x.28]  If the current object is    [2.x.29]  then `face_no` must be between   in the interval  [2.x.30]  and the function will always return    [2.x.31]  For wedges and pyramids, the   returned object may be either  [2.x.32]  or    [2.x.33]  depending on the given index.  
+* [0.x.25]*
+    [2.x.34]   
+* [0.x.26]*
+    [2.x.35]  Relationships between objects in the cell and on faces    [2.x.36]   
+* [0.x.27]*
+   Return which child cells are adjacent to a certain face of the   mother cell.     For example, in 2D the layout of a quadrilateral cell is as follows:  
+* [1.x.0]
+*    Vertices and faces are indicated with their numbers, faces also with   their directions.     Now, when refined, the layout is like this:  
+* [1.x.1]
+*      Thus, the child cells on face 0 are (ordered in the direction of the   face) 0 and 2, on face 3 they are 2 and 3, etc.     For three spatial dimensions, the exact order of the children is laid   down in the general documentation of this class.     The <tt>face_orientation</tt> argument is meant exclusively for   quadrilaterals and hexahedra at the moment. It determines how this function   handles faces oriented in the standard and non-standard orientation. It   represents a bit-code for the overall <tt>face_orientation</tt>,   <tt>face_flip</tt> and <tt>face_rotation</tt> and defaults to the standard   orientation. The concept of face orientations is explained in this    [2.x.37]  "glossary"   entry.  
+* [0.x.28]*
+   For a given vertex in a cell, return a pair of a face index and a   vertex index within this face.    
+*  [2.x.38]  In practice, a vertex is of course generally part of more than one     face, and one could return different faces and the corresponding     index within. Which face this function chooses is often not of     importance (and not exposed by this function on purpose).  
+* [0.x.29]*
+   For a given line in a cell, return a pair of a face index and a   line index within this face.    
+*  [2.x.39]  In practice, a line is of course generally part of more than one     face, and one could return different faces and the corresponding     index within. Which face this function chooses is often not of     importance (and not exposed by this function on purpose).  
+* [0.x.30]*
+   Map face line number to cell line number.  
+* [0.x.31]*
+   Map face vertex number to cell vertex number.  
+* [0.x.32]*
+   Correct vertex index depending on face orientation.  
+* [0.x.33]*
+   Correct line index depending on face orientation.  
+* [0.x.34]*
+   Return whether the line with index  [2.x.40]  is oriented in   standard direction within a cell, given the  [2.x.41]  of   the face within the current cell, and  [2.x.42]  flag   for the line within that face.  [2.x.43]  indicates that the line is   oriented from vertex 0 to vertex 1, whereas it is the other way   around otherwise. In 1d and 2d, this is always  [2.x.44]  but in 3d   it may be different, see the respective discussion in the   documentation of the GeometryInfo class.  
+* [0.x.35]*
+    [2.x.45]   
+* [0.x.36]*
+    [2.x.46]  Geometric properties of reference cells    [2.x.47]  Querying the number of building blocks of a reference cell    [2.x.48]   
+* [0.x.37]   Return  [2.x.49] -th unit tangential vector of a face of the reference cell.   The vectors are arranged such that the   cross product between the two vectors returns the unit normal vector.      [2.x.50]   [2.x.51]  must be between zero and `dim-1`.  
+* [0.x.38]*
+   Return the unit normal vector of a face of the reference cell.  
+* [0.x.39]*
+   Determine the orientation of the current entity described by its   vertices  [2.x.52]  relative to an entity described by  [2.x.53]   
+* [0.x.40]*
+   Inverse function of compute_orientation().  
+* [0.x.41]*
+   Return a vector of faces a given  [2.x.54]  belongs to.  
+* [0.x.42]*
+    [2.x.55]   
+* [0.x.43]*
+    [2.x.56]  Translating between deal.II indexing and formats used by other programs    [2.x.57]   
+* [0.x.44]*
+   Map an ExodusII vertex number to a deal.II vertex number.  
+* [0.x.45]*
+   Map an ExodusII face number to a deal.II face number.  
+* [0.x.46]*
+   Map a UNV vertex number to a deal.II vertex number.  
+* [0.x.47]*
+   Return a VTK linear shape constant that corresponds to the reference cell.  
+* [0.x.48]*
+   Return a VTK quadratic shape constant that corresponds to the reference   cell.  
+* [0.x.49]*
+   Return a VTK Lagrange shape constant that corresponds to the reference   cell.  
+* [0.x.50]*
+    [2.x.58]   
+* [0.x.51]*
+    [2.x.59]  Other functions    [2.x.60]   
+* [0.x.52]*
+   Return a text representation of the reference cell represented by the   current object.  
+* [0.x.53]*
+   Conversion operator to an integer.  
+* [0.x.54]*
+   Operator for equality comparison.  
+* [0.x.55]*
+   Operator for inequality comparison.  
+* [0.x.56]*
+   Write and read the data of this object from a stream for the purpose   of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.57]*
+    [2.x.61]   
+* [0.x.58]*
+   The variable that stores what this object actually corresponds to.  
+* [0.x.59]*
+   Constructor. This is the constructor used to create the different   `static` member variables of this class. It is `private` but can   be called by a function in an internal namespace that is a `friend`   of this class.  
+* [0.x.60]*
+   A kind of constructor
+* 
+*  -  not quite private because it can be   called by anyone, but at least hidden in an internal namespace.  
+* [0.x.61]*
+ A namespace in which we define objects that correspond to specific reference cells. The objects defined here are a complete enumeration of all possible reference cells that can be used in deal.II.
+*   [2.x.62]  ReferenceCell
+
+* 
+* [0.x.62]*
+   Return the correct simplex reference cell type for the given dimension   `dim`. Depending on the template argument `dim`, this function returns a   reference to either Vertex, Triangle, or Tetrahedron.  
+* [0.x.63]*
+   Return the correct hypercube reference cell type for the given dimension   `dim`. Depending on the template argument `dim`, this function returns a   reference to either Vertex, Quadrilateral, or Hexahedron.  
+* [0.x.64]*
+     Constructor.    
+* [0.x.65]*
+     Destructor.    
+* [0.x.66]*
+     Print error message to  [2.x.63]     
+* [0.x.67]*
+     Entity type.    
+* [0.x.68]*
+     First set of values.    
+* [0.x.69]*
+     Second set of values.    
+* [0.x.70]

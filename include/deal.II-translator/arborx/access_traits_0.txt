@@ -1,0 +1,81 @@
+[0.x.0]*
+   Base class for Point-based predicates providing basic functionality for   derived classes, not supposed to be used on its own.  
+* [0.x.1]*
+     Constructor.  [2.x.0]  is a list of points used by the predicate.    
+* [0.x.2]*
+     Number of points stored in the structure.    
+* [0.x.3]*
+     Return the `i`th Point stored in the object.    
+* [0.x.4]*
+   This class defines a predicate used by  [2.x.1]  to determine   for given points which of the bounding boxes used to build the    [2.x.2]  intersect with them.  
+*  [2.x.3]  The class is not supposed to be used in a polymorphic context.  
+* [0.x.5]*
+     Constructor.  [2.x.4]  is a list of points which we are interested in     knowing if they intersect  [2.x.5]  bounding boxes.    
+* [0.x.6]*
+   This class defines a predicate used by  [2.x.6]  to determine   for given points which are the nearest bounding boxes/points among the ones   used to build the  [2.x.7]   
+*  [2.x.8]  The class is not supposed to be used in a polymorphic context.  
+* [0.x.7]*
+     Constructor.  [2.x.9]  is a list of points for which we are interested in     the  [2.x.10]  in the  [2.x.11]  bounding     boxes/points.    
+* [0.x.8]*
+     Return the number of nearest neighbors we are looking for.    
+* [0.x.9]*
+   Base class for BoundingBox predicates providing basic functionality for   derived classes, not supposed to be used on its own.  
+* [0.x.10]*
+     Constructor.  [2.x.12]  is a list of bounding boxes used by the     predicate.    
+* [0.x.11]*
+     Number of bounding boxes stored in the structure.    
+* [0.x.12]*
+     Return the `i`th BoundingBox stored in the object.    
+* [0.x.13]*
+   This class is used by  [2.x.13]  to determine for given bounding   boxes which of the bounding boxes used to build the  [2.x.14]    intersect with them.  
+*  [2.x.15]  The class is not supposed to be used in a polymorphic context.  
+* [0.x.14]*
+     Constructor.  [2.x.16]  is a list of bounding boxes which we are interested in     knowing if they intersect  [2.x.17]  bounding boxes.    
+* [0.x.15]*
+   This class is used by  [2.x.18]  to determine for given bounding   boxes which are the nearest bounding boxes/points among the ones used to   build the  [2.x.19]   
+*  [2.x.20]  The class is not supposed to be used in a polymorphic context.  
+* [0.x.16]*
+     Constructor.  [2.x.21]  is a list of bounding boxes for which are interested in     knowing the  [2.x.22]  nearest bounding boxes used to build the      [2.x.23]     
+* [0.x.17]*
+     Return the number of nearest neighbors we are looking for.    
+* [0.x.18]*
+ This namespace contains the implementation of AccessTraits used by ArborX.
+
+* 
+* [0.x.19]*
+   This struct allows ArborX to use  [2.x.24]  as   primitive.  
+* [0.x.20]*
+     Return the size of the vector  [2.x.25]     
+* [0.x.21]*
+     Return an  [2.x.26]  from the  [2.x.27]  `v[i]`.    
+* [0.x.22]*
+   This struct allows ArborX to use  [2.x.28]  as   primitive.  
+* [0.x.23]*
+     Return the size of the vector  [2.x.29]     
+* [0.x.24]*
+     Return an  [2.x.30]  from the  [2.x.31]  `v[i]`.    
+* [0.x.25]*
+   This struct allows ArborX to use PointIntersectPredicate as a predicate.  
+* [0.x.26]*
+     Number of Point stored in  [2.x.32]     
+* [0.x.27]*
+     Return an  [2.x.33]  object constructed from the     `i`th  [2.x.34]  stored in  [2.x.35]     
+* [0.x.28]*
+   This struct allows ArborX to use PointNearestPredicate as a predicate.  
+* [0.x.29]*
+     Number of Point stored in  [2.x.36]     
+* [0.x.30]*
+     Return an  [2.x.37]       [2.x.38]  object constructed from     the `i`th  [2.x.39]  stored in  [2.x.40]     
+* [0.x.31]*
+   This struct allows ArborX to use BoundingBoxIntersectPredicate as a   predicate.  
+* [0.x.32]*
+     Number of BoundingBox stored in  [2.x.41]     
+* [0.x.33]*
+     Return an  [2.x.42]  object constructed from the     `i`th  [2.x.43]  stored in  [2.x.44]     
+* [0.x.34]*
+   This struct allows ArborX to use BoundingBoxNearstPredicate as a   predicate.  
+* [0.x.35]*
+     Number of BoundingBox stored in  [2.x.45]     
+* [0.x.36]*
+     Return an      [2.x.46]       [2.x.47]  object constructed     from the     `i`th  [2.x.48]  stored in  [2.x.49]     
+* [0.x.37]

@@ -1,0 +1,80 @@
+[0.x.0]*
+  [2.x.0]  OpenCASCADE  [2.x.1] 
+
+* 
+* [0.x.1]*
+   A Manifold object based on OpenCASCADE TopoDS_Shape where new points are   first computed by averaging the surrounding points in the same way as   FlatManifold does, and are then projected in the normal direction using   OpenCASCADE utilities.     This class makes no assumptions on the shape you pass to it, and the   topological dimension of the Manifold is inferred from the TopoDS_Shape   itself. In debug mode there is a sanity check to make sure that the   surrounding points (the ones used in project_to_manifold()) actually live   on the Manifold, i.e., calling  [2.x.2]  on those   points leaves them untouched. If this is not the case, an   ExcPointNotOnManifold is thrown.     This could happen, for example, if you are trying to use a shape of type   TopoDS_Edge when projecting on a face. In this case, the vertices of the   face would be collapsed to the edge, and your surrounding points would   not be lying on the given shape, raising an exception.  
+* [0.x.2]*
+     The standard constructor takes a generic TopoDS_Shape  [2.x.3]  and a     tolerance used to compute distances internally.         The TopoDS_Shape can be arbitrary, i.e., a collection of shapes, faces,     edges or a single face or edge.    
+* [0.x.3]*
+     Clone the current Manifold.    
+* [0.x.4]*
+     Perform the actual projection onto the manifold. This function, in     debug mode, checks that each of the  [2.x.4]  is within     tolerance from the given TopoDS_Shape. If this is not the case, an     exception is thrown.         The projected point is computed using OpenCASCADE normal projection     algorithms.    
+* [0.x.5]*
+     The topological shape which is used internally to project points. You     can construct such a shape by calling the  [2.x.5]      function, which will create a TopoDS_Shape with the geometry contained     in the IGES file.    
+* [0.x.6]*
+     Relative tolerance used by this class to compute distances.    
+* [0.x.7]*
+   A Manifold object based on OpenCASCADE TopoDS_Shape where new points are   first computed by averaging the surrounding points in the same way as   FlatManifold does, and then projecting them onto the manifold along the   direction specified at construction time using OpenCASCADE utilities.     This class makes no assumptions on the shape you pass to it, and the   topological dimension of the Manifold is inferred from the TopoDS_Shape   itself. In debug mode there is a sanity check to make sure that the   surrounding points (the ones used in project_to_manifold()) actually live   on the Manifold, i.e., calling  [2.x.6]  on those   points leaves them untouched. If this is not the case, an   ExcPointNotOnManifold is thrown.     Notice that this type of Manifold descriptor may fail to give results if   the triangulation to be refined is close to the boundary of the given   TopoDS_Shape, or when the direction you use at construction time does not   intersect the shape. An exception is thrown when this happens.  
+* [0.x.8]*
+     Construct a Manifold object which will project points on the     TopoDS_Shape  [2.x.7]  along the given  [2.x.8]     
+* [0.x.9]*
+     Clone the current Manifold.    
+* [0.x.10]*
+     Perform the actual projection onto the manifold. This function, in     debug mode, checks that each of the  [2.x.9]  is within     tolerance from the given TopoDS_Shape. If this is not the case, an     exception is thrown.         The projected point is computed using OpenCASCADE directional     projection algorithms.    
+* [0.x.11]*
+     The topological shape which is used internally to project points. You     can construct such a shape by calling the  [2.x.10]      function, which will create a TopoDS_Shape with the geometry contained     in the IGES file.    
+* [0.x.12]*
+     Direction used to project new points on the shape.    
+* [0.x.13]*
+     Relative tolerance used by this class to compute distances.    
+* [0.x.14]*
+   A Manifold object based on OpenCASCADE TopoDS_Shape where new points are   first computed by averaging the surrounding points in the same way as   FlatManifold does, and then projecting them using OpenCASCADE utilities   onto the manifold along a direction which is an estimation of the   surrounding points (hence mesh cell) normal.     The direction normal to the mesh is particularly useful because it is the   direction in which the mesh is missing nodes. For instance, during the   refinement of a cell a new node is initially created around the   baricenter of the cell. This location somehow ensures a uniform distance   from the nodes of the old cell. Projecting such cell baricenter onto the   CAD surface in the direction normal to the original cell will then retain   uniform distance from the points of the original cell. Of course, at the   stage of mesh generation, no dof handler nor finite element are defined,   and such direction has to be estimated. For the case in which 8   surrounding points are present, 4 different triangles are identified with   the points assigned, and the normals of such triangles are averaged to   obtain the approximation of the normal to the cell.     The case in which 2 surrounding points are present (i.e.:a cell edge is   being refined) is of course more tricky. The average of the CAD surface   normals at the 2 surrounding points is first computed, and then projected   onto the plane normal to the segment linking the surrounding points. This   again is an attempt to have the new point with equal distance with   respect to the surrounding points     This class only operates with CAD faces and makes the assumption that the   shape you pass to it contains at least one face. If that is not the case,   an Exception is thrown. In debug mode there is a sanity check to make   sure that the surrounding points (the ones used in project_to_manifold())   actually live on the Manifold, i.e., calling  [2.x.11]    on those points leaves them untouched. If this is not the case, an   ExcPointNotOnManifold is thrown.       Notice that this type of Manifold descriptor may fail to give results if   the triangulation to be refined is close to the boundary of the given   TopoDS_Shape, or when the normal direction estimated from the surrounding   points does not intersect the shape.  An exception is thrown when this   happens.  
+* [0.x.15]*
+     Construct a Manifold object which will project points on the     TopoDS_Shape  [2.x.12]  along a direction which is approximately normal to     the mesh cell.    
+* [0.x.16]*
+     Clone the current Manifold.    
+* [0.x.17]*
+     Perform the actual projection onto the manifold. This function, in     debug mode, checks that each of the  [2.x.13]  is within     tolerance from the given TopoDS_Shape. If this is not the case, an     exception is thrown.    
+* [0.x.18]*
+     The topological shape which is used internally to project points. You     can construct such a shape by calling the  [2.x.14]      function, which will create a TopoDS_Shape with the geometry contained     in the IGES file.    
+* [0.x.19]*
+     Relative tolerance used by this class to compute distances.    
+* [0.x.20]*
+   A Manifold object based on OpenCASCADE TopoDS_Shape objects which have   topological dimension equal to one (TopoDS_Edge or TopoDS_Wire) where new   points are located at the arclength average of the surrounding points. If   the given TopoDS_Shape can be casted to a periodic (closed) curve, then   this information is used internally to set the periodicity of the base   ChartManifold class.     This class can only work on TopoDS_Edge or TopoDS_Wire objects, and it   only makes sense when spacedim is three. If you use an object of   topological dimension different from one, an exception is throw.     In debug mode there is an additional sanity check to make sure that the   surrounding points actually live on the Manifold, i.e., calling    [2.x.15]  on those points leaves them untouched. If   this is not the case, an ExcPointNotOnManifold is thrown.  
+* [0.x.21]*
+     Default constructor with a TopoDS_Edge.    
+* [0.x.22]*
+     Clone the current Manifold.    
+* [0.x.23]*
+     Given a point on real space, find its arclength parameter. Throws an     error in debug mode, if the point is not on the TopoDS_Edge given at     construction time.    
+* [0.x.24]*
+     Given an arclength parameter, find its image in real space.    
+* [0.x.25]*
+     The actual shape used to build this object.    
+* [0.x.26]*
+     A Curve adaptor. This is the one which is used in the computations, and     it points to the right one above.    
+* [0.x.27]*
+     Relative tolerance used in all internal computations.    
+* [0.x.28]*
+     The total length of the curve. This is also used as a period if the     edge is periodic.    
+* [0.x.29]*
+   Manifold description for the face of a CAD imported using OpenCASCADE.    
+*  [2.x.16]   
+* [0.x.30]*
+     The constructor takes an OpenCASCADE TopoDS_Face  [2.x.17]  and an optional      [2.x.18]  This class uses the interval OpenCASCADE variables u, v     to describe the manifold.    
+* [0.x.31]*
+     Clone the current Manifold.    
+* [0.x.32]*
+     Pull back the given point from the Euclidean space. Will return the uv     coordinates associated with the point  [2.x.19]     
+* [0.x.33]*
+     Given a  [2.x.20]  in the uv coordinate system, this method returns the     Euclidean coordinates associated.    
+* [0.x.34]*
+     Given a point in the spacedim dimensional Euclidean space, this     method returns the derivatives of the function  [2.x.21]  that maps from     the uv coordinate system to the Euclidean coordinate     system. In other words, it is a matrix of size      [2.x.22] .         This function is used in the computations required by the     get_tangent_vector() function.         Refer to the general documentation of this class for more information.    
+* [0.x.35]*
+     Return a tuple representing the minimum and maximum values of u     and v.  Precisely, it returns (u_min, u_max, v_min, v_max)    
+* [0.x.36]*
+     An OpenCASCADE TopoDS_Face  [2.x.23]  given by the CAD.    
+* [0.x.37]*
+     Tolerance used by OpenCASCADE to identify points in each     operation.    
+* [0.x.38]

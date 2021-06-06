@@ -113,7 +113,7 @@ Public Member Functions</h2></td></tr>
 class internal::DoFHandlerImplementation::DoFFaces&lt; dim &gt;</h3>
 
 <h4><a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">DoFFaces</a></h4>
-<p>These classes are similar to the <a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFLevel.html">DoFLevel</a> classes. We here store information that is associated with faces, rather than cells, as this information is independent of the hierarchical structure of cells, which are organized in levels. In 2D we store information on degrees of freedom located on lines whereas in 3D we store information on degrees of freedom located on quads and lines. In 1D we do nothing, as the faces of lines are vertices which are treated separately. Apart from the <a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFObjects.html">DoFObjects</a> object containing the data to store (degree of freedom indices) we do not store any data or provide any functionality. However, we do implement a function to determine an estimate of the memory consumption of the contained <a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFObjects.html">DoFObjects</a> object(s). The data contained isn't usually directly accessed. Rather, except for some access from the <a class="el" href="classDoFHandler.html">DoFHandler</a> class, access is usually through the <a class="el" href="classDoFAccessor.html#abe3cdc6b6fa4abf71bdec21c022c0506">DoFAccessor::set_dof_index()</a> and <a class="el" href="classDoFAccessor.html#a65cc20ce96d8d7501d113c578ecb2ea8">DoFAccessor::dof_index()</a> functions or similar functions of derived classes that in turn access the member variables using the <a class="el" href="classDoFHandler.html#a724020c033544330cbf218287347ba06">DoFHandler::get_dof_index()</a> and corresponding setter functions. Knowledge of the actual data format is therefore encapsulated to the present hierarchy of classes as well as the <a class="el" href="classDoFHandler.html">DoFHandler</a> class. </p>
+<p>These classes are similar to the <a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFLevel.html">DoFLevel</a> classes. We here store information that is associated with faces, rather than cells, as this information is independent of the hierarchical structure of cells, which are organized in levels. In 2D we store information on degrees of freedom located on lines whereas in 3D we store information on degrees of freedom located on quads and lines. In 1D we do nothing, as the faces of lines are vertices which are treated separately. Apart from the <a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFObjects.html">DoFObjects</a> object containing the data to store (degree of freedom indices) we do not store any data or provide any functionality. However, we do implement a function to determine an estimate of the memory consumption of the contained <a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFObjects.html">DoFObjects</a> <a class="el" href="dof__faces__0_8txt.html#ac52db78746a9d830c32d5c1aa35b1b2a">object(s)</a>. The data contained isn't usually directly accessed. Rather, except for some access from the <a class="el" href="classDoFHandler.html">DoFHandler</a> class, access is usually through the <a class="el" href="classDoFAccessor.html#abe3cdc6b6fa4abf71bdec21c022c0506">DoFAccessor::set_dof_index()</a> and <a class="el" href="classDoFAccessor.html#a65cc20ce96d8d7501d113c578ecb2ea8">DoFAccessor::dof_index()</a> functions or similar functions of derived classes that in turn access the member variables using the <a class="el" href="classDoFHandler.html#a724020c033544330cbf218287347ba06">DoFHandler::get_dof_index()</a> and corresponding setter functions. Knowledge of the actual data format is therefore encapsulated to the present hierarchy of classes as well as the <a class="el" href="classDoFHandler.html">DoFHandler</a> class. </p>
 
 <p class="definition">Definition at line <a class="el" href="dofs_2dof__faces_8h_source.html#l00064">64</a> of file <a class="el" href="dofs_2dof__faces_8h_source.html">dof_faces.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -129,7 +129,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">internal::DoFHandlerImplementation::DoFFaces</a>&lt; dim &gt;::<a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">DoFFaces</a> </td>
+          <td class="memname"><a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">internal::DoFHandlerImplementation::DoFFaces</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">DoFFaces</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -157,7 +157,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">internal::DoFHandlerImplementation::DoFFaces</a>&lt; dim &gt;::<a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">DoFFaces</a> </td>
+          <td class="memname"><a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">internal::DoFHandlerImplementation::DoFFaces</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">DoFFaces</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -185,7 +185,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">internal::DoFHandlerImplementation::DoFFaces</a>&lt; dim &gt;::<a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">DoFFaces</a> </td>
+          <td class="memname"><a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">internal::DoFHandlerImplementation::DoFFaces</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classinternal_1_1DoFHandlerImplementation_1_1DoFFaces.html">DoFFaces</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

@@ -1,0 +1,16 @@
+[0.x.0] Rather than using ifdefs everywhere, try to wrap older versions of PETSc functions in one place.
+
+* 
+* [0.x.1]*
+   Set an option in the global PETSc database. This function just wraps   PetscOptionsSetValue with a version check (the signature of this function   changed in PETSc 3.7.0).  
+* [0.x.2]*
+   Destroy a PETSc matrix. This function wraps MatDestroy with a version   check (the signature of this function changed in PETSc 3.2.0).      [2.x.0]  Since the primary intent of this function is to enable RAII   semantics in the PETSc wrappers, this function will not throw an   exception if an error occurs, but instead just returns the error code   given by MatDestroy.  
+* [0.x.3]*
+   Destroy a Krylov Subspace (KSP) PETSc solver. This function wraps   KSPDestroy with a version check (the signature of this function changed   in PETSc 3.2.0).      [2.x.1]  Since the primary intent of this function is to enable RAII   semantics in the PETSc wrappers, this function will not throw an   exception if an error occurs, but instead just returns the error code   given by MatDestroy.  
+* [0.x.4]*
+   Set a PETSc matrix option. This function wraps MatSetOption with a   version check.      [2.x.2]  The argument option_value is ignored in versions of PETSc   before 3.0.0 since the corresponding function did not take this argument.  
+* [0.x.5]*
+   Tell PETSc that we are not planning on adding new entries to the   matrix. Generate errors in debug mode.  
+* [0.x.6]*
+   Tell PETSc to keep the SparsityPattern entries even if we delete a   row with clear_rows() which calls MatZeroRows(). Otherwise one can   not write into that row afterwards.  
+* [0.x.7]

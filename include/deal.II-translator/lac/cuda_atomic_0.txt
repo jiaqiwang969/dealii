@@ -1,0 +1,13 @@
+[0.x.0]*
+     Provide atomicAdd for floats.          [2.x.0]  Use atomicAdd(address, val) directly.    
+*  [2.x.1]     
+* [0.x.1]*
+     Provide atomicAdd for doubles.          [2.x.2]  Use atomicAdd(address, val) directly.    
+*  [2.x.3]     
+* [0.x.2]*
+     Provide atomicMax for floats.        
+*  [2.x.4]     
+* [0.x.3]*
+     Provide atomicMax for doubles.        
+*  [2.x.5]     
+* [0.x.4]

@@ -1,0 +1,59 @@
+[0.x.0]*
+   A Function class that leverages symbolic differentiation to compute   gradients, Laplacians, Hessians, and time derivatives.     This class can be used to define functions using methods provided by the    [2.x.0]  namespace. In particular, one can define a symbolic   evaluation point (the argument of the function), as well as a symbolic   expression.     The symbolic gradients and the symbolic Hessians are computed at   construction time, and when a substitution in the symbolic functions is   requested by the user using the method update_user_substitution_map().     Whenever one of the evaluation methods is called, a substitution is   attempted with the coordinate symbols argument replaced by the evaluation   point and the symbolic time replaced by the current time, as returned by   the get_time() method. The user has to make sure that at evaluation time   argument substitution provides a fully evaluated expression (i.e., no other   symbols are contained in the function expression, except numerical values),   or an exception will be thrown. Additional symbols can be partially   evaluated or substituted by storing them in a user supplied substitution   maps, that can be updated by calling update_user_substitution_map() or the   set_additional_function_arguments() methods.     The simplest use case of this class is given in the following example:  
+* [1.x.0]
+*    where a Function with two components is defined using a string containing   their expressions separated by semicolons.     A more involved example, that explicitly uses    [2.x.1]  objects, is given by  
+* [1.x.1]
+*      Partial substitution is possible (i.e., you can define the function using   additional symbols). However, as soon as you evaluate the function, you   have to make sure that all extraneous symbols (i.e., those not referring   to the spacial  [2.x.2]  or to the  [2.x.3]  variable)   have been substituted with numerical values, or expressions of the spatial   or temporal argument, by calling the update_user_substitution_map() or the   set_additional_function_arguments() methods.     If your function requires additional arguments to be evaluated, you can   specify them by calling the set_additional_function_arguments() method.     If you call update_user_substitution_map() and   set_additional_function_arguments() with the same argument, the effect on   the function evaluation will be the same, however, the internal behavior   and function derivatives will be different. The method   update_user_substitution_map() performs the substitution once (the first   time it is required), and then stores internally a copy of the resulting   expression, together with its derivatives (if required). These are then   used in all subsequent evaluations. Calling   set_additional_function_arguments() will evaluate the passed   substitution map on the fly during evaluation time,after* all   derivatives have been computed.    
+*  [2.x.4]  The difference between this class and the FunctionParser class is   that this class allows to compute first and second order derivatives (in a   symbolic way), while the FunctionParser class computes first order   derivatives only, using finite differences. For complicated expressions,   this class may be slower than the FunctionParser class.    
+*  [2.x.5]   
+* [0.x.1]*
+     Constructor.         The resulting Function object will have as many components as there     are entries in the vector of symbolic expressions  [2.x.6]          The vector  [2.x.7]  should contain a list of symbolic expression     involving the coordinate symbols argument  [2.x.8]  and     possibly the symbolic time argument  [2.x.9]  It is possible to     define it in terms of other symbols, as long as the optional parameter      [2.x.10]  replaces all symbols except      [2.x.11]  and  [2.x.12]      This is useful if, for example, you want to express formulas in terms of     material parameters that you want to name symbolically, rather than     through their numeric values when defining the formula, or when you want     to express your formula in terms of polar coordinates rather than     cartesian ones, and you want the symbolic engine to compute the     derivatives for you.     You may later update the symbol map contained in  [2.x.13]      by calling update_user_substitution_map().          [2.x.14]  function A vector of symbolic expressions of type      [2.x.15]  representing the components of this     Function.          [2.x.16]  coordinate_symbols A tensor of symbols representing coordinates,     used as input argument in the symbolic expressions contained in the      [2.x.17]  vector. The default  [2.x.18]  is a      [2.x.19]      containing the symbols "x" for `dim` equal to one, "x", "y" for `dim`     equal to two, and "x", "y", "z" for `dim` equal to three.          [2.x.20]  time_symbol A symbolic variable representing time. It defaults     to a symbolic variable named "t".          [2.x.21]  user_substitution_map Any other symbol that may be contained in     the symbolic function needs to be specified in this map. The map may be     empty, and the functions may still contain unevaluated symbols, provided     that you call update_user_substitution_map() and provide a replacement of     all symbols except  [2.x.22]  and  [2.x.23]  before any     evaluation occurs.    
+* [0.x.2]*
+     Constructor that takes a single string that describes the function     expression as a semicolon separated list of expressions.         The symbolic expression can use the default argument and the default     symbolic time variable, plus any additional symbols that you may     need, provided that you update the user substitution map that substitutes     all of them before you try to evaluate the function or its derivatives,     by calling update_user_substitution_map(), and that you provide all the     additional function arguments of your function using the method     set_additional_function_arguments().    
+* [0.x.3]*
+     Store and apply the substitution map  [2.x.24]  to each symbolic     component of this Function object.         Notice that this method will trigger a recomputation of the     gradients, Hessians, and Laplacians of each component.    
+* [0.x.4]*
+     Set the additional  [2.x.25]  to be substituted in next evaluation     step.         Notice that the  [2.x.26]  are substitutedafter* evaluating the      [2.x.27]  and after all derivatives are     computed. If the additional arguments you pass still depend on the     coordinate or time symbols, then evaluation of derivatives will result in     a partial derivative evaluation.         This method provides a way to evaluate functions that depend on more     arguments than simply the coordinates and time. If you want to compute     the total derivative w.r.t. to complicated symbolic expressions, you     should call update_user_substitution_map() instead.    
+* [0.x.5]*
+     Return a tensor of coordinate symbols that can be used to define the     expressions of this symbolic function object.         The default argument is a  [2.x.28]      containing the symbols "x" for `dim` equal to one, "x", "y" for `dim`     equal to two, and "x", "y", "z" for `dim` equal to three.    
+* [0.x.6]*
+     Get the actual arguments used for the coordinates in the symbolic     function. This object does not include any user-defined arguments.    
+* [0.x.7]*
+     Get the actual symbolic time in use in this symbolic function.    
+* [0.x.8]*
+     Get the actual symbolic expressions used in this symbolic function.    
+* [0.x.9]*
+     Get the currently stored  [2.x.29]     
+* [0.x.10]*
+     Return a SymbolicFunction object that represents the time derivative of     this function. The spatial argument, the symbolic time, and the currently     stored user substitution map are forwarded to the new function.    
+* [0.x.11]*
+     Print the stored arguments and function expression, as it would be     evaluated when calling the method value().    
+* [0.x.12]*
+     Return a substitution map that replaces the argument with the values of      [2.x.30]  the symbolic time with the value of this->get_time(), and any     additional arguments with the substitution map given by      [2.x.31]     
+* [0.x.13]*
+     Recompute the symbolic value of the function, applying the user     substitution map. This may be an expensive computation, and it is called     only if necessary.    
+* [0.x.14]*
+     Recompute the symbolic gradient of the function, applying the user     substitution map. This may be an expensive computation, and it is called     only if necessary.    
+* [0.x.15]*
+     Recompute the symbolic Hessian and the symbolic Lapalacian of the     function. This may be an expensive computation, and it is called     only if necessary.    
+* [0.x.16]*
+     The components of this symbolic function, before any subustitution took     place. This is immutable, and generated at construction time.         Before any evaluation takes place, the  [2.x.32]  is     applied to this object, and the result is stored in the internal variable     function.         During evaluation, the  [2.x.33]  the  [2.x.34]  and     any remaining symbols are substituted with the input evaluation point,     the current time, and the content of  [2.x.35]     
+* [0.x.17]*
+     Store the user substitution map used for expression substitutions. This     may be updated with a call to update_user_substitution_map(). Notice that     the function may still have unresolved symbols, provided that they are     resolved by a call to set_additional_function_arguments().    
+* [0.x.18]*
+     Store a user substitution map used for additional argument     substitutions. This will be updated by a call to     set_additional_function_arguments().    
+* [0.x.19]*
+     The actual components of this symbolic function. This is obtained from     the  [2.x.36]  after applying the  [2.x.37]     
+* [0.x.20]*
+     The gradients of each component of this symbolic function. This is     obtained by computing the symbolic gradient of the object  [2.x.38]      that is, after applying the  [2.x.39]  to  [2.x.40]     
+* [0.x.21]*
+     The Hessians of each component of this symbolic function. This is     obtained by computing the symbolic Hessian of the object  [2.x.41]      that is, after applying the  [2.x.42]  to  [2.x.43]     
+* [0.x.22]*
+     The Laplacians of each component of this symbolic function. This is     obtained by computing the symbolic Laplacian of the object  [2.x.44]      that is, after applying the  [2.x.45]  to  [2.x.46]     
+* [0.x.23]*
+     The coordinate symbols argument of the function.    
+* [0.x.24]*
+     The symbolic time argument of the function.    
+* [0.x.25]*
+   Allow output using the bitwise left shift operator.  
+* [0.x.26]

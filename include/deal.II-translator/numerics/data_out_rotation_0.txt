@@ -1,0 +1,40 @@
+[0.x.0]*
+     A derived class for use in the DataOutFaces class. This is a class for     the AdditionalData kind of data structure discussed in the     documentation of the WorkStream class.    
+* [0.x.1]*
+ This class generates output in the full domain of computations that were done using rotational symmetry of domain and solution. In particular, if a computation of a three dimensional problem with rotational symmetry around the  [2.x.0]  (i.e. in the  [2.x.1]  was done, then this class can be used to generate the output in the original  [2.x.2]  space. In order to do so, it generates from each cell in the computational mesh a cell in the space with dimension one greater than that of the DoFHandler object. The resulting output will then consist of hexahedra forming an object that has rotational symmetry around the z-axis. As most graphical programs can not represent ring-like structures, the angular (rotation) variable is discretized into a finite number of intervals as well; the number of these intervals must be given to the  [2.x.3]  function. It is noted, however, that while this function generates nice pictures of the whole domain, it often produces  [2.x.4] very [2.x.5]  large output files.
+* 
+
+*  [1.x.0]
+*  The interface of this class is copied from the DataOut class. Furthermore, they share the common parent class DataOut_DoFData(). See the reference of these two classes for a discussion of the interface and how to extend it by deriving further classes from this class.
+* 
+
+*  [1.x.1]
+*  The one coordinate in the triangulation used by the DoFHandler object passed to this class is taken as the radial variable, and the output will then be either a circle or a ring domain. It is in the user's responsibility to assure that the radial coordinate only attains non- negative values.
+* 
+
+*  [1.x.2]
+*  We consider the computation (represented by the DoFHandler object that is attached to this class) to have happened in the  [2.x.6]  where  [2.x.7]  is the radial variable and  [2.x.8]  denotes the axis of revolution around which the solution is symmetric. The output is in  [2.x.9]  space, where the radial dependence is transformed to the  [2.x.10]  plane. At present, it is not possible to exchange the meaning of the first and second variable of the plane in which the simulation was made, i.e. generate output from a simulation where the first variable denoted the symmetry axis, and the second denoted the radial variable. You have to take that into account when first programming your application.
+*  It is in the responsibility of the user to make sure that the radial variable attains only non-negative values.
+* 
+
+* 
+*  [2.x.11] 
+
+* 
+* [0.x.2]*
+   Dimension parameters for the patches.  
+* [0.x.3]*
+   Typedef to the iterator type of the dof handler class under   consideration.  
+* [0.x.4]*
+   This is the central function of this class since it builds the list of   patches to be written by the low-level functions of the base class. A   patch is, in essence, some intermediate representation of the data on   each cell of a triangulation and DoFHandler object that can then be used   to write files in some format that is readable by visualization programs.     You can find an overview of the use of this function in the general   documentation of this class. An example is also provided in the   documentation of this class's base class DataOut_DoFData.      [2.x.12]  n_patches_per_circle Denotes into how many intervals the angular   (rotation) variable is to be subdivided.      [2.x.13]  n_subdivisions See  [2.x.14]  for an extensive   description of this parameter.  
+* [0.x.5]*
+   Return the first cell which we want output for. The default   implementation returns the first    [2.x.15]  "active cell",   but you might want to return other cells in a derived class.  
+* [0.x.6]*
+   Return the next cell after  [2.x.16]  which we want output for. If there are   no more cells, <tt>dofs->end()</tt> shall be returned.     The default implementation returns the next active cell, but you might   want to return other cells in a derived class. Note that the default   implementation assumes that the given  [2.x.17]  is active, which is   guaranteed as long as  [2.x.18]  is also used from the default   implementation. Overloading only one of the two functions might not be a   good idea.  
+* [0.x.7]*
+   Exception  
+* [0.x.8]*
+   Build all of the patches that correspond to the cell given in the first   argument. Use the second argument as scratch space for parallel   invocation in WorkStream, and put the results into the last argument.  
+* [0.x.9]*
+    [2.x.19]  Use  [2.x.20]  without the DoFHandlerType   template instead.  
+* [0.x.10]

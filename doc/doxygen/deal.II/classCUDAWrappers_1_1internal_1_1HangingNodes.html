@@ -104,74 +104,74 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae9cd43f829d4f0ee866b07a0de4e530f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ae9cd43f829d4f0ee866b07a0de4e530f">HangingNodes</a> (unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3413dc20c4813d1ec1f93ed91cfab319">fe_degree</a>, const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3ea0bd01fef3a69c47ce475386ec32d1">dof_handler</a>, const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a6310aaad55bd4c1accd9305dac5867a8">lexicographic_mapping</a>)</td></tr>
+<tr class="memitem:ae9cd43f829d4f0ee866b07a0de4e530f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ae9cd43f829d4f0ee866b07a0de4e530f">HangingNodes</a> (unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3413dc20c4813d1ec1f93ed91cfab319">fe_degree</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3ea0bd01fef3a69c47ce475386ec32d1">dof_handler</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a6310aaad55bd4c1accd9305dac5867a8">lexicographic_mapping</a>)</td></tr>
 <tr class="separator:ae9cd43f829d4f0ee866b07a0de4e530f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5766c708ab54f67db334371340d9b0fb"><td class="memTemplParams" colspan="2">template&lt;typename CellIterator &gt; </td></tr>
-<tr class="memitem:a5766c708ab54f67db334371340d9b0fb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a5766c708ab54f67db334371340d9b0fb">setup_constraints</a> (std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dof_indices, const CellIterator &amp;cell, const std::shared_ptr&lt; const <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;partitioner, unsigned <a class="el" href="classint.html">int</a> &amp;mask) const</td></tr>
+<tr class="memitem:a5766c708ab54f67db334371340d9b0fb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a5766c708ab54f67db334371340d9b0fb">setup_constraints</a> (<a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dof_indices, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::shared_ptr&lt; <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;<a class="el" href="base_2partitioner__0_8txt.html#a936b2264a337bdb80dd12b8f90f72767">partitioner</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;<a class="el" href="point__value__history__0_8txt.html#a1e0120f991abf85a9a8ace8cb30b2093">mask</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a5766c708ab54f67db334371340d9b0fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9cd43f829d4f0ee866b07a0de4e530f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ae9cd43f829d4f0ee866b07a0de4e530f">HangingNodes</a> (unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3413dc20c4813d1ec1f93ed91cfab319">fe_degree</a>, const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3ea0bd01fef3a69c47ce475386ec32d1">dof_handler</a>, const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a6310aaad55bd4c1accd9305dac5867a8">lexicographic_mapping</a>)</td></tr>
+<tr class="memitem:ae9cd43f829d4f0ee866b07a0de4e530f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ae9cd43f829d4f0ee866b07a0de4e530f">HangingNodes</a> (unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3413dc20c4813d1ec1f93ed91cfab319">fe_degree</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3ea0bd01fef3a69c47ce475386ec32d1">dof_handler</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a6310aaad55bd4c1accd9305dac5867a8">lexicographic_mapping</a>)</td></tr>
 <tr class="separator:ae9cd43f829d4f0ee866b07a0de4e530f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5766c708ab54f67db334371340d9b0fb"><td class="memTemplParams" colspan="2">template&lt;typename CellIterator &gt; </td></tr>
-<tr class="memitem:a5766c708ab54f67db334371340d9b0fb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a5766c708ab54f67db334371340d9b0fb">setup_constraints</a> (std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dof_indices, const CellIterator &amp;cell, const std::shared_ptr&lt; const <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;partitioner, unsigned <a class="el" href="classint.html">int</a> &amp;mask) const</td></tr>
+<tr class="memitem:a5766c708ab54f67db334371340d9b0fb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a5766c708ab54f67db334371340d9b0fb">setup_constraints</a> (<a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dof_indices, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::shared_ptr&lt; <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;<a class="el" href="base_2partitioner__0_8txt.html#a936b2264a337bdb80dd12b8f90f72767">partitioner</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;<a class="el" href="point__value__history__0_8txt.html#a1e0120f991abf85a9a8ace8cb30b2093">mask</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a5766c708ab54f67db334371340d9b0fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9cd43f829d4f0ee866b07a0de4e530f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ae9cd43f829d4f0ee866b07a0de4e530f">HangingNodes</a> (unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3413dc20c4813d1ec1f93ed91cfab319">fe_degree</a>, const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3ea0bd01fef3a69c47ce475386ec32d1">dof_handler</a>, const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a6310aaad55bd4c1accd9305dac5867a8">lexicographic_mapping</a>)</td></tr>
+<tr class="memitem:ae9cd43f829d4f0ee866b07a0de4e530f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ae9cd43f829d4f0ee866b07a0de4e530f">HangingNodes</a> (unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3413dc20c4813d1ec1f93ed91cfab319">fe_degree</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3ea0bd01fef3a69c47ce475386ec32d1">dof_handler</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a6310aaad55bd4c1accd9305dac5867a8">lexicographic_mapping</a>)</td></tr>
 <tr class="separator:ae9cd43f829d4f0ee866b07a0de4e530f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5766c708ab54f67db334371340d9b0fb"><td class="memTemplParams" colspan="2">template&lt;typename CellIterator &gt; </td></tr>
-<tr class="memitem:a5766c708ab54f67db334371340d9b0fb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a5766c708ab54f67db334371340d9b0fb">setup_constraints</a> (std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dof_indices, const CellIterator &amp;cell, const std::shared_ptr&lt; const <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;partitioner, unsigned <a class="el" href="classint.html">int</a> &amp;mask) const</td></tr>
+<tr class="memitem:a5766c708ab54f67db334371340d9b0fb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a5766c708ab54f67db334371340d9b0fb">setup_constraints</a> (<a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dof_indices, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIterator &amp;<a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::shared_ptr&lt; <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;<a class="el" href="base_2partitioner__0_8txt.html#a936b2264a337bdb80dd12b8f90f72767">partitioner</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;<a class="el" href="point__value__history__0_8txt.html#a1e0120f991abf85a9a8ace8cb30b2093">mask</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a5766c708ab54f67db334371340d9b0fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
 Private Types</h2></td></tr>
-<tr class="memitem:afc1aa1b1ba20a9e287c8cf8c882d024a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td></tr>
+<tr class="memitem:afc1aa1b1ba20a9e287c8cf8c882d024a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td></tr>
 <tr class="separator:afc1aa1b1ba20a9e287c8cf8c882d024a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1eba3c44e3c2a1d9a83e4f42700349cb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td></tr>
+<tr class="memitem:a1eba3c44e3c2a1d9a83e4f42700349cb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td></tr>
 <tr class="separator:a1eba3c44e3c2a1d9a83e4f42700349cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc1aa1b1ba20a9e287c8cf8c882d024a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td></tr>
+<tr class="memitem:afc1aa1b1ba20a9e287c8cf8c882d024a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td></tr>
 <tr class="separator:afc1aa1b1ba20a9e287c8cf8c882d024a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1eba3c44e3c2a1d9a83e4f42700349cb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td></tr>
+<tr class="memitem:a1eba3c44e3c2a1d9a83e4f42700349cb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td></tr>
 <tr class="separator:a1eba3c44e3c2a1d9a83e4f42700349cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc1aa1b1ba20a9e287c8cf8c882d024a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td></tr>
+<tr class="memitem:afc1aa1b1ba20a9e287c8cf8c882d024a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td></tr>
 <tr class="separator:afc1aa1b1ba20a9e287c8cf8c882d024a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1eba3c44e3c2a1d9a83e4f42700349cb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td></tr>
+<tr class="memitem:a1eba3c44e3c2a1d9a83e4f42700349cb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> = typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td></tr>
 <tr class="separator:a1eba3c44e3c2a1d9a83e4f42700349cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a9544ba719d5bdc9907c3ab68c3a639f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a9544ba719d5bdc9907c3ab68c3a639f5">setup_line_to_cell</a> ()</td></tr>
 <tr class="separator:a9544ba719d5bdc9907c3ab68c3a639f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51864d7d0d95e7151947b54a1735634a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a51864d7d0d95e7151947b54a1735634a">rotate_subface_index</a> (<a class="el" href="classint.html">int</a> times, unsigned <a class="el" href="classint.html">int</a> &amp;subface_index) const</td></tr>
+<tr class="memitem:a51864d7d0d95e7151947b54a1735634a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a51864d7d0d95e7151947b54a1735634a">rotate_subface_index</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__dgp__nonparametric__0_8txt.html#a220d7e31a52399d0ec229bef64409bfb">times</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;subface_index) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a51864d7d0d95e7151947b54a1735634a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7118b26fdf6a9f82009bac5d77ae28c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a7118b26fdf6a9f82009bac5d77ae28c1">rotate_face</a> (<a class="el" href="classint.html">int</a> times, unsigned <a class="el" href="classint.html">int</a> n_dofs_1d, std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dofs) const</td></tr>
+<tr class="memitem:a7118b26fdf6a9f82009bac5d77ae28c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a7118b26fdf6a9f82009bac5d77ae28c1">rotate_face</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__dgp__nonparametric__0_8txt.html#a220d7e31a52399d0ec229bef64409bfb">times</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="cuda__matrix__free__0_8txt.html#a4fa2a8b0336e4864bcd726ea5f0e701d">n_dofs_1d</a>, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;<a class="el" href="mapping__fe__field__0_8txt.html#aca0277fe12b09db4182d01dc3791a6ad">dofs</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a7118b26fdf6a9f82009bac5d77ae28c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fa96b9971d8dc270b56dea3d18a6c56"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a8fa96b9971d8dc270b56dea3d18a6c56">line_dof_idx</a> (<a class="el" href="classint.html">int</a> local_line, unsigned <a class="el" href="classint.html">int</a> dof, unsigned <a class="el" href="classint.html">int</a> n_dofs_1d) const</td></tr>
+<tr class="memitem:a8fa96b9971d8dc270b56dea3d18a6c56"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a8fa96b9971d8dc270b56dea3d18a6c56">line_dof_idx</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> local_line, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dof, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="cuda__matrix__free__0_8txt.html#a4fa2a8b0336e4864bcd726ea5f0e701d">n_dofs_1d</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a8fa96b9971d8dc270b56dea3d18a6c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa282ac3f851d9cca43309190c0eb64bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#aa282ac3f851d9cca43309190c0eb64bc">transpose_face</a> (std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dofs) const</td></tr>
+<tr class="memitem:aa282ac3f851d9cca43309190c0eb64bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#aa282ac3f851d9cca43309190c0eb64bc">transpose_face</a> (<a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;<a class="el" href="mapping__fe__field__0_8txt.html#aca0277fe12b09db4182d01dc3791a6ad">dofs</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa282ac3f851d9cca43309190c0eb64bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34d5574238209b12f9c55f83e4dbac74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a34d5574238209b12f9c55f83e4dbac74">transpose_subface_index</a> (unsigned <a class="el" href="classint.html">int</a> &amp;subface) const</td></tr>
+<tr class="memitem:a34d5574238209b12f9c55f83e4dbac74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a34d5574238209b12f9c55f83e4dbac74">transpose_subface_index</a> (unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;<a class="el" href="error__estimator__0_8txt.html#afe3e1315116a1d25be1163f4131f310a">subface</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a34d5574238209b12f9c55f83e4dbac74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9544ba719d5bdc9907c3ab68c3a639f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a9544ba719d5bdc9907c3ab68c3a639f5">setup_line_to_cell</a> ()</td></tr>
 <tr class="separator:a9544ba719d5bdc9907c3ab68c3a639f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51864d7d0d95e7151947b54a1735634a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a51864d7d0d95e7151947b54a1735634a">rotate_subface_index</a> (<a class="el" href="classint.html">int</a> times, unsigned <a class="el" href="classint.html">int</a> &amp;subface_index) const</td></tr>
+<tr class="memitem:a51864d7d0d95e7151947b54a1735634a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a51864d7d0d95e7151947b54a1735634a">rotate_subface_index</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__dgp__nonparametric__0_8txt.html#a220d7e31a52399d0ec229bef64409bfb">times</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;subface_index) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a51864d7d0d95e7151947b54a1735634a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7118b26fdf6a9f82009bac5d77ae28c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a7118b26fdf6a9f82009bac5d77ae28c1">rotate_face</a> (<a class="el" href="classint.html">int</a> times, unsigned <a class="el" href="classint.html">int</a> n_dofs_1d, std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dofs) const</td></tr>
+<tr class="memitem:a7118b26fdf6a9f82009bac5d77ae28c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a7118b26fdf6a9f82009bac5d77ae28c1">rotate_face</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__dgp__nonparametric__0_8txt.html#a220d7e31a52399d0ec229bef64409bfb">times</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="cuda__matrix__free__0_8txt.html#a4fa2a8b0336e4864bcd726ea5f0e701d">n_dofs_1d</a>, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;<a class="el" href="mapping__fe__field__0_8txt.html#aca0277fe12b09db4182d01dc3791a6ad">dofs</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a7118b26fdf6a9f82009bac5d77ae28c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fa96b9971d8dc270b56dea3d18a6c56"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a8fa96b9971d8dc270b56dea3d18a6c56">line_dof_idx</a> (<a class="el" href="classint.html">int</a> local_line, unsigned <a class="el" href="classint.html">int</a> dof, unsigned <a class="el" href="classint.html">int</a> n_dofs_1d) const</td></tr>
+<tr class="memitem:a8fa96b9971d8dc270b56dea3d18a6c56"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a8fa96b9971d8dc270b56dea3d18a6c56">line_dof_idx</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> local_line, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dof, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="cuda__matrix__free__0_8txt.html#a4fa2a8b0336e4864bcd726ea5f0e701d">n_dofs_1d</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a8fa96b9971d8dc270b56dea3d18a6c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa282ac3f851d9cca43309190c0eb64bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#aa282ac3f851d9cca43309190c0eb64bc">transpose_face</a> (std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dofs) const</td></tr>
+<tr class="memitem:aa282ac3f851d9cca43309190c0eb64bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#aa282ac3f851d9cca43309190c0eb64bc">transpose_face</a> (<a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;<a class="el" href="mapping__fe__field__0_8txt.html#aca0277fe12b09db4182d01dc3791a6ad">dofs</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa282ac3f851d9cca43309190c0eb64bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34d5574238209b12f9c55f83e4dbac74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a34d5574238209b12f9c55f83e4dbac74">transpose_subface_index</a> (unsigned <a class="el" href="classint.html">int</a> &amp;subface) const</td></tr>
+<tr class="memitem:a34d5574238209b12f9c55f83e4dbac74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a34d5574238209b12f9c55f83e4dbac74">transpose_subface_index</a> (unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;<a class="el" href="error__estimator__0_8txt.html#afe3e1315116a1d25be1163f4131f310a">subface</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a34d5574238209b12f9c55f83e4dbac74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9544ba719d5bdc9907c3ab68c3a639f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a9544ba719d5bdc9907c3ab68c3a639f5">setup_line_to_cell</a> ()</td></tr>
 <tr class="separator:a9544ba719d5bdc9907c3ab68c3a639f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51864d7d0d95e7151947b54a1735634a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a51864d7d0d95e7151947b54a1735634a">rotate_subface_index</a> (<a class="el" href="classint.html">int</a> times, unsigned <a class="el" href="classint.html">int</a> &amp;subface_index) const</td></tr>
+<tr class="memitem:a51864d7d0d95e7151947b54a1735634a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a51864d7d0d95e7151947b54a1735634a">rotate_subface_index</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__dgp__nonparametric__0_8txt.html#a220d7e31a52399d0ec229bef64409bfb">times</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;subface_index) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a51864d7d0d95e7151947b54a1735634a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7118b26fdf6a9f82009bac5d77ae28c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a7118b26fdf6a9f82009bac5d77ae28c1">rotate_face</a> (<a class="el" href="classint.html">int</a> times, unsigned <a class="el" href="classint.html">int</a> n_dofs_1d, std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dofs) const</td></tr>
+<tr class="memitem:a7118b26fdf6a9f82009bac5d77ae28c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a7118b26fdf6a9f82009bac5d77ae28c1">rotate_face</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="fe__dgp__nonparametric__0_8txt.html#a220d7e31a52399d0ec229bef64409bfb">times</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="cuda__matrix__free__0_8txt.html#a4fa2a8b0336e4864bcd726ea5f0e701d">n_dofs_1d</a>, <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;<a class="el" href="mapping__fe__field__0_8txt.html#aca0277fe12b09db4182d01dc3791a6ad">dofs</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a7118b26fdf6a9f82009bac5d77ae28c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fa96b9971d8dc270b56dea3d18a6c56"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a8fa96b9971d8dc270b56dea3d18a6c56">line_dof_idx</a> (<a class="el" href="classint.html">int</a> local_line, unsigned <a class="el" href="classint.html">int</a> dof, unsigned <a class="el" href="classint.html">int</a> n_dofs_1d) const</td></tr>
+<tr class="memitem:a8fa96b9971d8dc270b56dea3d18a6c56"><td class="memItemLeft" align="right" valign="top">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a8fa96b9971d8dc270b56dea3d18a6c56">line_dof_idx</a> (<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> local_line, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> dof, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="cuda__matrix__free__0_8txt.html#a4fa2a8b0336e4864bcd726ea5f0e701d">n_dofs_1d</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a8fa96b9971d8dc270b56dea3d18a6c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa282ac3f851d9cca43309190c0eb64bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#aa282ac3f851d9cca43309190c0eb64bc">transpose_face</a> (std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;dofs) const</td></tr>
+<tr class="memitem:aa282ac3f851d9cca43309190c0eb64bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#aa282ac3f851d9cca43309190c0eb64bc">transpose_face</a> (<a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;<a class="el" href="mapping__fe__field__0_8txt.html#aca0277fe12b09db4182d01dc3791a6ad">dofs</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:aa282ac3f851d9cca43309190c0eb64bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34d5574238209b12f9c55f83e4dbac74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a34d5574238209b12f9c55f83e4dbac74">transpose_subface_index</a> (unsigned <a class="el" href="classint.html">int</a> &amp;subface) const</td></tr>
+<tr class="memitem:a34d5574238209b12f9c55f83e4dbac74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a34d5574238209b12f9c55f83e4dbac74">transpose_subface_index</a> (unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;<a class="el" href="error__estimator__0_8txt.html#afe3e1315116a1d25be1163f4131f310a">subface</a>) <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a></td></tr>
 <tr class="separator:a34d5574238209b12f9c55f83e4dbac74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5d20913465244e03622ff2886fd33b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ac5d20913465244e03622ff2886fd33b4">setup_line_to_cell</a> ()</td></tr>
 <tr class="separator:ac5d20913465244e03622ff2886fd33b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,15 +182,15 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:ad83368c47f1494de70fbfa258f40ce01"><td class="memItemLeft" align="right" valign="top">const unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ad83368c47f1494de70fbfa258f40ce01">n_raw_lines</a></td></tr>
+<tr class="memitem:ad83368c47f1494de70fbfa258f40ce01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ad83368c47f1494de70fbfa258f40ce01">n_raw_lines</a></td></tr>
 <tr class="separator:ad83368c47f1494de70fbfa258f40ce01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae85ae81413d4a25b7765e7434248edec"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; std::pair&lt; <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a>, unsigned <a class="el" href="classint.html">int</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ae85ae81413d4a25b7765e7434248edec">line_to_cells</a></td></tr>
+<tr class="memitem:ae85ae81413d4a25b7765e7434248edec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#ae85ae81413d4a25b7765e7434248edec">line_to_cells</a></td></tr>
 <tr class="separator:ae85ae81413d4a25b7765e7434248edec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6310aaad55bd4c1accd9305dac5867a8"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a6310aaad55bd4c1accd9305dac5867a8">lexicographic_mapping</a></td></tr>
+<tr class="memitem:a6310aaad55bd4c1accd9305dac5867a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a6310aaad55bd4c1accd9305dac5867a8">lexicographic_mapping</a></td></tr>
 <tr class="separator:a6310aaad55bd4c1accd9305dac5867a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3413dc20c4813d1ec1f93ed91cfab319"><td class="memItemLeft" align="right" valign="top">const unsigned <a class="el" href="classint.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3413dc20c4813d1ec1f93ed91cfab319">fe_degree</a></td></tr>
+<tr class="memitem:a3413dc20c4813d1ec1f93ed91cfab319"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3413dc20c4813d1ec1f93ed91cfab319">fe_degree</a></td></tr>
 <tr class="separator:a3413dc20c4813d1ec1f93ed91cfab319"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ea0bd01fef3a69c47ce475386ec32d1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3ea0bd01fef3a69c47ce475386ec32d1">dof_handler</a></td></tr>
+<tr class="memitem:a3ea0bd01fef3a69c47ce475386ec32d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a3ea0bd01fef3a69c47ce475386ec32d1">dof_handler</a></td></tr>
 <tr class="separator:a3ea0bd01fef3a69c47ce475386ec32d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -214,7 +214,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;dim&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td>
+          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td>
         </tr>
       </table>
   </td>
@@ -240,7 +240,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;dim&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td>
+          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td>
         </tr>
       </table>
   </td>
@@ -266,7 +266,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;dim&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td>
+          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td>
         </tr>
       </table>
   </td>
@@ -292,7 +292,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;dim&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td>
+          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td>
         </tr>
       </table>
   </td>
@@ -318,7 +318,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;dim&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td>
+          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a></td>
         </tr>
       </table>
   </td>
@@ -344,7 +344,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;dim&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td>
+          <td class="memname">using <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a> =  typename <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt;<a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>&gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#a1eba3c44e3c2a1d9a83e4f42700349cb">active_cell_iterator</a></td>
         </tr>
       </table>
   </td>
@@ -371,21 +371,21 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">HangingNodes</a> </td>
+          <td class="memname"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">HangingNodes</a> </td>
           <td>(</td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>fe_degree</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>lexicographic_mapping</em>&#160;</td>
         </tr>
         <tr>
@@ -415,21 +415,21 @@ template&lt;int dim&gt; </div>
 template&lt;int dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">HangingNodes</a> </td>
+          <td class="memname"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">HangingNodes</a> </td>
           <td>(</td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>fe_degree</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>lexicographic_mapping</em>&#160;</td>
         </tr>
         <tr>
@@ -452,21 +452,21 @@ template&lt;int dim&gt; </div>
 template&lt;int dim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">HangingNodes</a> </td>
+          <td class="memname"><a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::<a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">HangingNodes</a> </td>
           <td>(</td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>fe_degree</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_handler</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>lexicographic_mapping</em>&#160;</td>
         </tr>
         <tr>
@@ -495,27 +495,27 @@ template&lt;typename CellIterator &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::setup_constraints </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::setup_constraints </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const CellIterator &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIterator &amp;&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::shared_ptr&lt; const <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::shared_ptr&lt; <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>partitioner</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a> &amp;&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;&#160;</td>
           <td class="paramname"><em>mask</em>&#160;</td>
         </tr>
         <tr>
@@ -548,7 +548,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::setup_line_to_cell</td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::setup_line_to_cell</td>
         </tr>
       </table>
   </td>
@@ -575,15 +575,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::rotate_subface_index </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::rotate_subface_index </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>times</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a> &amp;&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;&#160;</td>
           <td class="paramname"><em>subface_index</em>&#160;</td>
         </tr>
         <tr>
@@ -615,21 +615,21 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::rotate_face </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::rotate_face </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>times</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_dofs_1d</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dofs</em>&#160;</td>
         </tr>
         <tr>
@@ -661,21 +661,21 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::line_dof_idx </td>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::line_dof_idx </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>local_line</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dof</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_dofs_1d</em>&#160;</td>
         </tr>
         <tr>
@@ -707,9 +707,9 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::transpose_face </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::transpose_face </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dofs</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -737,9 +737,9 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::transpose_subface_index </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::transpose_subface_index </td>
           <td>(</td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a> &amp;&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;&#160;</td>
           <td class="paramname"><em>subface</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -766,27 +766,27 @@ template&lt;int dim&gt; </div>
 template&lt;typename CellIterator &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::setup_constraints </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::setup_constraints </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const CellIterator &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIterator &amp;&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::shared_ptr&lt; const <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::shared_ptr&lt; <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>partitioner</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a> &amp;&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;&#160;</td>
           <td class="paramname"><em>mask</em>&#160;</td>
         </tr>
         <tr>
@@ -812,7 +812,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::setup_line_to_cell </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::setup_line_to_cell </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -840,15 +840,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::rotate_subface_index </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::rotate_subface_index </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>times</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a> &amp;&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;&#160;</td>
           <td class="paramname"><em>subface_index</em>&#160;</td>
         </tr>
         <tr>
@@ -878,21 +878,21 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::rotate_face </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::rotate_face </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>times</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_dofs_1d</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dofs</em>&#160;</td>
         </tr>
         <tr>
@@ -922,21 +922,21 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::line_dof_idx </td>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::line_dof_idx </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>local_line</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dof</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_dofs_1d</em>&#160;</td>
         </tr>
         <tr>
@@ -966,9 +966,9 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::transpose_face </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::transpose_face </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dofs</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -994,9 +994,9 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::transpose_subface_index </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::transpose_subface_index </td>
           <td>(</td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a> &amp;&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;&#160;</td>
           <td class="paramname"><em>subface</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1021,27 +1021,27 @@ template&lt;int dim&gt; </div>
 template&lt;typename CellIterator &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::setup_constraints </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::setup_constraints </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_indices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const CellIterator &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIterator &amp;&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::shared_ptr&lt; const <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> std::shared_ptr&lt; <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html">Utilities::MPI::Partitioner</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>partitioner</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a> &amp;&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;&#160;</td>
           <td class="paramname"><em>mask</em>&#160;</td>
         </tr>
         <tr>
@@ -1067,7 +1067,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::setup_line_to_cell </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::setup_line_to_cell </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1095,15 +1095,15 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::rotate_subface_index </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::rotate_subface_index </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>times</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a> &amp;&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;&#160;</td>
           <td class="paramname"><em>subface_index</em>&#160;</td>
         </tr>
         <tr>
@@ -1133,21 +1133,21 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::rotate_face </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::rotate_face </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>times</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_dofs_1d</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dofs</em>&#160;</td>
         </tr>
         <tr>
@@ -1177,21 +1177,21 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::line_dof_idx </td>
+          <td class="memname">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::line_dof_idx </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>local_line</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>dof</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>n_dofs_1d</em>&#160;</td>
         </tr>
         <tr>
@@ -1221,9 +1221,9 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::transpose_face </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::transpose_face </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="namespacetypes.html#a3bf9e493f1aab00b04933b81856144c4">types::global_dof_index</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dofs</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1249,9 +1249,9 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::transpose_subface_index </td>
+          <td class="memname">void <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::transpose_subface_index </td>
           <td>(</td>
-          <td class="paramtype">unsigned <a class="el" href="classint.html">int</a> &amp;&#160;</td>
+          <td class="paramtype">unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &amp;&#160;</td>
           <td class="paramname"><em>subface</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1359,7 +1359,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::n_raw_lines</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::n_raw_lines</td>
         </tr>
       </table>
   </td>
@@ -1385,7 +1385,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; std::vector&lt; std::pair&lt; <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a>, unsigned <a class="el" href="classint.html">int</a> &gt; &gt; &gt; <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::line_to_cells</td>
+          <td class="memname"><a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; std::pair&lt; <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html#afc1aa1b1ba20a9e287c8cf8c882d024a">cell_iterator</a>, unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &gt; &gt; <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::line_to_cells</td>
         </tr>
       </table>
   </td>
@@ -1411,7 +1411,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::vector&lt; unsigned <a class="el" href="classint.html">int</a> &gt; &amp; <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::lexicographic_mapping</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#ab19f5518dcad7cebd9aa51c8bc219a22">std::vector</a>&lt; unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> &gt; &amp; <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::lexicographic_mapping</td>
         </tr>
       </table>
   </td>
@@ -1437,7 +1437,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const unsigned <a class="el" href="classint.html">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::fe_degree</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::fe_degree</td>
         </tr>
       </table>
   </td>
@@ -1463,7 +1463,7 @@ template&lt;int dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; dim &gt; &amp; <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; dim &gt;::dof_handler</td>
+          <td class="memname"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classDoFHandler.html">DoFHandler</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt; &amp; <a class="el" href="classCUDAWrappers_1_1internal_1_1HangingNodes.html">CUDAWrappers::internal::HangingNodes</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a> &gt;::dof_handler</td>
         </tr>
       </table>
   </td>

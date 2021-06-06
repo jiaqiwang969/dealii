@@ -1,0 +1,530 @@
+[0.x.0]*
+ Namespace containing the time stepping methods.
+
+* 
+* [0.x.1]*
+   The following Runge-Kutta methods are available:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Explicit methods (see  [2.x.0] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - FORWARD_EULER (first order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - RK_THIRD_ORDER (third order Runge-Kutta)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - SSP_THIRD_ORDER (third order SSP Runge-Kutta)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - RK_CLASSIC_FOURTH_ORDER (classical fourth order Runge-Kutta)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Low-storage (explicit) Runge-Kutta methods
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - LOW_STORAGE_RK_STAGE3_ORDER3 (Three stages and third order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - LOW_STORAGE_RK_STAGE5_ORDER4 (Five stages and fourth order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - LOW_STORAGE_RK_STAGE7_ORDER4 (Seven stages and fourth order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - LOW_STORAGE_RK_STAGE9_ORDER5 (Nine stages and fifth order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Implicit methods (see  [2.x.1] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - BACKWARD_EULER (first order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - IMPLICIT_MIDPOINT (second order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - CRANK_NICOLSON (second order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - SDIRK_TWO_STAGES (second order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Embedded explicit methods (see  [2.x.2] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - HEUN_EULER (second order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - BOGACKI_SHAMPINE (third order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - DOPRI (Dormand-Prince method, fifth order; this is the method used by   ode45 in MATLAB)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - FEHLBERG (fifth order)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - CASH_KARP (fifth order)  
+* [0.x.2]*
+     Forward Euler method, first order.    
+* [0.x.3]*
+     Third order Runge-Kutta method.    
+* [0.x.4]*
+     Third order Strong Stability Preserving (SSP) Runge-Kutta method     (SSP time discretizations are also called Total Variation Diminishing     (TVD) methods in the literature, see  [2.x.3] ).    
+* [0.x.5]*
+     Classical fourth order Runge-Kutta method.    
+* [0.x.6]*
+     Three-stage scheme of order three by Kennedy et al.      [2.x.4] . Its stability region is     significantly smaller than the higher order schemes, but due to three     stages only, it is very competitive in terms of the work per stage.    
+* [0.x.7]*
+     Five-stage scheme of order four,     defined in the paper by Kennedy et al.  [2.x.5] .    
+* [0.x.8]*
+     Seven-stage scheme of order four defined in the paper by Tselios and     Simos  [2.x.6] .    
+* [0.x.9]*
+     Nine-stage scheme of order five     defined in the paper by Kennedy et al.  [2.x.7] .    
+* [0.x.10]*
+     Backward Euler method, first order.    
+* [0.x.11]*
+     Implicit midpoint method, second order.    
+* [0.x.12]*
+     Crank-Nicolson method, second order.    
+* [0.x.13]*
+     Two stage SDIRK method (short for "singly diagonally implicit     Runge-Kutta"), second order.    
+* [0.x.14]*
+     Heun's method (improved Euler's method), second order.    
+* [0.x.15]*
+     Bogacki–Shampine method, third-order.    
+* [0.x.16]*
+     Dormand-Prince method, fifth order; this is the method used by     ode45 in MATLAB.    
+* [0.x.17]*
+     Fehlberg method, fifth order.    
+* [0.x.18]*
+     Cash–Karp method, fifth order.    
+* [0.x.19]*
+     Invalid.    
+* [0.x.20]*
+   Reason for exiting evolve_one_time_step when using an embedded method:   DELTA_T, MIN_DELTA_T, MAX_DELTA_T.  
+* [0.x.21]*
+     The time step is in the valid range.    
+* [0.x.22]*
+     The time step was increased to the minimum acceptable time step.    
+* [0.x.23]*
+     The time step was reduced to the maximum acceptable time step.    
+* [0.x.24]*
+   Abstract class for time stepping methods. These methods assume that the   equation has the form:  [2.x.8] .  
+* [0.x.25]*
+     Virtual destructor.    
+* [0.x.26]*
+     Purely virtual function. This function is used to advance from time  [2.x.9]      t to t+  [2.x.10]   [2.x.11]  is a vector of functions  [2.x.12]  that     should be integrated, the input parameters are the time t and the     vector y and the output is value of f at this point.  [2.x.13]  is a     vector functions that compute the inverse of the Jacobians associated     to the implicit problems. The input parameters are the time,  [2.x.14] ,     and a vector. The output is the value of function at this point. This     function returns the time at the end of the time step.    
+* [0.x.27]*
+     Empty structure used to store information.    
+* [0.x.28]*
+     Purely virtual function that return Status.    
+* [0.x.29]*
+   Base class for the Runge-Kutta method  
+* [0.x.30]*
+     Virtual destructor.    
+* [0.x.31]*
+     Purely virtual method used to initialize the Runge-Kutta method.    
+* [0.x.32]*
+     This function is used to advance from time  [2.x.15]  to t+  [2.x.16]   [2.x.17]      is a vector of functions  [2.x.18]  that should be integrated, the     input parameters are the time t and the vector y and the output is     value of f at this point.  [2.x.19]  is a vector functions that     compute the inverse of the Jacobians associated to the implicit     problems. The input parameters are the time,  [2.x.20] , and a vector.     The output is the value of function at this point. This function     returns the time at the end of the time step. When using Runge-Kutta     methods,  [2.x.21]  and @ J_inverse can only contain one element.    
+* [0.x.33]*
+     Purely virtual function. This function is used to advance from time  [2.x.22]      t to t+  [2.x.23]   [2.x.24]   is the function  [2.x.25]  that should be     integrated, the input parameters are the time t and the vector y and     the output is value of f at this point.  [2.x.26]  is a     function that computes  [2.x.27]  where  [2.x.28]  is the identity     matrix,  [2.x.29]  is given, and  [2.x.30]  is the Jacobian  [2.x.31] . The input parameters are the time,  [2.x.32] , and a     vector. The output is the value of function at this point.     evolve_one_time_step returns the time at the end of the time step.    
+* [0.x.34]*
+     Number of stages of the Runge-Kutta method.    
+* [0.x.35]*
+     Butcher tableau coefficients.    
+* [0.x.36]*
+     Butcher tableau coefficients.    
+* [0.x.37]*
+     Butcher tableau coefficients.    
+* [0.x.38]*
+   ExplicitRungeKutta is derived from RungeKutta and implement the explicit   methods.  
+* [0.x.39]*
+     Default constructor. This constructor creates an object for which     you will want to call  [2.x.33]      before it can be used.    
+* [0.x.40]*
+     Constructor. This function calls initialize(runge_kutta_method).    
+* [0.x.41]*
+     Initialize the explicit Runge-Kutta method.    
+* [0.x.42]*
+     This function is used to advance from time  [2.x.34]  to t+  [2.x.35]   [2.x.36]      is the function  [2.x.37]  that should be integrated, the input     parameters are the time t and the vector y and the output is value of f     at this point.  [2.x.38]  is a function that computes  [2.x.39]  where  [2.x.40]  is the identity matrix,  [2.x.41]  is given,     and  [2.x.42]  is the Jacobian  [2.x.43] . The input     parameter are the time,  [2.x.44] , and a vector. The output is the value     of function at this point. evolve_one_time_step returns the time at the     end of the time step.    
+* [0.x.43]*
+     This function is used to advance from time  [2.x.45]  to t+  [2.x.46]  This     function is similar to the one derived from RungeKutta, but does not     required id_minus_tau_J_inverse because it is not used for explicit     methods. evolve_one_time_step returns the time at the end of the time     step.    
+* [0.x.44]*
+     This structure stores the name of the method used.    
+* [0.x.45]*
+     Return the status of the current object.    
+* [0.x.46]*
+     Compute the different stages needed.    
+* [0.x.47]*
+     Status structure of the object.    
+* [0.x.48]*
+   The LowStorageRungeKutta class is derived from RungeKutta and implements a   specific class of explicit methods. The main advantages of low-storage   methods are the reduced memory consumption and the reduced memory access.  
+* [0.x.49]*
+     Default constructor. This constructor creates an object for which     you will want to call  [2.x.47]      before it can be used.    
+* [0.x.50]*
+     Constructor. This function calls initialize(runge_kutta_method).    
+* [0.x.51]*
+     Initialize the explicit Runge-Kutta method.    
+* [0.x.52]*
+     This function is used to advance from time  [2.x.48]  to t+  [2.x.49]   [2.x.50]      is the function  [2.x.51]  that should be integrated, the input     parameters are the time t and the vector y and the output is value of f     at this point.  [2.x.52]  is a function that computes  [2.x.53]  where  [2.x.54]  is the identity matrix,  [2.x.55]  is given,     and  [2.x.56]  is the Jacobian  [2.x.57] . The input     parameters are the time,  [2.x.58] , and a vector. The output is the value     of function at this point. evolve_one_time_step returns the time at the     end of the time step.    
+* [0.x.53]*
+     This function is used to advance from time  [2.x.59]  to t+  [2.x.60]  This     function is similar to the one derived from RungeKutta, but does not     required id_minus_tau_J_inverse because it is not used for explicit     methods. evolve_one_time_step returns the time at the end of the time     step. Note that vec_ki holds the evaluation of the differential operator,     and vec_ri holds the right-hand side for the differential operator     application.    
+* [0.x.54]*
+     Get the coefficients of the scheme.     Note that here vector  [2.x.61]  is not the conventional definition in terms of a     Butcher tableau but merely one of the sub-diagonals. More details can be     found in  [2.x.62]  and the references therein.    
+* [0.x.55]*
+     This structure stores the name of the method used.    
+* [0.x.56]*
+     Return the status of the current object.    
+* [0.x.57]*
+     Compute  one stage of low storage rk.    
+* [0.x.58]*
+     Status structure of the object.    
+* [0.x.59]*
+   This class is derived from RungeKutta and implement the implicit methods.   This class works only for Diagonal Implicit Runge-Kutta (DIRK) methods.  
+* [0.x.60]*
+     Default constructor. initialize(runge_kutta_method) and     set_newton_solver_parameters(unsigned int,double) need to be called     before the object can be used.    
+* [0.x.61]*
+     Constructor. This function calls initialize(runge_kutta_method) and     initialize the maximum number of iterations and the tolerance of the     Newton solver.    
+* [0.x.62]*
+     Initialize the implicit Runge-Kutta method.    
+* [0.x.63]*
+     This function is used to advance from time  [2.x.63]  to t+  [2.x.64]   [2.x.65]      is the function  [2.x.66]  that should be integrated, the input     parameters are the time t and the vector y and the output is value of f     at this point.  [2.x.67]  is a function that computes  [2.x.68]  where  [2.x.69]  is the identity matrix,  [2.x.70]  is given,     and  [2.x.71]  is the Jacobian  [2.x.72] . The input     parameters this function receives are the time,  [2.x.73] , and a vector.     The output is the value of function at this point. evolve_one_time_step     returns the time at the end of the time step.    
+* [0.x.64]*
+     Set the maximum number of iterations and the tolerance used by the     Newton solver.    
+* [0.x.65]*
+     Structure that stores the name of the method, the number of Newton     iterations and the norm of the residual when exiting the Newton solver.    
+* [0.x.66]*
+     Return the status of the current object.    
+* [0.x.67]*
+     Compute the different stages needed.    
+* [0.x.68]*
+     Newton solver used for the implicit stages.    
+* [0.x.69]*
+     Compute the residual needed by the Newton solver.    
+* [0.x.70]*
+     When using SDIRK, there is no need to compute the linear combination of     the stages. Thus, when this flag is true, the linear combination is     skipped.    
+* [0.x.71]*
+     Maximum number of iterations of the Newton solver.    
+* [0.x.72]*
+     Tolerance of the Newton solver.    
+* [0.x.73]*
+     Status structure of the object.    
+* [0.x.74]*
+   This class is derived from RungeKutta and implements embedded explicit   methods.  
+* [0.x.75]*
+     Default constructor. initialize(runge_kutta_method) and     set_time_adaptation_parameters(double, double, double, double, double,     double) need to be called before the object can be used.    
+* [0.x.76]*
+     Constructor. This function calls initialize(runge_kutta_method) and     initialize the parameters needed for time adaptation.    
+* [0.x.77]*
+     Destructor.    
+* [0.x.78]*
+     If necessary, deallocate memory allocated by the object.    
+* [0.x.79]*
+     Initialize the embedded explicit Runge-Kutta method.    
+* [0.x.80]*
+     This function is used to advance from time  [2.x.74]  to t+  [2.x.75]   [2.x.76]      is the function  [2.x.77]  that should be integrated, the input     parameters are the time t and the vector y and the output is value of f     at this point.  [2.x.78]  is a function that computes  [2.x.79]  where  [2.x.80]  is the identity matrix,  [2.x.81]  is given,     and  [2.x.82]  is the Jacobian  [2.x.83] . The input     parameters are the time,  [2.x.84] , and a vector. The output is the     value of function at this point. evolve_one_time_step returns the time     at the end of the time step.    
+* [0.x.81]*
+     This function is used to advance from time  [2.x.85]  to t+  [2.x.86]  This     function is similar to the one derived from TimeStepping, but does not     required id_minus_tau_J_inverse because it is not used for explicit     methods. evolve_one_time_step returns the time at the end of the time     step.    
+* [0.x.82]*
+     Set the parameters necessary for the time adaptation.    
+* [0.x.83]*
+     Structure that stores the name of the method, the reason to exit     evolve_one_time_step, the number of iteration inside n_iterations, a     guess of what the next time step should be, and an estimate of the norm     of the error.    
+* [0.x.84]*
+     Return the status of the current object.    
+* [0.x.85]*
+     Compute the different stages needed.    
+* [0.x.86]*
+     This parameter is the factor (>1) by which the time step is multiplied     when the time stepping can be coarsen.    
+* [0.x.87]*
+     This parameter is the factor (<1) by which the time step is multiplied     when the time stepping must be refined.    
+* [0.x.88]*
+     Smallest time step allowed.    
+* [0.x.89]*
+     Largest time step allowed.    
+* [0.x.90]*
+     Refinement tolerance: if the error estimate is larger than refine_tol,     the time step is refined.    
+* [0.x.91]*
+     Coarsening tolerance: if the error estimate is smaller than coarse_tol,     the time step is coarsen.    
+* [0.x.92]*
+     If the flag is true, the last stage is the same as the first stage and     one evaluation of f can be saved.    
+* [0.x.93]*
+     Butcher tableau coefficients.    
+* [0.x.94]*
+     Butcher tableau coefficients.    
+* [0.x.95]*
+     If the last_same_as_first flag is set to true, the last stage is saved     and reused as the first stage of the next time step.    
+* [0.x.96]*
+     Status structure of the object.    
+* [0.x.97]

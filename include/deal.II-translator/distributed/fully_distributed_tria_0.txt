@@ -1,0 +1,149 @@
+[0.x.0]*
+   A namespace for the fully distributed triangulation.    
+*  [2.x.0]   
+* [0.x.1]*
+     A distributed triangulation with a distributed coarse grid.         The motivation for  [2.x.1]  has its     origins in the following observations about complex geometries and/or     about given meshes created by an external mesh generator. We regard     complex geometries as geometries that can be meshed only with a     non-negligible number of coarse cells (>10,000):
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - storing the coarse-grid information on every process is too expensive       from a memory point of view (as done by        [2.x.2]  Normally, a process only needs a       small section of the global triangulation, i.e., a small section of the       coarse grid such that a partitioning of the coarse grid is indeed       essential. The cells stored on each process consist of the        [2.x.3]  "locally owned cells" and the        [2.x.4]  "ghost cells".
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - the distribution of the active cells
+* 
+*  - on the finest level
+* 
+*  - among all       processes by simply partitioning a space-filling curve might not lead       to an optimal result for triangulations that originate from large       coarse grids: e.g. partitions that belong to the same process might       be discontinuous, leading to increased communication (within a       node and beyond). Graph-based partitioning algorithms might be a sound       alternative to the space filling curve used by        [2.x.5]          To be able to construct a fully partitioned triangulation that     distributes the coarse grid and gives flexibility regarding partitioning,     the following ingredients are required:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - a locally relevant coarse-grid triangulation       (vertices, cell definition; including a layer of ghost cells)
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - a mapping of the locally relevant coarse-grid triangulation into the       global coarse-grid triangulation
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - information about which cell should be refined as well as information       regarding the subdomain_id, the level_subdomain_id, manifold_id,       and boundary_id of each cell.         The ingredients listed above are bundled in the struct      [2.x.6]  The user has to fill this     data structure
+* 
+*  - in a pre-processing step
+* 
+*  - before actually creating the     triangulation. Predefined functions to create      [2.x.7]  can be found in the namespace      [2.x.8]          Once the  [2.x.9]  `construction_data` has     been constructed, the triangulation `tria` can be created by calling     `tria.create_triangulation(construction_data);`.        
+*  [2.x.10]  This triangulation supports: 1D/2D/3D, hanging nodes,           geometric multigrid, and periodicity.        
+*  [2.x.11]  You can create a triangulation with hanging nodes and multigrid           levels with create_triangulation(). However, once it has been           created, it cannot be altered anymore, i.e. you cannot coarsen or           refine afterwards.        
+*  [2.x.12]  Currently only simple periodicity conditions (i.e. without offsets           and rotation matrices
+* 
+*  - see also the documentation of            [2.x.13]  are supported.    
+* [0.x.2]*
+       Constructor.              [2.x.14]  mpi_communicator The MPI communicator to be used for the                               triangulation.      
+* [0.x.3]*
+       Destructor.      
+* [0.x.4]*
+        [2.x.15]   [2.x.16]             
+*  [2.x.17]  This is the function to be used instead of        [2.x.18]  for some of the other       triangulations of deal.II.      
+* [0.x.5]*
+      
+*  [2.x.19]  This function is not implemented for this class  and throws             an assertion. Instead, use             the other create_triangulation() function to create the             triangulation.      
+* [0.x.6]*
+       Implementation of the same function as in the base class.              [2.x.20]  other_tria The triangulation to be copied. It can be a serial              Triangulation or a  [2.x.21]  Both              can have been refined already.            
+*  [2.x.22]  This function uses the partitioner registered with             set_partitioner().      
+* [0.x.7]*
+       Register a partitioner, which is used within the method       copy_triangulation.              [2.x.23]  partitioner A partitioning function, which takes as input argument                          a reference to the triangulation to be partitioned                          and the number of partitions to be created.                          The function needs to set subdomain                          ids for each active cell of the given triangulation,                          with values between zero (inclusive)                          and the second argument to the function (exclusive).        [2.x.24]  settings See the description of the Settings enumerator.            
+*  [2.x.25]  As a default,  [2.x.26]  is used             as partitioner and data structures on multigrid levels are not             set up.      
+* [0.x.8]*
+       Coarsen and refine the mesh according to refinement and coarsening       flags set.            
+*  [2.x.27]  Not implemented yet.      
+* [0.x.9]*
+       Override the implementation of prepare_coarsening_and_refinement from       the base class.            
+*  [2.x.28]  Not implemented yet.      
+* [0.x.10]*
+       Return true if the triangulation has hanging nodes.            
+*  [2.x.29]  Not implemented yet.      
+* [0.x.11]*
+       Return the local memory consumption in bytes.      
+* [0.x.12]*
+       Save the triangulation into the given file. This file needs to be       reachable from all nodes in the computation on a shared network file       system. See the SolutionTransfer class on how to store solution vectors       into this file. Additional cell-based data can be saved using       register_data_attach().      
+* [0.x.13]*
+       Load the triangulation saved with save() back in. The mesh       must be empty before calling this function.             You need to load with the same number of MPI processes that       you saved with, hence autopartition is disabled.             Cell-based data that was saved with register_data_attach() can be read       in with notify_ready_to_unpack() after calling load().      
+* [0.x.14]*
+       Go through all active cells that are locally owned and record how they       will change in the private member vector local_cell_relations.             As no adaptive mesh refinement is supported at the moment for this       class, all cells will be flagged with the CellStatus CELL_PERSIST.       These relations will currently only be used for serialization.             The stored vector will have a size equal to the number of locally owned       active cells and will be ordered by the occurrence of those cells.      
+* [0.x.15]*
+       store the Settings.      
+* [0.x.16]*
+       Partitioner used in copy_triangulation().      
+* [0.x.17]*
+       Sorted list of pairs of coarse-cell ids and their indices.      
+* [0.x.18]*
+       List of the coarse-cell id for each coarse cell (stored at       cell->index()).      
+* [0.x.19]*
+       Boolean indicating that the function create_triangulation() was called       for internal usage.      
+* [0.x.20]*
+       Boolean indicating that the function       prepare_coarsening_and_refinement() was called for internal usage.      
+* [0.x.21]

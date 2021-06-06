@@ -129,117 +129,117 @@ Namespaces</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a90b0bb7059f1e3416d6ef17d9e3e12c7"><td class="memTemplParams" colspan="2">template&lt;int rank, int dim, typename Number , typename OtherNumber , typename std::enable_if&lt; !std::is_integral&lt; typename ProductType&lt; Number, OtherNumber &gt;::type &gt;::value, int &gt;::type  = 0&gt; </td></tr>
-<tr class="memitem:a90b0bb7059f1e3416d6ef17d9e3e12c7"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceinternal_1_1TensorImplementation.html#a90b0bb7059f1e3416d6ef17d9e3e12c7">internal::TensorImplementation::division_operator</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;t, const OtherNumber &amp;factor)</td></tr>
+<tr class="memitem:a90b0bb7059f1e3416d6ef17d9e3e12c7"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceinternal_1_1TensorImplementation.html#a90b0bb7059f1e3416d6ef17d9e3e12c7">internal::TensorImplementation::division_operator</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> OtherNumber &amp;<a class="el" href="sparse__decomposition__0_8txt.html#aa36e69f7b51d00cbf24c899c1490950c">factor</a>)</td></tr>
 <tr class="separator:a90b0bb7059f1e3416d6ef17d9e3e12c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Output functions for Tensor objects</div></td></tr>
 <tr class="memitem:aa6dbdfaae175fb64daf4370a78da8a77"><td class="memTemplParams" colspan="2">template&lt;int rank_, int dim, typename Number &gt; </td></tr>
-<tr class="memitem:aa6dbdfaae175fb64daf4370a78da8a77"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#aa6dbdfaae175fb64daf4370a78da8a77">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_, dim, Number &gt; &amp;p)</td></tr>
+<tr class="memitem:aa6dbdfaae175fb64daf4370a78da8a77"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#aa6dbdfaae175fb64daf4370a78da8a77">operator&lt;&lt;</a> (std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>)</td></tr>
 <tr class="separator:aa6dbdfaae175fb64daf4370a78da8a77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed228386c60c5fd56031d4f034eca97f"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:aed228386c60c5fd56031d4f034eca97f"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#aed228386c60c5fd56031d4f034eca97f">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;p)</td></tr>
+<tr class="memitem:aed228386c60c5fd56031d4f034eca97f"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#aed228386c60c5fd56031d4f034eca97f">operator&lt;&lt;</a> (std::ostream &amp;<a class="el" href="la__parallel__block__vector__0_8txt.html#a38646e394cbb4630086107945fff0c2f">out</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>)</td></tr>
 <tr class="separator:aed228386c60c5fd56031d4f034eca97f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Vector space operations on Tensor objects:</div></td></tr>
 <tr class="memitem:a7d3cac921f59d70d5b65a638bb7a8046"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number , typename Other &gt; </td></tr>
-<tr class="memitem:a7d3cac921f59d70d5b65a638bb7a8046"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt; Other, Number &gt;::type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a7d3cac921f59d70d5b65a638bb7a8046">operator*</a> (const Other &amp;object, const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;t)</td></tr>
+<tr class="memitem:a7d3cac921f59d70d5b65a638bb7a8046"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt; Other, Number &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a7d3cac921f59d70d5b65a638bb7a8046">operator*</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Other &amp;<a class="el" href="particle__0_8txt.html#aa5453bb7f5639b588c4baf9c9e74a5f1">object</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t)</td></tr>
 <tr class="separator:a7d3cac921f59d70d5b65a638bb7a8046"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a491f974aed4d1a5cbe31df2c9e88bb21"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number , typename Other &gt; </td></tr>
-<tr class="memitem:a491f974aed4d1a5cbe31df2c9e88bb21"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt; Number, Other &gt;::type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a491f974aed4d1a5cbe31df2c9e88bb21">operator*</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;t, const Other &amp;object)</td></tr>
+<tr class="memitem:a491f974aed4d1a5cbe31df2c9e88bb21"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt; Number, Other &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a491f974aed4d1a5cbe31df2c9e88bb21">operator*</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Other &amp;<a class="el" href="particle__0_8txt.html#aa5453bb7f5639b588c4baf9c9e74a5f1">object</a>)</td></tr>
 <tr class="separator:a491f974aed4d1a5cbe31df2c9e88bb21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03916ad841ef540207a3a36e72a6f1ab"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a03916ad841ef540207a3a36e72a6f1ab"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a03916ad841ef540207a3a36e72a6f1ab">operator*</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;src1, const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, OtherNumber &gt; &amp;src2)</td></tr>
+<tr class="memitem:a03916ad841ef540207a3a36e72a6f1ab"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a03916ad841ef540207a3a36e72a6f1ab">operator*</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;src1, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;src2)</td></tr>
 <tr class="separator:a03916ad841ef540207a3a36e72a6f1ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d00b8128b9d1afd9713d4bbdc5645b0"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a6d00b8128b9d1afd9713d4bbdc5645b0"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt; OtherNumber &gt;::type &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a6d00b8128b9d1afd9713d4bbdc5645b0">operator/</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;t, const OtherNumber &amp;factor)</td></tr>
+<tr class="memitem:a6d00b8128b9d1afd9713d4bbdc5645b0"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt; OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a6d00b8128b9d1afd9713d4bbdc5645b0">operator/</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> OtherNumber &amp;<a class="el" href="sparse__decomposition__0_8txt.html#aa36e69f7b51d00cbf24c899c1490950c">factor</a>)</td></tr>
 <tr class="separator:a6d00b8128b9d1afd9713d4bbdc5645b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9cb3a2803cdef8c678b05390d338381d"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a9cb3a2803cdef8c678b05390d338381d"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a9cb3a2803cdef8c678b05390d338381d">operator+</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;p, const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, OtherNumber &gt; &amp;q)</td></tr>
+<tr class="memitem:a9cb3a2803cdef8c678b05390d338381d"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a9cb3a2803cdef8c678b05390d338381d">operator+</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;q)</td></tr>
 <tr class="separator:a9cb3a2803cdef8c678b05390d338381d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38b26f57984d5dfa128522e0daf1b8eb"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a38b26f57984d5dfa128522e0daf1b8eb"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a38b26f57984d5dfa128522e0daf1b8eb">operator-</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;p, const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, OtherNumber &gt; &amp;q)</td></tr>
+<tr class="memitem:a38b26f57984d5dfa128522e0daf1b8eb"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a38b26f57984d5dfa128522e0daf1b8eb">operator-</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;q)</td></tr>
 <tr class="separator:a38b26f57984d5dfa128522e0daf1b8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23c1c074227795b3e67a668f7341eef0"><td class="memTemplParams" colspan="2">template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a23c1c074227795b3e67a668f7341eef0"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt; OtherNumber &gt;::type &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a23c1c074227795b3e67a668f7341eef0">operator*</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;t, const OtherNumber &amp;factor)</td></tr>
+<tr class="memitem:a23c1c074227795b3e67a668f7341eef0"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt; OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a23c1c074227795b3e67a668f7341eef0">operator*</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> OtherNumber &amp;<a class="el" href="sparse__decomposition__0_8txt.html#aa36e69f7b51d00cbf24c899c1490950c">factor</a>)</td></tr>
 <tr class="separator:a23c1c074227795b3e67a668f7341eef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66f19b228935304e2ce086a4b3820355"><td class="memTemplParams" colspan="2">template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a66f19b228935304e2ce086a4b3820355"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt; Number &gt;::type, OtherNumber &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a66f19b228935304e2ce086a4b3820355">operator*</a> (const Number &amp;factor, const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, OtherNumber &gt; &amp;t)</td></tr>
+<tr class="memitem:a66f19b228935304e2ce086a4b3820355"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt; Number &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a66f19b228935304e2ce086a4b3820355">operator*</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;<a class="el" href="sparse__decomposition__0_8txt.html#aa36e69f7b51d00cbf24c899c1490950c">factor</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;t)</td></tr>
 <tr class="separator:a66f19b228935304e2ce086a4b3820355"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7eb7473ab9ff22e283ff95f8600a5ea2"><td class="memTemplParams" colspan="2">template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a7eb7473ab9ff22e283ff95f8600a5ea2"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt; OtherNumber &gt;::type &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a7eb7473ab9ff22e283ff95f8600a5ea2">operator/</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;t, const OtherNumber &amp;factor)</td></tr>
+<tr class="memitem:a7eb7473ab9ff22e283ff95f8600a5ea2"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt; OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a7eb7473ab9ff22e283ff95f8600a5ea2">operator/</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> OtherNumber &amp;<a class="el" href="sparse__decomposition__0_8txt.html#aa36e69f7b51d00cbf24c899c1490950c">factor</a>)</td></tr>
 <tr class="separator:a7eb7473ab9ff22e283ff95f8600a5ea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e12294bc68d01b05dd6c697f879bf4f"><td class="memTemplParams" colspan="2">template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a4e12294bc68d01b05dd6c697f879bf4f"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a4e12294bc68d01b05dd6c697f879bf4f">operator+</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;p, const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, OtherNumber &gt; &amp;q)</td></tr>
+<tr class="memitem:a4e12294bc68d01b05dd6c697f879bf4f"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a4e12294bc68d01b05dd6c697f879bf4f">operator+</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;q)</td></tr>
 <tr class="separator:a4e12294bc68d01b05dd6c697f879bf4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a916f0915292f2a8ddc8b54f4b07fd000"><td class="memTemplParams" colspan="2">template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a916f0915292f2a8ddc8b54f4b07fd000"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a916f0915292f2a8ddc8b54f4b07fd000">operator-</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;p, const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, OtherNumber &gt; &amp;q)</td></tr>
+<tr class="memitem:a916f0915292f2a8ddc8b54f4b07fd000"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a916f0915292f2a8ddc8b54f4b07fd000">operator-</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;<a class="el" href="multithreading__0_8txt.html#a0bfb8de17844b28306aa6934b1d7c696">p</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;q)</td></tr>
 <tr class="separator:a916f0915292f2a8ddc8b54f4b07fd000"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae746f37f02eaebc3ec297968c3c439cd"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:ae746f37f02eaebc3ec297968c3c439cd"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ae746f37f02eaebc3ec297968c3c439cd">schur_product</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;src1, const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, OtherNumber &gt; &amp;src2)</td></tr>
+<tr class="memitem:ae746f37f02eaebc3ec297968c3c439cd"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ae746f37f02eaebc3ec297968c3c439cd">schur_product</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;src1, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;src2)</td></tr>
 <tr class="separator:ae746f37f02eaebc3ec297968c3c439cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9429792b59593a340fa58aea512ef5a5"><td class="memTemplParams" colspan="2">template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a9429792b59593a340fa58aea512ef5a5"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a9429792b59593a340fa58aea512ef5a5">schur_product</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;src1, const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, OtherNumber &gt; &amp;src2)</td></tr>
+<tr class="memitem:a9429792b59593a340fa58aea512ef5a5"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a9429792b59593a340fa58aea512ef5a5">schur_product</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;src1, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;src2)</td></tr>
 <tr class="separator:a9429792b59593a340fa58aea512ef5a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Contraction operations and the outer product for tensor objects</div></td></tr>
 <tr class="memitem:ad59ec316272a55b8516586404f86075d"><td class="memTemplParams" colspan="2">template&lt;int rank_1, int rank_2, int dim, typename Number , typename OtherNumber , typename  = typename std::enable_if&lt;rank_1 &gt;= 1 &amp;&amp; rank_2&gt; </td></tr>
-<tr class="memitem:ad59ec316272a55b8516586404f86075d"><td class="memTemplItemLeft" align="right" valign="top">OtherNumber ::type ::tensor_type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ad59ec316272a55b8516586404f86075d">operator*</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, dim, Number &gt; &amp;src1, const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, dim, OtherNumber &gt; &amp;src2)</td></tr>
+<tr class="memitem:ad59ec316272a55b8516586404f86075d"><td class="memTemplItemLeft" align="right" valign="top">OtherNumber ::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> ::tensor_type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ad59ec316272a55b8516586404f86075d">operator*</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;src1, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;src2)</td></tr>
 <tr class="separator:ad59ec316272a55b8516586404f86075d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d9f1786b8de22329be8fce0faab1c8a"><td class="memTemplParams" colspan="2">template&lt;int index_1, int index_2, int rank_1, int rank_2, int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a8d9f1786b8de22329be8fce0faab1c8a"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1+rank_2 - 2, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type &gt;::tensor_type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a8d9f1786b8de22329be8fce0faab1c8a">contract</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, dim, Number &gt; &amp;src1, const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, dim, OtherNumber &gt; &amp;src2)</td></tr>
+<tr class="memitem:a8d9f1786b8de22329be8fce0faab1c8a"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1+rank_2 - 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;::tensor_type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a8d9f1786b8de22329be8fce0faab1c8a">contract</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;src1, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;src2)</td></tr>
 <tr class="separator:a8d9f1786b8de22329be8fce0faab1c8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a334a8450791eca072f443fb497b6566c"><td class="memTemplParams" colspan="2">template&lt;int index_1, int index_2, int index_3, int index_4, int rank_1, int rank_2, int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a334a8450791eca072f443fb497b6566c"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1+rank_2 - 4, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type &gt;::tensor_type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a334a8450791eca072f443fb497b6566c">double_contract</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, dim, Number &gt; &amp;src1, const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, dim, OtherNumber &gt; &amp;src2)</td></tr>
+<tr class="memitem:a334a8450791eca072f443fb497b6566c"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1+rank_2 - 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;::tensor_type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a334a8450791eca072f443fb497b6566c">double_contract</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;src1, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;src2)</td></tr>
 <tr class="separator:a334a8450791eca072f443fb497b6566c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2526ccb15c2debe346690560d0fcb336"><td class="memTemplParams" colspan="2">template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a2526ccb15c2debe346690560d0fcb336"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a2526ccb15c2debe346690560d0fcb336">scalar_product</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;left, const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, OtherNumber &gt; &amp;right)</td></tr>
+<tr class="memitem:a2526ccb15c2debe346690560d0fcb336"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a2526ccb15c2debe346690560d0fcb336">scalar_product</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;<a class="el" href="dof__renumbering__0_8txt.html#ac3d8d9248a8deade35c7885be0096758">left</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;<a class="el" href="fe__tools__0_8txt.html#a65a8cf466d3dfcbbb71981c170be3436">right</a>)</td></tr>
 <tr class="separator:a2526ccb15c2debe346690560d0fcb336"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a345005aef1688725bf186d965f19d797"><td class="memTemplParams" colspan="2">template&lt;template&lt; int, int, typename &gt; class TensorT1, template&lt; int, int, typename &gt; class TensorT2, template&lt; int, int, typename &gt; class TensorT3, int rank_1, int rank_2, int dim, typename T1 , typename T2 , typename T3 &gt; </td></tr>
-<tr class="memitem:a345005aef1688725bf186d965f19d797"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt; T1, typename <a class="el" href="structProductType.html">ProductType</a>&lt; T2, T3 &gt;::type &gt;::type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a345005aef1688725bf186d965f19d797">contract3</a> (const TensorT1&lt; rank_1, dim, T1 &gt; &amp;left, const TensorT2&lt; rank_1+rank_2, dim, T2 &gt; &amp;middle, const TensorT3&lt; rank_2, dim, T3 &gt; &amp;right)</td></tr>
+<tr class="memitem:a345005aef1688725bf186d965f19d797"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt; T1, typename <a class="el" href="structProductType.html">ProductType</a>&lt; T2, T3 &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a345005aef1688725bf186d965f19d797">contract3</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> TensorT1&lt; rank_1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, T1 &gt; &amp;<a class="el" href="dof__renumbering__0_8txt.html#ac3d8d9248a8deade35c7885be0096758">left</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> TensorT2&lt; rank_1+rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, T2 &gt; &amp;middle, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> TensorT3&lt; rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, T3 &gt; &amp;<a class="el" href="fe__tools__0_8txt.html#a65a8cf466d3dfcbbb71981c170be3436">right</a>)</td></tr>
 <tr class="separator:a345005aef1688725bf186d965f19d797"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a855c0ce9ff2e6854210f8a7dc018322d"><td class="memTemplParams" colspan="2">template&lt;int rank_1, int rank_2, int dim, typename Number , typename OtherNumber &gt; </td></tr>
-<tr class="memitem:a855c0ce9ff2e6854210f8a7dc018322d"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1+rank_2, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a855c0ce9ff2e6854210f8a7dc018322d">outer_product</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, dim, Number &gt; &amp;src1, const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, dim, OtherNumber &gt; &amp;src2)</td></tr>
+<tr class="memitem:a855c0ce9ff2e6854210f8a7dc018322d"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1+rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number, OtherNumber &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a855c0ce9ff2e6854210f8a7dc018322d">outer_product</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;src1, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;src2)</td></tr>
 <tr class="separator:a855c0ce9ff2e6854210f8a7dc018322d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Special operations on tensors of rank 1</div></td></tr>
 <tr class="memitem:a91e0e4214c4df6c706789d5bd86ad804"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:a91e0e4214c4df6c706789d5bd86ad804"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a91e0e4214c4df6c706789d5bd86ad804">cross_product_2d</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number &gt; &amp;src)</td></tr>
+<tr class="memitem:a91e0e4214c4df6c706789d5bd86ad804"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a91e0e4214c4df6c706789d5bd86ad804">cross_product_2d</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;src)</td></tr>
 <tr class="separator:a91e0e4214c4df6c706789d5bd86ad804"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea5c6683390315ab21bf466314aa1908"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number1 , typename Number2 &gt; </td></tr>
-<tr class="memitem:aea5c6683390315ab21bf466314aa1908"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number1, Number2 &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#aea5c6683390315ab21bf466314aa1908">cross_product_3d</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number1 &gt; &amp;src1, const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number2 &gt; &amp;src2)</td></tr>
+<tr class="memitem:aea5c6683390315ab21bf466314aa1908"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt; Number1, Number2 &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#aea5c6683390315ab21bf466314aa1908">cross_product_3d</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number1 &gt; &amp;src1, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number2 &gt; &amp;src2)</td></tr>
 <tr class="separator:aea5c6683390315ab21bf466314aa1908"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Special operations on tensors of rank 2</div></td></tr>
 <tr class="memitem:a3e191fd2cb0ed2b86e5ca58aaedcdd13"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:a3e191fd2cb0ed2b86e5ca58aaedcdd13"><td class="memTemplItemLeft" align="right" valign="top">constexpr Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a3e191fd2cb0ed2b86e5ca58aaedcdd13">determinant</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;t)</td></tr>
+<tr class="memitem:a3e191fd2cb0ed2b86e5ca58aaedcdd13"><td class="memTemplItemLeft" align="right" valign="top">constexpr Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a3e191fd2cb0ed2b86e5ca58aaedcdd13">determinant</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t)</td></tr>
 <tr class="separator:a3e191fd2cb0ed2b86e5ca58aaedcdd13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6a5bcd00c2a33b1af85f2ffc2976243"><td class="memTemplParams" colspan="2">template&lt;typename Number &gt; </td></tr>
-<tr class="memitem:ab6a5bcd00c2a33b1af85f2ffc2976243"><td class="memTemplItemLeft" align="right" valign="top">constexpr Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ab6a5bcd00c2a33b1af85f2ffc2976243">determinant</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 1, Number &gt; &amp;t)</td></tr>
+<tr class="memitem:ab6a5bcd00c2a33b1af85f2ffc2976243"><td class="memTemplItemLeft" align="right" valign="top">constexpr Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ab6a5bcd00c2a33b1af85f2ffc2976243">determinant</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 1, Number &gt; &amp;t)</td></tr>
 <tr class="separator:ab6a5bcd00c2a33b1af85f2ffc2976243"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad34b6b774c5a94e2d75219bc1de767f5"><td class="memTemplParams" colspan="2">template&lt;typename Number &gt; </td></tr>
-<tr class="memitem:ad34b6b774c5a94e2d75219bc1de767f5"><td class="memTemplItemLeft" align="right" valign="top">constexpr Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ad34b6b774c5a94e2d75219bc1de767f5">determinant</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 2, Number &gt; &amp;t)</td></tr>
+<tr class="memitem:ad34b6b774c5a94e2d75219bc1de767f5"><td class="memTemplItemLeft" align="right" valign="top">constexpr Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ad34b6b774c5a94e2d75219bc1de767f5">determinant</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 2, Number &gt; &amp;t)</td></tr>
 <tr class="separator:ad34b6b774c5a94e2d75219bc1de767f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9fff6c2d9823b88726460d9bd373a5b"><td class="memTemplParams" colspan="2">template&lt;typename Number &gt; </td></tr>
-<tr class="memitem:ae9fff6c2d9823b88726460d9bd373a5b"><td class="memTemplItemLeft" align="right" valign="top">constexpr Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ae9fff6c2d9823b88726460d9bd373a5b">determinant</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 3, Number &gt; &amp;t)</td></tr>
+<tr class="memitem:ae9fff6c2d9823b88726460d9bd373a5b"><td class="memTemplItemLeft" align="right" valign="top">constexpr Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ae9fff6c2d9823b88726460d9bd373a5b">determinant</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 3, Number &gt; &amp;t)</td></tr>
 <tr class="separator:ae9fff6c2d9823b88726460d9bd373a5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a947dac48d007097defaf2736e4586e1d"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:a947dac48d007097defaf2736e4586e1d"><td class="memTemplItemLeft" align="right" valign="top">constexpr Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a947dac48d007097defaf2736e4586e1d">trace</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;d)</td></tr>
+<tr class="memitem:a947dac48d007097defaf2736e4586e1d"><td class="memTemplItemLeft" align="right" valign="top">constexpr Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a947dac48d007097defaf2736e4586e1d">trace</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;d)</td></tr>
 <tr class="separator:a947dac48d007097defaf2736e4586e1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3945b8cec369b856b3851961f1418a47"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:a3945b8cec369b856b3851961f1418a47"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a3945b8cec369b856b3851961f1418a47">invert</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;)</td></tr>
+<tr class="memitem:a3945b8cec369b856b3851961f1418a47"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a3945b8cec369b856b3851961f1418a47">invert</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;)</td></tr>
 <tr class="separator:a3945b8cec369b856b3851961f1418a47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f29ee428488f62cf63eeae89d5e7a1c"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:a1f29ee428488f62cf63eeae89d5e7a1c"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a1f29ee428488f62cf63eeae89d5e7a1c">transpose</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;t)</td></tr>
+<tr class="memitem:a1f29ee428488f62cf63eeae89d5e7a1c"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a1f29ee428488f62cf63eeae89d5e7a1c">transpose</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t)</td></tr>
 <tr class="separator:a1f29ee428488f62cf63eeae89d5e7a1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2cdf69669fa1393fbcf23bfdbd9624b5"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:a2cdf69669fa1393fbcf23bfdbd9624b5"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a2cdf69669fa1393fbcf23bfdbd9624b5">adjugate</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;t)</td></tr>
+<tr class="memitem:a2cdf69669fa1393fbcf23bfdbd9624b5"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a2cdf69669fa1393fbcf23bfdbd9624b5">adjugate</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t)</td></tr>
 <tr class="separator:a2cdf69669fa1393fbcf23bfdbd9624b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5a3abf2d9de73bfa688e5050377e15f"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:ac5a3abf2d9de73bfa688e5050377e15f"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ac5a3abf2d9de73bfa688e5050377e15f">cofactor</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;t)</td></tr>
+<tr class="memitem:ac5a3abf2d9de73bfa688e5050377e15f"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#ac5a3abf2d9de73bfa688e5050377e15f">cofactor</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t)</td></tr>
 <tr class="separator:ac5a3abf2d9de73bfa688e5050377e15f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a035b3ba87f38c258a3e243358eb36080"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:a035b3ba87f38c258a3e243358eb36080"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a035b3ba87f38c258a3e243358eb36080">project_onto_orthogonal_tensors</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;A)</td></tr>
+<tr class="memitem:a035b3ba87f38c258a3e243358eb36080"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a035b3ba87f38c258a3e243358eb36080">project_onto_orthogonal_tensors</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;<a class="el" href="symmetric__tensor__0_8txt.html#a37cd5701f5aaccacc8caf38d4a7a903a">A</a>)</td></tr>
 <tr class="separator:a035b3ba87f38c258a3e243358eb36080"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93ba01d979880b278cd4b573dd9c653b"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:a93ba01d979880b278cd4b573dd9c653b"><td class="memTemplItemLeft" align="right" valign="top">Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a93ba01d979880b278cd4b573dd9c653b">l1_norm</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;t)</td></tr>
+<tr class="memitem:a93ba01d979880b278cd4b573dd9c653b"><td class="memTemplItemLeft" align="right" valign="top">Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a93ba01d979880b278cd4b573dd9c653b">l1_norm</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t)</td></tr>
 <tr class="separator:a93ba01d979880b278cd4b573dd9c653b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a858195ddbd94c49d6a2cdd447fc5ee63"><td class="memTemplParams" colspan="2">template&lt;int dim, typename Number &gt; </td></tr>
-<tr class="memitem:a858195ddbd94c49d6a2cdd447fc5ee63"><td class="memTemplItemLeft" align="right" valign="top">Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a858195ddbd94c49d6a2cdd447fc5ee63">linfty_norm</a> (const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;t)</td></tr>
+<tr class="memitem:a858195ddbd94c49d6a2cdd447fc5ee63"><td class="memTemplItemLeft" align="right" valign="top">Number&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="translator_2base_2tensor_8h.html#a858195ddbd94c49d6a2cdd447fc5ee63">linfty_norm</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;t)</td></tr>
 <tr class="separator:a858195ddbd94c49d6a2cdd447fc5ee63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -255,7 +255,7 @@ template&lt;int rank_, int dim, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::ostream&amp; operator&lt;&lt; </td>
+          <td class="memname">std::ostream&amp; <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>&lt;&lt; </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
           <td class="paramname"><em>out</em>, </td>
@@ -263,7 +263,7 @@ template&lt;int rank_, int dim, typename Number &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -296,7 +296,7 @@ template&lt;int dim, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::ostream&amp; operator&lt;&lt; </td>
+          <td class="memname">std::ostream&amp; <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>&lt;&lt; </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
           <td class="paramname"><em>out</em>, </td>
@@ -304,7 +304,7 @@ template&lt;int dim, typename Number &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>&#160;</td>
         </tr>
         <tr>
@@ -337,15 +337,15 @@ template&lt;int dim, typename Number , typename Other &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt;Other, Number&gt;::type operator* </td>
+          <td class="memname">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt;Other, Number&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>* </td>
           <td>(</td>
-          <td class="paramtype">const Other &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Other &amp;&#160;</td>
           <td class="paramname"><em>object</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em>&#160;</td>
         </tr>
         <tr>
@@ -379,15 +379,15 @@ template&lt;int dim, typename Number , typename Other &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt;Number, Other&gt;::type operator* </td>
+          <td class="memname">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt;Number, Other&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>* </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Other &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Other &amp;&#160;</td>
           <td class="paramname"><em>object</em>&#160;</td>
         </tr>
         <tr>
@@ -421,15 +421,15 @@ template&lt;int dim, typename Number , typename OtherNumber &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type operator* </td>
+          <td class="memname">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>* </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>src1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>src2</em>&#160;</td>
         </tr>
         <tr>
@@ -463,15 +463,15 @@ template&lt;int dim, typename Number , typename OtherNumber &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;0, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt;OtherNumber&gt;::type&gt;::type&gt; operator/ </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt;OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>/ </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const OtherNumber &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> OtherNumber &amp;&#160;</td>
           <td class="paramname"><em>factor</em>&#160;</td>
         </tr>
         <tr>
@@ -505,15 +505,15 @@ template&lt;int dim, typename Number , typename OtherNumber &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;0, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type&gt; operator+ </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>+ </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>q</em>&#160;</td>
         </tr>
         <tr>
@@ -547,15 +547,15 @@ template&lt;int dim, typename Number , typename OtherNumber &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;0, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type&gt; operator- </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>- </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>q</em>&#160;</td>
         </tr>
         <tr>
@@ -589,15 +589,15 @@ template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt;OtherNumber&gt;::type&gt;::type&gt; operator* </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;<a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt;OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>* </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const OtherNumber &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> OtherNumber &amp;&#160;</td>
           <td class="paramname"><em>factor</em>&#160;</td>
         </tr>
         <tr>
@@ -631,15 +631,15 @@ template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt;Number&gt;::type, OtherNumber&gt;::type&gt; operator* </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;<a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt;Number&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>* </td>
           <td>(</td>
-          <td class="paramtype">const Number &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> Number &amp;&#160;</td>
           <td class="paramname"><em>factor</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em>&#160;</td>
         </tr>
         <tr>
@@ -673,15 +673,15 @@ template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt;OtherNumber&gt;::type&gt;::type&gt; operator/ </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;<a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, typename <a class="el" href="structEnableIfScalar.html">EnableIfScalar</a>&lt;OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>/ </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const OtherNumber &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> OtherNumber &amp;&#160;</td>
           <td class="paramname"><em>factor</em>&#160;</td>
         </tr>
         <tr>
@@ -715,15 +715,15 @@ template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type&gt; operator+ </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;<a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>+ </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>q</em>&#160;</td>
         </tr>
         <tr>
@@ -762,15 +762,15 @@ template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type&gt; operator- </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;<a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>- </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>q</em>&#160;</td>
         </tr>
         <tr>
@@ -809,15 +809,15 @@ template&lt;int dim, typename Number , typename OtherNumber &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;0, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type&gt; schur_product </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; schur_product </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>src1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 0, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 0, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>src2</em>&#160;</td>
         </tr>
         <tr>
@@ -850,15 +850,15 @@ template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type&gt; schur_product </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;<a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; schur_product </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>src1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>src2</em>&#160;</td>
         </tr>
         <tr>
@@ -896,15 +896,15 @@ template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </div
 template&lt;int rank_1, int rank_2, int dim, typename Number , typename OtherNumber , typename  = typename std::enable_if&lt;rank_1 &gt;= 1 &amp;&amp; rank_2&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">OtherNumber ::type ::tensor_type operator* </td>
+          <td class="memname">OtherNumber ::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> ::tensor_type <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">operator</a>* </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>src1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>src2</em>&#160;</td>
         </tr>
         <tr>
@@ -931,15 +931,15 @@ template&lt;int index_1, int index_2, int rank_1, int rank_2, int dim, typename 
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank_1 + rank_2 - 2, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type&gt;::tensor_type contract </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank_1 + rank_2 - 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt;::tensor_type contract </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>src1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>src2</em>&#160;</td>
         </tr>
         <tr>
@@ -979,15 +979,15 @@ template&lt;int index_1, int index_2, int index_3, int index_4, int rank_1, int 
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank_1 + rank_2 - 4, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type&gt;::tensor_type double_contract </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank_1 + rank_2 - 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt;::tensor_type double_contract </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>src1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>src2</em>&#160;</td>
         </tr>
         <tr>
@@ -1027,15 +1027,15 @@ template&lt;int rank, int dim, typename Number , typename OtherNumber &gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type scalar_product </td>
+          <td class="memname">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> scalar_product </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>left</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; <a class="el" href="vector__valued__0_8txt.html#a829880cc3bd20a807fe06caef3f5fb31">rank</a>, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>right</em>&#160;</td>
         </tr>
         <tr>
@@ -1070,21 +1070,21 @@ template&lt;template&lt; int, int, typename &gt; class TensorT1, template&lt; in
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt;T1, typename <a class="el" href="structProductType.html">ProductType</a>&lt;T2, T3&gt;::type&gt;::type contract3 </td>
+          <td class="memname">constexpr <a class="el" href="structProductType.html">ProductType</a>&lt;T1, typename <a class="el" href="structProductType.html">ProductType</a>&lt;T2, T3&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> contract3 </td>
           <td>(</td>
-          <td class="paramtype">const TensorT1&lt; rank_1, dim, T1 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> TensorT1&lt; rank_1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, T1 &gt; &amp;&#160;</td>
           <td class="paramname"><em>left</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const TensorT2&lt; rank_1+rank_2, dim, T2 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> TensorT2&lt; rank_1+rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, T2 &gt; &amp;&#160;</td>
           <td class="paramname"><em>middle</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const TensorT3&lt; rank_2, dim, T3 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> TensorT3&lt; rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, T3 &gt; &amp;&#160;</td>
           <td class="paramname"><em>right</em>&#160;</td>
         </tr>
         <tr>
@@ -1120,15 +1120,15 @@ template&lt;int rank_1, int rank_2, int dim, typename Number , typename OtherNum
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank_1 + rank_2, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::type&gt; outer_product </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;rank_1 + rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number, OtherNumber&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; outer_product </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>src1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, dim, OtherNumber &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; rank_2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, OtherNumber &gt; &amp;&#160;</td>
           <td class="paramname"><em>src2</em>&#160;</td>
         </tr>
         <tr>
@@ -1163,9 +1163,9 @@ template&lt;int dim, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;1, dim, Number&gt; cross_product_2d </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number&gt; cross_product_2d </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>src</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1194,15 +1194,15 @@ template&lt;int dim, typename Number1 , typename Number2 &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;1, dim, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number1, Number2&gt;::type&gt; cross_product_3d </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, typename <a class="el" href="structProductType.html">ProductType</a>&lt;Number1, Number2&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&gt; cross_product_3d </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number1 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number1 &gt; &amp;&#160;</td>
           <td class="paramname"><em>src1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number2 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number2 &gt; &amp;&#160;</td>
           <td class="paramname"><em>src2</em>&#160;</td>
         </tr>
         <tr>
@@ -1237,7 +1237,7 @@ template&lt;int dim, typename Number &gt; </div>
         <tr>
           <td class="memname">constexpr Number determinant </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1268,7 +1268,7 @@ template&lt;typename Number &gt; </div>
         <tr>
           <td class="memname">constexpr Number determinant </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 1, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 1, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1299,7 +1299,7 @@ template&lt;typename Number &gt; </div>
         <tr>
           <td class="memname">constexpr Number determinant </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 2, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 2, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1330,7 +1330,7 @@ template&lt;typename Number &gt; </div>
         <tr>
           <td class="memname">constexpr Number determinant </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 3, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, 3, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1361,7 +1361,7 @@ template&lt;int dim, typename Number &gt; </div>
         <tr>
           <td class="memname">constexpr Number trace </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>d</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1390,9 +1390,9 @@ template&lt;int dim, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;2, dim, Number&gt; invert </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number&gt; invert </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -1421,9 +1421,9 @@ template&lt;int dim, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;2, dim, Number&gt; transpose </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number&gt; transpose </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1452,9 +1452,9 @@ template&lt;int dim, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;2, dim, Number&gt; adjugate </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number&gt; adjugate </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1486,9 +1486,9 @@ template&lt;int dim, typename Number &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;2, dim, Number&gt; cofactor </td>
+          <td class="memname">constexpr <a class="el" href="classTensor.html">Tensor</a>&lt;2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number&gt; cofactor </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1517,9 +1517,9 @@ template&lt;int dim, typename Number &gt; </div>
 template&lt;int dim, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;2, dim, Number&gt; project_onto_orthogonal_tensors </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt;2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number&gt; project_onto_orthogonal_tensors </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>A</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1608,7 +1608,7 @@ template&lt;int dim, typename Number &gt; </div>
         <tr>
           <td class="memname">Number l1_norm </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1639,7 +1639,7 @@ template&lt;int dim, typename Number &gt; </div>
         <tr>
           <td class="memname">Number linfty_norm </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
         </tr>

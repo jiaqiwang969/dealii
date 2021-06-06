@@ -7,7 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>The deal.II Library: hp-finite element support</title>
+<title>The deal.II Library: hp-finite element support Classes and functions that have to</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -90,14 +90,14 @@ $(function() {
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
-<div class="title">hp-finite element support</div>  </div>
+<div class="title">hp-finite element support Classes and functions that have to</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Classes and functions that have to do with hp-finite elements. The <a class="el" href="step_27.html">step-27</a> tutorial program gives an overview of how to use the classes in this namespace. A slightly more exotic application is given in <a class="el" href="step_46.html">step-46</a>.  
+<p>do with hp-finite elements. The <a class="el" href="step_27.html">step-27</a> tutorial program gives an overview of how to use the classes in this namespace. A slightly more exotic application is given in <a class="el" href="step_46.html">step-46</a> . The hp-namespace implements the algorithms and data structures used for the hp-framework in deal.II. An overview over the details of how these algorithms work and what data structures are used is given in the <a class="el" href="DEALGlossary.html#hp_paper">hp-paper</a>.  
 <a href="#details">More...</a></p>
 <div class="dynheader">
-Collaboration diagram for hp-finite element support:</div>
+Collaboration diagram for hp-finite element support Classes and functions that have to:</div>
 <div class="dyncontent">
 <div class="center"><!-- SVG 0 -->
 </div>
@@ -105,8 +105,8 @@ Collaboration diagram for hp-finite element support:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group__hpcollection"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hpcollection.html">hp-Collections</a></td></tr>
-<tr class="memdesc:group__hpcollection"><td class="mdescLeft">&#160;</td><td class="mdescRight">In the implementation of the hp-finite element method, each cell might have a different finite element associated with it. To handle this, the <a class="el" href="group__dofs.html#ga768cd565b5c25f1ac235586e36ac94d6">hp::DoFHandler</a> must have a whole set of finite element classes associated with it. This concept is represented by the <a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a> class: Objects of this type act as containers that hold a whole set of finite element objects. Instead of storing pointers to finite element objects on each cell, we then only store an index for each cell that identifies the finite element object within the collection that should be used by this cell. The <a class="el" href="classDoFHandler.html">DoFHandler</a> object associated with the given cell can then assign degrees of freedom to each cell in accordance with the finite element used for it. <br /></td></tr>
+<tr class="memitem:group__hpcollection"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hpcollection.html">hp-Collections In the implementation of the</a></td></tr>
+<tr class="memdesc:group__hpcollection"><td class="mdescLeft">&#160;</td><td class="mdescRight">hp-finite element method, each cell might have a different finite element associated with it. To handle this, the <a class="el" href="group__dofs.html#ga768cd565b5c25f1ac235586e36ac94d6">hp::DoFHandler</a> must have a whole set of finite element classes associated with it. This concept is represented by the <a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a> class: Objects of this type act as containers that hold a whole set of finite element objects. Instead of storing pointers to finite element objects on each cell, we then only store an index for each cell that identifies the finite element object within the collection that should be used by this cell. The <a class="el" href="classDoFHandler.html">DoFHandler</a> object associated with the given cell can then assign degrees of freedom to each cell in accordance with the finite element used for it. A similar situation arises when integrating terms on a cell: one may want to use different quadrature formulas for different finite elements. For example, on cells where we use a Q1 element, a <a class="el" href="vector__tools__integrate__difference__0_8txt.html#ab24469127f1997c40730327503fd684a">QGauss(2)</a> object (i.e. a quadrature formula with two points in each space direction) may be sufficient, but on another cell where a Q3 element is used, this would lead to underintegration and we should use a <a class="el" href="hp__0_8txt.html#aae852286c2ae8c0fc2705f3aa25d0ea1">QGauss(4)</a> formula instead. Just as above, there exists a class <a class="el" href="classhp_1_1QCollection.html">hp::QCollection</a> that acts as a collection of quadrature formulas. Finally, one may want to use different orders for the boundary approximation for cells with different orders for the finite element. The <a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a> class allows to do this. All of these three classes, the <a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a>, <a class="el" href="classhp_1_1QCollection.html">hp::QCollection</a>, and <a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a> classes, implement an interface very similar to that of <code>std::vector</code> . They have functions <code><a class="el" href="q__collection__0_8txt.html#a98a6b91a750cdd7301bb66162fa71e80">push_back()</a></code> to add a finite element, quadrature formula, or mapping to the collection. They have an <code>operator[] (unsigned int)</code> function that allows to retrieve a reference to a given element of the collection. And they have a <code><a class="el" href="function__0_8txt.html#a4f780342f2d5d632f82cf7fd90158a66">size()</a></code> function that returns the number of elements in the collection. Some of the classes, in particular that holding finite element objects, also implement other functions specific to their purpose. The similarity goes beyond the interface: When adding an element to the collection, all of the classes create a copy of the argument. This allows to pass a temporary object to the function adding the element. For example, the following works: <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -136,9 +136,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Classes and functions that have to do with hp-finite elements. The <a class="el" href="step_27.html">step-27</a> tutorial program gives an overview of how to use the classes in this namespace. A slightly more exotic application is given in <a class="el" href="step_46.html">step-46</a>. </p>
-<p>do with hp-finite elements. The <a class="el" href="step_27.html">step-27</a> tutorial program gives an overview of how to use the classes in this namespace. A slightly more exotic application is given in <a class="el" href="step_46.html">step-46</a> . The hp-namespace implements the algorithms and data structures used for the hp-framework in deal.II. An overview over the details of how these algorithms work and what data structures are used is given in the <a class="el" href="DEALGlossary.html#hp_paper">hp-paper</a>.</p>
-<p>The hp-namespace implements the algorithms and data structures used for the hp-framework in deal.II. An overview over the details of how these algorithms work and what data structures are used is given in the <a class="el" href="DEALGlossary.html#hp_paper">hp-paper</a>.</p>
+<p>do with hp-finite elements. The <a class="el" href="step_27.html">step-27</a> tutorial program gives an overview of how to use the classes in this namespace. A slightly more exotic application is given in <a class="el" href="step_46.html">step-46</a> . The hp-namespace implements the algorithms and data structures used for the hp-framework in deal.II. An overview over the details of how these algorithms work and what data structures are used is given in the <a class="el" href="DEALGlossary.html#hp_paper">hp-paper</a>. </p>
+<p>Classes and functions that have to do with hp-finite elements. The <a class="el" href="step_27.html">step-27</a> tutorial program gives an overview of how to use the classes in this namespace. A slightly more exotic application is given in <a class="el" href="step_46.html">step-46</a>.</p>
+<p>The hp-namespace implements the algorithms and data structures used for the hp-framework in deal.II. An overview over the details of how these algorithms work and what data structures are used is given in the <a class="el" href="DEALGlossary.html#hp_paper">hp-paper</a>. </p>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->

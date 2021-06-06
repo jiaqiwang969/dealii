@@ -1,0 +1,34 @@
+[0.x.0]*
+   Anytime a  [2.x.0]  is repartitioned, either upon request   or by refinement/coarsening, cells will be distributed amongst all   subdomains to achieve an equally balanced workload. If the workload per   cell varies, which is in general the case for DoFHandler objects with   hp-capabilities, we can take that into account by introducing individual   weights for different cells.     This class allows computing these weights for load balancing by   consulting the FiniteElement that is associated with each cell of   a DoFHandler. One can choose from predefined weighting algorithms provided   by this class or provide a custom one.     If the associated DoFHandler has not been initialized yet, i.e., its    [2.x.1]  is empty, all cell weights will be evaluated as zero.     This class offers two different ways of connecting the chosen weighting   function to the corresponding signal of the linked    [2.x.2]  The recommended way involves creating an   object of this class which will automatically take care of registering the   weighting function upon creation and de-registering it once destroyed. An   object of this class needs to exist for every DoFHandler associated with   the Triangulation we work on to achieve satisfying work balancing results.   The connected weighting function may be changed anytime using the    [2.x.3]  function. The following code snippet demonstrates how   to achieve each cell being weighted by its current number of degrees of   freedom. We chose a factor of `1000` that corresponds to the initial weight   each cell is assigned to upon creation.  
+* [1.x.0]
+*      On the other hand, you are also able to take care of handling the signal   connection manually by using the static member function of this class. In   this case, an analogous code example looks as follows.  
+* [1.x.1]
+*      The use of this class is demonstrated in  [2.x.4] .    
+*  [2.x.5]  See  [2.x.6]  for more information on   weighting and load balancing.    
+*  [2.x.7]  Be aware that this class connects the weight function to the   Triangulation during this class's constructor. If the Triangulation   associated with the DoFHandler changes during the lifetime of the   latter via  [2.x.8]  an assertion will be triggered in   the weight_callback() function. Use  [2.x.9]  to deregister the   weighting function on the old Triangulation and connect it to the new one.    
+*  [2.x.10]   
+* [0.x.1]*
+     An alias that defines the characteristics of a function that can be used     for weighting cells during load balancing.         Such weighting functions take as arguments an iterator to a cell and the     future finite element that will be assigned to it after repartitioning.     They return an unsigned integer which is interpreted as the cell's     weight or, in other words, the additional computational load associated     with it.    
+* [0.x.2]*
+     Constructor.          [2.x.11]  dof_handler The DoFHandler which will be used to        determine each cell's finite element.      [2.x.12]  weighting_function The function that determines each        cell's weight during load balancing.    
+* [0.x.3]*
+     Destructor.         Disconnects the function previously connected to the weighting signal.    
+* [0.x.4]*
+     Connect a different  [2.x.13]  to the Triangulation     associated with the  [2.x.14]          Disconnects the function previously connected to the weighting signal.    
+* [0.x.5]*
+     Converts a  [2.x.15]  to a different type that qualifies as     a callback function, which can be connected to a weighting signal of a     Triangulation.         This function does [1.x.2] connect the converted function to the     Triangulation associated with the  [2.x.16]     
+* [0.x.6]*
+      [2.x.17]  Selection of weighting functions      [2.x.18]     
+* [0.x.7]*
+     Choose a constant weight  [2.x.19]  on each cell.    
+* [0.x.8]*
+     The pair of floating point numbers  [2.x.20]  provided via      [2.x.21]  determines the weight  [2.x.22]  of each cell  [2.x.23]  with      [2.x.24]  degrees of freedom in the following way: [1.x.3]         The right hand side will be rounded to the nearest integer since cell     weights are required to be integers.    
+* [0.x.9]*
+     The container  [2.x.25]  provides pairs of floating point numbers      [2.x.26]  that determine the weight  [2.x.27]  of each cell      [2.x.28]  with  [2.x.29]  degrees of freedom in the following way: [1.x.4]         The right hand side will be rounded to the nearest integer since cell     weights are required to be integers.    
+* [0.x.10]*
+      [2.x.30]     
+* [0.x.11]*
+     A connection to the corresponding cell_weight signal of the Triangulation     which is attached to the DoFHandler.    
+* [0.x.12]*
+     A callback function that will be connected to the cell_weight signal of     the  [2.x.31]  to which the  [2.x.32]  is attached. Ultimately     returns the weight for each cell, determined by the  [2.x.33]      provided as a parameter. Returns zero if  [2.x.34]  has not been     initialized yet.    
+* [0.x.13]

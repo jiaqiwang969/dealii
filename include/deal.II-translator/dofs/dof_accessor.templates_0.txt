@@ -1,0 +1,83 @@
+[0.x.0]*
+     A class like the one with same name in tria.cc. See there for more     information.    
+* [0.x.1]*
+       Process the  [2.x.0]  degree of freedom corresponding to the       finite element specified by  [2.x.1]  on the vertex with global       number  [2.x.2]  to  [2.x.3]       
+* [0.x.2]*
+       Determine range of dofs of object in global data structure.      
+* [0.x.3]*
+       Process all dofs of an object.      
+* [0.x.4]*
+       Set the  [2.x.4]  degree of freedom corresponding to the       finite element specified by  [2.x.5]  on the vertex with global       number  [2.x.6]  to  [2.x.7]       
+* [0.x.5]*
+       Get the  [2.x.8]  degree of freedom corresponding to the       finite element specified by  [2.x.9]  on the vertex with global       number  [2.x.10]  to  [2.x.11]       
+* [0.x.6]*
+       Return the number of different finite elements that are active on a       given vertex.      
+* [0.x.7]*
+       Return the FE index of the n-th finite element active on a given       vertex.      
+* [0.x.8]*
+       Returns all active FE indices on a given vertex.             The size of the returned set equals the number of finite elements that       are active on this vertex.      
+* [0.x.9]*
+       Loop over all degrees of freedom of the object described by the       provided  [2.x.12]  and  [2.x.13]  and count them.      
+* [0.x.10]*
+       Loop over all degrees of freedom of the object described by the       provided  [2.x.14]  and  [2.x.15]  and perform the static functions       provided by DoFOperation (set/get) on these.      
+* [0.x.11]*
+       An internal struct encapsulating the task of getting (vertex)       DoF indices.      
+* [0.x.12]*
+         Return vertex DoF indices.        
+* [0.x.13]*
+         Return DoF indices for lines, quads, and inner degrees of freedom.        
+* [0.x.14]*
+         Fallback for DoFInvalidAccessor.        
+* [0.x.15]*
+         Process non-active DoF.        
+* [0.x.16]*
+       An internal struct encapsulating the task of setting (vertex)       DoF indices.      
+* [0.x.17]*
+         Set vertex DoF indices.        
+* [0.x.18]*
+         Set DoF indices for lines, quads, and inner degrees of freedom.        
+* [0.x.19]*
+         Fallback for DoFInvalidAccessor.        
+* [0.x.20]*
+         Process non-active DoF.        
+* [0.x.21]*
+       An internal struct encapsulating the task of getting level (vertex)       DoF indices.      
+* [0.x.22]*
+         Constructor.        
+* [0.x.23]*
+         Return vertex DoF indices.        
+* [0.x.24]*
+         Return DoF indices for lines, quads, and inner degrees of freedom.        
+* [0.x.25]*
+         Fallback for DoFInvalidAccessor.        
+* [0.x.26]*
+         Process non-active DoF.        
+* [0.x.27]*
+       An internal struct encapsulating the task of setting level (vertex)       DoF indices.      
+* [0.x.28]*
+         Constructor.        
+* [0.x.29]*
+         Set vertex DoF indices.        
+* [0.x.30]*
+         Set DoF indices for lines, quads, and inner degrees of freedom.        
+* [0.x.31]*
+         Fallback for DoFInvalidAccessor.        
+* [0.x.32]*
+         Process non-active DoF.        
+* [0.x.33]*
+     A class with the same purpose as the similarly named class of the     Triangulation class. See there for more information.    
+* [0.x.34]*
+       Implement the updating of the cache.      
+* [0.x.35]*
+       Do what the active_fe_index function in the parent class is supposed to       do.      
+* [0.x.36]*
+       Do what the set_active_fe_index function in the parent class is       supposed to do.      
+* [0.x.37]*
+       Do what the future_fe_index function in the parent class is supposed to       do.      
+* [0.x.38]*
+       Do what the set_future_fe_index function in the parent class is       supposed to do.      
+* [0.x.39]*
+       Do what the future_fe_index_set function in the parent class is       supposed to do.      
+* [0.x.40]*
+       Do what the clear_fe_index function in the parent class is supposed to       do.      
+* [0.x.41]

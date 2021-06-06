@@ -1,0 +1,33 @@
+[0.x.0]*
+   This class represents an incremental function. That is, given an arbitrary   function  [2.x.0] , this class will return   <code>f(t)
+* 
+*  - f(t
+* 
+*  - delta_t)</code>, where  [2.x.1]  denotes the   function evaluated at time  [2.x.2]  and, likewise, <code>f(t
+* 
+*  -   delta_t)</code> denotes the function evaluated at time <code>t
+* 
+*  -   delta_t</code>. The decrement  [2.x.3]  is set by the method   set_decrement(). The main application of this class is to transform a given   Dirichlet boundary condition function into incremental form, as is   required by some implementations of non-linear solution schemes.    
+*  [2.x.4]   
+* [0.x.1]*
+     Export the value of the template parameter as a static member constant.     This is sometimes useful in the context of template programming.    
+* [0.x.2]*
+     The scalar-valued real type used for representing time.    
+* [0.x.3]*
+     Constructor which wraps a given function  [2.x.5]         
+*  [2.x.6]  This class stores a non-constant reference to  [2.x.7]      and will call  [2.x.8]  during evaluation     in order to evaluate the  [2.x.9]  class at any arbitrary time.     It is guaranteed that the temporal state of  [2.x.10]  is returned     to its original settings after each function evaluation in this     class.    
+* [0.x.4]*
+     Return the value of the function at the given point.         Unless there is only one component (i.e. the function is scalar), you     should state the component you want to have evaluated. By default, the     value of the first component is computed.    
+* [0.x.5]*
+     Return all components of a vector-valued function at a given point.         It is required that the  [2.x.11]  vector have the correct size before     this function is called.    
+* [0.x.6]*
+     Set the time decrement.         It is expected that this value be positive.    
+* [0.x.7]*
+     A reference to the function being wrapped.    
+* [0.x.8]*
+     The time decrement.    
+* [0.x.9]*
+     An auxiliary vector to store values.    
+* [0.x.10]*
+     Thread mutex for supporting evaluation in multi-threaded contexts.    
+* [0.x.11]

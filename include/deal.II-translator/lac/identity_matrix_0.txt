@@ -1,0 +1,45 @@
+[0.x.0]!  [2.x.0]  Matrix1 [2.x.1] 
+
+* 
+* [0.x.1]*
+ Implementation of a simple class representing the identity matrix of a given size, i.e. a matrix with entries  [2.x.2] . While it has the most important ingredients of a matrix, in particular that one can ask for its size and perform matrix-vector products with it, a matrix of this type is really only useful in two contexts: preconditioning and initializing other matrices.
+*  [1.x.0]
+*  The main usefulness of this class lies in its ability to initialize other matrix, like this:
+
+* 
+* [1.x.1]
+* 
+*  This creates a  [2.x.3]  matrix with ones on the diagonal and zeros everywhere else. Most matrix types, in particular FullMatrix and SparseMatrix, have conversion constructors and assignment operators for IdentityMatrix, and can therefore be filled rather easily with identity matrices.
+* 
+
+*  [1.x.2]
+*  No preconditioning at all is equivalent to preconditioning with preconditioning with the identity matrix. deal.II has a specialized class for this purpose, PreconditionIdentity, than can be used in a context as shown in the documentation of that class. The present class can be used in much the same way, although without any additional benefit:
+
+* 
+* [1.x.3]
+* 
+
+* 
+* [0.x.2]*
+   Declare type for container size.  
+* [0.x.3]*
+   Default constructor. Creates a zero-sized matrix that should be resized   later on using the reinit() function.  
+* [0.x.4]*
+   Constructor. Creates a identity matrix of size #n.  
+* [0.x.5]*
+   Resize the matrix to be of size #n by #n.  
+* [0.x.6]*
+   Number of rows of this matrix. For the present matrix, the number of rows   and columns are equal, of course.  
+* [0.x.7]*
+   Number of columns of this matrix. For the present matrix, the number of   rows and columns are equal, of course.  
+* [0.x.8]*
+   Matrix-vector multiplication. For the present case, this of course   amounts to simply copying the input vector to the output vector.  
+* [0.x.9]*
+   Matrix-vector multiplication with addition to the output vector. For the   present case, this of course amounts to simply adding the input vector to   the output vector.  
+* [0.x.10]*
+   Matrix-vector multiplication with the transpose matrix. For the present   case, this of course amounts to simply copying the input vector to the   output vector.  
+* [0.x.11]*
+   Matrix-vector multiplication with the transpose matrix, with addition to   the output vector. For the present case, this of course amounts to simply   adding the input vector to the output vector.  
+* [0.x.12]*
+   Number of rows and columns of this matrix.  
+* [0.x.13]

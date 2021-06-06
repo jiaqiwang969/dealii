@@ -1,0 +1,28 @@
+[0.x.0] MGSmootherBase is defined in mg_base.h
+
+* 
+* [0.x.1]*
+ General smoother class for block vectors. This class gives complete freedom to the choice of a block smoother by being initialized with a matrix and a smoother object. Therefore, the smoother object for each level must be constructed by hand.
+
+* 
+* [0.x.2]*
+   Constructor.  
+* [0.x.3]*
+   Initialize for matrices. The parameter <tt>matrices</tt> can be any   object having functions <tt>get_minlevel()</tt> and   <tt>get_maxlevel()</tt> as well as an <tt>operator[]</tt> returning a   reference to  [2.x.0]      The same convention is used for the parameter <tt>smoothers</tt>, such   that <tt>operator[]</tt> returns the object doing the block-smoothing on   a single level.     This function stores pointers to the level matrices and smoothing   operator for each level.  
+* [0.x.4]*
+   Empty all vectors.  
+* [0.x.5]*
+   Switch on/off reversed. This is mutually exclusive with transpose().  
+* [0.x.6]*
+   Implementation of the interface for  [2.x.1]  This function does   nothing, which by comparison with the definition of this function means   that the smoothing operator equals the null operator.  
+* [0.x.7]*
+   Memory used by this object.  
+* [0.x.8]*
+   Pointer to the matrices.  
+* [0.x.9]*
+   Pointer to the matrices.  
+* [0.x.10]*
+   Reverse?  
+* [0.x.11]*
+   Memory for auxiliary vectors.  
+* [0.x.12]

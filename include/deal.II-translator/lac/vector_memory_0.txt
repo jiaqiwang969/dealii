@@ -1,0 +1,87 @@
+[0.x.0]*
+ Memory management base class for vectors. This is an abstract base class used, among other places, by all iterative methods to allocate space for auxiliary vectors.
+*  The purpose of this class is as follows: in iterative solvers and other places, one needs to allocate temporary storage for vectors, for example for auxiliary vectors. One could allocate and release them anew every time, but this may be expensive in some situations if it has to happen very frequently. A common case for this is when an iterative method is used to invert a matrix in each iteration of an outer solver, such as when inverting a matrix block for a Schur complement solver. ( [2.x.0]  does this, for example, but instead just keeps a vector around permanently for temporary storage.)
+*  In such situations, allocating and deallocating vectors anew in each call to the inner solver is expensive and leads to memory fragmentation. The present class allows to avoid this by offering an interface that other classes can use to allocate and deallocate vectors. Different derived classes then implement different strategies to provide temporary storage vectors to using classes.
+*  For example, the PrimitiveVectorMemory class simply allocates and deallocates vectors via the operating system facilities (i.e., using  [2.x.1]  and  [2.x.2]  each time it is asked for a vector. It is an appropriate implementation to use for iterative solvers that are called only once, or very infrequently.
+*  On the other hand, the GrowingVectorMemory class never returns memory space to the operating system memory management subsystem during its lifetime; it only marks them as unused and allows them to be reused next time a vector is requested.
+* 
+
+*  [1.x.0]
+*  Classes derived from this base class return pointers to new vectors via the  [2.x.3]  function, and re-claim the vector when it is returned via  [2.x.4]  These two functions therefore play a similar role as  [2.x.5]  and  [2.x.6]  This includes the usual drawbacks: It is simple to forget to call  [2.x.7]  at the end of a function that uses this facility, or to forget it in an  [2.x.8]  branch of the function where one has an early  [2.x.9]  from the function. In both cases, this results in a memory leak: a correct piece of code has to call  [2.x.10]  for all allocated vectors at [1.x.1] possible exit points. This includes places where a function is left because an exception is thrown further down in the call stack and not explicitly handled here.
+*  In other words, vectors allocated via  [2.x.11]  have the same issue as raw pointers allocated via  [2.x.12]  It is easy to write code that has memory leaks. In the case of raw pointers, the common solution is to use the  [2.x.13]  class instead (see http://en.cppreference.com/w/cpp/memory/unique_ptr). In the case of the current class, the  [2.x.14]  class is the solution: it is a class that for all practical purposes looks like a pointer, but upon destruction also returns the vector back to the VectorMemory object from which it got it. Since destruction of the  [2.x.15]  class happens whenever it goes out of scope (whether because the function explicitly returns, or because control flow leaves it due to an exception), a memory leak cannot happen: the vector the  [2.x.16]  object points to is [1.x.2] returned.
+
+* 
+* [0.x.1]*
+   Virtual destructor. This destructor is declared  [2.x.17]  to allow   destroying objects of derived type through pointers to this base   class.  
+* [0.x.2]*
+   Return a pointer to a new vector. The number of elements or their   subdivision into blocks (if applicable) is unspecified and users of this   function should reset vectors to their proper size. The same holds for   the contents of vectors: they are unspecified. In other words,   the place that calls this function will need to resize or reinitialize   it appropriately.      [2.x.18]  Just like using  [2.x.19]      explicitly in code invites bugs where memory is leaked (either     because the corresponding  [2.x.20]  is forgotten     altogether, or because of exception safety issues), using the     alloc() and free() functions explicitly invites writing code     that accidentally leaks memory. You should consider using     the  [2.x.21]  class instead, which provides the     same kind of service that  [2.x.22]  provides     for arbitrary memory allocated on the heap.  
+* [0.x.3]*
+   Return a vector and indicate that it is not going to be used any further   by the place that called alloc() to get a pointer to it.      [2.x.23]  Just like using  [2.x.24]      explicitly in code invites bugs where memory is leaked (either     because the corresponding  [2.x.25]  is forgotten     altogether, or because of exception safety issues), using the     alloc() and free() functions explicitly invites writing code     that accidentally leaks memory. You should consider using     the  [2.x.26]  class instead, which provides the     same kind of service that  [2.x.27]  provides     for arbitrary memory allocated on the heap.  
+* [0.x.4]*
+    [2.x.28]  Exceptions    [2.x.29]   
+* [0.x.5]*
+   Vector was not allocated from this memory pool.  
+* [0.x.6]*
+   A class that looks like a pointer for all practical purposes and that   upon construction time allocates a vector from a VectorMemory object   (or an object of a class derived from VectorMemory) that is passed   to the constructor of this class. The destructor then automatically   returns the vector's ownership to the same VectorMemory object.     Pointers of this type are therefore safe in the sense that they   automatically call  [2.x.30]  when they are destroyed, whether   that happens at the end of a code block or because local variables are   destroyed during exception unwinding. These kinds of object thus relieve   the user from using vector management functions explicitly.     In many senses, this class acts like  [2.x.31]  in that   it is the unique owner of a chunk of memory that it frees upon destruction.   The main differences to  [2.x.32]  are (i) that it   allocates memory from a memory pool upon construction, and (ii) that the   memory is not destroyed using `operator delete` but returned to the   VectorMemory pool.  
+* [0.x.7]*
+     Default constructor. This constructor corresponds to a  [2.x.33]      object that does not own a vector. It can, however, later be     assigned another Pointer object via move assignment in which case     it will steal the vector owned by the other object     (as  [2.x.34]  does).    
+* [0.x.8]*
+     Move constructor: this creates a new Pointer by stealing the internal     data owned by  [2.x.35]     
+* [0.x.9]*
+     Move operator: this releases the vector owned by the current Pointer     and then steals the internal data owned by  [2.x.36]     
+* [0.x.10]*
+     Constructor. This constructor automatically allocates a vector from     the given vector memory object  [2.x.37]     
+* [0.x.11]*
+     Destructor, automatically releasing the vector from the memory pool.    
+* [0.x.12]*
+ Simple memory management. See the documentation of the base class for a description of its purpose.
+*  This class allocates and deletes vectors as needed from the global heap, i.e. performs no specially adapted actions for memory management.
+
+* 
+* [0.x.13]*
+   Return a pointer to a new vector. The number of elements or their   subdivision into blocks (if applicable) is unspecified and users of this   function should reset vectors to their proper size. The same holds for   the contents of vectors: they are unspecified. In other words,   the place that calls this function will need to resize or reinitialize   it appropriately.     For the present class, calling this function will allocate a new vector   on the heap and returning a pointer to it. Later calling free() then   returns the memory to the global heap managed by the operating system.      [2.x.38]  Just like using  [2.x.39]      explicitly in code invites bugs where memory is leaked (either     because the corresponding  [2.x.40]  is forgotten     altogether, or because of exception safety issues), using the     alloc() and free() functions explicitly invites writing code     that accidentally leaks memory. You should consider using     the  [2.x.41]  class instead, which provides the     same kind of service that  [2.x.42]  provides     for arbitrary memory allocated on the heap.  
+* [0.x.14]*
+   Return a vector and indicate that it is not going to be used any further   by the instance that called alloc() to get a pointer to it.     For the present class, this means that the vector is returned to the   global heap.      [2.x.43]  Just like using  [2.x.44]      explicitly in code invites bugs where memory is leaked (either     because the corresponding  [2.x.45]  is forgotten     altogether, or because of exception safety issues), using the     alloc() and free() functions explicitly invites writing code     that accidentally leaks memory. You should consider using     the  [2.x.46]  class instead, which provides the     same kind of service that  [2.x.47]  provides     for arbitrary memory allocated on the heap.  
+* [0.x.15]*
+ A pool based memory management class. See the documentation of the base class for a description of its purpose.
+*  Each time a vector is requested from this class, it checks if it has one available and returns its address, or allocates a new one on the heap. If a vector is returned from its user, through the  [2.x.48]  member function, it doesn't return the allocated memory to the operating system memory subsystem, but keeps it around unused for later use if  [2.x.49]  is called again. The class therefore avoid the overhead of repeatedly allocating memory on the heap if temporary vectors are required and released frequently; on the other hand, it doesn't release once-allocated memory at the earliest possible time and may therefore lead to an increased overall memory consumption.
+*  All GrowingVectorMemory objects of the same vector type use the same memory pool. (In other words: The pool of vectors from which this class draws is [1.x.3], rather than a regular member variable of the current class that is destroyed at the time that the surrounding GrowingVectorMemory object is destroyed.) Therefore, functions can create such a GrowingVectorMemory object whenever needed without the performance penalty of creating a new memory pool every time. A drawback of this policy is that vectors once allocated are only released at the end of the program run.
+
+* 
+* [0.x.16]*
+   Declare type for container size.  
+* [0.x.17]*
+   Constructor.  The argument allows to preallocate a certain number of   vectors. The default is not to do this.  
+* [0.x.18]*
+   Destructor. The destructor also checks that all vectors that have been   allocated through the current object have all been released again.   However, as discussed in the class documentation, this does not imply   that their memory is returned to the operating system.  
+* [0.x.19]*
+   Return a pointer to a new vector. The number of elements or their   subdivision into blocks (if applicable) is unspecified and users of this   function should reset vectors to their proper size. The same holds for   the contents of vectors: they are unspecified. In other words,   the place that calls this function will need to resize or reinitialize   it appropriately.      [2.x.50]  Just like using  [2.x.51]      explicitly in code invites bugs where memory is leaked (either     because the corresponding  [2.x.52]  is forgotten     altogether, or because of exception safety issues), using the     alloc() and free() functions explicitly invites writing code     that accidentally leaks memory. You should consider using     the  [2.x.53]  class instead, which provides the     same kind of service that  [2.x.54]  provides     for arbitrary memory allocated on the heap.  
+* [0.x.20]*
+   Return a vector and indicate that it is not going to be used any further   by the instance that called alloc() to get a pointer to it.     For the present class, this means retaining the vector for later reuse by   the alloc() method.      [2.x.55]  Just like using  [2.x.56]      explicitly in code invites bugs where memory is leaked (either     because the corresponding  [2.x.57]  is forgotten     altogether, or because of exception safety issues), using the     alloc() and free() functions explicitly invites writing code     that accidentally leaks memory. You should consider using     the  [2.x.58]  class instead, which provides the     same kind of service that  [2.x.59]  provides     for arbitrary memory allocated on the heap.  
+* [0.x.21]*
+   Release all vectors that are not currently in use.  
+* [0.x.22]*
+   Memory consumed by this class and all currently allocated vectors.  
+* [0.x.23]*
+   A type that describes this entries of an array that represents   the vectors stored by this object. The first component of the pair   is be a flag telling whether the vector is used, the second   a pointer to the vector itself.  
+* [0.x.24]*
+   The class providing the actual storage for the memory pool.     This is where the actual storage for GrowingVectorMemory is provided.   Only one of these pools is used for each vector type, thus allocating all   vectors from the same storage.  
+* [0.x.25]*
+     Standard constructor creating an empty pool    
+* [0.x.26]*
+     Destructor.    
+* [0.x.27]*
+     Create data vector; does nothing after first initialization    
+* [0.x.28]*
+     Pointer to the storage object    
+* [0.x.29]*
+   Return an array of allocated vectors.  
+* [0.x.30]*
+   Overall number of allocations. Only used for bookkeeping and to generate   output at the end of an object's lifetime.  
+* [0.x.31]*
+   Number of vectors currently allocated in this object; used for detecting   memory leaks.  
+* [0.x.32]*
+   A flag controlling the logging of statistics by the destructor.  
+* [0.x.33]*
+   Mutex to synchronize access to internal data of this object from multiple   threads.  
+* [0.x.34]

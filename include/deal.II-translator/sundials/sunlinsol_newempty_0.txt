@@ -1,0 +1,16 @@
+[0.x.0] The functions in this file are based on an implementation distributed within the SUNDIALS package, see the license here: https://computing.llnl.gov/projects/sundials/license.
+* 
+
+* 
+* 
+*  - --------------------------------------------------------------- Programmer(s): Daniel Reynolds @ SMU                David J. Gardner, Carol S. Woodward, and                Slaven Peles @ LLNL
+* 
+
+* 
+* 
+*  - ---------------------------------------------------------------[0.x.1]*
+     Create a new SUNLinearSolver structure without any content and     operations set to `nullptr`.    
+* [0.x.2]*
+     Free the memory associated with  [2.x.0]  which was previously allocated     with a call to SUNLinSolNewEmpty().        
+*  [2.x.1]  A call to this function does not deallocate the `content` field.          [2.x.2]  solver The solver memory to free    
+* [0.x.3]

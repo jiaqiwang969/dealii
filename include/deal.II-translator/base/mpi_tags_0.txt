@@ -1,0 +1,97 @@
+[0.x.0]*
+       This enum holds all MPI tags used in point to point MPI communications       inside the deal.II library.             We keep these tags in a central location so that they are unique within       the library. Otherwise, communication that receives packages might pick       up packets from a different algorithm. This is especially true if       MPI_ANY_SOURCE is used.             The list of MPI functions that use an MPI tag is:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - MPI_Send, MPI_Recv, MPI_Sendrecv
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - MPI_Isend, MPI_Irecv
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - MPI_Probe, MPI_Iprobe
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - MPI_Comm_create_group, MPI_Intercomm_create,        [2.x.0]       
+* [0.x.1]*
+         The enum with the tags.        
+* [0.x.2]

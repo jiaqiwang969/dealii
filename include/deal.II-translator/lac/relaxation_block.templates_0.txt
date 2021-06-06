@@ -1,0 +1,5 @@
+[0.x.0]*
+   Default implementation for serial vectors. Here we don't need to make a   copy into a ghosted vector, so just return a reference to  [2.x.0]   
+* [0.x.1]*
+   Specialization for Trilinos. Use the ghosted vector.  
+* [0.x.2]

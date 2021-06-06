@@ -1,0 +1,17 @@
+[0.x.0]*
+     Signed-distance level set function of a sphere:      [2.x.0] .     Here,  [2.x.1]  is the center of the sphere and  [2.x.2]  is its radius. This     function is thus zero on the sphere, negative "inside" the ball having     the sphere as its boundary, and positive in the rest of      [2.x.3] .         This function has gradient and Hessian equal to      [2.x.4] ,      [2.x.5] ,     where  [2.x.6]  is the Kronecker delta function.        
+*  [2.x.7]     
+* [0.x.1]*
+       Constructor, takes the center and radius of the sphere.      
+* [0.x.2]*
+        [2.x.8]   [2.x.9]             
+*  [2.x.10]  The gradient is singular at the center of the sphere. If the       incoming  [2.x.11]  is too close to the center, a floating-point       exception may be thrown or entries in the gradient may be +inf/-inf       or +nan/-nan, depending on how the point is located relative to the       singularity.      
+* [0.x.3]*
+        [2.x.12]   [2.x.13]             
+*  [2.x.14]  The Hessian is singular at the center of the sphere. If the       incoming  [2.x.15]  is too close to the center, a floating-point       exception may be thrown or entries in the Hessian may be +inf/-inf       or +nan/-nan, depending on how the point is located relative to the       singularity.      
+* [0.x.4]*
+     Signed level set function of a plane in  [2.x.16] :      [2.x.17] .     Here,  [2.x.18]  is the plane normal and  [2.x.19]  is a point in the plane.     Thus, with respect to the direction of the normal, this function is     positive above the plane, zero in the plane, and negative below the     plane. If the normal is normalized,  [2.x.20]  will be the signed distance to     the closest point in the plane.        
+*  [2.x.21]     
+* [0.x.5]*
+       Constructor, takes a point in the plane and the plane normal.      
+* [0.x.6]

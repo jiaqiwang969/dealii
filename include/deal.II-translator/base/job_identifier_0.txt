@@ -1,0 +1,21 @@
+[0.x.0]*
+ Identification of a program run. <tt>JobIdentifier</tt> determines the start time of a program run and stores it as a program identifier. There exists a library object <tt>dealjobid</tt> of this class. This object can be accessed by all output functions to provide an id for the current job.
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   Constructor. Set program identifier to value of <tt>program_id</tt>   concatenated with the present time.  
+* [0.x.2]*
+   This function returns an identifier for the running program. Currently,   the library provides a function returning "JobID".     The user may define a replacement of this function in their source code and   avoid linking the library version. Unfortunately, this mechanism does not   work with shared libraries.  
+* [0.x.3]*
+   Obtain the base name of the filename passed as argument. That is,   if the file is <tt>mypath/file.cc</tt> return just   <tt>file</tt>. For example, this function can be called from a   user program with argument <tt>__FILE__</tt> to create an   identifier for the program being run.  
+* [0.x.4]*
+   Return the value of <tt>id</tt>.  
+* [0.x.5]*
+   %Function to identify the presently running program.  
+* [0.x.6]*
+   String holding the identifier of the presently running program.  
+* [0.x.7]

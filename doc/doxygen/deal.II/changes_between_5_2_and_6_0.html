@@ -421,7 +421,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">Changed: We used to set preprocessor variables <code>PACKAGE_NAME</code>, <code>PACKAGE_TARNAME</code>, <code>PACKAGE_VERSION</code>, <code>PACKAGE_STRING</code>, <code>PACKAGE_BUGREPORT</code> in the file <code>&lt;<a class="el" href="config_8h.html">base/config.h</a>&gt;</code>. These variables were automatically set by the autoconf package, with which we generate the <code>./configure</code> script. However, these variables would conflict if someone were to use a different package that also uses autoconf, since that package would have the same variables, just set to different values. The preprocessor warns about these cases. <br  />
+<p class="interli">Changed: We used to set preprocessor variables <code>PACKAGE_NAME</code>, <code>PACKAGE_TARNAME</code>, <code>PACKAGE_VERSION</code>, <code>PACKAGE_STRING</code>, <code>PACKAGE_BUGREPORT</code> in the file <code>&lt;base/config.h&gt;</code>. These variables were automatically set by the autoconf package, with which we generate the <code>./configure</code> script. However, these variables would conflict if someone were to use a different package that also uses autoconf, since that package would have the same variables, just set to different values. The preprocessor warns about these cases. <br  />
  We now avoid this conflict by not using these names any more. Instead, we use the preprocessor names as above, prefixed with <code>DEAL_II_</code>. <br  />
  (WB 2006/11/10) </p>
 <p class="interli"></p>
@@ -466,7 +466,7 @@ $(function() {
 <p class="startli"></p>
 <p class="interli">Changed: When there is still a <code><a class="el" href="classSmartPointer.html">SmartPointer</a></code> object pointing to another object at the time it is destroyed, this would cause the program to be aborted. However, there are cases where this is not desirable, for example here: </p><pre>
        <code>
-          void f()
+          void <a class="el" href="automatic__and__symbolic__differentiation__0_8txt.html#a4874d3f2becad91b2bdda53a5539ff54">f()</a>
           {
             <a class="el" href="classTriangulation.html">Triangulation</a> tria;
             <a class="el" href="classDoFHandler.html">DoFHandler</a> *dh = new <a class="el" href="classDoFHandler.html">DoFHandler(tria)</a>;
@@ -502,7 +502,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">Improved: <code>VectorSlice</code> has new functions <code><a class="el" href="namespaceTrilinosWrappers_1_1internal.html#ad88a9499e01173b35d78413e5945e020">begin()</a></code> and <code><a class="el" href="namespaceTrilinosWrappers_1_1internal.html#aee42c8e3004e2e81eac3c3356d3ec46b">end()</a></code>, returning the corresponding vector iterators. <br  />
+<p class="interli">Improved: <code>VectorSlice</code> has new functions <code><a class="el" href="index__set__0_8txt.html#a06c4d20c91ab07a0e74210eb580db6d1">begin()</a></code> and <code><a class="el" href="coding__conventions__0_8txt.html#a177c697348e3052c514824563807ea3b">end()</a></code>, returning the corresponding vector iterators. <br  />
  (GK 2006/03/31) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -544,7 +544,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">Improved: The <code><a class="el" href="classTableBase.html">TableBase</a></code> base class of all the <code><a class="el" href="classTable.html">Table</a></code> classes had an <code>&gt;operator()</code> that takes a <code><a class="el" href="classTableIndices.html">TableIndices</a></code> object that represents the entire set of indices at once. However, due to C++ name lookup rules, this operator wasn't accessible through the <code><a class="el" href="classTable.html">Table</a></code> class without explicitly specifying the base class name. This is now fixed by also providing a similar <code>&gt;operator()</code> in the derived classes. <br  />
+<p class="interli">Improved: The <code><a class="el" href="classTableBase.html">TableBase</a></code> base class of all the <code><a class="el" href="classTable.html">Table</a></code> classes had an <code>&gt;<a class="el" href="precondition__selector__0_8txt.html#a1400415a03f0fadabafb87fd8e6287cc">operator()</a></code> that takes a <code><a class="el" href="classTableIndices.html">TableIndices</a></code> object that represents the entire set of indices at once. However, due to C++ name lookup rules, this operator wasn't accessible through the <code><a class="el" href="classTable.html">Table</a></code> class without explicitly specifying the base class name. This is now fixed by also providing a similar <code>&gt;<a class="el" href="precondition__selector__0_8txt.html#a1400415a03f0fadabafb87fd8e6287cc">operator()</a></code> in the derived classes. <br  />
  (WB 2006/02/21) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -841,7 +841,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">Fixed: The <code><a class="el" href="classSparseMatrix.html">SparseMatrix</a></code> iterators had a problem when one wrote code like <code>iterator-&gt;value()=0</code> (i.e. with a zero integer, rather than a floating point number on the right), in that that opened up a second conversion sequence and the compiler complained about an ambiguity. This is now fixed. <br  />
+<p class="interli">Fixed: The <code><a class="el" href="classSparseMatrix.html">SparseMatrix</a></code> iterators had a problem when one wrote code like <code>iterator-&gt;<a class="el" href="functions__0_8txt.html#af9f808a82e8c618e2e7a19dd08a9eae3">value()</a>=0</code> (i.e. with a zero integer, rather than a floating point number on the right), in that that opened up a second conversion sequence and the compiler complained about an ambiguity. This is now fixed. <br  />
  (WB 2005/10/17) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -996,8 +996,8 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">Extended: <code><a class="el" href="structDataOutBase_1_1Patch.html">DataOutBase::Patch</a></code> has been extended by a new boolean flag <code>points_are_available</code>, which defaults to <code>false</code>. It is set to <code>true</code> if the coordinates of the points defining the subdivision of a patch are appended to the <code>data</code> table contained in a <code>Patch</code>. This way, <code><a class="el" href="classDataOut.html">DataOut</a></code>::<code>build_patches()</code> can use a <code><a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a></code> to represent curved boundaries, especially for higher order elements. This change corresponds to an extension of the intermediate format for graphics. <br  />
- Fixed: Using the given <code><a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a></code> to obtain function values in <code><a class="el" href="classDataOut.html">DataOut</a></code>::<code>build_patches()</code> also fixes a bug for <code><a class="el" href="classFE__RaviartThomas.html">FE_RaviartThomas</a></code> and <code><a class="el" href="classFE__ABF.html">FE_ABF</a></code>elements, which need to evaluate the function values on the real (mapped) cell. <br  />
+<p class="interli">Extended: <code><a class="el" href="structDataOutBase_1_1Patch.html">DataOutBase::Patch</a></code> has been extended by a new boolean flag <code>points_are_available</code>, which defaults to <code>false</code>. It is set to <code>true</code> if the coordinates of the points defining the subdivision of a patch are appended to the <code>data</code> table contained in a <code>Patch</code>. This way, <code><a class="el" href="classDataOut.html">DataOut</a></code>::<code><a class="el" href="bounding__box__data__out__0_8txt.html#a1d432584aaf2e57a5803e239443cb56b">build_patches()</a></code> can use a <code><a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a></code> to represent curved boundaries, especially for higher order elements. This change corresponds to an extension of the intermediate format for graphics. <br  />
+ Fixed: Using the given <code><a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a></code> to obtain function values in <code><a class="el" href="classDataOut.html">DataOut</a></code>::<code><a class="el" href="bounding__box__data__out__0_8txt.html#a1d432584aaf2e57a5803e239443cb56b">build_patches()</a></code> also fixes a bug for <code><a class="el" href="classFE__RaviartThomas.html">FE_RaviartThomas</a></code> and <code><a class="el" href="classFE__ABF.html">FE_ABF</a></code>elements, which need to evaluate the function values on the real (mapped) cell. <br  />
  (Tobias Leicht 2007/01/30) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -1144,7 +1144,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: There are now new internal <code>TriaObjectAccessor&lt;1,dim&gt;</code>::<code>lines()</code> and <code>TriaObjectAccessor&lt;2,dim&gt;</code>::<code>quads()</code> functions. By using these functions, 30 function specializations could be removed, significantly reducing code duplication. <br  />
+<p class="interli">New: There are now new internal <code>TriaObjectAccessor&lt;1,dim&gt;</code>::<code><a class="el" href="iterators__0_8txt.html#a30945099378fbcb8d5e923663fa31b32">lines()</a></code> and <code>TriaObjectAccessor&lt;2,dim&gt;</code>::<code><a class="el" href="iterators__0_8txt.html#a5227cf90e652b2d41d4b4a7547237251">quads()</a></code> functions. By using these functions, 30 function specializations could be removed, significantly reducing code duplication. <br  />
  (RH 2006/06/13) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -1292,7 +1292,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">Changed: The <code><a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a></code>::<code>get_fe</code>, <code><a class="el" href="classhp_1_1QCollection.html">hp::QCollection</a></code>::<code>get_quadrature</code> and <code><a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a></code>::<code>get_mapping</code> functions are now renamed to the standard <code>operator[]</code> function. Similarly, the <code>FECollection</code>::<code>n_finite_elements</code>, <code>QCollection</code>::<code>n_quadratures</code> and <code>MappingCollection</code>::<code>n_mappings</code> functions are now renamed to the standard <code>size()</code> function. <br  />
+<p class="interli">Changed: The <code><a class="el" href="classhp_1_1FECollection.html">hp::FECollection</a></code>::<code>get_fe</code>, <code><a class="el" href="classhp_1_1QCollection.html">hp::QCollection</a></code>::<code>get_quadrature</code> and <code><a class="el" href="classhp_1_1MappingCollection.html">hp::MappingCollection</a></code>::<code>get_mapping</code> functions are now renamed to the standard <code>operator[]</code> function. Similarly, the <code>FECollection</code>::<code>n_finite_elements</code>, <code>QCollection</code>::<code>n_quadratures</code> and <code>MappingCollection</code>::<code>n_mappings</code> functions are now renamed to the standard <code><a class="el" href="function__0_8txt.html#a4f780342f2d5d632f82cf7fd90158a66">size()</a></code> function. <br  />
  (RH 2006/02/10) </p>
 <p class="interli"></p>
 <p class="endli"></p>
@@ -1320,7 +1320,7 @@ $(function() {
 </li>
 <li>
 <p class="startli"></p>
-<p class="interli">New: The <code><a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a></code> class and derived classes now have functions <code>clone()</code> that return a new object of the same (derived) type. <br  />
+<p class="interli">New: The <code><a class="el" href="classMapping.html" title="Abstract base class for mapping classes. This class declares the interface for the functionality to d...">Mapping</a></code> class and derived classes now have functions <code><a class="el" href="scalar__polynomials__base__0_8txt.html#af7375feef211a44a58b4f93a366f864a">clone()</a></code> that return a new object of the same (derived) type. <br  />
  (WB 2006/1/8) </p>
 <p class="interli"></p>
 <p class="endli"></p>

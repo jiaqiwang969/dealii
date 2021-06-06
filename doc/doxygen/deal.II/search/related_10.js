@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vector_21265',['Vector',['../group__Vectors.html#gac14c06b74acbf135ede85924e7b3d521',1,'LinearAlgebra::distributed::Vector::Vector()'],['../group__Vectors.html#ga879f896329da9659f538e8dc9d386087',1,'LinearAlgebra::Vector::Vector()'],['../group__Vectors.html#ga879f896329da9659f538e8dc9d386087',1,'Vector::Vector()'],['../group__Vectors.html#ga8481dc7cdda13914d82530f64c5b20bc',1,'LinearAlgebra::distributed::Vector::Vector()'],['../group__Vectors.html#ga8481dc7cdda13914d82530f64c5b20bc',1,'LinearAlgebra::distributed::Vector::Vector()']]]
+  ['vector_29054',['Vector',['../group__Vectors.html#gac14c06b74acbf135ede85924e7b3d521',1,'LinearAlgebra::distributed::Vector::Vector()'],['../group__Vectors.html#ga879f896329da9659f538e8dc9d386087',1,'LinearAlgebra::Vector::Vector()'],['../group__Vectors.html#ga879f896329da9659f538e8dc9d386087',1,'Vector::Vector()']]]
 ];

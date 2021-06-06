@@ -7,7 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>The deal.II Library: Utility functions and classes</title>
+<title>The deal.II Library: Utility functions and classes This module simply</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -90,14 +90,14 @@ $(function() {
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
-<div class="title">Utility functions and classes</div>  </div>
+<div class="title">Utility functions and classes This module simply</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This module simply collects a number of functions and classes that provide general tools for tasks that do not usually have much to do with finite element programs in particular, but happen to be required there just as well.  
+<p>collects a number of functions and classes that provide general tools for tasks that do not usually have much to do with finite element programs in particular, but happen to be required there just as well.  
 <a href="#details">More...</a></p>
 <div class="dynheader">
-Collaboration diagram for Utility functions and classes:</div>
+Collaboration diagram for Utility functions and classes This module simply:</div>
 <div class="dyncontent">
 <div class="center"><!-- SVG 0 -->
 </div>
@@ -105,11 +105,11 @@ Collaboration diagram for Utility functions and classes:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group__memory"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__memory.html">Memory handling</a></td></tr>
-<tr class="memdesc:group__memory"><td class="mdescLeft">&#160;</td><td class="mdescRight">This group has some basic classes and namespaces for memory handling. The <a class="el" href="classSubscriptor.html">Subscriptor</a> and <a class="el" href="classSmartPointer.html">SmartPointer</a> classes are used for counted memory handling, i.e. whenever a <a class="el" href="classSmartPointer.html">SmartPointer</a> is set to point to an object, it increases a counter in that object; when the pointer is set to point elsewhere, it decreases it again. This way, one always knows how many users of an object there still are. While this is rarely useful in itself, it is used to generate an exception if an object is destroyed while a pointer somewhere is still pointing to it, as any access through that pointer at a later time would otherwise lead to access of invalid memory regions. <br /></td></tr>
+<tr class="memitem:group__memory"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__memory.html">Memory handling This group has some basic classes and</a></td></tr>
+<tr class="memdesc:group__memory"><td class="mdescLeft">&#160;</td><td class="mdescRight">namespaces for memory handling. The <a class="el" href="classSubscriptor.html">Subscriptor</a> and <a class="el" href="classSmartPointer.html">SmartPointer</a> classes are used for counted memory handling, i.e. whenever a <a class="el" href="classSmartPointer.html">SmartPointer</a> is set to point to an object, it increases a counter in that object; when the pointer is set to point elsewhere, it decreases it again. This way, one always knows how many users of an object there still are. While this is rarely useful in itself, it is used to generate an exception if an object is destroyed while a pointer somewhere is still pointing to it, as any access through that pointer at a later time would otherwise lead to access of invalid memory regions. In contrast to this, the <a class="el" href="namespaceMemoryConsumption.html">MemoryConsumption</a> namespace provides functions that can be used to determine the memory consumption of objects. For some simple classes, like the standard library containers, it directly determines how much memory they need (or at least gives an estimate). For deal.II classes, it uses the <code>memory_consumption</code> member function that most classes have. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group__data"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html">Data storage primitives</a></td></tr>
-<tr class="memdesc:group__data"><td class="mdescLeft">&#160;</td><td class="mdescRight">Here are a few simple classes that help in storage and viewing data. For example, the <a class="el" href="classTable.html">Table</a> templates allow to use not only arrays of objects (for which one might want to use the std::vector class), but also two-dimensional (rectangular) tables of arbitrary objects, as well as higher-order analogs up to tables with (presently) seven indices. <br /></td></tr>
+<tr class="memitem:group__data"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html">Data storage primitives Here are a few simple classes that</a></td></tr>
+<tr class="memdesc:group__data"><td class="mdescLeft">&#160;</td><td class="mdescRight">help in storage and viewing data. For example, the <a class="el" href="classTable.html">Table</a> templates allow to use not only arrays of objects (for which one might want to use the std::vector class), but also two-dimensional (rectangular) tables of arbitrary objects, as well as higher-order analogs up to tables with (presently) seven indices. Similarly, the VectorSlice function is a primitive that takes anything that has an interface that resembles a vector (for example the deal.II <a class="el" href="classVector.html">Vector</a> or the std::vector classes) and presents a view on it as if it were a vector in itself. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -133,8 +133,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>This module simply collects a number of functions and classes that provide general tools for tasks that do not usually have much to do with finite element programs in particular, but happen to be required there just as well. </p>
-<p>collects a number of functions and classes that provide general tools for tasks that do not usually have much to do with finite element programs in particular, but happen to be required there just as well.</p>
+<p>collects a number of functions and classes that provide general tools for tasks that do not usually have much to do with finite element programs in particular, but happen to be required there just as well. </p>
+<p>This module simply collects a number of functions and classes that provide general tools for tasks that do not usually have much to do with finite element programs in particular, but happen to be required there just as well.</p>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->

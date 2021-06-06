@@ -1,0 +1,255 @@
+[0.x.0]*
+ The Gauss-Legendre family of quadrature rules for numerical integration.
+*  The coefficients of these quadrature rules are computed by the function described in [1.x.0].
+
+* 
+* [0.x.1]*
+   Generate a formula with <tt>n</tt> quadrature points (in each space   direction), exact for polynomials of degree <tt>2n-1</tt>.  
+* [0.x.2]*
+ The Gauss-Lobatto family of quadrature rules for numerical integration.
+*  This modification of the Gauss quadrature uses the two interval end points as well. Being exact for polynomials of degree [1.x.1], this formula is suboptimal by two degrees.
+*  The quadrature points are interval end points plus the roots of the derivative of the Legendre polynomial [1.x.2] of degree [1.x.3]. The quadrature weights are [1.x.4].
+* 
+
+* 
+*  [2.x.0]  This implementation has not been optimized concerning numerical stability and efficiency. It can be easily adapted to the general case of Gauss-Lobatto-Jacobi-Bouzitat quadrature with arbitrary parameters  [2.x.1] ,  [2.x.2] , of which the Gauss-Lobatto-Legendre quadrature ( [2.x.3] ) is a special case.
+*   [2.x.4]  http://en.wikipedia.org/wiki/Handbook_of_Mathematical_Functions  [2.x.5]  Karniadakis, G.E. and Sherwin, S.J.: Spectral/hp element methods for computational fluid dynamics. Oxford: Oxford University Press, 2005
+
+* 
+* [0.x.3]*
+   Generate a formula with <tt>n</tt> quadrature points (in each space   direction).  
+* [0.x.4]*
+ The midpoint rule for numerical quadrature. This one-point formula is exact for linear polynomials.
+
+* 
+* [0.x.5]*
+ The Simpson rule for numerical quadrature. This formula with 3 quadrature points is exact for polynomials of degree 3.
+
+* 
+* [0.x.6]*
+ The trapezoidal rule for numerical quadrature. This formula with two quadrature points is exact for linear polynomials and uses the end points of an interval for function evaluation in 1d, see https://en.wikipedia.org/wiki/Trapezoidal_rule . In higher dimensions, the class is constructed via a tensor product and then uses the vertices of a quadrilateral or hexahedron for function evaluation.
+
+* 
+* [0.x.7]*
+ An alias for QTrapezoid available for historic reasons. This name is deprecated.
+*  The class was originally named QTrapez, a poorly named choice since the proper name of the quadrature formula is "trapezoidal rule", or sometimes also called the "trapezoid rule". The misnomer resulted from the fact that its original authors' poor English language skills led them to translate the name incorrectly from the German "Trapezregel".
+
+* 
+* [0.x.8]*
+ The Milne rule for numerical quadrature formula. The Milne rule is a closed Newton-Cotes formula and is exact for polynomials of degree 5.
+*   [2.x.6]  Stoer: Einführung in die Numerische Mathematik I, p. 102
+
+* 
+* [0.x.9]*
+ The Weddle rule for numerical quadrature. The Weddle rule is a closed Newton-Cotes formula and is exact for polynomials of degree 7.
+*   [2.x.7]  Stoer: Einführung in die Numerische Mathematik I, p. 102
+
+* 
+* [0.x.10]*
+ A class for Gauss quadrature with logarithmic weighting function. This formula is used to integrate  [2.x.8]  on the interval  [2.x.9] , where  [2.x.10]  is a smooth function without singularities. The collection of quadrature points and weights has been obtained using <tt>Numerical Recipes</tt>.
+*  Notice that only the function  [2.x.11]  should be provided, i.e.,  [2.x.12] . Setting the  [2.x.13]  flag to true at construction time switches the weight from  [2.x.14]  to  [2.x.15] .
+*  The weights and functions have been tabulated up to order 12.
+
+* 
+* [0.x.11]*
+   Generate a formula with <tt>n</tt> quadrature points  
+* [0.x.12]*
+   Compute the points of the quadrature formula.  
+* [0.x.13]*
+   Compute the weights of the quadrature formula.  
+* [0.x.14]*
+ A class for Gauss quadrature with arbitrary logarithmic weighting function. This formula is used to integrate  [2.x.16]  on the interval  [2.x.17] , where  [2.x.18]  is a smooth function without singularities, and  [2.x.19]  and  [2.x.20]  are given at construction time, and are the location of the singularity  [2.x.21]  and an arbitrary scaling factor in the singularity.
+*  You have to make sure that the point  [2.x.22]  is not one of the Gauss quadrature points of order  [2.x.23] , otherwise an exception is thrown, since the quadrature weights cannot be computed correctly.
+*  This quadrature formula is rather expensive, since it uses internally two Gauss quadrature formulas of order n to integrate the nonsingular part of the factor, and two GaussLog quadrature formulas to integrate on the separate segments  [2.x.24]  and  [2.x.25] . If the singularity is one of the extremes and the factor alpha is 1, then this quadrature is the same as QGaussLog.
+*  The last argument from the constructor allows you to use this quadrature rule in one of two possible ways: [1.x.5]
+*  Which one of the two sets of weights is provided, can be selected by the  [2.x.26]  factor_out_singular_weight parameter. If it is false (the default), then the  [2.x.27]  weights are computed, and you should provide only the smooth function  [2.x.28] , since the singularity is included inside the quadrature. If the parameter is set to true, then the singularity is factored out of the quadrature formula, and you should provide a function  [2.x.29] , which should at least be similar to  [2.x.30] .
+*  Notice that this quadrature rule is worthless if you try to use it for regular functions once you factored out the singularity.
+*  The weights and functions have been tabulated up to order 12.
+
+* 
+* [0.x.15]*
+   The constructor takes four arguments: the order of the Gauss formula on   each of the segments  [2.x.31]  and  [2.x.32] , the actual location of the   singularity, the scale factor inside the logarithmic function and a flag   that decides whether the singularity is left inside the quadrature   formula or it is factored out, to be included in the integrand.  
+* [0.x.16]*
+   Move constructor. We cannot rely on the move constructor for `Quadrature`,   since it does not know about the additional member `fraction` of this   class.  
+* [0.x.17]*
+   This is the length of interval  [2.x.33] , or 1 if either of the two   extremes have been selected.  
+* [0.x.18]*
+ A class for Gauss quadrature with  [2.x.34]  weighting function. This formula can be used to integrate  [2.x.35]  on the reference element  [2.x.36] , where  [2.x.37]  is a smooth function without singularities, and  [2.x.38]  is the distance from the point  [2.x.39]  to the vertex  [2.x.40] , given at construction time by specifying its index. Notice that this distance is evaluated in the reference element.
+*  This quadrature formula is obtained from two QGauss quadrature formulas, upon transforming them into polar coordinate system centered at the singularity, and then again into another reference element. This allows for the singularity to be cancelled by part of the Jacobian of the transformation, which contains  [2.x.41] . In practice the reference element is transformed into a triangle by collapsing one of the sides adjacent to the singularity. The Jacobian of this transformation contains  [2.x.42] , which is removed before scaling the original quadrature, and this process is repeated for the next half element.
+*  Upon construction it is possible to specify whether we want the singularity removed, or not. In other words, this quadrature can be used to integrate  [2.x.43] , or simply  [2.x.44] , with the  [2.x.45]  factor already included in the quadrature weights.
+
+* 
+* [0.x.19]*
+   This constructor takes three arguments: the order of the Gauss formula,   the point of the reference element in which the singularity is located,   and whether we include the weighting singular function inside the   quadrature, or we leave it in the user function to be integrated.     Traditionally, quadrature formulas include their weighting function, and   the last argument is set to false by default. There are cases, however,   where this is undesirable (for example when you only know that your   singularity has the same order of 1/R, but cannot be written exactly in   this way).     In other words, you can use this function in either of the following way,   obtaining the same result:    
+* [1.x.6]
+*   
+* [0.x.20]*
+   The constructor takes three arguments: the order of the Gauss formula,   the index of the vertex where the singularity is located, and whether we   include the weighting singular function inside the quadrature, or we   leave it in the user function to be integrated. Notice that this is a   specialized version of the previous constructor which works only for the   vertices of the quadrilateral.     Traditionally, quadrature formulas include their weighting function, and   the last argument is set to false by default. There are cases, however,   where this is undesirable (for example when you only know that your   singularity has the same order of 1/R, but cannot be written exactly in   this way).     In other words, you can use this function in either of the following way,   obtaining the same result:    
+* [1.x.7]
+*   
+* [0.x.21]*
+   Given a quadrature point and a degree n, this function returns the size   of the singular quadrature rule, considering whether the point is inside   the cell, on an edge of the cell, or on a corner of the cell.  
+* [0.x.22]*
+ Sorted Quadrature. Given an arbitrary quadrature formula, this class generates a quadrature formula where the quadrature points are ordered according the weights, from those with smaller corresponding weight, to those with higher corresponding weights. This might be necessary, for example, when integrating high order polynomials, since in these cases you might sum very big numbers with very small numbers, and summation is not stable if the numbers to sum are not close to each other.
+
+* 
+* [0.x.23]*
+   The constructor takes an arbitrary quadrature formula  [2.x.46]  and sorts   its points and weights according to ascending weights.  
+* [0.x.24]*
+   A rule for  [2.x.47]  to reorder pairs of points and weights.    [2.x.48]  and  [2.x.49]  are indices into the weights array and the result will   be determined by comparing the weights.  
+* [0.x.25]*
+ Telles quadrature of arbitrary order.
+*  The coefficients of these quadrature rules are computed using a non linear change of variables starting from a Gauss-Legendre quadrature formula. This is done using a cubic polynomial,  [2.x.50]  in order to integrate a singular integral, with singularity at a given point x_0.
+*  We start from a Gauss Quadrature Formula with arbitrary function. Then we apply the cubic variable change. In the paper, J.C.F.Telles:A Self-Adaptive Co-ordinate Transformation For Efficient Numerical Evaluation of General Boundary Element Integrals. International Journal for Numerical Methods in Engineering, vol 24, pages 959–973. year 1987, the author applies the transformation on the reference cell  [2.x.51]  getting
+
+* 
+* [1.x.8]
+*  We get
+
+* 
+* [1.x.9]
+*  with
+
+* 
+* [1.x.10]
+*  Since the library assumes  [2.x.52]  as reference interval, we will map these values on the proper reference interval in the implementation.
+*  This variable change can be used to integrate singular integrals. One example is  [2.x.53]  on the reference interval  [2.x.54] , where  [2.x.55]  is given at construction time, and is the location of the singularity  [2.x.56] , and  [2.x.57]  is a smooth non singular function.
+*  Singular quadrature formula are rather expensive, nevertheless Telles' quadrature formula are much easier to compute with respect to other singular integration techniques as Lachat-Watson.
+*  We have implemented the case for  [2.x.58] . When we deal the case  [2.x.59]  we have computed the quadrature formula has a tensorial product of one dimensional Telles' quadrature formulas considering the different components of the singularity.
+*  The weights and functions for Gauss Legendre formula have been tabulated up to order 12.
+
+* 
+* [0.x.26]*
+   A constructor that takes a quadrature formula and a singular point as   argument. The quadrature formula will be mapped using Telles' rule. Make   sure that the order of the quadrature rule is appropriate for the   singularity in question.  
+* [0.x.27]*
+   A variant of above constructor that takes as parameters the order  [2.x.60]    and location of a singularity. A Gauss Legendre quadrature of order n   will be used  
+* [0.x.28]*
+ Gauss-Chebyshev quadrature rules integrate the weighted product  [2.x.61]  with weight given by:  [2.x.62] . The nodes and weights are known analytically, and are exact for monomials up to the order  [2.x.63] , where  [2.x.64]  is the number of quadrature points. Here we rescale the quadrature formula so that it is defined on the interval  [2.x.65]  instead of  [2.x.66] . So the quadrature formulas integrate exactly the integral  [2.x.67]  with the weight:  [2.x.68] . For details see: M. Abramowitz & I.A. Stegun: Handbook of Mathematical Functions, par. 25.4.38
+
+* 
+* [0.x.29]*
+ Gauss-Radau-Chebyshev quadrature rules integrate the weighted product  [2.x.69]  with weight given by:  [2.x.70]  with the additional constraint that a quadrature point lies at one of the two extrema of the interval. The nodes and weights are known analytically, and are exact for monomials up to the order  [2.x.71] , where  [2.x.72]  is the number of quadrature points. Here we rescale the quadrature formula so that it is defined on the interval  [2.x.73]  instead of  [2.x.74] . So the quadrature formulas integrate exactly the integral  [2.x.75]  with the weight:  [2.x.76] . By default the quadrature is constructed with the left endpoint as quadrature node, but the quadrature node can be imposed at the right endpoint through the variable ep that can assume the values left or right.
+
+* 
+* [0.x.30] EndPoint is used to specify which of the two endpoints of the unit interval   is used also as quadrature point  
+* [0.x.31]*
+     Left end point.    
+* [0.x.32]*
+     Right end point.    
+* [0.x.33]*
+   Move constructor. We cannot rely on the move constructor for `Quadrature`,   since it does not know about the additional member `ep` of this class.  
+* [0.x.34]*
+ Gauss-Lobatto-Chebyshev quadrature rules integrate the weighted product  [2.x.77]  with weight given by:  [2.x.78] , with the additional constraint that two of the quadrature points are located at the endpoints of the quadrature interval. The nodes and weights are known analytically, and are exact for monomials up to the order  [2.x.79] , where  [2.x.80]  is the number of quadrature points. Here we rescale the quadrature formula so that it is defined on the interval  [2.x.81]  instead of  [2.x.82] . So the quadrature formulas integrate exactly the integral  [2.x.83]  with the weight:  [2.x.84] . For details see: M. Abramowitz & I.A. Stegun: Handbook of Mathematical Functions, par. 25.4.40
+
+* 
+* [0.x.35]*
+ Given an arbitrary quadrature formula, return one that chops the quadrature points above the hyper-plane defined by  [2.x.85] . In other words, it extracts those quadrature points from the base formula that satisfy  [2.x.86] ."
+*  In general the resulting quadrature is not very useful, unless the quadrature you started from has been constructed specifically to integrate over triangles or tetrahedra. This class only ensures that the resulting quadrature formula only has quadrature points in the reference simplex or on its boundary.
+*  No transformation is applied to the weights, and the weights referring to points that live outside the reference simplex are simply discarded.
+*  The main use of this quadrature formula is not to chop tensor product quadratures. Ideally you should pass to this class a quadrature formula constructed directly using points and weights in the reference simplex, capable of integrating on triangles or tetrahedra.
+*  For finite elements based on quadrilaterals and hexahedra, a QSimplex quadrature formula is not very useful on its own. This class is typically used in conjunction with other classes, like QSplit, to patch the reference element using several QSimplex quadrature formulas.
+*  Such quadrature formulas are useful to integrate functions with singularities at certain points, or functions that present jumps along a co-dimension one surface inside the reference element, like in the extended finite element method (XFEM).
+
+* 
+* [0.x.36]*
+   Construct a quadrature that only contains the points that are in the lower   left reference simplex.      [2.x.87]  quad The input quadrature.  
+* [0.x.37]*
+   Return an affine transformation of this quadrature, that can be used to   integrate on the simplex identified by `vertices`.     Both the quadrature point locations and the weights are transformed, so   that you can effectively use the resulting quadrature to integrate on the   simplex.     The transformation is defined as   [1.x.11]   where the matrix  [2.x.88]  is given by  [2.x.89] .     The weights are scaled with the absolute value of the determinant of  [2.x.90] ,   that is  [2.x.91] . If  [2.x.92]  is zero, an empty   quadrature is returned. This may happen, in two dimensions, if the three   vertices are aligned, or in three dimensions if the four vertices are on   the same plane.      [2.x.93]  vertices The vertices of the simplex you wish to integrate on    [2.x.94]  A quadrature object that can be used to integrate on the simplex  
+* [0.x.38]*
+ A quadrature that implements a polar transformation from a square to a triangle to integrate singularities in the origin of the reference simplex. The quadrature is obtained through the following polar transformation:
+*  [1.x.12]
+
+* 
+* [0.x.39]*
+   Construct a QTrianglePolar quadrature, with different formulas in the   radial and angular directions.      [2.x.95]  radial_quadrature Radial quadrature    [2.x.96]  angular_quadrature Angular quadrature  
+* [0.x.40]*
+   Call the other constructor, with QGauss<1>(n) for both radial and   angular quadrature.      [2.x.97]  n Order of QGauss quadrature  
+* [0.x.41]*
+ A quadrature that implements the Duffy transformation from a square to a triangle to integrate singularities in the origin of the reference simplex.
+*  The Duffy transformation is defined as [1.x.13]
+*  with determinant of the Jacobian equal to  [2.x.98] . Such transformation maps the reference square  [2.x.99]  to the reference simplex, by collapsing the left side of the square and squeezing quadrature points towards the origin, and then shearing the resulting triangle to the reference one. This transformation shows good convergence properties when  [2.x.100]  with singularities of order  [2.x.101]  in the origin, but different  [2.x.102]  values can be selected to increase convergence and/or accuracy when higher order Gauss rules are used (see "Generalized Duffy transformation for integrating vertex singularities", S. E. Mousavi, N. Sukumar, Computational Mechanics 2009).
+*  When  [2.x.103] , this transformation is also known as the Lachat-Watson transformation.
+
+* 
+* [0.x.42]*
+   Constructor that allows the specification of different quadrature rules   along the "radial" and "angular" directions.     Since this quadrature is not based on a Polar change of coordinates, it   is not fully proper to talk about radial and angular directions. However,   the effect of the Duffy transformation is similar to a polar change   of coordinates, since the resulting quadrature points are aligned radially   with respect to the singularity.      [2.x.104]  radial_quadrature Base quadrature to use in the radial direction    [2.x.105]  angular_quadrature Base quadrature to use in the angular direction    [2.x.106]  beta Exponent used in the transformation  
+* [0.x.43]*
+   Call the above constructor with QGauss<1>(n) quadrature formulas for   both the radial and angular quadratures.      [2.x.107]  n Order of QGauss quadrature    [2.x.108]  beta Exponent used in the transformation  
+* [0.x.44]*
+ A quadrature to use when the cell should be split into subregions to integrate using one or more base quadratures.
+
+* 
+* [0.x.45]*
+   Construct a quadrature formula by splitting the reference hyper cube into   the minimum number of simplices that have vertex zero coinciding with    [2.x.109]  and patch together affine transformations of the  [2.x.110]    quadrature. The point  [2.x.111]  should be in the reference element,   and an exception is thrown if this is not the case.     In two dimensions, the resulting quadrature formula will be composed of   two, three, or four triangular quadrature formulas if  [2.x.112]    coincides with one of the vertices, if it lies on one of the edges, or if   it is internal to the reference element respectively.     The same is true for the three dimensional case, with six, eight, ten, or   twelve tetrahedral quadrature formulas if  [2.x.113]  coincides with one   of the vertices, if it lies on one of the edges, on one of the faces, or   if it is internal to the reference element respectively.     The resulting quadrature can be used, for example, to integrate functions   with integrable singularities at the split point, provided that you select   as base quadrature one that can integrate singular points on vertex zero   of the reference simplex.     An example usage in dimension two is given by:  
+* [1.x.14]
+*      The resulting quadrature will look like the following:    [2.x.114]       [2.x.115]  base Base QSimplex quadrature to use    [2.x.116]  split_point Where to split the hyper cube  
+* [0.x.46]*
+ Integration rule for simplex entities.
+*  Users specify a number `n_points_1D` as an indication of what polynomial degree to be integrated exactly, similarly to the number of points in a QGauss quadrature object, even though the present quadrature formula is not a tensor product. The given value is translated for n_points_1D=1,2,3,4 to following number of quadrature points for 2D and 3D:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - 2D: 1, 3, 7, 15
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - 3D: 1, 4, 10, 35
+*  For 1D, the quadrature rule degenerates to a  [2.x.117] 
+* 
+
+* 
+*  [2.x.118] 
+
+* 
+* [0.x.47]*
+   Constructor taking the number of quadrature points in 1D direction    [2.x.119]   
+* [0.x.48]*
+ Witherden-Vincent rules for simplex entities.
+*  Like QGauss, users should specify a number `n_points_1D` as an indication of what polynomial degree to be integrated exactly (e.g., for  [2.x.120]  points, the rule can integrate polynomials of degree  [2.x.121]  exactly). The given value for n_points_1D = 1, 2, 3, 4, 5 results in the following number of quadrature points in 2D and 3D:
+* 
+
+* 
+* 
+*  - 2D: 1, 6, 7, 15, 19
+* 
+
+* 
+* 
+*  - 3D: 1, 8, 14, 35, 59
+*  For 1D, the quadrature rule degenerates to a  [2.x.122] 
+*  These rules match the ones listed for Witherden-Vincent in the quadpy  [2.x.123]  library and were first described in  [2.x.124] .
+* 
+
+* 
+*  [2.x.125] 
+
+* 
+* [0.x.49]*
+   Constructor taking the number of quadrature points in 1D direction    [2.x.126]   
+* [0.x.50]*
+ Integration rule for wedge entities.
+
+* 
+* [0.x.51]*
+   Users specify a number `n_points_1D` as an indication of what polynomial   degree to be integrated exactly. For details, see the comments of   QGaussSimplex.  
+* [0.x.52]*
+ Integration rule for pyramid entities.
+
+* 
+* [0.x.53]*
+   Users specify a number `n_points_1D` as an indication of what polynomial   degree to be integrated exactly. For details, see the comments of   QGaussSimplex.  
+* [0.x.54]

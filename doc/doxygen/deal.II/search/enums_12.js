@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zlibcompressionlevel_20673',['ZlibCompressionLevel',['../structDataOutBase_1_1VtkFlags.html#a7ad65742b9dbfb7eeb04b511b5a08d63',1,'DataOutBase::VtkFlags::ZlibCompressionLevel()'],['../group__Exceptions.html#ga7ad65742b9dbfb7eeb04b511b5a08d63',1,'DataOutBase::VtkFlags::ZlibCompressionLevel()'],['../structDataOutBase_1_1VtkFlags.html#a7ad65742b9dbfb7eeb04b511b5a08d63',1,'DataOutBase::VtkFlags::ZlibCompressionLevel()']]]
+  ['whicheigenvalues_28417',['WhichEigenvalues',['../classArpackSolver.html#ad8d0a4392fc4cd6f45eaa8a16bf18a7c',1,'ArpackSolver::WhichEigenvalues()'],['../classPArpackSolver.html#a61e6ecc371924100bc132fba84bc9b67',1,'PArpackSolver::WhichEigenvalues()'],['../classArpackSolver.html#ad8d0a4392fc4cd6f45eaa8a16bf18a7c',1,'ArpackSolver::WhichEigenvalues()'],['../classPArpackSolver.html#a61e6ecc371924100bc132fba84bc9b67',1,'PArpackSolver::WhichEigenvalues()'],['../classArpackSolver.html#ad8d0a4392fc4cd6f45eaa8a16bf18a7c',1,'ArpackSolver::WhichEigenvalues()'],['../classPArpackSolver.html#a61e6ecc371924100bc132fba84bc9b67',1,'PArpackSolver::WhichEigenvalues()']]]
 ];

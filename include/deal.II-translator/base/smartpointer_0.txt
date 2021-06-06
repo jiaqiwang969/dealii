@@ -1,0 +1,73 @@
+[0.x.0]*
+ Smart pointers avoid using dangling pointers. They can be used just like a pointer (i.e. using the <tt>*</tt> and <tt>-></tt> operators and through casting) but make sure that the object pointed to is not deleted or moved from in the course of use of the pointer by signaling the pointee its use.
+*  Objects pointed to, i.e. the class T, should inherit Subscriptor or must implement the same functionality. Null pointers are an exception from this rule and are allowed, too.
+*  The second template argument P only serves a single purpose: if a constructor without a debug string is used, then the name of P is used as the debug string.
+*  SmartPointer does NOT implement any memory handling! Especially, deleting a SmartPointer does not delete the object. Writing
+
+* 
+* [1.x.0]
+*  is a sure way to program a memory leak! The secure version is
+
+* 
+* [1.x.1]
+* 
+*  Note that a smart pointer can handle <tt>const</tt>ness of an object, i.e. a <tt>SmartPointer<const ABC></tt> really behaves as if it were a pointer to a constant object (disallowing write access when dereferenced), while <tt>SmartPointer<ABC></tt> is a mutable pointer.
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   Standard constructor for null pointer. The id of this pointer is set to   the name of the class P.  
+* [0.x.2]*
+   Copy constructor for SmartPointer. We do not copy the object subscribed   to from <tt>tt</tt>, but subscribe ourselves to it again.  
+* [0.x.3]*
+   Copy constructor for SmartPointer. We do not copy the object subscribed   to from <tt>tt</tt>, but subscribe ourselves to it again.  
+* [0.x.4]*
+   Constructor taking a normal pointer. If possible, i.e. if the pointer is   not a null pointer, the constructor subscribes to the given object to   lock it, i.e. to prevent its destruction before the end of its use.     The <tt>id</tt> is used in the call to  [2.x.1]  and by   ~SmartPointer() in the call to  [2.x.2]   
+* [0.x.5]*
+   Constructor taking a normal pointer. If possible, i.e. if the pointer is   not a null pointer, the constructor subscribes to the given object to   lock it, i.e. to prevent its destruction before the end of its use. The   id of this pointer is set to the name of the class P.  
+* [0.x.6]*
+   Destructor, removing the subscription.  
+* [0.x.7]*
+   Assignment operator for normal pointers. The pointer subscribes to the   new object automatically and unsubscribes to an old one if it exists. It   will not try to subscribe to a null-pointer, but still delete the old   subscription.  
+* [0.x.8]*
+   Assignment operator for SmartPointer. The pointer subscribes to the new   object automatically and unsubscribes to an old one if it exists.  
+* [0.x.9]*
+   Assignment operator for SmartPointer. The pointer subscribes to the new   object automatically and unsubscribes to an old one if it exists.  
+* [0.x.10]*
+   Delete the object pointed to and set the pointer to zero.  
+* [0.x.11]*
+   Conversion to normal pointer.  
+* [0.x.12]*
+   Dereferencing operator. This operator throws an ExcNotInitialized() if the   pointer is a null pointer.  
+* [0.x.13]*
+   Dereferencing operator. This operator throws an ExcNotInitializedi() if the   pointer is a null pointer.  
+* [0.x.14]*
+   Exchange the pointers of this object and the argument. Since both the   objects to which is pointed are subscribed to before and after, we do not   have to change their subscription counters.     Note that this function (with two arguments) and the respective functions   where one of the arguments is a pointer and the other one is a C-style   pointer are implemented in global namespace.  
+* [0.x.15]*
+   Swap pointers between this object and the pointer given. As this releases   the object pointed to presently, we reduce its subscription count by one,   and increase it at the object which we will point to in the future.     Note that we indeed need a reference of a pointer, as we want to change   the pointer variable which we are given.  
+* [0.x.16]*
+   Return an estimate of the amount of memory (in bytes) used by this class.   Note in particular, that this only includes the amount of memory used by   [1.x.2] object, not by the object pointed to.  
+* [0.x.17]*
+   Pointer to the object we want to subscribe to. Since it is often   necessary to follow this pointer when debugging, we have deliberately   chosen a short name.  
+* [0.x.18]*
+   The identification for the subscriptor.  
+* [0.x.19]*
+   The Smartpointer is invalidated when the object pointed to is destroyed   or moved from.  
+* [0.x.20]*
+ Global function to swap the contents of two smart pointers. As both objects to which the pointers point retain to be subscribed to, we do not have to change their subscription count.
+
+* 
+* [0.x.21]*
+ Global function to swap the contents of a smart pointer and a C-style pointer.
+*  Note that we indeed need a reference of a pointer, as we want to change the pointer variable which we are given.
+
+* 
+* [0.x.22]*
+ Global function to swap the contents of a C-style pointer and a smart pointer.
+*  Note that we indeed need a reference of a pointer, as we want to change the pointer variable which we are given.
+
+* 
+* [0.x.23]

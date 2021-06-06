@@ -1,11 +1,11 @@
-digraph "Degrees of Freedom"
+digraph "Degrees of Freedom This module groups classes and namespaces"
 {
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=box];
   rankdir=LR;
   Node2 [label="Constraints on degrees\l of freedom",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__constraints.html",tooltip=" "];
   Node3 [label="Accessor classes of\l the mesh iterators",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Accessors.html",tooltip=" "];
-  Node1 [label="Degrees of Freedom",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="This module groups classes and namespaces that have to do with handling degrees of freedom...."];
+  Node1 [label="Degrees of Freedom\l This module groups\l classes and namespaces",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="that have to do with handling degrees of freedom. The central class of this group is the DoFHandler c..."];
   Node1->Node2 [shape=plaintext, dir="back", style="solid"];
   Node1->Node3 [shape=plaintext, label="internal::DoFAccessorImplementation\l::Inheritance\nDoFAccessor\nDoFCellAccessor", color="orange", dir="none", style="dashed"];
   Node1->Node2 [shape=plaintext, label="AffineConstraints", color="orange", dir="none", style="dashed"];

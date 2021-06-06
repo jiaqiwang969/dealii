@@ -1,0 +1,569 @@
+[0.x.0]*
+ This class is the base class for all exception classes. Do not use its methods and variables directly since the interface and mechanism may be subject to change. Rather create new exception classes using the <tt>DeclException</tt> macro family.
+*  See the  [2.x.0]  module for more details on this class and what can be done with classes derived from it.
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+   Default constructor.  
+* [0.x.2]*
+   Copy constructor.  
+* [0.x.3]*
+   Destructor.  
+* [0.x.4]*
+   Copy operator. This operator is deleted since exception objects   are not copyable.  
+* [0.x.5]*
+   Set the file name and line of where the exception appeared as well as the   violated condition and the name of the exception as a char pointer. This   function also populates the stacktrace.  
+* [0.x.6]*
+   Override the standard function that returns the description of the error.  
+* [0.x.7]*
+   Get exception name.  
+* [0.x.8]*
+   Print out the general part of the error information.  
+* [0.x.9]*
+   Print more specific information about the exception which occurred.   Overload this function in your own exception classes.  
+* [0.x.10]*
+   Print a stacktrace, if one has been recorded previously, to the given   stream.  
+* [0.x.11]*
+   Name of the file this exception happens in.  
+* [0.x.12]*
+   Line number in this file.  
+* [0.x.13]*
+   Name of the function, pretty printed.  
+* [0.x.14]*
+   The violated condition, as a string.  
+* [0.x.15]*
+   Name of the exception and call sequence.  
+* [0.x.16]*
+   A backtrace to the position where the problem happened, if the system   supports this.  
+* [0.x.17]*
+   The number of stacktrace frames that are stored in the previous variable.   Zero if the system does not support stack traces.  
+* [0.x.18]*
+   array of pointers that contains the raw stack trace  
+* [0.x.19]*
+   Internal function that generates the c_string. Called by what().  
+* [0.x.20]*
+   A pointer to the c_string that will be printed by what(). It is populated   by generate_message()  
+* [0.x.21]*
+ Declare an exception class derived from ExceptionBase without parameters.
+* 
+
+* 
+*  [2.x.2]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.3]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.4] , by including the header  [2.x.5]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.6] 
+
+* 
+* [0.x.22]*
+ Declare an exception class derived from ExceptionBase that can take one runtime argument, but if none is given in the place where you want to throw the exception, it simply reverts to the default text provided when declaring the exception class through this macro.
+* 
+
+* 
+*  [2.x.7]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.8]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.9] , by including the header  [2.x.10]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.11] 
+
+* 
+* [0.x.23]*
+ Declare an exception class derived from ExceptionBase with one additional parameter.
+* 
+
+* 
+*  [2.x.12]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.13]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.14] , by including the header  [2.x.15]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.16] 
+
+* 
+* [0.x.24]*
+ Declare an exception class derived from ExceptionBase with two additional parameters.
+* 
+
+* 
+*  [2.x.17]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.18]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.19] , by including the header  [2.x.20]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.21] 
+
+* 
+* [0.x.25]*
+ Declare an exception class derived from ExceptionBase with three additional parameters.
+* 
+
+* 
+*  [2.x.22]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.23]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.24] , by including the header  [2.x.25]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.26] 
+
+* 
+* [0.x.26]*
+ Declare an exception class derived from ExceptionBase with four additional parameters.
+* 
+
+* 
+*  [2.x.27]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.28]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.29] , by including the header  [2.x.30]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.31] 
+
+* 
+* [0.x.27]*
+ Declare an exception class derived from ExceptionBase with five additional parameters.
+* 
+
+* 
+*  [2.x.32]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.33]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.34] , by including the header  [2.x.35]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.36] 
+
+* 
+* [0.x.28]*
+ Declare an exception class derived from ExceptionBase without parameters.
+* 
+
+* 
+*  [2.x.37]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.38]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.39] , by including the header  [2.x.40]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.41] 
+
+* 
+* [0.x.29]*
+ Declare an exception class derived from ExceptionBase that can take one runtime argument, but if none is given in the place where you want to throw the exception, it simply reverts to the default text provided when declaring the exception class through this macro.
+* 
+
+* 
+*  [2.x.42]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.43]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.44] , by including the header  [2.x.45]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.46] 
+
+* 
+* [0.x.30]*
+ Declare an exception class derived from ExceptionBase with one additional parameter.
+* 
+
+* 
+*  [2.x.47]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.48]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.49] , by including the header  [2.x.50]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.51] 
+
+* 
+* [0.x.31]*
+ Declare an exception class derived from ExceptionBase with two additional parameters.
+* 
+
+* 
+*  [2.x.52]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.53]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.54] , by including the header  [2.x.55]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.56] 
+
+* 
+* [0.x.32]*
+ Declare an exception class derived from ExceptionBase with three additional parameters.
+* 
+
+* 
+*  [2.x.57]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.58]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.59] , by including the header  [2.x.60]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.61] 
+
+* 
+* [0.x.33]*
+ Declare an exception class derived from ExceptionBase with four additional parameters.
+* 
+
+* 
+*  [2.x.62]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.63]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.64] , by including the header  [2.x.65]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.66] 
+
+* 
+* [0.x.34]*
+ Declare an exception class derived from ExceptionBase with five additional parameters.
+* 
+
+* 
+*  [2.x.67]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.68]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.69] , by including the header  [2.x.70]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.71] 
+
+* 
+* [0.x.35]*
+ Declare some exceptions that occur over and over. This way, you can simply use these exceptions, instead of having to declare them locally in your class. The namespace in which these exceptions are declared is later included into the global namespace by
+
+* 
+* [1.x.0]
+* 
+* 
+
+* 
+*  [2.x.72] 
+
+* 
+* [0.x.36]*
+    [2.x.73]  Exceptions  
+* [0.x.37]*
+   Exception denoting a division by zero.  
+* [0.x.38]*
+   Exception raised if a number is not finite.     This exception should be used to catch infinite or not a number results   of arithmetic operations that do not result from a division by zero (use   ExcDivideByZero for those).     The exception uses  [2.x.74]  as its argument to ensure that we can use   it for all scalar arguments (real or complex-valued).  
+* [0.x.39]*
+   Trying to allocate a new object failed due to lack of free memory.  
+* [0.x.40]*
+   A memory handler reached a point where all allocated objects should have   been released. Since this exception is thrown, some were still allocated.  
+* [0.x.41]*
+   An error occurred reading or writing a file.  
+* [0.x.42]*
+   An error occurred opening the named file.     The constructor takes a single argument of type  [2.x.75]  naming   the file.  
+* [0.x.43]*
+   Exception denoting a part of the library or application program that has   not yet been implemented. In many cases, this only indicates that there   wasn't much need for something yet, not that this is difficult to   implement. It is therefore quite worth the effort to take a look at the   corresponding place and see whether it can be implemented without too   much effort.  
+* [0.x.44]*
+   This exception usually indicates that some condition which the programmer   thinks must be satisfied at a certain point in an algorithm, is not   fulfilled. This might be due to some programming error above, due to   changes to the algorithm that did not preserve this assertion, or due to   assumptions the programmer made that are not valid at all (i.e. the   exception is thrown although there is no error here). Within the library,   this exception is most often used when we write some kind of complicated   algorithm and are not yet sure whether we got it right; we then put in   assertions after each part of the algorithm that check for some   conditions that should hold there, and throw an exception if they do not.     We usually leave in these assertions even after we are confident that the   implementation is correct, since if someone later changes or extends the   algorithm, these exceptions will indicate to them if they violate   assumptions that are used later in the algorithm. Furthermore, it   sometimes happens that an algorithm does not work in very rare corner   cases. These cases will then be trapped sooner or later by the exception,   so that the algorithm can then be fixed for these cases as well.  
+* [0.x.45]*
+   This exception is used in functions that may not be called (i.e. in pure   functions) but could not be declared pure since the class is intended to   be used anyway, even though the respective function may only be called if   a derived class is used.  
+* [0.x.46]*
+   This exception is used if some object is found uninitialized.  
+* [0.x.47]*
+   The object is in a state not suitable for this operation.  
+* [0.x.48]*
+   This exception is raised if a functionality is not possible in the given   dimension. Mostly used to throw function calls in 1d.     The constructor takes a single <tt>int</tt>, denoting the dimension.  
+* [0.x.49]*
+   This exception is raised if a functionality is not possible in the given   combination of dimension and space-dimension.     The constructor takes two <tt>int</tt>, denoting the dimension and the   space dimension.  
+* [0.x.50]*
+   A number is zero, but it should not be here.  
+* [0.x.51]*
+   The object should have been filled with something before this member   function is called.  
+* [0.x.52]*
+   This exception is raised whenever the sizes of two objects were assumed   to be equal, but were not.     Parameters to the constructor are the first and second size, both of type   <tt>int</tt>.  
+* [0.x.53]*
+   The first dimension should be either equal to the second or the third,   but it is neither.  
+* [0.x.54]*
+   This exception indicates that an index is not within the expected range.   For example, it may be that you are trying to access an element of a   vector which does not exist.     The constructor takes three <tt>int</tt> arguments, namely    [2.x.76]     [2.x.77]  the violating index    [2.x.78]  the lower bound    [2.x.79]  the upper bound plus one    [2.x.80]   
+* [0.x.55]*
+   This exception indicates that an index is not within the expected range.   For example, it may be that you are trying to access an element of a   vector which does not exist.     The constructor takes three arguments, namely    [2.x.81]     [2.x.82]  the violating index    [2.x.83]  the lower bound    [2.x.84]  the upper bound plus one    [2.x.85]      This generic exception differs from ExcIndexRange by allowing to specify   the type of indices.  
+* [0.x.56]*
+   A number is too small.  
+* [0.x.57]*
+   A generic exception definition for the ExcLowerRange above.  
+* [0.x.58]*
+   This exception indicates that the first argument should be an integer   multiple of the second, but is not.  
+* [0.x.59]*
+   This exception is thrown if the iterator you access has corrupted data.   It might for instance be, that the container it refers does not have an   entry at the point the iterator refers.     Typically, this will be an internal error of deal.II, because the   increment and decrement operators should never yield an invalid iterator.  
+* [0.x.60]*
+   This exception is thrown if the iterator you incremented or decremented   was already at its final state.  
+* [0.x.61]*
+   This exception works around a design flaw in the <tt>DeclException0</tt>   macro: exceptions declared through DeclException0 do not allow one to   specify a message that is displayed when the exception is raised, as   opposed to the other exceptions which allow to show a text along with the   given parameters.     When throwing this exception, you can give a message as a    [2.x.86]  as argument to the exception that is then displayed.   The argument can, of course, be constructed at run-time, for example   including the name of a file that can't be opened, or any other text you   may want to assemble from different pieces.  
+* [0.x.62]*
+   Parallel vectors with ghost elements are read-only vectors.  
+* [0.x.63]*
+   Some of our numerical classes allow for setting all entries to zero using   the assignment operator <tt>=</tt>.     In many cases, this assignment operator makes sense [1.x.1] for the   argument zero. In other cases, this exception is thrown.  
+* [0.x.64]*
+   This function requires support for the LAPACK library.  
+* [0.x.65]*
+   This function requires support for the MPI library.  
+* [0.x.66]*
+   This function requires support for the FunctionParser library.  
+* [0.x.67]*
+   This function requires support for the Assimp library.  
+* [0.x.68]*
+   This exception is raised if an error happened in a CUDA kernel.     The constructor takes a single <tt>char*</tt>, the output of   cudaGetErrorString.  
+* [0.x.69]*
+   This exception is raised if an error happened in a cuSPARSE function.  
+* [0.x.70]*
+   This function requires support for the Exodus II library.  
+* [0.x.71]*
+   Exception for MPI errors. This exception is only defined if    [2.x.87]  is compiled with MPI support. This exception should   be used with  [2.x.88]  to check error codes of MPI   functions. For example:  
+* [1.x.2]
+*    or, using the convenience macro  [2.x.89] ,  
+* [1.x.3]
+*      If the assertion fails then the error code will be used to print a helpful   message to the screen by utilizing the  [2.x.90]    function.    
+*  [2.x.91]   
+* [0.x.72]*
+   Exception for ExodusII errors. This exception is only defined if    [2.x.92]  is compiled with SEACAS support, which is available   through Trilinos. This function should be used with the convenience macro   AssertThrowExodusII.    
+*  [2.x.93]   
+* [0.x.73]*
+     Constructor.          [2.x.94]  error_code The error code returned by an ExodusII function.    
+* [0.x.74]*
+     Print a description of the error to the given stream.    
+* [0.x.75]*
+     Store the error code.    
+* [0.x.76]*
+ In this namespace, functions in connection with the Assert and AssertThrow mechanism are declared.
+* 
+
+* 
+*  [2.x.95] 
+
+* 
+* [0.x.77]*
+     Setting this variable to false will disable deal.II's exception mechanism     to abort the problem. The Assert() macro will throw the exception instead     and the AssertNothrow() macro will just print the error message. This     variable should not be changed directly. Use disable_abort_on_exception()     instead.    
+* [0.x.78]*
+   Set a string that is printed upon output of the message indicating a   triggered <tt>Assert</tt> statement. This string, which is printed in   addition to the usual output may indicate information that is otherwise   not readily available unless we are using a debugger. For example, with   distributed programs on cluster computers, the output of all processes is   redirected to the same console window. In this case, it is convenient to   set as additional name the name of the host on which the program runs, so   that one can see in which instance of the program the exception occurred.     The string pointed to by the argument is copied, so doesn't need to be   stored after the call to this function.     Previously set additional output is replaced by the argument given to   this function.      [2.x.96]  Exceptions  
+* [0.x.79]*
+   Calling this function disables printing a stacktrace along with the other   output printed when an exception occurs. Most of the time, you will want   to see such a stacktrace; suppressing it, however, is useful if one wants   to compare the output of a program across different machines and systems,   since the stacktrace shows memory addresses and library names/paths that   depend on the exact setup of a machine.      [2.x.97]  Exceptions  
+* [0.x.80]*
+   Calling this function switches off the use of  [2.x.98]  when   an exception is created using the Assert() macro. Instead, the Exception   will be thrown using 'throw', so it can be caught if desired. Generally,   you want to abort the execution of a program when Assert() is called, but   it needs to be switched off if you want to log all exceptions created, or   if you want to test if an assertion is working correctly. This is done   for example in regression tests. Please note that some fatal errors will   still call abort(), e.g. when an exception is caught during exception   handling.      [2.x.99]  Exceptions  
+* [0.x.81]*
+   The functions in this namespace are in connection with the Assert and   AssertThrow mechanism but are solely for internal purposes and are not   for use outside the exception handling and throwing mechanism.    
+*  [2.x.100]   
+* [0.x.82]*
+     Abort the program by printing the     error message provided by  [2.x.101]  and calling  [2.x.102]     
+* [0.x.83]*
+     An enum describing how to treat an exception in issue_error_noreturn.    
+* [0.x.84]*
+       Abort the program by calling  [2.x.103]  unless        [2.x.104]  has been called: in       that case the program will throw an exception.      
+* [0.x.85]*
+       Throw the exception normally.      
+* [0.x.86]*
+     This routine does the main work for the exception generation mechanism     used in the <tt>Assert</tt> and <tt>AssertThrow</tt> macros: as the     name implies, this function either ends by throwing an exception (if      [2.x.105]  is throw_on_exception, or  [2.x.106]  is try_abort_exception     and  [2.x.107]  is false) or with a     call to <tt>abort</tt> (if  [2.x.108]  is try_abort_exception and      [2.x.109]  is true).         The actual exception object (the last argument) is typically an unnamed     object created in place; because we modify it, we can't take it by     const reference, and temporaries don't bind to non-const references.     So take it by value (=copy it) with a templated type to avoid slicing
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  the performance implications are pretty minimal anyway.          [2.x.110]     
+* [0.x.87]*
+     Internal function that does the work of issue_error_nothrow.    
+* [0.x.88]*
+     Exception generation mechanism in case we must not throw.          [2.x.111]         
+*  [2.x.112]  This function is defined with a template for the same reasons as     issue_error_noreturn().    
+* [0.x.89]*
+     Return a string given an error code. This is similar to the     cudaGetErrorString function but there is no equivalent function for     cuSPARSE.    
+* [0.x.90]*
+     Return a string given an error code. This is similar to the     cudaGetErrorString function but there is no equivalent function for     cuSOLVER.    
+* [0.x.91]*
+ A macro that serves as the main routine in the exception mechanism for debug mode error checking. It asserts that a certain condition is fulfilled, otherwise issues an error and aborts the program.
+*  A more detailed description can be found in the  [2.x.113]  module. It is first used in  [2.x.114]  and  [2.x.115] . See also the <tt>ExceptionBase</tt> class for more information.
+* 
+
+* 
+*  [2.x.116]  Active in DEBUG mode only
+* 
+
+* 
+*  [2.x.117]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.118]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.119] , by including the header  [2.x.120]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.121] 
+
+* 
+* [0.x.92]*
+ A variant of the <tt>Assert</tt> macro above that exhibits the same runtime behavior as long as disable_abort_on_exception was not called.
+*  However, if disable_abort_on_exception was called, this macro merely prints the exception that would be thrown to deallog and continues normally without throwing an exception.
+*  A more detailed description can be found in the  [2.x.122]  module, in the discussion about the corner case at the bottom of the page.
+* 
+
+* 
+*  [2.x.123]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.124]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.125] , by including the header  [2.x.126]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.127]  Active in DEBUG mode only
+
+* 
+*  [2.x.128] 
+
+* 
+* [0.x.93]*
+ A macro that serves as the main routine in the exception mechanism for dynamic error checking. It asserts that a certain condition is fulfilled, otherwise throws an exception via the C++  [2.x.129]  mechanism. This exception can be caught via a  [2.x.130]  clause, as is shown in  [2.x.131]  and all following tutorial programs.
+*  A more detailed description can be found in the  [2.x.132]  module. It is first used in  [2.x.133]  and  [2.x.134] . See also the <tt>ExceptionBase</tt> class for more information.
+* 
+
+* 
+*  [2.x.135]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.136]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.137] , by including the header  [2.x.138]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.139]  Active in both DEBUG and RELEASE modes
+
+* 
+*  [2.x.140] 
+
+* 
+* [0.x.94]*
+ Special assertion for dimension mismatch.
+*  Since this is used very often and always repeats the arguments, we introduce this special assertion for ExcDimensionMismatch in order to keep the user codes shorter.
+* 
+
+* 
+*  [2.x.141]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.142]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.143] , by including the header  [2.x.144]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.145] 
+
+* 
+* [0.x.95]*
+ An assertion that tests whether <tt>vec</tt> has size <tt>dim1</tt>, and each entry of the vector is itself an array that has the size <tt>dim2</tt>.
+* 
+
+* 
+*  [2.x.146]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.147]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.148] , by including the header  [2.x.149]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.150] 
+
+* 
+* [0.x.96]*
+ An assertion that tests that a given index is within the half-open range  [2.x.151] . It throws an exception object  [2.x.152]  if the assertion fails.
+* 
+
+* 
+*  [2.x.153]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.154]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.155] , by including the header  [2.x.156]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.157] 
+
+* 
+* [0.x.97]*
+ An assertion that checks whether a number is finite or not. We explicitly cast the number to  [2.x.158]  to match the signature of the exception (see there for an explanation of why we use  [2.x.159]  at all) and to satisfy the fact that  [2.x.160]  has no implicit conversions.
+* 
+
+* 
+*  [2.x.161]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.162]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.163] , by including the header  [2.x.164]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.165] 
+
+* 
+* [0.x.98]*
+ An assertion that checks whether or not an error code returned by an MPI function is equal to  [2.x.166] . If the check fails then an exception of type ExcMPI is thrown with the given error code as an argument.
+* 
+
+* 
+*  [2.x.167]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.168]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.169] , by including the header  [2.x.170]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.171]  Active only if deal.II is compiled with MPI
+
+* 
+*  [2.x.172] 
+
+* 
+* [0.x.99]*
+ An assertion that checks that the error code produced by calling a CUDA routine is equal to cudaSuccess.
+* 
+
+* 
+*  [2.x.173]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.174]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.175] , by including the header  [2.x.176]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.177] 
+
+* 
+* [0.x.100]*
+ The non-throwing equivalent of AssertCuda.
+* 
+
+* 
+*  [2.x.178]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.179]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.180] , by including the header  [2.x.181]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.182] 
+
+* 
+* [0.x.101]*
+ An assertion that checks that the kernel was launched and executed successfully.
+* 
+
+* 
+*  [2.x.183]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.184]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.185] , by including the header  [2.x.186]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.187] 
+
+* 
+* [0.x.102]*
+ An assertion that checks that the error code produced by calling a cuSPARSE routine is equal to CUSPARSE_STATUS_SUCCESS.
+* 
+
+* 
+*  [2.x.188]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.189]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.190] , by including the header  [2.x.191]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.192] 
+
+* 
+* [0.x.103]*
+ The non-throwing equivalent of AssertCusparse.
+* 
+
+* 
+*  [2.x.193]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.194]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.195] , by including the header  [2.x.196]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.197] 
+
+* 
+* [0.x.104]*
+ An assertion that checks that the error code produced by calling a cuSOLVER routine is equal to CUSOLVER_STATUS_SUCCESS.
+* 
+
+* 
+*  [2.x.198]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.199]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.200] , by including the header  [2.x.201]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.202] 
+
+* 
+* [0.x.105]*
+ Assertion that checks that the error code produced by calling an ExodusII routine is equal to EX_NOERR (which is zero).
+* 
+
+* 
+*  [2.x.203]  This and similar macro names are examples of preprocessor definitions in the deal.II library that are not prefixed by a string that likely makes them unique to deal.II. As a consequence, it is possible that other libraries your code interfaces with define the same name, and the result will be name collisions (see https://en.wikipedia.org/wiki/Name_collision). One can  [2.x.204]  this macro, as well as all other macros defined by deal.II that are not prefixed with either  [2.x.205] , by including the header  [2.x.206]  after all other deal.II headers have been included.
+* 
+
+* 
+*  [2.x.207] 
+
+* 
+* [0.x.106]

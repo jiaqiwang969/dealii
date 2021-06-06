@@ -1,0 +1,72 @@
+[0.x.0]*
+ A class that implements a polynomial mapping  [2.x.0]  of degree  [2.x.1]  on cells at the boundary of the domain (or, if requested in the constructor, for all cells) and linear mappings for interior cells.
+*  The class is in fact poorly named since (unless explicitly specified during the construction of the object, see below), it does not actually use mappings of degree  [2.x.2]  [1.x.0], but only on cells at the boundary. This is in contrast to the MappingQGeneric class which indeed does use a polynomial mapping  [2.x.3]  of degree  [2.x.4]  everywhere. The point of the current class is that in many situations, curved domains are only provided with information about how exactly edges at the boundary are shaped, but we do not know anything about internal edges. Thus, in the absence of other information, we can only assume that internal edges are straight lines, and in that case internal cells may as well be treated is bilinear quadrilaterals or trilinear hexahedra. (An example of how such meshes look is shown in  [2.x.5]  already, but it is also discussed in the "Results" section of  [2.x.6] .) Because bi-/trilinear mappings are significantly cheaper to compute than higher order mappings, it is advantageous in such situations to use the higher order mapping only on cells at the boundary of the domain. This class implements exactly this behavior.
+*  There are a number of special cases worth considering:
+* 
+
+* 
+* 
+*  - If you want to use a higher order mapping for all cells, you can achieve this by setting the second argument to the constructor to true. This only makes sense if you can actually provide information about how interior edges and faces of the mesh should be curved. This is typically done by associating a Manifold with interior cells and edges. A simple example of this is discussed in the "Results" section of  [2.x.7] ; a full discussion of manifolds is provided in  [2.x.8] .
+* 
+
+* 
+* 
+*  - If you pass true as the second argument to this class, then it is in fact completely equivalent to generating a MappingQGeneric object right away.
+* 
+
+* 
+* 
+*  - This class is also entirely equivalent to MappingQGeneric if the polynomial degree provided is one. This is because in that case, no distinction between the mapping used on cells in the interior and on the boundary of the domain can be made.
+* 
+
+* 
+* 
+*  - If you are working on meshes embedded in higher space dimensions, i.e., if dim!=spacedim, then every cell is considered to be at the boundary of the domain and consequently a higher order mapping is used for all cells; again this class is then equivalent to using MappingQGeneric right away.
+*  [1.x.1]
+*  For the behavior of the mapping and convergence rates in case of mixing different manifolds, please consult the respective section of MappingQGeneric.
+
+* 
+* [0.x.1]*
+   Constructor.   [2.x.9]  denotes the polynomial degree of the   polynomials that are used to map cells boundary.     The second argument determines whether the higher order mapping should   also be used on interior cells. If its value is  [2.x.10]  (the   default), then a lower order mapping is used in the interior. This is   sufficient for most cases where higher order mappings are only used to   better approximate the boundary. In that case, cells bounded by straight   lines are acceptable in the interior. However, there are cases where one   would also like to use a higher order mapping in the interior. The   MappingQEulerian class is one such case.     The value of  [2.x.11]  is ignored if  [2.x.12]  is not   equal to  [2.x.13]  i.e., if we are considering meshes on surfaces   embedded into higher dimensional spaces.  
+* [0.x.2]*
+   Copy constructor.  
+* [0.x.3]*
+   Return the degree of the mapping, i.e. the value which was passed to the   constructor.  
+* [0.x.4]*
+   Always returns  [2.x.14]  because the default implementation of functions in   this class preserves vertex locations.  
+* [0.x.5]*
+   Transform the point  [2.x.15]  on the unit cell to the point  [2.x.16]  on the   real cell  [2.x.17]  and returns  [2.x.18]   
+* [0.x.6]*
+   Transform the point  [2.x.19]  on the real cell to the point  [2.x.20]  on the   unit cell  [2.x.21]  and returns  [2.x.22]      Uses Newton iteration and the  [2.x.23]  function.     In the codimension one case, this function returns the normal projection   of the real point  [2.x.24]  on the curve or surface identified by the  [2.x.25]     
+*  [2.x.26]  Polynomial mappings from the reference (unit) cell coordinates to   the coordinate system of a real cell are not always invertible if the   point for which the inverse mapping is to be computed lies outside the   cell's boundaries.  In such cases, the current function may fail to   compute a point on the reference cell whose image under the mapping   equals the given point  [2.x.27]   If this is the case then this function   throws an exception of type  [2.x.28]  .  Whether   the given point  [2.x.29]  lies outside the cell can therefore be determined by   checking whether the return reference coordinates lie inside of outside   the reference cell (e.g., using  [2.x.30]  or   whether the exception mentioned above has been thrown.  
+* [0.x.7]*
+   Return a pointer to a copy of the present object. The caller of this copy   then assumes ownership of it.  
+* [0.x.8]*
+    [2.x.31]  Interface with FEValues    [2.x.32]   
+* [0.x.9]*
+   Storage for internal data of this mapping. See  [2.x.33]    for an extensive description.     This includes data that is computed once when the object is created (in   get_data()) as well as data the class wants to store from between the   call to fill_fe_values(), fill_fe_face_values(), or   fill_fe_subface_values() until possible later calls from the finite   element to functions such as transform(). The latter class of member   variables are marked as 'mutable'.     The current class uses essentially the same fields for storage as the   MappingQGeneric class. Consequently, it inherits from    [2.x.34]  rather than from    [2.x.35]  The principal difference to    [2.x.36]  is that MappingQ switches between  [2.x.37]  and    [2.x.38]  mappings depending on the cell we are on, so the internal data   object needs to also store a pointer to an InternalData object that   pertains to a  [2.x.39]  mapping.  
+* [0.x.10]*
+     Constructor.    
+* [0.x.11]*
+     Return an estimate (in bytes) for the memory consumption of this object.    
+* [0.x.12]*
+     Flag that is set by the <tt>fill_fe_[[sub]face]_values</tt> function.         If this flag is  [2.x.40]  we are on an interior cell and the  [2.x.41]      mapping_q1_data is used.    
+* [0.x.13]*
+     A pointer to a structure to store the information for the pure  [2.x.42]      mapping that is, by default, used on all interior cells.    
+* [0.x.14]*
+     A pointer to a structure to store the information for the full  [2.x.43]      mapping that is, by default, used on all boundary cells.    
+* [0.x.15]*
+    [2.x.44]   
+* [0.x.16]*
+   The polynomial degree of the cells to be used on all cells at the   boundary of the domain, or everywhere if so specified.  
+* [0.x.17]*
+   If this flag is set  [2.x.45]  then  [2.x.46]  is used on all cells, not   only on boundary cells.  
+* [0.x.18]*
+   Pointer to a Q1 mapping. This mapping is used on interior cells unless   use_mapping_q_on_all_cells was set in the call to the constructor. The   mapping is also used on any cell in the transform_real_to_unit_cell() to   compute a cheap initial guess for the position of the point before we   employ the more expensive Newton iteration using the full mapping.    
+*  [2.x.47]  MappingQEulerian resets this pointer to an object of type   MappingQ1Eulerian to ensure that the Q1 mapping also knows about the   proper shifts and transformations of the Eulerian displacements. This   also means that we really need to store our own Q1 mapping here, rather   than simply resorting to  [2.x.48]     
+*  [2.x.49]  If the polynomial degree used for the current object is one, then   the qp_mapping and q1_mapping variables point to the same underlying   object.  
+* [0.x.19]*
+   Pointer to a Q_p mapping. This mapping is used on boundary cells unless   use_mapping_q_on_all_cells was set in the call to the constructor (in   which case it is used for all cells).    
+*  [2.x.50]  MappingQEulerian and MappingC1 reset this pointer to an object of   their own implementation to ensure that the Q_p mapping also knows about   the proper shifts and transformations of the Eulerian displacements   (Eulerian case) and proper choice of support points (C1 case).    
+*  [2.x.51]  If the polynomial degree used for the current object is one, then   the qp_mapping and q1_mapping variables point to the same underlying   object.  
+* [0.x.20]

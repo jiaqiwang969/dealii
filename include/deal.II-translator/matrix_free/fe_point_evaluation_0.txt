@@ -1,0 +1,71 @@
+[0.x.0]*
+     Struct to distinguish between the value and gradient types of different     numbers of components used by the FlexibleEvaluator class.    
+* [0.x.1]*
+ This class provides an interface to the evaluation of interpolated solution values and gradients on cells on arbitrary reference point positions. These points can change from cell to cell, both with respect to their quantity as well to the location. The two typical use cases are evaluations on non-matching grids and particle simulations.
+*  The use of this class is similar to FEValues or FEEvaluation: The class is first initialized to a cell by calling  [2.x.0]  unit_points)`, with the main difference to the other concepts that the underlying points in reference coordinates need to be passed along. Then, upon call to evaluate() or integrate(), the user can compute information at the give points. Eventually, the access functions get_value() or get_gradient() allow to query this information at a specific point index.
+*  The functionality is similar to creating an FEValues object with a Quadrature object on the `unit_points` on every cell separately and then calling  [2.x.1]  or  [2.x.2]  and for some elements and mappings this is what actually happens internally. For specific combinations of Mapping and FiniteElement realizations, however, there is a much more efficient implementation that avoids the memory allocation and other expensive start-up cost of FEValues. Currently, the functionality is specialized for mappings derived from MappingQGeneric and for finite elements with tensor product structure that work with the  [2.x.3]  module. In those cases, the cost implied by this class is similar (or sometimes even somewhat lower) than using  [2.x.4]  followed by  [2.x.5] 
+
+* 
+* [0.x.2]*
+   Constructor.      [2.x.6]  mapping The Mapping class describing the actual geometry of a cell   passed to the evaluate() function.      [2.x.7]  fe The FiniteElement object that is used for the evaluation, which   is typically the same on all cells to be evaluated.      [2.x.8]  update_flags Specify the quantities to be computed by the mapping   during the call of reinit(). During evaluate() or integrate(), this data   is queried to produce the desired result (e.g., the gradient of a finite   element solution).      [2.x.9]  first_selected_component For multi-component FiniteElement   objects, this parameter allows to select a range of `n_components`   components starting from this parameter.  
+* [0.x.3]*
+   Set up the mapping information for the given cell, e.g., by computing the   Jacobian of the mapping the given points if gradients of the functions   are requested.      [2.x.10]  cell An iterator to the current cell      [2.x.11]  unit_points List of points in the reference locations of the   current cell where the FiniteElement object should be   evaluated/integrated in the evaluate() and integrate() functions.  
+* [0.x.4]*
+   This function interpolates the finite element solution, represented by   `solution_values`, on the cell and `unit_points` passed to reinit().      [2.x.12]  solution_values This array is supposed to contain the unknown   values on the element as returned by `cell->get_dof_values(global_vector,   solution_values)`.      [2.x.13]  evaluation_flags Flags specifying which quantities should be   evaluated at the points.  
+* [0.x.5]*
+   This function multiplies the quantities passed in by previous   submit_value() or submit_gradient() calls by the value or gradient of the   test functions, and performs summation over all given points. This is   similar to the integration of a bilinear form in terms of the test   function, with the difference that this formula does not include a `JxW`   factor. This allows the class to naturally embed point information   (e.g. particles) into a finite element formulation. Of course, by   multiplication of a `JxW` information of the data given to   submit_value(), the integration can also be represented by this class.      [2.x.14]  solution_values This array will contain the result of the   integral, which can be used to during   `cell->set_dof_values(solution_values, global_vector)` or   `cell->distribute_local_to_global(solution_values, global_vector)`. Note   that for multi-component systems where only some of the components are   selected by the present class, the entries not touched by this class will   be zeroed out.      [2.x.15]  integration_flags Flags specifying which quantities should be   integrated at the points.    
+* [0.x.6]*
+   Return the value at quadrature point number  [2.x.16]  after a call to    [2.x.17]  with  [2.x.18]  set, or   the value that has been stored there with a call to    [2.x.19]  If the object is vector-valued, a   vector-valued return argument is given.  
+* [0.x.7]*
+   Write a value to the field containing the values on points   with component point_index. Access to the same field as through   get_value(). If applied before the function  [2.x.20]    with  [2.x.21]  set is called, this specifies the value   which is tested by all basis function on the current cell and   integrated over.  
+* [0.x.8]*
+   Return the gradient in real coordinates at the point with index   `point_index` after a call to  [2.x.22]  with    [2.x.23]  set, or the gradient that has been stored there   with a call to  [2.x.24]  The gradient in real   coordinates is obtained by taking the unit gradient (also accessible via   get_unit_gradient()) and applying the inverse Jacobian of the mapping. If   the object is vector-valued, a vector-valued return argument is given.  
+* [0.x.9]*
+   Return the gradient in unit coordinates at the point with index   `point_index` after a call to  [2.x.25]  with    [2.x.26]  set, or the gradient that has been stored there   with a call to  [2.x.27]  If the object is   vector-valued, a vector-valued return argument is given. Note that when   vectorization is enabled, values from several points are grouped   together.  
+* [0.x.10]*
+   Write a contribution that is tested by the gradient to the field   containing the values on points with the given `point_index`. Access to   the same field as through get_gradient(). If applied before the function    [2.x.28]  is called, this   specifies what is tested by all basis function gradients on the current   cell and integrated over.  
+* [0.x.11]*
+   Return the Jacobian of the transformation on the current cell with the   given point index. Prerequisite: This class needs to be constructed with   UpdateFlags containing `update_jacobian`.  
+* [0.x.12]*
+   Return the inverse of the Jacobian of the transformation on the current   cell with the given point index. Prerequisite: This class needs to be   constructed with UpdateFlags containing `update_inverse_jacobian` or   `update_gradients`.  
+* [0.x.13]*
+   Return the position in real coordinates of the given point index among   the points passed to reinit().  
+* [0.x.14]*
+   Return the position in unit/reference coordinates of the given point   index, i.e., the respective point passed to the reinit() function.  
+* [0.x.15]*
+   Pointer to the Mapping object passed to the constructor.  
+* [0.x.16]*
+   Pointer to MappingQGeneric class that enables the fast path of this   class.  
+* [0.x.17]*
+   Pointer to the FiniteElement object passed to the constructor.  
+* [0.x.18]*
+   Description of the 1D polynomial basis for tensor product elements used   for the fast path of this class using tensor product evaluators.  
+* [0.x.19]*
+   Store whether the polynomials are linear with nodes at 0 and 1.  
+* [0.x.20]*
+   Renumbering between the unknowns of unknowns implied by the FiniteElement   class and a lexicographic numbering used for the tensorized code path.  
+* [0.x.21]*
+   Temporary array to store the `solution_values` passed to the evaluate()   function in a format compatible with the tensor product evaluators. For   vector-valued setups, this array uses a `Tensor<1, n_components>` type to   collect the unknowns for a particular basis function.  
+* [0.x.22]*
+   Temporary array to store a vectorized version of the `solution_values`   computed during `integrate()` in a format compatible with the tensor   product evaluators. For vector-valued setups, this array uses a   `Tensor<1, n_components, VectorizedArray<Number>>` format.  
+* [0.x.23]*
+   Temporary array to store the values at the points.  
+* [0.x.24]*
+   Temporary array to store the gradients in unit coordinates at the points.  
+* [0.x.25]*
+   Temporary array to store the gradients in real coordinates at the points.  
+* [0.x.26]*
+   Number of unknowns per component, i.e., number of unique basis functions,   for the chosen FiniteElement (or base element).  
+* [0.x.27]*
+   For complicated FiniteElement objects this variable informs us about   which unknowns actually carry degrees of freedom in the selected   components.  
+* [0.x.28]*
+   The desired update flags for the evaluation.  
+* [0.x.29]*
+   The update flags specific for the mapping in the fast evaluation path.  
+* [0.x.30]*
+   The FEValues object underlying the slow evaluation path.  
+* [0.x.31]*
+   Array to store temporary data computed by the mapping for the fast   evaluation path.  
+* [0.x.32]*
+   The reference points specified at reinit().  
+* [0.x.33]

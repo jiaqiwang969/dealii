@@ -1,0 +1,3 @@
+[0.x.0]*
+       Return the corresponding MPI data type id for the argument given.      
+* [0.x.1]

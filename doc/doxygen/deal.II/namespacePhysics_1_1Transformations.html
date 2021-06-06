@@ -108,14 +108,14 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A collection of operations to assist in the transformation of tensor quantities from the reference to spatial configuration, and vice versa. These types of transformation are typically used to re-express quantities measured or computed in one configuration in terms of a second configuration.</p>
+<div class="textblock"><p>A collection of operations to assist in the transformation of tensor quantities from the reference to spatial configuration, and vice versa. These types of transformation are typically used to re-express quantities measured or computed in one configuration in terms of a second configuration. </p><h3><a class="el" href="namespacePhysics_1_1Notation.html">Notation</a></h3>
+<p>We will use the same notation for the coordinates \(\mathbf{X}, \mathbf{x}\) , transformations \(\varphi\) , differential operator \(\nabla_{0}\) and deformation gradient \(\mathbf{F}\) as discussed for namespace <a class="el" href="namespacePhysics_1_1Elasticity.html">Physics::Elasticity</a>. As a further point on notation, we will follow Holzapfel (2007) and denote the push forward transformation as \(\chi\left(\bullet\right)\) and the pull back transformation as \(\chi^{-1}\left(\bullet\right)\) . We will also use the annotation \(\left(\bullet\right)^{\sharp}\) to indicate that a tensor \(\left(\bullet\right)\) is a contravariant tensor, and \(\left(\bullet\right)^{\flat}\) that it is covariant. In other words, these indices do not actually change the tensor, they just indicate the <em>kind</em> of object a particular tensor is.</p>
+<dl class="section note"><dt>Note</dt><dd>For these transformations, unless otherwise stated, we will strictly assume that all indices of the transformed tensors derive from one coordinate system; that is to say that they are not multi-point tensors (such as the <a class="el" href="namespacePhysics_1_1Transformations_1_1Piola.html">Piola</a> stress in elasticity).</dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Jean-Paul Pelteret, Andrew McBride, 2016</dd></dl>
+<p>A collection of operations to assist in the transformation of tensor quantities from the reference to spatial configuration, and vice versa. These types of transformation are typically used to re-express quantities measured or computed in one configuration in terms of a second configuration.</p>
 <h3><a class="el" href="namespacePhysics_1_1Notation.html">Notation</a></h3>
 <p>We will use the same notation for the coordinates \(\mathbf{X}, \mathbf{x}\), transformations \(\varphi\), differential operator \(\nabla_{0}\) and deformation gradient \(\mathbf{F}\) as discussed for namespace <a class="el" href="namespacePhysics_1_1Elasticity.html">Physics::Elasticity</a>.</p>
 <p>As a further point on notation, we will follow Holzapfel (2007) and denote the push forward transformation as \(\chi\left(\bullet\right)\) and the pull back transformation as \(\chi^{-1}\left(\bullet\right)\). We will also use the annotation \(\left(\bullet\right)^{\sharp}\) to indicate that a tensor \(\left(\bullet\right)\) is a contravariant tensor, and \(\left(\bullet\right)^{\flat}\) that it is covariant. In other words, these indices do not actually change the tensor, they just indicate the <em>kind</em> of object a particular tensor is.</p>
-<dl class="section note"><dt>Note</dt><dd>For these transformations, unless otherwise stated, we will strictly assume that all indices of the transformed tensors derive from one coordinate system; that is to say that they are not multi-point tensors (such as the <a class="el" href="namespacePhysics_1_1Transformations_1_1Piola.html">Piola</a> stress in elasticity).</dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Jean-Paul Pelteret, Andrew McBride, 2016</dd></dl>
-<p>A collection of operations to assist in the transformation of tensor quantities from the reference to spatial configuration, and vice versa. These types of transformation are typically used to re-express quantities measured or computed in one configuration in terms of a second configuration. </p><h3><a class="el" href="namespacePhysics_1_1Notation.html">Notation</a></h3>
-<p>We will use the same notation for the coordinates \(\mathbf{X}, \mathbf{x}\) , transformations \(\varphi\) , differential operator \(\nabla_{0}\) and deformation gradient \(\mathbf{F}\) as discussed for namespace <a class="el" href="namespacePhysics_1_1Elasticity.html">Physics::Elasticity</a>. As a further point on notation, we will follow Holzapfel (2007) and denote the push forward transformation as \(\chi\left(\bullet\right)\) and the pull back transformation as \(\chi^{-1}\left(\bullet\right)\) . We will also use the annotation \(\left(\bullet\right)^{\sharp}\) to indicate that a tensor \(\left(\bullet\right)\) is a contravariant tensor, and \(\left(\bullet\right)^{\flat}\) that it is covariant. In other words, these indices do not actually change the tensor, they just indicate the <em>kind</em> of object a particular tensor is.</p>
 <dl class="section note"><dt>Note</dt><dd>For these transformations, unless otherwise stated, we will strictly assume that all indices of the transformed tensors derive from one coordinate system; that is to say that they are not multi-point tensors (such as the <a class="el" href="namespacePhysics_1_1Transformations_1_1Piola.html">Piola</a> stress in elasticity).</dd></dl>
 <dl class="section author"><dt>Author</dt><dd>Jean-Paul Pelteret, Andrew McBride, 2016 </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
@@ -128,15 +128,15 @@ Namespaces</h2></td></tr>
 template&lt;int dim, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number &gt; Physics::Transformations::nansons_formula </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; Physics::Transformations::nansons_formula </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>N</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>F</em>&#160;</td>
         </tr>
         <tr>
@@ -187,15 +187,15 @@ For a discussion of the background of this function, see P. Wriggers: "Nonlinear
 template&lt;int dim, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number &gt; Physics::Transformations::basis_transformation </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; Physics::Transformations::basis_transformation </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 1, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 1, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>V</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>B</em>&#160;</td>
         </tr>
         <tr>
@@ -239,15 +239,15 @@ template&lt;int dim, typename Number &gt; </div>
 template&lt;int dim, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; Physics::Transformations::basis_transformation </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; Physics::Transformations::basis_transformation </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>T</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>B</em>&#160;</td>
         </tr>
         <tr>
@@ -291,15 +291,15 @@ template&lt;int dim, typename Number &gt; </div>
 template&lt;int dim, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSymmetricTensor.html">SymmetricTensor</a>&lt; 2, dim, Number &gt; Physics::Transformations::basis_transformation </td>
+          <td class="memname"><a class="el" href="classSymmetricTensor.html">SymmetricTensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; Physics::Transformations::basis_transformation </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classSymmetricTensor.html">SymmetricTensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classSymmetricTensor.html">SymmetricTensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>T</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>B</em>&#160;</td>
         </tr>
         <tr>
@@ -343,15 +343,15 @@ template&lt;int dim, typename Number &gt; </div>
 template&lt;int dim, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim, Number &gt; Physics::Transformations::basis_transformation </td>
+          <td class="memname"><a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; Physics::Transformations::basis_transformation </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 4, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>H</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>B</em>&#160;</td>
         </tr>
         <tr>
@@ -395,15 +395,15 @@ template&lt;int dim, typename Number &gt; </div>
 template&lt;int dim, typename Number &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSymmetricTensor.html">SymmetricTensor</a>&lt; 4, dim, Number &gt; Physics::Transformations::basis_transformation </td>
+          <td class="memname"><a class="el" href="classSymmetricTensor.html">SymmetricTensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; Physics::Transformations::basis_transformation </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classSymmetricTensor.html">SymmetricTensor</a>&lt; 4, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classSymmetricTensor.html">SymmetricTensor</a>&lt; 4, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>H</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classTensor.html">Tensor</a>&lt; 2, dim, Number &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classTensor.html">Tensor</a>&lt; 2, <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, Number &gt; &amp;&#160;</td>
           <td class="paramname"><em>B</em>&#160;</td>
         </tr>
         <tr>

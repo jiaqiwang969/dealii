@@ -1,0 +1,70 @@
+[0.x.0]*
+   Internal namespace to implement methods specific to MappingQ1, in   particular an explicit formula for the transformation from the real to   the unit cell in 2D.  
+* [0.x.1]       There are two ways to compute xi from eta, but either one may have a       zero denominator.      
+* [0.x.2]*
+   Internal namespace to implement methods of MappingQGeneric, such as the   evaluation of the mapping and the transformation between real and unit   cell.  
+* [0.x.3]*
+     This function generates the reference cell support points from the 1d     support points by expanding the tensor product.    
+* [0.x.4]*
+     This function is needed by the constructor of     <tt>MappingQ<dim,spacedim></tt> for <tt>dim=</tt> 2 and 3.         For the definition of the  [2.x.0]  please     refer to the description of TransfiniteInterpolationManifold.    
+* [0.x.5]*
+     This function is needed by the constructor of <tt>MappingQ<3></tt>.         For the definition of the  [2.x.1]  please     refer to the description of TransfiniteInterpolationManifold.    
+* [0.x.6]*
+     This function collects the output of     compute_support_point_weights_on_{quad,hex} in a single data structure.    
+* [0.x.7]*
+     Collects all interior points for the various dimensions.    
+* [0.x.8]*
+     Using the relative weights of the shape functions evaluated at     one point on the reference cell (and stored in data.shape_values     and accessed via data.shape(0,i)) and the locations of mapping     support points (stored in data.mapping_support_points), compute     the mapped location of that point in real space.    
+* [0.x.9]*
+     Implementation of transform_real_to_unit_cell for either type double     or VectorizedArray<double>    
+* [0.x.10]*
+     Implementation of transform_real_to_unit_cell for dim==spacedim-1    
+* [0.x.11]*
+     A class to compute a quadratic approximation to the inverse map from     real to unit points by a least-squares fit along the mapping support     points. The least squares fit is special in the sense that the     approximation is constructed for the inverse function of a     MappingQGeneric, which is generally a rational function. This allows     for a very cheap evaluation of the inverse map by a simple polynomial     interpolation, which can be used as a better initial guess for     transforming points from real to unit coordinates than an affine     approximation.         Far away outside the unit cell, this approximation can become     inaccurate for non-affine cell shapes. This must be expected from a     fit of a polynomial to a rational function, and due to the fact that     the region of the least squares fit, the unit cell, is left. Hence,     use this function with care in those situations.    
+* [0.x.12]*
+       Number of basis functions in the quadratic approximation.      
+* [0.x.13]*
+       Constructor.              [2.x.2]  real_support_points The position of the mapping support points       in real space, queried by        [2.x.3]               [2.x.4]  unit_support_points The location of the support points in       reference coordinates  [2.x.5]  that map to the mapping support       points in real space by a polynomial map.      
+* [0.x.14]*
+       Copy constructor.      
+* [0.x.15]*
+       Evaluate the quadratic approximation.      
+* [0.x.16]*
+       In order to guarantee a good conditioning, we need to apply a       transformation to the points in real space that is computed by a       shift vector normalization_shift (first point of the mapping support       points in real space) and an inverse length scale called       `length_normalization` as the distance between the first two points.      
+* [0.x.17]*
+       See the documentation of `normalization_shift` above.      
+* [0.x.18]*
+       The vector of coefficients in the quadratic approximation.      
+* [0.x.19]*
+       In case the quadratic approximation is not possible due to an       insufficient number of support points, we switch to an affine       approximation that always works but is less accurate.      
+* [0.x.20]*
+     In case the quadrature formula is a tensor product, this is a     replacement for maybe_compute_q_points(), maybe_update_Jacobians() and     maybe_update_jacobian_grads()    
+* [0.x.21]*
+     Compute the locations of quadrature points on the object described by     the first argument (and the cell for which the mapping support points     have already been set), but only if the update_flags of the  [2.x.6]      argument indicate so.    
+* [0.x.22]*
+     Update the co- and contravariant matrices as well as their determinant,     for the cell     described stored in the data object, but only if the update_flags of the  [2.x.7]      argument indicate so.         Skip the computation if possible as indicated by the first argument.    
+* [0.x.23]*
+     Update the Hessian of the transformation from unit to real cell, the     Jacobian gradients.         Skip the computation if possible as indicated by the first argument.    
+* [0.x.24]*
+     Update the Hessian of the transformation from unit to real cell, the     Jacobian gradients, pushed forward to the real cell coordinates.         Skip the computation if possible as indicated by the first argument.    
+* [0.x.25]*
+     Update the third derivatives of the transformation from unit to real     cell, the Jacobian hessians.         Skip the computation if possible as indicated by the first argument.    
+* [0.x.26]*
+     Update the Hessian of the Hessian of the transformation from unit     to real cell, the Jacobian Hessian gradients, pushed forward to the     real cell coordinates.         Skip the computation if possible as indicated by the first argument.    
+* [0.x.27]*
+     Update the fourth derivatives of the transformation from unit to real     cell, the Jacobian hessian gradients.         Skip the computation if possible as indicated by the first argument.    
+* [0.x.28]*
+     Update the Hessian gradient of the transformation from unit to real     cell, the Jacobian Hessians, pushed forward to the real cell     coordinates.         Skip the computation if possible as indicated by the first argument.    
+* [0.x.29]*
+     Depending on what information is called for in the update flags of the      [2.x.8]  object, compute the various pieces of information that is     required by the fill_fe_face_values() and fill_fe_subface_values()     functions. This function simply unifies the work that would be done by     those two functions.         The resulting data is put into the  [2.x.9]  argument.    
+* [0.x.30]*
+     Do the work of  [2.x.10]  and      [2.x.11]  in a generic way,     using the 'data_set' to differentiate whether we will     work on a face (and if so, which one) or subface.    
+* [0.x.31]*
+     Implementation of  [2.x.12]  for generic tensors.    
+* [0.x.32]*
+     Implementation of  [2.x.13]  for gradients.    
+* [0.x.33]*
+     Implementation of  [2.x.14]  for hessians.    
+* [0.x.34]*
+     Implementation of  [2.x.15]  for DerivativeForm     arguments.    
+* [0.x.35]

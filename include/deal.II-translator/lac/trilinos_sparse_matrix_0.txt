@@ -1,0 +1,447 @@
+[0.x.0]*
+   Iterators for Trilinos matrices  
+* [0.x.1]*
+     Exception    
+* [0.x.2]*
+     Exception    
+* [0.x.3]*
+     Handling of indices for both constant and non constant Accessor objects         For a regular  [2.x.0]  we would use an accessor for the     sparsity pattern. For Trilinos matrices, this does not seem so simple,     therefore, we write a little base class here.    
+* [0.x.4]*
+       Declare the type for container size.      
+* [0.x.5]*
+       Constructor.      
+* [0.x.6]*
+       Row number of the element represented by this object.      
+* [0.x.7]*
+       Index in row of the element represented by this object.      
+* [0.x.8]*
+       Column number of the element represented by this object.      
+* [0.x.9]*
+       Pointer to the matrix object. This object should be handled as a       const pointer or non-const by the appropriate derived classes. In       order to be able to implement both, it is not const here, so handle       with care!      
+* [0.x.10]*
+       Current row number.      
+* [0.x.11]*
+       Current index in row.      
+* [0.x.12]*
+       Discard the old row caches (they may still be used by other       accessors) and generate new ones for the row pointed to presently by       this accessor.      
+* [0.x.13]*
+       Cache where we store the column indices of the present row. This is       necessary, since Trilinos makes access to the elements of its       matrices rather hard, and it is much more efficient to copy all       column entries of a row once when we enter it than repeatedly asking       Trilinos for individual ones. This also makes some sense since it is       likely that we will access them sequentially anyway.             In order to make copying of iterators/accessor of acceptable       performance, we keep a shared pointer to these entries so that more       than one accessor can access this data if necessary.      
+* [0.x.14]*
+       Cache for the values of this row.      
+* [0.x.15]*
+     General template for sparse matrix accessors. The first template     argument denotes the underlying numeric type, the second the constness     of the matrix.         The general template is not implemented, only the specializations for     the two possible values of the second template argument. Therefore, the     interface listed here only serves as a template provided since doxygen     does not link the specializations.    
+* [0.x.16]*
+       Value of this matrix entry.      
+* [0.x.17]*
+       Value of this matrix entry.      
+* [0.x.18]*
+     The specialization for a const Accessor.    
+* [0.x.19]*
+       Typedef for the type (including constness) of the matrix to be used       here.      
+* [0.x.20]*
+       Constructor. Since we use accessors only for read access, a const       matrix pointer is sufficient.      
+* [0.x.21]*
+       Copy constructor to get from a const or non-const accessor to a const       accessor.      
+* [0.x.22]*
+       Value of this matrix entry.      
+* [0.x.23]*
+     The specialization for a mutable Accessor.    
+* [0.x.24]*
+         Constructor.        
+* [0.x.25]*
+         Conversion operator to the data type of the matrix.        
+* [0.x.26]*
+         Set the element of the matrix we presently point to to  [2.x.1]         
+* [0.x.27]*
+         Add  [2.x.2]  to the element of the matrix we presently point to.        
+* [0.x.28]*
+         Subtract  [2.x.3]  from the element of the matrix we presently point to.        
+* [0.x.29]*
+         Multiply the element of the matrix we presently point to by  [2.x.4]         
+* [0.x.30]*
+         Divide the element of the matrix we presently point to by  [2.x.5]         
+* [0.x.31]*
+         Pointer to the accessor that denotes which element we presently         point to.        
+* [0.x.32]*
+       Typedef for the type (including constness) of the matrix to be used       here.      
+* [0.x.33]*
+       Constructor. Since we use accessors only for read access, a const       matrix pointer is sufficient.      
+* [0.x.34]*
+       Value of this matrix entry.      
+* [0.x.35]*
+     This class acts as an iterator walking over the elements of Trilinos     matrices. The implementation of this class is similar to the one for     PETSc matrices.         Note that Trilinos stores the elements within each row in ascending     order. This is opposed to the deal.II sparse matrix style where the     diagonal element (if it exists) is stored before all other values, and     the PETSc sparse matrices, where one can't guarantee a certain order of     the elements.        
+*  [2.x.6]     
+* [0.x.36]*
+       Declare type for container size.      
+* [0.x.37]*
+       Typedef for the matrix type (including constness) we are to operate       on.      
+* [0.x.38]*
+       Constructor. Create an iterator into the matrix  [2.x.7]  for the       given row and the index within it.      
+* [0.x.39]*
+       Copy constructor with optional change of constness.      
+* [0.x.40]*
+       Prefix increment.      
+* [0.x.41]*
+       Postfix increment.      
+* [0.x.42]*
+       Dereferencing operator.      
+* [0.x.43]*
+       Dereferencing operator.      
+* [0.x.44]*
+       Comparison. True, if both iterators point to the same matrix       position.      
+* [0.x.45]*
+       Inverse of <tt>==</tt>.      
+* [0.x.46]*
+       Comparison operator. Result is true if either the first row number is       smaller or if the row numbers are equal and the first index is       smaller.      
+* [0.x.47]*
+       Comparison operator. The opposite of the previous operator      
+* [0.x.48]*
+       Exception      
+* [0.x.49]*
+       Store an object of the accessor class.      
+* [0.x.50]*
+   This class implements a wrapper to use the Trilinos distributed sparse   matrix class Epetra_FECrsMatrix. This is precisely the kind of matrix we   deal with all the time
+* 
+*  - we most likely get it from some assembly   process, where also entries not locally owned might need to be written   and hence need to be forwarded to the owner process.  This class is   designed to be used in a distributed memory architecture with an MPI   compiler on the bottom, but works equally well also for serial processes.   The only requirement for this class to work is that Trilinos has been   installed with the same compiler as is used for generating deal.II.     The interface of this class is modeled after the existing SparseMatrix   class in deal.II. It has almost the same member functions, and is often   exchangeable. However, since Trilinos only supports a single scalar type   (double), it is not templated, and only works with doubles.     Note that Trilinos only guarantees that operations do what you expect if   the functions  [2.x.8]  has been called after matrix assembly.   Therefore, you need to call  [2.x.9]  before you actually   use the matrix. This also calls  [2.x.10]  that compresses the   storage format for sparse matrices by discarding unused elements.   Trilinos allows to continue with assembling the matrix after calls to   these functions, though.     [1.x.0]     When writing into Trilinos matrices from several threads in shared   memory, several things must be kept in mind as there is no built-in locks   in this class to prevent data races. Simultaneous access to the same   matrix row at the same time can lead to data races and must be explicitly   avoided by the user. However, it is possible to access [1.x.1]   rows of the matrix from several threads simultaneously under the   following three conditions:    [2.x.11]     [2.x.12]  The matrix uses only one MPI process.    [2.x.13]  The matrix has been initialized with the reinit() method with a   DynamicSparsityPattern (that includes the set of locally relevant rows,   i.e., the rows that an assembly routine will possibly write into).    [2.x.14]  The matrix has been initialized from a    [2.x.15]  object that in turn has been   initialized with the reinit function specifying three index sets, one for   the rows, one for the columns and for the larger set of  [2.x.16]    writeable_rows, and the operation is an addition. At some point in the   future, Trilinos support might be complete enough such that initializing   from a  [2.x.17]  that has been filled by a   function similar to  [2.x.18]  always results in a   matrix that allows several processes to write into the same matrix row.   However, Trilinos until version at least 11.12 does not correctly support   this feature.    [2.x.19]      Note that all other reinit methods and constructors of    [2.x.20]  will result in a matrix that needs to   allocate off-processor entries on demand, which breaks thread-safety. Of   course, using the respective reinit method for the block Trilinos   sparsity pattern and block matrix also results in thread-safety.    
+*  [2.x.21]   
+*  [2.x.22]   
+* [0.x.51]*
+     Declare the type for container size.    
+* [0.x.52]*
+     Exception    
+* [0.x.53]*
+     A structure that describes some of the traits of this class in terms of     its run-time behavior. Some other classes (such as the block matrix     classes) that take one or other of the matrix classes as its template     parameters can tune their behavior based on the variables in this     class.    
+* [0.x.54]*
+       It is safe to elide additions of zeros to individual elements of this       matrix.      
+* [0.x.55]*
+     Declare an alias for the iterator class.    
+* [0.x.56]*
+     Declare an alias for the const iterator class.    
+* [0.x.57]*
+     Declare an alias in analogy to all the other container classes.    
+* [0.x.58]*
+      [2.x.23]  Constructors and initialization.    
+* [0.x.59]*
+     Default constructor. Generates an empty (zero-size) matrix.    
+* [0.x.60]*
+     Generate a matrix that is completely stored locally, having #m rows and     #n columns.         The number of columns entries per row is specified as the maximum     number of entries argument.    
+* [0.x.61]*
+     Generate a matrix that is completely stored locally, having #m rows and     #n columns.         The vector <tt>n_entries_per_row</tt> specifies the number of entries     in each row.    
+* [0.x.62]*
+     Generate a matrix from a Trilinos sparsity pattern object.    
+* [0.x.63]*
+     Move constructor. Create a new sparse matrix by stealing the internal     data.    
+* [0.x.64]*
+     Copy constructor is deleted.    
+* [0.x.65]*
+     operator= is deleted.    
+* [0.x.66]*
+     Destructor. Made virtual so that one can use pointers to this class.    
+* [0.x.67]*
+     This function initializes the Trilinos matrix with a deal.II sparsity     pattern, i.e. it makes the Trilinos Epetra matrix know the position of     nonzero entries according to the sparsity pattern. This function is     meant for use in serial programs, where there is no need to specify how     the matrix is going to be distributed among different processors. This     function works in %parallel, too, but it is recommended to manually     specify the %parallel partitioning of the matrix using an Epetra_Map.     When run in %parallel, it is currently necessary that each processor     holds the sparsity_pattern structure because each processor sets its     rows.         This is a collective operation that needs to be called on all     processors in order to avoid a dead lock.    
+* [0.x.68]*
+     This function reinitializes the Trilinos sparse matrix from a (possibly     distributed) Trilinos sparsity pattern.         This is a collective operation that needs to be called on all     processors in order to avoid a dead lock.         If you want to write to the matrix from several threads and use MPI,     you need to use this reinit method with a sparsity pattern that has     been created with explicitly stating writeable rows. In all other     cases, you cannot mix MPI with multithreaded writing into the matrix.    
+* [0.x.69]*
+     This function copies the layout of  [2.x.24]  to the calling     matrix. The values are not copied, but you can use copy_from() for     this.         This is a collective operation that needs to be called on all     processors in order to avoid a dead lock.    
+* [0.x.70]*
+     This function initializes the Trilinos matrix using the deal.II sparse     matrix and the entries stored therein. It uses a threshold to copy only     elements with modulus larger than the threshold (so zeros in the     deal.II matrix can be filtered away).         The optional parameter <tt>copy_values</tt> decides whether only the     sparsity structure of the input matrix should be used or the matrix     entries should be copied, too.         This is a collective operation that needs to be called on all     processors in order to avoid a deadlock.        
+*  [2.x.25]  If a different sparsity pattern is given in the last argument     (i.e., one that differs from the one used in the sparse matrix given in     the first argument), then the resulting Trilinos matrix will have the     sparsity pattern so given. This of course also means that all entries     in the given matrix that are not part of this separate sparsity pattern     will in fact be dropped.    
+* [0.x.71]*
+     This reinit function takes as input a Trilinos Epetra_CrsMatrix and     copies its sparsity pattern. If so requested, even the content (values)     will be copied.    
+* [0.x.72]*
+      [2.x.26]  Constructors and initialization using an IndexSet description    
+* [0.x.73]*
+     Constructor using an IndexSet and an MPI communicator to describe the     %parallel partitioning. The parameter  [2.x.27]  sets the     number of nonzero entries in each row that will be allocated. Note that     this number does not need to be exact, and it is even allowed that the     actual matrix structure has more nonzero entries than specified in the     constructor. However it is still advantageous to provide good estimates     here since this will considerably increase the performance of the     matrix setup. However, there is no effect in the performance of matrix-     vector products, since Trilinos reorganizes the matrix memory prior to     use (in the compress() step).    
+* [0.x.74]*
+     Same as before, but now set the number of nonzeros in each matrix row     separately. Since we know the number of elements in the matrix exactly     in this case, we can already allocate the right amount of memory, which     makes the creation process including the insertion of nonzero elements     by the respective  [2.x.28]  call considerably faster.    
+* [0.x.75]*
+     This constructor is similar to the one above, but it now takes two     different IndexSet partitions for row and columns. This interface is     meant to be used for generating rectangular matrices, where the first     index set describes the %parallel partitioning of the degrees of     freedom associated with the matrix rows and the second one the     partitioning of the matrix columns. The second index set specifies the     partitioning of the vectors this matrix is to be multiplied with, not     the distribution of the elements that actually appear in the matrix.         The parameter  [2.x.29]  defines how much memory will be     allocated for each row. This number does not need to be accurate, as     the structure is reorganized in the compress() call.    
+* [0.x.76]*
+     This constructor is similar to the one above, but it now takes two     different Epetra maps for rows and columns. This interface is meant to     be used for generating rectangular matrices, where one map specifies     the %parallel distribution of degrees of freedom associated with matrix     rows and the second one specifies the %parallel distribution the dofs     associated with columns in the matrix. The second map also provides     information for the internal arrangement in matrix vector products     (i.e., the distribution of vector this matrix is to be multiplied     with), but is not used for the distribution of the columns &ndash;     rather, all column elements of a row are stored on the same processor     in any case. The vector <tt>n_entries_per_row</tt> specifies the number     of entries in each row of the newly generated matrix.    
+* [0.x.77]*
+     This function is initializes the Trilinos Epetra matrix according to     the specified sparsity_pattern, and also reassigns the matrix rows to     different processes according to a user-supplied index set and     %parallel communicator. In programs following the style of the tutorial     programs, this function (and the respective call for a rectangular     matrix) are the natural way to initialize the matrix size, its     distribution among the MPI processes (if run in %parallel) as well as     the location of non-zero elements. Trilinos stores the sparsity pattern     internally, so it won't be needed any more after this call, in contrast     to the deal.II own object. The optional argument  [2.x.30]  can     be used for reinitialization with a sparsity pattern that is not fully     constructed. This feature is only implemented for input sparsity     patterns of type DynamicSparsityPattern. If the flag is not set, each     processor just sets the elements in the sparsity pattern that belong to     its rows.         This is a collective operation that needs to be called on all     processors in order to avoid a dead lock.    
+* [0.x.78]*
+     This function is similar to the other initialization function above,     but now also reassigns the matrix rows and columns according to two     user-supplied index sets.  To be used for rectangular matrices. The     optional argument  [2.x.31]  can be used for reinitialization     with a sparsity pattern that is not fully constructed. This feature is     only implemented for input sparsity patterns of type     DynamicSparsityPattern.         This is a collective operation that needs to be called on all     processors in order to avoid a dead lock.    
+* [0.x.79]*
+     This function initializes the Trilinos matrix using the deal.II sparse     matrix and the entries stored therein. It uses a threshold to copy only     elements with modulus larger than the threshold (so zeros in the     deal.II matrix can be filtered away). In contrast to the other reinit     function with deal.II sparse matrix argument, this function takes a     %parallel partitioning specified by the user instead of internally     generating it.         The optional parameter <tt>copy_values</tt> decides whether only the     sparsity structure of the input matrix should be used or the matrix     entries should be copied, too.         This is a collective operation that needs to be called on all     processors in order to avoid a dead lock.    
+* [0.x.80]*
+     This function is similar to the other initialization function with     deal.II sparse matrix input above, but now takes index sets for both     the rows and the columns of the matrix. Chosen for rectangular     matrices.         The optional parameter <tt>copy_values</tt> decides whether only the     sparsity structure of the input matrix should be used or the matrix     entries should be copied, too.         This is a collective operation that needs to be called on all     processors in order to avoid a dead lock.    
+* [0.x.81]*
+      [2.x.32]  Information on the matrix    
+* [0.x.82]*
+     Return the number of rows in this matrix.    
+* [0.x.83]*
+     Return the number of columns in this matrix.    
+* [0.x.84]*
+     Return the local dimension of the matrix, i.e. the number of rows     stored on the present MPI process. For sequential matrices, this number     is the same as m(), but for %parallel matrices it may be smaller.         To figure out which elements exactly are stored locally, use     local_range().    
+* [0.x.85]*
+     Return a pair of indices indicating which rows of this matrix are     stored locally. The first number is the index of the first row stored,     the second the index of the one past the last one that is stored     locally. If this is a sequential matrix, then the result will be the     pair (0,m()), otherwise it will be a pair (i,i+n), where     <tt>n=local_size()</tt>.    
+* [0.x.86]*
+     Return whether  [2.x.33]  is in the local range or not, see also     local_range().    
+* [0.x.87]*
+     Return the total number of nonzero elements of this matrix (summed     over all MPI processes).    
+* [0.x.88]*
+     Number of entries in a specific row.    
+* [0.x.89]*
+     Return the state of the matrix, i.e., whether compress() needs to be     called after an operation requiring data exchange. A call to compress()     is also needed when the method set() has been called (even when working     in serial).    
+* [0.x.90]*
+     Determine an estimate for the memory consumption (in bytes) of this     object. Note that only the memory reserved on the current processor is     returned in case this is called in an MPI-based program.    
+* [0.x.91]*
+     Return the MPI communicator object in use with this matrix.    
+* [0.x.92]*
+      [2.x.34]  Modifying entries    
+* [0.x.93]*
+     This operator assigns a scalar to a matrix. Since this does usually not     make much sense (should we set all matrix entries to this value?  Only     the nonzero entries of the sparsity pattern?), this operation is only     allowed if the actual value to be assigned is zero. This operator only     exists to allow for the obvious notation <tt>matrix=0</tt>, which sets     all elements of the matrix to zero, but keeps the sparsity pattern     previously used.    
+* [0.x.94]*
+     Release all memory and return to a state just like after having called     the default constructor.         This is a collective operation that needs to be called on all     processors in order to avoid a dead lock.    
+* [0.x.95]*
+     This command does two things:      [2.x.35]       [2.x.36]  If the matrix was initialized without a sparsity pattern, elements     have been added manually using the set() command. When this process is     completed, a call to compress() reorganizes the internal data     structures (sparsity pattern) so that a fast access to data is possible     in matrix-vector products.      [2.x.37]  If the matrix structure has already been fixed (either by     initialization with a sparsity pattern or by calling compress() during     the setup phase), this command does the %parallel exchange of data.     This is necessary when we perform assembly on more than one (MPI)     process, because then some non-local row data will accumulate on nodes     that belong to the current's processor element, but are actually held     by another. This command is usually called after all elements have been     traversed.      [2.x.38]          In both cases, this function compresses the data structures and allows     the resulting matrix to be used in all other operations like matrix-     vector products. This is a collective operation, i.e., it needs to be     run on all processors when used in %parallel.         See      [2.x.39]  "Compressing distributed objects"     for more information.    
+* [0.x.96]*
+     Set the element ([1.x.2]) to  [2.x.40]          This function is able to insert new elements into the matrix as long as     compress() has not been called, so the sparsity pattern will be     extended. When compress() is called for the first time (or in case the     matrix is initialized from a sparsity pattern), no new elements can be     added and an insertion of elements at positions which have not been     initialized will throw an exception.         For the case that the matrix is constructed without a sparsity pattern     and new matrix entries are added on demand, please note the following     behavior imposed by the underlying Epetra_FECrsMatrix data structure:     If the same matrix entry is inserted more than once, the matrix entries     will be added upon calling compress() (since Epetra does not track     values to the same entry before the final compress() is called), even     if  [2.x.41]  is specified as argument to compress(). In     the case you cannot make sure that matrix entries are only set once,     initialize the matrix with a sparsity pattern to fix the matrix     structure before inserting elements.    
+* [0.x.97]*
+     Set all elements given in a FullMatrix<double> into the sparse matrix     locations given by <tt>indices</tt>. In other words, this function     writes the elements in <tt>full_matrix</tt> into the calling matrix,     using the local-to-global indexing specified by <tt>indices</tt> for     both the rows and the columns of the matrix. This function assumes a     quadratic sparse matrix and a quadratic full_matrix, the usual     situation in FE calculations.         This function is able to insert new elements into the matrix as long as     compress() has not been called, so the sparsity pattern will be     extended. After compress() has been called for the first time or the     matrix has been initialized from a sparsity pattern, extending the     sparsity pattern is no longer possible and an insertion of elements at     positions which have not been initialized will throw an exception.         The optional parameter <tt>elide_zero_values</tt> can be used to     specify whether zero values should be inserted anyway or they should be     filtered away. The default value is <tt>false</tt>, i.e., even zero     values are inserted/replaced.         For the case that the matrix is constructed without a sparsity pattern     and new matrix entries are added on demand, please note the following     behavior imposed by the underlying Epetra_FECrsMatrix data structure:     If the same matrix entry is inserted more than once, the matrix entries     will be added upon calling compress() (since Epetra does not track     values to the same entry before the final compress() is called), even     if  [2.x.42]  is specified as argument to compress(). In     the case you cannot make sure that matrix entries are only set once,     initialize the matrix with a sparsity pattern to fix the matrix     structure before inserting elements.    
+* [0.x.98]*
+     Same function as before, but now including the possibility to use     rectangular full_matrices and different local-to-global indexing on     rows and columns, respectively.    
+* [0.x.99]*
+     Set several elements in the specified row of the matrix with column     indices as given by <tt>col_indices</tt> to the respective value.         This function is able to insert new elements into the matrix as long as     compress() has not been called, so the sparsity pattern will be     extended. After compress() has been called for the first time or the     matrix has been initialized from a sparsity pattern, extending the     sparsity pattern is no longer possible and an insertion of elements at     positions which have not been initialized will throw an exception.         The optional parameter <tt>elide_zero_values</tt> can be used to     specify whether zero values should be inserted anyway or they should be     filtered away. The default value is <tt>false</tt>, i.e., even zero     values are inserted/replaced.         For the case that the matrix is constructed without a sparsity pattern     and new matrix entries are added on demand, please note the following     behavior imposed by the underlying Epetra_FECrsMatrix data structure:     If the same matrix entry is inserted more than once, the matrix entries     will be added upon calling compress() (since Epetra does not track     values to the same entry before the final compress() is called), even     if  [2.x.43]  is specified as argument to compress(). In     the case you cannot make sure that matrix entries are only set once,     initialize the matrix with a sparsity pattern to fix the matrix     structure before inserting elements.    
+* [0.x.100]*
+     Set several elements to values given by <tt>values</tt> in a given row     in columns given by col_indices into the sparse matrix.         This function is able to insert new elements into the matrix as long as     compress() has not been called, so the sparsity pattern will be     extended. After compress() has been called for the first time or the     matrix has been initialized from a sparsity pattern, extending the     sparsity pattern is no longer possible and an insertion of elements at     positions which have not been initialized will throw an exception.         The optional parameter <tt>elide_zero_values</tt> can be used to     specify whether zero values should be inserted anyway or they should be     filtered away. The default value is <tt>false</tt>, i.e., even zero     values are inserted/replaced.         For the case that the matrix is constructed without a sparsity pattern     and new matrix entries are added on demand, please note the following     behavior imposed by the underlying Epetra_FECrsMatrix data structure:     If the same matrix entry is inserted more than once, the matrix entries     will be added upon calling compress() (since Epetra does not track     values to the same entry before the final compress() is called), even     if  [2.x.44]  is specified as argument to compress(). In     the case you cannot make sure that matrix entries are only set once,     initialize the matrix with a sparsity pattern to fix the matrix     structure before inserting elements.    
+* [0.x.101]*
+     Add  [2.x.45]  to the element ([1.x.3]).         Just as the respective call in deal.II SparseMatrix<Number> class (but     in contrast to the situation for PETSc based matrices), this function     throws an exception if an entry does not exist in the sparsity pattern.     Moreover, if <tt>value</tt> is not a finite number an exception is     thrown.    
+* [0.x.102]*
+     Add all elements given in a FullMatrix<double> into sparse matrix     locations given by <tt>indices</tt>. In other words, this function adds     the elements in <tt>full_matrix</tt> to the respective entries in     calling matrix, using the local-to-global indexing specified by     <tt>indices</tt> for both the rows and the columns of the matrix. This     function assumes a quadratic sparse matrix and a quadratic full_matrix,     the usual situation in FE calculations.         Just as the respective call in deal.II SparseMatrix<Number> class (but     in contrast to the situation for PETSc based matrices), this function     throws an exception if an entry does not exist in the sparsity pattern.         The optional parameter <tt>elide_zero_values</tt> can be used to     specify whether zero values should be added anyway or these should be     filtered away and only non-zero data is added. The default value is     <tt>true</tt>, i.e., zero values won't be added into the matrix.    
+* [0.x.103]*
+     Same function as before, but now including the possibility to use     rectangular full_matrices and different local-to-global indexing on     rows and columns, respectively.    
+* [0.x.104]*
+     Set several elements in the specified row of the matrix with column     indices as given by <tt>col_indices</tt> to the respective value.         Just as the respective call in deal.II SparseMatrix<Number> class (but     in contrast to the situation for PETSc based matrices), this function     throws an exception if an entry does not exist in the sparsity pattern.         The optional parameter <tt>elide_zero_values</tt> can be used to     specify whether zero values should be added anyway or these should be     filtered away and only non-zero data is added. The default value is     <tt>true</tt>, i.e., zero values won't be added into the matrix.    
+* [0.x.105]*
+     Add an array of values given by <tt>values</tt> in the given global     matrix row at columns specified by col_indices in the sparse matrix.         Just as the respective call in deal.II SparseMatrix<Number> class (but     in contrast to the situation for PETSc based matrices), this function     throws an exception if an entry does not exist in the sparsity pattern.         The optional parameter <tt>elide_zero_values</tt> can be used to     specify whether zero values should be added anyway or these should be     filtered away and only non-zero data is added. The default value is     <tt>true</tt>, i.e., zero values won't be added into the matrix.    
+* [0.x.106]*
+     Multiply the entire matrix by a fixed factor.    
+* [0.x.107]*
+     Divide the entire matrix by a fixed factor.    
+* [0.x.108]*
+     Copy the given (Trilinos) matrix (sparsity pattern and entries).    
+* [0.x.109]*
+     Add <tt>matrix</tt> scaled by <tt>factor</tt> to this matrix, i.e. the     matrix <tt>factor*matrix</tt> is added to <tt>this</tt>. If the     sparsity pattern of the calling matrix does not contain all the     elements in the sparsity pattern of the input matrix, this function     will throw an exception.    
+* [0.x.110]*
+     Remove all elements from this <tt>row</tt> by setting them to zero. The     function does not modify the number of allocated nonzero entries, it     only sets the entries to zero.         This operation is used in eliminating constraints (e.g. due to hanging     nodes) and makes sure that we can write this modification to the matrix     without having to read entries (such as the locations of non-zero     elements) from it &mdash; without this operation, removing constraints     on %parallel matrices is a rather complicated procedure.         The second parameter can be used to set the diagonal entry of this row     to a value different from zero. The default is to set it to zero.        
+*  [2.x.46]  If the matrix is stored in parallel across multiple processors     using MPI, this function only touches rows that are locally stored and     simply ignores all other row indices. Further, in the context of     parallel computations, you will get into trouble if you clear a row     while other processors still have pending writes or additions into the     same row. In other words, if another processor still wants to add     something to an element of a row and you call this function to zero out     the row, then the next time you call compress() may add the remote     value to the zero you just created. Consequently, you will want to call     compress() after you made the last modifications to a matrix and before     starting to clear rows.    
+* [0.x.111]*
+     Same as clear_row(), except that it works on a number of rows at once.         The second parameter can be used to set the diagonal entries of all     cleared rows to something different from zero. Note that all of these     diagonal entries get the same value
+* 
+*  -  if you want different values for     the diagonal entries, you have to set them by hand.        
+*  [2.x.47]  If the matrix is stored in parallel across multiple processors     using MPI, this function only touches rows that are locally stored and     simply ignores all other row indices. Further, in the context of     parallel computations, you will get into trouble if you clear a row     while other processors still have pending writes or additions into the     same row. In other words, if another processor still wants to add     something to an element of a row and you call this function to zero out     the row, then the next time you call compress() may add the remote     value to the zero you just created. Consequently, you will want to call     compress() after you made the last modifications to a matrix and before     starting to clear rows.    
+* [0.x.112]*
+     Sets an internal flag so that all operations performed by the matrix,     i.e., multiplications, are done in transposed order. However, this does     not reshape the matrix to transposed form directly, so care should be     taken when using this flag.        
+*  [2.x.48]  Calling this function any even number of times in succession will     return the object to its original state.    
+* [0.x.113]*
+      [2.x.49]  Entry Access    
+* [0.x.114]*
+     Return the value of the entry ([1.x.4]).  This may be an expensive     operation and you should always take care where to call this function.     As in the deal.II sparse matrix class, we throw an exception if the     respective entry doesn't exist in the sparsity pattern of this class,     which is requested from Trilinos. Moreover, an exception will be thrown     when the requested element is not saved on the calling process.    
+* [0.x.115]*
+     Return the value of the matrix entry ([1.x.5]). If this entry does     not exist in the sparsity pattern, then zero is returned. While this     may be convenient in some cases, note that it is simple to write     algorithms that are slow compared to an optimal solution, since the     sparsity of the matrix is not used.  On the other hand, if you want to     be sure the entry exists, you should use operator() instead.         The lack of error checking in this function can also yield surprising     results if you have a parallel matrix. In that case, just because you     get a zero result from this function does not mean that either the     entry does not exist in the sparsity pattern or that it does but has a     value of zero. Rather, it could also be that it simply isn't stored on     the current processor; in that case, it may be stored on a different     processor, and possibly so with a nonzero value.    
+* [0.x.116]*
+     Return the main diagonal element in the [1.x.6]th row. This function     throws an error if the matrix is not quadratic and it also throws an     error if [1.x.7] is not element of the local matrix.  See also the     comment in trilinos_sparse_matrix.cc.    
+* [0.x.117]*
+      [2.x.50]  Multiplications    
+* [0.x.118]*
+     Matrix-vector multiplication: let [1.x.8] with [1.x.9]     being this matrix.         Source and destination must not be the same vector.         This function can be called with several types of vector objects,     namely  [2.x.51]  can be      [2.x.52]       [2.x.53]   [2.x.54]       [2.x.55]   [2.x.56]       [2.x.57]   [2.x.58]       [2.x.59]  Vector<double>,      [2.x.60]   [2.x.61]       [2.x.62]          When using vectors of type  [2.x.63]  the vector      [2.x.64]  has to be initialized with the same IndexSet that was used for     the row indices of the matrix and the vector  [2.x.65]  has to be     initialized with the same IndexSet that was used for the column indices     of the matrix.         This function will be called when the underlying number type for the     matrix object and the one for the vector object are the same.     Despite looking complicated, the return type is just `void`.         In case of a serial vector, this function will only work when     running on one processor, since the matrix object is inherently     distributed. Otherwise, an exception will be thrown.    
+* [0.x.119]*
+     Same as the function above for the case that the underlying number type     for the matrix object and the one for the vector object do not coincide.     This case is not implemented. Calling it will result in a runtime error.     Despite looking complicated, the return type is just `void`.    
+* [0.x.120]*
+     Matrix-vector multiplication: let [1.x.10] with     [1.x.11] being this matrix. This function does the same as vmult() but     takes the transposed matrix.         Source and destination must not be the same vector.         This function can be called with several types of vector objects,     see the discussion about  [2.x.66]  in vmult().         This function will be called when the underlying number type for the     matrix object and the one for the vector object are the same.     Despite looking complicated, the return type is just `void`.    
+* [0.x.121]*
+     Same as the function above for the case that the underlying number type     for the matrix object and the one for the vector object do not coincide.     This case is not implemented. Calling it will result in a runtime error.     Despite looking complicated, the return type is just `void`.    
+* [0.x.122]*
+     Adding matrix-vector multiplication. Add [1.x.12] on [1.x.13]     with [1.x.14] being this matrix.         Source and destination must not be the same vector.         This function can be called with several types of vector objects,     see the discussion about  [2.x.67]  in vmult().    
+* [0.x.123]*
+     Adding matrix-vector multiplication. Add [1.x.15] to     [1.x.16] with [1.x.17] being this matrix. This function does the same     as vmult_add() but takes the transposed matrix.         Source and destination must not be the same vector.         This function can be called with several types of vector objects,     see the discussion about  [2.x.68]  in vmult().    
+* [0.x.124]*
+     Return the square of the norm of the vector  [2.x.69]  with respect to the     norm induced by this matrix, i.e.,  [2.x.70] . This is useful,     e.g. in the finite element context, where the  [2.x.71]  norm of a function     equals the matrix norm with respect to the mass matrix of the vector     representing the nodal values of the finite element function.         Obviously, the matrix needs to be quadratic for this operation.         The implementation of this function is not as efficient as the one in     the  [2.x.72]  class used in deal.II (i.e. the original one, not     the Trilinos wrapper class) since Trilinos doesn't support this     operation and needs a temporary vector.         The vector has to be initialized with the same IndexSet the matrix     was initialized with.         In case of a localized Vector, this function will only work when     running on one processor, since the matrix object is inherently     distributed. Otherwise, an exception will be thrown.    
+* [0.x.125]*
+     Compute the matrix scalar product  [2.x.73] .         The implementation of this function is not as efficient as the one in     the  [2.x.74]  class used in deal.II (i.e. the original one, not     the Trilinos wrapper class) since Trilinos doesn't support this     operation and needs a temporary vector.         The vector  [2.x.75]  has to be initialized with the same IndexSet that     was used for the row indices of the matrix and the vector  [2.x.76]  has     to be initialized with the same IndexSet that was used for the     column indices of the matrix.         In case of a localized Vector, this function will only work when     running on one processor, since the matrix object is inherently     distributed. Otherwise, an exception will be thrown.         This function is only implemented for square matrices.    
+* [0.x.126]*
+     Compute the residual of an equation [1.x.18], where the residual is     defined to be [1.x.19]. Write the residual into  [2.x.77]  The     [1.x.20] norm of the residual vector is returned.         Source [1.x.21] and destination [1.x.22] must not be the same vector.         The vectors  [2.x.78]  and  [2.x.79]  have to be initialized with the same     IndexSet that was used for the row indices of the matrix and the vector      [2.x.80]  has to be initialized with the same IndexSet that was used for the     column indices of the matrix.         In case of a localized Vector, this function will only work when     running on one processor, since the matrix object is inherently     distributed. Otherwise, an exception will be thrown.    
+* [0.x.127]*
+     Perform the matrix-matrix multiplication <tt>C = A B</tt>, or, if an     optional vector argument is given, <tt>C = A diag(V) B</tt>, where     <tt>diag(V)</tt> defines a diagonal matrix with the vector entries.         This function assumes that the calling matrix <tt>A</tt> and <tt>B</tt>     have compatible sizes. The size of <tt>C</tt> will be set within this     function.         The content as well as the sparsity pattern of the matrix C will be     changed by this function, so make sure that the sparsity pattern is not     used somewhere else in your program. This is an expensive operation, so     think twice before you use this function.    
+* [0.x.128]*
+     Perform the matrix-matrix multiplication with the transpose of     <tt>this</tt>, i.e., <tt>C = A<sup>T</sup> B</tt>, or, if an optional     vector argument is given, <tt>C = A<sup>T</sup> diag(V) B</tt>,     where <tt>diag(V)</tt> defines a diagonal matrix with the vector     entries.         This function assumes that the calling matrix <tt>A</tt> and <tt>B</tt>     have compatible sizes. The size of <tt>C</tt> will be set within this     function.         The content as well as the sparsity pattern of the matrix C will be     changed by this function, so make sure that the sparsity pattern is not     used somewhere else in your program. This is an expensive operation, so     think twice before you use this function.    
+* [0.x.129]*
+      [2.x.81]  Matrix norms    
+* [0.x.130]*
+     Return the [1.x.23]<sub>1</sub>-norm of the matrix, that is  [2.x.82] , (max. sum of columns).  This is the natural matrix norm that     is compatible to the l1-norm for vectors, i.e.   [2.x.83] .  (cf. Haemmerlin-Hoffmann: Numerische Mathematik)    
+* [0.x.131]*
+     Return the linfty-norm of the matrix, that is      [2.x.84] , (max. sum of rows).  This is the natural matrix norm that     is compatible to the linfty-norm of vectors, i.e.   [2.x.85] .  (cf. Haemmerlin-Hoffmann: Numerische     Mathematik)    
+* [0.x.132]*
+     Return the frobenius norm of the matrix, i.e. the square root of the     sum of squares of all entries in the matrix.    
+* [0.x.133]*
+      [2.x.86]  Access to underlying Trilinos data    
+* [0.x.134]*
+     Return a const reference to the underlying Trilinos Epetra_CrsMatrix     data.    
+* [0.x.135]*
+     Return a const reference to the underlying Trilinos Epetra_CrsGraph     data that stores the sparsity pattern of the matrix.    
+* [0.x.136]*
+      [2.x.87]  Partitioners    
+* [0.x.137]*
+     Return the partitioning of the domain space of this matrix, i.e., the     partitioning of the vectors this matrix has to be multiplied with.    
+* [0.x.138]*
+     Return the partitioning of the range space of this matrix, i.e., the     partitioning of the vectors that are result from matrix-vector     products.    
+* [0.x.139]*
+      [2.x.88]  Iterators    
+* [0.x.140]*
+     Return an iterator pointing to the first element of the matrix.         The elements accessed by iterators within each row are ordered in the     way in which Trilinos stores them, though the implementation guarantees     that all elements of one row are accessed before the elements of the     next row. If your algorithm relies on visiting elements within one row,     you will need to consult with the Trilinos documentation on the order     in which it stores data. It is, however, generally not a good and long-     term stable idea to rely on the order in which receive elements if you     iterate over them.         When you iterate over the elements of a parallel matrix, you will only     be able to access the locally owned rows. (You can access the other     rows as well, but they will look empty.) In that case, you probably     want to call the begin() function that takes the row as an argument to     limit the range of elements to loop over.    
+* [0.x.141]*
+     Like the function above, but for non-const matrices.    
+* [0.x.142]*
+     Return an iterator pointing the element past the last one of this     matrix.    
+* [0.x.143]*
+     Like the function above, but for non-const matrices.    
+* [0.x.144]*
+     Return an iterator pointing to the first element of row  [2.x.89]          Note that if the given row is empty, i.e. does not contain any nonzero     entries, then the iterator returned by this function equals     <tt>end(r)</tt>. The returned iterator may not be dereferenceable in     that case if neither row  [2.x.90]  nor any of the following rows contain any     nonzero entries.         The elements accessed by iterators within each row are ordered in the     way in which Trilinos stores them, though the implementation guarantees     that all elements of one row are accessed before the elements of the     next row. If your algorithm relies on visiting elements within one row,     you will need to consult with the Trilinos documentation on the order     in which it stores data. It is, however, generally not a good and long-     term stable idea to rely on the order in which receive elements if you     iterate over them.        
+*  [2.x.91]  When you access the elements of a parallel matrix, you can only     access the elements of rows that are actually stored locally. (You can     access the other rows as well, but they will look empty.) Even then, if     another processor has since written into, or added to, an element of     the matrix that is stored on the current processor, then you will still     see the old value of this entry unless you have called compress()     between modifying the matrix element on the remote processor and     accessing it on the current processor. See the documentation of the     compress() function for more information.    
+* [0.x.145]*
+     Like the function above, but for non-const matrices.    
+* [0.x.146]*
+     Return an iterator pointing the element past the last one of row  [2.x.92]  ,     or past the end of the entire sparsity pattern if none of the rows     after  [2.x.93]  contain any entries at all.         Note that the end iterator is not necessarily dereferenceable. This is     in particular the case if it is the end iterator for the last row of a     matrix.    
+* [0.x.147]*
+     Like the function above, but for non-const matrices.    
+* [0.x.148]*
+      [2.x.94]  Input/Output    
+* [0.x.149]*
+     Abstract Trilinos object that helps view in ASCII other Trilinos     objects. Currently this function is not implemented.  TODO: Not     implemented.    
+* [0.x.150]*
+     Print the matrix to the given stream, using the format <tt>(line,col)     value</tt>, i.e. one nonzero entry of the matrix per line. The optional     flag outputs the sparsity pattern in Trilinos style, where the data is     sorted according to the processor number when printed to the stream, as     well as a summary of the matrix like the global size.    
+* [0.x.151]*
+      [2.x.95]  Exceptions    
+* [0.x.152]*
+     Exception    
+* [0.x.153]*
+     Exception    
+* [0.x.154]*
+     Exception    
+* [0.x.155]*
+     Exception    
+* [0.x.156]*
+     Exception    
+* [0.x.157]*
+     Exception    
+* [0.x.158]*
+     For some matrix storage formats, in particular for the PETSc     distributed blockmatrices, set and add operations on individual     elements can not be freely mixed. Rather, one has to synchronize     operations when one wants to switch from setting elements to adding to     elements.  BlockMatrixBase automatically synchronizes the access by     calling this helper function for each block.  This function ensures     that the matrix is in a state that allows adding elements; if it     previously already was in this state, the function does nothing.    
+* [0.x.159]*
+     Same as prepare_add() but prepare the matrix for setting elements if     the representation of elements in this class requires such an     operation.    
+* [0.x.160]*
+     Pointer to the user-supplied Epetra Trilinos mapping of the matrix     columns that assigns parts of the matrix to the individual processes.    
+* [0.x.161]*
+     A sparse matrix object in Trilinos to be used for finite element based     problems which allows for assembling into non-local elements.  The     actual type, a sparse matrix, is set in the constructor.    
+* [0.x.162]*
+     A sparse matrix object in Trilinos to be used for collecting the non-     local elements if the matrix was constructed from a Trilinos sparsity     pattern with the respective option.    
+* [0.x.163]*
+     An export object used to communicate the nonlocal matrix.    
+* [0.x.164]*
+     Trilinos doesn't allow to mix additions to matrix entries and     overwriting them (to make synchronization of %parallel computations     simpler). The way we do it is to, for each access operation, store     whether it is an insertion or an addition. If the previous one was of     different type, then we first have to flush the Trilinos buffers;     otherwise, we can simply go on. Luckily, Trilinos has an object for     this which does already all the %parallel communications in such a     case, so we simply use their model, which stores whether the last     operation was an addition or an insertion.    
+* [0.x.165]*
+     A boolean variable to hold information on whether the vector is     compressed or not.    
+* [0.x.166]*
+       This is an extension class to LinearOperators for Trilinos sparse       matrix and preconditioner types. It provides the interface to       performing basic operations (<tt>vmult</tt> and <tt>Tvmult</tt>)  on       Trilinos vector types. It fulfills the requirements necessary for       wrapping a Trilinos solver, which calls Epetra_Operator functions, as a       LinearOperator.            
+*  [2.x.96]  The  [2.x.97]  or        [2.x.98]  that this payload wraps is passed by       reference to the <tt>vmult</tt> and <tt>Tvmult</tt> functions. This       object is not thread-safe when the transpose flag is set on it or the       Trilinos object to which it refers. See the docuemtation for the        [2.x.99]        function for further details.                  
+*  [2.x.100]       
+* [0.x.167]*
+         Definition for the internally supported vector type.        
+* [0.x.168]*
+         Definition for the vector type for the domain space of the operator.        
+* [0.x.169]*
+         Definition for the vector type for the range space of the operator.        
+* [0.x.170]*
+          [2.x.101]  Constructors / destructor        
+* [0.x.171]*
+         Default constructor                
+*  [2.x.102]  By design, the resulting object is inoperable since there is         insufficient information with which to construct the domain and         range maps.        
+* [0.x.172]*
+         Constructor for a sparse matrix based on an exemplary matrix        
+* [0.x.173]*
+         Constructor for a preconditioner based on an exemplary matrix        
+* [0.x.174]*
+         Constructor for a preconditioner based on an exemplary preconditioner        
+* [0.x.175]*
+         Default copy constructor        
+* [0.x.176]*
+         Composite copy constructor                 This is required for PackagedOperations as it sets up the domain and         range maps, and composite <tt>vmult</tt> and <tt>Tvmult</tt>         operations based on the combined operation of both operations        
+* [0.x.177]*
+         Destructor        
+* [0.x.178]*
+         Return a payload configured for identity operations        
+* [0.x.179]*
+         Return a payload configured for null operations        
+* [0.x.180]*
+         Return a payload configured for transpose operations        
+* [0.x.181]*
+         Return a payload configured for inverse operations                 Invoking this factory function will configure two additional         functions, namely <tt>inv_vmult</tt> and <tt>inv_Tvmult</tt>, both of         which wrap inverse operations. The <tt>vmult</tt> and <tt>Tvmult</tt>         operations retain the standard         definitions inherited from  [2.x.103]                 
+*  [2.x.104]  This function is enabled only if the solver and preconditioner         derive from the respective TrilinosWrappers base classes.         The C++ compiler will therefore only consider this function if the         following criterion are satisfied:         1. the  [2.x.105]  derives from  [2.x.106]  and         2. the  [2.x.107]  derives from  [2.x.108]         
+* [0.x.182]*
+         Return a payload configured for inverse operations                 Invoking this factory function will configure two additional         functions, namely <tt>inv_vmult</tt> and <tt>inv_Tvmult</tt>, both of         which         are disabled because the  [2.x.109]  or  [2.x.110]  are not         compatible with Epetra_MultiVector.         The <tt>vmult</tt> and <tt>Tvmult</tt> operations retain the standard         definitions inherited from  [2.x.111]                 
+*  [2.x.112]  The C++ compiler will only consider this function if the         following criterion are satisfied:         1. the  [2.x.113]  does not derive from  [2.x.114]  and         2. the  [2.x.115]  does not derive from          [2.x.116]         
+* [0.x.183]*
+          [2.x.117]  LinearOperator functionality        
+* [0.x.184]*
+         Return an IndexSet that defines the partitioning of the domain space         of this matrix, i.e., the partitioning of the vectors this matrix has         to be multiplied with / operate on.        
+* [0.x.185]*
+         Return an IndexSet that defines the partitioning of the range space         of this matrix, i.e., the partitioning of the vectors that result         from matrix-vector products.        
+* [0.x.186]*
+         Return the MPI communicator object in use with this Payload.        
+* [0.x.187]*
+         Sets an internal flag so that all operations performed by the matrix,         i.e., multiplications, are done in transposed order.        
+*  [2.x.118]  This does not reshape the matrix to transposed form directly,         so care should be taken when using this flag.        
+* [0.x.188]*
+         The standard matrix-vector operation to be performed by the payload         when Apply is called.                
+*  [2.x.119]  This is not called by a LinearOperator, but rather by Trilinos         functions that expect this to mimic the action of the LinearOperator.        
+* [0.x.189]*
+         The standard transpose matrix-vector operation to be performed by         the payload when Apply is called.                
+*  [2.x.120]  This is not called by a LinearOperator, but rather by Trilinos         functions that expect this to mimic the action of the LinearOperator.        
+* [0.x.190]*
+         The inverse matrix-vector operation to be performed by the payload         when ApplyInverse is called.                
+*  [2.x.121]  This is not called by a LinearOperator, but rather by Trilinos         functions that expect this to mimic the action of the         InverseOperator.        
+* [0.x.191]*
+         The inverse transpose matrix-vector operation to be performed by         the payload when ApplyInverse is called.                
+*  [2.x.122]  This is not called by a LinearOperator, but rather by Trilinos         functions that expect this to mimic the action of the         InverseOperator.        
+* [0.x.192]*
+          [2.x.123]  Core Epetra_Operator functionality        
+* [0.x.193]*
+         Return the status of the transpose flag for this operator                 This overloads the same function from the Trilinos class         Epetra_Operator.        
+* [0.x.194]*
+         Sets an internal flag so that all operations performed by the matrix,         i.e., multiplications, are done in transposed order.                 This overloads the same function from the Trilinos class         Epetra_Operator.                
+*  [2.x.124]  This does not reshape the matrix to transposed form directly,         so care should be taken when using this flag. When the flag is set to         true (either here or directly on the underlying Trilinos object         itself), this object is no longer thread-safe. In essence, it is not         possible ensure that the transposed state of the LinearOperator and         the underlying Trilinos object remain synchronized throughout all         operations that may occur on different threads simultaneously.        
+* [0.x.195]*
+         Apply the vmult operation on a vector  [2.x.125]  (of internally defined         type VectorType) and store the result in the vector  [2.x.126]                  This overloads the same function from the Trilinos class         Epetra_Operator.                
+*  [2.x.127]  The intended operation depends on the status of the internal         transpose flag. If this flag is set to true, the result will be         the equivalent of performing a Tvmult operation.        
+* [0.x.196]*
+         Apply the vmult inverse operation on a vector  [2.x.128]  (of internally         defined type VectorType) and store the result in the vector  [2.x.129]                  In practise, this function is only called from a Trilinos solver if         the wrapped object is to act as a preconditioner.                 This overloads the same function from the Trilinos class         Epetra_Operator.                
+*  [2.x.130]  This function will only be operable if the payload has been         initialized with an InverseOperator, or is a wrapper to a         preconditioner. If not, then using this function will lead to an         error being thrown.        
+*  [2.x.131]  The intended operation depends on the status of the internal         transpose flag. If this flag is set to true, the result will be         the equivalent of performing a Tvmult operation.        
+* [0.x.197]*
+          [2.x.132]  Additional Epetra_Operator functionality        
+* [0.x.198]*
+         Return a label to describe this class.                 This overloads the same function from the Trilinos class         Epetra_Operator.        
+* [0.x.199]*
+         Return a reference to the underlying MPI communicator for         this object.                 This overloads the same function from the Trilinos class         Epetra_Operator.        
+* [0.x.200]*
+         Return the partitioning of the domain space of this matrix, i.e., the         partitioning of the vectors this matrix has to be multiplied with.                 This overloads the same function from the Trilinos class         Epetra_Operator.        
+* [0.x.201]*
+         Return the partitioning of the range space of this matrix, i.e., the         partitioning of the vectors that are result from matrix-vector         products.                 This overloads the same function from the Trilinos class         Epetra_Operator.        
+* [0.x.202]*
+         A flag recording whether the operator is to perform standard         matrix-vector multiplication, or the transpose operation.        
+* [0.x.203]*
+         Internal communication pattern in case the matrix needs to be copied         from deal.II format.        
+* [0.x.204]*
+         Epetra_Map that sets the partitioning of the domain space of         this operator.        
+* [0.x.205]*
+         Epetra_Map that sets the partitioning of the range space of         this operator.        
+* [0.x.206]*
+         Return a flag that describes whether this operator can return the         computation of the infinity norm. Since in general this is not the         case, this always returns a negetive result.                 This overloads the same function from the Trilinos class         Epetra_Operator.        
+* [0.x.207]*
+         Return the infinity norm of this operator.         Throws an error since, in general, we cannot compute this value.                 This overloads the same function from the Trilinos class         Epetra_Operator.        
+* [0.x.208]*
+       Return an operator that returns a payload configured to support the       addition of two LinearOperators      
+* [0.x.209]*
+       Return an operator that returns a payload configured to support the       multiplication of two LinearOperators      
+* [0.x.210]

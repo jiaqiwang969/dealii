@@ -1,0 +1,16 @@
+[0.x.0]*
+   This class implements a collection of objects.     It implements the concepts stated in the  [2.x.0]    module described in the doxygen documentation.    
+*  [2.x.1]   
+* [0.x.1]*
+     Default constructor. Leads to an empty collection that can later be     filled using push_back().    
+* [0.x.2]*
+     Add a new object.    
+* [0.x.3]*
+     Return the object which was specified by the user for the     active FE index which is provided as a parameter to this method.          [2.x.2]   [2.x.3]  must be between zero and the number of elements of the     collection.    
+* [0.x.4]*
+     Return the number of objects stored in this container.    
+* [0.x.5]*
+     Determine an estimate for the memory consumption (in bytes) of this     object.    
+* [0.x.6]*
+     The real container, which stores pointers to the different objects.    
+* [0.x.7]

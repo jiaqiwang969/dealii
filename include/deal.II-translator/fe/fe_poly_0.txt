@@ -1,0 +1,66 @@
+[0.x.0]*
+ This class gives a unified framework for the implementation of FiniteElement classes based on scalar polynomial spaces like the TensorProductPolynomials or PolynomialSpace classes. This class has a corresponding class for tensor-valued finite elements in the FE_PolyTensor class.
+*  Every class that has the following public member variables and functions can be used as template parameter  [2.x.0] 
+* 
+
+* 
+* [1.x.0]
+*  Example classes are TensorProductPolynomials, PolynomialSpace or PolynomialsP.
+*  This class is not a fully implemented FiniteElement class. Instead there are several pure virtual functions declared in the FiniteElement and FiniteElement classes which cannot be implemented by this class but are left for implementation in derived classes.
+*   [2.x.1]  Since nearly all functions for spacedim != dim are specialized, this class needs cleaning up.
+
+* 
+* [0.x.1]*
+   Constructor.  
+* [0.x.2]*
+   Copy constructor.  
+* [0.x.3]*
+   Return the polynomial degree of this finite element, i.e. the value   passed to the constructor.  
+* [0.x.4]*
+   Return the underlying polynomial space.  
+* [0.x.5]*
+   Return the numbering of the underlying polynomial space compared to   lexicographic ordering of the basis functions. Returns    [2.x.2]     
+*  [2.x.3]  Some implementations of this class do not support this function,     since no lexicographic ordering of the basis functions is possible     for them. Examples are: FE_SimplexP, FE_WedgeP, and FE_PyramidP.  
+* [0.x.6]*
+   Return the inverse numbering of the underlying polynomial space. Returns    [2.x.4]     
+*  [2.x.5]  See note of get_poly_space_numbering().  
+* [0.x.7]*
+   Return the value of the <tt>i</tt>th shape function at the point   <tt>p</tt>. See the FiniteElement base class for more information about   the semantics of this function.  
+* [0.x.8]*
+   Return the value of the <tt>component</tt>th vector component of the   <tt>i</tt>th shape function at the point <tt>p</tt>. See the   FiniteElement base class for more information about the semantics of this   function.     Since this element is scalar, the returned value is the same as if the   function without the <tt>_component</tt> suffix were called, provided   that the specified component is zero.  
+* [0.x.9]*
+   Return the gradient of the <tt>i</tt>th shape function at the point   <tt>p</tt>. See the FiniteElement base class for more information about   the semantics of this function.  
+* [0.x.10]*
+   Return the gradient of the <tt>component</tt>th vector component of the   <tt>i</tt>th shape function at the point <tt>p</tt>. See the   FiniteElement base class for more information about the semantics of this   function.     Since this element is scalar, the returned value is the same as if the   function without the <tt>_component</tt> suffix were called, provided   that the specified component is zero.  
+* [0.x.11]*
+   Return the tensor of second derivatives of the <tt>i</tt>th shape   function at point <tt>p</tt> on the unit cell. See the FiniteElement base   class for more information about the semantics of this function.  
+* [0.x.12]*
+   Return the second derivative of the <tt>component</tt>th vector component   of the <tt>i</tt>th shape function at the point <tt>p</tt>. See the   FiniteElement base class for more information about the semantics of this   function.     Since this element is scalar, the returned value is the same as if the   function without the <tt>_component</tt> suffix were called, provided   that the specified component is zero.  
+* [0.x.13]*
+   Return the tensor of third derivatives of the <tt>i</tt>th shape function   at point <tt>p</tt> on the unit cell. See the FiniteElement base class   for more information about the semantics of this function.  
+* [0.x.14]*
+   Return the third derivative of the <tt>component</tt>th vector component   of the <tt>i</tt>th shape function at the point <tt>p</tt>. See the   FiniteElement base class for more information about the semantics of this   function.     Since this element is scalar, the returned value is the same as if the   function without the <tt>_component</tt> suffix were called, provided   that the specified component is zero.  
+* [0.x.15]*
+   Return the tensor of fourth derivatives of the <tt>i</tt>th shape   function at point <tt>p</tt> on the unit cell. See the FiniteElement base   class for more information about the semantics of this function.  
+* [0.x.16]*
+   Return the fourth derivative of the <tt>component</tt>th vector component   of the <tt>i</tt>th shape function at the point <tt>p</tt>. See the   FiniteElement base class for more information about the semantics of this   function.     Since this element is scalar, the returned value is the same as if the   function without the <tt>_component</tt> suffix were called, provided   that the specified component is zero.  
+* [0.x.17]*
+   Return an estimate (in bytes) for the memory consumption of this object.  
+* [0.x.18]   NOTE: The following function has its definition inlined into the class   declaration because we otherwise run into a compiler error with MS Visual   Studio.  
+* [0.x.19]*
+   Fields of cell-independent data.     For information about the general purpose of this class, see the   documentation of the base class.  
+* [0.x.20]*
+     Array with shape function values in quadrature points. There is one row     for each shape function, containing values for each quadrature point.         In this array, we store the values of the shape function in the     quadrature points on the unit cell. Since these values do not change     under transformation to the real cell, we only need to copy them over     when visiting a concrete cell.    
+* [0.x.21]*
+     Array with shape function gradients in quadrature points. There is one     row for each shape function, containing values for each quadrature     point.         We store the gradients in the quadrature points on the unit cell. We     then only have to apply the transformation (which is a matrix-vector     multiplication) when visiting an actual cell.    
+* [0.x.22]*
+     Array with shape function hessians in quadrature points. There is one     row for each shape function, containing values for each quadrature     point.         We store the hessians in the quadrature points on the unit cell. We     then only have to apply the transformation when visiting an actual     cell.    
+* [0.x.23]*
+     Array with shape function third derivatives in quadrature points. There     is one row for each shape function, containing values for each     quadrature point.         We store the third derivatives in the quadrature points on the unit     cell. We then only have to apply the transformation when visiting an     actual cell.    
+* [0.x.24]*
+   Correct the shape Hessians by subtracting the terms corresponding to the   Jacobian pushed forward gradient.     Before the correction, the Hessians would be given by   [1.x.1]   where  [2.x.6] . After the correction, the   correct Hessians would be given by   [1.x.2]   where  [2.x.7]  is the Jacobian pushed-forward derivative.  
+* [0.x.25]*
+   Correct the shape third derivatives by subtracting the terms   corresponding to the Jacobian pushed forward gradient and second   derivative.     Before the correction, the third derivatives would be given by   [1.x.3]   where  [2.x.8] . After the correction, the   correct third derivative would be given by   [1.x.4]   where  [2.x.9]  is the Jacobian pushed-forward derivative and  [2.x.10]    is the Jacobian pushed-forward second derivative.  
+* [0.x.26]*
+   The polynomial space.  
+* [0.x.27]

@@ -1,0 +1,37 @@
+[0.x.0]*
+   The enum type given to the mesh_loop() function, telling that function   which elements need to be assembled.     You can select more than one flag by concatenation using the bitwise or    [2.x.0] .  
+* [0.x.1]*
+     Do Nothing.    
+* [0.x.2]*
+     Assemble on locally owned cells.    
+* [0.x.3]*
+     Assemble on ghost cells.    
+* [0.x.4]*
+     Assemble on interior faces between two locally owned cells,     visiting each face only once.    
+* [0.x.5]*
+     Assemble on interior faces between two locally owned cells,     visiting each interior face twice, once from each of the two     adjacent cells.    
+* [0.x.6]*
+     Assemble on faces between a locally owned cell and a ghost cell, making     sure that only one of the processes will assemble these faces (from the     finer side or the process with the lower mpi rank).    
+* [0.x.7]*
+     Assemble on faces between a locally owned cell and a ghost cell. Both     processes will assemble these faces. Note that they are never     assembled from both sides on a single process.    
+* [0.x.8]*
+     Assemble on boundary faces of the locally owned cells.    
+* [0.x.9]*
+     By default we assemble cell integrals before face integrals. If this     flag is specified, cells will be assembled after faces and boundaries.    
+* [0.x.10]*
+     Combination of flags to determine if any work on cells is done.    
+* [0.x.11]*
+     Combination of flags to determine if any work is done on faces.    
+* [0.x.12]*
+     Combination of flags to determine if any work is done on the boundary     faces.    
+* [0.x.13]*
+   Output operator which outputs assemble flags as a set of or'd text values.      [2.x.1]   
+* [0.x.14]*
+   Global operator which returns an object in which all bits are set which are   either set in the first or the second argument. This operator exists since   if it did not then the result of the bit-or <tt>operator |</tt> would be an   integer which would in turn trigger a compiler warning when we tried to   assign it to an object of type AssembleFlags.      [2.x.2]   
+* [0.x.15]*
+   Global operator which sets the bits from the second argument also in the   first one.      [2.x.3]   
+* [0.x.16]*
+   Global operator which returns an object in which all bits are set which are   set in the first as well as the second argument. This operator exists since   if it did not then the result of the bit-and <tt>operator &</tt> would be   an integer which would in turn trigger a compiler warning when we tried to   assign it to an object of type AssembleFlags.      [2.x.4]   
+* [0.x.17]*
+   Global operator which clears all the bits in the first argument if they are   not also set in the second argument.      [2.x.5]   
+* [0.x.18]

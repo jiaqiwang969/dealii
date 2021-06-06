@@ -91,7 +91,7 @@ $(function() {
 <li>m()
 : <a class="el" href="classBlockMatrixBase.html#ab46c51896e8656797b2086bbdfb59506">BlockMatrixBase&lt; MatrixType &gt;</a>
 , <a class="el" href="classBlockSparseMatrixEZ.html#gaa302d704c6f71c381f639966a4ea8695">BlockSparseMatrixEZ&lt; Number &gt;</a>
-, <a class="el" href="classChunkSparseMatrix.html#a8a0224abfda5ad78be88a59132e9f581">ChunkSparseMatrix&lt; number &gt;</a>
+, <a class="el" href="group__Matrix1.html#ga8a0224abfda5ad78be88a59132e9f581">ChunkSparseMatrix&lt; number &gt;</a>
 , <a class="el" href="classCUDAWrappers_1_1PreconditionIC.html#a04b675b7ebc1eee0575237130c56445b">CUDAWrappers::PreconditionIC&lt; Number &gt;</a>
 , <a class="el" href="classCUDAWrappers_1_1PreconditionILU.html#a7afcd21cfd6e6db7889ea321f8d94c66">CUDAWrappers::PreconditionILU&lt; Number &gt;</a>
 , <a class="el" href="classCUDAWrappers_1_1SparseMatrix.html#ad3aa6f046ace18f110f212c03be75170">CUDAWrappers::SparseMatrix&lt; Number &gt;</a>
@@ -113,15 +113,35 @@ $(function() {
 , <a class="el" href="classSparseMatrix.html#acff5838afad6b9d4cc0c0eb5f6c515b5">SparseMatrix&lt; number &gt;</a>
 , <a class="el" href="classSparseMatrixEZ.html#aade22d2bb33ed07fb225df546fc2e176">SparseMatrixEZ&lt; number &gt;</a>
 , <a class="el" href="classSparseVanka.html#a1161f72e2921f4cf53584ddddca91665">SparseVanka&lt; number &gt;</a>
+, <a class="el" href="classStep59_1_1LaplaceOperator.html#a8836f0742ce62e06e924a7b744b8ab3f">Step59::LaplaceOperator&lt; dim, fe_degree, number &gt;</a>
+, <a class="el" href="classStep75_1_1LaplaceOperator.html#a10b951d56e7f2dc44892f27a6d16bad0">Step75::LaplaceOperator&lt; dim, number &gt;</a>
 , <a class="el" href="classTensorProductMatrixSymmetricSumBase.html#a748d33a168e91ca8f65e0de599f4fd42">TensorProductMatrixSymmetricSumBase&lt; dim, Number, n_rows_1d &gt;</a>
 , <a class="el" href="classTridiagonalMatrix.html#ac06db029f3582f88c27de235b8c81678">TridiagonalMatrix&lt; number &gt;</a>
 , <a class="el" href="classTrilinosWrappers_1_1SparseMatrix.html#ab9cf2620cc3350eb189597bd2831570a">TrilinosWrappers::SparseMatrix</a>
+</li>
+<li>Magnetoelastic_Constitutive_Law()
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoelastic__Constitutive__Law.html#a2c4e28626c4e8944becddead17b1426a">Step71::CoupledConstitutiveLaws::Magnetoelastic_Constitutive_Law&lt; dim &gt;</a>
+</li>
+<li>Magnetoelastic_Constitutive_Law_AD()
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoelastic__Constitutive__Law__AD.html#ac82b5fb5af3b0f9aae12cbcc5296e2f9">Step71::CoupledConstitutiveLaws::Magnetoelastic_Constitutive_Law_AD&lt; dim, ADTypeCode &gt;</a>
+</li>
+<li>Magnetoviscoelastic_Constitutive_Law()
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law.html#a005c94bad22c20c870265564d8b97324">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law&lt; dim &gt;</a>
+</li>
+<li>Magnetoviscoelastic_Constitutive_Law_SD()
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law__SD.html#a52a8ac06ff021cebf558cbca8ae62b99">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law_SD&lt; dim &gt;</a>
+</li>
+<li>MainLoop()
+: <a class="el" href="classStep69_1_1MainLoop.html#af9926a5867395df12080f263efa197c4">Step69::MainLoop&lt; dim &gt;</a>
 </li>
 <li>make_array_view()
 : <a class="el" href="classArrayView.html#a2339bfed866b07b8d100f017616e2f2a">ArrayView&lt; ElementType, MemorySpaceType &gt;</a>
 </li>
 <li>make_boundary_cells_divisible()
 : <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1TaskInfo.html#acfab167f46e8c79051d900df754cf1cc">internal::MatrixFreeFunctions::TaskInfo</a>
+</li>
+<li>make_coefficient_table()
+: <a class="el" href="classCoefficient.html#a2fca96f07d7525b1b9f57ed8761929cf">Coefficient&lt; dim &gt;</a>
 </li>
 <li>make_coloring_within_partitions_pre_blocked()
 : <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1TaskInfo.html#a8177c637a41d442175a81056c21565b7">internal::MatrixFreeFunctions::TaskInfo</a>
@@ -132,8 +152,35 @@ $(function() {
 <li>make_connectivity_graph()
 : <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1DoFInfo.html#ae1e4e70a1c48646db1723d8874ec13dd">internal::MatrixFreeFunctions::DoFInfo</a>
 </li>
+<li>make_constraints()
+: <a class="el" href="classStep44_1_1Solid.html#a0783bbb34d5f4c417601b50cf3007ece">Step44::Solid&lt; dim &gt;</a>
+</li>
 <li>make_filtered_iterator()
 : <a class="el" href="classFilteredIterator.html#ab70266a7220e6ff4e3f915e0fb44a4dd">FilteredIterator&lt; BaseIterator &gt;</a>
+</li>
+<li>make_grid()
+: <a class="el" href="classStep19_1_1CathodeRaySimulator.html#a7a89e7d12ffb091e9564c8a8dd533bdc">Step19::CathodeRaySimulator&lt; dim &gt;</a>
+, <a class="el" href="classStep29_1_1UltrasoundProblem.html#ab00da0652b75a2d0efa0f052290744c8">Step29::UltrasoundProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep3.html#ab64c271e9f4dcc657dbc73be05af1727">Step3</a>
+, <a class="el" href="classStep41_1_1ObstacleProblem.html#ad13de070732235c38c1957161ead2720">Step41::ObstacleProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep42_1_1PlasticityContactProblem.html#a04c8d6c229a913663a9e711c6f018cb6">Step42::PlasticityContactProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep44_1_1Solid.html#a6bf26128c9224e1cd4a92223e814a27e">Step44::Solid&lt; dim &gt;</a>
+, <a class="el" href="classStep46_1_1FluidStructureProblem.html#a95f8fcdfbed3fe868abcc0e278108577">Step46::FluidStructureProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep47_1_1BiharmonicProblem.html#aec0a974cef1180ffd83b7dbc1e147055">Step47::BiharmonicProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep4.html#aa3014ed740c8b555e54dc04b4629c0ee">Step4&lt; dim &gt;</a>
+, <a class="el" href="classStep55_1_1StokesProblem.html#a7ce7f5ff121cd888c95dabe9c3ae67cf">Step55::StokesProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep61_1_1WGDarcyEquation.html#a713b9d7edfa203b93f76d36431722c43">Step61::WGDarcyEquation&lt; dim &gt;</a>
+, <a class="el" href="classStep66_1_1GelfandProblem.html#ac6e8df9e791992ac173b80d889d38ae1">Step66::GelfandProblem&lt; dim, fe_degree &gt;</a>
+, <a class="el" href="classStep70_1_1StokesImmersedProblem.html#ae567376e16456bc0cef61e80581aa80e">Step70::StokesImmersedProblem&lt; dim, spacedim &gt;</a>
+</li>
+<li>make_grid_and_dofs()
+: <a class="el" href="classEuler__DG_1_1EulerProblem.html#a601527f8789e95caa3935cfc4ed872f6">Euler_DG::EulerProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep20_1_1MixedLaplaceProblem.html#a0167761fc6a159ded6b50d3620504f47">Step20::MixedLaplaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep21_1_1TwoPhaseFlowProblem.html#a1a487ee5a9ad1255d1147a90bdd01fc4">Step21::TwoPhaseFlowProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep25_1_1SineGordonProblem.html#ab6ee86801a8036d368420cb0fa36edd5">Step25::SineGordonProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep36_1_1EigenvalueProblem.html#ae8b67df5482cb4d4d002c15b84468c6c">Step36::EigenvalueProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep38_1_1LaplaceBeltramiProblem.html#ad427d82846c1db02c57f932666030755">Step38::LaplaceBeltramiProblem&lt; spacedim &gt;</a>
+, <a class="el" href="classStep48_1_1SineGordonProblem.html#a6f8024428904366265cb0d077b359f25">Step48::SineGordonProblem&lt; dim &gt;</a>
 </li>
 <li>make_mapping()
 : <a class="el" href="classInterGridMap.html#a9e9ed6c30b05d6ff93587e5306122bc2">InterGridMap&lt; MeshType &gt;</a>
@@ -144,6 +191,9 @@ $(function() {
 <li>make_nvector_view()
 : <a class="el" href="classSUNDIALS_1_1internal_1_1NVectorView.html#aee968d6c7dfea14f672651e79cb79860">SUNDIALS::internal::NVectorView&lt; VectorType &gt;</a>
 </li>
+<li>make_one_step()
+: <a class="el" href="classStep69_1_1TimeStepping.html#a5a77031657cae219f20cb6596419c139">Step69::TimeStepping&lt; dim &gt;</a>
+</li>
 <li>make_partitioning()
 : <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1TaskInfo.html#ac52a47f000cabc955b933011341d73da">internal::MatrixFreeFunctions::TaskInfo</a>
 </li>
@@ -152,6 +202,9 @@ $(function() {
 </li>
 <li>make_sorted_row_list()
 : <a class="el" href="classAffineConstraints.html#a3a02d1c13ace7c8c81fe2b009f07aa48">AffineConstraints&lt; number &gt;</a>
+</li>
+<li>make_substitution_map()
+: <a class="el" href="classStep71_1_1CoupledConstitutiveLaws_1_1Magnetoviscoelastic__Constitutive__Law__SD.html#a92fe1cd8f5035d74f0220fa35f21d5e8">Step71::CoupledConstitutiveLaws::Magnetoviscoelastic_Constitutive_Law_SD&lt; dim &gt;</a>
 </li>
 <li>make_thread_graph()
 : <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1TaskInfo.html#a9a3bac606d4e14e0e47cfc9556bd2c54">internal::MatrixFreeFunctions::TaskInfo</a>
@@ -207,7 +260,7 @@ $(function() {
 : <a class="el" href="classMappingFE.html#a18a9e14a1500023e4e5b4b50091c81e1">MappingFE&lt; dim, spacedim &gt;</a>
 </li>
 <li>MappingFEField()
-: <a class="el" href="classMappingFEField_3_01dim_00_01spacedim_00_01VectorType_00_01void_01_4.html#a2aac9318f1f370711efc55e2f299c0ff">MappingFEField&lt; dim, spacedim, VectorType, void &gt;</a>
+: <a class="el" href="classMappingFEField_3_01dim_00_01spacedim_00_01VectorType_00_01void_01_4.html#a0be8698d4e0b8ae38498b047562d169c">MappingFEField&lt; dim, spacedim, VectorType, void &gt;</a>
 </li>
 <li>MappingManifold()
 : <a class="el" href="classMappingManifold.html#a2f53694fa758a5c6f982ea0faa2c6799">MappingManifold&lt; dim, spacedim &gt;</a>
@@ -231,7 +284,7 @@ $(function() {
 : <a class="el" href="classMappingQEulerian_1_1MappingQEulerianGeneric.html#a789cedce12e82b1854b5c51b40e3bdab">MappingQEulerian&lt; dim, VectorType, spacedim &gt;::MappingQEulerianGeneric</a>
 </li>
 <li>MappingQGeneric()
-: <a class="el" href="classMappingQGeneric.html#a9baa8ee5dbef2db30620cfe49bc72c33">MappingQGeneric&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classMappingQGeneric.html#aee0be7d2834d4d5fd2004c5dd986b689">MappingQGeneric&lt; dim, spacedim &gt;</a>
 </li>
 <li>MarchingCubeAlgorithm()
 : <a class="el" href="classGridTools_1_1MarchingCubeAlgorithm.html#ab29b812b67e5aa185c0f5966163f40fa">GridTools::MarchingCubeAlgorithm&lt; dim, VectorType &gt;</a>
@@ -244,7 +297,7 @@ $(function() {
 </li>
 <li>mark_locally_active_vertices_on_level()
 : <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html#a9c5a374eae5fb78508395822ce66c6ae">parallel::distributed::Triangulation&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classparallel_1_1distributed_1_1Triangulation_3_011_00_01spacedim_01_4.html#af85aa7c2bcd4bac177901b88ebc4ae07">parallel::distributed::Triangulation&lt; 1, spacedim &gt;</a>
+, <a class="el" href="classparallel_1_1distributed_1_1Triangulation_3_011_00_01spacedim_01_4.html#a7335d61da699d1ef4b3a352609e01d05">parallel::distributed::Triangulation&lt; 1, spacedim &gt;</a>
 </li>
 <li>mark_support_locations()
 : <a class="el" href="classPointValueHistory.html#a5215083277dfb44a6446a235e862d53c">PointValueHistory&lt; dim &gt;</a>
@@ -265,8 +318,14 @@ $(function() {
 , <a class="el" href="classPatterns_1_1Selection.html#a69541dde5c608b19fe8da06967e389bd">Patterns::Selection</a>
 , <a class="el" href="classPatterns_1_1Tuple.html#a00ea4143a1e5b013bb56267f37467c93">Patterns::Tuple</a>
 </li>
+<li>Material_Compressible_Neo_Hook_Three_Field()
+: <a class="el" href="classStep44_1_1Material__Compressible__Neo__Hook__Three__Field.html#a71d4948a238024c29a22698497a5703f">Step44::Material_Compressible_Neo_Hook_Three_Field&lt; dim &gt;</a>
+</li>
 <li>material_id()
 : <a class="el" href="classCellAccessor.html#ae4769702cd7ab67a61b25778ea3021b2">CellAccessor&lt; dim, spacedim &gt;</a>
+</li>
+<li>MaterialData()
+: <a class="el" href="classStep28_1_1MaterialData.html#a3aa25110af7a21c993d9112b19f3670f">Step28::MaterialData</a>
 </li>
 <li>MaterialIdEqualTo()
 : <a class="el" href="classIteratorFilters_1_1MaterialIdEqualTo.html#a9895d5d02a2fa5919db16de4a4fcc5eb">IteratorFilters::MaterialIdEqualTo</a>
@@ -371,11 +430,11 @@ $(function() {
 : <a class="el" href="classhp_1_1FECollection.html#a173d07546d8bd925c5a113b11fa63ae8">hp::FECollection&lt; dim, spacedim &gt;</a>
 </li>
 <li>max_entries_per_row()
-: <a class="el" href="classBlockSparsityPatternBase.html#af073215d48531dd728f98de936ccd8f1">BlockSparsityPatternBase&lt; SparsityPatternType &gt;</a>
-, <a class="el" href="classChunkSparsityPattern.html#a265ec1a8cc78a1ac3d512528e93eadfe">ChunkSparsityPattern</a>
-, <a class="el" href="classDynamicSparsityPattern.html#aadfa1d39829c829f354af3b88cc9dd38">DynamicSparsityPattern</a>
-, <a class="el" href="classSparsityPatternBase.html#afe38c6ef54df0033741e2d29f41f71ad">SparsityPatternBase</a>
-, <a class="el" href="classTrilinosWrappers_1_1SparsityPattern.html#a7258e5fde3c622f24b276bd3354f7baa">TrilinosWrappers::SparsityPattern</a>
+: <a class="el" href="classBlockSparsityPatternBase.html#aa820874eb9f5a2915359ab5475c04f1b">BlockSparsityPatternBase&lt; SparsityPatternType &gt;</a>
+, <a class="el" href="classChunkSparsityPattern.html#aaddf17e4bad30c623b0ad768280c9534">ChunkSparsityPattern</a>
+, <a class="el" href="classDynamicSparsityPattern.html#ab88cbcafda0e136ec22c63ac35331d0a">DynamicSparsityPattern</a>
+, <a class="el" href="classSparsityPatternBase.html#a857bfd532632247a78da7df0b86793c5">SparsityPatternBase</a>
+, <a class="el" href="classTrilinosWrappers_1_1SparsityPattern.html#a4cee9e81898214ced961dd7f83039c26">TrilinosWrappers::SparsityPattern</a>
 </li>
 <li>max_level()
 : <a class="el" href="classMGLevelObject.html#ac23dab254a8a1c611301d194a266a2ed">MGLevelObject&lt; Object &gt;</a>
@@ -452,7 +511,7 @@ $(function() {
 , <a class="el" href="classAffineConstraints.html#a418e2721b2f0be9d5ac15babb407e9ac">AffineConstraints&lt; number &gt;</a>
 , <a class="el" href="classAlignedVector.html#a0fe56d5aff0ce372d2bddc2a0847ff35">AlignedVector&lt; T &gt;</a>
 , <a class="el" href="classBarycentricPolynomial.html#a21a061f15d848a3b46e90a77834b7ae7">BarycentricPolynomial&lt; dim, Number &gt;</a>
-, <a class="el" href="classBarycentricPolynomials.html#ae4573b20ef1e9e1c94e00c84660c66e4">BarycentricPolynomials&lt; dim &gt;</a>
+, <a class="el" href="classBarycentricPolynomials.html#a22606fbf9575fc965f782fba91d05f78">BarycentricPolynomials&lt; dim &gt;</a>
 , <a class="el" href="classBlockIndices.html#af2912535b1fd6771b30b8f33488c4d7d">BlockIndices</a>
 , <a class="el" href="classBlockInfo.html#a851e03280c25f1f2c5ff9080f41511a1">BlockInfo</a>
 , <a class="el" href="classBlockMask.html#a5ded99e27c06ac4dab36cda8250a2c51">BlockMask</a>
@@ -483,29 +542,29 @@ $(function() {
 , <a class="el" href="classFE__ABF.html#afa8b047d6cc05be09a687dec0864a142">FE_ABF&lt; dim &gt;</a>
 , <a class="el" href="classFE__DGP.html#abdda0f3634514a6acbab093a09f7b4f0">FE_DGP&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGPMonomial.html#a3569c40b291b46b96ecdc8293930c0ed">FE_DGPMonomial&lt; dim &gt;</a>
-, <a class="el" href="classFE__DGPNonparametric.html#aee63a8a21ebb84e0f1914e209221bb8c">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__DGPNonparametric.html#a58658ec5991783717a027382b40a3e6d">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__DGVector.html#afcdf31566f4c83b3910e5323f0a40dd9">FE_DGVector&lt; PolynomialType, dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Nedelec.html#af34c8df3f88c739502d0204bd0ad52a2">FE_Nedelec&lt; dim &gt;</a>
 , <a class="el" href="classFE__Poly.html#aecf803c7afc41d6923006fcce75030a7">FE_Poly&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Q__Hierarchical.html#af02372c3199cdf4cddb7c2542a7a906f">FE_Q_Hierarchical&lt; dim &gt;</a>
 , <a class="el" href="classFE__RaviartThomas.html#a5c9d2f85a483c3409d4ce83671532ba8">FE_RaviartThomas&lt; dim &gt;</a>
 , <a class="el" href="classFEFaceValuesBase.html#acfca7db5920e079dd40f21a17f4aae89">FEFaceValuesBase&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFESystem.html#aee119185633ea5d7c1c94f1ff29dea1b">FESystem&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFESystem.html#a44dba139aa845dac7f363c23d8a09792">FESystem&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFEValues.html#af649ad9baf7e58a6d43e266dec5523d9">FEValues&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFEValuesBase.html#a821f21ed0d993cae6df69f41d99f68a2">FEValuesBase&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFiniteElement_1_1InternalDataBase.html#aa572d4ba6b3bb1955b80862f9f7779a3">FiniteElement&lt; dim, spacedim &gt;::InternalDataBase</a>
+, <a class="el" href="classFiniteElement_1_1InternalDataBase.html#a6597324cc19177248c2ebde7d48f103a">FiniteElement&lt; dim, spacedim &gt;::InternalDataBase</a>
 , <a class="el" href="group__Exceptions.html#ga5d91517978ab8b107c6951cc4c63c10f">FiniteElement&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFullMatrix.html#a0d7fe46def6d7eada6e4bae55e2778ef">FullMatrix&lt; number &gt;</a>
 , <a class="el" href="classFunction.html#a45e07b63ee34bd7e7ab2492be5213377">Function&lt; dim, RangeNumberType &gt;</a>
-, <a class="el" href="classFunctionDerivative.html#a046459a557118c1bb97f457b52b056bb">FunctionDerivative&lt; dim &gt;</a>
+, <a class="el" href="classFunctionDerivative.html#aff8007ff8d60d5bb4785daa1cf03c73e">FunctionDerivative&lt; dim &gt;</a>
 , <a class="el" href="classFunctions_1_1ConstantFunction.html#a0ac3088e3ac73b2d9d3f585c06497b99">Functions::ConstantFunction&lt; dim, RangeNumberType &gt;</a>
-, <a class="el" href="classFunctions_1_1CSpline.html#a1b1d3c8a4c22b615efcb4e8cc143d13e">Functions::CSpline&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1FlowFunction.html#ad11ae10ddf295c00ceddbf009605745a">Functions::FlowFunction&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1InterpolatedTensorProductGridData.html#a996a3f8871bc5a626b78f9933a25efe9">Functions::InterpolatedTensorProductGridData&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1InterpolatedUniformGridData.html#aeedef0a7c09f521c5e16bbcbd4951289">Functions::InterpolatedUniformGridData&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1JumpFunction.html#a6b2746bc10c623cdc8a13c1e6b6652eb">Functions::JumpFunction&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1Polynomial.html#a2e1af7bafbf4f480c5cf6638ef669d8d">Functions::Polynomial&lt; dim &gt;</a>
-, <a class="el" href="classFunctions_1_1Spherical.html#aa8d6fac9ab77af568c3641c0392c428f">Functions::Spherical&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1CSpline.html#ab155b4e5f4a85baf71dbf7fa10c44c09">Functions::CSpline&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1FlowFunction.html#af03984a0bd001c2c151320da897602dd">Functions::FlowFunction&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1InterpolatedTensorProductGridData.html#aada4afa861071d1e3fbfc16261f574ee">Functions::InterpolatedTensorProductGridData&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1InterpolatedUniformGridData.html#a9d64767ee50b0ff75c03de9d622b3af2">Functions::InterpolatedUniformGridData&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1JumpFunction.html#ab7a3799d4a3309672b94bba9e40e65b4">Functions::JumpFunction&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1Polynomial.html#a3a45543b9c17fd2e70d341b47940e1c1">Functions::Polynomial&lt; dim &gt;</a>
+, <a class="el" href="classFunctions_1_1Spherical.html#a9d1f9d0fb03ac5049392938bcacb4ca8">Functions::Spherical&lt; dim &gt;</a>
 , <a class="el" href="classGridOut.html#aa6acf2f12ea704d18c211514fb1937d1">GridOut</a>
 , <a class="el" href="classGrowingVectorMemory.html#a99dfbab9d3005aa921689feec1380905">GrowingVectorMemory&lt; VectorType &gt;</a>
 , <a class="el" href="structHistogram_1_1Interval.html#ab8e52f41bb8019ecb34fe0a3df52d7f5">Histogram::Interval</a>
@@ -541,22 +600,22 @@ $(function() {
 , <a class="el" href="structinternal_1_1TriangulationImplementation_1_1TriaObjects_1_1BoundaryOrMaterialId.html#ae5c460c3cad401369741dbb333a58a29">internal::TriangulationImplementation::TriaObjects::BoundaryOrMaterialId</a>
 , <a class="el" href="classinternal_1_1TriangulationImplementation_1_1TriaObjects.html#a3e1855286e4c2febfdde9b67f69da8a8">internal::TriangulationImplementation::TriaObjects</a>
 , <a class="el" href="classLinearAlgebra_1_1CUDAWrappers_1_1Vector.html#ae68547bd67eea7c9f9c328352fdd880e">LinearAlgebra::CUDAWrappers::Vector&lt; Number &gt;</a>
-, <a class="el" href="classLinearAlgebra_1_1distributed_1_1BlockVector.html#a7d9c15a88fd2789219e70fd950d211e6">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
+, <a class="el" href="group__Vectors.html#ga7d9c15a88fd2789219e70fd950d211e6">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
 , <a class="el" href="classLinearAlgebra_1_1distributed_1_1Vector.html#a493afd09167ce2c18d27252178d88c59">LinearAlgebra::distributed::Vector&lt; Number, MemorySpace &gt;</a>
 , <a class="el" href="classLinearAlgebra_1_1EpetraWrappers_1_1Vector.html#a3b07a5f80adcb1a525c1278ff38f8767">LinearAlgebra::EpetraWrappers::Vector</a>
 , <a class="el" href="group__Vectors.html#ga2457ff17e4f00e2a964769dfcefebdb3">LinearAlgebra::ReadWriteVector&lt; Number &gt;</a>
 , <a class="el" href="classLinearAlgebra_1_1TpetraWrappers_1_1Vector.html#aef5bb977032de6dd837e1f39c228fa3a">LinearAlgebra::TpetraWrappers::Vector&lt; Number &gt;</a>
-, <a class="el" href="group__Vectors.html#ga2f04539baac8afa43b0ca6ddd4138e2d">LinearAlgebra::Vector&lt; Number &gt;</a>
+, <a class="el" href="classLinearAlgebra_1_1Vector.html#ga2f04539baac8afa43b0ca6ddd4138e2d">LinearAlgebra::Vector&lt; Number &gt;</a>
 , <a class="el" href="classLinearAlgebra_1_1VectorSpaceVector.html#a4760b791f71d963298a5d49917f46555">LinearAlgebra::VectorSpaceVector&lt; Number &gt;</a>
 , <a class="el" href="classLogStream.html#a293da71d4d7eafa68cf1e3c710f673ae">LogStream</a>
 , <a class="el" href="classMapping_1_1InternalDataBase.html#ab7b920cdcb2c10bc4d1df0515c20d7c8">Mapping&lt; dim, spacedim &gt;::InternalDataBase</a>
 , <a class="el" href="classMappingCartesian_1_1InternalData.html#afa3e547d78645ca80f37bbc1f2b828a7">MappingCartesian&lt; dim, spacedim &gt;::InternalData</a>
-, <a class="el" href="classMappingFE_1_1InternalData.html#a59c641f98e8b2a178b462a1207b1fe68">MappingFE&lt; dim, spacedim &gt;::InternalData</a>
+, <a class="el" href="classMappingFE_1_1InternalData.html#ab52cbcb9a0043bd6905f140f866cddfa">MappingFE&lt; dim, spacedim &gt;::InternalData</a>
 , <a class="el" href="classMappingFEField_3_01dim_00_01spacedim_00_01VectorType_00_01void_01_4_1_1InternalData.html#a38b6b182f886ab904de92ff669420659">MappingFEField&lt; dim, spacedim, VectorType, void &gt;::InternalData</a>
 , <a class="el" href="classMappingManifold_1_1InternalData.html#a57d97bc3e85a4befce1e2e8d095bb6b6">MappingManifold&lt; dim, spacedim &gt;::InternalData</a>
-, <a class="el" href="classMappingQ_1_1InternalData.html#a79e9cb46a81aca392fe556cd3a0f4cbe">MappingQ&lt; dim, spacedim &gt;::InternalData</a>
+, <a class="el" href="classMappingQ_1_1InternalData.html#a38af12857d878cd5e48d4178e61c063a">MappingQ&lt; dim, spacedim &gt;::InternalData</a>
 , <a class="el" href="classMappingQCache.html#a2ec1b572003e45fbd23c03009b2bcd7d">MappingQCache&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classMappingQGeneric_1_1InternalData.html#ac45c11c499b6127e3fed6804376ece79">MappingQGeneric&lt; dim, spacedim &gt;::InternalData</a>
+, <a class="el" href="classMappingQGeneric_1_1InternalData.html#a11699055bd957e5171a0f08c63e71fb4">MappingQGeneric&lt; dim, spacedim &gt;::InternalData</a>
 , <a class="el" href="classMatrixBlock.html#a333bcdbfb77e9fc6a1c0372c4e4f8e81">MatrixBlock&lt; MatrixType &gt;</a>
 , <a class="el" href="classMatrixBlockVector.html#ab7e0ef2ade03e5cc43f1ab17c93e803a">MatrixBlockVector&lt; MatrixType &gt;</a>
 , <a class="el" href="classMatrixFree.html#aa47cc139ef80f83ed20fc55e3cd16767">MatrixFree&lt; dim, Number, VectorizedArrayType &gt;</a>
@@ -584,9 +643,9 @@ $(function() {
 , <a class="el" href="classMGTransferSelect.html#a193f462c3cd7f61968323c020d71a293">MGTransferSelect&lt; number &gt;</a>
 , <a class="el" href="classMultipleParameterLoop_1_1Entry.html#af3b0125f0fdaa6f15865e8b45a330998">MultipleParameterLoop::Entry</a>
 , <a class="el" href="classMultipleParameterLoop.html#aa76c74f48e073e6ff96fa9d788d2b0bd">MultipleParameterLoop</a>
-, <a class="el" href="classMultithreadInfo.html#ae2e1b8a8027409936bda14b561d62a8f">MultithreadInfo</a>
+, <a class="el" href="classMultithreadInfo.html#a329bf14ddd3afa43504f60e7ae07a397">MultithreadInfo</a>
 , <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html#afa0357cc88e13176507540d7f2524123">parallel::distributed::Triangulation&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classparallel_1_1fullydistributed_1_1Triangulation.html#af3462af3709c558b158e3a1abba439ad">parallel::fullydistributed::Triangulation&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classparallel_1_1fullydistributed_1_1Triangulation.html#a4206cfa0fd0e262368df09b97199d183">parallel::fullydistributed::Triangulation&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classparallel_1_1TriangulationBase.html#a0ad3703ebbac4468e07b74c3ca595747">parallel::TriangulationBase&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classParameterHandler.html#a0342139603da3b30b132446d94a17b25">ParameterHandler</a>
 , <a class="el" href="classPArpackSolver.html#aaa32562cd1f1073587fbe447c219d184">PArpackSolver&lt; VectorType &gt;</a>
@@ -596,7 +655,7 @@ $(function() {
 , <a class="el" href="classPatterns_1_1PatternBase.html#a1447332979d7471835a53da75577633e">Patterns::PatternBase</a>
 , <a class="el" href="classPatterns_1_1Selection.html#a88b2178431dc7d0648dca34461853b2d">Patterns::Selection</a>
 , <a class="el" href="classPatterns_1_1Tuple.html#a0f6bae2e6bf5f7cca8d51460cc207ced">Patterns::Tuple</a>
-, <a class="el" href="classPersistentTriangulation.html#a17b9533b25ed580656f17c823bad0cf9">PersistentTriangulation&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classPersistentTriangulation.html#a70e1c08d9b42c0c8246049f0f5a90ac5">PersistentTriangulation&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classPETScWrappers_1_1MatrixBase.html#a0af7a8873fc01cd20682e079dbb8f225">PETScWrappers::MatrixBase</a>
 , <a class="el" href="classPETScWrappers_1_1VectorBase.html#a49cd6e2cf47c7d44cbcbb9bdd44613fd">PETScWrappers::VectorBase</a>
 , <a class="el" href="classPolynomials_1_1PiecewisePolynomial.html#a884156cc57e65ec10fd8a583b795faf9">Polynomials::PiecewisePolynomial&lt; number &gt;</a>
@@ -606,39 +665,39 @@ $(function() {
 , <a class="el" href="classQuadrature.html#a2bf320fb4bcb0b047d568f66147d2f9f">Quadrature&lt; dim &gt;</a>
 , <a class="el" href="classRefinementCase.html#a23583691b2b42d0f71e2154c53a4b0d9">RefinementCase&lt; dim &gt;</a>
 , <a class="el" href="classRelaxationBlock_1_1AdditionalData.html#ac72f73e394b54fed87270a80a595a14e">RelaxationBlock&lt; MatrixType, InverseNumberType, VectorType &gt;::AdditionalData</a>
-, <a class="el" href="classScalarPolynomialsBase.html#aea426c67195b05f20be188da176be01f">ScalarPolynomialsBase&lt; dim &gt;</a>
+, <a class="el" href="classScalarPolynomialsBase.html#a83d83860258d48923a9cbb55c39850ad">ScalarPolynomialsBase&lt; dim &gt;</a>
 , <a class="el" href="classSmartPointer.html#ac050a2ec21d5b3c7d70571a6b99e3ae8">SmartPointer&lt; T, P &gt;</a>
 , <a class="el" href="classSolutionTransfer.html#a34844f66f382c6d0ac423b4815299de5">SolutionTransfer&lt; dim, VectorType, spacedim &gt;</a>
 , <a class="el" href="structSolutionTransfer_1_1Pointerstruct.html#a67f534db62d8d357f76483e4d12aa7f4">SolutionTransfer&lt; dim, VectorType, spacedim &gt;::Pointerstruct</a>
 , <a class="el" href="classSparseBlockVanka.html#aa7bc4e285829dc632eb4bd60be156a7f">SparseBlockVanka&lt; number &gt;</a>
 , <a class="el" href="classSparseILU.html#acae03317cb1ef19e319d0196f8c2bf69">SparseILU&lt; number &gt;</a>
-, <a class="el" href="classSparseLUDecomposition.html#aae34cbd15aa13aba61e33aa1e23a5729">SparseLUDecomposition&lt; number &gt;</a>
+, <a class="el" href="group__Preconditioners.html#gaae34cbd15aa13aba61e33aa1e23a5729">SparseLUDecomposition&lt; number &gt;</a>
 , <a class="el" href="classSparseMatrix.html#a78ec5962de50e44c1101ac48bd277b75">SparseMatrix&lt; number &gt;</a>
 , <a class="el" href="classSparseMatrixEZ.html#a907582d7f53774456f6847ff688a805e">SparseMatrixEZ&lt; number &gt;</a>
-, <a class="el" href="group__Preconditioners.html#ga5feb4b9d38d4a2cb13a2738bceeb1903">SparseMIC&lt; number &gt;</a>
-, <a class="el" href="group__Preconditioners.html#ga290a70aaffdcb0835b82894bda2dbf32">SparseVanka&lt; number &gt;</a>
+, <a class="el" href="classSparseMIC.html#a5feb4b9d38d4a2cb13a2738bceeb1903">SparseMIC&lt; number &gt;</a>
+, <a class="el" href="classSparseVanka.html#a290a70aaffdcb0835b82894bda2dbf32">SparseVanka&lt; number &gt;</a>
 , <a class="el" href="classSparsityPattern.html#af32a20c0a31a67133750ecd45f8a498c">SparsityPattern</a>
-, <a class="el" href="classSparsityPatternBase.html#ab0941b7048d52742bcb3ad11e46c7e57">SparsityPatternBase</a>
+, <a class="el" href="group__Sparsity.html#gab0941b7048d52742bcb3ad11e46c7e57">SparsityPatternBase</a>
 , <a class="el" href="classSymmetricTensor.html#a6914a2115b15f141ad165f7b6dc7266a">SymmetricTensor&lt; rank_, dim, Number &gt;</a>
 , <a class="el" href="classTableBase.html#a2c63db9ae49e0e3b099f0244801016f2">TableBase&lt; N, T &gt;</a>
 , <a class="el" href="classTensor.html#aa684a29980c5e7787414e35636b5d0dc">Tensor&lt; rank_, dim, Number &gt;</a>
-, <a class="el" href="classTensorProductPolynomials.html#a795944fd345cbe8d4e01c01fc9e92f39">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>
+, <a class="el" href="classTensorProductPolynomials.html#a15d0a5bf5b373b508703f802b8ecc2ef">TensorProductPolynomials&lt; dim, PolynomialType &gt;</a>
 , <a class="el" href="classTimeDependent.html#a145fa0199ac7c678cc3f28f84f757af6">TimeDependent</a>
-, <a class="el" href="classTimeStepBase.html#a2a810f06f9a2cb52ba368bc80801ee03">TimeStepBase</a>
+, <a class="el" href="classTimeStepBase.html#a0465b25cf82cdd8355d2b686a681d2c5">TimeStepBase</a>
 , <a class="el" href="classTimeStepBase__Tria.html#a413e4b2e62e966edd9d638dcf8689878">TimeStepBase_Tria&lt; dim &gt;</a>
 , <a class="el" href="classTriangulation.html#a4a63bdde5124e79a1370f29499128518">Triangulation&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classTriaRawIterator.html#a25ead0f86e2ca288e50844f0b1f8100f">TriaRawIterator&lt; Accessor &gt;</a>
 , <a class="el" href="group__TrilinosWrappers.html#gabfbb9eaae8b26a85ca9040025e4ccb54">TrilinosWrappers::MPI::Vector</a>
-, <a class="el" href="classTrilinosWrappers_1_1PreconditionAMG.html#ae49f59123a5460c2e3d2928e4aafe98d">TrilinosWrappers::PreconditionAMG</a>
+, <a class="el" href="classTrilinosWrappers_1_1PreconditionAMG.html#a5f7cbc344c63eb48952f04ede4a5c89a">TrilinosWrappers::PreconditionAMG</a>
 , <a class="el" href="classTrilinosWrappers_1_1PreconditionAMGMueLu.html#a2b20f9edbcb08ca4e154cf511d1bf323">TrilinosWrappers::PreconditionAMGMueLu</a>
-, <a class="el" href="classTrilinosWrappers_1_1SparseMatrix.html#a3b0241e5308043f439e44bf1285a0ac6">TrilinosWrappers::SparseMatrix</a>
+, <a class="el" href="classTrilinosWrappers_1_1SparseMatrix.html#ad965a55f69c6aab2b0f5c3fe855144fc">TrilinosWrappers::SparseMatrix</a>
 , <a class="el" href="classTrilinosWrappers_1_1SparsityPattern.html#a65eeb8d111d49e9c219e0d2883895c12">TrilinosWrappers::SparsityPattern</a>
 , <a class="el" href="classUtilities_1_1MPI_1_1NoncontiguousPartitioner.html#a591e95028bf89c7147c8987ed1a2148b">Utilities::MPI::NoncontiguousPartitioner</a>
 , <a class="el" href="classUtilities_1_1MPI_1_1Partitioner.html#a0f154243f694679910f605359a739fa1">Utilities::MPI::Partitioner</a>
 , <a class="el" href="group__Vectors.html#gaea73d2cb54e87b69a9b7cdb17ed274df">Vector&lt; Number &gt;</a>
 </li>
 <li>memory_consumption_p4est()
-: <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html#a7661a73ff6a5c955c40dbb31bba4128f">parallel::distributed::Triangulation&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classparallel_1_1distributed_1_1Triangulation.html#acab8b83719be2541acc3c2197b3cbe05">parallel::distributed::Triangulation&lt; dim, spacedim &gt;</a>
 </li>
 <li>MemorySpaceData()
 : <a class="el" href="structMemorySpace_1_1MemorySpaceData.html#a43277f025ecda9529ca67a0e8878d25e">MemorySpace::MemorySpaceData&lt; Number, MemorySpace &gt;</a>
@@ -669,10 +728,10 @@ $(function() {
 : <a class="el" href="classBoundingBox.html#a42c078e3aed8dee5059089bebe26d854">BoundingBox&lt; spacedim, Number &gt;</a>
 </li>
 <li>mg_cell_iterators()
-: <a class="el" href="group__CPP11.html#ga63916e6c9bdd49cb161064204bde0c13">DoFHandler&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classDoFHandler.html#gabd790e754b633c63a201bce74fd81d2f">DoFHandler&lt; dim, spacedim &gt;</a>
 </li>
 <li>mg_cell_iterators_on_level()
-: <a class="el" href="group__CPP11.html#ga87e87d46e8518de15c7e5d1cf0b407a2">DoFHandler&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classDoFHandler.html#gae39aa6251c8ab454b1cb44ff052d667f">DoFHandler&lt; dim, spacedim &gt;</a>
 </li>
 <li>mg_dof_index()
 : <a class="el" href="classDoFAccessor.html#acad7c02ba6168b40bca90e4fb8c2f8ee">DoFAccessor&lt; structdim, dim, spacedim, level_dof_access &gt;</a>
@@ -685,7 +744,7 @@ $(function() {
 : <a class="el" href="classDoFAccessor.html#acc4402930fd9d6e7745befbf0028cd59">DoFAccessor&lt; structdim, dim, spacedim, level_dof_access &gt;</a>
 </li>
 <li>MGCoarseGridApplySmoother()
-: <a class="el" href="classMGCoarseGridApplySmoother.html#aec7463c1f5576accc6d498bd570b2c0b">MGCoarseGridApplySmoother&lt; VectorType &gt;</a>
+: <a class="el" href="classMGCoarseGridApplySmoother.html#a49400dde6032779ab5590490ac739341">MGCoarseGridApplySmoother&lt; VectorType &gt;</a>
 </li>
 <li>MGCoarseGridHouseholder()
 : <a class="el" href="classMGCoarseGridHouseholder.html#ae256f7d09d911e7580b52a44dfff169f">MGCoarseGridHouseholder&lt; number, VectorType &gt;</a>
@@ -700,7 +759,7 @@ $(function() {
 : <a class="el" href="classMatrixFreeOperators_1_1MGInterfaceOperator.html#a127598d6e1d43fcdb5928a13725f8399">MatrixFreeOperators::MGInterfaceOperator&lt; OperatorType &gt;</a>
 </li>
 <li>MGLevelObject()
-: <a class="el" href="classMGLevelObject.html#af17393b33fbd6859570e6b52a96a004e">MGLevelObject&lt; Object &gt;</a>
+: <a class="el" href="classMGLevelObject.html#a6be07cc77f6654070da24a0b3ff4a817">MGLevelObject&lt; Object &gt;</a>
 </li>
 <li>MGMatrixBlockVector()
 : <a class="el" href="classMGMatrixBlockVector.html#ab10afa985ba8fde25e28eb099bc51128">MGMatrixBlockVector&lt; MatrixType &gt;</a>
@@ -730,13 +789,13 @@ $(function() {
 : <a class="el" href="classMGTransferBlock.html#abafe23ff33f07d79d33f71e02ff35f8d">MGTransferBlock&lt; number &gt;</a>
 </li>
 <li>MGTransferBlockBase()
-: <a class="el" href="classMGTransferBlockBase.html#aefc38a28470831917d64141c5c452138">MGTransferBlockBase</a>
+: <a class="el" href="classMGTransferBlockBase.html#ab895007d256baaa27901feda39be15ab">MGTransferBlockBase</a>
 </li>
 <li>MGTransferBlockMatrixFree()
 : <a class="el" href="classMGTransferBlockMatrixFree.html#a907365d494f8bf93753dc52ebfb2940b">MGTransferBlockMatrixFree&lt; dim, Number &gt;</a>
 </li>
 <li>MGTransferBlockSelect()
-: <a class="el" href="classMGTransferBlockSelect.html#ab0c968779ac07b4545fc83832624630d">MGTransferBlockSelect&lt; number &gt;</a>
+: <a class="el" href="classMGTransferBlockSelect.html#ac87ea5f6fe55e542d62ef5cb5cfc2a3f">MGTransferBlockSelect&lt; number &gt;</a>
 </li>
 <li>MGTransferGlobalCoarsening()
 : <a class="el" href="classMGTransferGlobalCoarsening.html#ade54faf39bf90fdd9c503bcd6f0beb93">MGTransferGlobalCoarsening&lt; dim, VectorType &gt;</a>
@@ -773,22 +832,36 @@ $(function() {
 <li>MinimalGranularityPolicy()
 : <a class="el" href="classRepartitioningPolicyTools_1_1MinimalGranularityPolicy.html#a1ee96474c3e159eada5e9549465e81dd">RepartitioningPolicyTools::MinimalGranularityPolicy&lt; dim, spacedim &gt;</a>
 </li>
+<li>MinimalSurfaceProblem()
+: <a class="el" href="classStep15_1_1MinimalSurfaceProblem.html#a3c1958c29fbf7c84e0397f3418a29d9e">Step15::MinimalSurfaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep72_1_1MinimalSurfaceProblem.html#ab3c2983d3841424d3a67d12dc7a065b4">Step72::MinimalSurfaceProblem&lt; dim &gt;</a>
+, <a class="el" href="classStep77_1_1MinimalSurfaceProblem.html#a453f2b1339d94eda34db19bcfeec32ec">Step77::MinimalSurfaceProblem&lt; dim &gt;</a>
+</li>
+<li>MinimalSurfaceProblemParameters()
+: <a class="el" href="classStep72_1_1MinimalSurfaceProblemParameters.html#aafeadb3ffd4f77d8af2e20519366a8b9">Step72::MinimalSurfaceProblemParameters</a>
+</li>
 <li>minimum_vertex_distance()
 : <a class="el" href="classTriaAccessor.html#a99b268c743742c3c9ab159ff916d9236">TriaAccessor&lt; structdim, dim, spacedim &gt;</a>
 </li>
+<li>MixedLaplaceProblem()
+: <a class="el" href="classStep20_1_1MixedLaplaceProblem.html#a009fa0db9d27ba4eed2f72a28c875001">Step20::MixedLaplaceProblem&lt; dim &gt;</a>
+</li>
 <li>mmult()
 : <a class="el" href="classFullMatrix.html#a21b873fcd180999ad0d268c3278a71ec">FullMatrix&lt; number &gt;</a>
-, <a class="el" href="classLAPACKFullMatrix.html#ad6aa68b2fe9db3d9648746a24cb27fe9">LAPACKFullMatrix&lt; number &gt;</a>
-, <a class="el" href="classLinearAlgebra_1_1distributed_1_1BlockVector.html#aeda5640c41b09bae50c6c3c6a863e289">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
+, <a class="el" href="classLAPACKFullMatrix.html#aea0bf9f7e8d178edd9cfba2de569f3c3">LAPACKFullMatrix&lt; number &gt;</a>
+, <a class="el" href="group__Vectors.html#gaeda5640c41b09bae50c6c3c6a863e289">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
 , <a class="el" href="classPETScWrappers_1_1MatrixBase.html#a49501300c99d6fea596a39fbe38b8961">PETScWrappers::MatrixBase</a>
 , <a class="el" href="classPETScWrappers_1_1MPI_1_1SparseMatrix.html#a1dbabb70ef99a4be889474c4c5dc4756">PETScWrappers::MPI::SparseMatrix</a>
 , <a class="el" href="classPETScWrappers_1_1SparseMatrix.html#a1dbabb70ef99a4be889474c4c5dc4756">PETScWrappers::SparseMatrix</a>
 , <a class="el" href="classScaLAPACKMatrix.html#a8242435e8730f7cac460b1ac2310c7ed">ScaLAPACKMatrix&lt; NumberType &gt;</a>
 , <a class="el" href="classSparseMatrix.html#a38676dc8cd6d6c7b8aea3a335653a25f">SparseMatrix&lt; number &gt;</a>
-, <a class="el" href="classTrilinosWrappers_1_1SparseMatrix.html#a1dbabb70ef99a4be889474c4c5dc4756">TrilinosWrappers::SparseMatrix</a>
+, <a class="el" href="classTrilinosWrappers_1_1SparseMatrix.html#a45be04169d9087fcb793cc2ab222a076">TrilinosWrappers::SparseMatrix</a>
 </li>
 <li>modified_gram_schmidt()
 : <a class="el" href="classSolverGMRES.html#ac98efb216917afc9d90201bd7445572b">SolverGMRES&lt; VectorType &gt;</a>
+</li>
+<li>momentum()
+: <a class="el" href="classStep69_1_1ProblemDescription.html#a09d300f45d64cb376735d75dbe111423">Step69::ProblemDescription&lt; dim &gt;</a>
 </li>
 <li>monomial()
 : <a class="el" href="classBarycentricPolynomial.html#ae0361da761a9b4ed2aa2bb404d5cec95">BarycentricPolynomial&lt; dim, Number &gt;</a>
@@ -798,10 +871,17 @@ $(function() {
 , <a class="el" href="classPolynomials_1_1Monomial.html#a5b6a15fe1a6a3093d2ddf415a8a295be">Polynomials::Monomial&lt; number &gt;</a>
 </li>
 <li>move_backward()
-: <a class="el" href="group__Exceptions.html#ga8268047e8d816b360e0210da750ee5ad">internal::BlockVectorIterators::Iterator&lt; BlockVectorType, Constness &gt;</a>
+: <a class="el" href="classinternal_1_1BlockVectorIterators_1_1Iterator.html#a8268047e8d816b360e0210da750ee5ad">internal::BlockVectorIterators::Iterator&lt; BlockVectorType, Constness &gt;</a>
 </li>
 <li>move_forward()
 : <a class="el" href="classinternal_1_1BlockVectorIterators_1_1Iterator.html#a76bdecf66ee4b1b54577ff714cbd85bb">internal::BlockVectorIterators::Iterator&lt; BlockVectorType, Constness &gt;</a>
+</li>
+<li>move_mesh()
+: <a class="el" href="classStep18_1_1TopLevel.html#a03ba480cdb54a6b4ea07a06a51d22b47">Step18::TopLevel&lt; dim &gt;</a>
+, <a class="el" href="classStep42_1_1PlasticityContactProblem.html#af8e4c1043508eed8e6f72c8477875ed1">Step42::PlasticityContactProblem&lt; dim &gt;</a>
+</li>
+<li>move_particles()
+: <a class="el" href="classStep19_1_1CathodeRaySimulator.html#a695dd78d5a1280da45edfba4e709619b">Step19::CathodeRaySimulator&lt; dim &gt;</a>
 </li>
 <li>MPI_InitFinalize()
 : <a class="el" href="classUtilities_1_1MPI_1_1MPI__InitFinalize.html#a71954ff48c33b1101b8a4d64d9c685db">Utilities::MPI::MPI_InitFinalize</a>
@@ -823,11 +903,14 @@ $(function() {
 <li>mult_add()
 : <a class="el" href="classMatrixFreeOperators_1_1Base.html#a29a4e046baaf4b5ff3fc9d0c7252bd50">MatrixFreeOperators::Base&lt; dim, VectorType, VectorizedArrayType &gt;</a>
 </li>
+<li>MultiComponentFunction()
+: <a class="el" href="classStep35_1_1EquationData_1_1MultiComponentFunction.html#a444c4aa2509bac5c8adad08edc4ce86b">Step35::EquationData::MultiComponentFunction&lt; dim &gt;</a>
+</li>
 <li>Multigrid()
 : <a class="el" href="classMultigrid.html#adb8653773eb669abf56b1c9732b157fa">Multigrid&lt; VectorType &gt;</a>
 </li>
 <li>MultipleParameterLoop()
-: <a class="el" href="group__Exceptions.html#ga90c2eea8e17afb645733c45d9bc5d562">MultipleParameterLoop</a>
+: <a class="el" href="classMultipleParameterLoop.html#a90c2eea8e17afb645733c45d9bc5d562">MultipleParameterLoop</a>
 </li>
 <li>MultipleSelection()
 : <a class="el" href="classPatterns_1_1MultipleSelection.html#a424f9fe21066dd8d0062567dc8368134">Patterns::MultipleSelection</a>
@@ -873,16 +956,16 @@ $(function() {
 : <a class="el" href="classMultithreadInfo.html#a64bde64767be554a993a2bddc3f0af11">MultithreadInfo</a>
 </li>
 <li>multivector_inner_product()
-: <a class="el" href="group__Vectors.html#gae860233e47e643eb93892aa873da9889">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
+: <a class="el" href="classLinearAlgebra_1_1distributed_1_1BlockVector.html#ae860233e47e643eb93892aa873da9889">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
 </li>
 <li>multivector_inner_product_with_metric()
 : <a class="el" href="classLinearAlgebra_1_1distributed_1_1BlockVector.html#aa0a5a9811aff25c8dd2a242d1e309547">LinearAlgebra::distributed::BlockVector&lt; Number &gt;</a>
 </li>
 <li>MutableBind()
-: <a class="el" href="classUtilities_1_1MutableBind.html#a2384b48b967ad65d2c69a822eb1cc0c4">Utilities::MutableBind&lt; ReturnType, FunctionArgs &gt;</a>
+: <a class="el" href="classUtilities_1_1MutableBind.html#a6568bec393e51e619eeb7aaf1b12bc6b">Utilities::MutableBind&lt; ReturnType, FunctionArgs &gt;</a>
 </li>
 <li>Mutex()
-: <a class="el" href="classThreads_1_1Mutex.html#a0e49de411ef25ffa6707c160694a0889">Threads::Mutex</a>
+: <a class="el" href="classThreads_1_1Mutex.html#ac78f53a40e13cb0e5e53f218459cc61b">Threads::Mutex</a>
 </li>
 </ul>
 </div><!-- contents -->

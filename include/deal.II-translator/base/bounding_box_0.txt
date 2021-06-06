@@ -1,0 +1,119 @@
+[0.x.0]*
+ The enumerator NeighborType describes the neighboring relation between two bounding boxes.
+
+* 
+* [0.x.1]*
+   Not neighbors: the intersection is empty.  
+* [0.x.2]*
+   Simple neighbors: the boxes intersect with an intersection of dimension at   most `spacedim
+* 
+*  - 2`. For example, in 2d this means that the two boxes   touch at one corner of the each box.  
+* [0.x.3]*
+   Attached neighbors: neighbors with an intersection of   `dimension > spacedim
+* 
+*  - 2`. For example, in 2d this means that the two   boxes touch along an edge.  
+* [0.x.4]*
+   Mergeable neighbors: neighbors which can be expressed with a single   BoundingBox, e.g.   
+* [1.x.0]
+*    or one is inside the other  
+* [0.x.5]*
+ A class that represents a box of arbitrary dimension <tt>spacedim</tt> and with sides parallel to the coordinate axes, that is, a region
+*  [1.x.1]
+*  where  [2.x.0] (x_0^U , ..., x_{spacedim-1}^U) denote the two vertices (bottom left and top right) which are used to represent the box.
+*  Geometrically, a bounding box is thus:
+* 
+
+* 
+* 
+*  - 1D: a segment (represented by its vertices in the proper order)
+* 
+
+* 
+* 
+*  - 2D: a rectangle (represented by the vertices V at bottom left, top right)
+
+* 
+* [1.x.2]
+* 
+* 
+
+* 
+* 
+*  - 3D: a cuboid (in which case the two vertices V follow the convention and are not owned by the same face)
+
+* 
+* [1.x.3]
+* 
+*  Bounding boxes are, for example, useful in parallel distributed meshes to give a general description of the owners of each portion of the mesh.
+*  Taking the cross section of a BoundingBox<spacedim> orthogonal to a given direction gives a box in one dimension lower: BoundingBox<spacedim
+* 
+*  - 1>. In 3D, the 2 coordinates of the cross section of BoundingBox<3> can be ordered in 2 different ways. That is, if we take the cross section orthogonal to the y direction we could either order a 3D-coordinate into a 2D-coordinate as  [2.x.1]  or as  [2.x.2] . This class uses the second convention, corresponding to the coordinates being ordered cyclicly  [2.x.3]  To be precise, if we take a cross section:
+*  | Orthogonal to | Cross section coordinates ordered as | |:-------------:|:------------------------------------:| |      x        |               (y, z)                 | |      y        |               (z, x)                 | |      z        |               (x, y)                 |
+*  This is according to the convention set by the function  [2.x.4] .
+
+* 
+* [0.x.6]*
+   Standard constructor. Creates an object that corresponds to an empty box,   i.e. a degenerate box with both points being the origin.  
+* [0.x.7]*
+   Standard constructor for non-empty boxes: it uses a pair of points   which describe the box: one for the bottom and one for the top   corner.  
+* [0.x.8]*
+   Construct the bounding box that encloses all the points in the given   container.     The constructor supports any Container that provides begin() and end()   iterators to Point<spacedim, Number> elements.  
+* [0.x.9]*
+   Return a reference to the boundary_points  
+* [0.x.10]*
+   Return a const reference to the boundary_points  
+* [0.x.11]*
+   Test for equality.  
+* [0.x.12]*
+   Test for inequality.  
+* [0.x.13]*
+   Check if the current object and  [2.x.5]  are neighbors, i.e. if the boxes   have dimension spacedim, check if their intersection is non empty.     Return an enumerator of type NeighborType.  
+* [0.x.14]*
+   Enlarge the current object so that it contains  [2.x.6]  .   If the current object already contains  [2.x.7]  then it is not changed   by this function.  
+* [0.x.15]*
+   Return true if the point is inside the Bounding Box, false otherwise. The   parameter  [2.x.8]  is a factor by which the bounding box is enlarged   relative to the dimensions of the bounding box in order to determine in a   numerically robust way whether the point is inside.  
+* [0.x.16]*
+   Increase (or decrease) the size of the bounding box by the given amount.   After calling this method, the lower left corner of the bounding box will   have each coordinate decreased by  [2.x.9]  and the upper right corner   of the bounding box will have each coordinate increased by  [2.x.10]      If you call this method with a negative number, and one of the axes of the   original bounding box is smaller than amount/2, the method will trigger   an assertion.  
+* [0.x.17]*
+   Compute the volume (i.e. the dim-dimensional measure) of the BoundingBox.  
+* [0.x.18]*
+   Returns the point in the center of the box.  
+* [0.x.19]*
+   Returns the side length of the box in  [2.x.11]   
+* [0.x.20]*
+   Return the lower bound of the box in  [2.x.12]   
+* [0.x.21]*
+   Return the upper bound of the box in  [2.x.13]   
+* [0.x.22]*
+   Return the bounds of the box in  [2.x.14]  as a one-dimensional box.  
+* [0.x.23]*
+   Returns the indexth vertex of the box. Vertex is meant in the same way as   for a cell, so that  [2.x.15]   [2.x.16] .  
+* [0.x.24]*
+   Returns the indexth child of the box. Child is meant in the same way as for   a cell.  
+* [0.x.25]*
+   Returns the cross section of the box orthogonal to  [2.x.17]    This is a box in one dimension lower.    
+*  [2.x.18]  Calling this method in 1D will result in an exception since    [2.x.19]  is not implemented.  
+* [0.x.26]*
+   Apply the affine transformation that transforms this BoundingBox to a unit   BoundingBox object.     If  [2.x.20]  is this bounding box, and  [2.x.21]  is the unit bounding box,   compute the affine mapping that satisfies  [2.x.22]  and apply it to    [2.x.23]   
+* [0.x.27]*
+   Apply the affine transformation that transforms the unit BoundingBox object   to this object.     If  [2.x.24]  is this bounding box, and  [2.x.25]  is the unit bounding box,   compute the affine mapping that satisfies  [2.x.26]  and apply it to    [2.x.27]   
+* [0.x.28]*
+   Write or read the data of this object to or from a stream for the   purpose of serialization using the [BOOST serialization   library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).  
+* [0.x.29]*
+ Specialization of BoundingBox for spacedim 0. This class exists to enable dimension-independent programming but unconditionally throws an exception in its constructor.
+
+* 
+* [0.x.30]*
+   Default constructor. Throws an exception.  
+* [0.x.31]*
+   Equivalent two-point constructor. Throws an exception.  
+* [0.x.32]*
+   Equivalent container constructor. Throws an exception.  
+* [0.x.33]*
+ Returns the unit box  [2.x.28] .
+*   [2.x.29]  BoundingBox
+
+* 
+* [0.x.34]*
+   This function defines a convention for how coordinates in dim   dimensions should translate to the coordinates in dim + 1 dimensions,   when one of the coordinates in dim + 1 dimensions is locked to a given   value.     The convention is the following: Starting from the locked coordinate we   store the lower dimensional coordinates consecutively and wrap around   when going over the dimension. This relationship is, in 2D,     | locked in 2D | 1D coordinate | 2D coordinate |   |:------------:|:-------------:|:-------------:|   |     x0       |      (a)      |   (x0,  a)    |   |     x1       |      (a)      |   (a , x1)    |     and, in 3D,     | locked in 3D | 2D coordinates | 3D coordinates |   |:-------------|:--------------:|:--------------:|   |     x0       |    (a, b)      | (x0,  a,  b)   |   |     x1       |    (a, b)      | ( b, x1,  a)   |   |     x2       |    (a, b)      | ( a,  b, x2)   |     Given a locked coordinate, this function maps a coordinate index in dim   dimension to a coordinate index in dim + 1 dimensions.      [2.x.30]  locked_coordinate should be in the range [0, dim+1).    [2.x.31]  coordinate_in_dim should be in the range [0, dim).    [2.x.32]  A coordinate index in the range [0, dim+1)      [2.x.33]  BoundingBox  
+* [0.x.35]

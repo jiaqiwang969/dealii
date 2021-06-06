@@ -97,11 +97,11 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:af719060789239a0a2ba383c2697bd820"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> = T</td></tr>
+<tr class="memitem:af719060789239a0a2ba383c2697bd820"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> = <a class="el" href="aligned__vector__0_8txt.html#a31cb67809a0291768d4b233f3d6dee80">T</a></td></tr>
 <tr class="separator:af719060789239a0a2ba383c2697bd820"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af719060789239a0a2ba383c2697bd820"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> = T</td></tr>
+<tr class="memitem:af719060789239a0a2ba383c2697bd820"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> = <a class="el" href="aligned__vector__0_8txt.html#a31cb67809a0291768d4b233f3d6dee80">T</a></td></tr>
 <tr class="separator:af719060789239a0a2ba383c2697bd820"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af719060789239a0a2ba383c2697bd820"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> = T</td></tr>
+<tr class="memitem:af719060789239a0a2ba383c2697bd820"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> = <a class="el" href="aligned__vector__0_8txt.html#a31cb67809a0291768d4b233f3d6dee80">T</a></td></tr>
 <tr class="separator:af719060789239a0a2ba383c2697bd820"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -110,64 +110,64 @@ struct identity&lt; T &gt;</h3>
 
 <p>A template class that simply exports its template argument as a local alias. This class, while at first appearing useless, makes sense in the following context: if you have a function template as follows:</p>
 <div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><span class="keywordtype">void</span> f(<a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>, <a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>);</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="automatic__and__symbolic__differentiation__0_8txt.html#a4874d3f2becad91b2bdda53a5539ff54">f</a>(<a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>, <a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>);</div>
 </div><!-- fragment --><p> then it can't be called in an expression like <code>f(1, 3.141)</code> because the type <code>T</code> of the template can not be deduced in a unique way from the types of the arguments. However, if the template is written as</p>
 <div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><span class="keywordtype">void</span> f(<a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>, <span class="keyword">typename</span> <a class="code" href="structidentity.html#af719060789239a0a2ba383c2697bd820">identity&lt;T&gt;::type</a>);</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="automatic__and__symbolic__differentiation__0_8txt.html#a4874d3f2becad91b2bdda53a5539ff54">f</a>(<a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>, <span class="keyword">typename</span> <a class="code" href="structidentity.html#af719060789239a0a2ba383c2697bd820">identity&lt;T&gt;::type</a>);</div>
 </div><!-- fragment --><p> then the call becomes valid: the type <code>T</code> is not deducible from the second argument to the function, so only the first argument participates in template type resolution. The context for this feature is as follows: consider</p>
 <div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RT, <span class="keyword">typename</span> A&gt;</div>
-<div class="line"><span class="keywordtype">void</span> forward_call(RT (*p) (<a class="code" href="namespaceLAPACKSupport.html#a40707d49114d54318c823f3b750e89a4">A</a>), <a class="code" href="namespaceLAPACKSupport.html#a40707d49114d54318c823f3b750e89a4">A</a> a)</div>
+<div class="line"><span class="keywordtype">void</span> forward_call(<a class="code" href="thread__management__0_8txt.html#adc69b7c23f26c3517d7356f7d94a51a3">RT</a> (*<a class="code" href="parsed__convergence__table__0_8txt.html#a8a90f5ba57a42a3fd4c067e00f8b8aea">p</a>) (<a class="code" href="symmetric__tensor__0_8txt.html#a37cd5701f5aaccacc8caf38d4a7a903a">A</a>), <a class="code" href="symmetric__tensor__0_8txt.html#a37cd5701f5aaccacc8caf38d4a7a903a">A</a> <a class="code" href="function__tools__0_8txt.html#a1a2acf608502527a80c0aeecdc12c908">a</a>)</div>
 <div class="line">{</div>
-<div class="line">p(a);</div>
+<div class="line"><a class="code" href="parsed__convergence__table__0_8txt.html#a8a90f5ba57a42a3fd4c067e00f8b8aea">p</a>(<a class="code" href="function__tools__0_8txt.html#a1a2acf608502527a80c0aeecdc12c908">a</a>);</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> h (<span class="keywordtype">double</span>);</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="auto__derivative__function__0_8txt.html#af5d8dd2d035de856717fb6b5c9438dd5">h</a> (<span class="keywordtype">double</span>);</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> g()</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="fe__vs__mapping__vs__fevalues__0_8txt.html#a2689bd0e3191a17756c0806a0ac59b01">g</a>()</div>
 <div class="line">{</div>
-<div class="line">forward_call(&amp;h, 1);</div>
+<div class="line">forward_call(&amp;<a class="code" href="auto__derivative__function__0_8txt.html#af5d8dd2d035de856717fb6b5c9438dd5">h</a>, 1);</div>
 <div class="line">}</div>
 </div><!-- fragment --><p> This code fails to compile because the compiler can't decide whether the template type <code>A</code> should be <code>double</code> (from the signature of the function given as first argument to <code>forward_call</code>, or <code>int</code> because the expression <code>1</code> has that type. Of course, what we would like the compiler to do is simply cast the <code>1</code> to <code>double</code> . We can achieve this by writing the code as follows:</p>
 <div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RT, <span class="keyword">typename</span> A&gt;</div>
-<div class="line"><span class="keywordtype">void</span> forward_call(RT (*p) (<a class="code" href="namespaceLAPACKSupport.html#a40707d49114d54318c823f3b750e89a4">A</a>), <span class="keyword">typename</span> <a class="code" href="structidentity.html#af719060789239a0a2ba383c2697bd820">identity&lt;A&gt;::type</a> a)</div>
+<div class="line"><span class="keywordtype">void</span> forward_call(<a class="code" href="thread__management__0_8txt.html#adc69b7c23f26c3517d7356f7d94a51a3">RT</a> (*<a class="code" href="parsed__convergence__table__0_8txt.html#a8a90f5ba57a42a3fd4c067e00f8b8aea">p</a>) (<a class="code" href="symmetric__tensor__0_8txt.html#a37cd5701f5aaccacc8caf38d4a7a903a">A</a>), <span class="keyword">typename</span> <a class="code" href="structidentity.html#af719060789239a0a2ba383c2697bd820">identity&lt;A&gt;::type</a> <a class="code" href="function__tools__0_8txt.html#a1a2acf608502527a80c0aeecdc12c908">a</a>)</div>
 <div class="line">{</div>
-<div class="line">p(a);</div>
+<div class="line"><a class="code" href="parsed__convergence__table__0_8txt.html#a8a90f5ba57a42a3fd4c067e00f8b8aea">p</a>(<a class="code" href="function__tools__0_8txt.html#a1a2acf608502527a80c0aeecdc12c908">a</a>);</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> h (<span class="keywordtype">double</span>);</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="auto__derivative__function__0_8txt.html#af5d8dd2d035de856717fb6b5c9438dd5">h</a> (<span class="keywordtype">double</span>);</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> g()</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="fe__vs__mapping__vs__fevalues__0_8txt.html#a2689bd0e3191a17756c0806a0ac59b01">g</a>()</div>
 <div class="line">{</div>
-<div class="line">forward_call(&amp;h, 1);</div>
+<div class="line">forward_call(&amp;<a class="code" href="auto__derivative__function__0_8txt.html#af5d8dd2d035de856717fb6b5c9438dd5">h</a>, 1);</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>A template class that simply exports its template argument as a local alias. This class, while at first appearing useless, makes sense in the following context: if you have a function template as follows: </p><div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><span class="keywordtype">void</span> f(<a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>, <a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>);</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="automatic__and__symbolic__differentiation__0_8txt.html#a4874d3f2becad91b2bdda53a5539ff54">f</a>(<a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>, <a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>);</div>
 </div><!-- fragment --><p> then it can't be called in an expression like <code>f(1, 3.141)</code> because the type <code>T</code> of the template can not be deduced in a unique way from the types of the arguments. However, if the template is written as </p><div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><span class="keywordtype">void</span> f(<a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>, <span class="keyword">typename</span> <a class="code" href="structidentity.html#af719060789239a0a2ba383c2697bd820">identity&lt;T&gt;::type</a>);</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="automatic__and__symbolic__differentiation__0_8txt.html#a4874d3f2becad91b2bdda53a5539ff54">f</a>(<a class="code" href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">T</a>, <span class="keyword">typename</span> <a class="code" href="structidentity.html#af719060789239a0a2ba383c2697bd820">identity&lt;T&gt;::type</a>);</div>
 </div><!-- fragment --><p> then the call becomes valid: the type <code>T</code> is not deducible from the second argument to the function, so only the first argument participates in template type resolution.</p>
 <p>The context for this feature is as follows: consider </p><div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RT, <span class="keyword">typename</span> A&gt;</div>
-<div class="line"><span class="keywordtype">void</span> forward_call(RT (*p) (<a class="code" href="namespaceLAPACKSupport.html#a40707d49114d54318c823f3b750e89a4">A</a>), <a class="code" href="namespaceLAPACKSupport.html#a40707d49114d54318c823f3b750e89a4">A</a> a)</div>
+<div class="line"><span class="keywordtype">void</span> forward_call(<a class="code" href="thread__management__0_8txt.html#adc69b7c23f26c3517d7356f7d94a51a3">RT</a> (*<a class="code" href="parsed__convergence__table__0_8txt.html#a8a90f5ba57a42a3fd4c067e00f8b8aea">p</a>) (<a class="code" href="symmetric__tensor__0_8txt.html#a37cd5701f5aaccacc8caf38d4a7a903a">A</a>), <a class="code" href="symmetric__tensor__0_8txt.html#a37cd5701f5aaccacc8caf38d4a7a903a">A</a> <a class="code" href="function__tools__0_8txt.html#a1a2acf608502527a80c0aeecdc12c908">a</a>)</div>
 <div class="line">{</div>
-<div class="line">  p(a);</div>
+<div class="line">  <a class="code" href="parsed__convergence__table__0_8txt.html#a8a90f5ba57a42a3fd4c067e00f8b8aea">p</a>(<a class="code" href="function__tools__0_8txt.html#a1a2acf608502527a80c0aeecdc12c908">a</a>);</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> h (<span class="keywordtype">double</span>);</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="auto__derivative__function__0_8txt.html#af5d8dd2d035de856717fb6b5c9438dd5">h</a> (<span class="keywordtype">double</span>);</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> g()</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="fe__vs__mapping__vs__fevalues__0_8txt.html#a2689bd0e3191a17756c0806a0ac59b01">g</a>()</div>
 <div class="line">{</div>
-<div class="line">  forward_call(&amp;h, 1);</div>
+<div class="line">  forward_call(&amp;<a class="code" href="auto__derivative__function__0_8txt.html#af5d8dd2d035de856717fb6b5c9438dd5">h</a>, 1);</div>
 <div class="line">}</div>
 </div><!-- fragment --><p> This code fails to compile because the compiler can't decide whether the template type <code>A</code> should be <code>double</code> (from the signature of the function given as first argument to <code>forward_call</code>, or <code>int</code> because the expression <code>1</code> has that type. Of course, what we would like the compiler to do is simply cast the <code>1</code> to <code>double</code>. We can achieve this by writing the code as follows: </p><div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RT, <span class="keyword">typename</span> A&gt;</div>
-<div class="line"><span class="keywordtype">void</span> forward_call(RT (*p) (<a class="code" href="namespaceLAPACKSupport.html#a40707d49114d54318c823f3b750e89a4">A</a>), <span class="keyword">typename</span> <a class="code" href="structidentity.html#af719060789239a0a2ba383c2697bd820">identity&lt;A&gt;::type</a> a)</div>
+<div class="line"><span class="keywordtype">void</span> forward_call(<a class="code" href="thread__management__0_8txt.html#adc69b7c23f26c3517d7356f7d94a51a3">RT</a> (*<a class="code" href="parsed__convergence__table__0_8txt.html#a8a90f5ba57a42a3fd4c067e00f8b8aea">p</a>) (<a class="code" href="symmetric__tensor__0_8txt.html#a37cd5701f5aaccacc8caf38d4a7a903a">A</a>), <span class="keyword">typename</span> <a class="code" href="structidentity.html#af719060789239a0a2ba383c2697bd820">identity&lt;A&gt;::type</a> <a class="code" href="function__tools__0_8txt.html#a1a2acf608502527a80c0aeecdc12c908">a</a>)</div>
 <div class="line">{</div>
-<div class="line">  p(a);</div>
+<div class="line">  <a class="code" href="parsed__convergence__table__0_8txt.html#a8a90f5ba57a42a3fd4c067e00f8b8aea">p</a>(<a class="code" href="function__tools__0_8txt.html#a1a2acf608502527a80c0aeecdc12c908">a</a>);</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> h (<span class="keywordtype">double</span>);</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="auto__derivative__function__0_8txt.html#af5d8dd2d035de856717fb6b5c9438dd5">h</a> (<span class="keywordtype">double</span>);</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> g()</div>
+<div class="line"><span class="keywordtype">void</span> <a class="code" href="fe__vs__mapping__vs__fevalues__0_8txt.html#a2689bd0e3191a17756c0806a0ac59b01">g</a>()</div>
 <div class="line">{</div>
-<div class="line">  forward_call(&amp;h, 1);</div>
+<div class="line">  forward_call(&amp;<a class="code" href="auto__derivative__function__0_8txt.html#af5d8dd2d035de856717fb6b5c9438dd5">h</a>, 1);</div>
 <div class="line">}</div>
 </div><!-- fragment --> 
 <p class="definition">Definition at line <a class="el" href="base_2template__constraints_8h_source.html#l00191">191</a> of file <a class="el" href="base_2template__constraints_8h_source.html">template_constraints.h</a>.</p>
@@ -181,7 +181,7 @@ struct identity&lt; T &gt;</h3>
 template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structidentity.html">identity</a>&lt; T &gt;::<a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> =  T</td>
+          <td class="memname">using <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="aligned__vector__0_8txt.html#a31cb67809a0291768d4b233f3d6dee80">T</a> &gt;::<a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> =  <a class="el" href="aligned__vector__0_8txt.html#a31cb67809a0291768d4b233f3d6dee80">T</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -199,7 +199,7 @@ template&lt;typename T &gt; </div>
 template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structidentity.html">identity</a>&lt; T &gt;::<a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> =  T</td>
+          <td class="memname">using <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="aligned__vector__0_8txt.html#a31cb67809a0291768d4b233f3d6dee80">T</a> &gt;::<a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> =  <a class="el" href="aligned__vector__0_8txt.html#a31cb67809a0291768d4b233f3d6dee80">T</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -217,7 +217,7 @@ template&lt;typename T &gt; </div>
 template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structidentity.html">identity</a>&lt; T &gt;::<a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> =  T</td>
+          <td class="memname">using <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="aligned__vector__0_8txt.html#a31cb67809a0291768d4b233f3d6dee80">T</a> &gt;::<a class="el" href="structidentity.html#af719060789239a0a2ba383c2697bd820">type</a> =  <a class="el" href="aligned__vector__0_8txt.html#a31cb67809a0291768d4b233f3d6dee80">T</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -231,8 +231,14 @@ template&lt;typename T &gt; </div>
 </ul>
 </div><!-- contents -->
 <div class="ttc" id="astructidentity_html_af719060789239a0a2ba383c2697bd820"><div class="ttname"><a href="structidentity.html#af719060789239a0a2ba383c2697bd820">identity::type</a></div><div class="ttdeci">T type</div><div class="ttdef"><b>Definition:</b> <a href="base_2template__constraints_8h_source.html#l00193">template_constraints.h:193</a></div></div>
+<div class="ttc" id="asymmetric__tensor__0_8txt_html_a37cd5701f5aaccacc8caf38d4a7a903a"><div class="ttname"><a href="symmetric__tensor__0_8txt.html#a37cd5701f5aaccacc8caf38d4a7a903a">A</a></div><div class="ttdeci">1 A</div><div class="ttdef"><b>Definition:</b> <a href="symmetric__tensor__0_8txt_source.html#l00078">symmetric_tensor_0.txt:78</a></div></div>
+<div class="ttc" id="athread__management__0_8txt_html_adc69b7c23f26c3517d7356f7d94a51a3"><div class="ttname"><a href="thread__management__0_8txt.html#adc69b7c23f26c3517d7356f7d94a51a3">RT</a></div><div class="ttdeci">namespace in which helper functions and the like for the threading subsystem are implemented The members of this namespace are not meant for public use **If in a sub thread an exception is thrown it is not propagated to the main thread Therefore the exception handler that is provided by the applications main function or some of its other parts will not be able to catch these exceptions Therefore we have to provide an exception handler in the top function of each sub thread that at least catches the exception and prints some information rather than letting the operating system to just kill the program without a message In each of the functions we use as entry points to new threads we therefore install a try catch block and if an exception of type[2.x.12] is it passes over control to this which will then provide some output **Same as but the type of the exception is not derived so there is little way to provide something more useful ****Given an arbitrary type RT</div><div class="ttdef"><b>Definition:</b> <a href="thread__management__0_8txt_source.html#l00034">thread_management_0.txt:34</a></div></div>
+<div class="ttc" id="afe__vs__mapping__vs__fevalues__0_8txt_html_a2689bd0e3191a17756c0806a0ac59b01"><div class="ttname"><a href="fe__vs__mapping__vs__fevalues__0_8txt.html#a2689bd0e3191a17756c0806a0ac59b01">g</a></div><div class="ttdeci">*****Most people create finite but that is also just set during construction time In other people never observe FiniteElement or Mapping objects actually[1.x.1] anything **and that is completely by design *This document is therefore for those who are interested in writing finite element or mapping classes and want to understand how FEValues works and interacts with the FiniteElement and Mapping classes In the we will not make a distinction between and the term FEValues will be used generally for all three of these classes in the text below ***Before going into detail about data and control let us define which class is responsible for providing what kind of information **FEValues is an abstraction that derived from the observation that almost everything one ever does in finite element codes only requires the evaluation of finite element shape functions at quadrature points This could for the approximation of an integral of the form[1.x.4] by quadrature[1.x.5] but it is equally valid when wanting to generate graphical and this too can be written as evaluating everything at quadrature points **these quadrature points are then simply the vertices of the their at quadrature points The same is true with some geometric e g</div><div class="ttdef"><b>Definition:</b> <a href="fe__vs__mapping__vs__fevalues__0_8txt_source.html#l00021">fe_vs_mapping_vs_fevalues_0.txt:21</a></div></div>
 <div class="ttc" id="anamespaceLAPACKSupport_html_a8cac1e477eff052db622c8a9a9426ea3"><div class="ttname"><a href="namespaceLAPACKSupport.html#a8cac1e477eff052db622c8a9a9426ea3">LAPACKSupport::T</a></div><div class="ttdeci">static const char T</div><div class="ttdef"><b>Definition:</b> <a href="lac_2lapack__support_8h_source.html#l00177">lapack_support.h:177</a></div></div>
-<div class="ttc" id="anamespaceLAPACKSupport_html_a40707d49114d54318c823f3b750e89a4"><div class="ttname"><a href="namespaceLAPACKSupport.html#a40707d49114d54318c823f3b750e89a4">LAPACKSupport::A</a></div><div class="ttdeci">static const char A</div><div class="ttdef"><b>Definition:</b> <a href="lac_2lapack__support_8h_source.html#l00162">lapack_support.h:162</a></div></div>
+<div class="ttc" id="aauto__derivative__function__0_8txt_html_af5d8dd2d035de856717fb6b5c9438dd5"><div class="ttname"><a href="auto__derivative__function__0_8txt.html#af5d8dd2d035de856717fb6b5c9438dd5">h</a></div><div class="ttdeci">*This class automatically computes the gradient of a function by employing numerical difference quotients This only if the user function does not provide the gradient function himself *The following example of an user defined function overloads and implements only the where the latter function employs numerical difference quotients *****If the user overloads and implements also the gradient of the users gradient function is called that the usage of the also applies to the see e g respectively *Furthermore that an object of this class does[1.x.1] represent the derivative of a like that gives a directional derivative by calling the this class the AutoDerivativeFunction class can substitute the Function class as base class for user defined classes This class implements the gradient() functions for automatic computation of numerical difference quotients and serves as intermediate class between the base Function class and the user defined function class. ***[2.x.2] **[0.x.1] *Names of difference formulas. *[0.x.2] *The symmetric Euler formula of second order absolutely necessary in this case **Choose the difference formula See the enum DifferenceFormula for available choices **Takes the difference step size&lt; tt &gt; h&lt;/tt &gt; It s within the user s responsibility to choose an appropriate value here&lt; tt &gt; h&lt;/tt &gt; should be chosen taking into account the absolute value of as well as the amount of variation of the function Setting&lt; tt &gt; h</div><div class="ttdef"><b>Definition:</b> <a href="auto__derivative__function__0_8txt_source.html#l00034">auto_derivative_function_0.txt:34</a></div></div>
+<div class="ttc" id="afunction__tools__0_8txt_html_a1a2acf608502527a80c0aeecdc12c908"><div class="ttname"><a href="function__tools__0_8txt.html#a1a2acf608502527a80c0aeecdc12c908">a</a></div><div class="ttdeci">*Estimate bounds on the value and bounds on each gradient component of a over a by approximating it by a order Taylor polynomial starting from the box center Each lower and upper bound is returned as a[2.x.1]</div><div class="ttdef"><b>Definition:</b> <a href="function__tools__0_8txt_source.html#l00002">function_tools_0.txt:2</a></div></div>
+<div class="ttc" id="aautomatic__and__symbolic__differentiation__0_8txt_html_a4874d3f2becad91b2bdda53a5539ff54"><div class="ttname"><a href="automatic__and__symbolic__differentiation__0_8txt.html#a4874d3f2becad91b2bdda53a5539ff54">f</a></div><div class="ttdeci">pow(2x+1, y)` and computing the derivatives `diff(f, x)` and `diff(f, y)`. At this point there is no assumption of what `x` and `y` represent f</div><div class="ttdef"><b>Definition:</b> <a href="automatic__and__symbolic__differentiation__0_8txt_source.html#l00347">automatic_and_symbolic_differentiation_0.txt:347</a></div></div>
+<div class="ttc" id="aparsed__convergence__table__0_8txt_html_a8a90f5ba57a42a3fd4c067e00f8b8aea"><div class="ttname"><a href="parsed__convergence__table__0_8txt.html#a8a90f5ba57a42a3fd4c067e00f8b8aea">p</a></div><div class="ttdeci">****This class simplifies the construction of convergence tables reading the options for the generation of the table from a parameter file It provides a series of methods that can be used to compute the error given a reference exact solution or the difference between two numerical solutions or any other custom computation of the error given via[2.x.1] objects *An example usage of this class is given by ****The above code constructs a ParsedConvergenceTable that works for scalar and will produce an error table with and Linfty_norm norms of the error *Whenever a call to the methods the instance of this class inspects its parameters computes all norms specified by the parameter given at construction time possibly modified via a parameter file computes all extra column entries specified using the method and writes one row of the convergence table *Once you have finished with the a call to and to the the same code can be used to estimate the errors of mixed or multi physics e and one component for the pressure field p</div><div class="ttdef"><b>Definition:</b> <a href="parsed__convergence__table__0_8txt_source.html#l00020">parsed_convergence_table_0.txt:20</a></div></div>
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

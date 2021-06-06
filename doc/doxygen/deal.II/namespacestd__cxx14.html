@@ -90,9 +90,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>deal.II currently only requires a C++11-conforming compiler, but there are a number of functions and classes from the C++14 standard that are easy to provide also in case the compiler only supports C++11. These are collected in the current namespace.</p>
-<p>The most notable example is the <a href="https://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique"><code>std::make_unique</code></a> function which is arguably an oversight for not having been included in C++11 (given that there is <a href="https://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared"><code>std::make_shared</code></a> in C++11).</p>
-<p>There are other small additions in this namespace that allow us to use C++14 features at this point already, even though we don't require a C++14-compliant compiler.</p>
+<div class="textblock"><p>deal.II currently only requires a C++11-conforming compiler, but there are a number of functions and classes from the C++14 standard that are easy to provide also in case the compiler only supports C++11. These are collected in the current namespace. The most notable example is the <a href="https://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique"><code>std::make_unique</code></a> function which is arguably an oversight for not having been included in C++11 (given that there is <a href="https://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared"><code>std::make_shared</code></a> in C++11). There are other small additions in this namespace that allow us to use C++14 features at this point already, even though we don't require a C++14-compliant compiler.</p>
 <dl class="section note"><dt>Note</dt><dd>If the compiler in use actually does support C++14, then the contents of this namespace are simply imported classes and functions from namespace <code>std</code>. That is, we fall back to what the compiler provides, rather than our own implementations. </dd></dl>
 </div></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.17-->

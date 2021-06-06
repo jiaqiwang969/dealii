@@ -1,0 +1,114 @@
+[0.x.0]*
+ A finite element that is a tensor product polynomial on each face and undefined in the interior of the cells. The basis functions on the faces are Lagrange polynomials based on the support points of the (dim-1)-dimensional Gauss--Lobatto quadrature rule. For element degree one and two, the polynomials hence correspond to the usual Lagrange polynomials on equidistant points.
+*  Although the name does not give it away, the element is discontinuous at locations where faces of cells meet. In particular, this finite element is the trace space of FE_RaviartThomas on the faces and serves in hybridized methods, e.g. in combination with the FE_DGQ element. Its use is demonstrated in the  [2.x.0]  tutorial program.
+* 
+
+* 
+*  [2.x.1]  Since this element is defined only on faces, only FEFaceValues and FESubfaceValues will provide useful information. On the other hand, if you use this element with FEValues for cell integration, then the values and derivatives of shape functions will have invalid values and will not likely produce anything useful. In order to make the use of this element as part of an FESystem simpler, using a (cell) FEValues object will not fail outright, but those components of shape functions of the combined element that correspond to FE_FaceQ will have the invalid values mentioned above.
+* 
+
+* 
+*  [2.x.2] 
+
+* 
+* [0.x.1]*
+   Constructor for tensor product polynomials of degree <tt>p</tt>. The   shape functions created using this constructor correspond to Lagrange   polynomials in each coordinate direction.  
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_FaceQ<dim>(degree)</tt>, with <tt>dim</tt> and   <tt>degree</tt> replaced by appropriate values.  
+* [0.x.3]*
+   Implementation of the corresponding function in the FiniteElement   class.  Since the current element is interpolatory, the nodal   values are exactly the support point values. Furthermore, since   the current element is scalar, the support point values need to   be vectors of length 1.  
+* [0.x.4]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. This   element only provides interpolation matrices for elements of the same   type and FE_Nothing. For all other elements, an exception of type    [2.x.3]  is thrown.  
+* [0.x.5]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. This   element only provides interpolation matrices for elements of the same   type and FE_Nothing. For all other elements, an exception of type    [2.x.4]  is thrown.  
+* [0.x.6]*
+   This function returns  [2.x.5]  if the shape function  [2.x.6]  has   non-zero function values somewhere on the face  [2.x.7]   
+* [0.x.7]*
+    [2.x.8]  Functions to support hp    [2.x.9]   
+* [0.x.8]*
+   If, on a vertex, several finite elements are active, the hp-code first   assigns the degrees of freedom of each of these FEs different global   indices. It then calls this function to find out which of them should get   identical values, and consequently can receive the same global DoF index.   This function therefore returns a list of identities between DoFs of the   present finite element object with the DoFs of  [2.x.10]  which is a   reference to a finite element object representing one of the other finite   elements active on this particular vertex. The function computes which of   the degrees of freedom of the two finite element objects are equivalent,   both numbered between zero and the corresponding value of   n_dofs_per_vertex() of the two finite elements. The first index of each   pair denotes one of the vertex dofs of the present element, whereas the   second is the corresponding index of the other finite element.     The set of such constraints is non-empty only for dim==1.  
+* [0.x.9]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on lines.     The set of such constraints is non-empty only for dim==2.  
+* [0.x.10]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on quads.     The set of such constraints is non-empty only for dim==3.  
+* [0.x.11]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".  
+* [0.x.12]*
+    [2.x.11]   [2.x.12]   
+* [0.x.13]*
+    [2.x.13]   
+* [0.x.14]*
+   Return a list of constant modes of the element. For this element, it   simply returns one row with all entries set to true.  
+* [0.x.15]*
+   Return vector with dofs per vertex, line, quad, hex.  
+* [0.x.16]*
+ Specialization of FE_FaceQ for 1D. In that case, the finite element only consists of one degree of freedom in each of the two faces (= vertices) of a cell, irrespective of the degree. However, this element still accepts a degree in its constructor and also returns that degree. This way, dimension-independent programming with trace elements is also possible in 1D (even though there is no computational benefit at all from it in 1D).
+* 
+
+* 
+*  [2.x.14] 
+
+* 
+* [0.x.17]*
+   Constructor.  
+* [0.x.18]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_FaceQ<dim>(degree)</tt>, with <tt>dim</tt> and   <tt>degree</tt> replaced by appropriate values.  
+* [0.x.19]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. This   element only provides interpolation matrices for elements of the same   type and FE_Nothing. For all other elements, an exception of type    [2.x.15]  is thrown.  
+* [0.x.20]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. This   element only provides interpolation matrices for elements of the same   type and FE_Nothing. For all other elements, an exception of type    [2.x.16]  is thrown.  
+* [0.x.21]*
+   This function returns  [2.x.17]  if the shape function  [2.x.18]  has   non-zero function values somewhere on the face  [2.x.19]   
+* [0.x.22]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".  
+* [0.x.23]*
+   If, on a vertex, several finite elements are active, the hp-code first   assigns the degrees of freedom of each of these FEs different global   indices. It then calls this function to find out which of them should get   identical values, and consequently can receive the same global DoF index.   This function therefore returns a list of identities between DoFs of the   present finite element object with the DoFs of  [2.x.20]  which is a   reference to a finite element object representing one of the other finite   elements active on this particular vertex. The function computes which of   the degrees of freedom of the two finite element objects are equivalent,   both numbered between zero and the corresponding value of   n_dofs_per_vertex() of the two finite elements. The first index of each   pair denotes one of the vertex dofs of the present element, whereas the   second is the corresponding index of the other finite element.     The set of such constraints is non-empty only for dim==1.  
+* [0.x.24]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on lines.     The set of such constraints is non-empty only for dim==2.  
+* [0.x.25]*
+   Same as hp_vertex_dof_indices(), except that the function treats degrees   of freedom on quads.     The set of such constraints is non-empty only for dim==3.  
+* [0.x.26]*
+   Return a list of constant modes of the element. For this element, it   simply returns one row with all entries set to true.  
+* [0.x.27]   NOTE: The following functions have their definitions inlined into the class   declaration because we otherwise run into a compiler error with MS Visual   Studio.  
+* [0.x.28]*
+   Return vector with dofs per vertex, line, quad, hex.  
+* [0.x.29]*
+ A finite element that is a Legendre element of complete polynomials on each face (i.e., it is the face equivalent of what FE_DGP is on cells) and undefined in the interior of the cells. The basis functions on the faces are from  [2.x.21] 
+*  Although the name does not give it away, the element is discontinuous at locations where faces of cells meet. The element serves in hybridized methods, e.g. in combination with the FE_DGP element. An example of hybridizes methods can be found in the  [2.x.22]  tutorial program.
+* 
+
+* 
+*  [2.x.23]  Since this element is defined only on faces, only FEFaceValues and FESubfaceValues will provide useful information. On the other hand, if you use this element with FEValues for cell integration, then the values and derivatives of shape functions will have invalid values and will not likely produce anything useful. In order to make the use of this element as part of an FESystem simpler, using a (cell) FEValues object will not fail outright, but those components of shape functions of the combined element that correspond to FE_FaceP will have the invalid values mentioned above.
+* 
+
+* 
+*  [2.x.24] 
+
+* 
+* [0.x.30]*
+   Constructor for complete basis of polynomials of degree <tt>p</tt>. The   shape functions created using this constructor correspond to Legendre   polynomials in each coordinate direction.  
+* [0.x.31]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_FaceP<dim>(degree)</tt> , with <tt>dim</tt> and   <tt>degree</tt> replaced by appropriate values.  
+* [0.x.32]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. This   element only provides interpolation matrices for elements of the same   type and FE_Nothing. For all other elements, an exception of type    [2.x.25]  is thrown.  
+* [0.x.33]*
+   Return the matrix interpolating from a face of one element to the face   of the neighboring element.  The size of the matrix is then   <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. This   element only provides interpolation matrices for elements of the same   type and FE_Nothing. For all other elements, an exception of type    [2.x.26]  is thrown.  
+* [0.x.34]*
+   This function returns  [2.x.27]  if the shape function  [2.x.28]  has   non-zero function values somewhere on the face  [2.x.29]   
+* [0.x.35]*
+   Return whether this element implements its hanging node constraints in   the new way, which has to be used to make elements "hp-compatible".  
+* [0.x.36]*
+    [2.x.30]   [2.x.31]   
+* [0.x.37]*
+   Return a list of constant modes of the element. For this element, the   first entry on each face is true, all other are false (as the constant   function is represented by the first base function of Legendre   polynomials).  
+* [0.x.38]*
+   Return vector with dofs per vertex, line, quad, hex.  
+* [0.x.39]*
+ FE_FaceP in 1D, i.e., with degrees of freedom on the element vertices. See the documentation of the general template for more information.
+
+* 
+* [0.x.40]*
+   Constructor.  
+* [0.x.41]*
+   Return the name of the element  
+* [0.x.42]

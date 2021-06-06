@@ -1,0 +1,71 @@
+[0.x.0]*
+ BlockIndices represents a range of indices (such as the range  [2.x.0]  of valid indices for elements of a vector) and how this one range is broken down into smaller but contiguous "blocks" (such as the velocity and pressure parts of a solution vector). In particular, it provides the ability to translate between global indices and the indices [1.x.0] a block. This class is used, for example, in the BlockVector, BlockSparsityPattern, and BlockMatrixBase classes.
+*  The information that can be obtained from this class falls into two groups. First, it is possible to query the global size of the index space (through the total_size() member function), and the number of blocks and their sizes (via size() and the block_size() functions).
+*  Secondly, this class manages the conversion of global indices to the local indices within this block, and the other way around. This is required, for example, when you address a global element in a block vector and want to know within which block this is, and which index within this block it corresponds to. It is also useful if a matrix is composed of several blocks, where you have to translate global row and column indices to local ones.
+* 
+
+* 
+*  [2.x.1]   [2.x.2]   [2.x.3]  "Block (linear algebra)"
+
+* 
+* [0.x.1]*
+   Declare the type for container size.  
+* [0.x.2]*
+   Default constructor. Initialize for zero blocks.  
+* [0.x.3]*
+   Constructor. Initialize the number of entries in each block  [2.x.4]  as   <tt>block_sizes[i]</tt>. The number of blocks will be the size of  [2.x.5]    block_sizes.  
+* [0.x.4]*
+   Move constructor. Initialize a new object by stealing the internal data of   another BlockIndices object.  
+* [0.x.5]*
+   Copy constructor.  
+* [0.x.6]*
+   Specialized constructor for a structure with blocks of equal size.  
+* [0.x.7]*
+   Reinitialize the number of blocks and assign each block the same number   of elements.  
+* [0.x.8]*
+   Reinitialize the number of indices within each block from the given   argument. The number of blocks will be adjusted to the size of   <tt>block_sizes</tt> and the size of block  [2.x.6]  is set to   <tt>block_sizes[i]</tt>.  
+* [0.x.9]*
+   Add another block of given size to the end of the block structure.  
+* [0.x.10]*
+    [2.x.7]  Size information  
+* [0.x.11]*
+   Number of blocks in index field.  
+* [0.x.12]*
+   Return the total number of indices accumulated over all blocks, that is,   the dimension of the vector space of the block vector.  
+* [0.x.13]*
+   The size of the  [2.x.8]  block.  
+* [0.x.14]*
+   String representation of the block sizes. The output is of the form   `[nb->b1,b2,b3|s]`, where `nb` is n_blocks(), `s` is total_size() and   `b1` etc. are the values returned by block_size() for each of the blocks.  
+* [0.x.15]*
+    [2.x.9]  Index conversion     Functions in this group assume an object, which was created after sorting   by block, such that each block forms a set of consecutive indices in the   object. If applied to other objects, the numbers obtained from these   functions are meaningless.  
+* [0.x.16]*
+   Return the block and the index within that block for the global index  [2.x.10]    i. The first element of the pair is the block, the second the index   within it.  
+* [0.x.17]*
+   Return the global index of  [2.x.11]  in block  [2.x.12]   
+* [0.x.18]*
+   The start index of the ith block.  
+* [0.x.19]*
+   Copy operator.  
+* [0.x.20]*
+   Move assignment operator. Move another BlockIndices object onto the   current one by transferring its contents.  
+* [0.x.21]*
+   Compare whether two objects are the same, i.e. whether the number of   blocks and the sizes of all blocks are equal.  
+* [0.x.22]*
+   Swap the contents of these two objects.  
+* [0.x.23]*
+   Determine an estimate for the memory consumption (in bytes) of this   object.  
+* [0.x.24]*
+   Number of blocks. While this value could be obtained through   <tt>start_indices.size()-1</tt>, we cache this value for faster access.  
+* [0.x.25]*
+   Global starting index of each vector. The last and redundant value is the   total number of entries.  
+* [0.x.26]*
+ Operator for logging BlockIndices. Writes the number of blocks, the size of each block and the total size of the index field.
+*   [2.x.13] 
+
+* 
+* [0.x.27]*
+ Global function  [2.x.14]  which overloads the default implementation of the C++ standard library which uses a temporary object. The function simply exchanges the data of the two objects.
+*   [2.x.15]  BlockIndices
+
+* 
+* [0.x.28]

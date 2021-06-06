@@ -95,11 +95,15 @@ $(function() {
 : <a class="el" href="classCellAccessor.html#a731df8f0245670b477495d804b60f4e7">CellAccessor&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classDoFCellAccessor.html#a17d70e743293a3b7b63b8f9e2dba70d2">DoFCellAccessor&lt; dimension_, space_dimension_, level_dof_access &gt;</a>
 , <a class="el" href="structinternal_1_1MFWorkerInterface.html#a164e54e09f0f500e209fdc6e8080871a">internal::MFWorkerInterface</a>
-, <a class="el" href="classMeshWorker_1_1LocalIntegrator.html#a1074d62e79d2adf5f1b855744824ba52">MeshWorker::LocalIntegrator&lt; dim, spacedim, number &gt;</a>
+, <a class="el" href="classMeshWorker_1_1LocalIntegrator.html#a6aab57ca24b0fd3e9a1614b5a6cb49e2">MeshWorker::LocalIntegrator&lt; dim, spacedim, number &gt;</a>
 , <a class="el" href="classQProjector_1_1DataSetDescriptor.html#ab852e5f566157ccd58278689a8d41537">QProjector&lt; dim &gt;::DataSetDescriptor</a>
+, <a class="el" href="classStep39_1_1ErrorIntegrator.html#ab33408d40e3c55aaa51a8cab1a8f6faa">Step39::ErrorIntegrator&lt; dim &gt;</a>
+, <a class="el" href="classStep39_1_1Estimator.html#a5efe981ad4f46fd9a38a64811e9215e4">Step39::Estimator&lt; dim &gt;</a>
+, <a class="el" href="classStep39_1_1MatrixIntegrator.html#a5af6a261b5e4e15e8b785d74f872aedf">Step39::MatrixIntegrator&lt; dim &gt;</a>
+, <a class="el" href="classStep39_1_1RHSIntegrator.html#af14f3d7999108b612643587e7a6a44c6">Step39::RHSIntegrator&lt; dim &gt;</a>
 </li>
 <li>face_fe_q_hierarchical_to_hierarchic_numbering()
-: <a class="el" href="classFE__Q__Hierarchical.html#aa7a972c4d5a753812639bb744647520d">FE_Q_Hierarchical&lt; dim &gt;</a>
+: <a class="el" href="classFE__Q__Hierarchical.html#a4ef590144da5f450cf667dcd73674240">FE_Q_Hierarchical&lt; dim &gt;</a>
 </li>
 <li>face_flip()
 : <a class="el" href="classTriaAccessor.html#ad90f5ff1a44cb8a6e08196dac6cdb22e">TriaAccessor&lt; structdim, dim, spacedim &gt;</a>
@@ -158,6 +162,9 @@ $(function() {
 : <a class="el" href="structGeometryInfo.html#a2adac0f129f0bdaa1600b14a543bdaa4">GeometryInfo&lt; dim &gt;</a>
 , <a class="el" href="structGeometryInfo_3_010_01_4.html#a4812a970618d9a3e8a2441c75d78f9d7">GeometryInfo&lt; 0 &gt;</a>
 , <a class="el" href="classReferenceCell.html#a3572cfa1d96f883c5689a9e80b132851">ReferenceCell</a>
+</li>
+<li>FaceData()
+: <a class="el" href="structStep14_1_1LaplaceSolver_1_1WeightedResidual_1_1FaceData.html#adc56d015ac6ed4cad215758eafa0f810">Step14::LaplaceSolver::WeightedResidual&lt; dim &gt;::FaceData</a>
 </li>
 <li>FaceIdentifier()
 : <a class="el" href="structinternal_1_1MatrixFreeFunctions_1_1FaceIdentifier.html#a5bf52d8ba17680d7dbdccca0d147437a">internal::MatrixFreeFunctions::FaceIdentifier</a>
@@ -375,7 +382,7 @@ $(function() {
 , <a class="el" href="classhp_1_1FESubfaceValues.html#ad0716a791fdc587a7ffb3e65de02c6f2">hp::FESubfaceValues&lt; dim, spacedim &gt;</a>
 </li>
 <li>FESystem()
-: <a class="el" href="classFESystem.html#a83c7bc44f43e75d7d3750cd6c3bce89b">FESystem&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classFESystem.html#a158ced808c3e615b5a3413eea85e254a">FESystem&lt; dim, spacedim &gt;</a>
 </li>
 <li>FEValues()
 : <a class="el" href="classFEValues.html#a051be8559fb1a35dff1ba230864d94b3">FEValues&lt; dim, spacedim &gt;</a>
@@ -392,7 +399,7 @@ $(function() {
 : <a class="el" href="classPatterns_1_1FileName.html#a4f420e25b4a3cce6f7fd9f133fbf705f">Patterns::FileName</a>
 </li>
 <li>fill()
-: <a class="el" href="classAlignedVector.html#a6d1805fd5c0824de60b496daa958b8a5">AlignedVector&lt; T &gt;</a>
+: <a class="el" href="classAlignedVector.html#a1d3f8d9637308d670fca25e85e39c80f">AlignedVector&lt; T &gt;</a>
 , <a class="el" href="classFullMatrix.html#a9bdf2b89ab7f7a0d5a7e988e43162361">FullMatrix&lt; number &gt;</a>
 , <a class="el" href="classLAPACKFullMatrix.html#af7a94112bbb40331fa4de8f2b502af8b">LAPACKFullMatrix&lt; number &gt;</a>
 , <a class="el" href="classMeshWorker_1_1VectorData.html#ae69fa6e0e1fc0ad35fa20e6ddfbdd2b8">MeshWorker::VectorData&lt; VectorType, dim, spacedim &gt;</a>
@@ -430,10 +437,10 @@ $(function() {
 , <a class="el" href="classFE__PolyTensor.html#a7aae2c752c1773929a57032589040fa5">FE_PolyTensor&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFESystem.html#adecb9cd153953b0b57e7319069525931">FESystem&lt; dim, spacedim &gt;</a>
 , <a class="el" href="group__Exceptions.html#ga7c5fd937dc322e6028f60c30fc65f185">FiniteElement&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classMapping.html#a9baf527d46a7f2391dbb3dd5dc416864">Mapping&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classMappingCartesian.html#afc9030d463cf60104d7a0a628e2cfab6">MappingCartesian&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classMapping.html#aa51c964b1e51b69db3f4933b97bff8c8">Mapping&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classMappingCartesian.html#a13f640c37d5138ec35911c398be6478d">MappingCartesian&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classMappingFE.html#a03294c2ec4863998c728cf2da714b616">MappingFE&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classMappingFEField_3_01dim_00_01spacedim_00_01VectorType_00_01void_01_4.html#a0650e4c5029e46fe55a7f03197d5f9a9">MappingFEField&lt; dim, spacedim, VectorType, void &gt;</a>
+, <a class="el" href="classMappingFEField_3_01dim_00_01spacedim_00_01VectorType_00_01void_01_4.html#a46a03e47057d9f0ab498cdb71bb20001">MappingFEField&lt; dim, spacedim, VectorType, void &gt;</a>
 , <a class="el" href="classMappingManifold.html#a9d1b43a1d32c7408db2af571d68a98b1">MappingManifold&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classMappingQ.html#a0a0ed10590c244f9edf0177b29f436f4">MappingQ&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classMappingQGeneric.html#a6c41a25f46990d74e31bcf8c35eab283">MappingQGeneric&lt; dim, spacedim &gt;</a>
@@ -442,42 +449,42 @@ $(function() {
 : <a class="el" href="classFE__DGPNonparametric.html#ac4cd0da7a3b2755ee62b0a0a2e32bf36">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Enriched.html#a127478c17a61952e8ac42bd9227f321d">FE_Enriched&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__FaceQ_3_011_00_01spacedim_01_4.html#a40ccc4232d012dcda0380a7a1928b544">FE_FaceQ&lt; 1, spacedim &gt;</a>
-, <a class="el" href="classFE__NedelecSZ.html#a73a6d50b869f6963cc20e8ee09be499d">FE_NedelecSZ&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__Nothing.html#a658036499bc10f951ccde16c1dfbbe81">FE_Nothing&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__P1NC.html#a2e4c5b92313577a285df518117f7990c">FE_P1NC</a>
+, <a class="el" href="classFE__NedelecSZ.html#aac2bffe6963f72d65754a2f0280e6cfb">FE_NedelecSZ&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__Nothing.html#a3f22c44462529bf97971a55d622a2643">FE_Nothing&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__P1NC.html#a9d78f2c05d5e6a58db248a29002ec71a">FE_P1NC</a>
 , <a class="el" href="classFE__Poly.html#ab0bb13c8e7e92bbd433ab7b13b402096">FE_Poly&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__PolyFace.html#a4a19b3fd89db53ab277a8f58e1d5a3e6">FE_PolyFace&lt; PolynomialType, dim, spacedim &gt;</a>
 , <a class="el" href="classFE__PolyTensor.html#ada0a259d87fb0df0b817c9d0195d8e07">FE_PolyTensor&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFESystem.html#ab64a2eda09c8bd983833192803c257b9">FESystem&lt; dim, spacedim &gt;</a>
-, <a class="el" href="group__Exceptions.html#gace7af117168f8d0fdb4bbdd516373625">FiniteElement&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFESystem.html#a4297067cdc2ad6bf1c9c5050590cfa2f">FESystem&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFiniteElement.html#ace7af117168f8d0fdb4bbdd516373625">FiniteElement&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classMapping.html#a9f7f6025bc3f10e8f7da2c8a68eaff4a">Mapping&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classMappingCartesian.html#afe29b9ec9d8ad367c2b96d80cbdb854d">MappingCartesian&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classMappingCartesian.html#a20ff217be3d55fdef56b310dda33f60d">MappingCartesian&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classMappingFE.html#a330ec34dc48d22e3b8e004aeb9717bde">MappingFE&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classMappingFEField_3_01dim_00_01spacedim_00_01VectorType_00_01void_01_4.html#a29a8ac55ec9d7987514ea7befcbb0d08">MappingFEField&lt; dim, spacedim, VectorType, void &gt;</a>
+, <a class="el" href="classMappingFEField_3_01dim_00_01spacedim_00_01VectorType_00_01void_01_4.html#a0d59664e517b73b36d865be54e2dac33">MappingFEField&lt; dim, spacedim, VectorType, void &gt;</a>
 , <a class="el" href="classMappingManifold.html#a899d901798c72c932e9b8653895fedae">MappingManifold&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classMappingQ.html#a55d26263547a910cae5c31026a4d1a3b">MappingQ&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classMappingQ.html#a8f948117ddd3550cf1267dac74b6b85f">MappingQ&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classMappingQGeneric.html#a2a707e9b13deefd7eeebad152dd9698e">MappingQGeneric&lt; dim, spacedim &gt;</a>
 </li>
 <li>fill_fe_values()
-: <a class="el" href="classFE__DGPNonparametric.html#a970a36d24d8631ddb8e30f4d69e11357">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classFE__DGPNonparametric.html#aef15a8f0b32f9f2d9a71058103e7aecb">FE_DGPNonparametric&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__Enriched.html#a2f107a6d8b7aca4bc67174de311a0c76">FE_Enriched&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__FaceQ_3_011_00_01spacedim_01_4.html#a0327a2b60e327cf7f70e14785f777fee">FE_FaceQ&lt; 1, spacedim &gt;</a>
 , <a class="el" href="classFE__NedelecSZ.html#a08948bf16363b0c1e3425821f3181245">FE_NedelecSZ&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFE__Nothing.html#ad8d8b11fef48da6291bdeb1af6d679f2">FE_Nothing&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classFE__Nothing.html#a48860803faab5358c1836fc892e87047">FE_Nothing&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__P1NC.html#aec11c79f19298af4023abba1ef4cd8b0">FE_P1NC</a>
 , <a class="el" href="classFE__Poly.html#ace5fffc8621deb2a2bfe10fa5c363bb3">FE_Poly&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFE__PolyFace.html#a780817a3c6ec890708423911a5710240">FE_PolyFace&lt; PolynomialType, dim, spacedim &gt;</a>
 , <a class="el" href="classFE__PolyTensor.html#ab39b9d1f49e11622d0adf74d48ebb7a7">FE_PolyTensor&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classFESystem.html#a47c78ecdd66c27bb01f38c86fd1158a2">FESystem&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classFiniteElement.html#a76218870e645f59e07c7ab650cf31a79">FiniteElement&lt; dim, spacedim &gt;</a>
+, <a class="el" href="group__Exceptions.html#ga76218870e645f59e07c7ab650cf31a79">FiniteElement&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classMapping.html#ac69cb4dd66dd3745b483f4703cb1fb69">Mapping&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classMappingCartesian.html#a7c94f22344900afef287806ca24924e1">MappingCartesian&lt; dim, spacedim &gt;</a>
+, <a class="el" href="classMappingCartesian.html#a34d10b345ec6b2fca526398d4878ed6e">MappingCartesian&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classMappingFE.html#aba7bf1413812893f040b089ade029fe5">MappingFE&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classMappingFEField_3_01dim_00_01spacedim_00_01VectorType_00_01void_01_4.html#a3f2177161a38be46c6ac112c01a51575">MappingFEField&lt; dim, spacedim, VectorType, void &gt;</a>
 , <a class="el" href="classMappingManifold.html#a50321c8317de6e2c15237fd5a26ce8f3">MappingManifold&lt; dim, spacedim &gt;</a>
 , <a class="el" href="classMappingQ1Eulerian.html#a94d2fc0d139aa15c84c098dec87351ff">MappingQ1Eulerian&lt; dim, VectorType, spacedim &gt;</a>
 , <a class="el" href="classMappingQ.html#abc98e38ab630ef7a165135a6d663c4d9">MappingQ&lt; dim, spacedim &gt;</a>
-, <a class="el" href="classMappingQEulerian.html#a144001ee2a1e1f0933e6a4d748830688">MappingQEulerian&lt; dim, VectorType, spacedim &gt;</a>
+, <a class="el" href="classMappingQEulerian.html#ac88936ad6cf6c2977cd059d438df8377">MappingQEulerian&lt; dim, VectorType, spacedim &gt;</a>
 , <a class="el" href="classMappingQGeneric.html#aaf9214b0965ab7fd09776390bbc285d5">MappingQGeneric&lt; dim, spacedim &gt;</a>
 </li>
 <li>fill_index_vector()
@@ -499,10 +506,10 @@ $(function() {
 : <a class="el" href="classFullMatrix.html#a15c1c072eb09809311fed47a03da2858">FullMatrix&lt; number &gt;</a>
 </li>
 <li>filter_iterators()
-: <a class="el" href="group__CPP11.html#ga3948dd66d9e66ac55d89dc8f75fa4855">FilteredIterator&lt; BaseIterator &gt;</a>
+: <a class="el" href="group__CPP11.html#ga05713415704536e5b0e967d33c2c77c1">FilteredIterator&lt; BaseIterator &gt;</a>
 </li>
 <li>FilteredIterator()
-: <a class="el" href="classFilteredIterator.html#abdb7a4cce0c39d3fece3d3f272b06be8">FilteredIterator&lt; BaseIterator &gt;</a>
+: <a class="el" href="classFilteredIterator.html#a60d5b3bb5eec9b464ea0ebce290aa610">FilteredIterator&lt; BaseIterator &gt;</a>
 </li>
 <li>final()
 : <a class="el" href="classAlgorithms_1_1TimestepControl.html#a19ad8f95cf02436d227fe0850cd4fbab">Algorithms::TimestepControl</a>
@@ -533,7 +540,13 @@ $(function() {
 : <a class="el" href="classhp_1_1FECollection.html#a1c4f34d801d827773a91ff539ffabadd">hp::FECollection&lt; dim, spacedim &gt;</a>
 </li>
 <li>find_enclosing_fes()
-: <a class="el" href="classhp_1_1FECollection.html#a6eba9b691c9f0b12f04b39fd2cac89ad">hp::FECollection&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classhp_1_1FECollection.html#aaf8d9c03d87c90753485bde0f7bf42fe">hp::FECollection&lt; dim, spacedim &gt;</a>
+</li>
+<li>find_max_step()
+: <a class="el" href="classSAND_1_1SANDTopOpt.html#ae97a21a34555652ea61b20c29a1255ab">SAND::SANDTopOpt&lt; dim &gt;</a>
+</li>
+<li>find_relevant_neighbors()
+: <a class="el" href="classSAND_1_1SANDTopOpt.html#add0cdc3840e97755e52258b2e3f06284">SAND::SANDTopOpt&lt; dim &gt;</a>
 </li>
 <li>finish_parameter_value()
 : <a class="el" href="classDataOutStack_3_01dim_00_01spacedim_00_01void_01_4.html#a7948968e2bf1071fc3cdb21e61f49b96">DataOutStack&lt; dim, spacedim, void &gt;</a>
@@ -554,7 +567,7 @@ $(function() {
 : <a class="el" href="classFiniteElement.html#afc49f8114f396b20b9a7fe9a3c058568">FiniteElement&lt; dim, spacedim &gt;</a>
 </li>
 <li>first_cell()
-: <a class="el" href="classDataOutRotation.html#aa892a39bd99ef698b203fd3029fd0c54">DataOutRotation&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classDataOutRotation.html#a164e423e4e9bb2a044aa6a0ea175ab21">DataOutRotation&lt; dim, spacedim &gt;</a>
 </li>
 <li>first_component()
 : <a class="el" href="structDifferentiation_1_1AD_1_1internal_1_1Extractor_3_01dim_00_01FEValuesExtractors_1_1Scalar_01_4.html#a23215f3ce51a3e2bc6d258916cdf78a1">Differentiation::AD::internal::Extractor&lt; dim, FEValuesExtractors::Scalar &gt;</a>
@@ -564,7 +577,7 @@ $(function() {
 , <a class="el" href="structDifferentiation_1_1AD_1_1internal_1_1Extractor_3_01dim_00_01FEValuesExtractors_1_1Vector_01_4.html#abb008e3cfc83498f4bf3e53278df6fb1">Differentiation::AD::internal::Extractor&lt; dim, FEValuesExtractors::Vector &gt;</a>
 </li>
 <li>first_face()
-: <a class="el" href="classDataOutFaces.html#abec0b74f6d53592282fd45a1901570ff">DataOutFaces&lt; dim, spacedim &gt;</a>
+: <a class="el" href="classDataOutFaces.html#ae53579b046aa2618f92631a029fb7a14">DataOutFaces&lt; dim, spacedim &gt;</a>
 </li>
 <li>first_invariant()
 : <a class="el" href="classSymmetricTensor.html#a04efa71ed514a17d8769c21019cca4e8">SymmetricTensor&lt; rank_, dim, Number &gt;</a>
@@ -602,11 +615,17 @@ $(function() {
 <li>FlowFunction()
 : <a class="el" href="classFunctions_1_1FlowFunction.html#aedc729f898530da082dd900a5d64b391">Functions::FlowFunction&lt; dim &gt;</a>
 </li>
+<li>FluidStructureProblem()
+: <a class="el" href="classStep46_1_1FluidStructureProblem.html#a633a92fa74355d2a593b3a4f4bdec676">Step46::FluidStructureProblem&lt; dim &gt;</a>
+</li>
 <li>flush_cells()
-: <a class="el" href="classDataOutBase_1_1DataOutFilter.html#a0dbf9f800502bcb856b3633c24707866">DataOutBase::DataOutFilter</a>
+: <a class="el" href="group__Exceptions.html#ga0dbf9f800502bcb856b3633c24707866">DataOutBase::DataOutFilter</a>
 </li>
 <li>flush_points()
-: <a class="el" href="classDataOutBase_1_1DataOutFilter.html#a42c1bde8026776d09c562dae7cb6d4fc">DataOutBase::DataOutFilter</a>
+: <a class="el" href="group__Exceptions.html#ga42c1bde8026776d09c562dae7cb6d4fc">DataOutBase::DataOutFilter</a>
+</li>
+<li>flux()
+: <a class="el" href="classStep69_1_1ProblemDescription.html#a691371e6788b78dba284d6917674e701">Step69::ProblemDescription&lt; dim &gt;</a>
 </li>
 <li>forward()
 : <a class="el" href="classFullMatrix.html#ad2241691e3b13448df6acbc37b39ab06">FullMatrix&lt; number &gt;</a>
@@ -632,7 +651,7 @@ $(function() {
 </li>
 <li>fourth_derivative()
 : <a class="el" href="classMappingFE_1_1InternalData.html#a8531c97bb1332b5e5ffd0152af5a7bb5">MappingFE&lt; dim, spacedim &gt;::InternalData</a>
-, <a class="el" href="classMappingFEField_3_01dim_00_01spacedim_00_01VectorType_00_01void_01_4_1_1InternalData.html#a80e4f5e8305d47fdb7e880831d8810cb">MappingFEField&lt; dim, spacedim, VectorType, void &gt;::InternalData</a>
+, <a class="el" href="classMappingFEField_3_01dim_00_01spacedim_00_01VectorType_00_01void_01_4_1_1InternalData.html#ac2a8cdeb575f283bdf3e53b71e1618d8">MappingFEField&lt; dim, spacedim, VectorType, void &gt;::InternalData</a>
 , <a class="el" href="classMappingQGeneric_1_1InternalData.html#a5da4a26f70cd023029c0dc39287ee773">MappingQGeneric&lt; dim, spacedim &gt;::InternalData</a>
 </li>
 <li>FPArrayComparator()
@@ -640,8 +659,8 @@ $(function() {
 </li>
 <li>free()
 : <a class="el" href="classCUDAWrappers_1_1MatrixFree.html#afdb6b86640ec59623d21e7ba63b81310">CUDAWrappers::MatrixFree&lt; dim, Number &gt;</a>
-, <a class="el" href="classGrowingVectorMemory.html#a98e9fb7dba295e667ca46321227ab20f">GrowingVectorMemory&lt; VectorType &gt;</a>
-, <a class="el" href="group__Exceptions.html#ga1c07789f829815a3f57d312d2dba3144">PrimitiveVectorMemory&lt; VectorType &gt;</a>
+, <a class="el" href="group__Exceptions.html#ga98e9fb7dba295e667ca46321227ab20f">GrowingVectorMemory&lt; VectorType &gt;</a>
+, <a class="el" href="classPrimitiveVectorMemory.html#a1c07789f829815a3f57d312d2dba3144">PrimitiveVectorMemory&lt; VectorType &gt;</a>
 , <a class="el" href="classVectorMemory.html#ad4d9c709afba576301411b9205c0e73d">VectorMemory&lt; VectorType &gt;</a>
 </li>
 <li>free_memory()
@@ -650,9 +669,12 @@ $(function() {
 <li>free_properties()
 : <a class="el" href="classParticles_1_1Particle.html#af307e61f872fc0223939865c5725be7d">Particles::Particle&lt; dim, spacedim &gt;</a>
 </li>
+<li>frequency_sweep()
+: <a class="el" href="classstep62_1_1ElasticWave.html#addfac76e2ef2d8498187903fcdfadc81">step62::ElasticWave&lt; dim &gt;</a>
+</li>
 <li>frobenius_norm()
-: <a class="el" href="classBlockMatrixBase.html#a40df5806b5d3cc3f19a31a7e11b36f51">BlockMatrixBase&lt; MatrixType &gt;</a>
-, <a class="el" href="group__Matrix1.html#gaef82bc2e32be8901a4b8dac6242b72db">ChunkSparseMatrix&lt; number &gt;</a>
+: <a class="el" href="group__Matrix1.html#ga40df5806b5d3cc3f19a31a7e11b36f51">BlockMatrixBase&lt; MatrixType &gt;</a>
+, <a class="el" href="classChunkSparseMatrix.html#aef82bc2e32be8901a4b8dac6242b72db">ChunkSparseMatrix&lt; number &gt;</a>
 , <a class="el" href="classCUDAWrappers_1_1SparseMatrix.html#a2ce3e31d388b7f2e606b48b61adb41cf">CUDAWrappers::SparseMatrix&lt; Number &gt;</a>
 , <a class="el" href="classFullMatrix.html#ace5a8a1ea24b18624dc2ddcb6b88d03b">FullMatrix&lt; number &gt;</a>
 , <a class="el" href="classLAPACKFullMatrix.html#a8b5fdc9d191f831817d706615cf5b334">LAPACKFullMatrix&lt; number &gt;</a>
@@ -666,7 +688,7 @@ $(function() {
 </li>
 <li>FullMatrix()
 : <a class="el" href="classFullMatrix.html#adc08a0718c9110770badd10b5a38892f">FullMatrix&lt; number &gt;</a>
-, <a class="el" href="classPETScWrappers_1_1FullMatrix.html#abff534aef68fd39060a178a3203324d3">PETScWrappers::FullMatrix</a>
+, <a class="el" href="classPETScWrappers_1_1FullMatrix.html#aa7bf471489868baedb1d33438fcb50a3">PETScWrappers::FullMatrix</a>
 </li>
 <li>Function()
 : <a class="el" href="classFunction.html#a8c6e33c27ac2c3c2be40af1f954b71a7">Function&lt; dim, RangeNumberType &gt;</a>
@@ -675,13 +697,13 @@ $(function() {
 : <a class="el" href="classFunctionDerivative.html#adec31cc4064fef2681a5f5f145a9bbc8">FunctionDerivative&lt; dim &gt;</a>
 </li>
 <li>FunctionFromFunctionObjects()
-: <a class="el" href="classFunctionFromFunctionObjects.html#ab76746fbde21fae651cc1d15d3fbbd8a">FunctionFromFunctionObjects&lt; dim, RangeNumberType &gt;</a>
+: <a class="el" href="classFunctionFromFunctionObjects.html#aa5ac9ded4aca2f3d32ac89c9a57090a0">FunctionFromFunctionObjects&lt; dim, RangeNumberType &gt;</a>
 </li>
 <li>FunctionManifold()
-: <a class="el" href="classFunctionManifold.html#ab7de04277216d0935c77281b0b340595">FunctionManifold&lt; dim, spacedim, chartdim &gt;</a>
+: <a class="el" href="classFunctionManifold.html#a065f83a002c1737a792ab6ee922515ab">FunctionManifold&lt; dim, spacedim, chartdim &gt;</a>
 </li>
 <li>FunctionParser()
-: <a class="el" href="classFunctionParser.html#a981060f088b43cdf6f9fac1b840d0346">FunctionParser&lt; dim &gt;</a>
+: <a class="el" href="classFunctionParser.html#a5a025a34dddf97b70fa604da253561e4">FunctionParser&lt; dim &gt;</a>
 </li>
 <li>FunctionTime()
 : <a class="el" href="classFunctionTime.html#afd664d1ab89910d8cffb428a9e9777fc">FunctionTime&lt; Number &gt;</a>

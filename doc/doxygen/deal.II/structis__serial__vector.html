@@ -97,11 +97,11 @@ struct is_serial_vector&lt; T &gt;</h3>
 
 <p>Type trait for a serial vector, i.e. a vector class for which storage is not supported to be distributed over processes. The specialization</p>
 <div class="fragment"><div class="line"><span class="keyword">template</span> &lt;&gt;</div>
-<div class="line"><span class="keyword">struct </span><a class="code" href="structis__serial__vector.html">is_serial_vector</a>&lt;<a class="code" href="classVectorType.html">VectorType</a>&gt; : std::true_type</div>
+<div class="line"><span class="keyword">struct </span><a class="code" href="structis__serial__vector.html">is_serial_vector</a>&lt;VectorType&gt; : std::true_type</div>
 <div class="line">{};</div>
 </div><!-- fragment --><p> for a serial vector type, respectively,</p>
 <div class="fragment"><div class="line"><span class="keyword">template</span> &lt;&gt;</div>
-<div class="line"><span class="keyword">struct </span><a class="code" href="structis__serial__vector.html">is_serial_vector</a>&lt;<a class="code" href="classVectorType.html">VectorType</a>&gt; : std::false_type</div>
+<div class="line"><span class="keyword">struct </span><a class="code" href="structis__serial__vector.html">is_serial_vector</a>&lt;VectorType&gt; : std::false_type</div>
 <div class="line">{};</div>
 </div><!-- fragment --><p> for a vector type with support of distributed storage, must be done in a header file of a vector declaration. </p>
 
@@ -110,7 +110,6 @@ struct is_serial_vector&lt; T &gt;</h3>
 <li>include/deal.II/lac/<a class="el" href="lac_2vector__type__traits_8h_source.html">vector_type_traits.h</a></li>
 </ul>
 </div><!-- contents -->
-<div class="ttc" id="aclassVectorType_html"><div class="ttname"><a href="classVectorType.html">VectorType</a></div></div>
 <div class="ttc" id="astructis__serial__vector_html"><div class="ttname"><a href="structis__serial__vector.html">is_serial_vector</a></div><div class="ttdef"><b>Definition:</b> <a href="lac_2vector__type__traits_8h_source.html#l00049">vector_type_traits.h:49</a></div></div>
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->

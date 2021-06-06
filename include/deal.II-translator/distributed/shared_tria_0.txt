@@ -1,0 +1,83 @@
+[0.x.0]*
+     This class provides a parallel triangulation for which every processor     knows about every cell of the global mesh (unlike for the      [2.x.0]  class) but in which cells are     automatically partitioned when run with MPI so that each processor     "owns" a subset of cells. The use of this class is demonstrated in      [2.x.1] .         Different from the  [2.x.2]  and      [2.x.3]  classes, this implies     that the entire mesh is stored on each processor. While this is clearly     a memory bottleneck that limits the use of this class to a few dozen     or hundreds of MPI processes, the partitioning of the mesh can be used     to partition work such as assembly or postprocessing between     participating processors, and it can also be used to partition which     processor stores which parts of matrices and vectors. As a consequence,     using this class is often a gentler introduction to parallelizing a     code than the more involved  [2.x.4]  class     in which processors only know their own part of the mesh, but nothing     about cells owned by other processors with the exception of a single     layer of ghost cells around their own part of the domain.         As a consequence of storing the entire mesh on each processor, active     cells need to be flagged for refinement or coarsening consistently on     all processors if you want to adapt them, regardless of being classified     as locally owned, ghost or artificial.         The class is also useful in cases where compute time and memory     considerations dictate that the program needs to be run in parallel,     but where algorithmic concerns require that every processor knows     about the entire mesh. An example could be where an application     has to have both volume and surface meshes that can then both     be partitioned independently, but where it is difficult to ensure     that the locally owned set of surface mesh cells is adjacent to the     locally owned set of volume mesh cells and the other way around. In     such cases, knowing the [1.x.0] of both meshes ensures that     assembly of coupling terms can be implemented without also     implementing overly complicated schemes to transfer information about     adjacent cells from processor to processor.         The partitioning of cells between processors is done internally     based on a number of different possibilities. By passing appropriate     flags to the constructor of this class (see the      [2.x.5]      enum), it is possible to select different ways of partitioning the mesh,     including ways that are dictated by the application and not by the     desire to minimize the length of the interface between subdomains owned     by processors (as is done by the METIS and Zoltan packages, both of     which are options for partitioning). The DoFHandler class knows how to     enumerate degrees of freedom in ways appropriate for the partitioned     mesh.        
+*  [2.x.6]     
+* [0.x.1]*
+       Configuration flags for distributed Triangulations to be set in the       constructor. Settings can be combined using bitwise OR.             The constructor requires that exactly one of        [2.x.7] ,        [2.x.8]  and        [2.x.9]  is set. If        [2.x.10]  is chosen, it will use        [2.x.11]  (if available), then        [2.x.12]  (if available) and finally        [2.x.13] .      
+* [0.x.2]*
+         Choose the partitioner depending on the enabled         dependencies that were found when configuring deal.II.  In         particular, if the Trilinos package Zoltan was found, then         use the  [2.x.14]  strategy. If Zoltan was not         found but the METIS package was found, then use the         partition_metis strategy. If neither of these were found,         then use the partition_zorder partitioning strategy.        
+* [0.x.3]*
+         Use METIS partitioner to partition active cells.        
+* [0.x.4]*
+         Partition active cells with the same scheme used in the         p4est library.                 The term "Z-order" originates in the fact that cells are         sorted using a space filling curve which in 2d connects the         four children of a cell in the order bottom left, bottom         right, top left, top right (i.e., with a curve that looks         like a reverse "Z"), and does so recursively on all levels         of a triangulation. This is also the order in which         children are enumerated by the GeometryInfo class. The         "Z-order" is also sometimes called "Morton ordering", see         https://en.wikipedia.org/wiki/Z-order_curve .                  [2.x.15]           [2.x.16]  "Z order glossary entry".        
+* [0.x.5]*
+         Use Zoltan to partition active cells.        
+* [0.x.6]*
+         Partition cells using a custom, user defined function. This is         accomplished by connecting the post_refinement signal to the         triangulation whenever it is first created and passing the user         defined function through the signal using  [2.x.17] .         Here is an example:        
+* [1.x.1]
+*                  An equivalent code using lambda functions would look like this:        
+* [1.x.2]
+*                 
+*  [2.x.18]  If you plan to use a custom partition with geometric multigrid,         you must manually partition the level cells in addition to the active         cells.        
+* [0.x.7]*
+         This flag needs to be set to use the geometric multigrid         functionality. This option requires additional computation and         communication.                 Note: This flag should always be set alongside a flag for an         active cell partitioning method.        
+* [0.x.8]*
+       Constructor.             The flag  [2.x.19]  can be used to enable artificial       cells. If enabled, this class will behave similarly       to  [2.x.20]  and        [2.x.21]  in the sense that there will       be locally owned cells, a single layer of ghost cells, and       artificial cells. However, one should not forget that in contrast to       those parallel triangulations all cells are duplicated on all       processes, leading in most cases to significantly more artificial       cells.             If artificial cells are disabled, all non-locally owned cells are       considered ghost cells. This might lead to very expensive ghost-value       update steps. While in the case of artificial cells, ghost-value       updates lead to communication only with the direct process neighbors in       a point-to-point fashion, these degenerate to an operation in which       every process communicates with every other process (an "all-to-all"       communication) if no artificial cells are available. If such       ghost-value updates are the bottleneck in your code, you may want to       consider enabling artificial cells.      
+* [0.x.9]*
+       Destructor.      
+* [0.x.10]*
+       Return if multilevel hierarchy is supported and has been constructed.      
+* [0.x.11]*
+       Coarsen and refine the mesh according to refinement and coarsening       flags set.             This step is equivalent to the  [2.x.22]  class with an       addition of calling  [2.x.23]  at       the end.      
+* [0.x.12]*
+       Create a triangulation.             This function also partitions triangulation based on the MPI       communicator provided to the constructor.      
+* [0.x.13]*
+        [2.x.24]   [2.x.25]             
+*  [2.x.26]  Not implemented yet.      
+* [0.x.14]*
+       Copy  [2.x.27]  to this triangulation.             This function also partitions triangulation based on the MPI       communicator provided to the constructor.            
+*  [2.x.28]  This function can not be used with  [2.x.29]        since it only stores those cells that it owns, one layer of ghost cells       around the ones it locally owns, and a number of artificial cells.      
+* [0.x.15]*
+       Read the data of this object from a stream for the purpose of       serialization. Throw away the previous content.             This function first does the same work as in        [2.x.30]  then partitions the triangulation based on       the MPI communicator provided to the constructor.      
+* [0.x.16]*
+       Return a vector of length  [2.x.31]  where each       element stores the subdomain id of the owner of this cell. The       elements of the vector are obviously the same as the subdomain ids       for locally owned and ghost cells, but are also correct for       artificial cells that do not store who the owner of the cell is in       their subdomain_id field.      
+* [0.x.17]*
+       Return a vector of length  [2.x.32]  where each       element stores the level subdomain id of the owner of this cell. The       elements of the vector are obviously the same as the level subdomain       ids for locally owned and ghost cells, but are also correct for       artificial cells that do not store who the owner of the cell is in       their level_subdomain_id field.      
+* [0.x.18]*
+       Return allow_artificial_cells , namely true if artificial cells are       allowed.      
+* [0.x.19]*
+       Settings      
+* [0.x.20]*
+       A flag to decide whether or not artificial cells are allowed.      
+* [0.x.21]*
+       This function calls  [2.x.33]  () and if       requested in the constructor of the class marks artificial cells.      
+* [0.x.22]*
+       A vector containing subdomain IDs of cells obtained by partitioning       using either zorder, METIS, or a user-defined partitioning scheme.       In case allow_artificial_cells is false, this vector is       consistent with IDs stored in cell->subdomain_id() of the       triangulation class. When allow_artificial_cells is true, cells which       are artificial will have cell->subdomain_id() ==  [2.x.34]              The original partition information is stored to allow using sequential       DoF distribution and partitioning functions with semi-artificial       cells.      
+* [0.x.23]*
+       A vector containing level subdomain IDs of cells obtained by       partitioning each level.             The original partition information is stored to allow using sequential       DoF distribution and partitioning functions with semi-artificial       cells.      
+* [0.x.24]*
+     Dummy class the compiler chooses for parallel shared triangulations if     we didn't actually configure deal.II with the MPI library. The     existence of this class allows us to refer to      [2.x.35]  objects throughout the library even if     it is disabled.         Since the constructor of this class is deleted, no such objects     can actually be created as this would be pointless given that     MPI is not available.    
+* [0.x.25]*
+       Constructor. Deleted to make sure that objects of this type cannot be       constructed (see also the class documentation).      
+* [0.x.26]*
+       Return if multilevel hierarchy is supported and has been constructed.      
+* [0.x.27]*
+       A dummy function to return empty vector.      
+* [0.x.28]*
+       A dummy function to return empty vector.      
+* [0.x.29]*
+       A dummy function which always returns true.      
+* [0.x.30]*
+       A dummy vector.      
+* [0.x.31]*
+       A dummy vector.      
+* [0.x.32]*
+       This class temporarily modifies the subdomain ID of all active cells to       their respective "true" owner.             The modification only happens on  [2.x.36]        objects with artificial cells, and persists for the lifetime of an       instantiation of this class.             The TemporarilyRestoreSubdomainIds class should only be used for       temporary read-only purposes. For example, whenever your implementation       requires to treat artificial cells temporarily as locally relevant to       access their dof indices.             This class has effect only if artificial cells are allowed. Without       artificial cells, the current subdomain IDs already correspond to the       true subdomain IDs. See the  [2.x.37]  "glossary"       for more information about artificial cells.      
+* [0.x.33]*
+         Constructor.                 Stores the subdomain ID of all active cells if the provided         Triangulation is of type  [2.x.38]                  Replaces them by their true subdomain ID equivalent.        
+* [0.x.34]*
+         Destructor.                 Returns the subdomain ID of all active cells on the          [2.x.39]  into their previous state.        
+* [0.x.35]*
+         The modified  [2.x.40]         
+* [0.x.36]*
+         A vector that temporarily stores the subdomain IDs on all active         cells before they have been modified on the          [2.x.41]         
+* [0.x.37]

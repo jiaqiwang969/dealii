@@ -1,0 +1,113 @@
+[0.x.0]*
+     A class that stores the data needed to reference the support points     closest to one requested point.    
+* [0.x.1]*
+ PointValueHistory tackles the overhead of plotting time (or any other iterative process) graphs of solution values at specific points on the mesh. The user specifies the points which the solution should be monitored at ahead of time, as well as giving each solution vector that they want to record a mnemonic name. Then, for each step the user calls one of the three available "evaluate field" methods to store the data from each time step, and the class extracts data for the requested points to store it. Finally, once the computation is finished, the user can request output files to be generated; these files are in Gnuplot format but are basically just regular text and can easily be imported into other programs well, for example into spreadsheets.
+*  The user can store extra variables which do not relate to mesh location specifying n_independent_variables. The class then expects a  [2.x.0]  of size n_independent_variables to be added during each step using the method  [2.x.1]  This may be used for example for recording external input, logging solver performance data such as time taken to solve the step and solver steps before convergence, saving norms calculated, or simply saving the time, number of time step, or number of nonlinear iteration along with the data evaluated from the mesh.
+*  The three "evaluate field" methods each have different strengths and weaknesses making each suitable for different contexts:  [2.x.2]   [2.x.3] Firstly, the  [2.x.4]  version that does not take a  [2.x.5]  DataPostprocessor object selects the nearest support point (see  [2.x.6]  "this entry in the glossary" ) to a given point to extract data from. This makes the code that needs to be run at each time step very short, since looping over the mesh to extract the needed dof_index can be done just once at the start. However, this method is not suitable for FiniteElement objects that do not assign dofs to actual mesh locations (i.e. FEs without  [2.x.7]  "support points" ) or if adaptive mesh refinement is used. The reason for the latter restriction is that the location of the closest support point to a given point may change upon mesh refinement. The class will throw an exception if any change to the triangulation is made (Although the nearest support point could be re- computed upon mesh refinement, the location of the support point will most likely change slightly, making the interpretation of the data difficult, hence this is not implemented currently.)
+*   [2.x.8]  Secondly,  [2.x.9]  calls  [2.x.10]   [2.x.11]  to compute values at the specific point requested. This method is valid for any FE that is supported by  [2.x.12]   [2.x.13]  Specifically, this method can be called by codes using adaptive mesh refinement.
+*   [2.x.14] Finally, the class offers a function  [2.x.15]  that takes a  [2.x.16]  DataPostprocessor object. This method allows the deal.II data postprocessor to be used to compute new quantities from the solution on the fly. The values are located at the nearest quadrature point to the requested point. If the mesh is refined between calls, this point will change, so care must be taken when using this method in code using adaptive refinement, but as the output will be meaningful (in the sense that the quadrature point selected is guaranteed to remain in the same vicinity, the class does not prevent the use of this method in adaptive codes. The class provides warnings in the output files if the mesh has changed. Note that one can reduce the error this procedure introduces by providing a quadrature formula that has more points, at the expense of performing more work since then the closest quadrature points is nearer to the point at which the evaluation is really supposed to happen. (As a sidenote: Why not do the evaluation at the requested point right away? The reason for this is that it would require setting up a new quadrature point object on each cell that has only a single point corresponding to the reference coordinates of the point you really want; then initializing a FEValues object with it; then evaluating the solution at this point; then handing the result to the DataPostprocessor object. This sequence of things is expensive
+* 
+*  -  which is the reason why  [2.x.17]  is expensive. Using the same quadrature formula on each cell on which we want to evaluate the solution and only having to initialize a FEValue object once is a much cheaper alternative, albeit of course at the expense of getting only an approximate result.)  [2.x.18] 
+*  When recording a new mnemonic name, the user must supply a component_mask (see  [2.x.19]  "this glossary entry" ) to indicate the  [2.x.20]  "(vector) components" to be extracted from the given input. If the user simply wants to extract all the components, the mask need not be explicitly supplied to the  [2.x.21]  add_field_name method and the default value of the parameter is sufficient. If the  [2.x.22]  with a  [2.x.23]  object is used, the component_mask is interpreted as the mask of the  [2.x.24]  return vector. The size of this mask can be different to that of the FE space, but must be provided when the  [2.x.25]  method is called. One variant of the  [2.x.26]  method allows an unsigned int input to construct a suitable mask, if all values from the  [2.x.27]  are desired.
+*  The class automatically generates names for the data stored based on the mnemonics supplied. The methods  [2.x.28]  and  [2.x.29]  add_independent_names allow the user to provide lists of names to use instead if desired.
+*  Following is a little code snippet that shows a common usage of this class:
+* 
+
+* 
+* [1.x.0]
+* 
+
+* 
+* [0.x.2]*
+   Provide a stripped down instance of the class which does not support   adding points or mesh data.  This may be used for example for recording   external input or logging solver performance data.  
+* [0.x.3]*
+   Constructor linking the class to a specific  [2.x.30]  This class   reads specific data from the  [2.x.31]  and stores it internally for   quick access (in particular dof indices of closest neighbors to requested   points) the class is fairly intolerant to changes to the  [2.x.32]  if   data at support points is required. Mesh refinement and  [2.x.33]    methods should be performed before the  [2.x.34]  method is called and   adaptive grid refinement is only supported by some methods.     The user can store extra variables which do not relate to mesh location   by specifying the number required using n_independent_variables and   making calls to  [2.x.35]  as needed.  This may be used for   example for recording external input or logging solver performance data.  
+* [0.x.4]*
+   Copy constructor. This constructor can be safely called with a  [2.x.36]    PointValueHistory object that contains data, but this could be expensive   and should be avoided.  
+* [0.x.5]*
+   Assignment operator. This assignment operator can be safely called once   the class is closed and data added, but this is provided primarily to   allow a  [2.x.37]  object declared in a class to be   reinitialized later in the class. Using the assignment operator when the   object contains data could be expensive.  
+* [0.x.6]*
+   Deconstructor.  
+* [0.x.7]*
+   Add a single point to the class. The support points (one per component)   in the mesh that are closest to that point are found and their details   stored for use when  [2.x.38]  is called. If more than one point   is required rather use the  [2.x.39]  method since this minimizes   iterations over the mesh.  
+* [0.x.8]*
+   Add multiple points to the class. The support points (one per component)   in the mesh that are closest to that point is found and their details   stored for use when  [2.x.40]  is called. If more than one point   is required, rather call this method as it is more efficient than the   add_point method since it minimizes iterations over the mesh. The points   are added to the internal database in the order they appear in the list   and there is always a one to one correspondence between the requested   point and the added point, even if a point is requested multiple times.  
+* [0.x.9]*
+   Put another mnemonic string (and hence  [2.x.41]  into the class.   This method adds storage space for variables equal to the number of true   values in component_mask. This also adds extra entries for points that   are already in the class, so  [2.x.42]  and  [2.x.43]  can be   called in any order.  
+* [0.x.10]*
+   Put another mnemonic string (and hence  [2.x.44]  into the class.   This method adds storage space for n_components variables. This also adds   extra entries for points that are already in the class, so  [2.x.45]    add_field_name and  [2.x.46]  can be called in any order. This method   generates a  [2.x.47]  0, ..., n_components-1 and calls the previous   function.  
+* [0.x.11]*
+   Provide optional names for each component of a field. These names will be   used instead of names generated from the field name, if supplied.  
+* [0.x.12]*
+   Provide optional names for the independent values. These names will be   used instead of "Indep_...", if supplied.  
+* [0.x.13]*
+   Extract values at the stored points from the VectorType supplied and add   them to the new dataset in vector_name. The component mask supplied when   the field was added is used to select components to extract. If a  [2.x.48]    DoFHandler is used, one (and only one) evaluate_field method must be   called for each dataset (time step, iteration, etc) for each vector_name,   otherwise a  [2.x.49]  error can occur.  
+* [0.x.14]*
+   Compute values using a  [2.x.50]  object with the  [2.x.51]    supplied and add them to the new dataset in vector_name. The   component_mask supplied when the field was added is used to select   components to extract from the  [2.x.52]  return vector. This   method takes a vector of field names to process and is preferred if many   fields use the same  [2.x.53]  object as each cell is only   located once. The quadrature object supplied is used for all components   of a vector field. Although this method will not throw an exception if   the mesh has changed. (No internal data structures are invalidated as the   quadrature points are repicked each time the function is called.)   Nevertheless the user must be aware that if the mesh changes the point   selected will also vary slightly, making interpretation of the data more   difficult. If a  [2.x.54]  is used, one (and only one) evaluate_field   method must be called for each dataset (time step, iteration, etc) for   each vector_name, otherwise a  [2.x.55]  error can occur.  
+* [0.x.15]*
+   Construct a  [2.x.56]   [2.x.57]  containing only vector_name and   call the above function. The above function is more efficient if multiple   fields use the same  [2.x.58]  object.  
+* [0.x.16]*
+   Extract values at the points actually requested from the VectorType   supplied and add them to the new dataset in vector_name. Unlike the other   evaluate_field methods this method does not care if the dof_handler has   been modified because it uses calls to  [2.x.59]  to   extract there data. Therefore, if only this method is used, the class is   fully compatible with adaptive refinement. The component_mask supplied   when the field was added is used to select components to extract. If a  [2.x.60]    DoFHandler is used, one (and only one) evaluate_field method must be   called for each dataset (time step, iteration, etc) for each vector_name,   otherwise a  [2.x.61]  error can occur.  
+* [0.x.17]*
+   Add the key for the current dataset to the dataset. Although calling this   method first is sensible, the order in which this method,  [2.x.62]    evaluate_field and  [2.x.63]  is not important. It is   however important that all the data for a give dataset is added to each   dataset and that it is added before a new data set is started. This   prevents a  [2.x.64]   
+* [0.x.18]*
+   If independent values have been set up, this method stores these values.   This should only be called once per dataset, and if independent values   are used it must be called for every dataset. A  [2.x.65]    exception can be thrown if this method is not called.  
+* [0.x.19]*
+   Write out a series of .gpl files named base_name + "-00.gpl", base_name +   "-01.gpl" etc. The data file gives information about where the support   points   selected and interpreting the data. If  [2.x.66]  != 0 an additional file   base_name + "_indep.gpl" containing key and independent data. The file   name agrees with the order the points were added to the class. The names   of the data columns can be supplied using the functions  [2.x.67]    add_component_names and  [2.x.68]  The support point   information is only meaningful if the dof_handler has not been changed.   Therefore, if adaptive mesh refinement has been used the support point   data should not be used. The optional parameter postprocessor_locations   is used to add the postprocessor locations to the output files. If this   is desired, the data should be obtained from a call to   get_postprocessor_locations while the dof_handler is usable. The default   parameter is an empty vector of strings, and will suppress postprocessor   locations output.  
+* [0.x.20]*
+   Return a  [2.x.69]  with the indices of selected points flagged with a 1.   This method is mainly for testing and verifying that the class is working   correctly. By passing this vector to a DataOut object, the user can   verify that the positions returned by  [2.x.70]  agree with   the positions that  [2.x.71]  interprets from the  [2.x.72]  returned. The   code snippet below demonstrates how this could be done:  
+* [1.x.1]
+*   
+* [0.x.21]*
+   Stores the actual location of each support point selected by the  [2.x.73]    add_point(s) method.  This can be used to compare with the point   requested, for example by using the  [2.x.74]  function. For   convenience, location is resized to the correct number of points by the   method.  
+* [0.x.22]*
+   Stores the actual location of the points used by the data_postprocessor.   This can be used to compare with the points requested, for example by   using the  [2.x.75]  function. Unlike the support_locations,   these locations are computed every time the evaluate_field method is   called with a postprocessor. This method uses the same algorithm so can   will find the same points. For convenience, location is resized to the   correct number of points by the method.  
+* [0.x.23]*
+   Once datasets have been added to the class, requests to add additional   points will make the data interpretation unclear. The boolean  [2.x.76]    defines a state of the class and ensures this does not happen. Additional   points or vectors can only be added while the class is not closed, and   the class must be closed before datasets can be added or written to file.    [2.x.77]  and  [2.x.78]    do not require the class to be closed. If a method that requires a class to   be open or close is called while in the wrong state a  [2.x.79]    exception is thrown.  
+* [0.x.24]*
+   Delete the lock this object has to the  [2.x.80]  used the last time   the class was created.  This method should not normally need to be   called, but can be useful to ensure that the  [2.x.81]  is released   before it goes out of scope if the  [2.x.82]  class might live   longer than it. Once this method has been called, the majority of methods   will throw a  [2.x.83]  exception, so if used this method should   be the last call to the class.  
+* [0.x.25]*
+   Print useful debugging information about the class, include details about   which support points were selected for each point and sizes of the data   stored.  
+* [0.x.26]*
+   Check the internal data sizes to test for a loss of data sync. This is   often used in  [2.x.84]  statements with the  [2.x.85]  exception.   If  [2.x.86]  is  [2.x.87]  this method returns  [2.x.88]  if all sizes are   within 1 of each other (needed to allow data to be added), with  [2.x.89]    =  [2.x.90]  they must be exactly equal.  
+* [0.x.27]*
+   Exception  
+* [0.x.28]*
+   Exception  
+* [0.x.29]*
+   Exception  
+* [0.x.30]*
+   Exception  
+* [0.x.31]*
+   Stores keys, values on the abscissa. This will often be time, but   possibly time step, iteration etc.  
+* [0.x.32]*
+   Values that do not depend on grid location.  
+* [0.x.33]*
+   Save a vector listing component names associated with a   independent_values. This will be an empty vector if the user does not   supplies names.  
+* [0.x.34]*
+   Save data for each mnemonic entry. data_store: mnemonic
+* 
+->   [point_0_components point_1_components ... point_n-1_components][key]   This format facilitates scalar mnemonics in a vector space, because   scalar mnemonics will only have one component per point. Vector   components are strictly FE.n_components () long.  
+* [0.x.35]*
+   Save a component mask for each mnemonic.  
+* [0.x.36]*
+   Save a vector listing component names associated with a mnemonic. This   will be an empty vector if the user does not supplies names.  
+* [0.x.37]*
+   Save the location and other mesh information about support points.  
+* [0.x.38]*
+   Used to enforce  [2.x.91]  state for some methods.  
+* [0.x.39]*
+   Used to enforce  [2.x.92]  state for some methods.  
+* [0.x.40]*
+   A smart pointer to the dof_handler supplied to the constructor. This can   be released by calling  [2.x.93]   
+* [0.x.41]*
+   Variable to check if the triangulation has changed. If it has changed,   certain data is out of date (especially the    [2.x.94]   
+* [0.x.42]*
+   A boolean to record whether the class was initialized with a DoFHandler   or not.  
+* [0.x.43]*
+   Used to detect signals from the Triangulation.  
+* [0.x.44]*
+   Stores the number of independent variables requested.  
+* [0.x.45]*
+   A function that will be triggered through signals whenever the   triangulation is modified.     It is currently used to check if the triangulation has changed,   invalidating precomputed values.  
+* [0.x.46]

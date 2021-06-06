@@ -1,0 +1,61 @@
+[0.x.0]*
+   A linear operator that wraps SUNDIALS functionality.  
+* [0.x.1]*
+     Apply this LinearOperator to  [2.x.0]  and store the result in  [2.x.1]     
+* [0.x.2]*
+     Constructor.          [2.x.2]  A_data Data required by  [2.x.3]       [2.x.4]  a_times_fn A function pointer to the function that computes A*v    
+* [0.x.3]*
+     Data necessary to evaluate a_times_fn.    
+* [0.x.4]*
+     %Function pointer declared by SUNDIALS to evaluate the matrix vector     product.    
+* [0.x.5]*
+   A linear operator that wraps preconditioner functionality as specified by   SUNDIALS. The vmult() function solves the preconditioner equation  [2.x.5] ,   i.e., it computes  [2.x.6] .  
+* [0.x.6]*
+     Apply the wrapped preconditioner, i.e., solve  [2.x.7]  where  [2.x.8]  is the      [2.x.9]  vector and  [2.x.10]  the  [2.x.11]  vector.          [2.x.12]  dst Result vector of the preconditioner application      [2.x.13]  src Target vector of the preconditioner application    
+* [0.x.7]*
+     Constructor.          [2.x.14]  P_data Data required by  [2.x.15]       [2.x.16]  p_solve_fn A function pointer to the function that computes A*v      [2.x.17]  tol Tolerance, that an iterative solver should use to judge       convergence    
+* [0.x.8]*
+     Data necessary to calls p_solve_fn    
+* [0.x.9]*
+     %Function pointer to a function that computes the preconditioner     application.    
+* [0.x.10]*
+     Potential tolerance to use in the internal solve of the preconditioner     equation.    
+* [0.x.11]*
+   Type of function objects to interface with SUNDIALS linear solvers     This function type encapsulates the action of solving  [2.x.18] .   The LinearOperator  [2.x.19]  encapsulates the matrix vector product  [2.x.20]  and   the LinearOperator  [2.x.21]  encapsulates the application of the   preconditioner  [2.x.22] .   The user can specify function objects of this type to attach custom linear   solver routines to SUNDIALS. The two LinearOperators  [2.x.23]  and  [2.x.24]  are   built internally by SUNDIALS based on user settings. The parameters are   interpreted as follows:      [2.x.25]  op A LinearOperator that applies the matrix vector product    [2.x.26]  prec A LinearOperator that applies the preconditioner    [2.x.27]  x The output solution vector    [2.x.28]  b The right-hand side    [2.x.29]  tol Tolerance for the iterative solver     This function should return:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - 0: Success
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - >0: Recoverable error, ARKode will reattempt the solution and call this         function again.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - <0: Unrecoverable error, the computation will be aborted and an         assertion will be thrown.  
+* [0.x.12]!     Attach wrapper functions to SUNDIALS' linear solver interface. We pretend     that the user-supplied linear solver is matrix-free, even though it can     be matrix-based. This way SUNDIALS does not need to understand our matrix     types.    
+* [0.x.13]*
+       Implicit conversion to SUNLinearSolver.      
+* [0.x.14]

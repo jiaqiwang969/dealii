@@ -1,0 +1,70 @@
+[0.x.0]!  [2.x.0]  PETScWrappers [2.x.1] 
+
+* 
+* [0.x.1]*
+   Namespace for PETSc classes that work in parallel over MPI, such as   distributed vectors and matrices.    
+*  [2.x.2]   
+* [0.x.2]*
+     Implementation of a parallel vector class based on PETSC and using MPI     communication to synchronize distributed operations. All the     functionality is actually in the base class, except for the calls to     generate a parallel vector. This is possible since PETSc only works on     an abstract vector type and internally distributes to functions that do     the actual work depending on the actual vector type (much like using     virtual functions). Only the functions creating a vector of specific     type differ, and are implemented in this particular class.             [1.x.0]         The parallel functionality of PETSc is built on top of the Message     Passing Interface (MPI). MPI's communication model is built on     collective communications: if one process wants something from another,     that other process has to be willing to accept this communication. A     process cannot query data from another process by calling a remote     function, without that other process expecting such a transaction. The     consequence is that most of the operations in the base class of this     class have to be called collectively. For example, if you want to     compute the l2 norm of a parallel vector,  [2.x.3]  all processes across     which this vector is shared have to call the  [2.x.4]  function. If     you don't do this, but instead only call the  [2.x.5]  function on one     process, then the following happens: This one process will call one of     the collective MPI functions and wait for all the other processes to     join in on this. Since the other processes don't call this function,     you will either get a time-out on the first process, or, worse, by the     time the next a call to a PETSc function generates an MPI message on     the other processes, you will get a cryptic message that only a subset     of processes attempted a communication. These bugs can be very hard to     figure out, unless you are well-acquainted with the communication model     of MPI, and know which functions may generate MPI messages.         One particular case, where an MPI message may be generated unexpectedly     is discussed below.             [1.x.1]         PETSc does allow read access to individual elements of a vector, but in     the distributed case only to elements that are stored locally. We     implement this through calls like <tt>d=vec(i)</tt>. However, if you     access an element outside the locally stored range, an exception is     generated.         In contrast to read access, PETSc (and the respective deal.II wrapper     classes) allow to write (or add) to individual elements of vectors,     even if they are stored on a different process. You can do this     writing, for example, <tt>vec(i)=d</tt> or <tt>vec(i)+=d</tt>, or     similar operations. There is one catch, however, that may lead to very     confusing error messages: PETSc requires application programs to call     the compress() function when they switch from adding, to elements to     writing to elements. The reasoning is that all processes might     accumulate addition operations to elements, even if multiple processes     write to the same elements. By the time we call compress() the next     time, all these additions are executed. However, if one process adds to     an element, and another overwrites to it, the order of execution would     yield non-deterministic behavior if we don't make sure that a     synchronization with compress() happens in between.         In order to make sure these calls to compress() happen at the     appropriate time, the deal.II wrappers keep a state variable that store     which is the presently allowed operation: additions or writes. If it     encounters an operation of the opposite kind, it calls compress() and     flips the state. This can sometimes lead to very confusing behavior, in     code that may for example look like this:    
+* [1.x.2]
+*          This code can run into trouble: by the time we see the first addition     operation, we need to flush the overwrite buffers for the vector, and     the deal.II library will do so by calling compress(). However, it will     only do so for all processes that actually do an addition
+* 
+*  -  if the     condition is never true for one of the processes, then this one will     not get to the actual compress() call, whereas all the other ones do.     This gets us into trouble, since all the other processes hang in the     call to flush the write buffers, while the one other process advances     to the call to compute the l2 norm. At this time, you will get an error     that some operation was attempted by only a subset of processes. This     behavior may seem surprising, unless you know that write/addition     operations on single elements may trigger this behavior.         The problem described here may be avoided by placing additional calls     to compress(), or making sure that all processes do the same type of     operations at the same time, for example by placing zero additions if     necessary.          [2.x.6]       [2.x.7]  "vectors with ghost elements"        
+*  [2.x.8]     
+*  [2.x.9]     
+* [0.x.3]*
+       Declare type for container size.      
+* [0.x.4]*
+       Default constructor. Initialize the vector as empty.      
+* [0.x.5]*
+       Constructor. Set dimension to  [2.x.10]  and initialize all elements with       zero.              [2.x.11]  locally_owned_size denotes the size of the chunk that shall be       stored on the present process.              [2.x.12]  communicator denotes the MPI communicator over which the       different parts of the vector shall communicate             The constructor is made explicit to avoid accidents like this:       <tt>v=0;</tt>. Presumably, the user wants to set every element of the       vector to zero, but instead, what happens is this call:       <tt>v=Vector [2.x.13]  i.e. the vector is replaced by one       of length zero.      
+* [0.x.6]*
+       Copy-constructor from deal.II vectors. Sets the dimension to that of       the given vector, and copies all elements.              [2.x.14]  locally_owned_size denotes the size of the chunk that shall be       stored on the present process.              [2.x.15]  communicator denotes the MPI communicator over which the       different parts of the vector shall communicate      
+* [0.x.7]*
+       Copy-constructor the values from a PETSc wrapper vector class.              [2.x.16]  local_size denotes the size of the chunk that shall be stored on       the present process.              [2.x.17]  communicator denotes the MPI communicator over which the       different parts of the vector shall communicate              [2.x.18]  The use of objects that are explicitly of type VectorBase       is deprecated: use  [2.x.19]  instead.      
+* [0.x.8]*
+       Construct a new parallel ghosted PETSc vector from IndexSets.             Note that  [2.x.20]  must be ascending and 1:1, see        [2.x.21]   In particular, the DoFs in        [2.x.22]  need to be contiguous, meaning you can only create vectors       from a DoFHandler with several finite element components if they are       not reordered by component (use a  [2.x.23]        otherwise).  The global size of the vector is determined by       local.size(). The global indices in  [2.x.24]  are supplied as ghost       indices so that they can be read locally.             Note that the  [2.x.25]  IndexSet may be empty and that any indices       already contained in  [2.x.26]  are ignored during construction. That       way, the ghost parameter can equal the set of locally relevant       degrees of freedom, see  [2.x.27] .            
+*  [2.x.28]  This operation always creates a ghosted vector, which is considered       read-only.              [2.x.29]         [2.x.30]  "vectors with ghost elements"      
+* [0.x.9]*
+       Construct a new parallel PETSc vector without ghost elements from an       IndexSet.             Note that  [2.x.31]  must be ascending and 1:1, see        [2.x.32]   In particular, the DoFs in        [2.x.33]  need to be contiguous, meaning you can only create vectors       from a DoFHandler with several finite element components if they are       not reordered by component (use a  [2.x.34]        otherwise).      
+* [0.x.10]*
+       Copy constructor.      
+* [0.x.11]*
+       Release all memory and return to a state just like after having       called the default constructor.      
+* [0.x.12]*
+       Copy the given vector. Resize the present vector if necessary. Also       take over the MPI communicator of  [2.x.35]       
+* [0.x.13]*
+       Set all components of the vector to the given number  [2.x.36]  Simply       pass this down to the base class, but we still need to declare this       function to make the example given in the discussion about making the       constructor explicit work.      
+* [0.x.14]*
+       Copy the values of a deal.II vector (as opposed to those of the PETSc       vector wrapper class) into this object.             Contrary to the case of sequential vectors, this operators requires       that the present vector already has the correct size, since we need       to have a partition and a communicator present which we otherwise       can't get from the source vector.      
+* [0.x.15]*
+       Change the dimension of the vector to  [2.x.37]  It is unspecified how       resizing the vector affects the memory allocation of this object;       i.e., it is not guaranteed that resizing it to a smaller size       actually also reduces memory consumption, or if for efficiency the       same amount of memory is used              [2.x.38]  denotes how many of the  [2.x.39]  values shall be       stored locally on the present process. for less data.              [2.x.40]  denotes the MPI communicator henceforth to be used       for this vector.             If  [2.x.41]  is false, the vector is filled by zeros.       Otherwise, the elements are left an unspecified state.      
+* [0.x.16]*
+       Change the dimension to that of the vector  [2.x.42]  and also take over       the partitioning into local sizes as well as the MPI communicator.       The same applies as for the other  [2.x.43]  function.             The elements of  [2.x.44]  are not copied, i.e. this function is the same       as calling <tt>reinit(v.size(), v.locally_owned_size(),       omit_zeroing_entries)</tt>.      
+* [0.x.17]*
+       Reinit as a vector with ghost elements. See the constructor with       same signature for more details.              [2.x.45]         [2.x.46]  "vectors with ghost elements"      
+* [0.x.18]*
+       Reinit as a vector without ghost elements. See constructor with same       signature for more details.              [2.x.47]         [2.x.48]  "vectors with ghost elements"      
+* [0.x.19]*
+       Return a reference to the MPI communicator object in use with this       vector.      
+* [0.x.20]*
+       Print to a stream.  [2.x.49]  denotes the desired precision with       which values shall be printed,  [2.x.50]  whether scientific       notation shall be used. If  [2.x.51]  is  [2.x.52]  then the vector is       printed in a line, while if  [2.x.53]  then the elements are printed on       a separate line each.            
+*  [2.x.54]  This function overloads the one in the base class to ensure       that the right thing happens for parallel vectors that are       distributed across processors.      
+* [0.x.21]*
+        [2.x.55]   [2.x.56]             
+*  [2.x.57]  This function overloads the one in the base class to make this       a collective operation.      
+* [0.x.22]*
+       Create a vector of length  [2.x.58]  For this class, we create a parallel       vector.  [2.x.59]  denotes the total size of the vector to be created.  [2.x.60]        locally_owned_size denotes how many of these elements shall be stored       locally.      
+* [0.x.23]*
+       Create a vector of global length  [2.x.61]  local size  [2.x.62]        locally_owned_size and with the specified ghost indices. Note that       you need to call update_ghost_values() before accessing those.      
+* [0.x.24]*
+       Copy of the communicator object to be used for this parallel vector.      
+* [0.x.25]*
+     Global function  [2.x.63]  which overloads the default implementation of     the C++ standard library which uses a temporary object. The function     simply exchanges the data of the two vectors.          [2.x.64]   [2.x.65]     
+* [0.x.26]*
+     A helper class used internally in linear_operator.h. Specialization for      [2.x.66]     
+* [0.x.27]*
+ Declare  [2.x.67]  as distributed vector.
+
+* 
+* [0.x.28]

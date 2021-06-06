@@ -164,7 +164,7 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac037fc30b4833bca7aea061bc7af85ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceFiniteElementDomination.html#ac037fc30b4833bca7aea061bc7af85ef">operator&amp;</a> (const <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a> d1, const <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a> d2)</td></tr>
+<tr class="memitem:ac037fc30b4833bca7aea061bc7af85ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceFiniteElementDomination.html#ac037fc30b4833bca7aea061bc7af85ef">operator&amp;</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a> d1, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a> d2)</td></tr>
 <tr class="separator:ac037fc30b4833bca7aea061bc7af85ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -177,7 +177,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">FiniteElementDomination::Domination</a></td>
+          <td class="memname"><a class="el" href="shared__tria__0_8txt.html#abcd3e97091f492496aa258c912ae135b">enum</a> <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">FiniteElementDomination::Domination</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -225,11 +225,11 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">FiniteElementDomination::Domination</a></td>
+          <td class="memname"><a class="el" href="shared__tria__0_8txt.html#abcd3e97091f492496aa258c912ae135b">enum</a> <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">FiniteElementDomination::Domination</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>An enum that describes the outcome of comparing two elements for mutual domination. If one element dominates another, then the restriction of the space described by the dominated element to a face of the cell is strictly larger than that of the dominating element. For example, in 2-d Q(2) elements dominate Q(4) elements, because the traces of Q(4) elements are quartic polynomials which is a space strictly larger than the quadratic polynomials (the restriction of the Q(2) element). Similar reasonings apply for vertices and cells as well. In general, Q(k) dominates Q(k') if \(k\le k&#39;\).</p>
+<p>An enum that describes the outcome of comparing two elements for mutual domination. If one element dominates another, then the restriction of the space described by the dominated element to a face of the cell is strictly larger than that of the dominating element. For example, in 2-d <a class="el" href="fe__base__0_8txt.html#a4448cafc8a31bb815e887b4de7e24ff2">Q(2)</a> elements dominate <a class="el" href="fe__base__0_8txt.html#a16c62ebaecb824126a663e24a348c95f">Q(4)</a> elements, because the traces of <a class="el" href="fe__base__0_8txt.html#a16c62ebaecb824126a663e24a348c95f">Q(4)</a> elements are quartic polynomials which is a space strictly larger than the quadratic polynomials (the restriction of the <a class="el" href="fe__base__0_8txt.html#a4448cafc8a31bb815e887b4de7e24ff2">Q(2)</a> element). Similar reasonings apply for vertices and cells as well. In general, <a class="el" href="fe__base__0_8txt.html#a197859d8bd783c1c9bc579194146561b">Q(k)</a> dominates Q(k') if \(k\le k&#39;\).</p>
 <p>This enum is used in the <a class="el" href="classFiniteElement.html#a1719468736ca8342cf3927564e57ed66">FiniteElement::compare_for_domination()</a> function that is used in the context of hp-finite element methods when determining what to do at faces where two different finite elements meet (see the <a class="el" href="DEALGlossary.html#hp_paper">hp-paper</a> for a more detailed description of the following). In that case, the degrees of freedom of one side need to be constrained to those on the other side. The determination which side is which is based on the outcome of a comparison for mutual domination: the dominated side is constrained to the dominating one.</p>
 <p>Note that there are situations where neither side dominates. The <a class="el" href="DEALGlossary.html#hp_paper">hp-paper</a> lists two case, with the simpler one being that a \(Q_2\times Q_1\) vector- valued element (i.e. a <code><a class="el" href="classFESystem.html">FESystem</a>(<a class="el" href="classFE__Q.html">FE_Q(2)</a>,1,<a class="el" href="classFE__Q.html">FE_Q(1)</a>,1)</code>) meets a \(Q_1\times Q_2\) element: here, for each of the two vector-components, we can define a domination relationship, but it is different for the two components.</p>
 <p>It is clear that the concept of domination doesn't matter for discontinuous elements. However, discontinuous elements may be part of vector-valued elements and may therefore be compared against each other for domination. They should return <code>either_element_can_dominate</code> in that case. Likewise, when comparing two identical finite elements, they should return this code; the reason is that we can not decide which element will dominate at the time we look at the first component of, for example, two \(Q_2\times Q_1\) and \(Q_2\times Q_2\) elements, and have to keep our options open until we get to the second base element.</p>
@@ -279,7 +279,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">FiniteElementDomination::Domination</a></td>
+          <td class="memname"><a class="el" href="shared__tria__0_8txt.html#abcd3e97091f492496aa258c912ae135b">enum</a> <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">FiniteElementDomination::Domination</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -331,15 +331,15 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a> FiniteElementDomination::operator&amp; </td>
+          <td class="memname"><a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a> <a class="el" href="solver__0_8txt.html#a840632236ca6e80e973c83ccf2ced958">FiniteElementDomination::operator</a>&amp; </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a>&#160;</td>
           <td class="paramname"><em>d1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceFiniteElementDomination.html#a65fdbe0cca5954df89a7af4f36769bf9">Domination</a>&#160;</td>
           <td class="paramname"><em>d2</em>&#160;</td>
         </tr>
         <tr>

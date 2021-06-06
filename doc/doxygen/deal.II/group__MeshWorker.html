@@ -7,7 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>The deal.II Library: The MeshWorker interface</title>
+<title>The deal.II Library: The MeshWorker interface A collection of classes and</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -90,14 +90,14 @@ $(function() {
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">The MeshWorker interface<div class="ingroups"><a class="el" href="group__Integrators.html">Integrators</a></div></div>  </div>
+<div class="title">The MeshWorker interface A collection of classes and<div class="ingroups"><a class="el" href="group__Integrators.html">Integrators A collection of namespaces and functions</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>A collection of classes and functions simplifying the coding of loops over all cells and faces. All classes and functions of this module are in the <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> namespace, which also contains documentation on the usage.  
+<p>functions simplifying the coding of loops over all cells and faces. All classes and functions of this module are in the <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> namespace, which also contains documentation on the usage.  
 <a href="#details">More...</a></p>
 <div class="dynheader">
-Collaboration diagram for The MeshWorker interface:</div>
+Collaboration diagram for The MeshWorker interface A collection of classes and:</div>
 <div class="dyncontent">
 <div class="center"><!-- SVG 0 -->
 </div>
@@ -154,30 +154,30 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:gaf5a59dde8686a651b12d040cc5afdf9a"><td class="memTemplParams" colspan="2">template&lt;class INFOBOX , class DOFINFO , int dim, int spacedim, class ITERATOR &gt; </td></tr>
-<tr class="memitem:gaf5a59dde8686a651b12d040cc5afdf9a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#gaf5a59dde8686a651b12d040cc5afdf9a">MeshWorker::cell_action</a> (ITERATOR cell, <a class="el" href="classMeshWorker_1_1DoFInfoBox.html">DoFInfoBox</a>&lt; dim, DOFINFO &gt; &amp;dof_info, INFOBOX &amp;info, const std::function&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;cell_worker, const std::function&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;boundary_worker, const std::function&lt; void(DOFINFO &amp;, DOFINFO &amp;, typename INFOBOX::CellInfo &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;face_worker, const <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;loop_control)</td></tr>
+<tr class="memitem:gaf5a59dde8686a651b12d040cc5afdf9a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#gaf5a59dde8686a651b12d040cc5afdf9a">MeshWorker::cell_action</a> (ITERATOR <a class="el" href="vector__tools__point__value__0_8txt.html#a8e9328f1f25ef75085320c149b93bb42">cell</a>, <a class="el" href="classMeshWorker_1_1DoFInfoBox.html">DoFInfoBox</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, DOFINFO &gt; &amp;dof_info, INFOBOX &amp;info, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;cell_worker, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;boundary_worker, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, DOFINFO &amp;, typename INFOBOX::CellInfo &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;face_worker, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;loop_control)</td></tr>
 <tr class="separator:gaf5a59dde8686a651b12d040cc5afdf9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad10f528ab87f39fbb0531d24f238b2f3"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim, class DOFINFO , class INFOBOX , class ASSEMBLER , class ITERATOR &gt; </td></tr>
-<tr class="memitem:gad10f528ab87f39fbb0531d24f238b2f3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#gad10f528ab87f39fbb0531d24f238b2f3">MeshWorker::loop</a> (ITERATOR begin, typename <a class="el" href="structidentity.html">identity</a>&lt; ITERATOR &gt;::type end, DOFINFO &amp;dinfo, INFOBOX &amp;info, const std::function&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;cell_worker, const std::function&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;boundary_worker, const std::function&lt; void(DOFINFO &amp;, DOFINFO &amp;, typename INFOBOX::CellInfo &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;face_worker, ASSEMBLER &amp;assembler, const <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;lctrl=<a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a>())</td></tr>
+<tr class="memitem:gad10f528ab87f39fbb0531d24f238b2f3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#gad10f528ab87f39fbb0531d24f238b2f3">MeshWorker::loop</a> (ITERATOR <a class="el" href="chunk__sparsity__pattern__0_8txt.html#a1b85ba44191e874d873fa30bb66efabd">begin</a>, typename <a class="el" href="structidentity.html">identity</a>&lt; ITERATOR &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> <a class="el" href="chunk__sparsity__pattern__0_8txt.html#afd9d8ed92a81e47388f0f4666beb0712">end</a>, DOFINFO &amp;dinfo, INFOBOX &amp;info, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;cell_worker, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;boundary_worker, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, DOFINFO &amp;, typename INFOBOX::CellInfo &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;face_worker, ASSEMBLER &amp;assembler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;lctrl=<a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a>())</td></tr>
 <tr class="separator:gad10f528ab87f39fbb0531d24f238b2f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga93cfb35f7969ce8f0be7628255dfe7fb"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim, class ITERATOR , class ASSEMBLER &gt; </td></tr>
-<tr class="memitem:ga93cfb35f7969ce8f0be7628255dfe7fb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#ga93cfb35f7969ce8f0be7628255dfe7fb">MeshWorker::integration_loop</a> (ITERATOR begin, typename <a class="el" href="structidentity.html">identity</a>&lt; ITERATOR &gt;::type end, <a class="el" href="classMeshWorker_1_1DoFInfo.html">DoFInfo</a>&lt; dim, spacedim &gt; &amp;dof_info, <a class="el" href="classMeshWorker_1_1IntegrationInfoBox.html">IntegrationInfoBox</a>&lt; dim, spacedim &gt; &amp;box, const <a class="el" href="classMeshWorker_1_1LocalIntegrator.html">LocalIntegrator</a>&lt; dim, spacedim &gt; &amp;integrator, ASSEMBLER &amp;assembler, const <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;lctrl=<a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a>())</td></tr>
+<tr class="memitem:ga93cfb35f7969ce8f0be7628255dfe7fb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#ga93cfb35f7969ce8f0be7628255dfe7fb">MeshWorker::integration_loop</a> (ITERATOR <a class="el" href="chunk__sparsity__pattern__0_8txt.html#a1b85ba44191e874d873fa30bb66efabd">begin</a>, typename <a class="el" href="structidentity.html">identity</a>&lt; ITERATOR &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> <a class="el" href="chunk__sparsity__pattern__0_8txt.html#afd9d8ed92a81e47388f0f4666beb0712">end</a>, <a class="el" href="classMeshWorker_1_1DoFInfo.html">DoFInfo</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;dof_info, <a class="el" href="classMeshWorker_1_1IntegrationInfoBox.html">IntegrationInfoBox</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;<a class="el" href="base_2bounding__box__0_8txt.html#af37935e4c84062243619eb336c9068ad">box</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1LocalIntegrator.html">LocalIntegrator</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;integrator, ASSEMBLER &amp;assembler, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;lctrl=<a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a>())</td></tr>
 <tr class="separator:ga93cfb35f7969ce8f0be7628255dfe7fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga76ec61fbd188fb320fe8ca166a79b322"><td class="memTemplParams" colspan="2">template&lt;class CellIteratorType , class ScratchData , class CopyData , class CellIteratorBaseType  = typename internal::CellIteratorBaseType&lt;CellIteratorType&gt;::type&gt; </td></tr>
-<tr class="memitem:ga76ec61fbd188fb320fe8ca166a79b322"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">MeshWorker::mesh_loop</a> (const CellIteratorType &amp;begin, const CellIteratorType &amp;end, const <a class="el" href="namespaceMeshWorker.html#a2cf962dca26399f5c73dbab4a5f9b9e8">CellWorkerFunctionType</a> &amp;cell_worker, const CopierType &amp;copier, const <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;sample_scratch_data, const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;sample_copy_data, const <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a> flags=<a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>, const <a class="el" href="namespaceMeshWorker.html#ad15a4a2de1fffa0ca0d982478cb2e020">BoundaryWorkerFunctionType</a> &amp;boundary_worker=<a class="el" href="namespaceMeshWorker.html#ad15a4a2de1fffa0ca0d982478cb2e020">BoundaryWorkerFunctionType</a>(), const <a class="el" href="namespaceMeshWorker.html#a13181f6a38f5fde7bb34301533f8c0ba">FaceWorkerFunctionType</a> &amp;face_worker=<a class="el" href="namespaceMeshWorker.html#a13181f6a38f5fde7bb34301533f8c0ba">FaceWorkerFunctionType</a>(), const unsigned <a class="el" href="classint.html">int</a> queue_length=2 *<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>(), const unsigned <a class="el" href="classint.html">int</a> chunk_size=8)</td></tr>
+<tr class="memitem:ga76ec61fbd188fb320fe8ca166a79b322"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">MeshWorker::mesh_loop</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;<a class="el" href="chunk__sparsity__pattern__0_8txt.html#a1b85ba44191e874d873fa30bb66efabd">begin</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;<a class="el" href="chunk__sparsity__pattern__0_8txt.html#afd9d8ed92a81e47388f0f4666beb0712">end</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#a2cf962dca26399f5c73dbab4a5f9b9e8">CellWorkerFunctionType</a> &amp;cell_worker, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CopierType &amp;<a class="el" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;sample_scratch_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;sample_copy_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a> <a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>=<a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#ad15a4a2de1fffa0ca0d982478cb2e020">BoundaryWorkerFunctionType</a> &amp;boundary_worker=<a class="el" href="namespaceMeshWorker.html#ad15a4a2de1fffa0ca0d982478cb2e020">BoundaryWorkerFunctionType</a>(), <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#a13181f6a38f5fde7bb34301533f8c0ba">FaceWorkerFunctionType</a> &amp;face_worker=<a class="el" href="namespaceMeshWorker.html#a13181f6a38f5fde7bb34301533f8c0ba">FaceWorkerFunctionType</a>(), <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> queue_length=2 *<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>(), <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> chunk_size=8)</td></tr>
 <tr class="separator:ga76ec61fbd188fb320fe8ca166a79b322"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae1cf14f6f8ff8f5e1f168c19ad4979b9"><td class="memTemplParams" colspan="2">template&lt;class CellIteratorType , class ScratchData , class CopyData , class CellIteratorBaseType  = typename internal::CellIteratorBaseType&lt;CellIteratorType&gt;::type&gt; </td></tr>
-<tr class="memitem:gae1cf14f6f8ff8f5e1f168c19ad4979b9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#gae1cf14f6f8ff8f5e1f168c19ad4979b9">MeshWorker::mesh_loop</a> (<a class="el" href="classIteratorRange.html">IteratorRange</a>&lt; CellIteratorType &gt; iterator_range, const typename <a class="el" href="structidentity.html">identity</a>&lt; std::function&lt; void(const CellIteratorBaseType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::type &amp;cell_worker, const typename <a class="el" href="structidentity.html">identity</a>&lt; std::function&lt; void(const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::type &amp;copier, const <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;sample_scratch_data, const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;sample_copy_data, const <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a> flags=<a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>, const typename <a class="el" href="structidentity.html">identity</a>&lt; std::function&lt; void(const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::type &amp;boundary_worker=std::function&lt; void(const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;(), const typename <a class="el" href="structidentity.html">identity</a>&lt; std::function&lt; void(const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::type &amp;face_worker=std::function&lt; void(const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;(), const unsigned <a class="el" href="classint.html">int</a> queue_length=2 *<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>(), const unsigned <a class="el" href="classint.html">int</a> chunk_size=8)</td></tr>
+<tr class="memitem:gae1cf14f6f8ff8f5e1f168c19ad4979b9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#gae1cf14f6f8ff8f5e1f168c19ad4979b9">MeshWorker::mesh_loop</a> (<a class="el" href="classIteratorRange.html">IteratorRange</a>&lt; CellIteratorType &gt; iterator_range, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;cell_worker, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;<a class="el" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;sample_scratch_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;sample_copy_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a> <a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>=<a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;boundary_worker=<a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;(), <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;face_worker=<a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;(), <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> queue_length=2 *<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>(), <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> chunk_size=8)</td></tr>
 <tr class="separator:gae1cf14f6f8ff8f5e1f168c19ad4979b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab233c65f7c758c094edbf9a0b5687d5e"><td class="memTemplParams" colspan="2">template&lt;class CellIteratorType , class ScratchData , class CopyData , class MainClass &gt; </td></tr>
-<tr class="memitem:gab233c65f7c758c094edbf9a0b5687d5e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#gab233c65f7c758c094edbf9a0b5687d5e">MeshWorker::mesh_loop</a> (const CellIteratorType &amp;begin, const typename <a class="el" href="structidentity.html">identity</a>&lt; CellIteratorType &gt;::type &amp;end, MainClass &amp;main_class, void(MainClass::*cell_worker)(const CellIteratorType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;), void(MainClass::*copier)(const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;), const <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;sample_scratch_data, const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;sample_copy_data, const <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a> flags=<a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>, void(MainClass::*boundary_worker)(const CellIteratorType &amp;, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)=nullptr, void(MainClass::*face_worker)(const CellIteratorType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, const CellIteratorType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)=nullptr, const unsigned <a class="el" href="classint.html">int</a> queue_length=2 *<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>(), const unsigned <a class="el" href="classint.html">int</a> chunk_size=8)</td></tr>
+<tr class="memitem:gab233c65f7c758c094edbf9a0b5687d5e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#gab233c65f7c758c094edbf9a0b5687d5e">MeshWorker::mesh_loop</a> (<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;<a class="el" href="chunk__sparsity__pattern__0_8txt.html#a1b85ba44191e874d873fa30bb66efabd">begin</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="structidentity.html">identity</a>&lt; CellIteratorType &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;<a class="el" href="chunk__sparsity__pattern__0_8txt.html#afd9d8ed92a81e47388f0f4666beb0712">end</a>, MainClass &amp;main_class, void(MainClass::*cell_worker)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;), void(MainClass::*<a class="el" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;), <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;sample_scratch_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;sample_copy_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a> <a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>=<a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>, void(MainClass::*boundary_worker)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)=<a class="el" href="fe__interface__values__0_8txt.html#a7afb86fa5db4a209b125ed3572c5579a">nullptr</a>, void(MainClass::*face_worker)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)=<a class="el" href="fe__interface__values__0_8txt.html#a7afb86fa5db4a209b125ed3572c5579a">nullptr</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> queue_length=2 *<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>(), <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> chunk_size=8)</td></tr>
 <tr class="separator:gab233c65f7c758c094edbf9a0b5687d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga47cf9870f0e4e1952e77d7c77a560998"><td class="memTemplParams" colspan="2">template&lt;class CellIteratorType , class ScratchData , class CopyData , class MainClass , class CellIteratorBaseType  = typename internal::CellIteratorBaseType&lt;CellIteratorType&gt;::type&gt; </td></tr>
-<tr class="memitem:ga47cf9870f0e4e1952e77d7c77a560998"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#ga47cf9870f0e4e1952e77d7c77a560998">MeshWorker::mesh_loop</a> (<a class="el" href="classIteratorRange.html">IteratorRange</a>&lt; CellIteratorType &gt; iterator_range, MainClass &amp;main_class, void(MainClass::*cell_worker)(const CellIteratorBaseType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;), void(MainClass::*copier)(const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;), const <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;sample_scratch_data, const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;sample_copy_data, const <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a> flags=<a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>, void(MainClass::*boundary_worker)(const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)=nullptr, void(MainClass::*face_worker)(const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)=nullptr, const unsigned <a class="el" href="classint.html">int</a> queue_length=2 *<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>(), const unsigned <a class="el" href="classint.html">int</a> chunk_size=8)</td></tr>
+<tr class="memitem:ga47cf9870f0e4e1952e77d7c77a560998"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__MeshWorker.html#ga47cf9870f0e4e1952e77d7c77a560998">MeshWorker::mesh_loop</a> (<a class="el" href="classIteratorRange.html">IteratorRange</a>&lt; CellIteratorType &gt; iterator_range, MainClass &amp;main_class, void(MainClass::*cell_worker)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;), void(MainClass::*<a class="el" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;), <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;sample_scratch_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;sample_copy_data, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a> <a class="el" href="grid__out__0_8txt.html#a510770d87baebda8326f66e6ab84dc84">flags</a>=<a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>, void(MainClass::*boundary_worker)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)=<a class="el" href="fe__interface__values__0_8txt.html#a7afb86fa5db4a209b125ed3572c5579a">nullptr</a>, void(MainClass::*face_worker)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)=<a class="el" href="fe__interface__values__0_8txt.html#a7afb86fa5db4a209b125ed3572c5579a">nullptr</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> queue_length=2 *<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>(), <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a> chunk_size=8)</td></tr>
 <tr class="separator:ga47cf9870f0e4e1952e77d7c77a560998"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>A collection of classes and functions simplifying the coding of loops over all cells and faces. All classes and functions of this module are in the <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> namespace, which also contains documentation on the usage. </p>
-<p>functions simplifying the coding of loops over all cells and faces. All classes and functions of this module are in the <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> namespace, which also contains documentation on the usage.</p>
+<p>functions simplifying the coding of loops over all cells and faces. All classes and functions of this module are in the <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> namespace, which also contains documentation on the usage. </p>
+<p>A collection of classes and functions simplifying the coding of loops over all cells and faces. All classes and functions of this module are in the <a class="el" href="namespaceMeshWorker.html">MeshWorker</a> namespace, which also contains documentation on the usage.</p>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="gaf5a59dde8686a651b12d040cc5afdf9a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gaf5a59dde8686a651b12d040cc5afdf9a">&#9670;&nbsp;</a></span>cell_action()</h2>
@@ -196,7 +196,7 @@ template&lt;class INFOBOX , class DOFINFO , int dim, int spacedim, class ITERATO
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classMeshWorker_1_1DoFInfoBox.html">DoFInfoBox</a>&lt; dim, DOFINFO &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classMeshWorker_1_1DoFInfoBox.html">DoFInfoBox</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, DOFINFO &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_info</em>, </td>
         </tr>
         <tr>
@@ -208,25 +208,25 @@ template&lt;class INFOBOX , class DOFINFO , int dim, int spacedim, class ITERATO
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::function&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
           <td class="paramname"><em>cell_worker</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::function&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
           <td class="paramname"><em>boundary_worker</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::function&lt; void(DOFINFO &amp;, DOFINFO &amp;, typename INFOBOX::CellInfo &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, DOFINFO &amp;, typename INFOBOX::CellInfo &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
           <td class="paramname"><em>face_worker</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;&#160;</td>
           <td class="paramname"><em>loop_control</em>&#160;</td>
         </tr>
         <tr>
@@ -284,7 +284,7 @@ template&lt;int dim, int spacedim, class DOFINFO , class INFOBOX , class ASSEMBL
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">typename <a class="el" href="structidentity.html">identity</a>&lt; ITERATOR &gt;::type&#160;</td>
+          <td class="paramtype">typename <a class="el" href="structidentity.html">identity</a>&lt; ITERATOR &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&#160;</td>
           <td class="paramname"><em>end</em>, </td>
         </tr>
         <tr>
@@ -302,19 +302,19 @@ template&lt;int dim, int spacedim, class DOFINFO , class INFOBOX , class ASSEMBL
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::function&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
           <td class="paramname"><em>cell_worker</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::function&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
           <td class="paramname"><em>boundary_worker</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::function&lt; void(DOFINFO &amp;, DOFINFO &amp;, typename INFOBOX::CellInfo &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(DOFINFO &amp;, DOFINFO &amp;, typename INFOBOX::CellInfo &amp;, typename INFOBOX::CellInfo &amp;)&gt; &amp;&#160;</td>
           <td class="paramname"><em>face_worker</em>, </td>
         </tr>
         <tr>
@@ -326,7 +326,7 @@ template&lt;int dim, int spacedim, class DOFINFO , class INFOBOX , class ASSEMBL
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;&#160;</td>
           <td class="paramname"><em>lctrl</em> = <code><a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a>()</code>&#160;</td>
         </tr>
         <tr>
@@ -359,25 +359,25 @@ template&lt;int dim, int spacedim, class ITERATOR , class ASSEMBLER &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">typename <a class="el" href="structidentity.html">identity</a>&lt; ITERATOR &gt;::type&#160;</td>
+          <td class="paramtype">typename <a class="el" href="structidentity.html">identity</a>&lt; ITERATOR &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a>&#160;</td>
           <td class="paramname"><em>end</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classMeshWorker_1_1DoFInfo.html">DoFInfo</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classMeshWorker_1_1DoFInfo.html">DoFInfo</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dof_info</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classMeshWorker_1_1IntegrationInfoBox.html">IntegrationInfoBox</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classMeshWorker_1_1IntegrationInfoBox.html">IntegrationInfoBox</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>box</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classMeshWorker_1_1LocalIntegrator.html">LocalIntegrator</a>&lt; dim, spacedim &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1LocalIntegrator.html">LocalIntegrator</a>&lt; <a class="el" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="el" href="fe__simplex__p__bubbles__0_8txt.html#a5cf3dab3f4c82260e6fb738524f8fbe2">spacedim</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>integrator</em>, </td>
         </tr>
         <tr>
@@ -389,7 +389,7 @@ template&lt;int dim, int spacedim, class ITERATOR , class ASSEMBLER &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a> &amp;&#160;</td>
           <td class="paramname"><em>lctrl</em> = <code><a class="el" href="classMeshWorker_1_1LoopControl.html">LoopControl</a>()</code>&#160;</td>
         </tr>
         <tr>
@@ -416,67 +416,67 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
         <tr>
           <td class="memname">void MeshWorker::mesh_loop </td>
           <td>(</td>
-          <td class="paramtype">const CellIteratorType &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;&#160;</td>
           <td class="paramname"><em>begin</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const CellIteratorType &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;&#160;</td>
           <td class="paramname"><em>end</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespaceMeshWorker.html#a2cf962dca26399f5c73dbab4a5f9b9e8">CellWorkerFunctionType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#a2cf962dca26399f5c73dbab4a5f9b9e8">CellWorkerFunctionType</a> &amp;&#160;</td>
           <td class="paramname"><em>cell_worker</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const CopierType &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CopierType &amp;&#160;</td>
           <td class="paramname"><em>copier</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;&#160;</td>
           <td class="paramname"><em>sample_scratch_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;&#160;</td>
           <td class="paramname"><em>sample_copy_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a>&#160;</td>
           <td class="paramname"><em>flags</em> = <code><a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespaceMeshWorker.html#ad15a4a2de1fffa0ca0d982478cb2e020">BoundaryWorkerFunctionType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#ad15a4a2de1fffa0ca0d982478cb2e020">BoundaryWorkerFunctionType</a> &amp;&#160;</td>
           <td class="paramname"><em>boundary_worker</em> = <code><a class="el" href="namespaceMeshWorker.html#ad15a4a2de1fffa0ca0d982478cb2e020">BoundaryWorkerFunctionType</a>()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespaceMeshWorker.html#a13181f6a38f5fde7bb34301533f8c0ba">FaceWorkerFunctionType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#a13181f6a38f5fde7bb34301533f8c0ba">FaceWorkerFunctionType</a> &amp;&#160;</td>
           <td class="paramname"><em>face_worker</em> = <code><a class="el" href="namespaceMeshWorker.html#a13181f6a38f5fde7bb34301533f8c0ba">FaceWorkerFunctionType</a>()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>queue_length</em> = <code>2&#160;*&#160;<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>chunk_size</em> = <code>8</code>&#160;</td>
         </tr>
         <tr>
@@ -486,24 +486,24 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
         </tr>
       </table>
 </div><div class="memdoc">
-<p>This function extends the <a class="el" href="namespaceWorkStream.html">WorkStream</a> concept to work on meshes (cells and/or faces) and handles the complicated logic for work on adaptively refined faces and parallel computation (work on faces to ghost neighbors for example). The <code>mesh_loop</code> can be used to simplify operations on cells (for example assembly), on boundaries (Neumann type boundary conditions), or on interior faces (for example in discontinuous Galerkin methods). The function is used in a number of tutorials, including <a class="el" href="step_12.html">step-12</a> , <a class="el" href="step_16.html">step-16</a> , and <a class="el" href="step_47.html">step-47</a> , to name just a few. For uniformly refined meshes, it would be relatively easy to use <a class="el" href="namespaceWorkStream.html#ab8ceb010811941c351803b671a19fb73">WorkStream::run()</a> with a <code>cell_worker</code> that also loops over faces, and takes care of assembling face terms depending on the current and neighbor cell. All user codes that do these loops would then need to insert manually the logic that identifies, for every face of the current cell, the neighboring cell, and the face index on the neighboring cell that corresponds to the current face. This is more complicated if local refinement is enabled and the current or neighbor cells have hanging nodes. In this case it is also necessary to identify the corresponding subface on either the current or the neighbor faces. This method externalizes that logic (which is independent from user codes) and separates the assembly of face terms (internal faces, boundary faces, or faces between different subdomain ids on parallel computations) from the assembling on cells, allowing the user to specify two additional workers (a <code>cell_worker</code>, a <code>boundary_worker</code>, and a <code>face_worker</code>) that are called automatically in each <code>cell</code>, according to the specific AssembleFlags <code>flags</code> that are passed. The <code>cell_worker</code> is passed the cell identifier, a <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> object, and a <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> object, following the same principles of <a class="el" href="namespaceWorkStream.html#ab8ceb010811941c351803b671a19fb73">WorkStream::run()</a>. Internally the function passes to <code>boundary_worker</code>, in addition to the above, also a <code>face_no</code> parameter that identifies the face on which the integration should be performed. The <code>face_worker</code> instead needs to identify the current face unambiguously both on the cell and on the neighboring cell, and it is therefore called with six arguments (three for each cell: the actual cell, the face index, and the subface_index. If no subface integration is needed, then the subface_index is <a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a>) in addition to the usual <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> and <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> objects. If the flag AssembleFlags::assemble_own_cells is passed, then the default behavior is to first loop over faces and do the work there, and then compute the actual work on the cell. It is possible to perform the integration on the cells after working on faces, by adding the flag AssembleFlags::cells_after_faces. If the flag AssembleFlags::assemble_own_interior_faces_once is specified, then each interior face is visited only once, and the <code>face_worker</code> is assumed to integrate all face terms at once (and add contributions to both sides of the face in a discontinuous Galerkin setting). This method is equivalent to the <a class="el" href="namespaceWorkStream.html#ab8ceb010811941c351803b671a19fb73">WorkStream::run()</a> method when AssembleFlags contains only <code>assemble_own_cells</code>, and can be used as a drop-in replacement for that method. The two data types <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> and <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> need to have a working copy constructor. <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> is only used in the worker function, while <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> is the object passed from the worker to the copier. The <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> object is reset to the value provided to this function every time this function visits a new cell (where it then calls the cell and face workers). In other words, no state carries over between calling the <code>copier</code> on one cell and the <code>cell_worker</code>/<code>face_worker</code>/<code>boundary_worker</code> functions on the next cell, and user code needs not reset the copy object either at the beginning of the cell integration or end of the copy operation. Resetting the state of the <code>copier</code> inside of a <code>face_worker</code> or <code>boundary_worker</code> constitutes a bug, and may lead to some unexpected results. The following example shows what is not permissible, as the copier is potentially shared among numerous faces on a cell: </p><div class="fragment"><div class="line"><span class="keyword">using</span> ScratchData      = <a class="code" href="classMeshWorker_1_1ScratchData.html">MeshWorker::ScratchData&lt;dim, spacedim&gt;</a>;</div>
-<div class="line"><span class="keyword">using</span> CopyData         = <a class="code" href="structMeshWorker_1_1CopyData.html">MeshWorker::CopyData&lt;1, 1, 1&gt;</a>;</div>
+<p>This function extends the <a class="el" href="namespaceWorkStream.html">WorkStream</a> concept to work on meshes (cells and/or faces) and handles the complicated logic for work on adaptively refined faces and parallel computation (work on faces to ghost neighbors for example). The <code>mesh_loop</code> can be used to simplify operations on cells (for example assembly), on boundaries (Neumann type boundary conditions), or on interior faces (for example in discontinuous Galerkin methods). The function is used in a number of tutorials, including <a class="el" href="step_12.html">step-12</a> , <a class="el" href="step_16.html">step-16</a> , and <a class="el" href="step_47.html">step-47</a> , to name just a few. For uniformly refined meshes, it would be relatively easy to use <a class="el" href="namespaceWorkStream.html#ab8ceb010811941c351803b671a19fb73">WorkStream::run()</a> with a <code>cell_worker</code> that also loops over faces, and takes care of assembling face terms depending on the current and neighbor cell. All user codes that do these loops would then need to insert manually the logic that identifies, for every face of the current cell, the neighboring cell, and the face index on the neighboring cell that corresponds to the current face. This is more complicated if local refinement is enabled and the current or neighbor cells have hanging nodes. In this case it is also necessary to identify the corresponding subface on either the current or the neighbor faces. This method externalizes that logic (which is independent from user codes) and separates the assembly of face terms (internal faces, boundary faces, or faces between different subdomain ids on parallel computations) from the assembling on cells, allowing the user to specify two additional workers (a <code>cell_worker</code>, a <code>boundary_worker</code>, and a <code>face_worker</code>) that are called automatically in each <code>cell</code>, according to the specific AssembleFlags <code>flags</code> that are passed. The <code>cell_worker</code> is passed the cell identifier, a <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> object, and a <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> object, following the same principles of <a class="el" href="namespaceWorkStream.html#ab8ceb010811941c351803b671a19fb73">WorkStream::run()</a>. Internally the function passes to <code>boundary_worker</code>, in addition to the above, also a <code>face_no</code> parameter that identifies the face on which the integration should be performed. The <code>face_worker</code> instead needs to identify the current face unambiguously both on the cell and on the neighboring cell, and it is therefore called with six arguments (three for each cell: the actual cell, the face index, and the subface_index. If no subface integration is needed, then the subface_index is <a class="el" href="namespacenumbers.html#a8ae36952c7e0cc778b47b5371b3aeff1">numbers::invalid_unsigned_int</a>) in addition to the usual <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> and <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> objects. If the flag AssembleFlags::assemble_own_cells is passed, then the default behavior is to first loop over faces and do the work there, and then compute the actual work on the cell. It is possible to perform the integration on the cells after working on faces, by adding the flag AssembleFlags::cells_after_faces. If the flag AssembleFlags::assemble_own_interior_faces_once is specified, then each interior face is visited only once, and the <code>face_worker</code> is assumed to integrate all face terms at once (and add contributions to both sides of the face in a discontinuous Galerkin setting). This method is equivalent to the <a class="el" href="namespaceWorkStream.html#ab8ceb010811941c351803b671a19fb73">WorkStream::run()</a> method when AssembleFlags contains only <code>assemble_own_cells</code>, and can be used as a drop-in replacement for that method. The two data types <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> and <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> need to have a working copy constructor. <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> is only used in the worker function, while <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> is the object passed from the worker to the copier. The <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> object is reset to the value provided to this function every time this function visits a new cell (where it then calls the cell and face workers). In other words, no state carries over between calling the <code>copier</code> on one cell and the <code>cell_worker</code>/<code>face_worker</code>/<code>boundary_worker</code> functions on the next cell, and user code needs not reset the copy object either at the beginning of the cell integration or end of the copy operation. Resetting the state of the <code>copier</code> inside of a <code>face_worker</code> or <code>boundary_worker</code> constitutes a bug, and may lead to some unexpected results. The following example shows what is not permissible, as the copier is potentially shared among numerous faces on a cell: </p><div class="fragment"><div class="line"><span class="keyword">using</span> <a class="code" href="structScratchData.html">ScratchData</a>      = <a class="code" href="classMeshWorker_1_1ScratchData.html">MeshWorker::ScratchData&lt;dim, spacedim&gt;</a>;</div>
+<div class="line"><span class="keyword">using</span> <a class="code" href="structCopyData.html">CopyData</a>         = <a class="code" href="structMeshWorker_1_1CopyData.html">MeshWorker::CopyData&lt;1, 1, 1&gt;</a>;</div>
 <div class="line"><span class="keyword">using</span> CellIteratorType = decltype(dof_handler.begin_active());</div>
 <div class="line"> </div>
-<div class="line">ScratchData            scratch(...);</div>
-<div class="line">CopyData               <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>(...);</div>
+<div class="line"><a class="code" href="structScratchData.html">ScratchData</a>            scratch(...);</div>
+<div class="line"><a class="code" href="structCopyData.html">CopyData</a>               <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>(...);</div>
 <div class="line"> </div>
-<div class="line">std::function&lt;void(<span class="keyword">const</span> CellIteratorType &amp;, ScratchData &amp;, CopyData &amp;)&gt;</div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#a7a17f790f94a4539645c427e98239a81">std::function</a>&lt;void(<span class="keyword">const</span> CellIteratorType &amp;, <a class="code" href="structScratchData.html">ScratchData</a> &amp;, <a class="code" href="structCopyData.html">CopyData</a> &amp;)&gt;</div>
 <div class="line">empty_cell_worker;</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">auto</span> boundary_worker = [...] (</div>
-<div class="line"><span class="keyword">const</span> CellIteratorType &amp;cell,</div>
-<div class="line"><span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>      face,</div>
-<div class="line">ScratchData            &amp;scratch_data,</div>
-<div class="line">CopyData               &amp;copy_data)</div>
+<div class="line"><span class="keyword">const</span> CellIteratorType &amp;<a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>,</div>
+<div class="line"><span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>      <a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a>,</div>
+<div class="line"><a class="code" href="structScratchData.html">ScratchData</a>            &amp;scratch_data,</div>
+<div class="line"><a class="code" href="structCopyData.html">CopyData</a>               &amp;copy_data)</div>
 <div class="line">{</div>
-<div class="line"><span class="keyword">const</span> <span class="keyword">auto</span> &amp;fe_face_values = scratch_data.reinit(cell, face);</div>
-<div class="line">copy_data = CopyData(...); <span class="comment">// This is an error, as we lose the</span></div>
+<div class="line"><span class="keyword">const</span> <span class="keyword">auto</span> &amp;fe_face_values = scratch_data.reinit(<a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>, <a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a>);</div>
+<div class="line">copy_data = <a class="code" href="structCopyData.html">CopyData</a>(...); <span class="comment">// This is an error, as we lose the</span></div>
 <div class="line">                          <span class="comment">// accumulation that has been performed on</span></div>
 <div class="line">                          <span class="comment">// other boundary faces of the same cell.</span></div>
 <div class="line"> </div>
@@ -515,16 +515,16 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
 <div class="line"> }</div>
 <div class="line">};</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">double</span> <a class="code" href="namespaceinternal.html#aa5bef221c94bc6b9c5441c306a72cdbaa2063c1608d6e0baf80249c42e2be5804">value</a> = 0;</div>
-<div class="line"><span class="keyword">auto</span> copier = [...](<span class="keyword">const</span> CopyData &amp;copy_data)</div>
+<div class="line"><span class="keywordtype">double</span> <a class="code" href="functions__0_8txt.html#af9f808a82e8c618e2e7a19dd08a9eae3">value</a> = 0;</div>
+<div class="line"><span class="keyword">auto</span> <a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a> = [...](<span class="keyword">const</span> <a class="code" href="structCopyData.html">CopyData</a> &amp;copy_data)</div>
 <div class="line">{</div>
-<div class="line"><a class="code" href="namespaceinternal.html#aa5bef221c94bc6b9c5441c306a72cdbaa2063c1608d6e0baf80249c42e2be5804">value</a> += copy_data.vectors[0][0]; <span class="comment">// Contributions from some faces may</span></div>
+<div class="line"><a class="code" href="functions__0_8txt.html#af9f808a82e8c618e2e7a19dd08a9eae3">value</a> += copy_data.vectors[0][0]; <span class="comment">// Contributions from some faces may</span></div>
 <div class="line">                                  <span class="comment">// be missing.</span></div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">MeshWorker::mesh_loop</a>(dof_handler.active_cell_iterators(),</div>
-<div class="line">                    empty_cell_worker, copier,</div>
-<div class="line">                    scratch, <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>,</div>
+<div class="line">                    empty_cell_worker, <a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>,</div>
+<div class="line">                    scratch, <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>,</div>
 <div class="line">                    <a class="code" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaa883d91104d154f16c67a4ea50da3fac5">MeshWorker::assemble_boundary_faces</a>,</div>
 <div class="line">                    boundary_worker);</div>
 </div><!-- fragment --><p> The queue_length argument indicates the number of items that can be live at any given time. Each item consists of chunk_size elements of the input stream that will be worked on by the worker and copier functions one after the other on the same thread. If your data objects are large, or their constructors are expensive, it is helpful to keep in mind that queue_length copies of the <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> object and <code>queue_length*chunk_size</code> copies of the <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> object are generated. </p><dl class="section note"><dt>Note</dt><dd>The types of the function arguments and the default values (empty worker functions) displayed in the Doxygen documentation here are slightly simplified compared to the real types. </dd>
@@ -537,24 +537,24 @@ More information about requirements on template types and meaning of <code>queue
 <p>If the flag AssembleFlags::assemble_own_cells is passed, then the default behavior is to first loop over faces and do the work there, and then compute the actual work on the cell. It is possible to perform the integration on the cells after working on faces, by adding the flag AssembleFlags::cells_after_faces.</p>
 <p>If the flag AssembleFlags::assemble_own_interior_faces_once is specified, then each interior face is visited only once, and the <code>face_worker</code> is assumed to integrate all face terms at once (and add contributions to both sides of the face in a discontinuous Galerkin setting).</p>
 <p>This method is equivalent to the <a class="el" href="namespaceWorkStream.html#ab8ceb010811941c351803b671a19fb73">WorkStream::run()</a> method when AssembleFlags contains only <code>assemble_own_cells</code>, and can be used as a drop-in replacement for that method.</p>
-<p>The two data types <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> and <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> need to have a working copy constructor. <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> is only used in the worker function, while <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> is the object passed from the worker to the copier. The <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> object is reset to the value provided to this function every time this function visits a new cell (where it then calls the cell and face workers). In other words, no state carries over between calling the <code>copier</code> on one cell and the <code>cell_worker</code>/<code>face_worker</code>/<code>boundary_worker</code> functions on the next cell, and user code needs not reset the copy object either at the beginning of the cell integration or end of the copy operation. Resetting the state of the <code>copier</code> inside of a <code>face_worker</code> or <code>boundary_worker</code> constitutes a bug, and may lead to some unexpected results. The following example shows what is not permissible, as the copier is potentially shared among numerous faces on a cell: </p><div class="fragment"><div class="line"><span class="keyword">using</span> ScratchData      = <a class="code" href="classMeshWorker_1_1ScratchData.html">MeshWorker::ScratchData&lt;dim, spacedim&gt;</a>;</div>
-<div class="line"><span class="keyword">using</span> CopyData         = <a class="code" href="structMeshWorker_1_1CopyData.html">MeshWorker::CopyData&lt;1, 1, 1&gt;</a>;</div>
+<p>The two data types <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> and <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> need to have a working copy constructor. <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> is only used in the worker function, while <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> is the object passed from the worker to the copier. The <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> object is reset to the value provided to this function every time this function visits a new cell (where it then calls the cell and face workers). In other words, no state carries over between calling the <code>copier</code> on one cell and the <code>cell_worker</code>/<code>face_worker</code>/<code>boundary_worker</code> functions on the next cell, and user code needs not reset the copy object either at the beginning of the cell integration or end of the copy operation. Resetting the state of the <code>copier</code> inside of a <code>face_worker</code> or <code>boundary_worker</code> constitutes a bug, and may lead to some unexpected results. The following example shows what is not permissible, as the copier is potentially shared among numerous faces on a cell: </p><div class="fragment"><div class="line"><span class="keyword">using</span> <a class="code" href="structScratchData.html">ScratchData</a>      = <a class="code" href="classMeshWorker_1_1ScratchData.html">MeshWorker::ScratchData&lt;dim, spacedim&gt;</a>;</div>
+<div class="line"><span class="keyword">using</span> <a class="code" href="structCopyData.html">CopyData</a>         = <a class="code" href="structMeshWorker_1_1CopyData.html">MeshWorker::CopyData&lt;1, 1, 1&gt;</a>;</div>
 <div class="line"><span class="keyword">using</span> CellIteratorType = decltype(dof_handler.begin_active());</div>
 <div class="line"> </div>
-<div class="line">ScratchData            scratch(...);</div>
-<div class="line">CopyData               <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>(...);</div>
+<div class="line"><a class="code" href="structScratchData.html">ScratchData</a>            scratch(...);</div>
+<div class="line"><a class="code" href="structCopyData.html">CopyData</a>               <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>(...);</div>
 <div class="line"> </div>
-<div class="line">std::function&lt;void(<span class="keyword">const</span> CellIteratorType &amp;, ScratchData &amp;, CopyData &amp;)&gt;</div>
+<div class="line"><a class="code" href="coding__conventions__0_8txt.html#a7a17f790f94a4539645c427e98239a81">std::function</a>&lt;void(<span class="keyword">const</span> CellIteratorType &amp;, <a class="code" href="structScratchData.html">ScratchData</a> &amp;, <a class="code" href="structCopyData.html">CopyData</a> &amp;)&gt;</div>
 <div class="line">  empty_cell_worker;</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">auto</span> boundary_worker = [...] (</div>
-<div class="line">  <span class="keyword">const</span> CellIteratorType &amp;cell,</div>
-<div class="line">  <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>      face,</div>
-<div class="line">  ScratchData            &amp;scratch_data,</div>
-<div class="line">  CopyData               &amp;copy_data)</div>
+<div class="line">  <span class="keyword">const</span> CellIteratorType &amp;<a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>,</div>
+<div class="line">  <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>      <a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a>,</div>
+<div class="line">  <a class="code" href="structScratchData.html">ScratchData</a>            &amp;scratch_data,</div>
+<div class="line">  <a class="code" href="structCopyData.html">CopyData</a>               &amp;copy_data)</div>
 <div class="line">{</div>
-<div class="line"> <span class="keyword">const</span> <span class="keyword">auto</span> &amp;fe_face_values = scratch_data.reinit(cell, face);</div>
-<div class="line"> copy_data = CopyData(...); <span class="comment">// This is an error, as we lose the</span></div>
+<div class="line"> <span class="keyword">const</span> <span class="keyword">auto</span> &amp;fe_face_values = scratch_data.reinit(<a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>, <a class="code" href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a>);</div>
+<div class="line"> copy_data = <a class="code" href="structCopyData.html">CopyData</a>(...); <span class="comment">// This is an error, as we lose the</span></div>
 <div class="line">                            <span class="comment">// accumulation that has been performed on</span></div>
 <div class="line">                            <span class="comment">// other boundary faces of the same cell.</span></div>
 <div class="line"> </div>
@@ -566,16 +566,16 @@ More information about requirements on template types and meaning of <code>queue
 <div class="line">   }</div>
 <div class="line">};</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">double</span> <a class="code" href="namespaceinternal.html#aa5bef221c94bc6b9c5441c306a72cdbaa2063c1608d6e0baf80249c42e2be5804">value</a> = 0;</div>
-<div class="line"><span class="keyword">auto</span> copier = [...](<span class="keyword">const</span> CopyData &amp;copy_data)</div>
+<div class="line"><span class="keywordtype">double</span> <a class="code" href="functions__0_8txt.html#af9f808a82e8c618e2e7a19dd08a9eae3">value</a> = 0;</div>
+<div class="line"><span class="keyword">auto</span> <a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a> = [...](<span class="keyword">const</span> <a class="code" href="structCopyData.html">CopyData</a> &amp;copy_data)</div>
 <div class="line">{</div>
-<div class="line">  <a class="code" href="namespaceinternal.html#aa5bef221c94bc6b9c5441c306a72cdbaa2063c1608d6e0baf80249c42e2be5804">value</a> += copy_data.vectors[0][0]; <span class="comment">// Contributions from some faces may</span></div>
+<div class="line">  <a class="code" href="functions__0_8txt.html#af9f808a82e8c618e2e7a19dd08a9eae3">value</a> += copy_data.vectors[0][0]; <span class="comment">// Contributions from some faces may</span></div>
 <div class="line">                                    <span class="comment">// be missing.</span></div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">MeshWorker::mesh_loop</a>(dof_handler.active_cell_iterators(),</div>
-<div class="line">                      empty_cell_worker, copier,</div>
-<div class="line">                      scratch, <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>,</div>
+<div class="line">                      empty_cell_worker, <a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>,</div>
+<div class="line">                      scratch, <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>,</div>
 <div class="line">                      <a class="code" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaa883d91104d154f16c67a4ea50da3fac5">MeshWorker::assemble_boundary_faces</a>,</div>
 <div class="line">                      boundary_worker);</div>
 </div><!-- fragment --><p>The queue_length argument indicates the number of items that can be live at any given time. Each item consists of chunk_size elements of the input stream that will be worked on by the worker and copier functions one after the other on the same thread.</p>
@@ -605,55 +605,55 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename <a class="el" href="structidentity.html">identity</a>&lt; std::function&lt; void(const CellIteratorBaseType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::type &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;&#160;</td>
           <td class="paramname"><em>cell_worker</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename <a class="el" href="structidentity.html">identity</a>&lt; std::function&lt; void(const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::type &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;&#160;</td>
           <td class="paramname"><em>copier</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;&#160;</td>
           <td class="paramname"><em>sample_scratch_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;&#160;</td>
           <td class="paramname"><em>sample_copy_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a>&#160;</td>
           <td class="paramname"><em>flags</em> = <code><a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename <a class="el" href="structidentity.html">identity</a>&lt; std::function&lt; void(const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::type &amp;&#160;</td>
-          <td class="paramname"><em>boundary_worker</em> = <code>std::function&lt;void(const&#160;CellIteratorBaseType&#160;&amp;,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;const&#160;unsigned&#160;<a class="el" href="classint.html">int</a>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a>&#160;&amp;,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a>&#160;&amp;)&gt;()</code>, </td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;&#160;</td>
+          <td class="paramname"><em>boundary_worker</em> = <code><a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt;void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a>&#160;CellIteratorBaseType&#160;&amp;,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a>&#160;unsigned&#160;<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a>&#160;&amp;,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a>&#160;&amp;)&gt;()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename <a class="el" href="structidentity.html">identity</a>&lt; std::function&lt; void(const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::type &amp;&#160;</td>
-          <td class="paramname"><em>face_worker</em> = <code>std::function&lt;void(const&#160;CellIteratorBaseType&#160;&amp;,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;const&#160;unsigned&#160;<a class="el" href="classint.html">int</a>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;const&#160;unsigned&#160;<a class="el" href="classint.html">int</a>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;const&#160;CellIteratorBaseType&#160;&amp;,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;const&#160;unsigned&#160;<a class="el" href="classint.html">int</a>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;const&#160;unsigned&#160;<a class="el" href="classint.html">int</a>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a>&#160;&amp;,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a>&#160;&amp;)&gt;()</code>, </td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="structidentity.html">identity</a>&lt; <a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt; void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&gt;&gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;&#160;</td>
+          <td class="paramname"><em>face_worker</em> = <code><a class="el" href="kinsol__0_8txt.html#a8d00284f252cd8059a1f0db88a9bda7b">std::function</a>&lt;void(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a>&#160;CellIteratorBaseType&#160;&amp;,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a>&#160;unsigned&#160;<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a>&#160;unsigned&#160;<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a>&#160;CellIteratorBaseType&#160;&amp;,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a>&#160;unsigned&#160;<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a>&#160;unsigned&#160;<a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a>&#160;&amp;,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a>&#160;&amp;)&gt;()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>queue_length</em> = <code>2&#160;*&#160;<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>chunk_size</em> = <code>8</code>&#160;</td>
         </tr>
         <tr>
@@ -663,46 +663,46 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Same as the function above, but for iterator ranges (and, therefore, filtered iterators). An example usage of the function for the serial case is given by </p><div class="fragment"><div class="line"><span class="keyword">using</span> ScratchData      = <a class="code" href="classMeshWorker_1_1ScratchData.html">MeshWorker::ScratchData&lt;dim, spacedim&gt;</a>;</div>
-<div class="line"><span class="keyword">using</span> CopyData         = <a class="code" href="structMeshWorker_1_1CopyData.html">MeshWorker::CopyData&lt;1, 1, 1&gt;</a>;</div>
+<p>Same as the function above, but for iterator ranges (and, therefore, filtered iterators). An example usage of the function for the serial case is given by </p><div class="fragment"><div class="line"><span class="keyword">using</span> <a class="code" href="structScratchData.html">ScratchData</a>      = <a class="code" href="classMeshWorker_1_1ScratchData.html">MeshWorker::ScratchData&lt;dim, spacedim&gt;</a>;</div>
+<div class="line"><span class="keyword">using</span> <a class="code" href="structCopyData.html">CopyData</a>         = <a class="code" href="structMeshWorker_1_1CopyData.html">MeshWorker::CopyData&lt;1, 1, 1&gt;</a>;</div>
 <div class="line"><span class="keyword">using</span> CellIteratorType = decltype(dof_handler.begin_active());</div>
 <div class="line"> </div>
-<div class="line">ScratchData            scratch(...);</div>
-<div class="line">CopyData               <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>(...);</div>
+<div class="line"><a class="code" href="structScratchData.html">ScratchData</a>            scratch(...);</div>
+<div class="line"><a class="code" href="structCopyData.html">CopyData</a>               <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>(...);</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">auto</span> cell_worker = [...] (</div>
-<div class="line"><span class="keyword">const</span> CellIteratorType &amp;cell,</div>
-<div class="line">ScratchData            &amp;scratch_data,</div>
-<div class="line">CopyData               &amp;copy_data)</div>
+<div class="line"><span class="keyword">const</span> CellIteratorType &amp;<a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>,</div>
+<div class="line"><a class="code" href="structScratchData.html">ScratchData</a>            &amp;scratch_data,</div>
+<div class="line"><a class="code" href="structCopyData.html">CopyData</a>               &amp;copy_data)</div>
 <div class="line">{</div>
 <div class="line">...</div>
 <div class="line">};</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">auto</span> copier = [...](<span class="keyword">const</span> CopyData &amp;copy_data)</div>
+<div class="line"><span class="keyword">auto</span> <a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a> = [...](<span class="keyword">const</span> <a class="code" href="structCopyData.html">CopyData</a> &amp;copy_data)</div>
 <div class="line">{</div>
 <div class="line">...</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">MeshWorker::mesh_loop</a>(dof_handler.active_cell_iterators(),</div>
-<div class="line">                    cell_worker, copier,</div>
-<div class="line">                    scratch, <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>,</div>
+<div class="line">                    cell_worker, <a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>,</div>
+<div class="line">                    scratch, <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>,</div>
 <div class="line">                    <a class="code" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">MeshWorker::assemble_own_cells</a>);</div>
-</div><!-- fragment --><p> and an example usage of the function for the parallel distributed case, where the copier is only to be called on locally owned cells, is given by </p><div class="fragment"><div class="line"><span class="keyword">using</span> ScratchData      = <a class="code" href="classMeshWorker_1_1ScratchData.html">MeshWorker::ScratchData&lt;dim, spacedim&gt;</a>;</div>
-<div class="line"><span class="keyword">using</span> CopyData         = <a class="code" href="structMeshWorker_1_1CopyData.html">MeshWorker::CopyData&lt;1, 1, 1&gt;</a>;</div>
+</div><!-- fragment --><p> and an example usage of the function for the parallel distributed case, where the copier is only to be called on locally owned cells, is given by </p><div class="fragment"><div class="line"><span class="keyword">using</span> <a class="code" href="structScratchData.html">ScratchData</a>      = <a class="code" href="classMeshWorker_1_1ScratchData.html">MeshWorker::ScratchData&lt;dim, spacedim&gt;</a>;</div>
+<div class="line"><span class="keyword">using</span> <a class="code" href="structCopyData.html">CopyData</a>         = <a class="code" href="structMeshWorker_1_1CopyData.html">MeshWorker::CopyData&lt;1, 1, 1&gt;</a>;</div>
 <div class="line"><span class="keyword">using</span> CellIteratorType = decltype(dof_handler.begin_active());</div>
 <div class="line"> </div>
-<div class="line">ScratchData            scratch(...);</div>
-<div class="line">CopyData               <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>(...);</div>
+<div class="line"><a class="code" href="structScratchData.html">ScratchData</a>            scratch(...);</div>
+<div class="line"><a class="code" href="structCopyData.html">CopyData</a>               <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>(...);</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">auto</span> cell_worker = [...] (</div>
-<div class="line"><span class="keyword">const</span> CellIteratorType &amp;cell,</div>
-<div class="line">ScratchData            &amp;scratch_data,</div>
-<div class="line">CopyData               &amp;copy_data)</div>
+<div class="line"><span class="keyword">const</span> CellIteratorType &amp;<a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>,</div>
+<div class="line"><a class="code" href="structScratchData.html">ScratchData</a>            &amp;scratch_data,</div>
+<div class="line"><a class="code" href="structCopyData.html">CopyData</a>               &amp;copy_data)</div>
 <div class="line">{</div>
 <div class="line">...</div>
 <div class="line">};</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">auto</span> copier = [...](<span class="keyword">const</span> CopyData &amp;copy_data)</div>
+<div class="line"><span class="keyword">auto</span> <a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a> = [...](<span class="keyword">const</span> <a class="code" href="structCopyData.html">CopyData</a> &amp;copy_data)</div>
 <div class="line">{</div>
 <div class="line">...</div>
 <div class="line">};</div>
@@ -712,8 +712,8 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
 <div class="line">                 <a class="code" href="classIteratorFilters_1_1LocallyOwnedCell.html">IteratorFilters::LocallyOwnedCell</a>());</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">MeshWorker::mesh_loop</a>(filtered_iterator_range,</div>
-<div class="line">                    cell_worker, copier,</div>
-<div class="line">                    scratch, <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>,</div>
+<div class="line">                    cell_worker, <a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>,</div>
+<div class="line">                    scratch, <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>,</div>
 <div class="line">                    <a class="code" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">MeshWorker::assemble_own_cells</a>);</div>
 </div><!-- fragment --> 
 <p class="definition">Definition at line <a class="el" href="meshworker_2mesh__loop_8h_source.html#l00706">706</a> of file <a class="el" href="meshworker_2mesh__loop_8h_source.html">mesh_loop.h</a>.</p>
@@ -731,13 +731,13 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
         <tr>
           <td class="memname">void MeshWorker::mesh_loop </td>
           <td>(</td>
-          <td class="paramtype">const CellIteratorType &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;&#160;</td>
           <td class="paramname"><em>begin</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const typename <a class="el" href="structidentity.html">identity</a>&lt; CellIteratorType &gt;::type &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> typename <a class="el" href="structidentity.html">identity</a>&lt; CellIteratorType &gt;::<a class="el" href="rtree__0_8txt.html#af516d631e8e6045677c29110e2696833">type</a> &amp;&#160;</td>
           <td class="paramname"><em>end</em>, </td>
         </tr>
         <tr>
@@ -749,55 +749,55 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(MainClass::*)(const CellIteratorType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
+          <td class="paramtype">void(MainClass::*)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
           <td class="paramname"><em>cell_worker</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(MainClass::*)(const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
+          <td class="paramtype">void(MainClass::*)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
           <td class="paramname"><em>copier</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;&#160;</td>
           <td class="paramname"><em>sample_scratch_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;&#160;</td>
           <td class="paramname"><em>sample_copy_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a>&#160;</td>
           <td class="paramname"><em>flags</em> = <code><a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(MainClass::*)(const CellIteratorType &amp;, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
-          <td class="paramname"><em>boundary_worker</em> = <code>nullptr</code>, </td>
+          <td class="paramtype">void(MainClass::*)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
+          <td class="paramname"><em>boundary_worker</em> = <code><a class="el" href="fe__interface__values__0_8txt.html#a7afb86fa5db4a209b125ed3572c5579a">nullptr</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(MainClass::*)(const CellIteratorType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, const CellIteratorType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
-          <td class="paramname"><em>face_worker</em> = <code>nullptr</code>, </td>
+          <td class="paramtype">void(MainClass::*)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
+          <td class="paramname"><em>face_worker</em> = <code><a class="el" href="fe__interface__values__0_8txt.html#a7afb86fa5db4a209b125ed3572c5579a">nullptr</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>queue_length</em> = <code>2&#160;*&#160;<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>chunk_size</em> = <code>8</code>&#160;</td>
         </tr>
         <tr>
@@ -807,35 +807,35 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
         </tr>
       </table>
 </div><div class="memdoc">
-<p>This is a variant of the <a class="el" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">mesh_loop()</a> function that can be used for worker and copier functions that are member functions of a class. The argument passed as <code>end</code> must be convertible to the same type as <code>begin</code>, but doesn't have to be of the same type itself. This allows to write code like <code>mesh_loop(dof_handler.begin_active(), <a class="el" href="namespaceTrilinosWrappers_1_1internal.html#aee42c8e3004e2e81eac3c3356d3ec46b">dof_handler.end()</a>, ...)</code> where the first is of type <a class="el" href="group__Iterators.html#ga6b8bbcafed8847f3030ea30c6990eb2d">DoFHandler::active_cell_iterator</a> whereas the second is of type DoFHandler::raw_cell_iterator. The <code>queue_length</code> argument indicates the number of items that can be live at any given time. Each item consists of <code>chunk_size</code> elements of the input stream that will be worked on by the worker and copier functions one after the other on the same thread. </p><dl class="section note"><dt>Note</dt><dd>If your data objects are large, or their constructors are expensive, it is helpful to keep in mind that <code>queue_length</code> copies of the <code><a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a></code> object and <code>queue_length*chunk_size</code> copies of the <code><a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a></code> object are generated. An example usage of the function is given by <div class="fragment"><div class="line"><span class="keyword">struct </span>ScratchData;</div>
-<div class="line"><span class="keyword">struct </span>CopyData;</div>
+<p>This is a variant of the <a class="el" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">mesh_loop()</a> function that can be used for worker and copier functions that are member functions of a class. The argument passed as <code>end</code> must be convertible to the same type as <code>begin</code>, but doesn't have to be of the same type itself. This allows to write code like <code>mesh_loop(dof_handler.begin_active(), dof_handler.end(), ...)</code> where the first is of type <a class="el" href="group__Iterators.html#ga6b8bbcafed8847f3030ea30c6990eb2d">DoFHandler::active_cell_iterator</a> whereas the second is of type DoFHandler::raw_cell_iterator. The <code>queue_length</code> argument indicates the number of items that can be live at any given time. Each item consists of <code>chunk_size</code> elements of the input stream that will be worked on by the worker and copier functions one after the other on the same thread. </p><dl class="section note"><dt>Note</dt><dd>If your data objects are large, or their constructors are expensive, it is helpful to keep in mind that <code>queue_length</code> copies of the <code><a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a></code> object and <code>queue_length*chunk_size</code> copies of the <code><a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a></code> object are generated. An example usage of the function is given by <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code" href="structScratchData.html">ScratchData</a>;</div>
+<div class="line"><span class="keyword">struct </span><a class="code" href="structCopyData.html">CopyData</a>;</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">template</span> &lt;<span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> spacedim&gt;</div>
 <div class="line"><span class="keyword">class </span>MyClass</div>
 <div class="line">{</div>
 <div class="line"><span class="keyword">public</span>:</div>
 <div class="line"><span class="keywordtype">void</span></div>
-<div class="line">cell_worker(<span class="keyword">const</span> CellIteratorType &amp;cell, ScratchData &amp;, CopyData &amp;);</div>
+<div class="line">cell_worker(<span class="keyword">const</span> CellIteratorType &amp;<a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>, <a class="code" href="structScratchData.html">ScratchData</a> &amp;, <a class="code" href="structCopyData.html">CopyData</a> &amp;);</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">void</span></div>
-<div class="line">copier(<span class="keyword">const</span> CopyData &amp;);</div>
+<div class="line"><a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>(<span class="keyword">const</span> <a class="code" href="structCopyData.html">CopyData</a> &amp;);</div>
 <div class="line"> </div>
 <div class="line">...</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line">...</div>
 <div class="line"> </div>
-<div class="line">MyClass&lt;dim, spacedim&gt; my_class;</div>
-<div class="line">ScratchData            scratch;</div>
-<div class="line">CopyData               <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>;</div>
+<div class="line">MyClass&lt;<a class="code" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="code" href="base_2bounding__box__0_8txt.html#a448658829353774b234a6819182c72db">spacedim</a>&gt; my_class;</div>
+<div class="line"><a class="code" href="structScratchData.html">ScratchData</a>            scratch;</div>
+<div class="line"><a class="code" href="structCopyData.html">CopyData</a>               <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>;</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">mesh_loop</a>(tria.<a class="code" href="classTriangulation.html#a9388e821c728eab8d0e699d0ca112482">begin_active</a>(),</div>
 <div class="line">        tria.<a class="code" href="classTriangulation.html#afdbd22694fb7591e822577a8f8a90de9">end</a>(),</div>
 <div class="line">        my_class,</div>
 <div class="line">        &amp;MyClass&lt;dim, spacedim&gt;::cell_worker,</div>
-<div class="line">        &amp;MyClass&lt;dim, spacedim&gt;::copier,</div>
+<div class="line">        &amp;<a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">MyClass&lt;dim, spacedim&gt;::copier</a>,</div>
 <div class="line">        scratch,</div>
-<div class="line">        <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>,</div>
+<div class="line">        <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>,</div>
 <div class="line">        <a class="code" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>);</div>
 </div><!-- fragment --> </dd></dl>
 
@@ -866,55 +866,55 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(MainClass::*)(const CellIteratorBaseType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
+          <td class="paramtype">void(MainClass::*)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
           <td class="paramname"><em>cell_worker</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(MainClass::*)(const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
+          <td class="paramtype">void(MainClass::*)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
           <td class="paramname"><em>copier</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;&#160;</td>
           <td class="paramname"><em>sample_scratch_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;&#160;</td>
           <td class="paramname"><em>sample_copy_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> <a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aa">AssembleFlags</a>&#160;</td>
           <td class="paramname"><em>flags</em> = <code><a class="el" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(MainClass::*)(const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
-          <td class="paramname"><em>boundary_worker</em> = <code>nullptr</code>, </td>
+          <td class="paramtype">void(MainClass::*)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
+          <td class="paramname"><em>boundary_worker</em> = <code><a class="el" href="fe__interface__values__0_8txt.html#a7afb86fa5db4a209b125ed3572c5579a">nullptr</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(MainClass::*)(const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, const CellIteratorBaseType &amp;, const unsigned <a class="el" href="classint.html">int</a>, const unsigned <a class="el" href="classint.html">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
-          <td class="paramname"><em>face_worker</em> = <code>nullptr</code>, </td>
+          <td class="paramtype">void(MainClass::*)(<a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> CellIteratorBaseType &amp;, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>, <a class="el" href="classMeshWorker_1_1ScratchData.html">ScratchData</a> &amp;, <a class="el" href="structMeshWorker_1_1CopyData.html">CopyData</a> &amp;)&#160;</td>
+          <td class="paramname"><em>face_worker</em> = <code><a class="el" href="fe__interface__values__0_8txt.html#a7afb86fa5db4a209b125ed3572c5579a">nullptr</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>queue_length</em> = <code>2&#160;*&#160;<a class="el" href="classMultithreadInfo.html#ad0b84ae105b385b88bdd4bfc0c530995">MultithreadInfo::n_threads</a>()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned <a class="el" href="classint.html">int</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="coding__conventions__0_8txt.html#ad54c4de985d6d1b46aaf6ae96ae8d3a1">const</a> unsigned <a class="el" href="matrix__free__0_8txt.html#afdb878b17ab7df395a1435ac49d661fc">int</a>&#160;</td>
           <td class="paramname"><em>chunk_size</em> = <code>8</code>&#160;</td>
         </tr>
         <tr>
@@ -924,56 +924,56 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Same as the function above, but for iterator ranges (and, therefore, filtered iterators). An example usage of the function for the serial case is given by </p><div class="fragment"><div class="line"><span class="keyword">struct </span>ScratchData;</div>
-<div class="line"><span class="keyword">struct </span>CopyData;</div>
+<p>Same as the function above, but for iterator ranges (and, therefore, filtered iterators). An example usage of the function for the serial case is given by </p><div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code" href="structScratchData.html">ScratchData</a>;</div>
+<div class="line"><span class="keyword">struct </span><a class="code" href="structCopyData.html">CopyData</a>;</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">template</span> &lt;<span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> spacedim&gt;</div>
 <div class="line"><span class="keyword">class </span>MyClass</div>
 <div class="line">{</div>
 <div class="line"><span class="keyword">public</span>:</div>
 <div class="line"><span class="keywordtype">void</span></div>
-<div class="line">cell_worker(<span class="keyword">const</span> CellIteratorType &amp;cell, ScratchData &amp;, CopyData &amp;);</div>
+<div class="line">cell_worker(<span class="keyword">const</span> CellIteratorType &amp;<a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>, <a class="code" href="structScratchData.html">ScratchData</a> &amp;, <a class="code" href="structCopyData.html">CopyData</a> &amp;);</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">void</span></div>
-<div class="line">copier(<span class="keyword">const</span> CopyData &amp;);</div>
+<div class="line"><a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>(<span class="keyword">const</span> <a class="code" href="structCopyData.html">CopyData</a> &amp;);</div>
 <div class="line"> </div>
 <div class="line">...</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line">...</div>
 <div class="line"> </div>
-<div class="line">MyClass&lt;dim, spacedim&gt; my_class;</div>
-<div class="line">ScratchData            scratch;</div>
-<div class="line">CopyData               <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>;</div>
+<div class="line">MyClass&lt;<a class="code" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="code" href="base_2bounding__box__0_8txt.html#a448658829353774b234a6819182c72db">spacedim</a>&gt; my_class;</div>
+<div class="line"><a class="code" href="structScratchData.html">ScratchData</a>            scratch;</div>
+<div class="line"><a class="code" href="structCopyData.html">CopyData</a>               <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>;</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">mesh_loop</a>(tria.<a class="code" href="group__CPP11.html#ga4288670ae5bd80367e24918d542cb2d8">active_cell_iterators</a>(),</div>
 <div class="line">        my_class,</div>
 <div class="line">        &amp;MyClass&lt;dim, spacedim&gt;::cell_worker,</div>
-<div class="line">        &amp;MyClass&lt;dim, spacedim&gt;::copier,</div>
+<div class="line">        &amp;<a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">MyClass&lt;dim, spacedim&gt;::copier</a>,</div>
 <div class="line">        scratch,</div>
-<div class="line">        <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>,</div>
+<div class="line">        <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>,</div>
 <div class="line">        <a class="code" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>);</div>
-</div><!-- fragment --><p> and an example usage of the function for the parallel distributed case, where the copier is only to be called on locally owned cells, is given by </p><div class="fragment"><div class="line"><span class="keyword">struct </span>ScratchData;</div>
-<div class="line"><span class="keyword">struct </span>CopyData;</div>
+</div><!-- fragment --><p> and an example usage of the function for the parallel distributed case, where the copier is only to be called on locally owned cells, is given by </p><div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code" href="structScratchData.html">ScratchData</a>;</div>
+<div class="line"><span class="keyword">struct </span><a class="code" href="structCopyData.html">CopyData</a>;</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">template</span> &lt;<span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> spacedim&gt;</div>
 <div class="line"><span class="keyword">class </span>MyClass</div>
 <div class="line">{</div>
 <div class="line"><span class="keyword">public</span>:</div>
 <div class="line"><span class="keywordtype">void</span></div>
-<div class="line">cell_worker(<span class="keyword">const</span> CellIteratorType &amp;cell, ScratchData &amp;, CopyData &amp;);</div>
+<div class="line">cell_worker(<span class="keyword">const</span> CellIteratorType &amp;<a class="code" href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a>, <a class="code" href="structScratchData.html">ScratchData</a> &amp;, <a class="code" href="structCopyData.html">CopyData</a> &amp;);</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">void</span></div>
-<div class="line">copier(<span class="keyword">const</span> CopyData &amp;);</div>
+<div class="line"><a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a>(<span class="keyword">const</span> <a class="code" href="structCopyData.html">CopyData</a> &amp;);</div>
 <div class="line"> </div>
 <div class="line">...</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line">...</div>
 <div class="line"> </div>
-<div class="line">MyClass&lt;dim, spacedim&gt; my_class;</div>
-<div class="line">ScratchData            scratch;</div>
-<div class="line">CopyData               <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>;</div>
+<div class="line">MyClass&lt;<a class="code" href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a>, <a class="code" href="base_2bounding__box__0_8txt.html#a448658829353774b234a6819182c72db">spacedim</a>&gt; my_class;</div>
+<div class="line"><a class="code" href="structScratchData.html">ScratchData</a>            scratch;</div>
+<div class="line"><a class="code" href="structCopyData.html">CopyData</a>               <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>;</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">const</span> <span class="keyword">auto</span> filtered_iterator_range =</div>
 <div class="line"><a class="code" href="group__CPP11.html#ga3948dd66d9e66ac55d89dc8f75fa4855">filter_iterators</a>(distributed_tria.active_cell_iterators(),</div>
@@ -982,9 +982,9 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
 <div class="line"><a class="code" href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">mesh_loop</a>(filtered_iterator_range,</div>
 <div class="line">        my_class,</div>
 <div class="line">        &amp;MyClass&lt;dim, spacedim&gt;::cell_worker,</div>
-<div class="line">        &amp;MyClass&lt;dim, spacedim&gt;::copier,</div>
+<div class="line">        &amp;<a class="code" href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">MyClass&lt;dim, spacedim&gt;::copier</a>,</div>
 <div class="line">        scratch,</div>
-<div class="line">        <a class="code" href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">copy</a>,</div>
+<div class="line">        <a class="code" href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a>,</div>
 <div class="line">        <a class="code" href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">assemble_own_cells</a>);</div>
 </div><!-- fragment --> 
 <p class="definition">Definition at line <a class="el" href="meshworker_2mesh__loop_8h_source.html#l01005">1005</a> of file <a class="el" href="meshworker_2mesh__loop_8h_source.html">mesh_loop.h</a>.</p>
@@ -993,16 +993,24 @@ template&lt;class CellIteratorType , class ScratchData , class CopyData , class 
 </div>
 </div><!-- contents -->
 <div class="ttc" id="astructMeshWorker_1_1CopyData_html"><div class="ttname"><a href="structMeshWorker_1_1CopyData.html">MeshWorker::CopyData</a></div><div class="ttdef"><b>Definition:</b> <a href="meshworker_2copy__data_8h_source.html#l00075">copy_data.h:75</a></div></div>
+<div class="ttc" id="ascalapack_8templates__0_8txt_html_ab64f6f46c3584fde07717f1112977c72"><div class="ttname"><a href="scalapack_8templates__0_8txt.html#ab64f6f46c3584fde07717f1112977c72">copy</a></div><div class="ttdeci">*Determine how many processes are available and the current process rank is ignored to be used in BLACS_GRIDINIT or BLACS_GRIDMAP is the integer handle to the BLACS whereas on entry it is a system context to be used in creating the BLACS context return the row and column coordinates in the BLACS process grid **Release a BLACS context **This routines holds up execution of all processes within the indicated scope until they have all called the routine **Free all BLACS contexts and releases all allocated memory **Receives a message from a process[2.x.6][2.x.7] into a general rectangular matrix size of the blocks the distributed matrix is split into[2.x.17] iproc The coordinate of the process whose array row or column is to be determined[2.x.18] isrcproc The coordinate of the process that possesses the first row column of the distributed matrix[2.x.19] nprocs The total number processes over which the distributed matrix is distributed **Compute the solution to a real system of linear equations **Perform one of the matrix matrix is one of[2.x.22] or *[2.x.23] *Return the value of the one or the Frobenius or the infinity or the element of largest absolute value of a distributed matrix **Compute the process coordinate which possesses the entry of a distributed matrix specified by a global index **Compute all eigenvalues eigenvectors of a real symmetric matrix A by calling the recommended sequence of ScaLAPACK routines In its present the routine assumes a homogeneous system and makes no checks for consistency of the eigenvalues or eigenvectors across the different processes Because of it is possible that a heterogeneous system may return incorrect results without any error messages pdlacpy performs a copy[2.x.24]</div><div class="ttdef"><b>Definition:</b> <a href="scalapack_8templates__0_8txt_source.html#l00060">scalapack.templates_0.txt:60</a></div></div>
 <div class="ttc" id="anamespaceMeshWorker_html_ac7a9db8b34d398d7d398d1e8809874aaa883d91104d154f16c67a4ea50da3fac5"><div class="ttname"><a href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaa883d91104d154f16c67a4ea50da3fac5">MeshWorker::assemble_boundary_faces</a></div><div class="ttdeci">@ assemble_boundary_faces</div><div class="ttdef"><b>Definition:</b> <a href="meshworker_2assemble__flags_8h_source.html#l00087">assemble_flags.h:87</a></div></div>
+<div class="ttc" id="astructCopyData_html"><div class="ttname"><a href="structCopyData.html">CopyData</a></div><div class="ttdef"><b>Definition:</b> <a href="step-50_8cc_source.html#l01104">step-50.cc:1104</a></div></div>
+<div class="ttc" id="awork__stream__0_8txt_html_ab1f7b2d0d351b91b988585df989cc234"><div class="ttname"><a href="work__stream__0_8txt.html#ab1f7b2d0d351b91b988585df989cc234">copier</a></div><div class="ttdeci">for for the purpose of assembling matrices or evaluating error an item could be a cell The TBB library determines how many threads are but the number of items that may be active at any given time is specified by the argument to the constructor It should be bigger or equal to the number of processor cores **the default is four times the number of cores on the current system *Items are created upon request by the TBB whenever one of the worker threads is idle or is expected to become idle It is then handed off to a worker typically a member function of a main class These worker functions are run in parallel on a number of and there is no guarantee that they are asked to work on items in any particular in particular not necessarily in the order in which items are generated from the iterator range worker functions need additional for example FEValues input data some of which can not be shared among threads To this the which designates a type objects of which are stored with each item and which threads can use as private data without having to share them with other threads The worker functions store their results in objects of template type CopyData These are then handed off to a separate called copier</div><div class="ttdef"><b>Definition:</b> <a href="work__stream__0_8txt_source.html#l00010">work_stream_0.txt:10</a></div></div>
 <div class="ttc" id="aclassIteratorFilters_1_1LocallyOwnedCell_html"><div class="ttname"><a href="classIteratorFilters_1_1LocallyOwnedCell.html">IteratorFilters::LocallyOwnedCell</a></div><div class="ttdef"><b>Definition:</b> <a href="grid_2filtered__iterator_8h_source.html#l00196">filtered_iterator.h:196</a></div></div>
 <div class="ttc" id="aclassMeshWorker_1_1ScratchData_html"><div class="ttname"><a href="classMeshWorker_1_1ScratchData.html">MeshWorker::ScratchData</a></div><div class="ttdef"><b>Definition:</b> <a href="meshworker_2scratch__data_8h_source.html#l00202">scratch_data.h:202</a></div></div>
 <div class="ttc" id="agroup__CPP11_html_ga3948dd66d9e66ac55d89dc8f75fa4855"><div class="ttname"><a href="group__CPP11.html#ga3948dd66d9e66ac55d89dc8f75fa4855">filter_iterators</a></div><div class="ttdeci">IteratorRange&lt; FilteredIterator&lt; BaseIterator &gt; &gt; filter_iterators(IteratorRange&lt; BaseIterator &gt; i, const Predicate &amp;p)</div><div class="ttdef"><b>Definition:</b> <a href="grid_2filtered__iterator_8h_source.html#l00888">filtered_iterator.h:888</a></div></div>
 <div class="ttc" id="aclassTriangulation_html_a9388e821c728eab8d0e699d0ca112482"><div class="ttname"><a href="classTriangulation.html#a9388e821c728eab8d0e699d0ca112482">Triangulation::begin_active</a></div><div class="ttdeci">active_cell_iterator begin_active(const unsigned int level=0) const</div><div class="ttdef"><b>Definition:</b> <a href="grid_2tria_8cc_source.html#l11958">tria.cc:11958</a></div></div>
 <div class="ttc" id="agroup__MeshWorker_html_ga76ec61fbd188fb320fe8ca166a79b322"><div class="ttname"><a href="group__MeshWorker.html#ga76ec61fbd188fb320fe8ca166a79b322">MeshWorker::mesh_loop</a></div><div class="ttdeci">void mesh_loop(const CellIteratorType &amp;begin, const CellIteratorType &amp;end, const CellWorkerFunctionType &amp;cell_worker, const CopierType &amp;copier, const ScratchData &amp;sample_scratch_data, const CopyData &amp;sample_copy_data, const AssembleFlags flags=assemble_own_cells, const BoundaryWorkerFunctionType &amp;boundary_worker=BoundaryWorkerFunctionType(), const FaceWorkerFunctionType &amp;face_worker=FaceWorkerFunctionType(), const unsigned int queue_length=2 *MultithreadInfo::n_threads(), const unsigned int chunk_size=8)</div><div class="ttdef"><b>Definition:</b> <a href="meshworker_2mesh__loop_8h_source.html#l00278">mesh_loop.h:278</a></div></div>
-<div class="ttc" id="anamespaceinternal_html_aa5bef221c94bc6b9c5441c306a72cdbaa2063c1608d6e0baf80249c42e2be5804"><div class="ttname"><a href="namespaceinternal.html#aa5bef221c94bc6b9c5441c306a72cdbaa2063c1608d6e0baf80249c42e2be5804">internal::EvaluatorQuantity::value</a></div><div class="ttdeci">@ value</div></div>
+<div class="ttc" id="ageometry__info__0_8txt_html_a30a552b07accf65da90f851e25d14d1c"><div class="ttname"><a href="geometry__info__0_8txt.html#a30a552b07accf65da90f851e25d14d1c">dim</a></div><div class="ttdeci">3, where it offers following possibilities:a face(quad) being refined in x- or y-direction(in the face-intern coordinate system) separately,([2.x.79] or([2.x.80] which corresponds to([2.x.81]). Additionally, it offers the possibilities a face can have through repeated anisotropic refinement steps performed on one of the two neighboring cells. It might be possible for example, that a face(quad) is refined with[2.x.82] and afterwards the left child is again refined with[2.x.83], so that there are three active subfaces. Note, however, that only refinement cases are allowed such that each line on a face between two hexes has not more than one hanging node. Furthermore, it is not allowed that two neighboring hexes are refined such that one of the hexes refines the common face with[2.x.84] and the other hex refines that face with[2.x.85] . In fact,[2.x.86] takes care of this situation and ensures that each face of a refined cell is completely contained in a single face of neighboring cells. The following drawings explain the SubfacePossibilities and give the corresponding subface numbers:*[1.x.4] **[2.x.87] *[0.x.68] *Possible cases of faces being subdivided into subface. See documentation to the SubfacePossibilities&lt; 3 &gt; for more details on the subface possibilities. *[0.x.69] *A class that provides all possible cases a face(in the current space dimension[2.x.88] might be subdivided into subfaces. *[2.x.89] *[0.x.70] *Constructor. Take and store a value indicating a particular subface possibility in the list of possible situations specified in the base class. *[0.x.71] *Return the numeric value stored by this class. While the presence of this operator might seem dangerous, it is useful in cases where one would like to have code like&lt; code &gt;switch(subface_case)... case[2.x.90] ...&lt;/code &gt;, which can be written as&lt; code &gt;switch[2.x.91] Another application is to use an object of the current type as an index into an array dim</div><div class="ttdef"><b>Definition:</b> <a href="geometry__info__0_8txt_source.html#l00202">geometry_info_0.txt:202</a></div></div>
+<div class="ttc" id="acoding__conventions__0_8txt_html_a7a17f790f94a4539645c427e98239a81"><div class="ttname"><a href="coding__conventions__0_8txt.html#a7a17f790f94a4539645c427e98239a81">function</a></div><div class="ttdeci">functions which clear bits or flags should be named[2.x.15] use[2.x.18] instead of *[2.x.19] In the implementation after each function</div><div class="ttdef"><b>Definition:</b> <a href="coding__conventions__0_8txt_source.html#l00021">coding_conventions_0.txt:21</a></div></div>
+<div class="ttc" id="acoding__conventions__0_8txt_html_adad35057b6e70ae37d4abe7878683d90"><div class="ttname"><a href="coding__conventions__0_8txt.html#adad35057b6e70ae37d4abe7878683d90">face</a></div><div class="ttdeci">functions which clear bits or flags should be named[2.x.15] use[2.x.18] instead of *[2.x.19] In the implementation after each three empty lines are expected to enable better readability One empty line occurs in functions to group blocks of since two empty lines are not enough to visibly distinguish sufficiently that the code belongs to two different functions *[2.x.21] Whenever an integer variable can only assume nonnegative it is marked as unsigned The same applies to functions that can only return positive or zero values it should be marked even if passed by value we mark input parameters as const This aids as an additional documentation tool to clarify the intent of a which is often either involuntarily or poor style *[2.x.25] Whenever a function does not change any of the member variable of the embedding class it should be marked as const  *[2.x.27] Function and variable names may not consist of only one or two unless the variable is a pure counting index *[2.x.29] Type the number of children per the child indices of the child cells adjacent to face</div><div class="ttdef"><b>Definition:</b> <a href="coding__conventions__0_8txt_source.html#l00027">coding_conventions_0.txt:27</a></div></div>
+<div class="ttc" id="acoding__conventions__0_8txt_html_ac639e1db0b03fc797eca55e266afa976"><div class="ttname"><a href="coding__conventions__0_8txt.html#ac639e1db0b03fc797eca55e266afa976">cell</a></div><div class="ttdeci">functions which clear bits or flags should be named[2.x.15] use[2.x.18] instead of *[2.x.19] In the implementation after each three empty lines are expected to enable better readability One empty line occurs in functions to group blocks of since two empty lines are not enough to visibly distinguish sufficiently that the code belongs to two different functions *[2.x.21] Whenever an integer variable can only assume nonnegative it is marked as unsigned The same applies to functions that can only return positive or zero values it should be marked even if passed by value we mark input parameters as const This aids as an additional documentation tool to clarify the intent of a which is often either involuntarily or poor style *[2.x.25] Whenever a function does not change any of the member variable of the embedding class it should be marked as const  *[2.x.27] Function and variable names may not consist of only one or two unless the variable is a pure counting index *[2.x.29] Type the number of children per cell</div><div class="ttdef"><b>Definition:</b> <a href="coding__conventions__0_8txt_source.html#l00027">coding_conventions_0.txt:27</a></div></div>
 <div class="ttc" id="agroup__CPP11_html_ga4288670ae5bd80367e24918d542cb2d8"><div class="ttname"><a href="group__CPP11.html#ga4288670ae5bd80367e24918d542cb2d8">Triangulation::active_cell_iterators</a></div><div class="ttdeci">IteratorRange&lt; active_cell_iterator &gt; active_cell_iterators() const</div><div class="ttdef"><b>Definition:</b> <a href="grid_2tria_8cc_source.html#l12155">tria.cc:12155</a></div></div>
+<div class="ttc" id="abase_2bounding__box__0_8txt_html_a448658829353774b234a6819182c72db"><div class="ttname"><a href="base_2bounding__box__0_8txt.html#a448658829353774b234a6819182c72db">spacedim</a></div><div class="ttdeci">*The enumerator NeighborType describes the neighboring relation between two bounding boxes ***Not in this means that the two boxes touch at one corner of the each box **Attached in this means that the two boxes touch along an edge **Mergeable e g **or one is inside the other **A class that represents a box of arbitrary dimension&lt; tt &gt; spacedim&lt;/tt &gt; and with sides parallel to the coordinate axes that is a region a bounding box is top right for useful in parallel distributed meshes to give a general description of the owners of each portion of the mesh *Taking the cross section of a BoundingBox&lt; spacedim &gt; orthogonal to a given direction gives a box in one dimension the coordinates of the cross section of BoundingBox&lt; 3 &gt; can be ordered in different ways That if we take the cross section orthogonal to the y direction we could either order a coordinate into a coordinate as[2.x.1] or as[2.x.2] This class uses the second convention corresponding to the coordinates being ordered cyclicly[2.x.3] To be if we take a cross z y *This is according to the convention set by the function *[2.x.4] **Standard constructor Creates an object that corresponds to an empty i e a degenerate box with both points being the origin **Standard constructor for non empty Number elements **Return a reference to the boundary_points **Return const a reference to the boundary_points **Test for equality **Test for inequality **Check if the current object and[2.x.5] are i e if the boxes have dimension spacedim</div><div class="ttdef"><b>Definition:</b> <a href="base_2bounding__box__0_8txt_source.html#l00070">bounding_box_0.txt:70</a></div></div>
+<div class="ttc" id="afunctions__0_8txt_html_af9f808a82e8c618e2e7a19dd08a9eae3"><div class="ttname"><a href="functions__0_8txt.html#af9f808a82e8c618e2e7a19dd08a9eae3">value</a></div><div class="ttdeci">****Functions are used in various places in deal for example to describe boundary coefficients in forcing or exact solutions Since closed form expressions for equations are often hard to pass along as function deal II uses the Function base class to describe these objects Essentially the interface of this base class requires derived classes to implement the ability to return the value of a function at one or a list of particular locations and function objects can then be used by algorithms like[2.x.1][2.x.2] and other functions *Some functions are needed again and and are therefore already provided in deal II This includes a function with a constant value</div><div class="ttdef"><b>Definition:</b> <a href="functions__0_8txt_source.html#l00007">functions_0.txt:7</a></div></div>
+<div class="ttc" id="astructScratchData_html"><div class="ttname"><a href="structScratchData.html">ScratchData</a></div><div class="ttdef"><b>Definition:</b> <a href="step-50_8cc_source.html#l01072">step-50.cc:1072</a></div></div>
 <div class="ttc" id="anamespaceMeshWorker_html_ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb"><div class="ttname"><a href="namespaceMeshWorker.html#ac7a9db8b34d398d7d398d1e8809874aaacb8627085561cee8b7af9d74320696eb">MeshWorker::assemble_own_cells</a></div><div class="ttdeci">@ assemble_own_cells</div><div class="ttdef"><b>Definition:</b> <a href="meshworker_2assemble__flags_8h_source.html#l00050">assemble_flags.h:50</a></div></div>
-<div class="ttc" id="anamespaceinternal_1_1VectorOperations_html_a40c8daa0881cff0123fbaeb08929f5cb"><div class="ttname"><a href="namespaceinternal_1_1VectorOperations.html#a40c8daa0881cff0123fbaeb08929f5cb">internal::VectorOperations::copy</a></div><div class="ttdeci">void copy(const T *begin, const T *end, U *dest)</div><div class="ttdef"><b>Definition:</b> <a href="lac_2vector__operations__internal_8h_source.html#l00068">vector_operations_internal.h:68</a></div></div>
 <div class="ttc" id="aclassTriangulation_html_afdbd22694fb7591e822577a8f8a90de9"><div class="ttname"><a href="classTriangulation.html#afdbd22694fb7591e822577a8f8a90de9">Triangulation::end</a></div><div class="ttdeci">cell_iterator end() const</div><div class="ttdef"><b>Definition:</b> <a href="grid_2tria_8cc_source.html#l12049">tria.cc:12049</a></div></div>
 <!-- HTML footer for doxygen 1.8.17-->
 <!-- start footer part -->

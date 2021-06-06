@@ -1,0 +1,103 @@
+[0.x.0]*
+ This class consistently uses a user-provided finite element on all cells of a triangulation to implement a polynomial mapping.
+*  If one initializes this class with the same FiniteElement as the discretization, one obtains an iso-parametric mapping.
+*  If one initializes this class with an FE_Q(degree) object, then this class is equivalent to MappingQGeneric(degree). Please note that no optimizations exploiting tensor-product structures of finite elements have been added here.
+* 
+
+* 
+*  [2.x.0]  Currently, only implemented for elements with tensor_degree==1 and   n_components==1.
+* 
+
+* 
+*  [2.x.1] 
+
+* 
+* [0.x.1]*
+   Constructor.  
+* [0.x.2]*
+   Copy constructor.  
+* [0.x.3]*
+   Return the degree of the mapping, i.e., the degree of the finite element   which was passed to the constructor.  
+* [0.x.4]*
+   Always returns  [2.x.2]  because the default implementation of functions in   this class preserves vertex locations.  
+* [0.x.5]*
+    [2.x.3]  Mapping points between reference and real cells    [2.x.4]   
+* [0.x.6]*
+    [2.x.5]   
+* [0.x.7]*
+    [2.x.6]  Functions to transform tensors from reference to real coordinates    [2.x.7]   
+* [0.x.8]*
+    [2.x.8]   
+* [0.x.9]*
+    [2.x.9]  Interface with FEValues    [2.x.10]   
+* [0.x.10]*
+   Storage for internal data of polynomial mappings. See    [2.x.11]  for an extensive description.     For the current class, the InternalData class stores data that is   computed once when the object is created (in get_data()) as well as data   the class wants to store from between the call to fill_fe_values(),   fill_fe_face_values(), or fill_fe_subface_values() until possible later   calls from the finite element to functions such as transform(). The   latter class of member variables are marked as 'mutable'.  
+* [0.x.11]*
+     Constructor.    
+* [0.x.12]*
+     Initialize the object's member variables related to cell data based on     the given arguments.         The function also calls compute_shape_function_values() to actually set     the member variables related to the values and derivatives of the     mapping shape functions.    
+* [0.x.13]*
+     Initialize the object's member variables related to cell and face data     based on the given arguments. In order to initialize cell data, this     function calls initialize().    
+* [0.x.14]*
+     Compute the values and/or derivatives of the shape functions used for     the mapping.    
+* [0.x.15]*
+     Shape function at quadrature point. Shape functions are in tensor     product order, so vertices must be reordered to obtain transformation.    
+* [0.x.16]*
+     Shape function at quadrature point. See above.    
+* [0.x.17]*
+     Gradient of shape function in quadrature point. See above.    
+* [0.x.18]*
+     Gradient of shape function in quadrature point. See above.    
+* [0.x.19]*
+     Second derivative of shape function in quadrature point. See above.    
+* [0.x.20]*
+     Second derivative of shape function in quadrature point. See above.    
+* [0.x.21]*
+     third derivative of shape function in quadrature point. See above.    
+* [0.x.22]*
+     third derivative of shape function in quadrature point. See above.    
+* [0.x.23]*
+     fourth derivative of shape function in quadrature point. See above.    
+* [0.x.24]*
+     fourth derivative of shape function in quadrature point. See above.    
+* [0.x.25]*
+     Return an estimate (in bytes) for the memory consumption of this object.    
+* [0.x.26]*
+     Values of shape functions. Access by function  [2.x.12]          Computed once.    
+* [0.x.27]*
+     Values of shape function derivatives. Access by function  [2.x.13]          Computed once.    
+* [0.x.28]*
+     Values of shape function second derivatives. Access by function  [2.x.14]      second_derivative.         Computed once.    
+* [0.x.29]*
+     Values of shape function third derivatives. Access by function  [2.x.15]      second_derivative.         Computed once.    
+* [0.x.30]*
+     Values of shape function fourth derivatives. Access by function  [2.x.16]      second_derivative.         Computed once.    
+* [0.x.31]*
+     Unit tangential vectors. Used for the computation of boundary forms and     normal vectors.         Filled once.    
+* [0.x.32]*
+     Underlying finite element.    
+* [0.x.33]*
+     The polynomial degree of the mapping.    
+* [0.x.34]*
+     Number of shape functions.    
+* [0.x.35]*
+     Tensors of covariant transformation at each of the quadrature points.     The matrix stored is the Jacobian G^{-1}, where G = Jacobian^{t}     Jacobian, is the first fundamental form of the map; if dim=spacedim     then it reduces to the transpose of the inverse of the Jacobian matrix,     which itself is stored in the  [2.x.17]  field of this structure.         Computed on each cell.    
+* [0.x.36]*
+     Tensors of contravariant transformation at each of the quadrature     points. The contravariant matrix is the Jacobian of the transformation,     i.e.  [2.x.18] .         Computed on each cell.    
+* [0.x.37]*
+     Auxiliary vectors for internal use.    
+* [0.x.38]*
+     Stores the support points of the mapping shape functions on the  [2.x.19]      cell_of_current_support_points.    
+* [0.x.39]*
+     Stores the cell of which the  [2.x.20]  are stored.    
+* [0.x.40]*
+     The determinant of the Jacobian in each quadrature point. Filled if     #update_volume_elements.    
+* [0.x.41]*
+     Projected quadrature weights.    
+* [0.x.42]*
+    [2.x.21]   
+* [0.x.43]*
+   The degree of the polynomials used as shape functions for the mapping of   cells.  
+* [0.x.44]*
+   Return the locations of support points for the mapping.  
+* [0.x.45]
