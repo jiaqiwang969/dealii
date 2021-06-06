@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2019 by the deal.II authors
 //
@@ -31,20 +31,19 @@ namespace Algorithms
   /**
    * Objects of this kind are used to notify interior applications of changes
    * provoked by an outer loop. They are handed to the application through
-   * Operator::notify() and it is up to the actual application how to handle
-   * them.
-   *
-   * Event is organized as an extensible binary enumerator. Every class can
-   * add its own events using assign(). A typical code example is
-   *
+   * Operator::notify()   and it is up to the actual application how to handle
+   * them.     Event is organized as an extensible binary enumerator. Every
+   * class can   add its own events using assign(). A typical code example is
    * @code
    * class A
    * {
-   *   static Event event;
+   * static Event event;
    * };
    *
    * Event A::event = Event::assign("Event for A");
    * @endcode
+   *
+   *
    */
   class Event
   {
@@ -53,6 +52,7 @@ namespace Algorithms
      * This function registers a new event type and assigns a unique
      * identifier to it. The result of this function should be stored for
      * later use.
+     *
      */
     static Event
     assign(const std::string &name);
@@ -60,34 +60,40 @@ namespace Algorithms
     /**
      * If you forgot to store the result of assign, here is how to retrieve it
      * knowing the name.
+     *
      */
     //      static Event find(const std::string& name);
 
     /**
      * Constructor, generating a clear Event.
+     *
      */
     Event();
 
     /**
      * Clear all flags
+     *
      */
     void
     clear();
 
     /**
      * Set all flags
+     *
      */
     void
     all();
 
     /**
      * Add the flags of the other event
+     *
      */
     Event &
     operator+=(const Event &event);
 
     /**
      * Clear the flags of the other event
+     *
      */
     Event &
     operator-=(const Event &event);
@@ -95,18 +101,21 @@ namespace Algorithms
     /**
      * Test whether all the flags set in the other Event are also set in this
      * one.
+     *
      */
     bool
     test(const Event &event) const;
 
     /**
      * Return <tt>true</tt> if any event is set.
+     *
      */
     bool
     any() const;
 
     /**
      * List the flags to a stream.
+     *
      */
     template <class OS>
     void
@@ -114,6 +123,7 @@ namespace Algorithms
 
     /**
      * List all assigned events.
+     *
      */
     template <class OS>
     static void
@@ -123,16 +133,19 @@ namespace Algorithms
     /**
      * Sometimes, actions have to be taken by all means. Therefore, if this
      * value is true, test() always returns true.
+     *
      */
     bool all_true;
 
     /**
      * The actual list of events
+     *
      */
     std::vector<bool> flags;
 
     /**
      * The names of registered events
+     *
      */
     // TODO: This static field must be guarded by a mutex to be thread-safe!
     static std::vector<std::string> names;
@@ -140,31 +153,37 @@ namespace Algorithms
 
   /**
    * Events used by library operators
+   *
    */
   namespace Events
   {
     /**
      * The program has just started and everything should be new.
+     *
      */
     extern const Event initial;
 
     /**
      * The mesh has changed.
+     *
      */
     extern const Event remesh;
 
     /**
      * The current derivative leads to slow convergence of Newton's method.
+     *
      */
     extern const Event bad_derivative;
 
     /**
      * The time stepping scheme starts a new time step.
+     *
      */
     extern const Event new_time;
 
     /**
      * The time stepping scheme has changed the time step size.
+     *
      */
     extern const Event new_timestep_size;
   } // namespace Events
@@ -284,9 +303,9 @@ namespace Algorithms
 
 
   /**
-   * Output shift operator for events. Calls Event::print().
+   * Output shift operator for events. Calls   Event::print().
+   * @relatesalso   Event
    *
-   * @relatesalso Event
    */
   template <class OS>
   OS &

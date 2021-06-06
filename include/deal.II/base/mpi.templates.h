@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
 //
@@ -42,6 +42,7 @@ namespace Utilities
 #ifdef DEAL_II_WITH_MPI
       /**
        * Return the corresponding MPI data type id for the argument given.
+       *
        */
       inline MPI_Datatype
       mpi_type_id(const bool *)

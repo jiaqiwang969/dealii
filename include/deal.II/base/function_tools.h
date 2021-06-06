@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2021 by the deal.II authors
 //
@@ -28,33 +28,27 @@ namespace FunctionTools
 {
   /**
    * Estimate bounds on the value and bounds on each gradient component of a
-   * Function, $f$, over a BoundingBox, by approximating it by a 2nd order
-   * Taylor polynomial starting from the box center.
+   * Function,   $f$  , over a BoundingBox, by approximating it by a 2nd order
+   * Taylor polynomial starting from the box center.     Each lower and upper
+   * bound is returned as a     <code>std::pair<double, double></code>  , such
+   * that the first entry is the   lower bound,   $L$  , and the second is the
+   * upper bound,   $U$  , i.e.     $f(x) \in [L, U]$  .     The function
+   * value, gradient, and Hessian are computed at the box center.   The bounds
+   * on the value of the function are then estimated as       $f(x) \in
+   * [f(x_c)
    *
-   * Each lower and upper bound is returned as a
-   * <code>std::pair<double, double></code>, such that the first entry is the
-   * lower bound, $L$, and the second is the upper bound, $U$, i.e.
-   * $f(x) \in [L, U]$.
+   * - F, f(x_c) + F]$  ,   where     $F = \sum_i |\partial_i f(x_c)| h_i +
+   * 1/2 \sum_i \sum_j |\partial_i \partial_j f(x_c)| h_i h_j$  .     Here,
+   * $h_i$   is half the side length of the box in the   $i$  th coordinate
+   * direction, which is the distance we extrapolate. The bounds on the
+   * gradient   components are estimated similarly as       $\partial_i f \in
+   * [\partial_i f(x_c)
    *
-   * The function value, gradient, and Hessian are computed at the box center.
-   * The bounds on the value of the function are then estimated as
+   * - G_i, \partial_i f(x_c) + G_i]$  ,   where     $G_i = \sum_j |\partial_i
+   * \partial_j f(x_c)| h_j$  .     If the function has more than 1 component
+   * the   @p component   parameter can   be used to specify which function
+   * component the bounds should be computed   for.
    *
-   * $f(x) \in [f(x_c) - F, f(x_c) + F]$,
-   * where
-   * $F = \sum_i |\partial_i f(x_c)| h_i
-   *    + 1/2 \sum_i \sum_j |\partial_i \partial_j f(x_c)| h_i h_j$.
-   *
-   * Here, $h_i$ is half the side length of the box in the $i$th coordinate
-   * direction, which is the distance we extrapolate. The bounds on the gradient
-   * components are estimated similarly as
-   *
-   * $\partial_i f \in [\partial_i f(x_c) - G_i, \partial_i f(x_c) + G_i]$,
-   * where
-   * $G_i = \sum_j |\partial_i \partial_j f(x_c)| h_j$.
-   *
-   * If the function has more than 1 component the @p component parameter can
-   * be used to specify which function component the bounds should be computed
-   * for.
    */
   template <int dim>
   void
@@ -68,4 +62,4 @@ namespace FunctionTools
 } // namespace FunctionTools
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* dealii_function_tools_h */
+#endif  /* dealii_function_tools_h */ 

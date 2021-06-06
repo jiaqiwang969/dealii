@@ -1,4 +1,4 @@
-name: github-linux
+name: q
 
 on: [push, pull_request]
 
@@ -6,7 +6,7 @@ jobs:
   linux-release-serial:
     # simple serial release build using g++
 
-    name: transltor for documentation-ab
+    name: transltor for documentation
     runs-on: [ubuntu-18.04]
 
     steps:
@@ -23,8 +23,7 @@ jobs:
         sudo apt-get install libboost-all-dev doxygen python
     - name: configure
       run: |
-        mv include/deal.II-translator/base/a*.h include/deal.II/base/
-        mv include/deal.II-translator/base/b*.h include/deal.II/base/
+        mv include/deal.II-translator/base/q*.h include/deal.II/base/
         cmake -D CMAKE_BUILD_TYPE=Release -D DEAL_II_CXX_FLAGS='-Werror' -D DEAL_II_EARLY_DEPRECATIONS=ON -DDEAL_II_COMPONENT_PYTHON_BINDINGS=ON -DDEAL_II_COMPONENT_DOCUMENTATION=ON -DDEAL_II_DOXYGEN_USE_MATHJAX=ON .
     - name: archive
       uses: actions/upload-artifact@v1

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
 //
@@ -34,16 +34,18 @@ namespace Utilities
     /**
      * CommunicationPattern is an abstract class that is used to define a
      * communication plan that can be called repeatedly to efficiently obtain
-     * off-processor elements. The idea is to decouple the communication pattern
-     * from the data that needs to be communicated. The goal is to reuse the
-     * same communication pattern for different containers. This is similar to
-     * the way SparseMatrix and SparsityPattern works.
+     * off-processor elements. The idea is to decouple the communication
+     * pattern     from the data that needs to be communicated. The goal is to
+     * reuse the     same communication pattern for different containers. This
+     * is similar to     the way SparseMatrix and SparsityPattern works.
+     *
      */
     class CommunicationPatternBase
     {
     public:
       /**
        * Destructor.
+       *
        */
       virtual ~CommunicationPatternBase() = default;
 
@@ -53,6 +55,7 @@ namespace Utilities
        * VectorSpaceVector object. The second argument
        * `read_write_vector_index_set` is the index set associated to a
        * ReadWriteVector object.
+       *
        */
       virtual void
       reinit(const IndexSet &vector_space_vector_index_set,
@@ -61,6 +64,7 @@ namespace Utilities
 
       /**
        * Return a constant reference to the underlying MPI communicator.
+       *
        */
       virtual const MPI_Comm &
       get_mpi_communicator() const = 0;
