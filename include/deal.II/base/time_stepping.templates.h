@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2014 - 2020 by the deal.II authors
 //
@@ -180,7 +180,7 @@ namespace TimeStepping
     const std::function<VectorType(const double, const VectorType &)> &f,
     const std::function<
       VectorType(const double, const double, const VectorType &)>
-      & /*id_minus_tau_J_inverse*/,
+      &  /*id_minus_tau_J_inverse*/ ,
     double      t,
     double      delta_t,
     VectorType &y)
@@ -365,7 +365,7 @@ namespace TimeStepping
     const std::function<VectorType(const double, const VectorType &)> &f,
     const std::function<
       VectorType(const double, const double, const VectorType &)>
-      & /*id_minus_tau_J_inverse*/,
+      &  /*id_minus_tau_J_inverse*/ ,
     double      t,
     double      delta_t,
     VectorType &y)
@@ -983,7 +983,7 @@ namespace TimeStepping
     const std::function<VectorType(const double, const VectorType &)> &f,
     const std::function<
       VectorType(const double, const double, const VectorType &)>
-      & /*id_minus_tau_J_inverse*/,
+      &  /*id_minus_tau_J_inverse*/ ,
     double      t,
     double      delta_t,
     VectorType &y)

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2012 - 2021 by the deal.II authors
 //
@@ -31,23 +31,22 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * @addtogroup Polynomials
- * @{
+ * @addtogroup   Polynomials   @{
+ *
+ *
  */
 
 /**
- * A class that represents a space of tensor product polynomials, augmented
- * by $dim$ (non-normalized) bubble functions of form
- * $\varphi_j(\mathbf x)
- * = 2^{\text{degree}-1}\left(x_j-frac 12\right)^{\text{degree}-1}
- * \left[\prod_{i=0}^{dim-1}(x_i(1-x_i))\right]$
- * for $j=0,\ldots,dim-1$. If `degree` is one, then the first factor
- * disappears and one receives the usual bubble function centered
- * at the mid-point of the cell.
+ * A class that represents a space of tensor product polynomials, augmented by
+ * $dim$   (non-normalized) bubble functions of form   $\varphi_j(\mathbf x) =
+ * 2^{\text{degree}-1}\left(x_j-frac 12\right)^{\text{degree}-1}
+ * \left[\prod_{i=0}^{dim-1}(x_i(1-x_i))\right]$   for   $j=0,\ldots,dim-1$  .
+ * If `degree` is one, then the first factor disappears and one receives the
+ * usual bubble function centered at the mid-point of the cell. This class
+ * inherits most of its functionality from TensorProductPolynomials. The
+ * bubble enrichments are added for the last index.
  *
- * This class inherits
- * most of its functionality from TensorProductPolynomials. The bubble
- * enrichments are added for the last index.
+ *
  */
 template <int dim>
 class TensorProductPolynomialsBubbles : public ScalarPolynomialsBase<dim>
@@ -56,6 +55,7 @@ public:
   /**
    * Access to the dimension of this object, for checking and automatic
    * setting of dimension in other classes.
+   *
    */
   static const unsigned int dimension = dim;
 
@@ -63,12 +63,14 @@ public:
    * Constructor. <tt>pols</tt> is a vector of objects that should be derived
    * or otherwise convertible to one-dimensional polynomial objects. It will
    * be copied element by element into a private variable.
+   *
    */
   template <class Pol>
   TensorProductPolynomialsBubbles(const std::vector<Pol> &pols);
 
   /**
    * Print the list of <tt>tensor_polys</tt> indices to <tt>out</tt>.
+   *
    */
   void
   output_indices(std::ostream &out) const;
@@ -77,33 +79,34 @@ public:
    * Set the ordering of the polynomials. Requires
    * <tt>renumber.size()==tensor_polys.n()</tt>.  Stores a copy of
    * <tt>renumber</tt>.
+   *
    */
   void
   set_numbering(const std::vector<unsigned int> &renumber);
 
   /**
    * Give read access to the renumber vector.
+   *
    */
   const std::vector<unsigned int> &
   get_numbering() const;
 
   /**
    * Give read access to the inverse renumber vector.
+   *
    */
   const std::vector<unsigned int> &
   get_numbering_inverse() const;
 
   /**
    * Compute the value and the first and second derivatives of each tensor
-   * product polynomial at <tt>unit_point</tt>.
+   * product polynomial at <tt>unit_point</tt>.     The size of the vectors
+   * must either be equal 0 or equal n(). In the first   case, the function
+   * will not compute these values.     If you need values or derivatives of
+   * all tensor product polynomials then   use this function, rather than
+   * using any of the compute_value(),   compute_grad() or compute_grad_grad()
+   * functions, see below, in a loop   over all tensor product polynomials.
    *
-   * The size of the vectors must either be equal 0 or equal n(). In the first
-   * case, the function will not compute these values.
-   *
-   * If you need values or derivatives of all tensor product polynomials then
-   * use this function, rather than using any of the compute_value(),
-   * compute_grad() or compute_grad_grad() functions, see below, in a loop
-   * over all tensor product polynomials.
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -116,57 +119,60 @@ public:
   /**
    * Compute the value of the <tt>i</tt>th tensor product polynomial at
    * <tt>unit_point</tt>. Here <tt>i</tt> is given in tensor product
-   * numbering.
+   * numbering.     Note, that using this function within a loop over all
+   * tensor product   polynomials is not efficient, because then each point
+   * value of the   underlying (one-dimensional) polynomials is
+   * (unnecessarily) computed   several times.  Instead use the evaluate()
+   * function with   <tt>values.size()==</tt>n() to get the point values of
+   * all tensor   polynomials all at once and in a much more efficient way.
    *
-   * Note, that using this function within a loop over all tensor product
-   * polynomials is not efficient, because then each point value of the
-   * underlying (one-dimensional) polynomials is (unnecessarily) computed
-   * several times.  Instead use the evaluate() function with
-   * <tt>values.size()==</tt>n() to get the point values of all tensor
-   * polynomials all at once and in a much more efficient way.
    */
   double
   compute_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * Compute the order @p order derivative of the <tt>i</tt>th tensor product
-   * polynomial at <tt>unit_point</tt>. Here <tt>i</tt> is given in tensor
-   * product numbering.
+   * Compute the order   @p order   derivative of the <tt>i</tt>th tensor
+   * product   polynomial at <tt>unit_point</tt>. Here <tt>i</tt> is given in
+   * tensor   product numbering.     Note, that using this function within a
+   * loop over all tensor product   polynomials is not efficient, because then
+   * each derivative value of the   underlying (one-dimensional) polynomials
+   * is (unnecessarily) computed   several times.  Instead use the evaluate()
+   * function, see above, with the   size of the appropriate parameter set to
+   * n() to get the point value of   all tensor polynomials all at once and in
+   * a much more efficient way.
    *
-   * Note, that using this function within a loop over all tensor product
-   * polynomials is not efficient, because then each derivative value of the
-   * underlying (one-dimensional) polynomials is (unnecessarily) computed
-   * several times.  Instead use the evaluate() function, see above, with the
-   * size of the appropriate parameter set to n() to get the point value of
-   * all tensor polynomials all at once and in a much more efficient way.
    */
   template <int order>
   Tensor<order, dim>
   compute_derivative(const unsigned int i, const Point<dim> &p) const;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_1st_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_1st_derivative()
+   *
    */
   virtual Tensor<1, dim>
   compute_1st_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_2nd_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_2nd_derivative()
+   *
    */
   virtual Tensor<2, dim>
   compute_2nd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_3rd_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_3rd_derivative()
+   *
    */
   virtual Tensor<3, dim>
   compute_3rd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_4th_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_4th_derivative()
+   *
    */
   virtual Tensor<4, dim>
   compute_4th_derivative(const unsigned int i,
@@ -175,14 +181,14 @@ public:
   /**
    * Compute the grad of the <tt>i</tt>th tensor product polynomial at
    * <tt>unit_point</tt>. Here <tt>i</tt> is given in tensor product
-   * numbering.
+   * numbering.     Note, that using this function within a loop over all
+   * tensor product   polynomials is not efficient, because then each
+   * derivative value of the   underlying (one-dimensional) polynomials is
+   * (unnecessarily) computed   several times.  Instead use the evaluate()
+   * function, see above, with   <tt>grads.size()==</tt>n() to get the point
+   * value of all tensor   polynomials all at once and in a much more
+   * efficient way.
    *
-   * Note, that using this function within a loop over all tensor product
-   * polynomials is not efficient, because then each derivative value of the
-   * underlying (one-dimensional) polynomials is (unnecessarily) computed
-   * several times.  Instead use the evaluate() function, see above, with
-   * <tt>grads.size()==</tt>n() to get the point value of all tensor
-   * polynomials all at once and in a much more efficient way.
    */
   Tensor<1, dim>
   compute_grad(const unsigned int i, const Point<dim> &p) const override;
@@ -190,14 +196,14 @@ public:
   /**
    * Compute the second derivative (grad_grad) of the <tt>i</tt>th tensor
    * product polynomial at <tt>unit_point</tt>. Here <tt>i</tt> is given in
-   * tensor product numbering.
+   * tensor product numbering.     Note, that using this function within a
+   * loop over all tensor product   polynomials is not efficient, because then
+   * each derivative value of the   underlying (one-dimensional) polynomials
+   * is (unnecessarily) computed   several times.  Instead use the evaluate()
+   * function, see above, with   <tt>grad_grads.size()==</tt>n() to get the
+   * point value of all tensor   polynomials all at once and in a much more
+   * efficient way.
    *
-   * Note, that using this function within a loop over all tensor product
-   * polynomials is not efficient, because then each derivative value of the
-   * underlying (one-dimensional) polynomials is (unnecessarily) computed
-   * several times.  Instead use the evaluate() function, see above, with
-   * <tt>grad_grads.size()==</tt>n() to get the point value of all tensor
-   * polynomials all at once and in a much more efficient way.
    */
   Tensor<2, dim>
   compute_grad_grad(const unsigned int i, const Point<dim> &p) const override;
@@ -207,6 +213,7 @@ public:
    * enrichments. For <i>n</i> 1d polynomials this is <i>n<sup>dim</sup>+1</i>
    * if the maximum degree of the polynomials is one and
    * <i>n<sup>dim</sup>+dim</i> otherwise.
+   *
    */
   unsigned int
   n() const;
@@ -214,12 +221,14 @@ public:
   /**
    * Return the name of the space, which is
    * <tt>TensorProductPolynomialsBubbles</tt>.
+   *
    */
   std::string
   name() const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::clone()
+   * @copydoc     ScalarPolynomialsBase::clone()
+   *
    */
   virtual std::unique_ptr<ScalarPolynomialsBase<dim>>
   clone() const override;
@@ -227,24 +236,27 @@ public:
 private:
   /**
    * The TensorProductPolynomials object
+   *
    */
   TensorProductPolynomials<dim> tensor_polys;
 
   /**
    * Index map for reordering the polynomials.
+   *
    */
   std::vector<unsigned int> index_map;
 
   /**
    * Index map for reordering the polynomials.
+   *
    */
   std::vector<unsigned int> index_map_inverse;
 };
 
-/** @} */
+ /** @} */ 
 
 
-/* ---------------- template and inline functions ---------- */
+ /* ---------------- template and inline functions ---------- */ 
 
 #ifndef DOXYGEN
 
@@ -320,7 +332,7 @@ TensorProductPolynomialsBubbles<dim>::compute_derivative(
 {
   const unsigned int q_degree      = tensor_polys.polynomials.size() - 1;
   const unsigned int max_q_indices = tensor_polys.n();
-  Assert(i < max_q_indices + /* n_bubbles= */ ((q_degree <= 1) ? 1 : dim),
+  Assert(i < max_q_indices +  /* n_bubbles= */  ((q_degree <= 1) ? 1 : dim),
          ExcInternalError());
 
   // treat the regular basis functions

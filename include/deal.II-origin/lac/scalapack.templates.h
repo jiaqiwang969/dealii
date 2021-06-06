@@ -807,9 +807,9 @@ extern "C"
 
   /*
    * Perform matrix sum:
-   * @f{equation*}
+   * @f{equation*}{
    * C \dealcoloneq \beta C + \alpha op(A),
-   * @f
+   * @f}
    * where $op(A)$ denotes either $op(A) = A$ or $op(A)=A^T$.
    */
   void

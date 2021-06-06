@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
 //
@@ -26,36 +26,47 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Polynomial implemented in barycentric coordinates.
- *
- * Barycentric coordinates are a coordinate system defined on simplices that
- * are particularly easy to work with since they express coordinates in the
- * simplex as convex combinations of the vertices. For example, any point in a
- * triangle can be written as
- *
- * @f[
- *   (x, y) = c_0 (x_0, y_0) + c_1 (x_1, y_1) + c_2 (x_2, y_2).
+ * Polynomial implemented in barycentric coordinates. Barycentric coordinates
+ * are a coordinate system defined on simplices that are particularly easy to
+ * work with since they express coordinates in the simplex as convex
+ * combinations of the vertices. For example, any point in a triangle can be
+ * written as
+ *  @f[
+ * (x, y) = c_0 (x_0, y_0) + c_1 (x_1, y_1) + c_2 (x_2, y_2).
  * @f]
+ * where each value   $c_i$   is the relative weight of each vertex (so the
+ * centroid is, in 2D, where each   $c_i = 1/3$  ). Since we only consider
+ * convex combinations we can rewrite this equation as
+ *  @f[
+ * (x, y) = (1
  *
- * where each value $c_i$ is the relative weight of each vertex (so the
- * centroid is, in 2D, where each $c_i = 1/3$). Since we only consider convex
- * combinations we can rewrite this equation as
+ * - c_1
  *
- * @f[
- *   (x, y) = (1 - c_1 - c_2) (x_0, y_0) + c_1 (x_1, y_1) + c_2 (x_2, y_2).
+ * - c_2) (x_0, y_0) + c_1 (x_1, y_1) + c_2 (x_2, y_2).
  * @f]
+ * This results in three polynomials that are equivalent to   $P^1$   in 2D.
+ * More exactly, this class implements a polynomial space defined with the
+ * basis, in 2D, of
  *
- * This results in three polynomials that are equivalent to $P^1$ in 2D. More
- * exactly, this class implements a polynomial space defined with the basis,
- * in 2D, of
  * @f{align*}{
- * t_0(x, y) &= 1 - x - y \\
+ * t_0(x, y) &= 1
+ *
+ * - x
+ *
+ * - y \\
  * t_1(x, y) &= x \\
  * t_2(x, y) &= y
  * @f}
  * and, in 3D,
+ *
  * @f{align*}{
- * t_0(x, y) &= 1 - x - y - z \\
+ * t_0(x, y) &= 1
+ *
+ * - x
+ *
+ * - y
+ *
+ * - z \\
  * t_1(x, y) &= x             \\
  * t_2(x, y) &= y             \\
  * t_2(x, y) &= z
@@ -63,19 +74,18 @@ DEAL_II_NAMESPACE_OPEN
  *
  * which is, in practice, a very convenient basis for defining simplex
  * polynomials: for example, the fourth basis function of a TRI6 element is
- *
- * @f[
- * 4 * t_1(x, y) * t_2(x, y).
+ *  @f[
+ * 4 t_1(x, y) t_2(x, y).
  * @f]
+ * Barycentric polynomials in   <code>dim</code>  -dimensional space have
+ * <code>dim + 1</code> variables in since <code>t_0</code>   can be written
+ * in terms of the other monomials. Monomials can be conveniently constructed
+ * with   BarycentricPolynomial::monomial().
  *
- * Barycentric polynomials in <code>dim</code>-dimensional space have
- * <code>dim + 1</code> variables in since <code>t_0</code> can be written in
- * terms of the other monomials.
- *
- * Monomials can be conveniently constructed with
- * BarycentricPolynomial::monomial().
  *
  * @ingroup Polynomials
+ *
+ *
  */
 template <int dim, typename Number = double>
 class BarycentricPolynomial
@@ -83,44 +93,51 @@ class BarycentricPolynomial
 public:
   /**
    * Constructor for the zero polynomial.
+   *
    */
   BarycentricPolynomial();
 
   /**
    * Constructor for a monomial.
+   *
    */
   BarycentricPolynomial(const TableIndices<dim + 1> &powers,
                         const Number                 coefficient);
 
   /**
    * Return the specified monomial.
+   *
    */
   static BarycentricPolynomial<dim, Number>
   monomial(const unsigned int d);
 
   /**
    * Print the polynomial to the output stream with lowest-order terms first.
-   * For example, the first P6 basis function is printed as
-   * <code>-1 * t0^1 + 2 * t0^2</code>, where <code>t0</code> is the first
-   * barycentric variable, <code>t1</code> is the second, etc.
+   * For example, the first P6 basis function is printed as     <code>-1 t0^1
+   * + 2 t0^2</code>, where <code>t0</code>   is the first   barycentric
+   * variable,   <code>t1</code>   is the second, etc.
+   *
    */
   void
   print(std::ostream &out) const;
 
   /**
    * Degree of each barycentric polynomial.
+   *
    */
   TableIndices<dim + 1>
   degrees() const;
 
   /**
    * Unary minus.
+   *
    */
   BarycentricPolynomial<dim, Number>
   operator-() const;
 
   /**
    * Add a scalar.
+   *
    */
   template <typename Number2>
   BarycentricPolynomial<dim, Number>
@@ -128,6 +145,7 @@ public:
 
   /**
    * Subtract a scalar.
+   *
    */
   template <typename Number2>
   BarycentricPolynomial<dim, Number>
@@ -135,12 +153,14 @@ public:
 
   /**
    * Multiply by a scalar.
+   *
    */
   template <typename Number2>
   BarycentricPolynomial<dim, Number> operator*(const Number2 &a) const;
 
   /**
    * Divide by a scalar.
+   *
    */
   template <typename Number2>
   BarycentricPolynomial<dim, Number>
@@ -148,42 +168,49 @@ public:
 
   /**
    * Add another barycentric polynomial.
+   *
    */
   BarycentricPolynomial<dim, Number>
   operator+(const BarycentricPolynomial<dim, Number> &augend) const;
 
   /**
    * Subtract another barycentric polynomial.
+   *
    */
   BarycentricPolynomial<dim, Number>
   operator-(const BarycentricPolynomial<dim, Number> &augend) const;
 
   /**
    * Multiply by another barycentric polynomial.
+   *
    */
   BarycentricPolynomial<dim, Number>
   operator*(const BarycentricPolynomial<dim, Number> &multiplicand) const;
 
   /**
    * Differentiate in barycentric coordinates.
+   *
    */
   BarycentricPolynomial<dim, Number>
   barycentric_derivative(const unsigned int coordinate) const;
 
   /**
    * Differentiate in Cartesian coordinates.
+   *
    */
   BarycentricPolynomial<dim, Number>
   derivative(const unsigned int coordinate) const;
 
   /**
    * Evaluate the polynomial.
+   *
    */
   Number
   value(const Point<dim> &point) const;
 
   /**
    * Return an estimate, in bytes, of the memory usage of the object.
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -191,16 +218,15 @@ public:
 protected:
   /**
    * Coefficients of the polynomial. The exponents are the integer indexes.
+   *
    */
   Table<dim + 1, Number> coefficients;
 
   /**
-   * Utility function for barycentric polynomials - its convenient to loop
-   * over all the indices at once in a dimension-independent way, but we also
-   * need to access the actual indices of the underlying Table object. This
-   * utility function converts an integral index into the equivalent
-   * TableIndices array (which are also the implicitly stored polynomial
-   * exponents).
+   * Utility function for barycentric polynomials
+   *
+   *  - its convenient to loop   over all the indices at once in a dimension-independent way, but we also   need to access the actual indices of the underlying Table object. This   utility function converts an integral index into the equivalent   TableIndices array (which are also the implicitly stored polynomial   exponents).
+   *
    */
   static TableIndices<dim + 1>
   index_to_indices(const std::size_t &          index,
@@ -209,6 +235,8 @@ protected:
 
 /**
  * Scalar polynomial space based on barycentric polynomials.
+ *
+ *
  */
 template <int dim>
 class BarycentricPolynomials : public ScalarPolynomialsBase<dim>
@@ -216,28 +244,33 @@ class BarycentricPolynomials : public ScalarPolynomialsBase<dim>
 public:
   /**
    * Make the dimension available to the outside.
+   *
    */
   static const unsigned int dimension = dim;
 
   /**
    * Get the standard Lagrange basis for a specified degree.
+   *
    */
   static BarycentricPolynomials<dim>
   get_fe_p_basis(const unsigned int degree);
 
   /**
-   * Constructor taking the polynomial @p degree as input.
+   * Constructor taking the polynomial   @p degree   as input.
+   *
    */
   BarycentricPolynomials(
     const std::vector<BarycentricPolynomial<dim>> &polynomials);
 
   /**
    * Access operator.
+   *
    */
   const BarycentricPolynomial<dim> &operator[](const std::size_t i) const;
 
   /**
-   * @copydoc ScalarPolynomialsBase::evaluate()
+   * @copydoc     ScalarPolynomialsBase::evaluate()
+   *
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -248,65 +281,75 @@ public:
            std::vector<Tensor<4, dim>> &fourth_derivatives) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_value()
+   * @copydoc     ScalarPolynomialsBase::compute_value()
+   *
    */
   double
   compute_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_1st_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_1st_derivative()
+   *
    */
   Tensor<1, dim>
   compute_1st_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_2nd_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_2nd_derivative()
+   *
    */
   Tensor<2, dim>
   compute_2nd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_3rd_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_3rd_derivative()
+   *
    */
   Tensor<3, dim>
   compute_3rd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_4th_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_4th_derivative()
+   *
    */
   Tensor<4, dim>
   compute_4th_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_grad()
+   * @copydoc     ScalarPolynomialsBase::compute_grad()
+   *
    */
   Tensor<1, dim>
   compute_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_grad_grad()
+   * @copydoc     ScalarPolynomialsBase::compute_grad_grad()
+   *
    */
   Tensor<2, dim>
   compute_grad_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::memory_consumption()
+   * @copydoc     ScalarPolynomialsBase::memory_consumption()
+   *
    */
   virtual std::size_t
   memory_consumption() const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::name()
+   * @copydoc     ScalarPolynomialsBase::name()
+   *
    */
   std::string
   name() const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::clone()
+   * @copydoc     ScalarPolynomialsBase::clone()
+   *
    */
   virtual std::unique_ptr<ScalarPolynomialsBase<dim>>
   clone() const override;
@@ -327,6 +370,8 @@ protected:
 
 /**
  * Multiply a BarycentricPolynomial by a constant.
+ *
+ *
  */
 template <int dim, typename Number1, typename Number2>
 BarycentricPolynomial<dim, Number1>
@@ -337,6 +382,8 @@ operator*(const Number2 &a, const BarycentricPolynomial<dim, Number1> &bp)
 
 /**
  * Add a constant to a BarycentricPolynomial.
+ *
+ *
  */
 template <int dim, typename Number1, typename Number2>
 BarycentricPolynomial<dim, Number1>
@@ -347,6 +394,8 @@ operator+(const Number2 &a, const BarycentricPolynomial<dim, Number1> &bp)
 
 /**
  * Subtract a BarycentricPolynomial from a constant.
+ *
+ *
  */
 template <int dim, typename Number1, typename Number2>
 BarycentricPolynomial<dim, Number1>
@@ -357,6 +406,8 @@ operator-(const Number2 &a, const BarycentricPolynomial<dim, Number1> &bp)
 
 /**
  * Write a BarycentricPolynomial to the provided output stream.
+ *
+ *
  */
 template <int dim, typename Number>
 std::ostream &

@@ -245,8 +245,8 @@ namespace internal
  * elements of other rows; the ConvergenceTable class does something like
  * this.
  *
- * To support both scenarios, the TableHandler class has a property called <i
- * >auto-fill mode</i>. By default, auto-fill mode is off, but it can be
+ * To support both scenarios, the TableHandler class has a property called <i>
+ * auto-fill mode</i>. By default, auto-fill mode is off, but it can be
  * enabled by calling set_auto_fill_mode(). If auto-fill mode is enabled we
  * use the following algorithm:
  *

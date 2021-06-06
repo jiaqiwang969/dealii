@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2020 by the deal.II authors
 //
@@ -92,16 +92,17 @@ struct EnableIfScalar<VectorizedArray<Number, width>>
 
 /**
  * An iterator for VectorizedArray.
+ *
+ *
  */
 template <typename T>
 class VectorizedArrayIterator
 {
 public:
   /**
-   * Constructor.
+   * Constructor.       @param   data The actual VectorizedArray.     @param
+   * lane A pointer to the current lane.
    *
-   * @param data The actual VectorizedArray.
-   * @param lane A pointer to the current lane.
    */
   VectorizedArrayIterator(T &data, const std::size_t lane)
     : data(&data)
@@ -110,6 +111,7 @@ public:
 
   /**
    * Compare for equality.
+   *
    */
   bool
   operator==(const VectorizedArrayIterator<T> &other) const
@@ -122,6 +124,7 @@ public:
 
   /**
    * Compare for inequality.
+   *
    */
   bool
   operator!=(const VectorizedArrayIterator<T> &other) const
@@ -134,6 +137,7 @@ public:
 
   /**
    * Copy assignment.
+   *
    */
   VectorizedArrayIterator<T> &
   operator=(const VectorizedArrayIterator<T> &other) = default;
@@ -141,6 +145,7 @@ public:
   /**
    * Dereferencing operator (const version): returns the value of the current
    * lane.
+   *
    */
   const typename T::value_type &operator*() const
   {
@@ -150,8 +155,9 @@ public:
 
 
   /**
-   * Dereferencing operator (non-@p const version): returns the value of the
-   * current lane.
+   * Dereferencing operator (non-  @p const   version): returns the value of
+   * the   current lane.
+   *
    */
   template <typename U = T>
   typename std::enable_if<!std::is_same<U, const U>::value,
@@ -166,6 +172,7 @@ public:
    * Prefix <tt>++</tt> operator: <tt>++iterator</tt>. This operator advances
    * the iterator to the next lane and returns a reference to
    * <tt>*this</tt>.
+   *
    */
   VectorizedArrayIterator<T> &
   operator++()
@@ -176,8 +183,9 @@ public:
   }
 
   /**
-   * This operator advances the iterator by @p offset lanes and returns a
+   * This operator advances the iterator by   @p offset   lanes and returns a
    * reference to <tt>*this</tt>.
+   *
    */
   VectorizedArrayIterator<T> &
   operator+=(const std::size_t offset)
@@ -191,6 +199,7 @@ public:
    * Prefix <tt>--</tt> operator: <tt>--iterator</tt>. This operator advances
    * the iterator to the previous lane and returns a reference to
    * <tt>*this</tt>.
+   *
    */
   VectorizedArrayIterator<T> &
   operator--()
@@ -204,7 +213,8 @@ public:
   }
 
   /**
-   * Create new iterator, which is shifted by @p offset.
+   * Create new iterator, which is shifted by   @p offset.
+   *
    */
   VectorizedArrayIterator<T>
   operator+(const std::size_t &offset) const
@@ -214,7 +224,8 @@ public:
   }
 
   /**
-   * Compute distance between this iterator and iterator @p other.
+   * Compute distance between this iterator and iterator   @p other.
+   *
    */
   std::ptrdiff_t
   operator-(const VectorizedArrayIterator<T> &other) const
@@ -226,11 +237,13 @@ public:
 private:
   /**
    * Pointer to the actual VectorizedArray.
+   *
    */
   T *data;
 
   /**
    * Pointer to the current lane.
+   *
    */
   std::size_t lane;
 };
@@ -240,11 +253,12 @@ private:
 /**
  * A base class for the various VectorizedArray template specializations,
  * containing common functionalities.
+ * @tparam   T Type of the actual vectorized array. We are using the
+ * Couriously Recurring Template Pattern (see
+ * https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern) in this
+ * class to avoid having to resort to `virtual` member functions.
  *
- * @tparam T Type of the actual vectorized array. We are using the
- *   Couriously Recurring Template Pattern (see
- *   https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern) in this
- *   class to avoid having to resort to `virtual` member functions.
+ *
  */
 template <typename T, std::size_t width>
 class VectorizedArrayBase
@@ -252,6 +266,7 @@ class VectorizedArrayBase
 public:
   /**
    * Return the number of elements in the array.
+   *
    */
   static constexpr std::size_t
   size()
@@ -260,7 +275,8 @@ public:
   }
 
   /**
-   * @return An iterator pointing to the beginning of the underlying data.
+   * @return   An iterator pointing to the beginning of the underlying data.
+   *
    */
   VectorizedArrayIterator<T>
   begin()
@@ -269,8 +285,9 @@ public:
   }
 
   /**
-   * @return An iterator pointing to the beginning of the underlying data (`const`
-   * version).
+   * @return   An iterator pointing to the beginning of the underlying data
+   * (`const`   version).
+   *
    */
   VectorizedArrayIterator<const T>
   begin() const
@@ -279,7 +296,8 @@ public:
   }
 
   /**
-   * @return An iterator pointing to the end of the underlying data.
+   * @return   An iterator pointing to the end of the underlying data.
+   *
    */
   VectorizedArrayIterator<T>
   end()
@@ -288,8 +306,9 @@ public:
   }
 
   /**
-   * @return An iterator pointing to the end of the underlying data (`const`
+   * @return   An iterator pointing to the end of the underlying data (`const`
    * version).
+   *
    */
   VectorizedArrayIterator<const T>
   end() const
@@ -321,69 +340,118 @@ public:
  * respectively (this corresponds to the SSE/SSE2 data sets) when compiling
  * deal.II on 64-bit operating systems. On Intel Sandy Bridge processors and
  * newer or AMD Bulldozer processors and newer, four doubles or eight floats
- * are used when deal.II is configured using gcc with \--with-cpu=native
- * or \--with-cpu=corei7-avx. On compilations with AVX-512 support (e.g.,
- * Intel Skylake Server from 2017), eight doubles or sixteen floats are used.
- *
- * This behavior of this class is made similar to the basic data types double
- * and float. The definition of a vectorized array does not initialize the
- * data field but rather leaves it undefined, as is the case for double and
- * float. However, when calling something like `VectorizedArray<double> a =
+ * are used when deal.II is configured using gcc with \--with-cpu=native or
+ * \--with-cpu=corei7-avx. On compilations with AVX-512 support (e.g., Intel
+ * Skylake Server from 2017), eight doubles or sixteen floats are used. This
+ * behavior of this class is made similar to the basic data types double and
+ * float. The definition of a vectorized array does not initialize the data
+ * field but rather leaves it undefined, as is the case for double and float.
+ * However, when calling something like `VectorizedArray<double> a =
  * VectorizedArray<double>()` or `VectorizedArray<double> a = 0.`, it sets all
  * numbers in this field to zero. This class is of standard layout type
  * according to the C++11 standard, which means that there is an equivalent C
- * representation and the class can e.g. be safely copied with std::memcpy.
+ * representation and the class can e.g. be safely copied with   std::memcpy.
  * (See also https://en.cppreference.com/w/cpp/named_req/StandardLayoutType.)
  * The standard layout is also necessary for ensuring correct alignment of
  * data with address boundaries when collected in a vector (i.e., when the
  * first element in a vector is properly aligned, all subsequent elements will
- * be correctly aligned, too).
+ * be correctly aligned, too). Note that for proper functioning of this class,
+ * certain data alignment rules must be respected. This is because the
+ * computer expects the starting address of a VectorizedArray<double> field at
+ * specific addresses in memory (usually, the address of the vectorized array
+ * should be a multiple of the length of the array in bytes). Otherwise, a
+ * segmentation fault or a severe loss of performance might occur. When
+ * creating a single data field on the stack like `VectorizedArray<double> a =
+ * 5.;`, the compiler will take care of data alignment automatically. However,
+ * when allocating a long vector of VectorizedArray<double> data, one needs to
+ * respect these rules. Use the class AlignedVector or data containers based
+ * on AlignedVector (such as Table) for this purpose. It is a class very
+ * similar to   std::vector   otherwise but always makes sure that data is
+ * correctly aligned. The user can explicitly control the width of a
+ * particular instruction set architecture (ISA) extension by specifying the
+ * number of lanes via the second template parameter of this wrapper class.
+ * For example on Intel Skylake Server, you have the following options for the
+ * data type double:
  *
- * Note that for proper functioning of this class, certain data alignment
- * rules must be respected. This is because the computer expects the starting
- * address of a VectorizedArray<double> field at specific addresses in memory
- * (usually, the address of the vectorized array should be a multiple of the
- * length of the array in bytes). Otherwise, a segmentation fault or a severe
- * loss of performance might occur. When creating a single data field on the
- * stack like `VectorizedArray<double> a = 5.;`, the compiler will take care
- * of data alignment automatically. However, when allocating a long vector of
- * VectorizedArray<double> data, one needs to respect these rules. Use the
- * class AlignedVector or data containers based on AlignedVector (such as
- * Table) for this purpose. It is a class very similar to std::vector
- * otherwise but always makes sure that data is correctly aligned.
  *
- * The user can explicitly control the width of a particular instruction set
- * architecture (ISA) extension by specifying the number of lanes via the second
- * template parameter of this wrapper class. For example on Intel Skylake
- * Server, you have the following options for the data type double:
+ *
+ *
+ *
  *  - VectorizedArray<double, 1> // no vectorization (auto-optimization)
+ *
+ *
+ *
+ *
+ *
  *  - VectorizedArray<double, 2> // SSE2
+ *
+ *
+ *
+ *
+ *
  *  - VectorizedArray<double, 4> // AVX
+ *
+ *
+ *
+ *
+ *
  *  - VectorizedArray<double, 8> // AVX-512 (default)
+ * and for Intel Sandy Bridge, Haswell, Broadwell, AMD Bulldozer and
+ * Zen/Ryzen:
  *
- * and for Intel Sandy Bridge, Haswell, Broadwell, AMD Bulldozer and Zen/Ryzen:
+ *
+ *
+ *
+ *
  *  - VectorizedArray<double, 1> // no vectorization (auto-optimization)
+ *
+ *
+ *
+ *
+ *
  *  - VectorizedArray<double, 2> // SSE2
+ *
+ *
+ *
+ *
+ *
  *  - VectorizedArray<double, 4> // AVX (default)
- *
  * and for processors with AltiVec support:
- *  - VectorizedArray<double, 1>
- *  - VectorizedArray<double, 2>
  *
+ *
+ *
+ *
+ *
+ *  - VectorizedArray<double, 1>
+ *
+ *
+ *
+ *
+ *
+ *  - VectorizedArray<double, 2>
  * for older x86 processors or in case no processor-specific compilation flags
  * were added (i.e., without `-D CMAKE_CXX_FLAGS=-march=native` or similar
  * flags):
+ *
+ *
+ *
+ *
+ *
  *  - VectorizedArray<double, 1> // no vectorization (auto-optimization)
+ *
+ *
+ *
+ *
+ *
  *  - VectorizedArray<double, 2> // SSE2
+ * Similar considerations also apply to the data type `float`. Wrongly
+ * selecting the width, e.g., width=3 or width=8 on a processor which does not
+ * support AVX-512 leads to a static assert.
+ * @tparam   Number underlying data type   @tparam   width  vector length
+ * (optional; if not set, the maximal width of the                architecture
+ * is used)
  *
- * Similar considerations also apply to the data type `float`.
  *
- * Wrongly selecting the width, e.g., width=3 or width=8 on a processor which
- * does not support AVX-512 leads to a static assert.
- *
- * @tparam Number underlying data type
- * @tparam width  vector length (optional; if not set, the maximal width of the
- *                architecture is used)
  */
 template <typename Number, std::size_t width>
 class VectorizedArray
@@ -392,6 +460,7 @@ class VectorizedArray
 public:
   /**
    * This gives the type of the array elements.
+   *
    */
   using value_type = Number;
 
@@ -401,11 +470,13 @@ public:
   /**
    * Default empty constructor, leaving the data in an uninitialized state
    * similar to float/double.
+   *
    */
   VectorizedArray() = default;
 
   /**
    * Construct an array with the given scalar broadcast to all lanes.
+   *
    */
   VectorizedArray(const Number scalar)
   {
@@ -414,6 +485,7 @@ public:
 
   /**
    * This function assigns a scalar to this class.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -426,6 +498,7 @@ public:
   /**
    * Access operator (only valid with component 0 in the base class without
    * specialization).
+   *
    */
   DEAL_II_ALWAYS_INLINE
   Number &operator[](const unsigned int comp)
@@ -438,6 +511,7 @@ public:
   /**
    * Constant access operator (only valid with component 0 in the base class
    * without specialization).
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const Number &operator[](const unsigned int comp) const
@@ -449,6 +523,7 @@ public:
 
   /**
    * Addition
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -460,6 +535,7 @@ public:
 
   /**
    * Subtraction
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -471,6 +547,7 @@ public:
 
   /**
    * Multiplication
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -482,6 +559,7 @@ public:
 
   /**
    * Division
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -496,6 +574,7 @@ public:
    * the given address. The pointer `ptr` needs not be aligned by the amount
    * of bytes in the vectorized array, as opposed to casting a double address
    * to VectorizedArray<double>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -505,10 +584,11 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of
-   * size() data items to the given address. The pointer `ptr` needs not be
-   * aligned by the amount of bytes in the vectorized array, as opposed to
-   * casting a double address to VectorizedArray<double>*.
+   * Write the content of the calling class into memory in form of   size()
+   * data items to the given address. The pointer `ptr` needs not be   aligned
+   * by the amount of bytes in the vectorized array, as opposed to   casting a
+   * double address to VectorizedArray<double>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -518,14 +598,13 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of
-   * size() data items to the given address using non-temporal stores that
-   * bypass the processor's caches, using @p _mm_stream_pd store intrinsics on
-   * supported CPUs. The destination of the store @p ptr must be aligned by
-   * the amount of bytes in the vectorized array.
-   *
-   * This store operation can be faster than usual store operations in case
-   * the store is streaming because it avoids the read-for-ownership transfer
+   * Write the content of the calling class into memory in form of   size()
+   * data items to the given address using non-temporal stores that   bypass
+   * the processor's caches, using   @p _mm_stream_pd   store intrinsics on
+   * supported CPUs. The destination of the store   @p ptr   must be aligned
+   * by   the amount of bytes in the vectorized array.     This store
+   * operation can be faster than usual store operations in case   the store
+   * is streaming because it avoids the read-for-ownership transfer
    * typically invoked in standard stores. This approximately works as follows
    * (see the literature on computer architecture for details): When an
    * algorithm stores some results to a memory address, a processor typically
@@ -558,10 +637,10 @@ public:
    * for storing large arrays that will collectively not fit into caches, as
    * performance will be degraded otherwise. For a typical use case, see also
    * <a href="https://blogs.fau.de/hager/archives/2103">this blog article</a>.
-   *
    * Note that streaming stores are only available in the specialized SSE/AVX
-   * classes of VectorizedArray of type @p double or @p float, not in the
-   * generic base class.
+   * classes of VectorizedArray of type   @p double   or   @p float,   not in
+   * the   generic base class.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -573,14 +652,15 @@ public:
   /**
    * Load size() data items from memory into the calling class, starting at
    * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * providing one element of the vectorized array.     This operation
+   * corresponds to the following code (but uses a more   efficient
+   * implementation in case the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -590,16 +670,17 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of
-   * size() data items to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Write the content of the calling class into memory in form of   size()
+   * data items to the given address and the given offsets, filling the
+   * elements of the vectorized array into each offset.     This operation
+   * corresponds to the following code (but uses a more   efficient
+   * implementation in case the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -612,6 +693,7 @@ public:
    * Actual data field. To be consistent with the standard layout type and to
    * enable interaction with external SIMD functionality, this member is
    * declared public.
+   *
    */
   Number data;
 
@@ -619,6 +701,7 @@ private:
   /**
    * Return the square root of this field. Not for use in user code. Use
    * sqrt(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -632,6 +715,7 @@ private:
   /**
    * Return the absolute value of this field. Not for use in user code. Use
    * abs(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -645,6 +729,7 @@ private:
   /**
    * Return the component-wise maximum of this field and another one. Not for
    * use in user code. Use max(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -658,6 +743,7 @@ private:
   /**
    * Return the component-wise minimum of this field and another one. Not for
    * use in user code. Use min(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -688,7 +774,9 @@ private:
 
 
 /**
- * @name Packing and unpacking of a VectorizedArray
+ * @name   Packing and unpacking of a VectorizedArray
+ *
+ *
  */
 //@{
 
@@ -696,8 +784,9 @@ private:
 /**
  * Create a vectorized array that sets all entries in the array to the given
  * scalar, i.e., broadcasts the scalar to all array elements.
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number,
           std::size_t width =
@@ -712,10 +801,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 
 
 /**
- * Create a vectorized array of given type and broadcast the scalar value
- * to all array elements.
+ * Create a vectorized array of given type and broadcast the scalar value to
+ * all array elements.
+ * @relatesalso   VectorizedArray
  *
- *  @relatesalso VectorizedArray
+ *
  */
 template <typename VectorizedArrayType>
 inline DEAL_II_ALWAYS_INLINE VectorizedArrayType
@@ -734,15 +824,18 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArrayType
 
 
 /**
- * Load size() data items from memory into the VectorizedArray @p out,
+ * Load size() data items from memory into the VectorizedArray   @p out,
  * starting at the given addresses and with given offset, each entry from the
- * offset providing one element of the vectorized array.
+ * offset providing one element of the vectorized array. This operation
+ * corresponds to the following code:
  *
- * This operation corresponds to the following code:
  * @code
  * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
- *   out.data[v] = ptrs[v][offset];
+ * out.data[v] = ptrs[v][offset];
  * @endcode
+ *
+ *
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE void
@@ -757,29 +850,29 @@ gather(VectorizedArray<Number, width> &   out,
 
 
 /**
- * This method loads VectorizedArray::size() data streams from the
- * given array @p in. The offsets to the input array are given by the array @p
+ * This method loads   VectorizedArray::size()   data streams from the given
+ * array   @p in.   The offsets to the input array are given by the array   @p
  * offsets. From each stream, n_entries are read. The data is then transposed
- * and stored it into an array of VectorizedArray type. The output array @p
- * out is expected to be an array of size @p n_entries. This method operates
- * on plain arrays, so no checks for valid data access are made. It is the
- * user's responsibility to ensure that the given arrays are valid according
- * to the access layout below.
+ * and stored it into an array of VectorizedArray type. The output array   @p
+ * out is expected to be an array of size   @p n_entries.   This method
+ * operates on plain arrays, so no checks for valid data access are made. It
+ * is the user's responsibility to ensure that the given arrays are valid
+ * according to the access layout below. This operation corresponds to a
+ * transformation of an array-of-struct (input) into a struct-of-array
+ * (output) according to the following formula:
  *
- * This operation corresponds to a transformation of an array-of-struct
- * (input) into a struct-of-array (output) according to the following formula:
  *
  * @code
  * for (unsigned int i=0; i<n_entries; ++i)
- *   for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
- *     out[i][v] = in[offsets[v]+i];
+ * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
+ *   out[i][v] = in[offsets[v]+i];
  * @endcode
  *
  * A more optimized version of this code will be used for supported types.
- *
  * This is the inverse operation to vectorized_transpose_and_store().
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE void
@@ -795,15 +888,14 @@ vectorized_load_and_transpose(const unsigned int              n_entries,
 
 
 /**
- * The same as above with the difference that an array of pointers are
- * passed in as input argument @p in.
- *
- * In analogy to the function above, one can consider that
- * `in+offset[v]` is precomputed and passed as input argument.
- *
+ * The same as above with the difference that an array of pointers are passed
+ * in as input argument   @p in. In analogy to the function above, one can
+ * consider that `in+offset[v]` is precomputed and passed as input argument.
  * However, this function can also be used if some function returns an array
- * of pointers and no assumption can be made that they belong to the same array,
- * i.e., they can have their origin in different memory allocations.
+ * of pointers and no assumption can be made that they belong to the same
+ * array, i.e., they can have their origin in different memory allocations.
+ *
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE void
@@ -820,41 +912,40 @@ vectorized_load_and_transpose(const unsigned int                 n_entries,
 
 /**
  * This method stores the vectorized arrays in transposed form into the given
- * output array @p out with the given offsets @p offsets. This operation
- * corresponds to a transformation of a struct-of-array (input) into an array-
- * of-struct (output). This method operates on plain array, so no checks for
- * valid data access are made. It is the user's responsibility to ensure that
- * the given arrays are valid according to the access layout below.
+ * output array   @p out   with the given offsets   @p offsets.   This
+ * operation corresponds to a transformation of a struct-of-array (input) into
+ * an array- of-struct (output). This method operates on plain array, so no
+ * checks for valid data access are made. It is the user's responsibility to
+ * ensure that the given arrays are valid according to the access layout
+ * below. This method assumes that the specified offsets do not overlap.
+ * Otherwise, the behavior is undefined in the vectorized case. It is the
+ * user's responsibility to make sure that the access does not overlap and
+ * avoid undefined behavior. The argument   @p add_into   selects where the
+ * entries should only be written into the output arrays or the result should
+ * be added into the existing entries in the output. For   <code>add_into ==
+ * false</code>  , the following code is assumed:
  *
- * This method assumes that the specified offsets do not overlap. Otherwise,
- * the behavior is undefined in the vectorized case. It is the user's
- * responsibility to make sure that the access does not overlap and avoid
- * undefined behavior.
- *
- * The argument @p add_into selects where the entries should only be written
- * into the output arrays or the result should be added into the existing
- * entries in the output. For <code>add_into == false</code>, the following
- * code is assumed:
  *
  * @code
  * for (unsigned int i=0; i<n_entries; ++i)
- *   for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
- *     out[offsets[v]+i] = in[i][v];
+ * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
+ *   out[offsets[v]+i] = in[i][v];
  * @endcode
  *
- * For <code>add_into == true</code>, the code implements the following
+ * For   <code>add_into == true</code>  , the code implements the following
  * action:
+ *
  * @code
  * for (unsigned int i=0; i<n_entries; ++i)
- *   for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
- *     out[offsets[v]+i] += in[i][v];
+ * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
+ *   out[offsets[v]+i] += in[i][v];
  * @endcode
  *
  * A more optimized version of this code will be used for supported types.
- *
  * This is the inverse operation to vectorized_load_and_transpose().
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE void
@@ -876,15 +967,14 @@ vectorized_transpose_and_store(const bool                            add_into,
 
 
 /**
- * The same as above with the difference that an array of pointers are
- * passed in as input argument @p out.
- *
- * In analogy to the function above, one can consider that
- * `out+offset[v]` is precomputed and passed as input argument.
- *
+ * The same as above with the difference that an array of pointers are passed
+ * in as input argument   @p out. In analogy to the function above, one can
+ * consider that `out+offset[v]` is precomputed and passed as input argument.
  * However, this function can also be used if some function returns an array
- * of pointers and no assumption can be made that they belong to the same array,
- * i.e., they can have their origin in different memory allocations.
+ * of pointers and no assumption can be made that they belong to the same
+ * array, i.e., they can have their origin in different memory allocations.
+ *
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE void
@@ -915,6 +1005,8 @@ vectorized_transpose_and_store(const bool                            add_into,
 
 /**
  * Specialization of VectorizedArray class for double and AVX-512.
+ *
+ *
  */
 template <>
 class VectorizedArray<double, 8>
@@ -923,17 +1015,20 @@ class VectorizedArray<double, 8>
 public:
   /**
    * This gives the type of the array elements.
+   *
    */
   using value_type = double;
 
   /**
    * Default empty constructor, leaving the data in an uninitialized state
    * similar to float/double.
+   *
    */
   VectorizedArray() = default;
 
   /**
    * Construct an array with the given scalar broadcast to all lanes.
+   *
    */
   VectorizedArray(const double scalar)
   {
@@ -942,6 +1037,7 @@ public:
 
   /**
    * This function can be used to set all data fields to a given scalar.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -953,6 +1049,7 @@ public:
 
   /**
    * Access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   double &operator[](const unsigned int comp)
@@ -963,6 +1060,7 @@ public:
 
   /**
    * Constant access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const double &operator[](const unsigned int comp) const
@@ -973,6 +1071,7 @@ public:
 
   /**
    * Addition.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -993,6 +1092,7 @@ public:
 
   /**
    * Subtraction.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1007,6 +1107,7 @@ public:
   }
   /**
    * Multiplication.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1022,6 +1123,7 @@ public:
 
   /**
    * Division.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1039,6 +1141,7 @@ public:
    * Load size() data items from memory into the calling class, starting at
    * the given address. The memory need not be aligned by 64 bytes, as opposed
    * to casting a double address to VectorizedArray<double>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1048,10 +1151,11 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 64 bytes, as opposed to casting a double address to
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address. The memory need not be aligned by   64
+   * bytes, as opposed to casting a double address to
    * VectorizedArray<double>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1060,8 +1164,10 @@ public:
     _mm512_storeu_pd(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 64 bytes.
+  /**
+   * @copydoc     VectorizedArray<Number>::streaming_store()
+   * @note   Memory must be aligned by 64 bytes.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1073,16 +1179,17 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address and with given offsets, each entry from the offset
+   * providing one element of the vectorized array.     This operation
+   * corresponds to the following code (but uses a more   efficient
+   * implementation in case the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1098,16 +1205,17 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address and the given offsets, filling the   elements
+   * of the vectorized array into each offset.     This operation corresponds
+   * to the following code (but uses a more   efficient implementation in case
+   * the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1132,6 +1240,7 @@ public:
    * Actual data field. To be consistent with the standard layout type and to
    * enable interaction with external SIMD functionality, this member is
    * declared public.
+   *
    */
   __m512d data;
 
@@ -1139,6 +1248,7 @@ private:
   /**
    * Return the square root of this field. Not for use in user code. Use
    * sqrt(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1152,6 +1262,7 @@ private:
   /**
    * Return the absolute value of this field. Not for use in user code. Use
    * abs(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1173,6 +1284,7 @@ private:
   /**
    * Return the component-wise maximum of this field and another one. Not for
    * use in user code. Use max(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1186,6 +1298,7 @@ private:
   /**
    * Return the component-wise minimum of this field and another one. Not for
    * use in user code. Use min(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1217,6 +1330,8 @@ private:
 
 /**
  * Specialization for double and AVX-512.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1262,6 +1377,8 @@ vectorized_load_and_transpose(const unsigned int          n_entries,
 
 /**
  * Specialization for double and AVX-512.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1301,6 +1418,8 @@ vectorized_load_and_transpose(const unsigned int             n_entries,
 
 /**
  * Specialization for double and AVX-512.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1384,6 +1503,8 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 /**
  * Specialization for double and AVX-512.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1462,6 +1583,8 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 /**
  * Specialization for float and AVX512.
+ *
+ *
  */
 template <>
 class VectorizedArray<float, 16>
@@ -1470,17 +1593,20 @@ class VectorizedArray<float, 16>
 public:
   /**
    * This gives the type of the array elements.
+   *
    */
   using value_type = float;
 
   /**
    * Default empty constructor, leaving the data in an uninitialized state
    * similar to float/double.
+   *
    */
   VectorizedArray() = default;
 
   /**
    * Construct an array with the given scalar broadcast to all lanes.
+   *
    */
   VectorizedArray(const float scalar)
   {
@@ -1489,6 +1615,7 @@ public:
 
   /**
    * This function can be used to set all data fields to a given scalar.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1500,6 +1627,7 @@ public:
 
   /**
    * Access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   float &operator[](const unsigned int comp)
@@ -1510,6 +1638,7 @@ public:
 
   /**
    * Constant access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const float &operator[](const unsigned int comp) const
@@ -1520,6 +1649,7 @@ public:
 
   /**
    * Addition.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1540,6 +1670,7 @@ public:
 
   /**
    * Subtraction.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1554,6 +1685,7 @@ public:
   }
   /**
    * Multiplication.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1569,6 +1701,7 @@ public:
 
   /**
    * Division.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1583,9 +1716,10 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 64 bytes, as opposed
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address. The memory need not be aligned by 64 bytes, as opposed
    * to casting a float address to VectorizedArray<float>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1595,10 +1729,11 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 64 bytes, as opposed to casting a float address to
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address. The memory need not be aligned by   64
+   * bytes, as opposed to casting a float address to
    * VectorizedArray<float>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1607,8 +1742,10 @@ public:
     _mm512_storeu_ps(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 64 bytes.
+  /**
+   * @copydoc     VectorizedArray<Number>::streaming_store()
+   * @note   Memory must be aligned by 64 bytes.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1620,16 +1757,17 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address and with given offsets, each entry from the offset
+   * providing one element of the vectorized array.     This operation
+   * corresponds to the following code (but uses a more   efficient
+   * implementation in case the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1645,16 +1783,17 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address and the given offsets, filling the   elements
+   * of the vectorized array into each offset.     This operation corresponds
+   * to the following code (but uses a more   efficient implementation in case
+   * the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1679,6 +1818,7 @@ public:
    * Actual data field. To be consistent with the standard layout type and to
    * enable interaction with external SIMD functionality, this member is
    * declared public.
+   *
    */
   __m512 data;
 
@@ -1686,6 +1826,7 @@ private:
   /**
    * Return the square root of this field. Not for use in user code. Use
    * sqrt(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1699,6 +1840,7 @@ private:
   /**
    * Return the absolute value of this field. Not for use in user code. Use
    * abs(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1720,6 +1862,7 @@ private:
   /**
    * Return the component-wise maximum of this field and another one. Not for
    * use in user code. Use max(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1733,6 +1876,7 @@ private:
   /**
    * Return the component-wise minimum of this field and another one. Not for
    * use in user code. Use min(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1764,6 +1908,8 @@ private:
 
 /**
  * Specialization for float and AVX-512.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1826,6 +1972,8 @@ vectorized_load_and_transpose(const unsigned int          n_entries,
 
 /**
  * Specialization for float and AVX-512.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1878,6 +2026,8 @@ vectorized_load_and_transpose(const unsigned int             n_entries,
 
 /**
  * Specialization for float and AVX-512.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1992,6 +2142,8 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 /**
  * Specialization for float and AVX-512.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2105,6 +2257,8 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 /**
  * Specialization of VectorizedArray class for double and AVX.
+ *
+ *
  */
 template <>
 class VectorizedArray<double, 4>
@@ -2113,17 +2267,20 @@ class VectorizedArray<double, 4>
 public:
   /**
    * This gives the type of the array elements.
+   *
    */
   using value_type = double;
 
   /**
    * Default empty constructor, leaving the data in an uninitialized state
    * similar to float/double.
+   *
    */
   VectorizedArray() = default;
 
   /**
    * Construct an array with the given scalar broadcast to all lanes.
+   *
    */
   VectorizedArray(const double scalar)
   {
@@ -2132,6 +2289,7 @@ public:
 
   /**
    * This function can be used to set all data fields to a given scalar.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2143,6 +2301,7 @@ public:
 
   /**
    * Access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   double &operator[](const unsigned int comp)
@@ -2153,6 +2312,7 @@ public:
 
   /**
    * Constant access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const double &operator[](const unsigned int comp) const
@@ -2163,6 +2323,7 @@ public:
 
   /**
    * Addition.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2183,6 +2344,7 @@ public:
 
   /**
    * Subtraction.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2197,6 +2359,7 @@ public:
   }
   /**
    * Multiplication.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2212,6 +2375,7 @@ public:
 
   /**
    * Division.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2226,9 +2390,10 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 32 bytes, as opposed
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address. The memory need not be aligned by 32 bytes, as opposed
    * to casting a double address to VectorizedArray<double>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2238,10 +2403,11 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 32 bytes, as opposed to casting a double address to
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address. The memory need not be aligned by   32
+   * bytes, as opposed to casting a double address to
    * VectorizedArray<double>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2250,8 +2416,10 @@ public:
     _mm256_storeu_pd(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 32 bytes.
+  /**
+   * @copydoc     VectorizedArray<Number>::streaming_store()
+   * @note   Memory must be aligned by 32 bytes.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2263,16 +2431,17 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address and with given offsets, each entry from the offset
+   * providing one element of the vectorized array.     This operation
+   * corresponds to the following code (but uses a more   efficient
+   * implementation in case the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2293,16 +2462,17 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address and the given offsets, filling the   elements
+   * of the vectorized array into each offset.     This operation corresponds
+   * to the following code (but uses a more   efficient implementation in case
+   * the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2317,6 +2487,7 @@ public:
    * Actual data field. To be consistent with the standard layout type and to
    * enable interaction with external SIMD functionality, this member is
    * declared public.
+   *
    */
   __m256d data;
 
@@ -2324,6 +2495,7 @@ private:
   /**
    * Return the square root of this field. Not for use in user code. Use
    * sqrt(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2337,6 +2509,7 @@ private:
   /**
    * Return the absolute value of this field. Not for use in user code. Use
    * abs(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2354,6 +2527,7 @@ private:
   /**
    * Return the component-wise maximum of this field and another one. Not for
    * use in user code. Use max(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2367,6 +2541,7 @@ private:
   /**
    * Return the component-wise minimum of this field and another one. Not for
    * use in user code. Use min(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2398,6 +2573,8 @@ private:
 
 /**
  * Specialization for double and AVX.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2437,6 +2614,8 @@ vectorized_load_and_transpose(const unsigned int          n_entries,
 
 /**
  * Specialization for double and AVX.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2476,6 +2655,8 @@ vectorized_load_and_transpose(const unsigned int             n_entries,
 
 /**
  * Specialization for double and AVX.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2543,6 +2724,8 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 /**
  * Specialization for double and AVX.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2611,6 +2794,8 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 /**
  * Specialization for float and AVX.
+ *
+ *
  */
 template <>
 class VectorizedArray<float, 8>
@@ -2619,17 +2804,20 @@ class VectorizedArray<float, 8>
 public:
   /**
    * This gives the type of the array elements.
+   *
    */
   using value_type = float;
 
   /**
    * Default empty constructor, leaving the data in an uninitialized state
    * similar to float/double.
+   *
    */
   VectorizedArray() = default;
 
   /**
    * Construct an array with the given scalar broadcast to all lanes.
+   *
    */
   VectorizedArray(const float scalar)
   {
@@ -2638,6 +2826,7 @@ public:
 
   /**
    * This function can be used to set all data fields to a given scalar.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2649,6 +2838,7 @@ public:
 
   /**
    * Access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   float &operator[](const unsigned int comp)
@@ -2659,6 +2849,7 @@ public:
 
   /**
    * Constant access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const float &operator[](const unsigned int comp) const
@@ -2669,6 +2860,7 @@ public:
 
   /**
    * Addition.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2689,6 +2881,7 @@ public:
 
   /**
    * Subtraction.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2703,6 +2896,7 @@ public:
   }
   /**
    * Multiplication.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2718,6 +2912,7 @@ public:
 
   /**
    * Division.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2732,9 +2927,10 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 32 bytes, as opposed
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address. The memory need not be aligned by 32 bytes, as opposed
    * to casting a float address to VectorizedArray<float>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2744,10 +2940,11 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 32 bytes, as opposed to casting a float address to
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address. The memory need not be aligned by   32
+   * bytes, as opposed to casting a float address to
    * VectorizedArray<float>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2756,8 +2953,10 @@ public:
     _mm256_storeu_ps(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 32 bytes.
+  /**
+   * @copydoc     VectorizedArray<Number>::streaming_store()
+   * @note   Memory must be aligned by 32 bytes.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2769,16 +2968,17 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address and with given offsets, each entry from the offset
+   * providing one element of the vectorized array.     This operation
+   * corresponds to the following code (but uses a more   efficient
+   * implementation in case the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2799,16 +2999,17 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address and the given offsets, filling the   elements
+   * of the vectorized array into each offset.     This operation corresponds
+   * to the following code (but uses a more   efficient implementation in case
+   * the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2823,6 +3024,7 @@ public:
    * Actual data field. To be consistent with the standard layout type and to
    * enable interaction with external SIMD functionality, this member is
    * declared public.
+   *
    */
   __m256 data;
 
@@ -2830,6 +3032,7 @@ private:
   /**
    * Return the square root of this field. Not for use in user code. Use
    * sqrt(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2843,6 +3046,7 @@ private:
   /**
    * Return the absolute value of this field. Not for use in user code. Use
    * abs(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2860,6 +3064,7 @@ private:
   /**
    * Return the component-wise maximum of this field and another one. Not for
    * use in user code. Use max(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2873,6 +3078,7 @@ private:
   /**
    * Return the component-wise minimum of this field and another one. Not for
    * use in user code. Use min(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2904,6 +3110,8 @@ private:
 
 /**
  * Specialization for float and AVX.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2946,6 +3154,8 @@ vectorized_load_and_transpose(const unsigned int         n_entries,
 
 /**
  * Specialization for float and AVX.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2986,6 +3196,8 @@ vectorized_load_and_transpose(const unsigned int            n_entries,
 
 /**
  * Specialization for float and AVX.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3069,6 +3281,8 @@ vectorized_transpose_and_store(const bool                       add_into,
 
 /**
  * Specialization for float and AVX.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3151,6 +3365,8 @@ vectorized_transpose_and_store(const bool                       add_into,
 
 /**
  * Specialization for double and SSE2.
+ *
+ *
  */
 template <>
 class VectorizedArray<double, 2>
@@ -3159,17 +3375,20 @@ class VectorizedArray<double, 2>
 public:
   /**
    * This gives the type of the array elements.
+   *
    */
   using value_type = double;
 
   /**
    * Default empty constructor, leaving the data in an uninitialized state
    * similar to float/double.
+   *
    */
   VectorizedArray() = default;
 
   /**
    * Construct an array with the given scalar broadcast to all lanes.
+   *
    */
   VectorizedArray(const double scalar)
   {
@@ -3178,6 +3397,7 @@ public:
 
   /**
    * This function can be used to set all data fields to a given scalar.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3189,6 +3409,7 @@ public:
 
   /**
    * Access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   double &operator[](const unsigned int comp)
@@ -3199,6 +3420,7 @@ public:
 
   /**
    * Constant access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const double &operator[](const unsigned int comp) const
@@ -3209,6 +3431,7 @@ public:
 
   /**
    * Addition.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3224,6 +3447,7 @@ public:
 
   /**
    * Subtraction.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3239,6 +3463,7 @@ public:
 
   /**
    * Multiplication.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3254,6 +3479,7 @@ public:
 
   /**
    * Division.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3268,9 +3494,10 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 16 bytes, as opposed
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address. The memory need not be aligned by 16 bytes, as opposed
    * to casting a double address to VectorizedArray<double>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3280,10 +3507,11 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 16 bytes, as opposed to casting a double address to
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address. The memory need not be aligned by   16
+   * bytes, as opposed to casting a double address to
    * VectorizedArray<double>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3292,8 +3520,10 @@ public:
     _mm_storeu_pd(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 16 bytes.
+  /**
+   * @copydoc     VectorizedArray<Number>::streaming_store()
+   * @note   Memory must be aligned by 16 bytes.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3305,16 +3535,17 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address and with given offsets, each entry from the offset
+   * providing one element of the vectorized array.     This operation
+   * corresponds to the following code (but uses a more   efficient
+   * implementation in case the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3325,16 +3556,17 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address and the given offsets, filling the   elements
+   * of the vectorized array into each offset.     This operation corresponds
+   * to the following code (but uses a more   efficient implementation in case
+   * the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3348,6 +3580,7 @@ public:
    * Actual data field. To be consistent with the standard layout type and to
    * enable interaction with external SIMD functionality, this member is
    * declared public.
+   *
    */
   __m128d data;
 
@@ -3355,6 +3588,7 @@ private:
   /**
    * Return the square root of this field. Not for use in user code. Use
    * sqrt(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3368,6 +3602,7 @@ private:
   /**
    * Return the absolute value of this field. Not for use in user code. Use
    * abs(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3386,6 +3621,7 @@ private:
   /**
    * Return the component-wise maximum of this field and another one. Not for
    * use in user code. Use max(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3399,6 +3635,7 @@ private:
   /**
    * Return the component-wise minimum of this field and another one. Not for
    * use in user code. Use min(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3430,6 +3667,8 @@ private:
 
 /**
  * Specialization for double and SSE2.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3457,6 +3696,8 @@ vectorized_load_and_transpose(const unsigned int          n_entries,
 
 /**
  * Specialization for double and SSE2.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3484,6 +3725,8 @@ vectorized_load_and_transpose(const unsigned int             n_entries,
 
 /**
  * Specialization for double and SSE2.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3536,6 +3779,8 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 /**
  * Specialization for double and SSE2.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3587,6 +3832,8 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 /**
  * Specialization for float and SSE2.
+ *
+ *
  */
 template <>
 class VectorizedArray<float, 4>
@@ -3595,21 +3842,25 @@ class VectorizedArray<float, 4>
 public:
   /**
    * This gives the type of the array elements.
+   *
    */
   using value_type = float;
 
   /**
    * This function can be used to set all data fields to a given scalar.
+   *
    */
 
   /**
    * Default empty constructor, leaving the data in an uninitialized state
    * similar to float/double.
+   *
    */
   VectorizedArray() = default;
 
   /**
    * Construct an array with the given scalar broadcast to all lanes.
+   *
    */
   VectorizedArray(const float scalar)
   {
@@ -3626,6 +3877,7 @@ public:
 
   /**
    * Access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   float &operator[](const unsigned int comp)
@@ -3636,6 +3888,7 @@ public:
 
   /**
    * Constant access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const float &operator[](const unsigned int comp) const
@@ -3646,6 +3899,7 @@ public:
 
   /**
    * Addition.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3661,6 +3915,7 @@ public:
 
   /**
    * Subtraction.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3676,6 +3931,7 @@ public:
 
   /**
    * Multiplication.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3691,6 +3947,7 @@ public:
 
   /**
    * Division.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3705,9 +3962,10 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 16 bytes, as opposed
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address. The memory need not be aligned by 16 bytes, as opposed
    * to casting a float address to VectorizedArray<float>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3717,10 +3975,11 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 16 bytes, as opposed to casting a float address to
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address. The memory need not be aligned by   16
+   * bytes, as opposed to casting a float address to
    * VectorizedArray<float>*.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3729,8 +3988,10 @@ public:
     _mm_storeu_ps(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 16 bytes.
+  /**
+   * @copydoc     VectorizedArray<Number>::streaming_store()
+   * @note   Memory must be aligned by 16 bytes.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3742,16 +4003,17 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address and with given offsets, each entry from the offset
+   * providing one element of the vectorized array.     This operation
+   * corresponds to the following code (but uses a more   efficient
+   * implementation in case the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3762,16 +4024,17 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * Write the content of the calling class into memory in form of   @p
+   * size() to the given address and the given offsets, filling the   elements
+   * of the vectorized array into each offset.     This operation corresponds
+   * to the following code (but uses a more   efficient implementation in case
+   * the hardware allows for that):
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3785,6 +4048,7 @@ public:
    * Actual data field. To be consistent with the standard layout type and to
    * enable interaction with external SIMD functionality, this member is
    * declared public.
+   *
    */
   __m128 data;
 
@@ -3792,6 +4056,7 @@ private:
   /**
    * Return the square root of this field. Not for use in user code. Use
    * sqrt(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3805,6 +4070,7 @@ private:
   /**
    * Return the absolute value of this field. Not for use in user code. Use
    * abs(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3822,6 +4088,7 @@ private:
   /**
    * Return the component-wise maximum of this field and another one. Not for
    * use in user code. Use max(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3835,6 +4102,7 @@ private:
   /**
    * Return the component-wise minimum of this field and another one. Not for
    * use in user code. Use min(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3866,6 +4134,8 @@ private:
 
 /**
  * Specialization for float and SSE2.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3901,6 +4171,8 @@ vectorized_load_and_transpose(const unsigned int         n_entries,
 
 /**
  * Specialization for float and SSE2.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3936,6 +4208,8 @@ vectorized_load_and_transpose(const unsigned int            n_entries,
 
 /**
  * Specialization for float and SSE2.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3999,6 +4273,8 @@ vectorized_transpose_and_store(const bool                       add_into,
 
 /**
  * Specialization for float and SSE2.
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -4069,17 +4345,20 @@ class VectorizedArray<double, 2>
 public:
   /**
    * This gives the type of the array elements.
+   *
    */
   using value_type = double;
 
   /**
    * Default empty constructor, leaving the data in an uninitialized state
    * similar to float/double.
+   *
    */
   VectorizedArray() = default;
 
   /**
    * Construct an array with the given scalar broadcast to all lanes.
+   *
    */
   VectorizedArray(const double scalar)
   {
@@ -4088,6 +4367,7 @@ public:
 
   /**
    * This function assigns a scalar to this class.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4104,6 +4384,7 @@ public:
 
   /**
    * Access operator. The component must be either 0 or 1.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   double &operator[](const unsigned int comp)
@@ -4114,6 +4395,7 @@ public:
 
   /**
    * Constant access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const double &operator[](const unsigned int comp) const
@@ -4124,6 +4406,7 @@ public:
 
   /**
    * Addition.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4135,6 +4418,7 @@ public:
 
   /**
    * Subtraction.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4146,6 +4430,7 @@ public:
 
   /**
    * Multiplication.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4157,6 +4442,7 @@ public:
 
   /**
    * Division.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4167,8 +4453,9 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address.
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -4178,8 +4465,9 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
+   * Write the content of the calling class into memory in form of   @p
    * size() to the given address.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -4188,8 +4476,9 @@ public:
     vec_vsx_st(data, 0, ptr);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::streaming_store()
+    */
   DEAL_II_ALWAYS_INLINE
   void
   streaming_store(double *ptr) const
@@ -4197,8 +4486,9 @@ public:
     store(ptr);
   }
 
-  /** @copydoc VectorizedArray<Number>::gather()
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::gather()
+    */
   DEAL_II_ALWAYS_INLINE
   void
   gather(const double *base_ptr, const unsigned int *offsets)
@@ -4207,8 +4497,9 @@ public:
       *(reinterpret_cast<double *>(&data) + i) = base_ptr[offsets[i]];
   }
 
-  /** @copydoc VectorizedArray<Number>::scatter
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::scatter
+    */
   DEAL_II_ALWAYS_INLINE
   void
   scatter(const unsigned int *offsets, double *base_ptr) const
@@ -4221,6 +4512,7 @@ public:
    * Actual data field. To be consistent with the standard layout type and to
    * enable interaction with external SIMD functionality, this member is
    * declared public.
+   *
    */
   __vector double data;
 
@@ -4228,6 +4520,7 @@ private:
   /**
    * Return the square root of this field. Not for use in user code. Use
    * sqrt(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4241,6 +4534,7 @@ private:
   /**
    * Return the absolute value of this field. Not for use in user code. Use
    * abs(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4254,6 +4548,7 @@ private:
   /**
    * Return the component-wise maximum of this field and another one. Not for
    * use in user code. Use max(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4267,6 +4562,7 @@ private:
   /**
    * Return the component-wise minimum of this field and another one. Not for
    * use in user code. Use min(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4303,17 +4599,20 @@ class VectorizedArray<float, 4>
 public:
   /**
    * This gives the type of the array elements.
+   *
    */
   using value_type = float;
 
   /**
    * Default empty constructor, leaving the data in an uninitialized state
    * similar to float/double.
+   *
    */
   VectorizedArray() = default;
 
   /**
    * Construct an array with the given scalar broadcast to all lanes.
+   *
    */
   VectorizedArray(const float scalar)
   {
@@ -4322,6 +4621,7 @@ public:
 
   /**
    * This function assigns a scalar to this class.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4338,6 +4638,7 @@ public:
 
   /**
    * Access operator. The component must be between 0 and 3.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   float &operator[](const unsigned int comp)
@@ -4348,6 +4649,7 @@ public:
 
   /**
    * Constant access operator.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const float &operator[](const unsigned int comp) const
@@ -4358,6 +4660,7 @@ public:
 
   /**
    * Addition.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4369,6 +4672,7 @@ public:
 
   /**
    * Subtraction.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4380,6 +4684,7 @@ public:
 
   /**
    * Multiplication.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4391,6 +4696,7 @@ public:
 
   /**
    * Division.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4401,8 +4707,9 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address.
+   * Load   @p size()   from memory into the calling class, starting at   the
+   * given address.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -4412,8 +4719,9 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
+   * Write the content of the calling class into memory in form of   @p
    * size() to the given address.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -4422,8 +4730,9 @@ public:
     vec_vsx_st(data, 0, ptr);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::streaming_store()
+    */
   DEAL_II_ALWAYS_INLINE
   void
   streaming_store(float *ptr) const
@@ -4431,8 +4740,9 @@ public:
     store(ptr);
   }
 
-  /** @copydoc VectorizedArray<Number>::gather()
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::gather()
+    */
   DEAL_II_ALWAYS_INLINE
   void
   gather(const float *base_ptr, const unsigned int *offsets)
@@ -4441,8 +4751,9 @@ public:
       *(reinterpret_cast<float *>(&data) + i) = base_ptr[offsets[i]];
   }
 
-  /** @copydoc VectorizedArray<Number>::scatter
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::scatter
+    */
   DEAL_II_ALWAYS_INLINE
   void
   scatter(const unsigned int *offsets, float *base_ptr) const
@@ -4455,6 +4766,7 @@ public:
    * Actual data field. To be consistent with the standard layout type and to
    * enable interaction with external SIMD functionality, this member is
    * declared public.
+   *
    */
   __vector float data;
 
@@ -4462,6 +4774,7 @@ private:
   /**
    * Return the square root of this field. Not for use in user code. Use
    * sqrt(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4475,6 +4788,7 @@ private:
   /**
    * Return the absolute value of this field. Not for use in user code. Use
    * abs(x) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4488,6 +4802,7 @@ private:
   /**
    * Return the component-wise maximum of this field and another one. Not for
    * use in user code. Use max(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4501,6 +4816,7 @@ private:
   /**
    * Return the component-wise minimum of this field and another one. Not for
    * use in user code. Use min(x,y) instead.
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4535,14 +4851,17 @@ private:
 #endif // DOXYGEN
 
 /**
- * @name Arithmetic operations with VectorizedArray
+ * @name   Arithmetic operations with VectorizedArray
+ *
+ *
  */
 //@{
 
 /**
  * Relational operator == for VectorizedArray
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE bool
@@ -4559,8 +4878,9 @@ operator==(const VectorizedArray<Number, width> &lhs,
 
 /**
  * Addition of two vectorized arrays with operator +.
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4572,9 +4892,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Subtraction of two vectorized arrays with operator -.
+ * Subtraction of two vectorized arrays with operator
  *
- * @relatesalso VectorizedArray
+ * -
+ * @relatesalso   VectorizedArray
+ *
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4586,9 +4909,10 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Multiplication of two vectorized arrays with operator *.
+ * Multiplication of two vectorized arrays with operator.
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4601,8 +4925,9 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 
 /**
  * Division of two vectorized arrays with operator /.
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4614,10 +4939,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Addition of a scalar (expanded to a vectorized array with @p
- * size() equal entries) and a vectorized array.
+ * Addition of a scalar (expanded to a vectorized array with   @p   size()
+ * equal entries) and a vectorized array.
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4628,12 +4954,13 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Addition of a scalar (expanded to a vectorized array with @p
- * size() equal entries) and a vectorized array in case the scalar
- * is a double (needed in order to be able to write simple code with constants
- * that are usually double numbers).
+ * Addition of a scalar (expanded to a vectorized array with   @p   size()
+ * equal entries) and a vectorized array in case the scalar is a double
+ * (needed in order to be able to write simple code with constants that are
+ * usually double numbers).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4645,9 +4972,10 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 
 /**
  * Addition of a vectorized array and a scalar (expanded to a vectorized array
- * with @p size() equal entries).
+ * with   @p size()   equal entries).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4658,11 +4986,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 
 /**
  * Addition of a vectorized array and a scalar (expanded to a vectorized array
- * with @p size() equal entries) in case the scalar is a double
- * (needed in order to be able to write simple code with constants that are
- * usually double numbers).
+ * with   @p size()   equal entries) in case the scalar is a double (needed in
+ * order to be able to write simple code with constants that are usually
+ * double numbers).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4673,9 +5002,10 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 
 /**
  * Subtraction of a vectorized array from a scalar (expanded to a vectorized
- * array with @p size() equal entries).
+ * array with   @p size()   equal entries).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4687,11 +5017,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 
 /**
  * Subtraction of a vectorized array from a scalar (expanded to a vectorized
- * array with @p size() equal entries) in case the scalar is a
- * double (needed in order to be able to write simple code with constants that
- * are usually double numbers).
+ * array with   @p size()   equal entries) in case the scalar is a double
+ * (needed in order to be able to write simple code with constants that are
+ * usually double numbers).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4702,10 +5033,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Subtraction of a scalar (expanded to a vectorized array with @p
- * size() equal entries) from a vectorized array.
+ * Subtraction of a scalar (expanded to a vectorized array with   @p   size()
+ * equal entries) from a vectorized array.
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4716,12 +5048,13 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Subtraction of a scalar (expanded to a vectorized array with @p
- * size() equal entries) from a vectorized array in case the scalar
- * is a double (needed in order to be able to write simple code with constants
- * that are usually double numbers).
+ * Subtraction of a scalar (expanded to a vectorized array with   @p   size()
+ * equal entries) from a vectorized array in case the scalar is a double
+ * (needed in order to be able to write simple code with constants that are
+ * usually double numbers).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4732,10 +5065,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Multiplication of a scalar (expanded to a vectorized array with @p
+ * Multiplication of a scalar (expanded to a vectorized array with   @p
  * size() equal entries) and a vectorized array.
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4746,12 +5080,13 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Multiplication of a scalar (expanded to a vectorized array with @p
- * size() equal entries) and a vectorized array in case the scalar
- * is a double (needed in order to be able to write simple code with constants
- * that are usually double numbers).
+ * Multiplication of a scalar (expanded to a vectorized array with   @p
+ * size() equal entries) and a vectorized array in case the scalar is a double
+ * (needed in order to be able to write simple code with constants that are
+ * usually double numbers).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4763,9 +5098,10 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 
 /**
  * Multiplication of a vectorized array and a scalar (expanded to a vectorized
- * array with @p size() equal entries).
+ * array with   @p size()   equal entries).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4776,11 +5112,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 
 /**
  * Multiplication of a vectorized array and a scalar (expanded to a vectorized
- * array with @p size() equal entries) in case the scalar is a
- * double (needed in order to be able to write simple code with constants that
- * are usually double numbers).
+ * array with   @p size()   equal entries) in case the scalar is a double
+ * (needed in order to be able to write simple code with constants that are
+ * usually double numbers).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4790,10 +5127,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Quotient between a scalar (expanded to a vectorized array with @p
+ * Quotient between a scalar (expanded to a vectorized array with   @p
  * size() equal entries) and a vectorized array.
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4804,12 +5142,13 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Quotient between a scalar (expanded to a vectorized array with @p
- * size() equal entries) and a vectorized array in case the scalar
- * is a double (needed in order to be able to write simple code with constants
- * that are usually double numbers).
+ * Quotient between a scalar (expanded to a vectorized array with   @p
+ * size() equal entries) and a vectorized array in case the scalar is a double
+ * (needed in order to be able to write simple code with constants that are
+ * usually double numbers).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4821,9 +5160,10 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 
 /**
  * Quotient between a vectorized array and a scalar (expanded to a vectorized
- * array with @p size() equal entries).
+ * array with   @p size()   equal entries).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4835,11 +5175,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 
 /**
  * Quotient between a vectorized array and a scalar (expanded to a vectorized
- * array with @p size() equal entries) in case the scalar is a
- * double (needed in order to be able to write simple code with constants that
- * are usually double numbers).
+ * array with   @p size()   equal entries) in case the scalar is a double
+ * (needed in order to be able to write simple code with constants that are
+ * usually double numbers).
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4851,8 +5192,9 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 
 /**
  * Unary operator + on a vectorized array.
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4862,9 +5204,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Unary operator - on a vectorized array.
+ * Unary operator
  *
- * @relatesalso VectorizedArray
+ *  - on a vectorized array.
+ * @relatesalso   VectorizedArray
+ *
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4877,8 +5222,9 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 
 /**
  * Output operator for vectorized array.
+ * @relatesalso   VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline std::ostream &
@@ -4895,7 +5241,9 @@ operator<<(std::ostream &out, const VectorizedArray<Number, width> &p)
 //@}
 
 /**
- * @name Ternary operations on VectorizedArray
+ * @name   Ternary operations on VectorizedArray
+ *
+ *
  */
 //@{
 
@@ -4904,8 +5252,11 @@ operator<<(std::ostream &out, const VectorizedArray<Number, width> &p)
  * enum class encoding binary operations for a component-wise comparison of
  * VectorizedArray data types.
  *
- * @note In case of SIMD vecorization (sse, avx, av512) we select the
- * corresponding ordered, non-signalling (<code>OQ</code>) variants.
+ *
+ * @note   In case of SIMD vecorization (sse, avx, av512) we select the
+ * corresponding ordered, non-signalling (  <code>OQ</code>  ) variants.
+ *
+ *
  */
 enum class SIMDComparison : int
 {
@@ -4929,66 +5280,70 @@ enum class SIMDComparison : int
 
 /**
  * Computes the vectorized equivalent of the following ternary operation:
- * @code
- *   (left OP right) ? true_value : false_value
- * @endcode
- * where <code>OP</code> is a binary operator (such as <code>=</code>,
- * <code>!=</code>, <code><</code>, <code><=</code>, <code>></code>, and
- * <code>>=</code>).
  *
- * Such a computational idiom is useful as an alternative to branching
- * whenever the control flow itself would depend on (computed) data. For
- * example, in case of a scalar data type the statement
- * <code>(left < right) ? true_value : false_value</code>
- * could have been also implemented using an <code>if</code>-statement:
+ * @code
+ * (left OP right) ? true_value : false_value
+ * @endcode
+ * where   <code>OP</code> is a binary operator (such as <code>=</code>  ,
+ * <code>!=</code>, <code><</code>, <code><=</code>, <code>></code>  , and
+ * <code>>=</code>  ). Such a computational idiom is useful as an alternative
+ * to branching whenever the control flow itself would depend on (computed)
+ * data. For example, in case of a scalar data type the statement
+ * <code>(left < right) ? true_value : false_value</code>   could have been
+ * also implemented using an   <code>if</code>  -statement:
+ *
  * @code
  * if (left < right)
- *     result = true_value;
+ *   result = true_value;
  * else
- *     result = false_value;
+ *   result = false_value;
  * @endcode
- * This, however, is fundamentally impossible in case of vectorization
- * because different decisions will be necessary on different vector entries
- * (lanes) and
- * the first variant (based on a ternary operator) has to be used instead:
+ * This, however, is fundamentally impossible in case of vectorization because
+ * different decisions will be necessary on different vector entries (lanes)
+ * and the first variant (based on a ternary operator) has to be used instead:
+ *
  * @code
- *   result = compare_and_apply_mask<SIMDComparison::less_than>
- *     (left, right, true_value, false_value);
+ * result = compare_and_apply_mask<SIMDComparison::less_than>
+ *   (left, right, true_value, false_value);
  * @endcode
- * Some more illustrative examples (that are less efficient than the
- * dedicated <code>std::max</code> and <code>std::abs</code> overloads):
+ * Some more illustrative examples (that are less efficient than the dedicated
+ * <code>std::max</code> and <code>std::abs</code>   overloads):
+ *
  * @code
- *   VectorizedArray<double> left;
- *   VectorizedArray<double> right;
+ * VectorizedArray<double> left;
+ * VectorizedArray<double> right;
  *
- *   // std::max
- *   const auto maximum = compare_and_apply_mask<SIMDComparison::greater_than>
- *     (left, right, left, right);
+ * // std::max
+ * const auto maximum = compare_and_apply_mask<SIMDComparison::greater_than>
+ *   (left, right, left, right);
  *
- *   // std::abs
- *   const auto absolute = compare_and_apply_mask<SIMDComparison::less_than>
- *     (left, VectorizedArray<double>(0.), -left, left);
+ * // std::abs
+ * const auto absolute = compare_and_apply_mask<SIMDComparison::less_than>
+ *   (left, VectorizedArray<double>(0.),
+ *
+ * -left, left);
  * @endcode
  *
- * More precisely, this function first computes a (boolean) mask that is
- * the result of a binary operator <code>OP</code> applied to all elements
- * of the VectorizedArray arguments @p left and @p right. The mask is then
- * used to either select the corresponding component of @p true_value (if
- * the binary operation equates to true), or @p false_value. The binary
- * operator is encoded via the SIMDComparison template argument
- * @p predicate.
+ * More precisely, this function first computes a (boolean) mask that is the
+ * result of a binary operator   <code>OP</code>   applied to all elements of
+ * the VectorizedArray arguments   @p left   and   @p right.   The mask is
+ * then used to either select the corresponding component of   @p true_value
+ * (if the binary operation equates to true), or   @p false_value.   The
+ * binary operator is encoded via the SIMDComparison template argument   @p
+ * predicate. In order to ease with generic programming approaches, the
+ * function provides overloads for all VectorizedArray<Number> variants as
+ * well as generic POD types such as double and float.
  *
- * In order to ease with generic programming approaches, the function
- * provides overloads for all VectorizedArray<Number> variants as well as
- * generic POD types such as double and float.
  *
- * @note For this function to work the binary operation has to be encoded
- * via a SIMDComparison template argument @p predicate. Depending on it
- * appropriate low-level machine instructions are generated replacing the
- * call to compare_and_apply_mask. This also explains why @p predicate is a
+ * @note   For this function to work the binary operation has to be encoded
+ * via a SIMDComparison template argument   @p predicate.   Depending on it
+ * appropriate low-level machine instructions are generated replacing the call
+ * to compare_and_apply_mask. This also explains why   @p predicate   is a
  * compile-time constant template parameter and not a constant function
  * argument. In order to be able to emit the correct low-level instruction,
  * the compiler has to know the comparison at compile time.
+ *
+ *
  */
 template <SIMDComparison predicate, typename Number>
 DEAL_II_ALWAYS_INLINE inline Number
@@ -5027,6 +5382,8 @@ compare_and_apply_mask(const Number &left,
 /**
  * Specialization of above function for the non-vectorized
  * VectorizedArray<Number, 1> variant.
+ *
+ *
  */
 template <SIMDComparison predicate, typename Number>
 DEAL_II_ALWAYS_INLINE inline VectorizedArray<Number, 1>
@@ -5204,16 +5561,18 @@ DEAL_II_NAMESPACE_CLOSE
  * Implementation of functions from cmath on VectorizedArray. These functions
  * do not reside in the dealii namespace in order to ensure a similar
  * interface as for the respective functions in cmath. Instead, call them
- * using std::sin.
+ * using   std::sin.
+ *
+ *
  */
 namespace std
 {
   /**
    * Compute the sine of a vectorized data field. The result is returned as
    * vectorized array in the form <tt>{sin(x[0]), sin(x[1]), ...,
-   * sin(x[VectorizedArray::size()-1])}</tt>.
+   * sin(x[VectorizedArray::size()-1])}</tt>.         @relatesalso
+   * VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5238,9 +5597,8 @@ namespace std
   /**
    * Compute the cosine of a vectorized data field. The result is returned as
    * vectorized array in the form <tt>{cos(x[0]), cos(x[1]), ...,
-   * cos(x[size()-1])}</tt>.
+   * cos(x[size()-1])}</tt>.       @relatesalso   VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5260,9 +5618,8 @@ namespace std
   /**
    * Compute the tangent of a vectorized data field. The result is returned
    * as vectorized array in the form <tt>{tan(x[0]), tan(x[1]), ...,
-   * tan(x[size()-1])}</tt>.
+   * tan(x[size()-1])}</tt>.       @relatesalso   VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5282,9 +5639,8 @@ namespace std
   /**
    * Compute the exponential of a vectorized data field. The result is
    * returned as vectorized array in the form <tt>{exp(x[0]), exp(x[1]), ...,
-   * exp(x[size()-1])}</tt>.
+   * exp(x[size()-1])}</tt>.       @relatesalso   VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5304,9 +5660,8 @@ namespace std
   /**
    * Compute the natural logarithm of a vectorized data field. The result is
    * returned as vectorized array in the form <tt>{log(x[0]), log(x[1]), ...,
-   * log(x[size()-1])}</tt>.
+   * log(x[size()-1])}</tt>.       @relatesalso   VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5326,9 +5681,8 @@ namespace std
   /**
    * Compute the square root of a vectorized data field. The result is
    * returned as vectorized array in the form <tt>{sqrt(x[0]), sqrt(x[1]),
-   * ..., sqrt(x[size()-1])}</tt>.
+   * ..., sqrt(x[size()-1])}</tt>.       @relatesalso   VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5340,11 +5694,11 @@ namespace std
 
 
   /**
-   * Raises the given number @p x to the power @p p for a vectorized data
-   * field. The result is returned as vectorized array in the form
+   * Raises the given number   @p x   to the power   @p p   for a vectorized
+   * data   field. The result is returned as vectorized array in the form
    * <tt>{pow(x[0],p), pow(x[1],p), ..., pow(x[size()-1],p)}</tt>.
+   * @relatesalso   VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5362,12 +5716,11 @@ namespace std
 
 
   /**
-   * Raises the given number @p x to the power @p p for a vectorized data
-   * field. The result is returned as vectorized array in the form
+   * Raises the given number   @p x   to the power   @p p   for a vectorized
+   * data   field. The result is returned as vectorized array in the form
    * <tt>{pow(x[0],p[0]), pow(x[1],p[1]), ...,
-   * pow(x[size()-1],p[size()-1])}</tt>.
+   * pow(x[size()-1],p[size()-1])}</tt>.       @relatesalso   VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5388,9 +5741,9 @@ namespace std
   /**
    * Compute the absolute value (modulus) of a vectorized data field. The
    * result is returned as vectorized array in the form <tt>{abs(x[0]),
-   * abs(x[1]), ..., abs(x[size()-1])}</tt>.
+   * abs(x[1]), ..., abs(x[size()-1])}</tt>.       @relatesalso
+   * VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5404,9 +5757,8 @@ namespace std
   /**
    * Compute the componentwise maximum of two vectorized data fields. The
    * result is returned as vectorized array in the form <tt>{max(x[0],y[0]),
-   * max(x[1],y[1]), ...}</tt>.
+   * max(x[1],y[1]), ...}</tt>.       @relatesalso   VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5421,9 +5773,8 @@ namespace std
   /**
    * Compute the componentwise minimum of two vectorized data fields. The
    * result is returned as vectorized array in the form <tt>{min(x[0],y[0]),
-   * min(x[1],y[1]), ...}</tt>.
+   * min(x[1],y[1]), ...}</tt>.       @relatesalso   VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5437,6 +5788,7 @@ namespace std
 
   /**
    * Iterator traits for VectorizedArrayIterator.
+   *
    */
   template <class T>
   struct iterator_traits<dealii::VectorizedArrayIterator<T>>

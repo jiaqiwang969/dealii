@@ -119,7 +119,7 @@ for m in re.finditer(r'@dot|@htmlonly|[@\\]f{align\*}|[@\\]f{align}|[@\\]f{eqnar
 for m in re.finditer(r'@enddot|@endhtmlonly|@f}|@endcode|@endverbatim|\\f}|[@\\]f\]|\<\/a\>|\<\/h[1-9]\>|<\/[bi]\>', text):
     end_values.append(m.end())
 nitems = len(start_values)
-assert(len(end_values) == nitems)
+assert len(end_values) == nitems, filebase
 if(nitems > 0):
     newtext = text[:start_values[0]]
     for neq in range(nitems-1):
