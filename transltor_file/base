@@ -2294,17 +2294,6 @@ include/deal.II-translator/base/flow_function_0.txt
      Construct an object for the give Reynolds number <tt>Re</tt>. If the     parameter <tt>Stokes</tt> is true, the right hand side of the momentum     equation returned by vector_laplacians() contains the nonlinearity,     such that the Kovasznay solution can be obtained as the solution to a     Stokes problem.    
 * [0.x.21]
 
-include/deal.II-translator/base/function.templates_0.txt
-[0.x.0]*
- The constructor for <tt>VectorFunctionFromTensorFunction</tt> which initiates the return vector to be size <tt>n_components</tt>.
-
-* 
-* [0.x.1]*
- Member function <tt>vector_value_list </tt> is the interface for giving a list of points ( [2.x.0] ) of which to evaluate using the <tt>vector_value</tt> member function.  Again, this function is written so as to not replicate the function definition but passes each point on to <tt>vector_value</tt> to be evaluated.
-
-* 
-* [0.x.2]
-
 include/deal.II-translator/base/function_0.txt
 [0.x.0]*
  This class is a model for a general function that, given a point at which to evaluate the function, returns a vector of values with one or more components.
@@ -3177,8 +3166,16 @@ include/deal.II-translator/base/function_spherical_0.txt
      A vector from the origin to the center of spherical coordinate system.    
 * [0.x.10]
 
-include/deal.II-translator/base/function_time.templates_0.txt
-[0.x.0]
+include/deal.II-translator/base/function.templates_0.txt
+[0.x.0]*
+ The constructor for <tt>VectorFunctionFromTensorFunction</tt> which initiates the return vector to be size <tt>n_components</tt>.
+
+* 
+* [0.x.1]*
+ Member function <tt>vector_value_list </tt> is the interface for giving a list of points ( [2.x.0] ) of which to evaluate using the <tt>vector_value</tt> member function.  Again, this function is written so as to not replicate the function definition but passes each point on to <tt>vector_value</tt> to be evaluated.
+
+* 
+* [0.x.2]
 
 include/deal.II-translator/base/function_time_0.txt
 [0.x.0]*
@@ -3210,6 +3207,9 @@ include/deal.II-translator/base/function_time_0.txt
 * [0.x.7]*
    Store the present time.  
 * [0.x.8]
+
+include/deal.II-translator/base/function_time.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/base/function_tools_0.txt
 [0.x.0]*
@@ -5199,11 +5199,6 @@ include/deal.II-translator/base/mg_level_object_0.txt
    Array of the objects to be held.  
 * [0.x.14]
 
-include/deal.II-translator/base/mpi.templates_0.txt
-[0.x.0]*
-       Return the corresponding MPI data type id for the argument given.      
-* [0.x.1]
-
 include/deal.II-translator/base/mpi_0.txt
 [0.x.0]*
  Helper macro to remove const from the pointer arguments to some MPI_*
@@ -5483,9 +5478,6 @@ include/deal.II-translator/base/mpi_compute_index_owner_internal_0.txt
 * [0.x.40]*
            Stores the index request in the `requesters` field. We first find           out the owner of the index that was requested (using the guess in           `owner_index`, as we typically might look up on the same rank           several times in a row, which avoids the binary search in            [2.x.17]  Once we know the rank of the           owner, we the vector entry with the rank of the request. Here, we           utilize the fact that requests are processed rank-by-rank, so we           can simply look at the end of the vector if there is already some           data stored or not. Finally, we build ranges, again using that           the index list is sorted and we therefore only need to append at           the end.          
 * [0.x.41]
-
-include/deal.II-translator/base/mpi_consensus_algorithms.templates_0.txt
-[0.x.0]
 
 include/deal.II-translator/base/mpi_consensus_algorithms_0.txt
 [0.x.0]*
@@ -5790,7 +5782,7 @@ include/deal.II-translator/base/mpi_consensus_algorithms_0.txt
           [2.x.67]   [2.x.68]         
 * [0.x.63]
 
-include/deal.II-translator/base/mpi_noncontiguous_partitioner.templates_0.txt
+include/deal.II-translator/base/mpi_consensus_algorithms.templates_0.txt
 [0.x.0]
 
 include/deal.II-translator/base/mpi_noncontiguous_partitioner_0.txt
@@ -5853,6 +5845,9 @@ include/deal.II-translator/base/mpi_noncontiguous_partitioner_0.txt
        MPI requests for sending and receiving.            
 *  [2.x.34]  Only allocated if not provided externally by user.      
 * [0.x.23]
+
+include/deal.II-translator/base/mpi_noncontiguous_partitioner.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/base/mpi_remote_point_evaluation_0.txt
 [0.x.0]*
@@ -6020,8 +6015,10 @@ include/deal.II-translator/base/mpi_tags_0.txt
          The enum with the tags.        
 * [0.x.2]
 
-include/deal.II-translator/base/mu_parser_internal_0.txt
-[0.x.0]
+include/deal.II-translator/base/mpi.templates_0.txt
+[0.x.0]*
+       Return the corresponding MPI data type id for the argument given.      
+* [0.x.1]
 
 include/deal.II-translator/base/multithread_info_0.txt
 [0.x.0]*
@@ -6053,6 +6050,9 @@ include/deal.II-translator/base/multithread_info_0.txt
 * [0.x.10]*
    Store a taskflow Executor that is constructed with N workers (from   set_thread_limit).  
 * [0.x.11]
+
+include/deal.II-translator/base/mu_parser_internal_0.txt
+[0.x.0]
 
 include/deal.II-translator/base/mutable_bind_0.txt
 [0.x.0]*
@@ -7145,9 +7145,6 @@ include/deal.II-translator/base/parsed_function_0.txt
      The object with which we do computations.    
 * [0.x.8]
 
-include/deal.II-translator/base/partitioner.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/base/partitioner_0.txt
 [0.x.0]*
      This class defines a model for the partitioning of a vector (or, in     fact, any linear data structure) among processors using MPI.         The partitioner stores the global vector size and the locally owned     range as a half-open interval [ [2.x.0]   [2.x.1]  on each process.     Furthermore, it includes a structure for the point-to-point communication     patterns. It allows the inclusion of ghost indices (i.e. indices that a     current processor needs to have access to, but are owned by another     process) through an IndexSet. In addition, it also stores the other     processors' ghost indices belonging to the current processor (see     import_targets()), which are the indices where other processors might     require information from. In a sense, these import indices form the dual     of the ghost indices. This information is gathered once when constructing     the partitioner, which obviates subsequent global communication steps     when exchanging data.         The figure below gives an example of index space  [2.x.2]  being split     into four parts that are each owned by one MPI process:      [2.x.3]      The first row (above the thick black line) shows which process owns which     elements. Below it, the next four lines indicate which elements of     the overall array each processor wants to know about
@@ -7280,6 +7277,9 @@ include/deal.II-translator/base/partitioner_0.txt
 * [0.x.56]*
        A variable storing whether the ghost indices have been explicitly set.      
 * [0.x.57]
+
+include/deal.II-translator/base/partitioner.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/base/path_search_0.txt
 [0.x.0]*
@@ -7936,61 +7936,6 @@ include/deal.II-translator/base/polynomial_0.txt
    Compute the roots of the Jacobi polynomials on the unit interval  [2.x.84]    of the given degree. These roots are used in several places inside the   deal.II library, such as the Gauss-Lobatto quadrature formula or for the   Hermite-like interpolation.     The algorithm uses a Newton algorithm, using the zeros of the Chebyshev   polynomials as an initial guess. This code has been tested for alpha and   beta equal to zero (Legendre case), one (Gauss-Lobatto case) as well as   two, so be careful when using it for other values as the Newton iteration   might or might not converge.  
 * [0.x.61]
 
-include/deal.II-translator/base/polynomial_space_0.txt
-[0.x.0]*
- Representation of the space of polynomials of degree at most n in higher dimensions.
-*  Given a vector of [1.x.0] one-dimensional polynomials [1.x.1] to [1.x.2], where [1.x.3] has degree [1.x.4], this class generates all dim-dimensional polynomials of the form [1.x.5], where the sum of [1.x.6], [1.x.7] and [1.x.8] is less than or equal [1.x.9].
-*  The output_indices() function prints the ordering of the polynomials, i.e. for each dim-dimensional polynomial in the polynomial space it gives the indices i,j,k of the one-dimensional polynomials in x,y and z direction. The ordering of the dim-dimensional polynomials can be changed by using the set_numbering() function.
-*  The standard ordering of polynomials is that indices for the first space dimension vary fastest and the last space dimension is slowest. In particular, if we take for simplicity the vector of monomials [1.x.10], we get
-*   [2.x.0]  <dt> 1D  [2.x.1]  [1.x.11] <dt> 2D:  [2.x.2]  [1.x.12] <dt> 3D:  [2.x.3]  [1.x.13]  [2.x.4] 
-* 
-
-* 
-*  [2.x.5] 
-
-* 
-* [0.x.1]*
-   Access to the dimension of this object, for checking and automatic   setting of dimension in other classes.  
-* [0.x.2]*
-   Constructor. <tt>pols</tt> is a vector of pointers to one-dimensional   polynomials and will be copied into a private member variable. The static   type of the template argument <tt>pols</tt> needs to be convertible to    [2.x.6]  i.e. should usually be a derived class   of  [2.x.7]   
-* [0.x.3]*
-   Prints the list of the indices to <tt>out</tt>.  
-* [0.x.4]*
-   Set the ordering of the polynomials. Requires   <tt>renumber.size()==n()</tt>. Stores a copy of <tt>renumber</tt>.  
-* [0.x.5]*
-   Compute the value and the first and second derivatives of each   polynomial at <tt>unit_point</tt>.     The size of the vectors must either be equal 0 or equal n(). In the first   case, the function will not compute these values, i.e. you indicate what   you want to have computed by resizing those vectors which you want   filled.     If you need values or derivatives of all polynomials then use this   function, rather than using any of the compute_value(), compute_grad() or   compute_grad_grad() functions, see below, in a loop over all polynomials.  
-* [0.x.6]*
-   Compute the value of the <tt>i</tt>th polynomial at unit point   <tt>p</tt>.     Consider using evaluate() instead.  
-* [0.x.7]*
-   Compute the <tt>order</tt>th derivative of the <tt>i</tt>th polynomial   at unit point <tt>p</tt>.     Consider using evaluate() instead.      [2.x.8]  order The order of the derivative.  
-* [0.x.8]*
-    [2.x.9]   [2.x.10]   
-* [0.x.9]*
-    [2.x.11]   [2.x.12]   
-* [0.x.10]*
-    [2.x.13]   [2.x.14]   
-* [0.x.11]*
-    [2.x.15]   [2.x.16]   
-* [0.x.12]*
-   Compute the gradient of the <tt>i</tt>th polynomial at unit point   <tt>p</tt>.     Consider using evaluate() instead.  
-* [0.x.13]*
-   Compute the second derivative (grad_grad) of the <tt>i</tt>th polynomial   at unit point <tt>p</tt>.     Consider using evaluate() instead.  
-* [0.x.14]*
-   Return the number of polynomials spanning the space represented by this   class. Here, if <tt>N</tt> is the number of one-dimensional polynomials   given, then the result of this function is [1.x.14] in 1d,   [1.x.15] in 2d, and [1.x.16] in 3d.  
-* [0.x.15]*
-   Return the name of the space, which is <tt>PolynomialSpace</tt>.  
-* [0.x.16]*
-    [2.x.17]   [2.x.18]   
-* [0.x.17]*
-   Compute numbers in x, y and z direction. Given an index <tt>n</tt> in the   d-dimensional polynomial space, return the indices i,j,k such that   [1.x.17].     In 1d and 2d, obviously only i and i,j are returned.  
-* [0.x.18]*
-   Copy of the vector <tt>pols</tt> of polynomials given to the constructor.  
-* [0.x.19]*
-   Index map for reordering the polynomials.  
-* [0.x.20]*
-   Index map for reordering the polynomials.  
-* [0.x.21]
-
 include/deal.II-translator/base/polynomials_abf_0.txt
 [0.x.0]*
  This class implements the [1.x.0]-conforming, vector-valued Arnold-Boffi-Falk polynomials as described in the article by Arnold-Boffi- Falk: Quadrilateral H(div) finite elements, SIAM J. Numer. Anal. Vol.42, No.6, pp.2429-2451
@@ -8393,6 +8338,61 @@ include/deal.II-translator/base/polynomials_p_0.txt
 * [0.x.7]*
    Degree <tt>p</tt> of the polynomial space  [2.x.13] , i.e. the number   <tt>p</tt> which was given to the constructor.  
 * [0.x.8]
+
+include/deal.II-translator/base/polynomial_space_0.txt
+[0.x.0]*
+ Representation of the space of polynomials of degree at most n in higher dimensions.
+*  Given a vector of [1.x.0] one-dimensional polynomials [1.x.1] to [1.x.2], where [1.x.3] has degree [1.x.4], this class generates all dim-dimensional polynomials of the form [1.x.5], where the sum of [1.x.6], [1.x.7] and [1.x.8] is less than or equal [1.x.9].
+*  The output_indices() function prints the ordering of the polynomials, i.e. for each dim-dimensional polynomial in the polynomial space it gives the indices i,j,k of the one-dimensional polynomials in x,y and z direction. The ordering of the dim-dimensional polynomials can be changed by using the set_numbering() function.
+*  The standard ordering of polynomials is that indices for the first space dimension vary fastest and the last space dimension is slowest. In particular, if we take for simplicity the vector of monomials [1.x.10], we get
+*   [2.x.0]  <dt> 1D  [2.x.1]  [1.x.11] <dt> 2D:  [2.x.2]  [1.x.12] <dt> 3D:  [2.x.3]  [1.x.13]  [2.x.4] 
+* 
+
+* 
+*  [2.x.5] 
+
+* 
+* [0.x.1]*
+   Access to the dimension of this object, for checking and automatic   setting of dimension in other classes.  
+* [0.x.2]*
+   Constructor. <tt>pols</tt> is a vector of pointers to one-dimensional   polynomials and will be copied into a private member variable. The static   type of the template argument <tt>pols</tt> needs to be convertible to    [2.x.6]  i.e. should usually be a derived class   of  [2.x.7]   
+* [0.x.3]*
+   Prints the list of the indices to <tt>out</tt>.  
+* [0.x.4]*
+   Set the ordering of the polynomials. Requires   <tt>renumber.size()==n()</tt>. Stores a copy of <tt>renumber</tt>.  
+* [0.x.5]*
+   Compute the value and the first and second derivatives of each   polynomial at <tt>unit_point</tt>.     The size of the vectors must either be equal 0 or equal n(). In the first   case, the function will not compute these values, i.e. you indicate what   you want to have computed by resizing those vectors which you want   filled.     If you need values or derivatives of all polynomials then use this   function, rather than using any of the compute_value(), compute_grad() or   compute_grad_grad() functions, see below, in a loop over all polynomials.  
+* [0.x.6]*
+   Compute the value of the <tt>i</tt>th polynomial at unit point   <tt>p</tt>.     Consider using evaluate() instead.  
+* [0.x.7]*
+   Compute the <tt>order</tt>th derivative of the <tt>i</tt>th polynomial   at unit point <tt>p</tt>.     Consider using evaluate() instead.      [2.x.8]  order The order of the derivative.  
+* [0.x.8]*
+    [2.x.9]   [2.x.10]   
+* [0.x.9]*
+    [2.x.11]   [2.x.12]   
+* [0.x.10]*
+    [2.x.13]   [2.x.14]   
+* [0.x.11]*
+    [2.x.15]   [2.x.16]   
+* [0.x.12]*
+   Compute the gradient of the <tt>i</tt>th polynomial at unit point   <tt>p</tt>.     Consider using evaluate() instead.  
+* [0.x.13]*
+   Compute the second derivative (grad_grad) of the <tt>i</tt>th polynomial   at unit point <tt>p</tt>.     Consider using evaluate() instead.  
+* [0.x.14]*
+   Return the number of polynomials spanning the space represented by this   class. Here, if <tt>N</tt> is the number of one-dimensional polynomials   given, then the result of this function is [1.x.14] in 1d,   [1.x.15] in 2d, and [1.x.16] in 3d.  
+* [0.x.15]*
+   Return the name of the space, which is <tt>PolynomialSpace</tt>.  
+* [0.x.16]*
+    [2.x.17]   [2.x.18]   
+* [0.x.17]*
+   Compute numbers in x, y and z direction. Given an index <tt>n</tt> in the   d-dimensional polynomial space, return the indices i,j,k such that   [1.x.17].     In 1d and 2d, obviously only i and i,j are returned.  
+* [0.x.18]*
+   Copy of the vector <tt>pols</tt> of polynomials given to the constructor.  
+* [0.x.19]*
+   Index map for reordering the polynomials.  
+* [0.x.20]*
+   Index map for reordering the polynomials.  
+* [0.x.21]
 
 include/deal.II-translator/base/polynomials_piecewise_0.txt
 [0.x.0]*
@@ -9477,9 +9477,6 @@ include/deal.II-translator/base/subscriptor_0.txt
    A mutex used to ensure data consistency when printing out the list   of subscribers.  
 * [0.x.25]
 
-include/deal.II-translator/base/symbolic_function.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/base/symbolic_function_0.txt
 [0.x.0]*
    A Function class that leverages symbolic differentiation to compute   gradients, Laplacians, Hessians, and time derivatives.     This class can be used to define functions using methods provided by the    [2.x.0]  namespace. In particular, one can define a symbolic   evaluation point (the argument of the function), as well as a symbolic   expression.     The symbolic gradients and the symbolic Hessians are computed at   construction time, and when a substitution in the symbolic functions is   requested by the user using the method update_user_substitution_map().     Whenever one of the evaluation methods is called, a substitution is   attempted with the coordinate symbols argument replaced by the evaluation   point and the symbolic time replaced by the current time, as returned by   the get_time() method. The user has to make sure that at evaluation time   argument substitution provides a fully evaluated expression (i.e., no other   symbols are contained in the function expression, except numerical values),   or an exception will be thrown. Additional symbols can be partially   evaluated or substituted by storing them in a user supplied substitution   maps, that can be updated by calling update_user_substitution_map() or the   set_additional_function_arguments() methods.     The simplest use case of this class is given in the following example:  
@@ -9541,7 +9538,7 @@ include/deal.II-translator/base/symbolic_function_0.txt
    Allow output using the bitwise left shift operator.  
 * [0.x.26]
 
-include/deal.II-translator/base/symmetric_tensor.templates_0.txt
+include/deal.II-translator/base/symbolic_function.templates_0.txt
 [0.x.0]
 
 include/deal.II-translator/base/symmetric_tensor_0.txt
@@ -10061,6 +10058,9 @@ include/deal.II-translator/base/symmetric_tensor_0.txt
 
 * 
 * [0.x.135]
+
+include/deal.II-translator/base/symmetric_tensor.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/base/synchronous_iterator_0.txt
 [0.x.0]*
@@ -11482,9 +11482,6 @@ include/deal.II-translator/base/tensor_accessors_0.txt
 *  - but sometimes, especially for     StoreIndex and ReorderedIndexView that return rvalues, we have to     return by value.    
 * [0.x.8]
 
-include/deal.II-translator/base/tensor_function.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/base/tensor_function_0.txt
 [0.x.0]*
  This class is a model for a tensor valued function. The interface of the class is mostly the same as that for the Function class, with the exception that it does not support vector-valued functions with several components, but that the return type is always tensor-valued. The returned values of the evaluation of objects of this type are always whole tensors, while for the <tt>Function</tt> class, one can ask for a specific component only, or use the <tt>vector_value</tt> function, which however does not return the value, but rather writes it into the address provided by its second argument. The reason for the different behavior of the classes is that in the case of tensor valued functions, the size of the argument is known to the compiler a priori, such that the correct amount of memory can be allocated on the stack for the return value; on the other hand, for the vector valued functions, the size is not known to the compiler, so memory has to be allocated on the heap, resulting in relatively expensive copy operations. One can therefore consider this class a specialization of the <tt>Function</tt> class for which the size is known. An additional benefit is that tensors of arbitrary rank can be returned, not only vectors, as for them the size can be determined similarly simply.
@@ -11613,6 +11610,9 @@ include/deal.II-translator/base/tensor_function_parser_0.txt
 * [0.x.24]*
    Number of components is equal dim<sup>rank</sup>.  
 * [0.x.25]
+
+include/deal.II-translator/base/tensor_function.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/base/tensor_polynomials_base_0.txt
 [0.x.0]*
@@ -12125,8 +12125,252 @@ include/deal.II-translator/base/thread_management_0.txt
 * 
 * [0.x.73]
 
-include/deal.II-translator/base/time_stepping.templates_0.txt
-[0.x.0]
+include/deal.II-translator/base/timer_0.txt
+[0.x.0]*
+ A clock, compatible with the  [2.x.0]  notion of a clock, whose now() method returns a time point indicating the amount of CPU time that the current process has used.
+
+* 
+* [0.x.1]*
+   Duration type. Windows measures CPU times, by default, in multiples of   1/64th of a second and POSIX uses microseconds, so go with microseconds   for uniformity.  
+* [0.x.2]*
+   Signed integral type used to store the value returned by count().  
+* [0.x.3]*
+   Ratio representing the length of a period (in seconds).  
+* [0.x.4]*
+   Time point type.  
+* [0.x.5]*
+   Boolean indicating that the clock monotonically increases.  
+* [0.x.6]*
+   Return the amount of CPU time that the current process has   used. Unfortunately, this requires platform-specific calls, so this   function returns 0 on platforms that are neither Windows nor POSIX.  
+* [0.x.7]*
+ The Timer class provides a way to measure both the amount of wall time (i.e., the amount of time elapsed on a wall clock) and the amount of CPU time that certain sections of an application have used. This class also offers facilities for synchronizing the elapsed time across an MPI communicator.
+*  [1.x.0]
+*  The Timer class can be started and stopped several times. It stores both the amount of time elapsed over the last start-stop cycle, or  [2.x.1] lap [2.x.2] , as well as the total time elapsed over all laps. Here is an example:
+* 
+
+* 
+* [1.x.1]
+* 
+*  Alternatively, you can also restart the timer instead of resetting it. The times between successive calls to start() and stop() (i.e., the laps) will then be accumulated. The usage of this class is also explained in the  [2.x.3]  tutorial program.
+* 
+
+* 
+*  [2.x.4]  The TimerOutput (combined with  [2.x.5]  class provide a convenient way to time multiple named sections and summarize the output.
+* 
+
+* 
+*  [2.x.6]  Implementation of this class is system dependent. In particular, CPU times are accumulated from summing across all threads and will usually exceed the wall times.
+* 
+
+* 
+*  [2.x.7] 
+
+* 
+* [0.x.8]*
+   Constructor. Sets the accumulated times at zero and calls  [2.x.8]   
+* [0.x.9]*
+   Constructor specifying that CPU times should be summed over the given   communicator. If  [2.x.9]  is  [2.x.10]  then the Timer   will set the elapsed wall and CPU times over the last lap to their   maximum values across the provided communicator. This synchronization is   only performed if  [2.x.11]  is called before the timer is queried for   time duration values.     This constructor calls  [2.x.12]     
+*  [2.x.13]  The timer is stopped before the synchronization over the   communicator occurs; the extra cost of the synchronization is not   measured.  
+* [0.x.10]*
+   Return a reference to the data structure containing basic statistics on   the last lap's wall time measured across all MPI processes in the given   communicator. This structure does not contain meaningful values until    [2.x.14]  has been called.  
+* [0.x.11]*
+   Return a reference to the data structure containing basic statistics on   the accumulated wall time measured across all MPI processes in the given   communicator. This structure does not contain meaningful values until    [2.x.15]  has been called.  
+* [0.x.12]*
+   Print the data returned by  [2.x.16]  to the   given stream.  
+* [0.x.13]*
+   Print the data returned by  [2.x.17]  to the   given stream.  
+* [0.x.14]*
+   Begin measuring a new lap. If  [2.x.18]  is    [2.x.19]  then an MPI barrier is used to ensure that all   processes begin the lap at the same wall time.  
+* [0.x.15]*
+   Stop the timer. This updates the lap times and accumulated times. If    [2.x.20]  then the lap times are   synchronized over all processors in the communicator (i.e., the lap times   are set to the maximum lap time).     Return the accumulated CPU time in seconds.  
+* [0.x.16]*
+   Stop the timer, if it is running, and reset all measured values to their   default states.  
+* [0.x.17]*
+   Equivalent to calling  [2.x.21]  followed by calling  [2.x.22]   
+* [0.x.18]*
+   Return the current accumulated wall time (including the current lap, if   the timer is running) in seconds without stopping the timer.  
+* [0.x.19]*
+   Return the wall time of the last lap in seconds. The timer is not stopped   by this function.  
+* [0.x.20]*
+   Return the accumulated CPU time (including the current lap, if the timer   is running) in seconds without stopping the timer.     If an MPI communicator is provided to the constructor then the returned   value is the sum of all accumulated CPU times over all processors in the   communicator.  
+* [0.x.21]*
+   Return the CPU time of the last lap in seconds. The timer is not stopped   by this function.  
+* [0.x.22]*
+   The Timer class stores timing information for two different clocks: a   wall clock and a CPU usage clock. Since the logic for handling both   clocks is, in most places, identical, we collect the relevant   measurements for each clock into this  [2.x.23] .      [2.x.24]  clock_type_ The type of the clock whose measurements are being   stored. This class should conform to the usual clock interface expected   by  [2.x.25]  (i.e., the correct alias and a static    [2.x.26]  method).  
+* [0.x.23]*
+     Store the clock type.    
+* [0.x.24]*
+     The time point type of the provided clock.    
+* [0.x.25]*
+     The duration type of the provided clock.    
+* [0.x.26]*
+     The time point corresponding to the start of the current lap. This is     obtained by calling  [2.x.27] .    
+* [0.x.27]*
+     The accumulated time over several laps.    
+* [0.x.28]*
+     The duration of the last lap.    
+* [0.x.29]*
+     Constructor. Sets  [2.x.28]  to the current     clock time and the durations to zero.    
+* [0.x.30]*
+     Reset the clock by setting  [2.x.29]  to the     current clock time and the durations to zero.    
+* [0.x.31]*
+   Alias for the wall clock.  
+* [0.x.32]*
+   Alias for the CPU clock.  
+* [0.x.33]*
+   Collection of wall time measurements.  
+* [0.x.34]*
+   Collection of CPU time measurements.  
+* [0.x.35]*
+   Whether or not the timer is presently running.  
+* [0.x.36]*
+   The communicator over which various time values are synchronized and   combined: see the documentation of the relevant constructor for   additional information.  
+* [0.x.37]*
+   Store whether or not the wall time and CPU time are synchronized across   the communicator in  [2.x.30]  and  [2.x.31]   
+* [0.x.38]*
+   A structure for parallel wall time measurement that includes the minimum,   maximum, and average over all processors known to the MPI communicator of   the last lap time.  
+* [0.x.39]*
+   A structure for parallel wall time measurement that includes the minimum   time recorded among all processes, the maximum time as well as the   average time defined as the sum of all individual times divided by the   number of MPI processes in the MPI_Comm for the total run time.  
+* [0.x.40]*
+ This class can be used to generate formatted output from time measurements of different subsections in a program. It is possible to create several sections that perform certain aspects of the program. A section can be entered several times. By changing the options in OutputFrequency and OutputType, the user can choose whether output should be generated every time a section is joined or just in the end of the program. Moreover, it is possible to show CPU times, wall times, or both.
+*  The class is used in a substantial number of tutorial programs that collect timing data.  [2.x.32]  is an example of a relatively simple sequential program that uses it.  [2.x.33]  and several others mentioned below use it for parallel computations.
+* 
+
+*  [1.x.2]
+*  Use of this class could be as follows:
+
+* 
+* [1.x.3]
+*  When run, this program will return an output like this:
+
+* 
+* [1.x.4]
+*  The output will see that we entered the assembly and solve section twice, and reports how much time we spent there. Moreover, the class measures the total time spent from start to termination of the TimerOutput object. In this case, we did a lot of other stuff, so that the time proportions of the functions we measured are far away from 100 percent.
+* 
+
+*  [1.x.5]
+*  The scheme above where you have to have calls to  [2.x.34]  and  [2.x.35]  is awkward if the sections in between these calls contain  [2.x.36]  statements or may throw exceptions. In that case, it is easy to forget that one nevertheless needs to leave the section somehow, somewhere. An easier approach is to use "scoped" sections. This is a variable that when you create it enters a section, and leaves the section when you destroy it. If this is a variable local to a particular scope (a code block between curly braces) and you leave this scope due to a  [2.x.37]  statements or an exception, then the variable is destroyed and the timed section is left automatically. Consequently, we could have written the code piece above as follows, with exactly the same result but now exception-safe:
+
+* 
+* [1.x.6]
+* 
+* 
+
+*  [1.x.7]
+*  In a parallel program built on MPI, using the class in a way such as the one shown above would result in a situation where each process times the corresponding sections and then outputs the resulting timing information at the end. This is annoying since you'd get a lot of output
+* 
+*  -  one set of timing information from each processor.
+*  This can be avoided by only letting one processor generate screen output, typically by using an object of type ConditionalOStream instead of  [2.x.38]  to write to screen (see, for example,  [2.x.39] ,  [2.x.40] ,  [2.x.41]  and  [2.x.42] , all of which use this method).
+*  This way, only a single processor outputs timing information, typically the first process in the MPI universe. However, if you take the above code snippet as an example, imagine what would happen if  [2.x.43]  is fast on processor zero and slow on at least one of the other processors; and if the first thing  [2.x.44]  does is something that requires all processors to communicate. In this case, on processor zero, the timing section with name  [2.x.45]  will yield a short run time on processor zero, whereas the section  [2.x.46]  will take a long time: not because  [2.x.47]  takes a particularly long time, but because on the processor on which we time (or, rather, the one on which we generate output) happens to have to wait for a long time till the other processor is finally done with  [2.x.48]  and starts to participate in  [2.x.49] . In other words, the timing that is reported is unreliable because it reflects run times from other processors. Furthermore, the run time of this section on processor zero has nothing to do with the run time of the section on other processors but instead with the run time of [1.x.8] on another processor.
+*  The first way to avoid this is to introduce a barrier into the parallel code just before we start and stop timing sections. This ensures that all processes are at the same place and the timing information then reflects the maximal run time across all processors. To achieve this, you need to initialize the TimerOutput object with an MPI communicator object, for example as in the following code:
+
+* 
+* [1.x.9]
+*  Here,  [2.x.50]  is an object of type ConditionalOStream that makes sure that we only generate output on a single processor. See the  [2.x.51] ,  [2.x.52] , and  [2.x.53]  tutorial programs for this kind of usage of this class.
+*  The second variant to cope with this issue is print more information about the recorded times to be able to understand this kind of imbalances without actually adding the barriers. While this approach is still affected by imbalances between different MPI processes, its output is not the arbitrary time of rank 0, but the minimum, average and maximum of the MPI results, using information from  [2.x.54]  As the data is also equipped with the rank id where the minimum and maximum are attained, this approach allows to identify on which ranks certain slowdowns occur. In case some imbalance between the MPI ranks from one section to the next can be tolerated, this strategy can hence be advantageous over the barrier variant as it does not synchronize the program in places where it is not necessary, and rather tries to display the imbalance observed in various phases. In order to use this variant initialize the output object without any native print settings and without communicator,
+
+* 
+* [1.x.10]
+*  and then call
+
+* 
+* [1.x.11]
+*  where appropriate. Here, the output is written to the  [2.x.55]  object of type ConditionalOStream passed to the constructor, making sure the information is only printed once. See  [2.x.56]  for an example usage of this variant. Besides the basic minimum, average, and maximum of times over all MPI ranks, the  [2.x.57]  function also takes a second argument to specify output of quantiles, e.g., the time taken by the 10\% of the slowest and fastest ranks, respectively, to get additional insight into the statistical distribution.
+* 
+
+* 
+*  [2.x.58] 
+
+* 
+* [0.x.41]*
+   Helper class to enter/exit sections in TimerOutput be constructing a   simple scope-based object. The purpose of this class is explained in the   documentation of TimerOutput.  
+* [0.x.42]*
+     Enter the given section in the timer. Exit automatically when calling     stop() or destructor runs.    
+* [0.x.43]*
+     Destructor calls stop()    
+* [0.x.44]*
+     In case you want to exit the scope before the destructor is executed,     call this function.    
+* [0.x.45]*
+     Reference to the TimerOutput object    
+* [0.x.46]*
+     Name of the section we need to exit    
+* [0.x.47]*
+     Do we still need to exit the section we are in?    
+* [0.x.48]*
+   An enumeration data type that describes whether to generate output every   time we exit a section, just in the end, both, or never.  
+* [0.x.49]*
+     Generate output after every call.    
+* [0.x.50]*
+     Generate output in summary at the end.    
+* [0.x.51]*
+     Generate output both after every call and in summary at the end.    
+* [0.x.52]*
+     Never generate any output.    
+* [0.x.53]*
+   An enumeration data type that describes the type of data to return   when fetching the data from the timer.  
+* [0.x.54]*
+     Output CPU times.    
+* [0.x.55]*
+     Output wall clock times.    
+* [0.x.56]*
+     Output number of calls.    
+* [0.x.57]*
+   An enumeration data type that describes whether to show CPU times, wall   times, or both CPU and wall times whenever we generate output.  
+* [0.x.58]*
+     Output CPU times.    
+* [0.x.59]*
+     Output wall clock times.    
+* [0.x.60]*
+     Output both CPU and wall clock times in separate tables.    
+* [0.x.61]*
+     Output both CPU and wall clock times in a single table.    
+* [0.x.62]*
+   Constructor.      [2.x.59]  stream The stream (of type  [2.x.60]  to which output is   written.    [2.x.61]  output_frequency A variable indicating when output is to be   written to the given stream.    [2.x.62]  output_type A variable indicating what kind of timing the output   should represent (CPU or wall time).  
+* [0.x.63]*
+   Constructor.      [2.x.63]  stream The stream (of type ConditionalOstream) to which output is   written.    [2.x.64]  output_frequency A variable indicating when output is to be   written to the given stream.    [2.x.65]  output_type A variable indicating what kind of timing the output   should represent (CPU or wall time).  
+* [0.x.64]*
+   Constructor that takes an MPI communicator as input. A timer constructed   this way will sum up the CPU times over all processors in the MPI network   for calculating the CPU time, or take the maximum over all processors,   depending on the value of  [2.x.66]  . See the documentation of this   class for the rationale for this constructor and an example.      [2.x.67]  mpi_comm An MPI communicator across which we should accumulate or   otherwise synchronize the timing information we produce on every MPI   process.    [2.x.68]  stream The stream (of type  [2.x.69]  to which output is   written.    [2.x.70]  output_frequency A variable indicating when output is to be   written to the given stream.    [2.x.71]  output_type A variable indicating what kind of timing the output   should represent (CPU or wall time). In this parallel context, when this   argument selects CPU time, then times are accumulated over all processes   participating in the MPI communicator. If this argument selects wall   time, then reported times are the maximum over all processors' run times   for this section. (The latter is computed by placing an    [2.x.72]  call before starting and stopping the timer for   each section.  
+* [0.x.65]*
+   Constructor that takes an MPI communicator as input. A timer constructed   this way will sum up the CPU times over all processors in the MPI network   for calculating the CPU time, or take the maximum over all processors,   depending on the value of  [2.x.73]  . See the documentation of this   class for the rationale for this constructor and an example.      [2.x.74]  mpi_comm An MPI communicator across which we should accumulate or   otherwise synchronize the timing information we produce on every MPI   process.    [2.x.75]  stream The stream (of type ConditionalOstream) to which output is   written.    [2.x.76]  output_frequency A variable indicating when output is to be   written to the given stream.    [2.x.77]  output_type A variable indicating what kind of timing the output   should represent (CPU or wall time). In this parallel context, when this   argument selects CPU time, then times are accumulated over all processes   participating in the MPI communicator. If this argument selects wall   time, then reported times are the maximum over all processors' run times   for this section. (The latter is computed by placing an    [2.x.78]  call before starting and stopping the timer for   each section.)  
+* [0.x.66]*
+   Destructor. Calls print_summary() in case the option for writing the   summary output is set.  
+* [0.x.67]*
+   Open a section by given a string name of it. In case the name already   exists, that section is entered once again and times are accumulated.  
+* [0.x.68]*
+   Leave a section. If no name is given, the last section that was entered   is left.  
+* [0.x.69]*
+   Get a map with the collected data of the specified type for each subsection  
+* [0.x.70]*
+   Print a formatted table that summarizes the time consumed in the various   sections.  
+* [0.x.71]*
+   Print a formatted table that summarizes the wall time consumed in the   various sections, using statistics in terms of the minimum, average, and   maximum of times in the various sections and the MPI ranks where the   minimum and maximum are attained. Note that this call only provides   useful information when the TimerOutput object is constructed without an   MPI_Comm argument, to let individual sections run without being disturbed   by barriers.     The optional argument `quantile` allows to add two additional columns to   the output in terms of the distribution of run times. If quantile = 0.1,   the value and rank of the 10% lowest data is printed as well as the value   and rank at 90% of the distribution function, in addition to the minimum   and the maximum. The value of `quantile` needs to be between 0 (no   quantiles are printed besides the minimum and maximum) and 0.5 (when the   median is given).  
+* [0.x.72]*
+   By calling this function, all output can be disabled. This function   together with enable_output() can be useful if one wants to control the   output in a flexible way without putting a lot of <tt>if</tt> clauses in   the program.  
+* [0.x.73]*
+   This function re-enables output of this class if it was previously   disabled with disable_output(). This function together with   disable_output() can be useful if one wants to control the output in a   flexible way without putting a lot of <tt>if</tt> clauses in the program.  
+* [0.x.74]*
+   Resets the recorded timing information.  
+* [0.x.75]*
+   When to output information to the output stream.  
+* [0.x.76]*
+   Whether to show CPU times, wall times, or both CPU and wall times.  
+* [0.x.77]*
+   A timer object for the overall run time. If we are using MPI, this timer   also accumulates over all MPI processes.  
+* [0.x.78]*
+   A structure that groups all information that we collect about each of the   sections.  
+* [0.x.79]*
+   A list of all the sections and their information.  
+* [0.x.80]*
+   The stream object to which we are to output.  
+* [0.x.81]*
+   A boolean variable that sets whether output of this class is currently on   or off.  
+* [0.x.82]*
+   A list of the sections that have been entered and not exited. The list is   kept in the order in which sections have been entered, but elements may   be removed in the middle if an argument is given to the leave_subsection()   function.  
+* [0.x.83]*
+   mpi communicator  
+* [0.x.84]*
+   A lock that makes sure that this class gives reasonable results even when   used with several threads.  
+* [0.x.85]
 
 include/deal.II-translator/base/time_stepping_0.txt
 [0.x.0]*
@@ -12660,252 +12904,8 @@ include/deal.II-translator/base/time_stepping_0.txt
      Status structure of the object.    
 * [0.x.97]
 
-include/deal.II-translator/base/timer_0.txt
-[0.x.0]*
- A clock, compatible with the  [2.x.0]  notion of a clock, whose now() method returns a time point indicating the amount of CPU time that the current process has used.
-
-* 
-* [0.x.1]*
-   Duration type. Windows measures CPU times, by default, in multiples of   1/64th of a second and POSIX uses microseconds, so go with microseconds   for uniformity.  
-* [0.x.2]*
-   Signed integral type used to store the value returned by count().  
-* [0.x.3]*
-   Ratio representing the length of a period (in seconds).  
-* [0.x.4]*
-   Time point type.  
-* [0.x.5]*
-   Boolean indicating that the clock monotonically increases.  
-* [0.x.6]*
-   Return the amount of CPU time that the current process has   used. Unfortunately, this requires platform-specific calls, so this   function returns 0 on platforms that are neither Windows nor POSIX.  
-* [0.x.7]*
- The Timer class provides a way to measure both the amount of wall time (i.e., the amount of time elapsed on a wall clock) and the amount of CPU time that certain sections of an application have used. This class also offers facilities for synchronizing the elapsed time across an MPI communicator.
-*  [1.x.0]
-*  The Timer class can be started and stopped several times. It stores both the amount of time elapsed over the last start-stop cycle, or  [2.x.1] lap [2.x.2] , as well as the total time elapsed over all laps. Here is an example:
-* 
-
-* 
-* [1.x.1]
-* 
-*  Alternatively, you can also restart the timer instead of resetting it. The times between successive calls to start() and stop() (i.e., the laps) will then be accumulated. The usage of this class is also explained in the  [2.x.3]  tutorial program.
-* 
-
-* 
-*  [2.x.4]  The TimerOutput (combined with  [2.x.5]  class provide a convenient way to time multiple named sections and summarize the output.
-* 
-
-* 
-*  [2.x.6]  Implementation of this class is system dependent. In particular, CPU times are accumulated from summing across all threads and will usually exceed the wall times.
-* 
-
-* 
-*  [2.x.7] 
-
-* 
-* [0.x.8]*
-   Constructor. Sets the accumulated times at zero and calls  [2.x.8]   
-* [0.x.9]*
-   Constructor specifying that CPU times should be summed over the given   communicator. If  [2.x.9]  is  [2.x.10]  then the Timer   will set the elapsed wall and CPU times over the last lap to their   maximum values across the provided communicator. This synchronization is   only performed if  [2.x.11]  is called before the timer is queried for   time duration values.     This constructor calls  [2.x.12]     
-*  [2.x.13]  The timer is stopped before the synchronization over the   communicator occurs; the extra cost of the synchronization is not   measured.  
-* [0.x.10]*
-   Return a reference to the data structure containing basic statistics on   the last lap's wall time measured across all MPI processes in the given   communicator. This structure does not contain meaningful values until    [2.x.14]  has been called.  
-* [0.x.11]*
-   Return a reference to the data structure containing basic statistics on   the accumulated wall time measured across all MPI processes in the given   communicator. This structure does not contain meaningful values until    [2.x.15]  has been called.  
-* [0.x.12]*
-   Print the data returned by  [2.x.16]  to the   given stream.  
-* [0.x.13]*
-   Print the data returned by  [2.x.17]  to the   given stream.  
-* [0.x.14]*
-   Begin measuring a new lap. If  [2.x.18]  is    [2.x.19]  then an MPI barrier is used to ensure that all   processes begin the lap at the same wall time.  
-* [0.x.15]*
-   Stop the timer. This updates the lap times and accumulated times. If    [2.x.20]  then the lap times are   synchronized over all processors in the communicator (i.e., the lap times   are set to the maximum lap time).     Return the accumulated CPU time in seconds.  
-* [0.x.16]*
-   Stop the timer, if it is running, and reset all measured values to their   default states.  
-* [0.x.17]*
-   Equivalent to calling  [2.x.21]  followed by calling  [2.x.22]   
-* [0.x.18]*
-   Return the current accumulated wall time (including the current lap, if   the timer is running) in seconds without stopping the timer.  
-* [0.x.19]*
-   Return the wall time of the last lap in seconds. The timer is not stopped   by this function.  
-* [0.x.20]*
-   Return the accumulated CPU time (including the current lap, if the timer   is running) in seconds without stopping the timer.     If an MPI communicator is provided to the constructor then the returned   value is the sum of all accumulated CPU times over all processors in the   communicator.  
-* [0.x.21]*
-   Return the CPU time of the last lap in seconds. The timer is not stopped   by this function.  
-* [0.x.22]*
-   The Timer class stores timing information for two different clocks: a   wall clock and a CPU usage clock. Since the logic for handling both   clocks is, in most places, identical, we collect the relevant   measurements for each clock into this  [2.x.23] .      [2.x.24]  clock_type_ The type of the clock whose measurements are being   stored. This class should conform to the usual clock interface expected   by  [2.x.25]  (i.e., the correct alias and a static    [2.x.26]  method).  
-* [0.x.23]*
-     Store the clock type.    
-* [0.x.24]*
-     The time point type of the provided clock.    
-* [0.x.25]*
-     The duration type of the provided clock.    
-* [0.x.26]*
-     The time point corresponding to the start of the current lap. This is     obtained by calling  [2.x.27] .    
-* [0.x.27]*
-     The accumulated time over several laps.    
-* [0.x.28]*
-     The duration of the last lap.    
-* [0.x.29]*
-     Constructor. Sets  [2.x.28]  to the current     clock time and the durations to zero.    
-* [0.x.30]*
-     Reset the clock by setting  [2.x.29]  to the     current clock time and the durations to zero.    
-* [0.x.31]*
-   Alias for the wall clock.  
-* [0.x.32]*
-   Alias for the CPU clock.  
-* [0.x.33]*
-   Collection of wall time measurements.  
-* [0.x.34]*
-   Collection of CPU time measurements.  
-* [0.x.35]*
-   Whether or not the timer is presently running.  
-* [0.x.36]*
-   The communicator over which various time values are synchronized and   combined: see the documentation of the relevant constructor for   additional information.  
-* [0.x.37]*
-   Store whether or not the wall time and CPU time are synchronized across   the communicator in  [2.x.30]  and  [2.x.31]   
-* [0.x.38]*
-   A structure for parallel wall time measurement that includes the minimum,   maximum, and average over all processors known to the MPI communicator of   the last lap time.  
-* [0.x.39]*
-   A structure for parallel wall time measurement that includes the minimum   time recorded among all processes, the maximum time as well as the   average time defined as the sum of all individual times divided by the   number of MPI processes in the MPI_Comm for the total run time.  
-* [0.x.40]*
- This class can be used to generate formatted output from time measurements of different subsections in a program. It is possible to create several sections that perform certain aspects of the program. A section can be entered several times. By changing the options in OutputFrequency and OutputType, the user can choose whether output should be generated every time a section is joined or just in the end of the program. Moreover, it is possible to show CPU times, wall times, or both.
-*  The class is used in a substantial number of tutorial programs that collect timing data.  [2.x.32]  is an example of a relatively simple sequential program that uses it.  [2.x.33]  and several others mentioned below use it for parallel computations.
-* 
-
-*  [1.x.2]
-*  Use of this class could be as follows:
-
-* 
-* [1.x.3]
-*  When run, this program will return an output like this:
-
-* 
-* [1.x.4]
-*  The output will see that we entered the assembly and solve section twice, and reports how much time we spent there. Moreover, the class measures the total time spent from start to termination of the TimerOutput object. In this case, we did a lot of other stuff, so that the time proportions of the functions we measured are far away from 100 percent.
-* 
-
-*  [1.x.5]
-*  The scheme above where you have to have calls to  [2.x.34]  and  [2.x.35]  is awkward if the sections in between these calls contain  [2.x.36]  statements or may throw exceptions. In that case, it is easy to forget that one nevertheless needs to leave the section somehow, somewhere. An easier approach is to use "scoped" sections. This is a variable that when you create it enters a section, and leaves the section when you destroy it. If this is a variable local to a particular scope (a code block between curly braces) and you leave this scope due to a  [2.x.37]  statements or an exception, then the variable is destroyed and the timed section is left automatically. Consequently, we could have written the code piece above as follows, with exactly the same result but now exception-safe:
-
-* 
-* [1.x.6]
-* 
-* 
-
-*  [1.x.7]
-*  In a parallel program built on MPI, using the class in a way such as the one shown above would result in a situation where each process times the corresponding sections and then outputs the resulting timing information at the end. This is annoying since you'd get a lot of output
-* 
-*  -  one set of timing information from each processor.
-*  This can be avoided by only letting one processor generate screen output, typically by using an object of type ConditionalOStream instead of  [2.x.38]  to write to screen (see, for example,  [2.x.39] ,  [2.x.40] ,  [2.x.41]  and  [2.x.42] , all of which use this method).
-*  This way, only a single processor outputs timing information, typically the first process in the MPI universe. However, if you take the above code snippet as an example, imagine what would happen if  [2.x.43]  is fast on processor zero and slow on at least one of the other processors; and if the first thing  [2.x.44]  does is something that requires all processors to communicate. In this case, on processor zero, the timing section with name  [2.x.45]  will yield a short run time on processor zero, whereas the section  [2.x.46]  will take a long time: not because  [2.x.47]  takes a particularly long time, but because on the processor on which we time (or, rather, the one on which we generate output) happens to have to wait for a long time till the other processor is finally done with  [2.x.48]  and starts to participate in  [2.x.49] . In other words, the timing that is reported is unreliable because it reflects run times from other processors. Furthermore, the run time of this section on processor zero has nothing to do with the run time of the section on other processors but instead with the run time of [1.x.8] on another processor.
-*  The first way to avoid this is to introduce a barrier into the parallel code just before we start and stop timing sections. This ensures that all processes are at the same place and the timing information then reflects the maximal run time across all processors. To achieve this, you need to initialize the TimerOutput object with an MPI communicator object, for example as in the following code:
-
-* 
-* [1.x.9]
-*  Here,  [2.x.50]  is an object of type ConditionalOStream that makes sure that we only generate output on a single processor. See the  [2.x.51] ,  [2.x.52] , and  [2.x.53]  tutorial programs for this kind of usage of this class.
-*  The second variant to cope with this issue is print more information about the recorded times to be able to understand this kind of imbalances without actually adding the barriers. While this approach is still affected by imbalances between different MPI processes, its output is not the arbitrary time of rank 0, but the minimum, average and maximum of the MPI results, using information from  [2.x.54]  As the data is also equipped with the rank id where the minimum and maximum are attained, this approach allows to identify on which ranks certain slowdowns occur. In case some imbalance between the MPI ranks from one section to the next can be tolerated, this strategy can hence be advantageous over the barrier variant as it does not synchronize the program in places where it is not necessary, and rather tries to display the imbalance observed in various phases. In order to use this variant initialize the output object without any native print settings and without communicator,
-
-* 
-* [1.x.10]
-*  and then call
-
-* 
-* [1.x.11]
-*  where appropriate. Here, the output is written to the  [2.x.55]  object of type ConditionalOStream passed to the constructor, making sure the information is only printed once. See  [2.x.56]  for an example usage of this variant. Besides the basic minimum, average, and maximum of times over all MPI ranks, the  [2.x.57]  function also takes a second argument to specify output of quantiles, e.g., the time taken by the 10\% of the slowest and fastest ranks, respectively, to get additional insight into the statistical distribution.
-* 
-
-* 
-*  [2.x.58] 
-
-* 
-* [0.x.41]*
-   Helper class to enter/exit sections in TimerOutput be constructing a   simple scope-based object. The purpose of this class is explained in the   documentation of TimerOutput.  
-* [0.x.42]*
-     Enter the given section in the timer. Exit automatically when calling     stop() or destructor runs.    
-* [0.x.43]*
-     Destructor calls stop()    
-* [0.x.44]*
-     In case you want to exit the scope before the destructor is executed,     call this function.    
-* [0.x.45]*
-     Reference to the TimerOutput object    
-* [0.x.46]*
-     Name of the section we need to exit    
-* [0.x.47]*
-     Do we still need to exit the section we are in?    
-* [0.x.48]*
-   An enumeration data type that describes whether to generate output every   time we exit a section, just in the end, both, or never.  
-* [0.x.49]*
-     Generate output after every call.    
-* [0.x.50]*
-     Generate output in summary at the end.    
-* [0.x.51]*
-     Generate output both after every call and in summary at the end.    
-* [0.x.52]*
-     Never generate any output.    
-* [0.x.53]*
-   An enumeration data type that describes the type of data to return   when fetching the data from the timer.  
-* [0.x.54]*
-     Output CPU times.    
-* [0.x.55]*
-     Output wall clock times.    
-* [0.x.56]*
-     Output number of calls.    
-* [0.x.57]*
-   An enumeration data type that describes whether to show CPU times, wall   times, or both CPU and wall times whenever we generate output.  
-* [0.x.58]*
-     Output CPU times.    
-* [0.x.59]*
-     Output wall clock times.    
-* [0.x.60]*
-     Output both CPU and wall clock times in separate tables.    
-* [0.x.61]*
-     Output both CPU and wall clock times in a single table.    
-* [0.x.62]*
-   Constructor.      [2.x.59]  stream The stream (of type  [2.x.60]  to which output is   written.    [2.x.61]  output_frequency A variable indicating when output is to be   written to the given stream.    [2.x.62]  output_type A variable indicating what kind of timing the output   should represent (CPU or wall time).  
-* [0.x.63]*
-   Constructor.      [2.x.63]  stream The stream (of type ConditionalOstream) to which output is   written.    [2.x.64]  output_frequency A variable indicating when output is to be   written to the given stream.    [2.x.65]  output_type A variable indicating what kind of timing the output   should represent (CPU or wall time).  
-* [0.x.64]*
-   Constructor that takes an MPI communicator as input. A timer constructed   this way will sum up the CPU times over all processors in the MPI network   for calculating the CPU time, or take the maximum over all processors,   depending on the value of  [2.x.66]  . See the documentation of this   class for the rationale for this constructor and an example.      [2.x.67]  mpi_comm An MPI communicator across which we should accumulate or   otherwise synchronize the timing information we produce on every MPI   process.    [2.x.68]  stream The stream (of type  [2.x.69]  to which output is   written.    [2.x.70]  output_frequency A variable indicating when output is to be   written to the given stream.    [2.x.71]  output_type A variable indicating what kind of timing the output   should represent (CPU or wall time). In this parallel context, when this   argument selects CPU time, then times are accumulated over all processes   participating in the MPI communicator. If this argument selects wall   time, then reported times are the maximum over all processors' run times   for this section. (The latter is computed by placing an    [2.x.72]  call before starting and stopping the timer for   each section.  
-* [0.x.65]*
-   Constructor that takes an MPI communicator as input. A timer constructed   this way will sum up the CPU times over all processors in the MPI network   for calculating the CPU time, or take the maximum over all processors,   depending on the value of  [2.x.73]  . See the documentation of this   class for the rationale for this constructor and an example.      [2.x.74]  mpi_comm An MPI communicator across which we should accumulate or   otherwise synchronize the timing information we produce on every MPI   process.    [2.x.75]  stream The stream (of type ConditionalOstream) to which output is   written.    [2.x.76]  output_frequency A variable indicating when output is to be   written to the given stream.    [2.x.77]  output_type A variable indicating what kind of timing the output   should represent (CPU or wall time). In this parallel context, when this   argument selects CPU time, then times are accumulated over all processes   participating in the MPI communicator. If this argument selects wall   time, then reported times are the maximum over all processors' run times   for this section. (The latter is computed by placing an    [2.x.78]  call before starting and stopping the timer for   each section.)  
-* [0.x.66]*
-   Destructor. Calls print_summary() in case the option for writing the   summary output is set.  
-* [0.x.67]*
-   Open a section by given a string name of it. In case the name already   exists, that section is entered once again and times are accumulated.  
-* [0.x.68]*
-   Leave a section. If no name is given, the last section that was entered   is left.  
-* [0.x.69]*
-   Get a map with the collected data of the specified type for each subsection  
-* [0.x.70]*
-   Print a formatted table that summarizes the time consumed in the various   sections.  
-* [0.x.71]*
-   Print a formatted table that summarizes the wall time consumed in the   various sections, using statistics in terms of the minimum, average, and   maximum of times in the various sections and the MPI ranks where the   minimum and maximum are attained. Note that this call only provides   useful information when the TimerOutput object is constructed without an   MPI_Comm argument, to let individual sections run without being disturbed   by barriers.     The optional argument `quantile` allows to add two additional columns to   the output in terms of the distribution of run times. If quantile = 0.1,   the value and rank of the 10% lowest data is printed as well as the value   and rank at 90% of the distribution function, in addition to the minimum   and the maximum. The value of `quantile` needs to be between 0 (no   quantiles are printed besides the minimum and maximum) and 0.5 (when the   median is given).  
-* [0.x.72]*
-   By calling this function, all output can be disabled. This function   together with enable_output() can be useful if one wants to control the   output in a flexible way without putting a lot of <tt>if</tt> clauses in   the program.  
-* [0.x.73]*
-   This function re-enables output of this class if it was previously   disabled with disable_output(). This function together with   disable_output() can be useful if one wants to control the output in a   flexible way without putting a lot of <tt>if</tt> clauses in the program.  
-* [0.x.74]*
-   Resets the recorded timing information.  
-* [0.x.75]*
-   When to output information to the output stream.  
-* [0.x.76]*
-   Whether to show CPU times, wall times, or both CPU and wall times.  
-* [0.x.77]*
-   A timer object for the overall run time. If we are using MPI, this timer   also accumulates over all MPI processes.  
-* [0.x.78]*
-   A structure that groups all information that we collect about each of the   sections.  
-* [0.x.79]*
-   A list of all the sections and their information.  
-* [0.x.80]*
-   The stream object to which we are to output.  
-* [0.x.81]*
-   A boolean variable that sets whether output of this class is currently on   or off.  
-* [0.x.82]*
-   A list of the sections that have been entered and not exited. The list is   kept in the order in which sections have been entered, but elements may   be removed in the middle if an argument is given to the leave_subsection()   function.  
-* [0.x.83]*
-   mpi communicator  
-* [0.x.84]*
-   A lock that makes sure that this class gives reasonable results even when   used with several threads.  
-* [0.x.85]
+include/deal.II-translator/base/time_stepping.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/base/types_0.txt
 [0.x.0]*
@@ -13163,9 +13163,6 @@ include/deal.II-translator/base/utilities_0.txt
 * [0.x.68]*
      Given a Trilinos Epetra map, create a new map that has the same     subdivision of elements to processors but uses the given communicator     object instead of the one stored in the first argument. In essence,     this means that we create a map that communicates among the same     processors in the same way, but using a separate channel.         This function is typically used with a communicator that has been     obtained by the duplicate_communicator() function.    
 * [0.x.69]
-
-include/deal.II-translator/base/vector_slice_0.txt
-[0.x.0]
 
 include/deal.II-translator/base/vectorization_0.txt
 [0.x.0]*
@@ -14077,6 +14074,9 @@ include/deal.II-translator/base/vectorization_0.txt
 * [0.x.274]*
    Iterator traits for VectorizedArrayIterator.  
 * [0.x.275]
+
+include/deal.II-translator/base/vector_slice_0.txt
+[0.x.0]
 
 include/deal.II-translator/base/work_stream_0.txt
 [0.x.0]*

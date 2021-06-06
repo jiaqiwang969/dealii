@@ -413,17 +413,6 @@ include/deal.II-translator/multigrid/mg_tools_0.txt
 *  [2.x.17]  This function requires that    [2.x.18]    is true, which can be controlled by setting the   construct_multigrid_hierarchy flag when constructing the   Triangulation.  
 * [0.x.17]
 
-include/deal.II-translator/multigrid/mg_transfer.templates_0.txt
-[0.x.0]*
-     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.0]  each level     vector to this length. For compatibility reasons with the next function     the target_component is added here but is not used.    
-* [0.x.1]*
-     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.1]  each level     vector to this length. The target_component is handed to      [2.x.2]  See for documentation there.    
-* [0.x.2]*
-     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.3]  each level     vector to this length.    
-* [0.x.3]*
-     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.4]  each level     vector to this length.    
-* [0.x.4]
-
 include/deal.II-translator/multigrid/mg_transfer_0.txt
 [0.x.0] MGTransferBase is defined in mg_base.h
 
@@ -555,9 +544,6 @@ include/deal.II-translator/multigrid/mg_transfer_0.txt
    Degrees of freedom on the refinement edge excluding those on the   boundary.  
 * [0.x.60]
 
-include/deal.II-translator/multigrid/mg_transfer_block.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/multigrid/mg_transfer_block_0.txt
 [0.x.0] MGTransferBase is defined in mg_base.h
 
@@ -660,7 +646,7 @@ include/deal.II-translator/multigrid/mg_transfer_block_0.txt
    Selected block.  
 * [0.x.43]
 
-include/deal.II-translator/multigrid/mg_transfer_component.templates_0.txt
+include/deal.II-translator/multigrid/mg_transfer_block.templates_0.txt
 [0.x.0]
 
 include/deal.II-translator/multigrid/mg_transfer_component_0.txt
@@ -746,15 +732,8 @@ include/deal.II-translator/multigrid/mg_transfer_component_0.txt
    The constraints of the global system.  
 * [0.x.35]
 
-include/deal.II-translator/multigrid/mg_transfer_global_coarsening.templates_0.txt
-[0.x.0]*
-   Helper class to select the right templated implementation.    
-*  [2.x.0]  This class is similar to  [2.x.1]   
-* [0.x.1]*
-   Helper class containing the cell-wise prolongation operation.  
-* [0.x.2]*
-   Helper class containing the cell-wise restriction operation.  
-* [0.x.3]
+include/deal.II-translator/multigrid/mg_transfer_component.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/multigrid/mg_transfer_global_coarsening_0.txt
 [0.x.0]*
@@ -914,6 +893,16 @@ include/deal.II-translator/multigrid/mg_transfer_global_coarsening_0.txt
    %Function to initialize internal level vectors.  
 * [0.x.58]
 
+include/deal.II-translator/multigrid/mg_transfer_global_coarsening.templates_0.txt
+[0.x.0]*
+   Helper class to select the right templated implementation.    
+*  [2.x.0]  This class is similar to  [2.x.1]   
+* [0.x.1]*
+   Helper class containing the cell-wise prolongation operation.  
+* [0.x.2]*
+   Helper class containing the cell-wise restriction operation.  
+* [0.x.3]
+
 include/deal.II-translator/multigrid/mg_transfer_internal_0.txt
 [0.x.0]*
      Internal function for filling the copy indices from global to level     indices         If  [2.x.0]  is false, the mapping will also contain     DoFs at the interface between levels. This is desirable when     transferring solution vectors instead of residuals.    
@@ -1042,8 +1031,16 @@ include/deal.II-translator/multigrid/mg_transfer_matrix_free_0.txt
    A flag to indicate whether the same DoFHandler is used for all   the components or if each block has its own DoFHandler.  
 * [0.x.46]
 
-include/deal.II-translator/multigrid/multigrid.templates_0.txt
-[0.x.0]
+include/deal.II-translator/multigrid/mg_transfer.templates_0.txt
+[0.x.0]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.0]  each level     vector to this length. For compatibility reasons with the next function     the target_component is added here but is not used.    
+* [0.x.1]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.1]  each level     vector to this length. The target_component is handed to      [2.x.2]  See for documentation there.    
+* [0.x.2]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.3]  each level     vector to this length.    
+* [0.x.3]*
+     Adjust vectors on all levels to correct size.  Here, we just count the     numbers of degrees of freedom on each level and  [2.x.4]  each level     vector to this length.    
+* [0.x.4]
 
 include/deal.II-translator/multigrid/multigrid_0.txt
 [0.x.0]*
@@ -1199,6 +1196,9 @@ include/deal.II-translator/multigrid/multigrid_0.txt
 * [0.x.63]*
    Signals used by this object  
 * [0.x.64]
+
+include/deal.II-translator/multigrid/multigrid.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/multigrid/sparse_matrix_collection_0.txt
 [0.x.0]*

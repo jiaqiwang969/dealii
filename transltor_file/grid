@@ -4478,38 +4478,6 @@ include/deal.II-translator/grid/tria_0.txt
 *  [2.x.478]  Manifold objects are pretty useless for points since they are   neither refined nor are their interiors mapped. We nevertheless allow   storing manifold ids for points to be consistent in dimension-independent   programs.     The field is declared as a pointer for a rather mundane reason: all other   fields of this class that can be modified by the TriaAccessor hierarchy   are pointers, and so these accessor classes store a const pointer to the   triangulation. We could no longer do so for TriaAccessor<0,1,spacedim> if   this field (that can be modified by  [2.x.479]  were   not a pointer.  
 * [0.x.310]
 
-include/deal.II-translator/grid/tria_accessor.templates_0.txt
-[0.x.0]*
-     Compute the diameter for a given set of vertices. The vertices are     interpreted, depending on their count, as the vertices of a particular     reference cell.    
-* [0.x.1]*
-     A class with the same purpose as the similarly named class of the     Triangulation class. See there for more information.    
-* [0.x.2]*
-       Implementation of the function of some name in the mother class.      
-* [0.x.3]*
-       Implementation of the function of some name in the mother class.      
-* [0.x.4]*
-       Implementation of the function of some name in the mother class      
-* [0.x.5]         Default implementation used in 1d                 In 1d, face_orientation is always true        
-* [0.x.6]*
-       Implementation of the function of some name in the mother class.      
-* [0.x.7]         Default implementation used in 1d and 2d                 In 1d, face_flip is always false as there is no such concept as         "flipped" faces in 1d.                 In 2d, we currently only support meshes where all faces are in         standard orientation, so the result is also false. This also         matches the fact that one canalways* orient faces in 2d in such a         way that the don't need to be flipped        
-* [0.x.8]*
-       Implementation of the function of some name in the mother class.      
-* [0.x.9]         Default implementation used in 1d and 2d                 In 1d and 2d, face_rotation is always false as there is no such         concept as "rotated" faces in 1d and 2d.        
-* [0.x.10]*
-       Implementation of the function of some name in the mother class.      
-* [0.x.11]*
-       Implementation of the function of some name in the mother class.      
-* [0.x.12]*
-       Implementation of the function of some name in the mother class.      
-* [0.x.13]*
-       Implementation of the function of some name in the mother class.      
-* [0.x.14]*
-       Implementation of the function of some name in the mother class.      
-* [0.x.15]*
-       Implementation of the function of same name in the enclosing class.      
-* [0.x.16]
-
 include/deal.II-translator/grid/tria_accessor_0.txt
 [0.x.0]*
      Implementation of a type with which to store the level of an accessor     object. We only need it for the case that <tt>structdim == dim</tt>.     Otherwise, an empty object is sufficient.    
@@ -5512,6 +5480,38 @@ include/deal.II-translator/grid/tria_accessor_0.txt
    Set the orientation of this cell.     For the meaning of this flag, see    [2.x.469] .  
 * [0.x.422]
 
+include/deal.II-translator/grid/tria_accessor.templates_0.txt
+[0.x.0]*
+     Compute the diameter for a given set of vertices. The vertices are     interpreted, depending on their count, as the vertices of a particular     reference cell.    
+* [0.x.1]*
+     A class with the same purpose as the similarly named class of the     Triangulation class. See there for more information.    
+* [0.x.2]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.3]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.4]*
+       Implementation of the function of some name in the mother class      
+* [0.x.5]         Default implementation used in 1d                 In 1d, face_orientation is always true        
+* [0.x.6]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.7]         Default implementation used in 1d and 2d                 In 1d, face_flip is always false as there is no such concept as         "flipped" faces in 1d.                 In 2d, we currently only support meshes where all faces are in         standard orientation, so the result is also false. This also         matches the fact that one canalways* orient faces in 2d in such a         way that the don't need to be flipped        
+* [0.x.8]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.9]         Default implementation used in 1d and 2d                 In 1d and 2d, face_rotation is always false as there is no such         concept as "rotated" faces in 1d and 2d.        
+* [0.x.10]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.11]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.12]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.13]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.14]*
+       Implementation of the function of some name in the mother class.      
+* [0.x.15]*
+       Implementation of the function of same name in the enclosing class.      
+* [0.x.16]
+
 include/deal.II-translator/grid/tria_description_0.txt
 [0.x.0]*
  The CellData class (and the related SubCellData class) is used to provide a comprehensive, but minimal, description of the cells when creating a triangulation via  [2.x.0]  Specifically, each CellData object
@@ -5700,10 +5700,6 @@ include/deal.II-translator/grid/tria_faces_0.txt
 * [0.x.9]*
        Read or write the data of this object to or from a stream for the       purpose of serialization using the [BOOST serialization       library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).      
 * [0.x.10]
-
-include/deal.II-translator/grid/tria_iterator.templates_0.txt
-[0.x.0] Note: This file only contains template definitions and will thus   not produce an object file. It is rather thought to be included   into the_accessor.cc files.
-* [0.x.1]
 
 include/deal.II-translator/grid/tria_iterator_0.txt
 [0.x.0]*
@@ -5983,6 +5979,10 @@ include/deal.II-translator/grid/tria_iterator_selector_0.txt
 * [1.x.2]
 *     
 * [0.x.3]
+
+include/deal.II-translator/grid/tria_iterator.templates_0.txt
+[0.x.0] Note: This file only contains template definitions and will thus   not produce an object file. It is rather thought to be included   into the_accessor.cc files.
+* [0.x.1]
 
 include/deal.II-translator/grid/tria_levels_0.txt
 [0.x.0]*

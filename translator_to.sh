@@ -2,6 +2,8 @@
 mkdir transltor_file
 rm -rf transltor_file/*
 path=include/deal.II-translator
+rm -rf include/deal.II-translator
+cp -rf include/deal.II-origin include/deal.II-translator
 files=$(ls $path)
 for filename in $files
 do

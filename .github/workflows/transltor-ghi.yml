@@ -1,0 +1,38 @@
+name: github-linux
+
+on: [push, pull_request]
+
+jobs:
+  linux-release-serial:
+    # simple serial release build using g++
+
+    name: transltor for documentation-ghi
+    runs-on: [ubuntu-18.04]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup
+      run: |
+        ./contrib/utilities/download_clang_format
+    - name: info
+      run: |
+        g++ -v
+        cmake --version
+    - name: modules
+      run: |
+        sudo apt-get install libboost-all-dev doxygen python
+    - name: configure
+      run: |
+        mv include/deal.II-translator/base/g*.h include/deal.II/base/
+        mv include/deal.II-translator/base/h*.h include/deal.II/base/
+        mv include/deal.II-translator/base/i*.h include/deal.II/base/
+        cmake -D CMAKE_BUILD_TYPE=Release -D DEAL_II_CXX_FLAGS='-Werror' -D DEAL_II_EARLY_DEPRECATIONS=ON -DDEAL_II_COMPONENT_PYTHON_BINDINGS=ON -DDEAL_II_COMPONENT_DOCUMENTATION=ON -DDEAL_II_DOXYGEN_USE_MATHJAX=ON .
+    - name: archive
+      uses: actions/upload-artifact@v1
+      with:
+        name: linux-serial-detailed.log
+        path: detailed.log
+    - name: build
+      run: |
+        make -j 2
+        make documentation

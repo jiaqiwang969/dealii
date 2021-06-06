@@ -195,9 +195,6 @@ include/deal.II-translator/meshworker/copy_data_0.txt
      An array of local degrees of freedom indices.    
 * [0.x.7]
 
-include/deal.II-translator/meshworker/dof_info.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/meshworker/dof_info_0.txt
 [0.x.0]*
    A class containing information on geometry and degrees of freedom of a   mesh object.     The information in these objects is usually used by one of the Assembler   classes. It is also the kind of information which is needed in mesh based   matrices (often referred to as matrix free methods).     In addition to the information on degrees of freedom stored in this   class, it also provides the local computation space for the worker object   operating on it in LocalResults. This base class will automatically be   reinitialized on each cell, but initial setup is up to the user and   should be done when initialize() for this class is called.     This class operates in two different modes, corresponding to the data   models discussed in the Assembler namespace documentation.     The choice of the local data model is triggered by the vector    [2.x.0]  which in turn is usually filled by    [2.x.1]  If this function has been used, or the   vector has been changed from zero-length, then local dof indices stored   in this object will automatically be renumbered to reflect local block   structure. This means, the first entries in  [2.x.2]  will refer to the   first block of the system, then comes the second block and so on.     The BlockInfo object is stored as a pointer. Therefore, if the block   structure changes, for instance because of mesh refinement, the DoFInfo   class will automatically use the new structures.    
@@ -257,6 +254,9 @@ include/deal.II-translator/meshworker/dof_info_0.txt
      A flag to specify if the current object has been set to a valid cell.    
 * [0.x.27]
 
+include/deal.II-translator/meshworker/dof_info.templates_0.txt
+[0.x.0]
+
 include/deal.II-translator/meshworker/functional_0.txt
 [0.x.0]*
      The class assembling local contributions to a functional into global     functionals.                
@@ -289,9 +289,6 @@ include/deal.II-translator/meshworker/functional_0.txt
 * [0.x.13]*
        The value of the ith entry in  [2.x.11]       
 * [0.x.14]
-
-include/deal.II-translator/meshworker/integration_info.templates_0.txt
-[0.x.0]
 
 include/deal.II-translator/meshworker/integration_info_0.txt
 [0.x.0]*
@@ -406,6 +403,9 @@ include/deal.II-translator/meshworker/integration_info_0.txt
 * [0.x.53]*
      The  [2.x.33]  object for an interior face, seen from the other cell.    
 * [0.x.54]
+
+include/deal.II-translator/meshworker/integration_info.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/meshworker/local_integrator_0.txt
 [0.x.0]*
@@ -1072,9 +1072,6 @@ include/deal.II-translator/meshworker/simple_0.txt
        Assemble a single matrix  [2.x.35]  into the element at        [2.x.36]  in the vector #matrix.      
 * [0.x.51]
 
-include/deal.II-translator/meshworker/vector_selector.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/meshworker/vector_selector_0.txt
 [0.x.0]*
    A class that selects vectors from a list of named vectors.     Since the number of vectors in an AnyData object may grow with every   nesting of applications or loops, it is important to be able to select   those, which are actually used in computing residuals etc. This class   organizes the selection.     It is used for instance in IntegrationWorker to determine which values,   derivatives or second derivatives are actually computed.    
@@ -1161,4 +1158,7 @@ include/deal.II-translator/meshworker/vector_selector_0.txt
      Initialize with a single vector and cache the indices in the     VectorSelector base class.        
 *  [2.x.26]  Make sure the VectorSelector base class was filled with     reasonable data before calling this function.    
 * [0.x.38]
+
+include/deal.II-translator/meshworker/vector_selector.templates_0.txt
+[0.x.0]
 

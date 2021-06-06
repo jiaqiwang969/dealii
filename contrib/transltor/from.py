@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
+#-*- coding: UTF-8 -*- 
 # -----------------------------------------
 # deal.ii translator for doxygen documents
 # Jiaqi-Knight 2021

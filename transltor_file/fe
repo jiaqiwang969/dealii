@@ -1057,74 +1057,6 @@ include/deal.II-translator/fe/fe_bernstein_0.txt
    This function renumbers Bernstein basis functions from hierarchic to   lexicographic numbering.  
 * [0.x.15]
 
-include/deal.II-translator/fe/fe_dg_vector.templates_0.txt
-[0.x.0]
-
-include/deal.II-translator/fe/fe_dg_vector_0.txt
-[0.x.0]*
- DG elements based on vector valued polynomials.
-*  These elements use vector valued polynomial spaces as they have been introduced for H<sup>div</sup> and H<sup>curl</sup> conforming finite elements, but do not use the usual continuity of these elements. Thus, they are suitable for DG and hybrid formulations involving these function spaces.
-*  The template argument <tt>PolynomialType</tt> refers to a vector valued polynomial space like PolynomialsRaviartThomas or PolynomialsNedelec. Note that the dimension of the polynomial space and the argument <tt>dim</tt> must coincide.
-* 
-
-* 
-*  [2.x.0] 
-
-* 
-* [0.x.1]*
-   Constructor for the vector element of degree  [2.x.1]   
-* [0.x.2]*
-   Return a string that uniquely identifies a finite element. This class   returns `FE_DGVector_` plus a piece of the name that is taken from what   the polynomial object returns, plus `<dim>(degree)`, with  [2.x.2]  and  [2.x.3]    replaced by appropriate values.  
-* [0.x.3]*
-   This function returns  [2.x.4]  if the shape function  [2.x.5]  has   non-zero function values somewhere on the face  [2.x.6]      For this element, we always return  [2.x.7]   
-* [0.x.4]*
-   Only for internal use. Its full name is  [2.x.8]    function and it creates the  [2.x.9]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.10]    FiniteElementData.  
-* [0.x.5]*
-   Fields of cell-independent data.     For information about the general purpose of this class, see the   documentation of the base class.  
-* [0.x.6]*
-     Array with shape function values in quadrature points. There is one row     for each shape function, containing values for each quadrature point.     Since the shape functions are vector-valued (with as many components as     there are space dimensions), the value is a tensor.         In this array, we store the values of the shape function in the     quadrature points on the unit cell. The transformation to the real     space cell is then simply done by multiplication with the Jacobian of     the mapping.    
-* [0.x.7]*
-     Array with shape function gradients in quadrature points. There is one     row for each shape function, containing values for each quadrature     point.         We store the gradients in the quadrature points on the unit cell. We     then only have to apply the transformation (which is a matrix-vector     multiplication) when visiting an actual cell.    
-* [0.x.8]*
- A vector-valued DG element based on the polynomials space of FE_Nedelec. This class implements a "broken" finite element space that is discontinuous between cells and on each cell has shape functions that equal those of the Nedelec element.
-*  The related class FE_DGRT is used in  [2.x.11] .
-
-* 
-*  [2.x.12] 
-
-* 
-* [0.x.9]*
-   Constructor for the discontinuous N&eacute;d&eacute;lec element of degree    [2.x.13]   
-* [0.x.10]*
-   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGNedelec<dim>(degree)</tt>, with  [2.x.14]  and  [2.x.15]    replaced by appropriate values.  
-* [0.x.11]*
- A vector-valued DG element based on the polynomials space of FE_RaviartThomas. This class implements a "broken" finite element space that is discontinuous between cells and on each cell has shape functions that equal those of the Raviart-Thomas element.
-*  The class is used in  [2.x.16] .
-* 
-
-* 
-*  [2.x.17] 
-
-* 
-* [0.x.12]*
-   Constructor for the Raviart-Thomas element of degree  [2.x.18]   
-* [0.x.13]*
-   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGRaviartThomas<dim>(degree)</tt>, with  [2.x.19]  and  [2.x.20]    degree replaced by appropriate values.  
-* [0.x.14]*
- A vector-valued DG element based on the polynomials space of FE_BDM. This class implements a "broken" finite element space that is discontinuous between cells and on each cell has shape functions that equal those of the BDM element.
-*  The related class FE_DGRT is used in  [2.x.21] .
-* 
-
-* 
-*  [2.x.22] 
-
-* 
-* [0.x.15]*
-   Constructor for the discontinuous BDM element of degree  [2.x.23]   
-* [0.x.16]*
-   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGBDM<dim>(degree)</tt>, with  [2.x.24]  and  [2.x.25]    replaced by appropriate values.  
-* [0.x.17]
-
 include/deal.II-translator/fe/fe_dgp_0.txt
 [0.x.0]*
  Discontinuous finite elements based on Legendre polynomials.
@@ -1438,6 +1370,74 @@ include/deal.II-translator/fe/fe_dgq_0.txt
 * [0.x.32]*
    Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGQHermite<dim>(degree)</tt>, with <tt>dim</tt> and   <tt>degree</tt> replaced by the values given by the template parameter   and the argument passed to the constructor, respectively.  
 * [0.x.33]
+
+include/deal.II-translator/fe/fe_dg_vector_0.txt
+[0.x.0]*
+ DG elements based on vector valued polynomials.
+*  These elements use vector valued polynomial spaces as they have been introduced for H<sup>div</sup> and H<sup>curl</sup> conforming finite elements, but do not use the usual continuity of these elements. Thus, they are suitable for DG and hybrid formulations involving these function spaces.
+*  The template argument <tt>PolynomialType</tt> refers to a vector valued polynomial space like PolynomialsRaviartThomas or PolynomialsNedelec. Note that the dimension of the polynomial space and the argument <tt>dim</tt> must coincide.
+* 
+
+* 
+*  [2.x.0] 
+
+* 
+* [0.x.1]*
+   Constructor for the vector element of degree  [2.x.1]   
+* [0.x.2]*
+   Return a string that uniquely identifies a finite element. This class   returns `FE_DGVector_` plus a piece of the name that is taken from what   the polynomial object returns, plus `<dim>(degree)`, with  [2.x.2]  and  [2.x.3]    replaced by appropriate values.  
+* [0.x.3]*
+   This function returns  [2.x.4]  if the shape function  [2.x.5]  has   non-zero function values somewhere on the face  [2.x.6]      For this element, we always return  [2.x.7]   
+* [0.x.4]*
+   Only for internal use. Its full name is  [2.x.8]    function and it creates the  [2.x.9]  vector that is needed   within the constructor to be passed to the constructor of  [2.x.10]    FiniteElementData.  
+* [0.x.5]*
+   Fields of cell-independent data.     For information about the general purpose of this class, see the   documentation of the base class.  
+* [0.x.6]*
+     Array with shape function values in quadrature points. There is one row     for each shape function, containing values for each quadrature point.     Since the shape functions are vector-valued (with as many components as     there are space dimensions), the value is a tensor.         In this array, we store the values of the shape function in the     quadrature points on the unit cell. The transformation to the real     space cell is then simply done by multiplication with the Jacobian of     the mapping.    
+* [0.x.7]*
+     Array with shape function gradients in quadrature points. There is one     row for each shape function, containing values for each quadrature     point.         We store the gradients in the quadrature points on the unit cell. We     then only have to apply the transformation (which is a matrix-vector     multiplication) when visiting an actual cell.    
+* [0.x.8]*
+ A vector-valued DG element based on the polynomials space of FE_Nedelec. This class implements a "broken" finite element space that is discontinuous between cells and on each cell has shape functions that equal those of the Nedelec element.
+*  The related class FE_DGRT is used in  [2.x.11] .
+
+* 
+*  [2.x.12] 
+
+* 
+* [0.x.9]*
+   Constructor for the discontinuous N&eacute;d&eacute;lec element of degree    [2.x.13]   
+* [0.x.10]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGNedelec<dim>(degree)</tt>, with  [2.x.14]  and  [2.x.15]    replaced by appropriate values.  
+* [0.x.11]*
+ A vector-valued DG element based on the polynomials space of FE_RaviartThomas. This class implements a "broken" finite element space that is discontinuous between cells and on each cell has shape functions that equal those of the Raviart-Thomas element.
+*  The class is used in  [2.x.16] .
+* 
+
+* 
+*  [2.x.17] 
+
+* 
+* [0.x.12]*
+   Constructor for the Raviart-Thomas element of degree  [2.x.18]   
+* [0.x.13]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGRaviartThomas<dim>(degree)</tt>, with  [2.x.19]  and  [2.x.20]    degree replaced by appropriate values.  
+* [0.x.14]*
+ A vector-valued DG element based on the polynomials space of FE_BDM. This class implements a "broken" finite element space that is discontinuous between cells and on each cell has shape functions that equal those of the BDM element.
+*  The related class FE_DGRT is used in  [2.x.21] .
+* 
+
+* 
+*  [2.x.22] 
+
+* 
+* [0.x.15]*
+   Constructor for the discontinuous BDM element of degree  [2.x.23]   
+* [0.x.16]*
+   Return a string that uniquely identifies a finite element. This class   returns <tt>FE_DGBDM<dim>(degree)</tt>, with  [2.x.24]  and  [2.x.25]    replaced by appropriate values.  
+* [0.x.17]
+
+include/deal.II-translator/fe/fe_dg_vector.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/fe/fe_enriched_0.txt
 [0.x.0]*
@@ -2164,14 +2164,6 @@ include/deal.II-translator/fe/fe_p1nc_0.txt
    Create the constraints matrix for hanging edges.  
 * [0.x.10]
 
-include/deal.II-translator/fe/fe_poly.templates_0.txt
-[0.x.0]*
- Returns whether we need to correct the Hessians and third derivatives with the derivatives of the Jacobian. This is determined by checking if the jacobian_pushed_forward are zero.
-*  Especially for the third derivatives, the correction term is very expensive, which is why we check if the derivatives are zero before computing the correction.
-
-* 
-* [0.x.1]
-
 include/deal.II-translator/fe/fe_poly_0.txt
 [0.x.0]*
  This class gives a unified framework for the implementation of FiniteElement classes based on scalar polynomial spaces like the TensorProductPolynomials or PolynomialSpace classes. This class has a corresponding class for tensor-valued finite elements in the FE_PolyTensor class.
@@ -2240,9 +2232,6 @@ include/deal.II-translator/fe/fe_poly_0.txt
    The polynomial space.  
 * [0.x.27]
 
-include/deal.II-translator/fe/fe_poly_face.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/fe/fe_poly_face_0.txt
 [0.x.0]*
   [2.x.0]  This class is not sufficiently tested yet!
@@ -2268,6 +2257,17 @@ include/deal.II-translator/fe/fe_poly_face_0.txt
 * [0.x.6]*
    The polynomial space. Its type is given by the template parameter   PolynomialType.  
 * [0.x.7]
+
+include/deal.II-translator/fe/fe_poly_face.templates_0.txt
+[0.x.0]
+
+include/deal.II-translator/fe/fe_poly.templates_0.txt
+[0.x.0]*
+ Returns whether we need to correct the Hessians and third derivatives with the derivatives of the Jacobian. This is determined by checking if the jacobian_pushed_forward are zero.
+*  Especially for the third derivatives, the correction term is very expensive, which is why we check if the derivatives are zero before computing the correction.
+
+* 
+* [0.x.1]
 
 include/deal.II-translator/fe/fe_poly_tensor_0.txt
 [0.x.0]*
@@ -3313,13 +3313,6 @@ include/deal.II-translator/fe/fe_system_0.txt
    Mutex for protecting initialization of restriction and embedding matrix.  
 * [0.x.60]
 
-include/deal.II-translator/fe/fe_tools.templates_0.txt
-[0.x.0]*
-     Take a  [2.x.0]  object     and return an boolean vector including the  [2.x.1]      restriction_is_additive_flags of the mixed element consisting of  [2.x.2]      elements of the sub-element  [2.x.3]     
-* [0.x.1]*
-     Compute the non-zero vector components of a composed finite element.    
-* [0.x.2]
-
 include/deal.II-translator/fe/fe_tools_0.txt
 [0.x.0]*
  This namespace offers interpolations and extrapolations of discrete functions of one  [2.x.0]   [2.x.1]  to another  [2.x.2]   [2.x.3]  fe2.
@@ -3554,6 +3547,13 @@ include/deal.II-translator/fe/fe_tools_extrapolate.templates_0.txt
 
 include/deal.II-translator/fe/fe_tools_interpolate.templates_0.txt
 [0.x.0]
+
+include/deal.II-translator/fe/fe_tools.templates_0.txt
+[0.x.0]*
+     Take a  [2.x.0]  object     and return an boolean vector including the  [2.x.1]      restriction_is_additive_flags of the mixed element consisting of  [2.x.2]      elements of the sub-element  [2.x.3]     
+* [0.x.1]*
+     Compute the non-zero vector components of a composed finite element.    
+* [0.x.2]
 
 include/deal.II-translator/fe/fe_trace_0.txt
 [0.x.0]*
@@ -5321,68 +5321,6 @@ include/deal.II-translator/fe/mapping_manifold_0.txt
     [2.x.22]   
 * [0.x.28]
 
-include/deal.II-translator/fe/mapping_q1_0.txt
-[0.x.0]*
- Implementation of a  [2.x.0] -linear mapping from the reference cell to a general quadrilateral/hexahedron.
-*  The mapping implemented by this class maps the reference (unit) cell to a general grid cell with straight lines in  [2.x.1]  dimensions. (Note, however, that in 3D the [1.x.0] of a general, trilinearly mapped cell may be curved, even if the edges are not). This is the standard mapping used for polyhedral domains. It is also the mapping used throughout deal.II for many functions that come in two variants, one that allows to pass a mapping argument explicitly and one that simply falls back to the MappingQ1 class declared here. (Or, in fact, to an object of kind MappingQGeneric(1), which implements exactly the functionality of this class.)
-*  The shape functions for this mapping are the same as for the finite element FE_Q of polynomial degree 1. Therefore, coupling these two yields an isoparametric element.
-* 
-
-* 
-*  [2.x.2]  This class is, in all reality, nothing more than a different name for calling MappingQGeneric with a polynomial degree of one as argument.
-
-* 
-* [0.x.1]*
-   Default constructor.  
-* [0.x.2]*
- Many places in the library by default use (bi-,tri-)linear mappings unless users explicitly provide a different mapping to use. In these cases, the called function has to create a  [2.x.3]  mapping object, i.e., an object of kind MappingQGeneric(1). This is costly. It would also be costly to create such objects as static objects in the affected functions, because static objects are never destroyed throughout the lifetime of a program, even though they only have to be created once the first time code runs through a particular function.
-*  In order to avoid creation of (static or dynamic)  [2.x.4]  mapping objects in these contexts throughout the library, this class defines a static  [2.x.5]  mapping object. This object can then be used in all of those places where such an object is needed.
-* 
-
-* 
-*  [2.x.6]  The use of this object should be avoided since it is only applicable   in cases where a mesh consists exclusively of quadrilaterals or hexahedra.   Use  [2.x.7]    instead.
-
-* 
-* [0.x.3]*
-   The static  [2.x.8]  mapping object discussed in the documentation of this   class.  
-* [0.x.4]
-
-include/deal.II-translator/fe/mapping_q1_eulerian_0.txt
-[0.x.0]*
- This class provides a mapping that adds to the location of each cell a  [2.x.0] -linear displacement field. (The generalization to higher order polynomials is provided in the MappingQEulerian class.) Each cell is thus shifted in space by values given to the mapping through a finite element field.
-*  [1.x.0]
-*  The constructor of this class takes two arguments: a reference to the vector that defines the mapping from the reference configuration to the current configuration and a reference to the DoFHandler. The vector should then represent a (flattened out version of a) vector valued field defined at nodes defined by the DoFHandler, where the number of components of the vector field equals the number of space dimensions. Thus, the DoFHandler shall operate on a finite element that has as many components as space dimensions. As an additional requirement, we impose that it have as many degree of freedom per vertex as there are space dimensions; since this object only evaluates the finite element field at the vertices, the values of all other degrees of freedom (not associated to vertices) are ignored. These requirements are met if the finite element which the given DoFHandler operates on is constructed as a system element (FESystem) from  [2.x.1]  continuous FE_Q() objects.
-*  In many cases, the shift vector will also be the solution vector of the problem under investigation. If this is not the case (i.e. the number of components of the solution variable is not equal to the space dimension, e.g. for scalar problems in <tt>dim>1</tt> where the Eulerian coordinates only give a background field) or for coupled problems where more variables are computed than just the flow field), then a different DoFHandler has to be set up on the given triangulation, and the shift vector has then to be associated to it.
-*  An example is shown below:
-
-* 
-* [1.x.1]
-* 
-*  Note that since the vector of shift values and the dof handler are only associated to this object at construction time, you have to make sure that whenever you use this object, the given objects still represent valid data.
-*  To enable the use of the MappingQ1Eulerian class also in the context of parallel codes using the PETSc or Trilinos wrapper classes, the type of the vector can be specified as template parameter <tt>VectorType</tt>.
-*  For more information about the <tt>spacedim</tt> template parameter check the documentation of FiniteElement or the one of Triangulation.
-
-* 
-* [0.x.1]*
-   Constructor.      [2.x.2]  euler_dof_handler A DoFHandler object that defines a finite   element space. This space needs to have exactly dim components   and these will be considered displacements   relative to the original positions of the cells of the triangulation.   This DoFHandler must be based on a  [2.x.3]    finite element.    [2.x.4]  euler_vector A finite element function in the space defined by   the first argument. The dim components of this function will be   interpreted as the displacement we use in defining the mapping, relative   to the location of cells of the underlying triangulation.  
-* [0.x.2]*
-   Return the mapped vertices of the cell. For the current class, this   function does not use the support points from the geometry of the current   cell but instead evaluates an externally given displacement field in   addition to the geometry of the cell.  
-* [0.x.3]*
-   Return a pointer to a copy of the present object. The caller of this copy   then assumes ownership of it.  
-* [0.x.4]*
-   Always returns  [2.x.5]  because MappingQ1Eulerian does not in general   preserve vertex locations (unless the translation vector happens to   provide for zero displacements at vertex locations).  
-* [0.x.5]*
-   Exception.  
-* [0.x.6]*
-   Compute mapping-related information for a cell. See the documentation of    [2.x.6]  for a discussion of purpose, arguments, and   return value of this function.     This function overrides the function in the base class since we cannot   use any cell similarity for this class.  
-* [0.x.7]*
-   Compute the support points of the mapping. For the current class, these   are the vertices, as obtained by calling  [2.x.7]  See the   documentation of  [2.x.8]  for   more information.  
-* [0.x.8]*
-   Reference to the vector of shifts.  
-* [0.x.9]*
-   Pointer to the DoFHandler to which the mapping vector is associated.  
-* [0.x.10]
-
 include/deal.II-translator/fe/mapping_q_0.txt
 [0.x.0]*
  A class that implements a polynomial mapping  [2.x.0]  of degree  [2.x.1]  on cells at the boundary of the domain (or, if requested in the constructor, for all cells) and linear mappings for interior cells.
@@ -5456,6 +5394,68 @@ include/deal.II-translator/fe/mapping_q_0.txt
 *  [2.x.50]  MappingQEulerian and MappingC1 reset this pointer to an object of   their own implementation to ensure that the Q_p mapping also knows about   the proper shifts and transformations of the Eulerian displacements   (Eulerian case) and proper choice of support points (C1 case).    
 *  [2.x.51]  If the polynomial degree used for the current object is one, then   the qp_mapping and q1_mapping variables point to the same underlying   object.  
 * [0.x.20]
+
+include/deal.II-translator/fe/mapping_q1_0.txt
+[0.x.0]*
+ Implementation of a  [2.x.0] -linear mapping from the reference cell to a general quadrilateral/hexahedron.
+*  The mapping implemented by this class maps the reference (unit) cell to a general grid cell with straight lines in  [2.x.1]  dimensions. (Note, however, that in 3D the [1.x.0] of a general, trilinearly mapped cell may be curved, even if the edges are not). This is the standard mapping used for polyhedral domains. It is also the mapping used throughout deal.II for many functions that come in two variants, one that allows to pass a mapping argument explicitly and one that simply falls back to the MappingQ1 class declared here. (Or, in fact, to an object of kind MappingQGeneric(1), which implements exactly the functionality of this class.)
+*  The shape functions for this mapping are the same as for the finite element FE_Q of polynomial degree 1. Therefore, coupling these two yields an isoparametric element.
+* 
+
+* 
+*  [2.x.2]  This class is, in all reality, nothing more than a different name for calling MappingQGeneric with a polynomial degree of one as argument.
+
+* 
+* [0.x.1]*
+   Default constructor.  
+* [0.x.2]*
+ Many places in the library by default use (bi-,tri-)linear mappings unless users explicitly provide a different mapping to use. In these cases, the called function has to create a  [2.x.3]  mapping object, i.e., an object of kind MappingQGeneric(1). This is costly. It would also be costly to create such objects as static objects in the affected functions, because static objects are never destroyed throughout the lifetime of a program, even though they only have to be created once the first time code runs through a particular function.
+*  In order to avoid creation of (static or dynamic)  [2.x.4]  mapping objects in these contexts throughout the library, this class defines a static  [2.x.5]  mapping object. This object can then be used in all of those places where such an object is needed.
+* 
+
+* 
+*  [2.x.6]  The use of this object should be avoided since it is only applicable   in cases where a mesh consists exclusively of quadrilaterals or hexahedra.   Use  [2.x.7]    instead.
+
+* 
+* [0.x.3]*
+   The static  [2.x.8]  mapping object discussed in the documentation of this   class.  
+* [0.x.4]
+
+include/deal.II-translator/fe/mapping_q1_eulerian_0.txt
+[0.x.0]*
+ This class provides a mapping that adds to the location of each cell a  [2.x.0] -linear displacement field. (The generalization to higher order polynomials is provided in the MappingQEulerian class.) Each cell is thus shifted in space by values given to the mapping through a finite element field.
+*  [1.x.0]
+*  The constructor of this class takes two arguments: a reference to the vector that defines the mapping from the reference configuration to the current configuration and a reference to the DoFHandler. The vector should then represent a (flattened out version of a) vector valued field defined at nodes defined by the DoFHandler, where the number of components of the vector field equals the number of space dimensions. Thus, the DoFHandler shall operate on a finite element that has as many components as space dimensions. As an additional requirement, we impose that it have as many degree of freedom per vertex as there are space dimensions; since this object only evaluates the finite element field at the vertices, the values of all other degrees of freedom (not associated to vertices) are ignored. These requirements are met if the finite element which the given DoFHandler operates on is constructed as a system element (FESystem) from  [2.x.1]  continuous FE_Q() objects.
+*  In many cases, the shift vector will also be the solution vector of the problem under investigation. If this is not the case (i.e. the number of components of the solution variable is not equal to the space dimension, e.g. for scalar problems in <tt>dim>1</tt> where the Eulerian coordinates only give a background field) or for coupled problems where more variables are computed than just the flow field), then a different DoFHandler has to be set up on the given triangulation, and the shift vector has then to be associated to it.
+*  An example is shown below:
+
+* 
+* [1.x.1]
+* 
+*  Note that since the vector of shift values and the dof handler are only associated to this object at construction time, you have to make sure that whenever you use this object, the given objects still represent valid data.
+*  To enable the use of the MappingQ1Eulerian class also in the context of parallel codes using the PETSc or Trilinos wrapper classes, the type of the vector can be specified as template parameter <tt>VectorType</tt>.
+*  For more information about the <tt>spacedim</tt> template parameter check the documentation of FiniteElement or the one of Triangulation.
+
+* 
+* [0.x.1]*
+   Constructor.      [2.x.2]  euler_dof_handler A DoFHandler object that defines a finite   element space. This space needs to have exactly dim components   and these will be considered displacements   relative to the original positions of the cells of the triangulation.   This DoFHandler must be based on a  [2.x.3]    finite element.    [2.x.4]  euler_vector A finite element function in the space defined by   the first argument. The dim components of this function will be   interpreted as the displacement we use in defining the mapping, relative   to the location of cells of the underlying triangulation.  
+* [0.x.2]*
+   Return the mapped vertices of the cell. For the current class, this   function does not use the support points from the geometry of the current   cell but instead evaluates an externally given displacement field in   addition to the geometry of the cell.  
+* [0.x.3]*
+   Return a pointer to a copy of the present object. The caller of this copy   then assumes ownership of it.  
+* [0.x.4]*
+   Always returns  [2.x.5]  because MappingQ1Eulerian does not in general   preserve vertex locations (unless the translation vector happens to   provide for zero displacements at vertex locations).  
+* [0.x.5]*
+   Exception.  
+* [0.x.6]*
+   Compute mapping-related information for a cell. See the documentation of    [2.x.6]  for a discussion of purpose, arguments, and   return value of this function.     This function overrides the function in the base class since we cannot   use any cell similarity for this class.  
+* [0.x.7]*
+   Compute the support points of the mapping. For the current class, these   are the vertices, as obtained by calling  [2.x.7]  See the   documentation of  [2.x.8]  for   more information.  
+* [0.x.8]*
+   Reference to the vector of shifts.  
+* [0.x.9]*
+   Pointer to the DoFHandler to which the mapping vector is associated.  
+* [0.x.10]
 
 include/deal.II-translator/fe/mapping_q_cache_0.txt
 [0.x.0]*

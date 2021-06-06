@@ -1,6 +1,3 @@
-include/deal.II-translator/distributed/cell_data_transfer.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/distributed/cell_data_transfer_0.txt
 [0.x.0]*
      Transfer data that is associated with each active cell (like error     indicators) while refining and/or coarsening a distributed triangulation     and handle the necessary communication.         This class therefore does for cell-related information what      [2.x.0]  does for the values of degrees of     freedom defined on a  [2.x.1]          This class has been designed to operate on any kind of datatype that is     serializable. A non-distributed container (like Vector or  [2.x.2]      has to be provided, which holds the cell-wise data in the same order as     active cells are traversed. In other words, each entry corresponds to the     cell with the same index  [2.x.3]  and the     container has to be of size  [2.x.4]          [1.x.0]         The following code snippet demonstrates how to transfer cell-related data     across refinement/coarsening of the registered triangulation.        
@@ -52,6 +49,9 @@ include/deal.II-translator/distributed/cell_data_transfer_0.txt
 * [0.x.19]*
        A callback function used to unpack the data on the current mesh that       has been packed up previously on the mesh before refinement,       coarsening and repartitioning.      
 * [0.x.20]
+
+include/deal.II-translator/distributed/cell_data_transfer.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/distributed/cell_weights_0.txt
 [0.x.0]*

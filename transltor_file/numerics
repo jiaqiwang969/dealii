@@ -26,9 +26,6 @@ include/deal.II-translator/numerics/adaptation_strategies_0.txt
      Return maximum value of data on all children.         [1.x.7]    
 * [0.x.11]
 
-include/deal.II-translator/numerics/cell_data_transfer.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/numerics/cell_data_transfer_0.txt
 [0.x.0]*
  Transfer data that is associated with each active cell (like error indicators) while refining and/or coarsening a triangulation.
@@ -81,6 +78,9 @@ include/deal.II-translator/numerics/cell_data_transfer_0.txt
 * [0.x.11]*
    Number of active cells on the initial triangulation that has not been   refined yet.     It will be set in prepare_for_coarsening_and_refinement() and used to   validate user inputs after refinement happened (only in debug mode).  
 * [0.x.12]
+
+include/deal.II-translator/numerics/cell_data_transfer.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/numerics/data_component_interpretation_0.txt
 [0.x.0]*
@@ -168,73 +168,6 @@ include/deal.II-translator/numerics/data_out_0.txt
 * [0.x.19]*
     [2.x.36]  Use  [2.x.37]  without the DoFHandlerType template   instead.  
 * [0.x.20]
-
-include/deal.II-translator/numerics/data_out_dof_data.templates_0.txt
-[0.x.0]*
-     Generate evaluation points on a simplex with arbitrary number of     subdivisions.    
-* [0.x.1]*
-     Helper function to create evaluation points recursively with     subdivisions=0,1,2 being the base case:                                            +                                            |\                                +           +-+                                |\          |\|\                      +         +-+         +-+-+                      |\        |\|\        |\|\|\              +       +-+       +-+-+       +-+-+-+              |\      |\|\      |\|\|\      |\|\|\|\        +     +-+     +-+-+     +-+-+-+     +-+-+-+-+            0      1        2          3            4        ^      ^                   |            |        |      |                   |            |        +--------------------------+            |               |                                |               +--------------------------------+    
-* [0.x.2]*
-     Specialization for triangles.    
-* [0.x.3]*
-     Set up vectors of FEValues and FEFaceValues needed inside of     ParallelDataBase and return the maximum number of quadrature points     needed to allocate enough memory for the scratch data.    
-* [0.x.4]*
-     In a WorkStream context, use this function to append the patch computed     by the parallel stage to the array of patches.    
-* [0.x.5]*
-     Extract the specified component of a number. This template is used when     the given value is assumed to be a real scalar, so asking for the real     part is the only valid choice for the second argument.    
-* [0.x.6]*
-     Extract the specified component of a number. This template is used when     the given value is a complex number    
-* [0.x.7]*
-     Helper class templated on vector type to allow different implementations     to extract information from a vector.    
-* [0.x.8]*
-       extract the  [2.x.0]  from  [2.x.1]  and put them into  [2.x.2]       
-* [0.x.9]*
-     Class that stores a pointer to a vector of type equal to the template     argument, and provides the functions to extract data from it.    
-* [0.x.10]*
-       Constructor. Give a list of names for the individual components of       the vector and their interpretation as scalar or vector data. This       constructor assumes that no postprocessor is going to be used.      
-* [0.x.11]*
-       Constructor when a data postprocessor is going to be used. In that       case, the names and vector declarations are going to be acquired from       the postprocessor.      
-* [0.x.12]*
-       Assuming that the stored vector is a cell vector, extract the given       element from it.      
-* [0.x.13]*
-       Given a FEValuesBase object, extract the values on the present cell       from the vector we actually store.      
-* [0.x.14]*
-       Given a FEValuesBase object, extract the values on the present cell       from the vector we actually store. This function does the same as the       one above but for vector-valued finite elements.      
-* [0.x.15]*
-       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store.      
-* [0.x.16]*
-       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store. This function does the same       as the one above but for vector-valued finite elements.      
-* [0.x.17]*
-       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store.      
-* [0.x.18]*
-       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store. This function does       the same as the one above but for vector-valued finite elements.      
-* [0.x.19]*
-       Return whether the data represented by (a derived class of) this object       represents a complex-valued (as opposed to real-valued) information.      
-* [0.x.20]*
-       Clear all references to the vectors.      
-* [0.x.21]*
-       Determine an estimate for the memory consumption (in bytes) of this       object.      
-* [0.x.22]*
-       Pointer to the data vector. Note that ownership of the vector pointed       to remains with the caller of this class.      
-* [0.x.23]*
-     Like DataEntry, but used to look up data from multigrid computations.     Data will use level-DoF indices to look up in a     MGLevelObject<VectorType> given on the specific level instead of     interpolating data to coarser cells.    
-* [0.x.24]*
-       Given a FEValuesBase object, extract the values on the present cell       from the vector we actually store. This function does the same as the       one above but for vector-valued finite elements.      
-* [0.x.25]*
-       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store.      
-* [0.x.26]*
-       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store. This function does the same       as the one above but for vector-valued finite elements.      
-* [0.x.27]*
-       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store.      
-* [0.x.28]*
-       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store. This function does       the same as the one above but for vector-valued finite elements.      
-* [0.x.29]*
-       Return whether the data represented by (a derived class of) this object       represents a complex-valued (as opposed to real-valued) information.      
-* [0.x.30]*
-       Clear all references to the vectors.      
-* [0.x.31]*
-       Determine an estimate for the memory consumption (in bytes) of this       object.      
-* [0.x.32]
 
 include/deal.II-translator/numerics/data_out_dof_data_0.txt
 [0.x.0]*
@@ -410,6 +343,73 @@ include/deal.II-translator/numerics/data_out_dof_data_0.txt
 * [0.x.66]*
     [2.x.55]  Use  [2.x.56]  without the DoFHandlerType   template instead.  
 * [0.x.67]
+
+include/deal.II-translator/numerics/data_out_dof_data.templates_0.txt
+[0.x.0]*
+     Generate evaluation points on a simplex with arbitrary number of     subdivisions.    
+* [0.x.1]*
+     Helper function to create evaluation points recursively with     subdivisions=0,1,2 being the base case:                                            +                                            |\                                +           +-+                                |\          |\|\                      +         +-+         +-+-+                      |\        |\|\        |\|\|\              +       +-+       +-+-+       +-+-+-+              |\      |\|\      |\|\|\      |\|\|\|\        +     +-+     +-+-+     +-+-+-+     +-+-+-+-+            0      1        2          3            4        ^      ^                   |            |        |      |                   |            |        +--------------------------+            |               |                                |               +--------------------------------+    
+* [0.x.2]*
+     Specialization for triangles.    
+* [0.x.3]*
+     Set up vectors of FEValues and FEFaceValues needed inside of     ParallelDataBase and return the maximum number of quadrature points     needed to allocate enough memory for the scratch data.    
+* [0.x.4]*
+     In a WorkStream context, use this function to append the patch computed     by the parallel stage to the array of patches.    
+* [0.x.5]*
+     Extract the specified component of a number. This template is used when     the given value is assumed to be a real scalar, so asking for the real     part is the only valid choice for the second argument.    
+* [0.x.6]*
+     Extract the specified component of a number. This template is used when     the given value is a complex number    
+* [0.x.7]*
+     Helper class templated on vector type to allow different implementations     to extract information from a vector.    
+* [0.x.8]*
+       extract the  [2.x.0]  from  [2.x.1]  and put them into  [2.x.2]       
+* [0.x.9]*
+     Class that stores a pointer to a vector of type equal to the template     argument, and provides the functions to extract data from it.    
+* [0.x.10]*
+       Constructor. Give a list of names for the individual components of       the vector and their interpretation as scalar or vector data. This       constructor assumes that no postprocessor is going to be used.      
+* [0.x.11]*
+       Constructor when a data postprocessor is going to be used. In that       case, the names and vector declarations are going to be acquired from       the postprocessor.      
+* [0.x.12]*
+       Assuming that the stored vector is a cell vector, extract the given       element from it.      
+* [0.x.13]*
+       Given a FEValuesBase object, extract the values on the present cell       from the vector we actually store.      
+* [0.x.14]*
+       Given a FEValuesBase object, extract the values on the present cell       from the vector we actually store. This function does the same as the       one above but for vector-valued finite elements.      
+* [0.x.15]*
+       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store.      
+* [0.x.16]*
+       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store. This function does the same       as the one above but for vector-valued finite elements.      
+* [0.x.17]*
+       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store.      
+* [0.x.18]*
+       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store. This function does       the same as the one above but for vector-valued finite elements.      
+* [0.x.19]*
+       Return whether the data represented by (a derived class of) this object       represents a complex-valued (as opposed to real-valued) information.      
+* [0.x.20]*
+       Clear all references to the vectors.      
+* [0.x.21]*
+       Determine an estimate for the memory consumption (in bytes) of this       object.      
+* [0.x.22]*
+       Pointer to the data vector. Note that ownership of the vector pointed       to remains with the caller of this class.      
+* [0.x.23]*
+     Like DataEntry, but used to look up data from multigrid computations.     Data will use level-DoF indices to look up in a     MGLevelObject<VectorType> given on the specific level instead of     interpolating data to coarser cells.    
+* [0.x.24]*
+       Given a FEValuesBase object, extract the values on the present cell       from the vector we actually store. This function does the same as the       one above but for vector-valued finite elements.      
+* [0.x.25]*
+       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store.      
+* [0.x.26]*
+       Given a FEValuesBase object, extract the gradients on the present       cell from the vector we actually store. This function does the same       as the one above but for vector-valued finite elements.      
+* [0.x.27]*
+       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store.      
+* [0.x.28]*
+       Given a FEValuesBase object, extract the second derivatives on the       present cell from the vector we actually store. This function does       the same as the one above but for vector-valued finite elements.      
+* [0.x.29]*
+       Return whether the data represented by (a derived class of) this object       represents a complex-valued (as opposed to real-valued) information.      
+* [0.x.30]*
+       Clear all references to the vectors.      
+* [0.x.31]*
+       Determine an estimate for the memory consumption (in bytes) of this       object.      
+* [0.x.32]
 
 include/deal.II-translator/numerics/data_out_faces_0.txt
 [0.x.0]*
@@ -854,14 +854,14 @@ include/deal.II-translator/numerics/derivative_approximation_0.txt
    Exception  
 * [0.x.10]
 
-include/deal.II-translator/numerics/dof_output_operator.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/numerics/dof_output_operator_0.txt
 [0.x.0]*
    An output operator writing a separate file in each step and writing the   vectors as finite element functions with respect to a given DoFHandler.  
 * [0.x.1]     Constructor. The <tt>filename</tt> is the common base name of     all files and the argument <tt>digits</tt> should be the number     of digits of the highest number in the sequence. File names by     default have the form "outputNNN" with NNN the number set by the     last step command. Numbers with less digits are filled with     zeros from the left.    
 * [0.x.2]
+
+include/deal.II-translator/numerics/dof_output_operator.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/numerics/dof_print_solver_step_0.txt
 [0.x.0]*
@@ -882,59 +882,6 @@ include/deal.II-translator/numerics/dof_print_solver_step_0.txt
 * [0.x.4]*
    Base of filenames.  
 * [0.x.5]
-
-include/deal.II-translator/numerics/error_estimator.templates_0.txt
-[0.x.0]*
-   All small temporary data objects that are needed once per thread by the   several functions of the error estimator are gathered in this struct.   The reason for this structure is mainly that we have a number of   functions that operate on cells or faces and need a number of small   temporary data objects. Since these functions may run in parallel, we   cannot make these objects member variables of the enclosing class. On   the other hand, declaring them locally in each of these functions would   require their reallocating every time we visit the next cell or face,   which we found can take a significant amount of time if it happens   often even in the single threaded case (10-20 per cent in our   measurements); however, most importantly, memory allocation requires   synchronization in multithreaded mode. While that is done by the C++   library and has not to be handcoded, it nevertheless seriously damages   the ability to efficiently run the functions of this class in parallel,   since they are quite often blocked by these synchronization points,   slowing everything down by a factor of two or three.     Thus, every thread gets an instance of this class to work with and   needs not allocate memory itself, or synchronize with other threads.     The sizes of the arrays are initialized with the maximal number of   entries necessary for the hp-case. Within the loop over individual   cells, we then resize the arrays as necessary. Since for  [2.x.0]    resizing to a smaller size doesn't imply memory allocation, this is   fast.  
-* [0.x.1]*
-     The finite element to be used.    
-* [0.x.2]*
-     The quadrature formulas to be used for the faces.    
-* [0.x.3]*
-     FEFaceValues objects to integrate over the faces of the current and     potentially of neighbor cells.    
-* [0.x.4]*
-     A vector to store the jump of the normal vectors in the quadrature     points for each of the solution vectors (i.e. a temporary value).     This vector is not allocated inside the functions that use it, but     rather globally, since memory allocation is slow, in particular in     presence of multiple threads where synchronization makes things even     slower.    
-* [0.x.5]*
-     A vector for the gradients of the finite element function on one cell         Let psi be a short name for <tt>a grad u_h</tt>, where the third     index be the component of the finite element, and the second index     the number of the quadrature point. The first index denotes the index     of the solution vector.    
-* [0.x.6]*
-     The same vector for a neighbor cell    
-* [0.x.7]*
-     The normal vectors of the finite element function on one face    
-* [0.x.8]*
-     Normal vectors of the opposing face.    
-* [0.x.9]*
-     Two arrays needed for the values of coefficients in the jumps, if     they are given.    
-* [0.x.10]*
-     Array for the products of Jacobian determinants and weights of     quadraturs points.    
-* [0.x.11]*
-     The subdomain id we are to care for.    
-* [0.x.12]*
-     The material id we are to care for.    
-* [0.x.13]*
-     Some more references to input data to the      [2.x.1]  function.    
-* [0.x.14]*
-     Constructor.    
-* [0.x.15]*
-     Resize the arrays so that they fit the number of quadrature points     associated with the given finite element index into the hp-     collections.    
-* [0.x.16]*
-   Copy data from the local_face_integrals map of a single ParallelData   object into a global such map. This is the copier stage of a WorkStream   pipeline.  
-* [0.x.17]*
-   Actually do the computation based on the evaluated gradients in   ParallelData.  
-* [0.x.18]*
-   A factor to scale the integral for the face at the boundary. Used for   Neumann BC.  
-* [0.x.19]*
-   A factor to scale the integral for the regular face.  
-* [0.x.20]*
-   A factor to scale the integral for the irregular face.  
-* [0.x.21]*
-   A factor used when summing up all the contribution from different faces   of each cell.  
-* [0.x.22]*
-   Actually do the computation on a face which has no hanging nodes (it is   regular), i.e. either on the other side there is nirvana (face is at   boundary), or the other side's refinement level is the same as that of   this side, then handle the integration of these both cases together.  
-* [0.x.23]*
-   The same applies as for the function above, except that integration is   over face  [2.x.2]  of  [2.x.3]  where the respective neighbor is   refined, so that the integration is a bit more complex.  
-* [0.x.24]*
-   Computate the error on the faces of a single cell.     This function is only needed in two or three dimensions.  The error   estimator in one dimension is implemented separately.  
-* [0.x.25]
 
 include/deal.II-translator/numerics/error_estimator_0.txt
 [0.x.0]*
@@ -1049,8 +996,58 @@ include/deal.II-translator/numerics/error_estimator_0.txt
    Exception  
 * [0.x.30]
 
-include/deal.II-translator/numerics/fe_field_function.templates_0.txt
-[0.x.0]
+include/deal.II-translator/numerics/error_estimator.templates_0.txt
+[0.x.0]*
+   All small temporary data objects that are needed once per thread by the   several functions of the error estimator are gathered in this struct.   The reason for this structure is mainly that we have a number of   functions that operate on cells or faces and need a number of small   temporary data objects. Since these functions may run in parallel, we   cannot make these objects member variables of the enclosing class. On   the other hand, declaring them locally in each of these functions would   require their reallocating every time we visit the next cell or face,   which we found can take a significant amount of time if it happens   often even in the single threaded case (10-20 per cent in our   measurements); however, most importantly, memory allocation requires   synchronization in multithreaded mode. While that is done by the C++   library and has not to be handcoded, it nevertheless seriously damages   the ability to efficiently run the functions of this class in parallel,   since they are quite often blocked by these synchronization points,   slowing everything down by a factor of two or three.     Thus, every thread gets an instance of this class to work with and   needs not allocate memory itself, or synchronize with other threads.     The sizes of the arrays are initialized with the maximal number of   entries necessary for the hp-case. Within the loop over individual   cells, we then resize the arrays as necessary. Since for  [2.x.0]    resizing to a smaller size doesn't imply memory allocation, this is   fast.  
+* [0.x.1]*
+     The finite element to be used.    
+* [0.x.2]*
+     The quadrature formulas to be used for the faces.    
+* [0.x.3]*
+     FEFaceValues objects to integrate over the faces of the current and     potentially of neighbor cells.    
+* [0.x.4]*
+     A vector to store the jump of the normal vectors in the quadrature     points for each of the solution vectors (i.e. a temporary value).     This vector is not allocated inside the functions that use it, but     rather globally, since memory allocation is slow, in particular in     presence of multiple threads where synchronization makes things even     slower.    
+* [0.x.5]*
+     A vector for the gradients of the finite element function on one cell         Let psi be a short name for <tt>a grad u_h</tt>, where the third     index be the component of the finite element, and the second index     the number of the quadrature point. The first index denotes the index     of the solution vector.    
+* [0.x.6]*
+     The same vector for a neighbor cell    
+* [0.x.7]*
+     The normal vectors of the finite element function on one face    
+* [0.x.8]*
+     Normal vectors of the opposing face.    
+* [0.x.9]*
+     Two arrays needed for the values of coefficients in the jumps, if     they are given.    
+* [0.x.10]*
+     Array for the products of Jacobian determinants and weights of     quadraturs points.    
+* [0.x.11]*
+     The subdomain id we are to care for.    
+* [0.x.12]*
+     The material id we are to care for.    
+* [0.x.13]*
+     Some more references to input data to the      [2.x.1]  function.    
+* [0.x.14]*
+     Constructor.    
+* [0.x.15]*
+     Resize the arrays so that they fit the number of quadrature points     associated with the given finite element index into the hp-     collections.    
+* [0.x.16]*
+   Copy data from the local_face_integrals map of a single ParallelData   object into a global such map. This is the copier stage of a WorkStream   pipeline.  
+* [0.x.17]*
+   Actually do the computation based on the evaluated gradients in   ParallelData.  
+* [0.x.18]*
+   A factor to scale the integral for the face at the boundary. Used for   Neumann BC.  
+* [0.x.19]*
+   A factor to scale the integral for the regular face.  
+* [0.x.20]*
+   A factor to scale the integral for the irregular face.  
+* [0.x.21]*
+   A factor used when summing up all the contribution from different faces   of each cell.  
+* [0.x.22]*
+   Actually do the computation on a face which has no hanging nodes (it is   regular), i.e. either on the other side there is nirvana (face is at   boundary), or the other side's refinement level is the same as that of   this side, then handle the integration of these both cases together.  
+* [0.x.23]*
+   The same applies as for the function above, except that integration is   over face  [2.x.2]  of  [2.x.3]  where the respective neighbor is   refined, so that the integration is a bit more complex.  
+* [0.x.24]*
+   Computate the error on the faces of a single cell.     This function is only needed in two or three dimensions.  The error   estimator in one dimension is implemented separately.  
+* [0.x.25]
 
 include/deal.II-translator/numerics/fe_field_function_0.txt
 [0.x.0]*
@@ -1119,6 +1116,9 @@ include/deal.II-translator/numerics/fe_field_function_0.txt
 * [0.x.23]*
       [2.x.59]  Use  [2.x.60]  without the     DoFHandlerType template instead.    
 * [0.x.24]
+
+include/deal.II-translator/numerics/fe_field_function.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/numerics/histogram_0.txt
 [0.x.0]*
@@ -2025,9 +2025,6 @@ include/deal.II-translator/numerics/time_dependent_0.txt
    Restore the grid according to the saved data. For this, the coarse grid   is copied and the grid is stepwise rebuilt using the saved flags.  
 * [0.x.109]
 
-include/deal.II-translator/numerics/vector_tools.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/numerics/vector_tools_0.txt
 [0.x.0]*
  Provide a namespace which offers some operations on vectors. Among these are assembling of standard vectors, integration of the difference of a finite element solution and a continuous function, interpolations and projections of continuous functions to the finite element space and other operations.
@@ -2079,9 +2076,6 @@ include/deal.II-translator/numerics/vector_tools_0.txt
 
 * 
 * [0.x.1]
-
-include/deal.II-translator/numerics/vector_tools_boundary.templates_0.txt
-[0.x.0]
 
 include/deal.II-translator/numerics/vector_tools_boundary_0.txt
 [0.x.0]*
@@ -2154,6 +2148,9 @@ include/deal.II-translator/numerics/vector_tools_boundary_0.txt
 *  [2.x.163]       [2.x.164]     [2.x.165]  "Glossary entry on boundary indicators"  
 * [0.x.23]
 
+include/deal.II-translator/numerics/vector_tools_boundary.templates_0.txt
+[0.x.0]
+
 include/deal.II-translator/numerics/vector_tools_common_0.txt
 [0.x.0]*
    Denote which norm/integral is to be computed by the   integrate_difference() function on each cell and compute_global_error()   for the whole domain.   Let  [2.x.0]  be a finite element function   with  [2.x.1]  components where component  [2.x.2]  is denoted by  [2.x.3]  and  [2.x.4]    be the reference function (the  [2.x.5]  and  [2.x.6]    arguments to integrate_difference()). Let  [2.x.7]    be the difference or error between the two. Further,   let   [2.x.8]  be the  [2.x.9]  function of integrate_difference(), which is   assumed to be equal to one if not supplied. Finally, let  [2.x.10]  be the    [2.x.11]  argument (for  [2.x.12] -norms).     In the following,we denote by  [2.x.13]  the local error computed by   integrate_difference() on cell  [2.x.14] , whereas  [2.x.15]  is the global error   computed by compute_global_error(). Note that integrals are   approximated by quadrature in the usual way:   [1.x.0]   Similarly for suprema over a cell  [2.x.16] :   [1.x.1]  
@@ -2191,17 +2188,6 @@ include/deal.II-translator/numerics/vector_tools_common_0.txt
        Convert a string to a NormType.      
 * [0.x.17]
 
-include/deal.II-translator/numerics/vector_tools_constraints.templates_0.txt
-[0.x.0]*
-     A structure that stores the dim DoF indices that correspond to a     vector-valued quantity at a single support point.    
-* [0.x.1]*
-     Add the constraint  [2.x.0]  to the list of     constraints.         Here,  [2.x.1]  is represented by the set of given DoF indices, and      [2.x.2]  by the vector specified as the second argument.         The function does not add constraints if a degree of freedom is already     constrained in the constraints object.    
-* [0.x.2]*
-     Add the constraint  [2.x.3]  to the list of     constraints. In 2d, this is a single constraint, in 3d these are two     constraints.         Here,  [2.x.4]  is represented by the set of given DoF indices, and      [2.x.5]  by the vector specified as the second argument.         The function does not add constraints if a degree of freedom is already     constrained in the constraints object.    
-* [0.x.3]*
-     Given a vector, compute a set of dim-1 vectors that are orthogonal to     the first one and mutually orthonormal as well.    
-* [0.x.4]
-
 include/deal.II-translator/numerics/vector_tools_constraints_0.txt
 [0.x.0]*
     [2.x.0]  Interpolation and projection  
@@ -2220,6 +2206,17 @@ include/deal.II-translator/numerics/vector_tools_constraints_0.txt
    Same as above for homogeneous tangential-flux constraints.    
 *  [2.x.70]       [2.x.71]     [2.x.72]  "Glossary entry on boundary indicators"  
 * [0.x.5]
+
+include/deal.II-translator/numerics/vector_tools_constraints.templates_0.txt
+[0.x.0]*
+     A structure that stores the dim DoF indices that correspond to a     vector-valued quantity at a single support point.    
+* [0.x.1]*
+     Add the constraint  [2.x.0]  to the list of     constraints.         Here,  [2.x.1]  is represented by the set of given DoF indices, and      [2.x.2]  by the vector specified as the second argument.         The function does not add constraints if a degree of freedom is already     constrained in the constraints object.    
+* [0.x.2]*
+     Add the constraint  [2.x.3]  to the list of     constraints. In 2d, this is a single constraint, in 3d these are two     constraints.         Here,  [2.x.4]  is represented by the set of given DoF indices, and      [2.x.5]  by the vector specified as the second argument.         The function does not add constraints if a degree of freedom is already     constrained in the constraints object.    
+* [0.x.3]*
+     Given a vector, compute a set of dim-1 vectors that are orthogonal to     the first one and mutually orthonormal as well.    
+* [0.x.4]
 
 include/deal.II-translator/numerics/vector_tools_evaluate_0.txt
 [0.x.0]*
@@ -2252,9 +2249,6 @@ include/deal.II-translator/numerics/vector_tools_evaluate_0.txt
      Perform reduction for tensors.    
 * [0.x.12]
 
-include/deal.II-translator/numerics/vector_tools_integrate_difference.templates_0.txt
-[0.x.0]
-
 include/deal.II-translator/numerics/vector_tools_integrate_difference_0.txt
 [0.x.0]*
     [2.x.0]  Evaluation of functions and errors  
@@ -2274,10 +2268,8 @@ include/deal.II-translator/numerics/vector_tools_integrate_difference_0.txt
 *  [2.x.67]  Instantiated for type Vector<double> and Vector<float>.  
 * [0.x.6]
 
-include/deal.II-translator/numerics/vector_tools_interpolate.templates_0.txt
-[0.x.0]*
-     Return whether the cell and all of its descendants are locally owned.    
-* [0.x.1]
+include/deal.II-translator/numerics/vector_tools_integrate_difference.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/numerics/vector_tools_interpolate_0.txt
 [0.x.0]*
@@ -2314,8 +2306,10 @@ include/deal.II-translator/numerics/vector_tools_interpolate_0.txt
    Like the above function but also taking  [2.x.60]  as argument.   This will introduce an additional approximation between the true geometry   specified by the manifold if the degree of the mapping is lower than the   degree of the finite element in the DoFHandler  [2.x.61]  but more   importantly it allows to fill location vectors for mappings that do not   preserve vertex locations (like Eulerian mappings).  
 * [0.x.12]
 
-include/deal.II-translator/numerics/vector_tools_mean_value.templates_0.txt
-[0.x.0]
+include/deal.II-translator/numerics/vector_tools_interpolate.templates_0.txt
+[0.x.0]*
+     Return whether the cell and all of its descendants are locally owned.    
+* [0.x.1]
 
 include/deal.II-translator/numerics/vector_tools_mean_value_0.txt
 [0.x.0]*
@@ -2330,7 +2324,7 @@ include/deal.II-translator/numerics/vector_tools_mean_value_0.txt
    Call the other compute_mean_value() function, see above, with   <tt>mapping=MappingQGeneric [2.x.19]   
 * [0.x.4]
 
-include/deal.II-translator/numerics/vector_tools_point_gradient.templates_0.txt
+include/deal.II-translator/numerics/vector_tools_mean_value.templates_0.txt
 [0.x.0]
 
 include/deal.II-translator/numerics/vector_tools_point_gradient_0.txt
@@ -2370,7 +2364,7 @@ include/deal.II-translator/numerics/vector_tools_point_gradient_0.txt
 *  [2.x.28]  This function needs to find the cell within which a point lies,     and this can only be done up to a certain numerical tolerance of course.     Consequently, for points that are on, or close to, the boundary of     a cell, you may get the gradient of the finite element field either     here or there, depending on which cell the point is found in. Since     the gradient is, for most elements, discontinuous from one cell or     the other, you will get unpredictable values for     points on or close to the boundary of the cell, as one would expect     when trying to evaluate point values of discontinuous functions.  
 * [0.x.9]
 
-include/deal.II-translator/numerics/vector_tools_point_value.templates_0.txt
+include/deal.II-translator/numerics/vector_tools_point_gradient.templates_0.txt
 [0.x.0]
 
 include/deal.II-translator/numerics/vector_tools_point_value_0.txt
@@ -2462,21 +2456,8 @@ include/deal.II-translator/numerics/vector_tools_point_value_0.txt
 *  [2.x.79]  This function needs to find the cell within which a point lies,     and this can only be done up to a certain numerical tolerance of course.     Consequently, for points that are on, or close to, the boundary of     a cell, you may get the value of the finite element field either     here or there, depending on which cell the point is found in. This     does not matter (to within the same tolerance) if the finite element     field is continuous. On the other hand, if the finite element in use     is [1.x.20] continuous, then you will get unpredictable values for     points on or close to the boundary of the cell, as one would expect     when trying to evaluate point values of discontinuous functions.  
 * [0.x.18]
 
-include/deal.II-translator/numerics/vector_tools_project.templates_0.txt
-[0.x.0]*
-     Interpolate zero boundary values. We don't need to worry about a     mapping here because the function we evaluate for the DoFs is zero in     the mapped locations as well as in the original, unmapped locations    
-* [0.x.1]*
-     Compute the boundary values to be used in the project() functions.    
-* [0.x.2]     MatrixFree implementation of project() for an arbitrary number of     components of the FiniteElement.    
-* [0.x.3]*
-     Helper interface for the matrix-free implementation of project(): avoid     instantiating the other helper functions for more than one VectorType     by copying from a  [2.x.0]     
-* [0.x.4]*
-     Return whether the boundary values try to constrain a degree of freedom     that is already constrained to something else    
-* [0.x.5]*
-     Generic implementation of the project() function    
-* [0.x.6]*
-     Specialization of project() for the case dim==spacedim.     Check if we can use the MatrixFree implementation or need     to use the matrix based one.    
-* [0.x.7]
+include/deal.II-translator/numerics/vector_tools_point_value.templates_0.txt
+[0.x.0]
 
 include/deal.II-translator/numerics/vector_tools_project_0.txt
 [0.x.0]*
@@ -2571,8 +2552,21 @@ include/deal.II-translator/numerics/vector_tools_project_0.txt
    Same as above but for <code>n_q_points_1d =   matrix_free.get_dof_handler().get_fe().degree+1</code>.  
 * [0.x.8]
 
-include/deal.II-translator/numerics/vector_tools_rhs.templates_0.txt
-[0.x.0]
+include/deal.II-translator/numerics/vector_tools_project.templates_0.txt
+[0.x.0]*
+     Interpolate zero boundary values. We don't need to worry about a     mapping here because the function we evaluate for the DoFs is zero in     the mapped locations as well as in the original, unmapped locations    
+* [0.x.1]*
+     Compute the boundary values to be used in the project() functions.    
+* [0.x.2]     MatrixFree implementation of project() for an arbitrary number of     components of the FiniteElement.    
+* [0.x.3]*
+     Helper interface for the matrix-free implementation of project(): avoid     instantiating the other helper functions for more than one VectorType     by copying from a  [2.x.0]     
+* [0.x.4]*
+     Return whether the boundary values try to constrain a degree of freedom     that is already constrained to something else    
+* [0.x.5]*
+     Generic implementation of the project() function    
+* [0.x.6]*
+     Specialization of project() for the case dim==spacedim.     Check if we can use the MatrixFree implementation or need     to use the matrix based one.    
+* [0.x.7]
 
 include/deal.II-translator/numerics/vector_tools_rhs_0.txt
 [0.x.0]*
@@ -2594,4 +2588,10 @@ include/deal.II-translator/numerics/vector_tools_rhs_0.txt
 * [0.x.8]*
    Call the create_boundary_right_hand_side() function, see above, with a   single Q1 mapping as collection. This function therefore will only work   if the only active FE index in use is zero.      [2.x.11]     [2.x.12]  "Glossary entry on boundary indicators"  
 * [0.x.9]
+
+include/deal.II-translator/numerics/vector_tools_rhs.templates_0.txt
+[0.x.0]
+
+include/deal.II-translator/numerics/vector_tools.templates_0.txt
+[0.x.0]
 
