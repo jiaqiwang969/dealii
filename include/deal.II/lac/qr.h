@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -30,67 +30,74 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A base class for thin QR implementations.
+ * A base class for thin QR implementations. This class and classes derived
+ * from it are meant to build   $Q$   and   $R$   matrices one row/column at a
+ * time, i.e., by growing   $R$   matrix from an empty   $0\times 0$   matrix
+ * to   $N\times N$  , where   $N$   is the number of added column vectors. As
+ * a consequence, matrices which have the same number of rows as each vector
+ * (i.e.   $Q$   matrix) is stored as a collection of vectors of `VectorType`.
  *
- * This class and classes derived from it are meant to build $Q$ and $R$
- * matrices one row/column at a time, i.e., by growing $R$ matrix from an empty
- * $0\times 0$ matrix to $N\times N$, where $N$ is the number of added column
- * vectors.
  *
- * As a consequence, matrices which have the same number of rows as each vector
- * (i.e. $Q$ matrix) is stored as a collection of vectors of `VectorType`.
  */
 template <typename VectorType>
 class BaseQR
 {
   /**
    * Number type for R matrix.
+   *
    */
   using Number = typename VectorType::value_type;
 
 protected:
   /**
    * Default private constructor.
+   *
    */
   BaseQR();
 
 public:
   /**
    * Destructor.
+   *
    */
   virtual ~BaseQR() = default;
 
   /**
-   * Append @p column to the QR factorization.
-   * Returns <code>true</code> if the result is successful, i.e.
-   * the columns are linearly independent. Otherwise the @p column
-   * is rejected and the return value is <code>false</code>.
+   * Append   @p column   to the QR factorization.   Returns
+   * <code>true</code>   if the result is successful, i.e.   the columns are
+   * linearly independent. Otherwise the   @p column     is rejected and the
+   * return value is   <code>false</code>  .
+   *
    */
   virtual bool
   append_column(const VectorType &column) = 0;
 
   /**
-   * Remove a column @p k and update QR factorization.
+   * Remove a column   @p k   and update QR factorization.
+   *
    */
   virtual void
   remove_column(const unsigned int k = 0) = 0;
 
   /**
    * Return size of the subspace.
+   *
    */
   unsigned int
   size() const;
 
   /**
    * Return the current upper triangular matrix R.
+   *
    */
   const LAPACKFullMatrix<Number> &
   get_R() const;
 
   /**
-   * Solve $Rx=y$. Vectors @p x and @p y should be consistent
-   * with the current size of the subspace.
-   * If @p transpose is <code>true</code>, $R^Tx=y$ is solved instead.
+   * Solve   $Rx=y$  . Vectors   @p x   and   @p y   should be consistent
+   * with the current size of the subspace.   If   @p transpose   is
+   * <code>true</code>  ,   $R^Tx=y$   is solved instead.
+   *
    */
   void
   solve(Vector<Number> &      x,
@@ -98,41 +105,45 @@ public:
         const bool            transpose = false) const;
 
   /**
-   * Set $y = Qx$. The size of $x$ should be consistent with the
+   * Set   $y = Qx$  . The size of   $x$   should be consistent with the
    * size of the R matrix.
+   *
    */
   virtual void
   multiply_with_Q(VectorType &y, const Vector<Number> &x) const = 0;
 
   /**
-   * Set $y = Q^Tx$. The size of $x$ should be consistent with the
+   * Set   $y = Q^Tx$  . The size of   $x$   should be consistent with the
    * size of column vectors.
+   *
    */
   virtual void
   multiply_with_QT(Vector<Number> &y, const VectorType &x) const = 0;
 
   /**
-   * Set $y = QRx$. The size of $x$ should be consistent with the
+   * Set   $y = QRx$  . The size of   $x$   should be consistent with the
    * size of the R matrix.
+   *
    */
   virtual void
   multiply_with_A(VectorType &y, const Vector<Number> &x) const = 0;
 
   /**
-   * Set $y = R^T Q^Tx$. The size of $x$ should be consistent with the
+   * Set   $y = R^T Q^Tx$  . The size of   $x$   should be consistent with the
    * size of column vectors.
+   *
    */
   virtual void
   multiply_with_AT(Vector<Number> &y, const VectorType &x) const = 0;
 
   /**
-   * Connect a slot to retrieve a notification when the Givens rotations
-   * are performed.
+   * Connect a slot to retrieve a notification when the Givens rotations   are
+   * performed.     The function takes two indices,   @p i   and   @p j,
+   * describing the plane of   rotation, and a triplet of numbers   @p csr
+   * (cosine, sine and radius, see
+   * Utilities::LinearAlgebra::givens_rotation())   which represents the
+   * rotation   matrix.
    *
-   * The function takes two indices, @p i and @p j, describing the plane of
-   * rotation, and a triplet of numbers @p csr (cosine, sine and radius, see
-   * Utilities::LinearAlgebra::givens_rotation()) which represents the rotation
-   * matrix.
    */
   boost::signals2::connection
   connect_givens_slot(
@@ -142,36 +153,42 @@ public:
 
 protected:
   /**
-   * Compute $y=Hx$ where $H$ is the matrix formed by the column vectors stored
-   * by this object.
+   * Compute   $y=Hx$   where   $H$   is the matrix formed by the column
+   * vectors stored   by this object.
+   *
    */
   void
   multiply_with_cols(VectorType &y, const Vector<Number> &x) const;
 
   /**
    * Multiply with transpose columns stored in the object.
+   *
    */
   void
   multiply_with_colsT(Vector<Number> &y, const VectorType &x) const;
 
   /**
    * A vector of unique pointers to store columns.
+   *
    */
   std::vector<std::unique_ptr<VectorType>> columns;
 
   /**
    * Matrix to store R.
+   *
    */
   LAPACKFullMatrix<Number> R;
 
   /**
    * Current size (number of columns in Q).
+   *
    */
   unsigned int current_size;
 
   /**
-   * Signal used to retrieve a notification
-   * when Givens rotations are performed in the `(i,j)`-plane.
+   * Signal used to retrieve a notification   when Givens rotations are
+   * performed in the `(i,j)`-plane.
+   *
    */
   boost::signals2::signal<void(const unsigned int i,
                                const unsigned int j,
@@ -181,59 +198,60 @@ protected:
 
 // clang-format off
 /**
- * A class to compute and store the QR factorization of a matrix represented by a set of column vectors.
+ * A class to compute and store the QR factorization of a matrix represented
+ * by a set of column vectors. The class is design to update a given (possibly
+ * empty) QR factorization of a matrix   $A$   (constructed incrementally by
+ * providing its columns) due to the addition of a new column vector to   $A$
+ * . This is equivalent to constructing an orthonormal basis by the
+ * Gram-Schmidt procedure. The class also provides update functionality when
+ * the first column is removed. The `VectorType` template argument may either
+ * be a parallel and serial vector, and only need to have basic operations
+ * such as additions, scalar product, etc. It also needs to have a
+ * copy-constructor. See sections 6.5.2-6.5.3 on pp. 335-338 in
  *
- * The class is design to update a given (possibly empty) QR factorization
- * of a matrix $A$ (constructed incrementally by providing its columns)
- * due to the addition of a new column vector to $A$. This is equivalent to
- * constructing an orthonormal basis by the Gram-Schmidt procedure.
- * The class also provides update functionality when the first column
- * is removed.
- *
- * The `VectorType` template argument may either be a parallel and serial vector, and only need
- * to have basic operations such as additions, scalar product, etc.
- * It also needs to have a copy-constructor.
- *
- * See sections 6.5.2-6.5.3 on pp. 335-338 in
  * @code{.bib}
  * @Book{Golub2013,
- *   title     = {Matrix computations},
- *   publisher = {Johns Hopkins University Press},
- *   year      = {2013},
- *   author    = {Golub, Gene H and Van Loan, Charles F},
- *   edition   = {4},
- *  }
+ * title     = {Matrix computations},
+ * publisher = {Johns Hopkins University Press},
+ * year      = {2013},
+ * author    = {Golub, Gene H and Van Loan, Charles F},
+ * edition   = {4},
+ * }
  * @endcode
  * as well as
+ *
  * @code{.bib}
  * @article{Daniel1976,
- *   author   = {Daniel, James W and Gragg, Walter Bill and Kaufman, Linda and Stewart, Gilbert W},
- *   title    = {{Reorthogonalization and stable algorithms for updating the Gram-Schmidt QR factorization}},
- *   journal  = {Mathematics of Computation},
- *   year     = {1976},
- *   volume   = {30},
- *   number   = {136},
- *   pages    = {772--795},
+ * author   = {Daniel, James W and Gragg, Walter Bill and Kaufman, Linda and Stewart, Gilbert W},
+ * title    = {{Reorthogonalization and stable algorithms for updating the Gram-Schmidt QR factorization}},
+ * journal  = {Mathematics of Computation},
+ * year     = {1976},
+ * volume   = {30},
+ * number   = {136},
+ * pages    = {772--795},
  * }
  * @Article{Reichel1990,
- *   author     = {Reichel, L. and Gragg, W. B.},
- *   title      = {{Algorithm 686: FORTRAN Subroutines for Updating the QR Decomposition}},
- *   journal    = {ACM Trans. Math. Softw.},
- *   year       = {1990},
- *   volume     = {16},
- *   number     = {4},
- *   pages      = {369--377},
- *   month      = dec,
- *   issn       = {0098-3500},
- *   acmid      = {98291},
- *   address    = {New York, NY, USA},
- *   doi        = {10.1145/98267.98291},
- *   issue_date = {Dec. 1990},
- *   numpages   = {9},
- *   publisher  = {ACM},
- *   url        = {http://doi.acm.org/10.1145/98267.98291},
- *  }
+ * author     = {Reichel, L. and Gragg, W. B.},
+ * title      = {{Algorithm 686: FORTRAN Subroutines for Updating the QR Decomposition}},
+ * journal    = {ACM Trans. Math. Softw.},
+ * year       = {1990},
+ * volume     = {16},
+ * number     = {4},
+ * pages      = {369--377},
+ * month      = dec,
+ * issn       = {0098-3500},
+ * acmid      = {98291},
+ * address    = {New York, NY, USA},
+ * doi        = {10.1145/98267.98291},
+ * issue_date = {Dec. 1990},
+ * numpages   = {9},
+ * publisher  = {ACM},
+ * url        = {http://doi.acm.org/10.1145/98267.98291},
+ * }
  * @endcode
+ *
+ *
+ *
  */
 // clang-format on
 template <typename VectorType>
@@ -242,58 +260,44 @@ class QR : public BaseQR<VectorType>
 public:
   /**
    * Number type for R matrix.
+   *
    */
   using Number = typename VectorType::value_type;
 
   /**
    * Default constructor.
+   *
    */
   QR();
 
   /**
    * Destructor.
+   *
    */
   virtual ~QR() = default;
 
   /**
-   * @copydoc BaseQR::append_column
+   * @copydoc     BaseQR::append_column
+   * @note   Currently this function always returns   <code>true</code>  .
    *
-   * @note Currently this function always returns <code>true</code>.
    */
   virtual bool
   append_column(const VectorType &column);
 
   /**
-   * Remove first column and update QR factorization.
+   * Remove first column and update QR factorization.     Starting from the
+   * given QR decomposition     $QR= A = [a_1\,\dots a_n], \quad a_i \in
+   * {\mathbb R}^m$     we aim at computing factorization of     $\tilde Q
+   * \tilde R= \tilde A = [a_2\,\dots a_n], \quad a_i \in {\mathbb R}^m$  .
+   * The standard approach is to partition   $R$   as   \f[ R =
+   * \begin{bmatrix} r_{11} & w^T \\ 0      & R_{33} \end{bmatrix} \f]   It
+   * then follows that   \f[ Q^T \tilde A = \begin{bmatrix} 0 & w^T \\ 0 &
+   * R_{33} \end{bmatrix} \f]   is upper Hessenberg where unwanted
+   * sub-diagonal elements can be   zeroed by a sequence of Givens rotations.
+   * Note that   $\tilde R^T \tilde R = \tilde A^T \tilde A$  ,   where the
+   * RHS is included in   $A^T A = R^T R$  . Therefore     $\tilde R$   can be
+   * obtained by Cholesky decomposition.
    *
-   * Starting from the given QR decomposition
-   * $QR= A = [a_1\,\dots a_n], \quad a_i \in {\mathbb R}^m$
-   * we aim at computing factorization of
-   * $\tilde Q \tilde R= \tilde A = [a_2\,\dots a_n], \quad a_i \in {\mathbb
-   * R}^m$.
-   *
-   * The standard approach is to partition $R$ as
-   * \f[
-   * R =
-   * \begin{bmatrix}
-   * r_{11} & w^T \\
-   * 0      & R_{33}
-   * \end{bmatrix}
-   * \f]
-   * It then follows that
-   * \f[
-   * Q^T \tilde A =
-   * \begin{bmatrix}
-   * 0 & w^T \\
-   * 0 & R_{33}
-   * \end{bmatrix}
-   * \f]
-   * is upper Hessenberg where unwanted sub-diagonal elements can be
-   * zeroed by a sequence of Givens rotations.
-   *
-   * Note that $\tilde R^T \tilde R = \tilde A^T \tilde A$,
-   * where the RHS is included in $A^T A = R^T R$. Therefore
-   * $\tilde R$ can be obtained by Cholesky decomposition.
    */
   virtual void
   remove_column(const unsigned int k = 0);
@@ -312,16 +316,17 @@ public:
 
 private:
   /**
-   * Apply givens rotation in the `(i,j)`-plane to @p Q and @p R so that
-   * <code>R(k,k)</code> is zeroed.
+   * Apply givens rotation in the `(i,j)`-plane to   @p Q   and   @p R   so
+   * that     <code>R(k,k)</code>   is zeroed.     See Chapter 5.1.9 of Golub
+   * 2013, Matrix computations.
    *
-   * See Chapter 5.1.9 of Golub 2013, Matrix computations.
    */
   void
   apply_givens_rotation(const unsigned int i, const unsigned int k);
 
   /**
    * Temporary vector needed to do Givens rotation of Q.
+   *
    */
   VectorType tmp;
 };
@@ -329,21 +334,20 @@ private:
 
 
 /**
- * A class to obtain the triangular $R$ matrix of the $A=QR$ factorization
- * together with the matrix $A$ itself. The orthonormal matrix $Q$ is not stored
- * explicitly, the name of the class.
- * The multiplication with $Q$ can be represented as $Q=A R^{-1}$, whereas the
- * multiplication with $Q^T$ is given by $Q^T=R^{-T}A^T$.
+ * A class to obtain the triangular   $R$   matrix of the   $A=QR$
+ * factorization together with the matrix   $A$   itself. The orthonormal
+ * matrix   $Q$   is not stored explicitly, the name of the class. The
+ * multiplication with   $Q$   can be represented as   $Q=A R^{-1}$  , whereas
+ * the multiplication with   $Q^T$   is given by   $Q^T=R^{-T}A^T$  . The
+ * class is designed to update a given (possibly empty) QR factorization due
+ * to the addition of a new column vector. This is equivalent to constructing
+ * an orthonormal basis by the Gram-Schmidt procedure. The class also provides
+ * update functionality when the column is removed. The `VectorType` template
+ * argument may either be a parallel and serial vector, and only need to have
+ * basic operations such as additions, scalar product, etc. It also needs to
+ * have a copy-constructor.
  *
- * The class is designed to update a given (possibly empty) QR factorization
- * due to the addition of a new column vector. This is equivalent to
- * constructing an orthonormal basis by the Gram-Schmidt procedure.
- * The class also provides update functionality when the column
- * is removed.
  *
- * The `VectorType` template argument may either be a parallel and serial
- * vector, and only need to have basic operations such as additions, scalar
- * product, etc. It also needs to have a copy-constructor.
  */
 template <typename VectorType>
 class ImplicitQR : public BaseQR<VectorType>
@@ -351,16 +355,19 @@ class ImplicitQR : public BaseQR<VectorType>
 public:
   /**
    * Number type for R matrix.
+   *
    */
   using Number = typename VectorType::value_type;
 
   /**
    * Default constructor.
+   *
    */
   ImplicitQR();
 
   /**
    * Destructor.
+   *
    */
   virtual ~ImplicitQR() = default;
 
@@ -368,16 +375,14 @@ public:
   append_column(const VectorType &column);
 
   /**
-   * Remove column and update QR factorization.
+   * Remove column and update QR factorization.     Starting from the given QR
+   * decomposition     $QR= A = [a_1\,\dots a_n], \quad a_i \in R^m$     we
+   * aim at computing factorization of     $\tilde Q \tilde R= \tilde A =
+   * [a_2\,\dots a_n], \quad a_i \in R^m$  .     Note that   $\tilde R^T
+   * \tilde R = \tilde A^T \tilde A$  ,   where the RHS is included in   $A^T
+   * A = R^T R$  . Therefore     $\tilde R$   can be obtained by Cholesky
+   * decomposition.
    *
-   * Starting from the given QR decomposition
-   * $QR= A = [a_1\,\dots a_n], \quad a_i \in R^m$
-   * we aim at computing factorization of
-   * $\tilde Q \tilde R= \tilde A = [a_2\,\dots a_n], \quad a_i \in R^m$.
-   *
-   * Note that $\tilde R^T \tilde R = \tilde A^T \tilde A$,
-   * where the RHS is included in $A^T A = R^T R$. Therefore
-   * $\tilde R$ can be obtained by Cholesky decomposition.
    */
   virtual void
   remove_column(const unsigned int k = 0);
@@ -395,13 +400,12 @@ public:
   multiply_with_AT(Vector<Number> &y, const VectorType &x) const;
 
   /**
-   * Connect a slot to implement a custom check of linear dependency
-   * during addition of a column.
+   * Connect a slot to implement a custom check of linear dependency   during
+   * addition of a column.     Here,   @p u   is the last column of the to-be
+   * R matrix,   @p rho     is its diagonal and   @p col_norm_sqr   is the
+   * square of the   $l2$   norm of the column.   The function should return
+   * <code>true</code>   if the new column is   linearly independent.
    *
-   * Here, @p u is the last column of the to-be R matrix, @p rho
-   * is its diagonal and @p col_norm_sqr is the square of the $l2$ norm of the column.
-   * The function should return <code>true</code> if the new column is
-   * linearly independent.
    */
   boost::signals2::connection
   connect_append_column_slot(
@@ -411,18 +415,19 @@ public:
 
 private:
   /**
-   * Apply givens rotation in the `(i,k)`-plane to zero out $R(k,k)$.
+   * Apply givens rotation in the `(i,k)`-plane to zero out   $R(k,k)$  .
+   *
    */
   void
   apply_givens_rotation(const unsigned int i, const unsigned int k);
 
   /**
-   * Signal used to decide if the new column is linear dependent.
+   * Signal used to decide if the new column is linear dependent.     Here,
+   * @p u   is the last column of the to-be R matrix,   @p rho     is its
+   * diagonal and   @p col_norm_sqr   is the square of the   $l2$   norm of
+   * the column.   The function should return   <code>true</code>   if the new
+   * column is   linearly independent.
    *
-   * Here, @p u is the last column of the to-be R matrix, @p rho
-   * is its diagonal and @p col_norm_sqr is the square of the $l2$ norm of the column.
-   * The function should return <code>true</code> if the new column is
-   * linearly independent.
    */
   boost::signals2::signal<bool(const Vector<Number> &u,
                                const Number &        rho,

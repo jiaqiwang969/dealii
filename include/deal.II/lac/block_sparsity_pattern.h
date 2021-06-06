@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
 //
@@ -38,9 +38,10 @@ class BlockSparseMatrix;
 class BlockDynamicSparsityPattern;
 #endif
 
-/*! @addtogroup Sparsity
- *@{
- */
+/*!   @addtogroup   Sparsity  @{  
+
+* 
+* */
 
 
 /**
@@ -50,29 +51,23 @@ class BlockDynamicSparsityPattern;
  * them. It has mostly the same interface as has the SparsityPattern, and
  * DynamicSparsityPattern, and simply transforms calls to its member functions
  * to calls to the respective member functions of the member sparsity
- * patterns.
- *
- * The largest difference between the SparsityPattern and
+ * patterns. The largest difference between the SparsityPattern and
  * DynamicSparsityPattern classes and this class is that mostly, the matrices
  * have different properties and you will want to work on the blocks making up
  * the matrix rather than the whole matrix. You can access the different
- * blocks using the <tt>block(row,col)</tt> function.
- *
- * Attention: this object is not automatically notified if the size of one of
- * its subobjects' size is changed. After you initialize the sizes of the
- * subobjects, you will therefore have to call the <tt>collect_sizes()</tt>
- * function of this class! Note that, of course, all sub-matrices in a
- * (block-)row have to have the same number of rows, and that all sub-matrices
- * in a (block-)column have to have the same number of columns.
- *
- * You will in general not want to use this class, but one of the derived
- * classes.
- *
- * @todo Handle optimization of diagonal elements of the underlying
+ * blocks using the <tt>block(row,col)</tt> function. Attention: this object
+ * is not automatically notified if the size of one of its subobjects' size is
+ * changed. After you initialize the sizes of the subobjects, you will
+ * therefore have to call the <tt>collect_sizes()</tt> function of this class!
+ * Note that, of course, all sub-matrices in a (block-)row have to have the
+ * same number of rows, and that all sub-matrices in a (block-)column have to
+ * have the same number of columns. You will in general not want to use this
+ * class, but one of the derived classes.
+ * @todo   Handle optimization of diagonal elements of the underlying
  * SparsityPattern correctly.
+ * @see     @ref GlossBlockLA   "Block (linear algebra)"
  *
- * @see
- * @ref GlossBlockLA "Block (linear algebra)"
+ *
  */
 template <typename SparsityPatternType>
 class BlockSparsityPatternBase : public Subscriptor
@@ -80,16 +75,16 @@ class BlockSparsityPatternBase : public Subscriptor
 public:
   /**
    * Declare type for container size.
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Define a value which is used to indicate that a certain value in the @p
+   * Define a value which is used to indicate that a certain value in the   @p
    * colnums array is unused, i.e. does not represent a certain column number
-   * index.
-   *
-   * This value is only an alias to the respective value of the
+   * index.     This value is only an alias to the respective value of the
    * SparsityPattern class.
+   *
    */
   static const size_type invalid_entry = SparsityPattern::invalid_entry;
 
@@ -97,6 +92,7 @@ public:
    * Initialize the matrix empty, that is with no memory allocated. This is
    * useful if you want such objects as member variables in other classes. You
    * can make the structure usable by calling the reinit() function.
+   *
    */
   BlockSparsityPatternBase();
 
@@ -104,6 +100,7 @@ public:
    * Initialize the matrix with the given number of block rows and columns.
    * The blocks themselves are still empty, and you have to call
    * collect_sizes() after you assign them sizes.
+   *
    */
   BlockSparsityPatternBase(const size_type n_block_rows,
                            const size_type n_block_columns);
@@ -113,11 +110,13 @@ public:
    * sparsity pattern to be copied is empty, i.e. there are no block allocated
    * at present. This is for the same reason as for the SparsityPattern, see
    * there for the details.
+   *
    */
   BlockSparsityPatternBase(const BlockSparsityPatternBase &bsp);
 
   /**
    * Destructor.
+   *
    */
   ~BlockSparsityPatternBase() override;
 
@@ -126,13 +125,12 @@ public:
    * deletes all blocks and replaces them with uninitialized ones, i.e. ones
    * for which also the sizes are not yet set. You have to do that by calling
    * the reinit() functions of the blocks themselves. Do not forget to call
-   * collect_sizes() after that on this object.
+   * collect_sizes() after that on this object.     The reason that you have
+   * to set sizes of the blocks yourself is that the   sizes may be varying,
+   * the maximum number of elements per row may be   varying, etc. It is
+   * simpler not to reproduce the interface of the   SparsityPattern class
+   * here but rather let the user call whatever function   they desire.
    *
-   * The reason that you have to set sizes of the blocks yourself is that the
-   * sizes may be varying, the maximum number of elements per row may be
-   * varying, etc. It is simpler not to reproduce the interface of the
-   * SparsityPattern class here but rather let the user call whatever function
-   * they desire.
    */
   void
   reinit(const size_type n_block_rows, const size_type n_block_columns);
@@ -141,6 +139,7 @@ public:
    * Copy operator. For this the same holds as for the copy constructor: it is
    * declared, defined and fine to be called, but the latter only for empty
    * objects.
+   *
    */
   BlockSparsityPatternBase &
   operator=(const BlockSparsityPatternBase &);
@@ -148,14 +147,16 @@ public:
   /**
    * This function collects the sizes of the sub-objects and stores them in
    * internal arrays, in order to be able to relay global indices into the
-   * matrix to indices into the subobjects. You *must* call this function each
+   * matrix to indices into the subobjects. Youmust* call this function each
    * time after you have changed the size of the sub-objects.
+   *
    */
   void
   collect_sizes();
 
   /**
    * Access the block with the given coordinates.
+   *
    */
   SparsityPatternType &
   block(const size_type row, const size_type column);
@@ -164,6 +165,7 @@ public:
   /**
    * Access the block with the given coordinates. Version for constant
    * objects.
+   *
    */
   const SparsityPatternType &
   block(const size_type row, const size_type column) const;
@@ -171,6 +173,7 @@ public:
   /**
    * Grant access to the object describing the distribution of row indices to
    * the individual blocks.
+   *
    */
   const BlockIndices &
   get_row_indices() const;
@@ -178,25 +181,29 @@ public:
   /**
    * Grant access to the object describing the distribution of column indices
    * to the individual blocks.
+   *
    */
   const BlockIndices &
   get_column_indices() const;
 
   /**
    * This function compresses the sparsity structures that this object
-   * represents. It simply calls @p compress for all sub-objects.
+   * represents. It simply calls   @p compress   for all sub-objects.
+   *
    */
   void
   compress();
 
   /**
    * Return the number of blocks in a column.
+   *
    */
   size_type
   n_block_rows() const;
 
   /**
    * Return the number of blocks in a row.
+   *
    */
   size_type
   n_block_cols() const;
@@ -206,6 +213,7 @@ public:
    * allocated, which is the same as that both dimensions are zero. This
    * function is just the concatenation of the respective call to all sub-
    * matrices.
+   *
    */
   bool
   empty() const;
@@ -214,31 +222,28 @@ public:
    * Return the maximum number of entries per row. It returns the maximal
    * number of entries per row accumulated over all blocks in a row, and the
    * maximum over all rows.
+   *
    */
   size_type
   max_entries_per_row() const;
 
   /**
    * Add a nonzero entry to the matrix. This function may only be called for
-   * non-compressed sparsity patterns.
+   * non-compressed sparsity patterns.     If the entry already exists,
+   * nothing bad happens.     This function simply finds out to which block
+   * <tt>(i,j)</tt> belongs and   then relays to that block.
    *
-   * If the entry already exists, nothing bad happens.
-   *
-   * This function simply finds out to which block <tt>(i,j)</tt> belongs and
-   * then relays to that block.
    */
   void
   add(const size_type i, const size_type j);
 
   /**
    * Add several nonzero entries to the specified matrix row.  This function
-   * may only be called for non-compressed sparsity patterns.
+   * may only be called for non-compressed sparsity patterns.     If some of
+   * the entries already exist, nothing bad happens.     This function simply
+   * finds out to which blocks <tt>(row,col)</tt> for   <tt>col</tt> in the
+   * iterator range belong and then relays to those   blocks.
    *
-   * If some of the entries already exist, nothing bad happens.
-   *
-   * This function simply finds out to which blocks <tt>(row,col)</tt> for
-   * <tt>col</tt> in the iterator range belong and then relays to those
-   * blocks.
    */
   template <typename ForwardIterator>
   void
@@ -250,6 +255,7 @@ public:
   /**
    * Return number of rows of this matrix, which equals the dimension of the
    * image space. It is the sum of rows of the (block-)rows of sub-matrices.
+   *
    */
   size_type
   n_rows() const;
@@ -258,12 +264,14 @@ public:
    * Return number of columns of this matrix, which equals the dimension of
    * the range space. It is the sum of columns of the (block-)columns of sub-
    * matrices.
+   *
    */
   size_type
   n_cols() const;
 
   /**
    * Check if a value at a certain position may be non-zero.
+   *
    */
   bool
   exists(const size_type i, const size_type j) const;
@@ -271,6 +279,7 @@ public:
   /**
    * Number of entries in a specific row, added up over all the blocks that
    * form this row.
+   *
    */
   unsigned int
   row_length(const size_type row) const;
@@ -278,13 +287,11 @@ public:
   /**
    * Return the number of nonzero elements of this matrix. Actually, it
    * returns the number of entries in the sparsity pattern; if any of the
-   * entries should happen to be zero, it is counted anyway.
+   * entries should happen to be zero, it is counted anyway.     This function
+   * may only be called if the matrix struct is compressed. It   does not make
+   * too much sense otherwise anyway.     In the present context, it is the
+   * sum of the values as returned by the   sub-objects.
    *
-   * This function may only be called if the matrix struct is compressed. It
-   * does not make too much sense otherwise anyway.
-   *
-   * In the present context, it is the sum of the values as returned by the
-   * sub-objects.
    */
   size_type
   n_nonzero_elements() const;
@@ -293,6 +300,7 @@ public:
    * Print the sparsity of the matrix. The output consists of one line per row
    * of the format <tt>[i,j1,j2,j3,...]</tt>. <i>i</i> is the row number and
    * <i>jn</i> are the allocated columns in this row.
+   *
    */
   void
   print(std::ostream &out) const;
@@ -301,8 +309,8 @@ public:
    * Print the sparsity of the matrix in a format that <tt>gnuplot</tt>
    * understands and which can be used to plot the sparsity pattern in a
    * graphical way. This is the same functionality implemented for usual
-   * sparsity patterns, see
-   * SparsityPatternBase::print_gnuplot().
+   * sparsity patterns, see     SparsityPatternBase::print_gnuplot().
+   *
    */
   void
   print_gnuplot(std::ostream &out) const;
@@ -311,17 +319,19 @@ public:
    * Print the sparsity of the matrix in <tt>svg</tt> format. This is the same
    * functionality implemented for usual sparsity patterns, see
    * SparsityPatternBase::print_svg().
+   *
    */
   void
   print_svg(std::ostream &out) const;
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup   Exceptions     @{
+   *
    */
 
   /**
    * Exception
+   *
    */
   DeclException4(ExcIncompatibleRowNumbers,
                  int,
@@ -332,6 +342,7 @@ public:
                  << ',' << arg4 << "] have differing row numbers.");
   /**
    * Exception
+   *
    */
   DeclException4(ExcIncompatibleColNumbers,
                  int,
@@ -345,16 +356,19 @@ public:
 protected:
   /**
    * Number of block rows.
+   *
    */
   size_type rows;
 
   /**
    * Number of block columns.
+   *
    */
   size_type columns;
 
   /**
    * Array of sparsity patterns.
+   *
    */
   Table<2,
         SmartPointer<SparsityPatternType,
@@ -364,12 +378,14 @@ protected:
   /**
    * Object storing and managing the transformation of row indices to indices
    * of the sub-objects.
+   *
    */
   BlockIndices row_indices;
 
   /**
    * Object storing and managing the transformation of column indices to
    * indices of the sub-objects.
+   *
    */
   BlockIndices column_indices;
 
@@ -377,12 +393,14 @@ private:
   /**
    * Temporary vector for counting the elements written into the individual
    * blocks when doing a collective add or set.
+   *
    */
   std::vector<size_type> counter_within_block;
 
   /**
    * Temporary vector for column indices on each block when writing local to
    * global data on each sparse matrix.
+   *
    */
   std::vector<std::vector<size_type>> block_column_indices;
 
@@ -399,9 +417,10 @@ private:
  * patterns that can be used by block sparse matrix objects. It only adds a
  * few additional member functions, but the main interface stems from the base
  * class, see there for more information.
+ * This class is an example of the "static"
+ * type of   @ref Sparsity  .
  *
- * This class is an example of the "static" type of
- * @ref Sparsity.
+ *
  */
 class BlockSparsityPattern : public BlockSparsityPatternBase<SparsityPattern>
 {
@@ -410,6 +429,7 @@ public:
    * Initialize the matrix empty, that is with no memory allocated. This is
    * useful if you want such objects as member variables in other classes. You
    * can make the structure usable by calling the reinit() function.
+   *
    */
   BlockSparsityPattern() = default;
 
@@ -417,26 +437,27 @@ public:
    * Initialize the matrix with the given number of block rows and columns.
    * The blocks themselves are still empty, and you have to call
    * collect_sizes() after you assign them sizes.
+   *
    */
   BlockSparsityPattern(const size_type n_rows, const size_type n_columns);
 
   /**
-   * Forwarding to BlockSparsityPatternBase::reinit().
+   * Forwarding to   BlockSparsityPatternBase::reinit().
+   *
    */
   void
   reinit(const size_type n_block_rows, const size_type n_block_columns);
 
   /**
    * Initialize the pattern with two BlockIndices for the block structures of
-   * matrix rows and columns as well as a row length vector.
-   *
-   * The row length vector should be in the format produced by DoFTools.
+   * matrix rows and columns as well as a row length vector.     The row
+   * length vector should be in the format produced by DoFTools.
    * Alternatively, there is a simplified version, where each of the inner
    * vectors has length one. Then, the corresponding entry is used as the
-   * maximal row length.
+   * maximal row length.     For the diagonal blocks, the inner
+   * SparsityPattern is initialized with   optimized diagonals, while this is
+   * not done for the off-diagonal blocks.
    *
-   * For the diagonal blocks, the inner SparsityPattern is initialized with
-   * optimized diagonals, while this is not done for the off-diagonal blocks.
    */
   void
   reinit(const BlockIndices &                          row_indices,
@@ -447,6 +468,7 @@ public:
   /**
    * Return whether the structure is compressed or not, i.e. whether all sub-
    * matrices are compressed.
+   *
    */
   bool
   is_compressed() const;
@@ -454,6 +476,7 @@ public:
   /**
    * Determine an estimate for the memory consumption (in bytes) of this
    * object.
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -462,6 +485,7 @@ public:
    * Copy data from an object of type BlockDynamicSparsityPattern, i.e. resize
    * this object to the size of the given argument, and copy over the contents
    * of each of the subobjects. Previous content of this object is lost.
+   *
    */
   void
   copy_from(const BlockDynamicSparsityPattern &dsp);
@@ -473,40 +497,37 @@ public:
  * This class extends the base class to implement an array of compressed
  * sparsity patterns that can be used to initialize objects of type
  * BlockSparsityPattern. It does not add additional member functions, but
- * rather acts as an @p alias to introduce the name of this class, without
+ * rather acts as an   @p alias   to introduce the name of this class, without
  * requiring the user to specify the templated name of the base class. For
  * information on the interface of this class refer to the base class. The
  * individual blocks are based on the DynamicSparsityPattern class.
+ * This class is an example of the "dynamic"
+ * type of   @ref Sparsity  . <h3>Example</h3> Usage of this class is very
+ * similar to DynamicSparsityPattern, but since the use of block indices
+ * causes some additional complications, we give a short example. After the
+ * DoFHandler <tt>dof</tt> and the AffineConstraints <tt>constraints</tt> have
+ * been set up with a system element, we must count the degrees of freedom in
+ * each matrix block:
  *
- * This class is an example of the "dynamic" type of
- * @ref Sparsity.
- *
- * <h3>Example</h3>
- *
- * Usage of this class is very similar to DynamicSparsityPattern, but since
- * the use of block indices causes some additional complications, we give a
- * short example.
- *
- * After the DoFHandler <tt>dof</tt> and the AffineConstraints
- * <tt>constraints</tt> have been set up with a system element, we must count
- * the degrees of freedom in each matrix block:
  *
  * @code
  * const std::vector<unsigned int> dofs_per_block =
- *   DoFTools::count_dofs_per_fe_block(dof);
+ * DoFTools::count_dofs_per_fe_block(dof);
  * @endcode
  *
  * Now, we are ready to set up the BlockDynamicSparsityPattern.
  *
+ *
  * @code
  * BlockDynamicSparsityPattern dsp(fe.n_blocks(), fe.n_blocks());
  * for (unsigned int i = 0; i < fe.n_blocks(); ++i)
- *   for (unsigned int j = 0; j < fe.n_blocks(); ++j)
- *     dsp.block(i, j).reinit(dofs_per_block[i], dofs_per_block[j]);
+ * for (unsigned int j = 0; j < fe.n_blocks(); ++j)
+ *   dsp.block(i, j).reinit(dofs_per_block[i], dofs_per_block[j]);
  * dsp.collect_sizes();
  * @endcode
  *
  * It is filled as if it were a normal pattern
+ *
  *
  * @code
  * DoFTools::make_sparsity_pattern(dof, dsp);
@@ -515,10 +536,14 @@ public:
  *
  * In the end, it is copied to a normal BlockSparsityPattern for later use.
  *
+ *
  * @code
  * BlockSparsityPattern sparsity;
  * sparsity.copy_from(dsp);
  * @endcode
+ *
+ *
+ *
  */
 
 class BlockDynamicSparsityPattern
@@ -529,6 +554,7 @@ public:
    * Initialize the matrix empty, that is with no memory allocated. This is
    * useful if you want such objects as member variables in other classes. You
    * can make the structure usable by calling the reinit() function.
+   *
    */
   BlockDynamicSparsityPattern() = default;
 
@@ -536,6 +562,7 @@ public:
    * Initialize the matrix with the given number of block rows and columns.
    * The blocks themselves are still empty, and you have to call
    * collect_sizes() after you assign them sizes.
+   *
    */
   BlockDynamicSparsityPattern(const size_type n_rows,
                               const size_type n_columns);
@@ -545,6 +572,7 @@ public:
    * matrix rows and columns. This function is equivalent to calling the
    * previous constructor with the length of the two index vector and then
    * entering the index values.
+   *
    */
   BlockDynamicSparsityPattern(const std::vector<size_type> &row_block_sizes,
                               const std::vector<size_type> &col_block_sizes);
@@ -556,12 +584,14 @@ public:
    * Each block only stores the rows given by the values in the IndexSet,
    * which is useful for distributed memory parallel computations and usually
    * corresponds to the locally owned DoFs.
+   *
    */
   BlockDynamicSparsityPattern(const std::vector<IndexSet> &partitioning);
 
   /**
    * Initialize the pattern with two BlockIndices for the block structures of
    * matrix rows and columns.
+   *
    */
   BlockDynamicSparsityPattern(const BlockIndices &row_indices,
                               const BlockIndices &col_indices);
@@ -569,11 +599,11 @@ public:
 
   /**
    * Resize the pattern to a tensor product of matrices with dimensions
-   * defined by the arguments.
+   * defined by the arguments.     The matrix will have as many block rows and
+   * columns as there are entries   in the two arguments. The block at
+   * position (<i>i,j</i>) will have the   dimensions
+   * <tt>row_block_sizes[i]</tt> times <tt>col_block_sizes[j]</tt>.
    *
-   * The matrix will have as many block rows and columns as there are entries
-   * in the two arguments. The block at position (<i>i,j</i>) will have the
-   * dimensions <tt>row_block_sizes[i]</tt> times <tt>col_block_sizes[j]</tt>.
    */
   void
   reinit(const std::vector<size_type> &row_block_sizes,
@@ -582,6 +612,7 @@ public:
   /**
    * Resize the pattern with symmetric blocks determined by the size() of each
    * IndexSet. See the constructor taking a vector of IndexSets for details.
+   *
    */
   void
   reinit(const std::vector<IndexSet> &partitioning);
@@ -590,24 +621,27 @@ public:
    * Resize the matrix to a tensor product of matrices with dimensions defined
    * by the arguments. The two BlockIndices objects must be initialized and
    * the sparsity pattern will have the same block structure afterwards.
+   *
    */
   void
   reinit(const BlockIndices &row_indices, const BlockIndices &col_indices);
 
   /**
-   * Access to column number field. Return the column number of the @p index
-   * th entry in row @p row.
+   * Access to column number field. Return the column number of the   @p index
+   * th entry in row   @p row.
+   *
    */
   size_type
   column_number(const size_type row, const unsigned int index) const;
 
   /**
    * Allow the use of the reinit functions of the base class as well.
+   *
    */
   using BlockSparsityPatternBase<DynamicSparsityPattern>::reinit;
 };
 
-/*@}*/
+ /*@}*/ 
 
 
 #ifdef DEAL_II_WITH_TRILINOS
@@ -615,26 +649,17 @@ public:
 
 namespace TrilinosWrappers
 {
-  /*! @addtogroup TrilinosWrappers
-   *@{
-   */
+  /*!   @addtogroup   TrilinosWrappers    @{    
+* */
 
   /**
-   * This class extends the base class to implement an array of Trilinos
-   * sparsity patterns that can be used to initialize Trilinos block sparse
-   * matrices that can be distributed among different processors. It is used in
-   * the same way as the dealii::BlockSparsityPattern except that it builds upon
-   * the TrilinosWrappers::SparsityPattern instead of the
-   * dealii::SparsityPattern.
+   * This class extends the base class to implement an array of Trilinos   sparsity patterns that can be used to initialize Trilinos block sparse   matrices that can be distributed among different processors. It is used in   the same way as the   dealii::BlockSparsityPattern   except that it builds upon   the   TrilinosWrappers::SparsityPattern   instead of the     dealii::SparsityPattern.       This class is has properties of the "dynamic"
+   * type of     @ref Sparsity     (in the sense that it can extend the memory
+   * if too little elements were   allocated), but otherwise is more like the
+   * basic deal.II SparsityPattern   (in the sense that the method compress()
+   * needs to be called before the   pattern can be used).     This class is
+   * used in   step-32  .
    *
-   * This class is has properties of the "dynamic" type of
-   * @ref Sparsity
-   * (in the sense that it can extend the memory if too little elements were
-   * allocated), but otherwise is more like the basic deal.II SparsityPattern
-   * (in the sense that the method compress() needs to be called before the
-   * pattern can be used).
-   *
-   * This class is used in step-32.
    */
   class BlockSparsityPattern
     : public dealii::BlockSparsityPatternBase<SparsityPattern>
@@ -644,6 +669,7 @@ namespace TrilinosWrappers
      * Initialize the matrix empty, that is with no memory allocated. This is
      * useful if you want such objects as member variables in other classes.
      * You can make the structure usable by calling the reinit() function.
+     *
      */
     BlockSparsityPattern() = default;
 
@@ -651,6 +677,7 @@ namespace TrilinosWrappers
      * Initialize the matrix with the given number of block rows and columns.
      * The blocks themselves are still empty, and you have to call
      * collect_sizes() after you assign them sizes.
+     *
      */
     BlockSparsityPattern(const size_type n_rows, const size_type n_columns);
 
@@ -659,6 +686,7 @@ namespace TrilinosWrappers
      * of matrix rows and columns. This function is equivalent to calling the
      * previous constructor with the length of the two index vector and then
      * entering the index values.
+     *
      */
     BlockSparsityPattern(const std::vector<size_type> &row_block_sizes,
                          const std::vector<size_type> &col_block_sizes);
@@ -669,6 +697,7 @@ namespace TrilinosWrappers
      * matrix), where the size() of the IndexSets specifies the size of the
      * blocks and the values in each IndexSet denotes the rows that are going
      * to be saved in each block.
+     *
      */
     BlockSparsityPattern(const std::vector<IndexSet> &parallel_partitioning,
                          const MPI_Comm &communicator = MPI_COMM_WORLD);
@@ -681,8 +710,9 @@ namespace TrilinosWrappers
      * writable_rows is used to set all rows that we allow to write locally.
      * This constructor is used to create matrices that allow several threads
      * to write simultaneously into the matrix (to different rows, of course),
-     * see the method TrilinosWrappers::SparsityPattern::reinit method with
-     * three index set arguments for more details.
+     * see the method   TrilinosWrappers::SparsityPattern::reinit   method
+     * with     three index set arguments for more details.
+     *
      */
     BlockSparsityPattern(
       const std::vector<IndexSet> &row_parallel_partitioning,
@@ -692,12 +722,11 @@ namespace TrilinosWrappers
 
     /**
      * Resize the matrix to a tensor product of matrices with dimensions
-     * defined by the arguments.
+     * defined by the arguments.         The matrix will have as many block
+     * rows and columns as there are     entries in the two arguments. The
+     * block at position (<i>i,j</i>) will     have the dimensions
+     * <tt>row_block_sizes[i]</tt> times     <tt>col_block_sizes[j]</tt>.
      *
-     * The matrix will have as many block rows and columns as there are
-     * entries in the two arguments. The block at position (<i>i,j</i>) will
-     * have the dimensions <tt>row_block_sizes[i]</tt> times
-     * <tt>col_block_sizes[j]</tt>.
      */
     void
     reinit(const std::vector<size_type> &row_block_sizes,
@@ -706,6 +735,7 @@ namespace TrilinosWrappers
     /**
      * Resize the matrix to a square tensor product of matrices. See the
      * constructor that takes a vector of IndexSets for details.
+     *
      */
     void
     reinit(const std::vector<IndexSet> &parallel_partitioning,
@@ -715,6 +745,7 @@ namespace TrilinosWrappers
      * Resize the matrix to a rectangular block matrices. This method allows
      * rows and columns to be different, both in the outer block structure and
      * within the blocks.
+     *
      */
     void
     reinit(const std::vector<IndexSet> &row_parallel_partitioning,
@@ -726,8 +757,9 @@ namespace TrilinosWrappers
      * explicitly specify the writable rows in each of the blocks. This method
      * is used to create matrices that allow several threads to write
      * simultaneously into the matrix (to different rows, of course), see the
-     * method TrilinosWrappers::SparsityPattern::reinit method with three
+     * method   TrilinosWrappers::SparsityPattern::reinit   method with three
      * index set arguments for more details.
+     *
      */
     void
     reinit(const std::vector<IndexSet> &row_parallel_partitioning,
@@ -737,17 +769,18 @@ namespace TrilinosWrappers
 
     /**
      * Allow the use of the reinit functions of the base class as well.
+     *
      */
     using BlockSparsityPatternBase<SparsityPattern>::reinit;
   };
 
-  /*@}*/
+   /*@}*/ 
 
-} /* namespace TrilinosWrappers */
+}  /* namespace TrilinosWrappers */ 
 
 #endif
 
-/*--------------------- Template functions ----------------------------------*/
+ /*--------------------- Template functions ----------------------------------*/ 
 
 
 

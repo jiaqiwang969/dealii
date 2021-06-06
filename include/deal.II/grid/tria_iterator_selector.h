@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2020 by the deal.II authors
 //
@@ -47,32 +47,28 @@ namespace internal
     struct Iterators;
 
     /**
-     * This class implements some types which differ between the dimensions.
-     * These are the declarations for the 1D case only. See the
-     * @ref Iterators
-     * module for more information.
-     *
-     * A @p line_iterator is aliased to an iterator operating on the @p
-     * lines member variable of a <tt>Triangulation<1></tt> object. An @p
-     * active_line_iterator only operates on the active lines. @p
-     * raw_line_iterator objects operate on all lines, used or not.
-     *
-     * Since we are in one dimension, the following identities are declared:
-     *  @code
-     *    using raw_cell_iterator = raw_line_iterator;
-     *    using cell_iterator = line_iterator;
-     *    using active_cell_iterator = active_line_iterator;
-     *  @endcode
-     *
-     * To enable the declaration of @p begin_quad and the like in
-     * <tt>Triangulation<1></tt>, the @p quad_iterators are declared as
+     * This class
+     * implements some types which differ between the dimensions.     These
+     * are the declarations for the 1D case only. See the       @ref Iterators
+     * module for more information.         A   @p line_iterator   is aliased
+     * to an iterator operating on the   @p       lines member variable of a
+     * <tt>Triangulation<1></tt> object. An   @p       active_line_iterator
+     * only operates on the active lines.   @p       raw_line_iterator objects
+     * operate on all lines, used or not.         Since we are in one
+     * dimension, the following identities are declared:
+     * @code
+     *  using raw_cell_iterator = raw_line_iterator;
+     *  using cell_iterator = line_iterator;
+     *  using active_cell_iterator = active_line_iterator;
+     * @endcode
+     * To enable the declaration of   @p begin_quad   and the like in
+     * <tt>Triangulation<1></tt>, the   @p quad_iterators   are declared as
      * iterators over InvalidAccessor. Thus these types exist, but are useless
      * and will certainly make any involuntary use visible. The same holds for
-     * hexahedron iterators.
+     * hexahedron iterators.         The same applies for the   @p
+     * face_iterator   types, since lines have no     substructures apart from
+     * vertices, which are handled in a different     way, however.
      *
-     * The same applies for the @p face_iterator types, since lines have no
-     * substructures apart from vertices, which are handled in a different
-     * way, however.
      */
     template <int spacedim>
     struct Iterators<1, spacedim>
@@ -101,38 +97,36 @@ namespace internal
 
 
     /**
-     * This class implements some types which differ between the dimensions.
-     * These are the declarations for the 2D case only. See the
-     * @ref Iterators
-     * module for more information.
-     *
-     * A @p line_iterator is aliased to an iterator operating on the @p
-     * lines member variable of a <tt>Triangulation<2></tt> object. An @p
-     * active_line_iterator only operates on the active lines. @p
-     * raw_line_iterator objects operate on all lines, used or not. Using @p
+     * This class
+     * implements some types which differ between the dimensions.     These
+     * are the declarations for the 2D case only. See the       @ref Iterators
+     * module for more information.         A   @p line_iterator   is aliased
+     * to an iterator operating on the   @p       lines member variable of a
+     * <tt>Triangulation<2></tt> object. An   @p       active_line_iterator
+     * only operates on the active lines.   @p       raw_line_iterator objects
+     * operate on all lines, used or not. Using   @p
      * active_line_iterators may not be particularly in 2D useful since it
      * only operates on unrefined lines. However, also refined lines may bound
      * unrefined cells if the neighboring cell is refined once more than the
-     * present one.
+     * present one.         Similarly to line iterators,   @p quad_iterator,
+     * @p raw_quad_iterator   and       @p active_quad_iterator   are
+     * declared.         To enable the declaration of   @p begin_hex   and the
+     * like in     <tt>Triangulation<[12]></tt>, the   @p hex_iterators   are
+     * declared as     iterators over InvalidAccessor. Thus these types exist,
+     * but are useless     and will certainly make any involuntary use
+     * visible.         Since we are in two dimension, the following
+     * identities are declared:
+     * @code
+     *  using raw_cell_iterator = raw_quad_iterator;
+     *  using cell_iterator = quad_iterator;
+     *  using active_cell_iterator = active_quad_iterator;
      *
-     * Similarly to line iterators, @p quad_iterator, @p raw_quad_iterator and
-     * @p active_quad_iterator are declared.
+     *  using raw_face_iterator = raw_line_iterator;
+     *  using face_iterator = line_iterator;
+     *  using active_face_iterator = active_line_iterator;
+     * @endcode
      *
-     * To enable the declaration of @p begin_hex and the like in
-     * <tt>Triangulation<[12]></tt>, the @p hex_iterators are declared as
-     * iterators over InvalidAccessor. Thus these types exist, but are useless
-     * and will certainly make any involuntary use visible.
      *
-     * Since we are in two dimension, the following identities are declared:
-     *  @code
-     *    using raw_cell_iterator = raw_quad_iterator;
-     *    using cell_iterator = quad_iterator;
-     *    using active_cell_iterator = active_quad_iterator;
-     *
-     *    using raw_face_iterator = raw_line_iterator;
-     *    using face_iterator = line_iterator;
-     *    using active_face_iterator = active_line_iterator;
-     *  @endcode
      */
     template <int spacedim>
     struct Iterators<2, spacedim>
@@ -159,23 +153,24 @@ namespace internal
 
 
     /**
-     * This class implements some types which differ between the dimensions.
-     * These are the declarations for the 3D case only. See the
-     * @ref Iterators
-     * module for more information.
+     * This class
+     * implements some types which differ between the dimensions.     These
+     * are the declarations for the 3D case only. See the       @ref Iterators
+     * module for more information.         For the declarations of the data
+     * types, more or less the same holds as     for lower dimensions (see
+     * <tt>Iterators<[12]></tt>). The dimension     specific data types are
+     * here, since we are in three dimensions:
+     * @code
+     *  using raw_cell_iterator = raw_hex_iterator;
+     *  using cell_iterator = hex_iterator;
+     *  using active_cell_iterator = active_hex_iterator;
      *
-     * For the declarations of the data types, more or less the same holds as
-     * for lower dimensions (see <tt>Iterators<[12]></tt>). The dimension
-     * specific data types are here, since we are in three dimensions:
-     *  @code
-     *    using raw_cell_iterator = raw_hex_iterator;
-     *    using cell_iterator = hex_iterator;
-     *    using active_cell_iterator = active_hex_iterator;
+     *  using raw_face_iterator = raw_quad_iterator;
+     *  using face_iterator = quad_iterator;
+     *  using active_face_iterator = active_quad_iterator;
+     * @endcode
      *
-     *    using raw_face_iterator = raw_quad_iterator;
-     *    using face_iterator = quad_iterator;
-     *    using active_face_iterator = active_quad_iterator;
-     *  @endcode
+     *
      */
     template <int spacedim>
     struct Iterators<3, spacedim>

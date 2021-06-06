@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
 //
@@ -28,101 +28,90 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 /**
- * <h3>Quasi-minimal method for symmetric matrices (SQMR)</h3>
- *
- * The SQMR (symmetric quasi-minimal residual) method is supposed to solve
- * symmetric indefinite linear systems with symmetric, not necessarily definite
+ * <h3>Quasi-minimal method for symmetric matrices (SQMR)</h3> The SQMR
+ * (symmetric quasi-minimal residual) method is supposed to solve symmetric
+ * indefinite linear systems with symmetric, not necessarily definite
  * preconditioners. It is a variant of the original quasi-minimal residual
  * method (QMR) and produces the same iterative solution. This version of SQMR
  * is adapted from the respective symmetric QMR-from-BiCG algorithm given by
- * both Freund/Nachtigal: A new Krylov-subspace method for symmetric indefinite
- * linear systems, NASA STI/Recon Technical Report N, 95 (1994) and
+ * both Freund/Nachtigal: A new Krylov-subspace method for symmetric
+ * indefinite linear systems, NASA STI/Recon Technical Report N, 95 (1994) and
  * Freund/Nachtigal: Software for simplified Lanczos and QMR algorithms, Appl.
  * Num. Math. 19 (1995), pp. 319-341 and provides both right and left (but not
  * split) preconditioning.
  *
- *
- * <h3>Trade off of stability to simplicity</h3>
- *
- * Note, that the QMR implementation that the given algorithm is based on is
- * derived from classical BiCG. It can be shown (Freund/Szeto: A transpose-free
+ *  <h3>Trade off of stability to simplicity</h3> Note, that the QMR
+ * implementation that the given algorithm is based on is derived from
+ * classical BiCG. It can be shown (Freund/Szeto: A transpose-free
  * quasi-minimal residual squared algorithm for non-Hermitian linear systems,
- * Advances in Computer Methods for Partial Differential Equations VII
- * (IMACS, New Brunswick, NJ, 1992) pp. 258-264) that the QMR iterates can
- * be generated from the BiCG iteration through one additional vector and
- * some scalar updates. Possible breakdowns (or precisely, divisions by
- * zero) of BiCG therefore obviously transfer to this simple no-look-ahead
- * algorithm.
- *
+ * Advances in Computer Methods for Partial Differential Equations VII (IMACS,
+ * New Brunswick, NJ, 1992) pp. 258-264) that the QMR iterates can be
+ * generated from the BiCG iteration through one additional vector and some
+ * scalar updates. Possible breakdowns (or precisely, divisions by zero) of
+ * BiCG therefore obviously transfer to this simple no-look-ahead algorithm.
  * In return the algorithm is cheap compared to classical QMR or BiCGStab,
- * using only one matrix-vector product with the system matrix and
- * one application of the preconditioner per iteration respectively.
- *
- * The residual used for measuring convergence is only approximately calculated
- * by an upper bound. If this value comes below a threshold prescribed within
- * the AdditionalData struct, then the exact residual of the current QMR iterate
+ * using only one matrix-vector product with the system matrix and one
+ * application of the preconditioner per iteration respectively. The residual
+ * used for measuring convergence is only approximately calculated by an upper
+ * bound. If this value comes below a threshold prescribed within the
+ * AdditionalData struct, then the exact residual of the current QMR iterate
  * will be calculated using another multiplication with the system matrix. By
- * experience (according to Freund and Nachtigal) this technique is useful for a
- * threshold that is ten times the solving tolerance, and in that case will be
- * only used in the last one or two steps of the complete iteration.
+ * experience (according to Freund and Nachtigal) this technique is useful for
+ * a threshold that is ten times the solving tolerance, and in that case will
+ * be only used in the last one or two steps of the complete iteration. For
+ * the requirements on matrices and vectors in order to work with this class,
+ * see the documentation of the Solver base class. Like all other solver
+ * classes, this class has a local structure called   @p   AdditionalData
+ * which is used to pass additional parameters to the solver, like damping
+ * parameters or the number of temporary vectors. We use this additional
+ * structure instead of passing these values directly to the constructor
+ * because this makes the use of the   @p SolverSelector   and other classes
+ * much easier and guarantees that these will continue to work even if number
+ * or type of the additional parameters for a certain solver changes.
  *
- * For the requirements on matrices and vectors in order to work with this
- * class, see the documentation of the Solver base class.
- *
- * Like all other solver classes, this class has a local structure called @p
- * AdditionalData which is used to pass additional parameters to the solver,
- * like damping parameters or the number of temporary vectors. We use this
- * additional structure instead of passing these values directly to the
- * constructor because this makes the use of the @p SolverSelector and other
- * classes much easier and guarantees that these will continue to work even if
- * number or type of the additional parameters for a certain solver changes.
+ *  <h3>Observing the progress of linear solver iterations</h3> The solve()
+ * function of this class uses the mechanism described in the Solver base
+ * class to determine convergence. This mechanism can also be used to observe
+ * the progress of the iteration.
  *
  *
- * <h3>Observing the progress of linear solver iterations</h3>
- *
- * The solve() function of this class uses the mechanism described in the
- * Solver base class to determine convergence. This mechanism can also be used
- * to observe the progress of the iteration.
  */
 template <typename VectorType = Vector<double>>
 class SolverQMRS : public SolverBase<VectorType>
 {
 public:
   /**
-   * Standardized data struct to pipe additional data to the solver.
+   * Standardized data struct to pipe additional data to the solver.     The
+   * user is able to switch between right and left preconditioning, that
+   * means solving the systems <i>P<sup>-1</sup>A</i> and
+   * <i>AP<sup>-1</sup></i>   respectively, using the corresponding parameter.
+   * Note that left   preconditioning means to employ the preconditioned
+   * (BiCG-)residual and   otherwise the unpreconditioned one. The default is
+   * the application from the   right side.     The   @p solver_tolerance
+   * threshold is used to define the said bound below which the residual   is
+   * computed exactly. See the class documentation for more information. The
+   * default value is 1e-9, that is the default solving precision multiplied
+   * by   ten.     SQMR is susceptible to breakdowns (divisions by zero), so
+   * we need a   parameter telling us which numbers are considered zero. The
+   * proper   breakdown criterion is very unclear, so experiments may be
+   * necessary here.   It is even possible to achieve convergence despite of
+   * dividing through by   small numbers. There are even cases in which it is
+   * advantageous to accept   such divisions because the cheap iteration cost
+   * makes the algorithm the   fastest of all available indefinite iterative
+   * solvers. Nonetheless, the   default breakdown threshold value is 1e-16.
    *
-   * The user is able to switch between right and left preconditioning, that
-   * means solving the systems <i>P<sup>-1</sup>A</i> and <i>AP<sup>-1</sup></i>
-   * respectively, using the corresponding parameter. Note that left
-   * preconditioning means to employ the preconditioned (BiCG-)residual and
-   * otherwise the unpreconditioned one. The default is the application from the
-   * right side.
-   *
-   * The @p solver_tolerance threshold is used to define the said bound below which the residual
-   * is computed exactly. See the class documentation for more information. The
-   * default value is 1e-9, that is the default solving precision multiplied by
-   * ten.
-   *
-   * SQMR is susceptible to breakdowns (divisions by zero), so we need a
-   * parameter telling us which numbers are considered zero. The proper
-   * breakdown criterion is very unclear, so experiments may be necessary here.
-   * It is even possible to achieve convergence despite of dividing through by
-   * small numbers. There are even cases in which it is advantageous to accept
-   * such divisions because the cheap iteration cost makes the algorithm the
-   * fastest of all available indefinite iterative solvers. Nonetheless, the
-   * default breakdown threshold value is 1e-16.
    */
   struct AdditionalData
   {
     /**
-     * Constructor.
+     * Constructor.         The default is right preconditioning, with the
+     * @p solver_tolerance   chosen to be 1e-9 and     the   @p
+     * breakdown_threshold   set at 1e-16.
      *
-     * The default is right preconditioning, with the @p solver_tolerance chosen to be 1e-9 and
-     * the @p breakdown_threshold set at 1e-16.
      */
     explicit AdditionalData(const bool   left_preconditioning = false,
                             const double solver_tolerance     = 1.e-9,
@@ -136,28 +125,33 @@ public:
 
     /**
      * Flag for using a left-preconditioned version.
+     *
      */
     bool left_preconditioning;
 
     /**
      * The threshold below which the current residual is computed exactly.
+     *
      */
     double solver_tolerance;
 
     /**
      * Flag for breakdown testing.
+     *
      */
     bool breakdown_testing;
 
     /**
      * Breakdown threshold. Scalars measured to this bound are used for
      * divisions.
+     *
      */
     double breakdown_threshold;
   };
 
   /**
    * Constructor.
+   *
    */
   SolverQMRS(SolverControl &           cn,
              VectorMemory<VectorType> &mem,
@@ -166,11 +160,13 @@ public:
   /**
    * Constructor. Use an object of type GrowingVectorMemory as a default to
    * allocate memory.
+   *
    */
   SolverQMRS(SolverControl &cn, const AdditionalData &data = AdditionalData());
 
   /**
-   * Solve the linear system $Ax=b$ for x.
+   * Solve the linear system   $Ax=b$   for x.
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -183,6 +179,7 @@ public:
    * Interface for derived class. This function gets the current iteration
    * vector, the residual and the update vector in each step. It can be used
    * for a graphical output of the convergence history.
+   *
    */
   virtual void
   print_vectors(const unsigned int step,
@@ -193,6 +190,7 @@ public:
 protected:
   /**
    * Additional parameters.
+   *
    */
   AdditionalData additional_data;
 
@@ -200,6 +198,7 @@ private:
   /**
    * A structure returned by the iterate() function representing what it found
    * is happening during the iteration.
+   *
    */
   struct IterationResult
   {
@@ -213,6 +212,7 @@ private:
   /**
    * The iteration loop itself. The function returns a structure indicating
    * what happened in this function.
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   IterationResult
@@ -228,12 +228,13 @@ private:
 
   /**
    * Number of the current iteration (accumulated over restarts)
+   *
    */
   unsigned int step;
 };
 
-/*@}*/
-/*------------------------- Implementation ----------------------------*/
+ /*@}*/ 
+ /*------------------------- Implementation ----------------------------*/ 
 
 #ifndef DOXYGEN
 

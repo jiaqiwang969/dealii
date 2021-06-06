@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
 //
@@ -30,60 +30,87 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 /**
  * FIRE (Fast Inertial Relaxation Engine) for minimization of (potentially
- * non-linear) objective function $E(\mathbf x)$, $\mathbf x$ is a vector of
- * $n$ variables ($n$ is the number of variables of the objective function).
- * Like all other solver classes, it can work on any kind of vector and matrix
- * as long as they satisfy certain requirements (for the requirements on
- * matrices and vectors in order to work with this class, see the documentation
- * of the Solver base class). The type of the solution vector must be passed as
- * template argument, and defaults to dealii::Vector<double>.
+ * non-linear) objective function   $E(\mathbf x)$  ,   $\mathbf x$   is a
+ * vector of   $n$   variables (  $n$   is the number of variables of the
+ * objective function). Like all other solver classes, it can work on any kind
+ * of vector and matrix as long as they satisfy certain requirements (for the
+ * requirements on matrices and vectors in order to work with this class, see
+ * the documentation of the Solver base class). The type of the solution
+ * vector must be passed as template argument, and defaults to
+ * dealii::Vector<double>. FIRE is a damped dynamics method described in <a
+ * href="https://doi.org/10.1103/PhysRevLett.97.170201">Structural Relaxation
+ * Made Simple</a> by Bitzek et al. 2006, typically used to find stable
+ * equilibrium configurations of atomistic systems in computational material
+ * science. Starting from a given initial configuration of the atomistic
+ * system, the algorithm relies on inertia to obtain (nearest) configuration
+ * with least potential energy. Notation:
  *
- * FIRE is a damped dynamics method described in
- * <a href="https://doi.org/10.1103/PhysRevLett.97.170201">Structural
- * Relaxation Made Simple</a> by Bitzek et al. 2006, typically used to find
- * stable equilibrium configurations of atomistic systems in computational
- * material science. Starting from a given initial configuration of the
- * atomistic system, the algorithm relies on inertia to obtain (nearest)
- * configuration with least potential energy.
  *
- * Notation:
- *  - The global vector of unknown variables: $\mathbf x$.
- *  - Objective function:                     $E(\mathbf x)$.
- *  - Rate of change of unknowns:             $\mathbf v$.
- *  - Gradient of the objective
- *    function w.r.t unknowns:                $\mathbf g = \nabla E(\mathbf x)$.
- *  - Mass matrix:                            $\mathbf M$.
- *  - Initial guess of unknowns:              $\mathbf x_0$.
- *  - Time step:                              $\Delta t$.
  *
- * Given initial values for $\Delta t$, $\alpha = \alpha_0$, $\epsilon$,
- * $\mathbf x = \mathbf x_0$ and $\mathbf v= \mathbf 0$ along with a given mass
- * matrix $\mathbf M$, FIRE algorithm is as follows,
- * 1. Calculate $\mathbf g = \nabla E(\mathbf x)$ and check for convergence
- *    ($\mathbf g \cdot \mathbf g < \epsilon^2 $).
- * 2. Update $\mathbf x$ and $V$ using simple (forward) Euler integration step,
- *    <BR>
- *        $\mathbf x = \mathbf x + \Delta t \mathbf v$,                 <BR>
- *        $\mathbf v = \mathbf v + \Delta t \mathbf M^{-1} \cdot \mathbf g$.
- * 3. Calculate $p = \mathbf g \cdot \mathbf v$.
- * 4. Set $\mathbf v = (1-\alpha) \mathbf v
- *                   + \alpha \frac{|\mathbf v|}{|\mathbf g|} \mathbf g$.
- * 5. If $p<0$ and number of steps since $p$ was last negative is larger
- *    than certain value, then increase time step $\Delta t$ and decrease
- *    $\alpha$.
- * 6. If $p>0$, then decrease the time step, freeze the system i.e.,
- *    $\mathbf v = \mathbf 0$ and reset $\alpha = \alpha_0$.
- * 7. Return to 1.
  *
- * Also see
- * <a href="http://onlinelibrary.wiley.com/doi/10.1002/pamm.201110246/full">
+ *
+ *  - The global vector of unknown variables:   $\mathbf x$  .
+ *
+ *
+ *
+ *
+ *
+ *  - Objective function:                       $E(\mathbf x)$  .
+ *
+ *
+ *
+ *
+ *
+ *  - Rate of change of unknowns:               $\mathbf v$  .
+ *
+ *
+ *
+ *
+ *
+ *  - Gradient of the objective    function w.r.t unknowns:                  $\mathbf g = \nabla E(\mathbf x)$  .
+ *
+ *
+ *
+ *
+ *
+ *  - Mass matrix:                              $\mathbf M$  .
+ *
+ *
+ *
+ *
+ *
+ *  - Initial guess of unknowns:                $\mathbf x_0$  .
+ *
+ *
+ *
+ *
+ *
+ *  - Time step:                                $\Delta t$  .
+ * Given initial values for   $\Delta t$  ,   $\alpha = \alpha_0$  ,
+ * $\epsilon$  ,   $\mathbf x = \mathbf x_0$   and   $\mathbf v= \mathbf 0$
+ * along with a given mass matrix   $\mathbf M$  , FIRE algorithm is as
+ * follows, 1. Calculate   $\mathbf g = \nabla E(\mathbf x)$   and check for
+ * convergence    (  $\mathbf g \cdot \mathbf g < \epsilon^2 $  ). 2. Update
+ * $\mathbf x$   and   $V$   using simple (forward) Euler integration step,
+ * <BR>          $\mathbf x = \mathbf x + \Delta t \mathbf v$  ,
+ * <BR>          $\mathbf v = \mathbf v + \Delta t \mathbf M^{-1} \cdot
+ * \mathbf g$  . 3. Calculate   $p = \mathbf g \cdot \mathbf v$  . 4. Set
+ * $\mathbf v = (1-\alpha) \mathbf v + \alpha \frac{|\mathbf v|}{|\mathbf g|}
+ * \mathbf g$  . 5. If   $p<0$   and number of steps since   $p$   was last
+ * negative is larger    than certain value, then increase time step   $\Delta
+ * t$   and decrease      $\alpha$  . 6. If   $p>0$  , then decrease the time
+ * step, freeze the system i.e.,      $\mathbf v = \mathbf 0$   and reset
+ * $\alpha = \alpha_0$  . 7. Return to 1. Also see <a
+ * href="http://onlinelibrary.wiley.com/doi/10.1002/pamm.201110246/full">
  * Energy-Minimization in Atomic-to-Continuum Scale-Bridging Methods </a> by
  * Eidel et al. 2011.
+ *
+ *
  */
 template <typename VectorType = Vector<double>>
 class SolverFIRE : public SolverBase<VectorType>
@@ -91,6 +118,7 @@ class SolverFIRE : public SolverBase<VectorType>
 public:
   /**
    * Standardized data struct to pipe additional data to the solver.
+   *
    */
   struct AdditionalData
   {
@@ -98,6 +126,7 @@ public:
      * Constructor. By default, set the initial time step for the (forward)
      * Euler integration step to 0.1, the maximum time step to 1 and the
      * maximum change allowed in any variable (per iteration) to 1.
+     *
      */
     explicit AdditionalData(const double initial_timestep    = 0.1,
                             const double maximum_timestep    = 1,
@@ -105,22 +134,26 @@ public:
 
     /**
      * Initial time step for the (forward) Euler integration step.
+     *
      */
     const double initial_timestep;
 
     /**
      * Maximum time step for the (forward) Euler integration step.
+     *
      */
     const double maximum_timestep;
 
     /**
      * Maximum change allowed in any variable of the objective function.
+     *
      */
     const double maximum_linfty_norm;
   };
 
   /**
    * Constructor.
+   *
    */
   SolverFIRE(SolverControl &           solver_control,
              VectorMemory<VectorType> &vector_memory,
@@ -129,18 +162,20 @@ public:
   /**
    * Constructor. Use an object of type GrowingVectorMemory as a default to
    * allocate memory.
+   *
    */
   SolverFIRE(SolverControl &       solver_control,
              const AdditionalData &data = AdditionalData());
 
   /**
-   * Obtain a set of variables @p x that minimize an objective function
-   * described by the polymorphic function wrapper @p compute, with a given
-   * preconditioner @p inverse_mass_matrix and initial @p x values.
-   * The function @p compute returns the objective function's value and updates
-   * the objective function's gradient (with respect to the variables) when
-   * passed in as first argument based on the second argument-- the state of
-   * variables.
+   * Obtain a set of variables   @p x   that minimize an objective function
+   * described by the polymorphic function wrapper   @p compute,   with a
+   * given   preconditioner   @p inverse_mass_matrix   and initial   @p x
+   * values.   The function   @p compute   returns the objective function's
+   * value and updates   the objective function's gradient (with respect to
+   * the variables) when   passed in as first argument based on the second
+   * argument-- the state of   variables.
+   *
    */
   template <typename PreconditionerType = DiagonalMatrix<VectorType>>
   void
@@ -149,9 +184,12 @@ public:
         const PreconditionerType &inverse_mass_matrix);
 
   /**
-   * Solve for x that minimizes $E(\mathbf x)$ for the <EM>special case</EM>
-   * when $E(\mathbf x)
-   * = \frac{1}{2} \mathbf x^{T} \mathbf A \mathbf x - \mathbf x^{T} \mathbf b$.
+   * Solve for x that minimizes   $E(\mathbf x)$   for the <EM>special
+   * case</EM>   when   $E(\mathbf x) = \frac{1}{2} \mathbf x^{T} \mathbf A
+   * \mathbf x
+   *
+   * - \mathbf x^{T} \mathbf b$  .
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -163,9 +201,10 @@ public:
 protected:
   /**
    * Interface for derived class. This function gets the current iteration
-   * @p x (variables), @p v (x's time derivative) and @p g (the gradient) in
-   * each step.
-   * It can be used for graphical output of the convergence history.
+   * @p x   (variables),   @p v   (x's time derivative) and   @p g   (the
+   * gradient) in   each step.   It can be used for graphical output of the
+   * convergence history.
+   *
    */
   virtual void
   print_vectors(const unsigned int,
@@ -175,13 +214,14 @@ protected:
 
   /**
    * Additional data to the solver.
+   *
    */
   const AdditionalData additional_data;
 };
 
-/*@}*/
+ /*@}*/ 
 
-/*------------------------- Implementation ----------------------------*/
+ /*------------------------- Implementation ----------------------------*/ 
 
 #ifndef DOXYGEN
 

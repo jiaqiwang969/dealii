@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
 //
@@ -43,6 +43,7 @@ namespace internal
     /**
      * A struct that is used to represent a collection of faces of a process
      * with one of its neighbor within the setup done in struct FaceInfo.
+     *
      */
     struct FaceIdentifier
     {
@@ -65,6 +66,7 @@ namespace internal
      * sides). This data structure is used for the setup of the connectivity
      * between faces and cells and for identification of the dof indices to be
      * used for face integrals.
+     *
      */
     template <int dim>
     struct FaceSetup
@@ -76,6 +78,7 @@ namespace internal
        * the cells. This does not add the faces yet but only decides on
        * whether some of the faces should be considered for processing
        * locally.
+       *
        */
       void
       initialize(
@@ -89,6 +92,7 @@ namespace internal
        * information relevant for FaceToCellTopology and categorizes the faces
        * into interior faces, boundary faces, and ghost faces (not processed
        * locally but adjacent to some of the cells present locally).
+       *
        */
       void
       generate_faces(
@@ -101,6 +105,7 @@ namespace internal
        * within the plain array representation in MatrixFree into
        * FaceToCellTopology (without vectorization, which is something applied
        * later).
+       *
        */
       FaceToCellTopology<1>
       create_face(
@@ -115,6 +120,7 @@ namespace internal
       /**
        * A type that categorizes faces in the first initialize() function such
        * that we can later get their correct value in generate_faces().
+       *
        */
       enum class FaceCategory : char
       {
@@ -137,6 +143,7 @@ namespace internal
 
     /**
      * Actually form the batches for vectorized execution of face integrals.
+     *
      */
     template <int vectorization_width>
     void
@@ -148,7 +155,7 @@ namespace internal
 
 
 
-    /* -------------------------------------------------------------------- */
+     /* -------------------------------------------------------------------- */ 
 
 #ifndef DOXYGEN
 
@@ -1034,6 +1041,7 @@ namespace internal
      * faces of the same type, i.e., where all of the interior and exterior
      * face number, subface index and orientation are the same. This is used
      * to batch similar faces together for vectorization.
+     *
      */
     inline bool
     compare_faces_for_vectorization(
@@ -1072,9 +1080,10 @@ namespace internal
 
     /**
      * This comparator is used within collect_faces_vectorization() to create
-     * a sorting of FaceToCellTopology objects based on their
-     * identifiers. This is used to obtain a good data locality when
-     * processing the face integrals.
+     * a sorting of FaceToCellTopology objects based on their     identifiers.
+     * This is used to obtain a good data locality when     processing the
+     * face integrals.
+     *
      */
     template <int length>
     struct FaceComparator

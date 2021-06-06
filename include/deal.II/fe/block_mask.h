@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2020 by the deal.II authors
 //
@@ -30,44 +30,45 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * This class represents a mask that can be used to select individual vector
- * blocks of a finite element (see also
- * @ref GlossBlockMask "this glossary entry").
+ * This class represents a mask that can be used to select individual vector blocks of a finite element (see also   @ref GlossBlockMask   "this glossary entry").
  * It will typically have as many elements as the finite element has blocks,
- * and one can use <code>operator[]</code> to query whether a particular block
- * has been selected.
+ * and one can use   <code>operator[]</code>   to query whether a particular
+ * block has been selected. The semantics of this class are the same as the
+ * related ComponentMask class, i.e., a default constructed mask represents
+ * all possible blocks. See there for more information about these semantics.
+ * Objects of
+ * this kind are used in many places where one wants to restrict operations to
+ * a certain subset of blocks, e.g. in   DoFTools::extract_dofs.   These
+ * objects can either be created by hand, or, simpler, by asking the finite
+ * element to generate a block mask from certain selected blocks using code
+ * such as this where we create a mask that only denotes the velocity block of
+ * a Stokes element (see   @ref vector_valued  ):
  *
- * The semantics of this class are the same as the related ComponentMask
- * class, i.e., a default constructed mask represents all possible blocks. See
- * there for more information about these semantics.
- *
- * Objects of this kind are used in many places where one wants to restrict
- * operations to a certain subset of blocks, e.g. in DoFTools::extract_dofs.
- * These objects can either be created by hand, or, simpler, by asking the
- * finite element to generate a block mask from certain selected blocks using
- * code such as this where we create a mask that only denotes the velocity
- * block of a Stokes element (see
- * @ref vector_valued):
  * @code
- *   // Q2 element for the velocities, Q1 element for the pressure
- *   FESystem<dim> stokes_fe (FESystem<dim>(FE_Q<dim>(2), dim), 1,
- *                            FE_Q<dim>(1),                     1);
- *   FEValuesExtractors::Scalar pressure(dim);
- *   BlockMask pressure_mask = stokes_fe.block_mask (pressure);
+ * // Q2 element for the velocities, Q1 element for the pressure
+ * FESystem<dim> stokes_fe (FESystem<dim>(FE_Q<dim>(2), dim), 1,
+ *                          FE_Q<dim>(1),                     1);
+ * FEValuesExtractors::Scalar pressure(dim);
+ * BlockMask pressure_mask = stokes_fe.block_mask (pressure);
  * @endcode
  * Note that by wrapping the velocity elements into a single FESystem object
  * we make sure that the overall element has only 2 blocks. The result is a
  * block mask that, in both 2d and 3d, would have values <code>[false,
  * true]</code>. (Compare this to the corresponding component mask discussed
  * in the ComponentMask documentation.) Similarly, using
+ *
  * @code
- *   FEValuesExtractors::Vector velocities(0);
- *   BlockMask velocity_mask = stokes_fe.block_mask (velocities);
+ * FEValuesExtractors::Vector velocities(0);
+ * BlockMask velocity_mask = stokes_fe.block_mask (velocities);
  * @endcode
- * would result in a mask <code>[true, false]</code> in both 2d and 3d.
+ * would result in a mask   <code>[true, false]</code>   in both 2d and 3d.
+ *
  *
  * @ingroup fe
+ *
  * @ingroup vector_valued
+ *
+ *
  */
 class BlockMask
 {
@@ -75,29 +76,28 @@ public:
   /**
    * Initialize a block mask. The default is that a block mask represents a
    * set of blocks that are <i>all</i> selected, i.e., calling this
-   * constructor results in a block mask that always returns <code>true</code>
-   * whenever asked whether a block is selected.
+   * constructor results in a block mask that always returns
+   * <code>true</code>     whenever asked whether a block is selected.
+   *
    */
   BlockMask() = default;
 
   /**
    * Initialize an object of this type with a set of selected blocks specified
-   * by the argument.
+   * by the argument.       @param   block_mask A vector of
+   * <code>true/false</code>   entries that   determine which blocks of a
+   * finite element are selected. If the length of   the given vector is zero,
+   * then this interpreted as the case where   <i>every</i> block is selected.
    *
-   * @param block_mask A vector of <code>true/false</code> entries that
-   * determine which blocks of a finite element are selected. If the length of
-   * the given vector is zero, then this interpreted as the case where
-   * <i>every</i> block is selected.
    */
   BlockMask(const std::vector<bool> &block_mask);
 
   /**
    * Initialize the block mask with a number of elements that are either all
-   * true or false.
+   * true or false.       @param   n_blocks The number of elements of this
+   * mask     @param   initializer The value each of these elements is
+   * supposed to have:   either true or false.
    *
-   * @param n_blocks The number of elements of this mask
-   * @param initializer The value each of these elements is supposed to have:
-   * either true or false.
    */
   BlockMask(const unsigned int n_blocks, const bool initializer);
 
@@ -108,6 +108,7 @@ public:
    * represents a mask that is true for every element (i.e., if this object
    * would return true when calling represents_the_all_selected_mask()) then
    * return zero since no definite size is known.
+   *
    */
   unsigned int
   size() const;
@@ -117,40 +118,39 @@ public:
    * represents the case of an object that selects <i>all blocks</i> (e.g. if
    * it is created using the default constructor or is converted from an empty
    * vector of type bool) then this function returns true regardless of the
-   * given argument.
+   * given argument.       @param   block_index The index for which the
+   * function should return whether   the block is selected. If this object
+   * represents a mask in which all   blocks are always selected then any
+   * index is allowed here. Otherwise, the   given index needs to be between
+   * zero and the number of blocks that this   mask represents.
    *
-   * @param block_index The index for which the function should return whether
-   * the block is selected. If this object represents a mask in which all
-   * blocks are always selected then any index is allowed here. Otherwise, the
-   * given index needs to be between zero and the number of blocks that this
-   * mask represents.
    */
   bool operator[](const unsigned int block_index) const;
 
   /**
    * Return whether this block mask represents a mask with exactly
-   * <code>n</code> blocks. This is true if either it was initialized with a
-   * vector with exactly <code>n</code> entries of type <code>bool</code> (in
-   * this case, @p n must equal the result of size()) or if it was initialized
-   * with an empty vector (or using the default constructor) in which case it
-   * can represent a mask with an arbitrary number of blocks and will always
-   * say that a block is selected.
+   * <code>n</code>   blocks. This is true if either it was initialized with a
+   * vector with exactly   <code>n</code> entries of type <code>bool</code>
+   * (in   this case,   @p n   must equal the result of size()) or if it was
+   * initialized   with an empty vector (or using the default constructor) in
+   * which case it   can represent a mask with an arbitrary number of blocks
+   * and will always   say that a block is selected.
+   *
    */
   bool
   represents_n_blocks(const unsigned int n) const;
 
   /**
-   * Return the number of blocks that are selected by this mask.
-   *
-   * Since empty block masks represent a block mask that would return
-   * <code>true</code> for every block, this function may not know the true
+   * Return the number of blocks that are selected by this mask.     Since
+   * empty block masks represent a block mask that would return
+   * <code>true</code>   for every block, this function may not know the true
    * size of the block mask and it therefore requires an argument that denotes
-   * the overall number of blocks.
-   *
-   * If the object has been initialized with a non-empty mask (i.e., if the
-   * size() function returns something greater than zero, or equivalently if
+   * the overall number of blocks.     If the object has been initialized with
+   * a non-empty mask (i.e., if the   size() function returns something
+   * greater than zero, or equivalently if
    * represents_the_all_selected_mask() returns false) then the argument can
    * be omitted and the result of size() is taken.
+   *
    */
   unsigned int
   n_selected_blocks(const unsigned int overall_number_of_blocks =
@@ -158,9 +158,9 @@ public:
 
   /**
    * Return the index of the first selected block. The argument is there for
-   * the same reason it exists with the n_selected_blocks() function.
+   * the same reason it exists with the n_selected_blocks() function.     The
+   * function throws an exception if no block is selected at all.
    *
-   * The function throws an exception if no block is selected at all.
    */
   unsigned int
   first_selected_block(const unsigned int overall_number_of_blocks =
@@ -170,6 +170,7 @@ public:
    * Return true if this mask represents a default constructed mask that
    * corresponds to one in which all blocks are selected. If true, then the
    * size() function will return zero.
+   *
    */
   bool
   represents_the_all_selected_mask() const;
@@ -177,6 +178,7 @@ public:
   /**
    * Return a block mask that contains the union of the blocks selected by the
    * current object and the one passed as an argument.
+   *
    */
   BlockMask
   operator|(const BlockMask &mask) const;
@@ -184,17 +186,20 @@ public:
   /**
    * Return a block mask that has only those elements set that are set both in
    * the current object as well as the one passed as an argument.
+   *
    */
   BlockMask operator&(const BlockMask &mask) const;
 
   /**
    * Return whether this object and the argument are identical.
+   *
    */
   bool
   operator==(const BlockMask &mask) const;
 
   /**
    * Return whether this object and the argument are not identical.
+   *
    */
   bool
   operator!=(const BlockMask &mask) const;
@@ -202,6 +207,7 @@ public:
   /**
    * Determine an estimate for the memory consumption (in bytes) of this
    * object.
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -209,6 +215,7 @@ public:
 private:
   /**
    * The actual block mask.
+   *
    */
   std::vector<bool> block_mask;
 
@@ -222,12 +229,13 @@ private:
 /**
  * Write a block mask to an output stream. If the block mask represents one
  * where all blocks are selected without specifying a particular size of the
- * mask, then it writes the string <code>[all blocks selected]</code> to the
- * stream. Otherwise, it prints the block mask in a form like
- * <code>[true,true,true,false]</code>.
+ * mask, then it writes the string   <code>[all blocks selected]</code>   to
+ * the stream. Otherwise, it prints the block mask in a form like
+ * <code>[true,true,true,false]</code>  .
+ * @param   out The stream to write to.   @param   mask The mask to write.
+ * @return   A reference to the first argument.
  *
- * @param out The stream to write to.
- * @param mask The mask to write. @return A reference to the first argument.
+ *
  */
 std::ostream &
 operator<<(std::ostream &out, const BlockMask &mask);

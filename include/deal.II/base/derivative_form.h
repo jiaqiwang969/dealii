@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2013 - 2020 by the deal.II authors
 //
@@ -23,36 +23,40 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * This class represents the (tangential) derivatives of a function $ \mathbf F:
- * {\mathbb R}^{\text{dim}} \rightarrow {\mathbb R}^{\text{spacedim}}$. Such
- * functions are always used to map the reference dim-dimensional cell into
- * spacedim-dimensional space. For such objects, the first derivative of the
- * function is a linear map from ${\mathbb R}^{\text{dim}}$ to ${\mathbb
- * R}^{\text{spacedim}}$, i.e., it can be represented as a matrix in ${\mathbb
- * R}^{\text{spacedim}\times \text{dim}}$. This makes sense since one would
- * represent the first derivative, $\nabla \mathbf F(\mathbf x)$ with $\mathbf
- * x\in
- * {\mathbb R}^{\text{dim}}$, in such a way that the directional derivative in
- * direction $\mathbf d\in {\mathbb R}^{\text{dim}}$ so that
+ * This class represents the (tangential) derivatives of a function   $
+ * \mathbf F: {\mathbb R}^{\text{dim}} \rightarrow {\mathbb
+ * R}^{\text{spacedim}}$  . Such functions are always used to map the
+ * reference dim-dimensional cell into spacedim-dimensional space. For such
+ * objects, the first derivative of the function is a linear map from
+ * ${\mathbb R}^{\text{dim}}$   to   ${\mathbb R}^{\text{spacedim}}$  , i.e.,
+ * it can be represented as a matrix in   ${\mathbb R}^{\text{spacedim}\times
+ * \text{dim}}$  . This makes sense since one would represent the first
+ * derivative,   $\nabla \mathbf F(\mathbf x)$   with   $\mathbf x\in {\mathbb
+ * R}^{\text{dim}}$  , in such a way that the directional derivative in
+ * direction   $\mathbf d\in {\mathbb R}^{\text{dim}}$   so that
+ *
  * @f{align*}{
- *   \nabla \mathbf F(\mathbf x) \mathbf d
- *   = \lim_{\varepsilon\rightarrow 0}
- *     \frac{\mathbf F(\mathbf x + \varepsilon \mathbf d) - \mathbf F(\mathbf
+ * \nabla \mathbf F(\mathbf x) \mathbf d
+ * = \lim_{\varepsilon\rightarrow 0}
+ *   \frac{\mathbf F(\mathbf x + \varepsilon \mathbf d)
+ *
+ * - \mathbf F(\mathbf
  * x)}{\varepsilon},
  * @f}
- * i.e., one needs to be able to multiply the matrix $\nabla \mathbf F(\mathbf
- * x)$ by a vector in ${\mathbb R}^{\text{dim}}$, and the result is a difference
- * of function values, which are in ${\mathbb R}^{\text{spacedim}}$.
- * Consequently, the matrix must be of size $\text{spacedim}\times\text{dim}$.
+ * i.e., one needs to be able to multiply the matrix   $\nabla \mathbf
+ * F(\mathbf x)$   by a vector in   ${\mathbb R}^{\text{dim}}$  , and the
+ * result is a difference of function values, which are in   ${\mathbb
+ * R}^{\text{spacedim}}$  . Consequently, the matrix must be of size
+ * $\text{spacedim}\times\text{dim}$  . Similarly, the second derivative is a
+ * bilinear map from    ${\mathbb R}^{\text{dim}} \times  {\mathbb
+ * R}^{\text{dim}}$   to   ${\mathbb R}^{\text{spacedim}}$  , which one can
+ * think of a rank-3 object of size
+ * $\text{spacedim}\times\text{dim}\times\text{dim}$  . In deal.II we
+ * represent these derivatives using objects of type DerivativeForm
+ * @<1,dim,spacedim,Number@>,   DerivativeForm  @<2,dim,spacedim,Number@>
+ * and so on.
  *
- * Similarly, the second derivative is a bilinear map from  ${\mathbb
- * R}^{\text{dim}} \times  {\mathbb R}^{\text{dim}}$ to ${\mathbb
- * R}^{\text{spacedim}}$, which one can think of a rank-3 object of size
- * $\text{spacedim}\times\text{dim}\times\text{dim}$.
  *
- * In deal.II we represent these derivatives using objects of type
- * DerivativeForm@<1,dim,spacedim,Number@>,
- * DerivativeForm@<2,dim,spacedim,Number@> and so on.
  */
 template <int order, int dim, int spacedim, typename Number = double>
 class DerivativeForm
@@ -60,90 +64,106 @@ class DerivativeForm
 public:
   /**
    * Constructor. Initialize all entries to zero.
+   *
    */
   DerivativeForm() = default;
 
   /**
    * Constructor from a tensor.
+   *
    */
   DerivativeForm(const Tensor<order + 1, dim, Number> &);
 
   /**
    * Constructor from a tensor.
+   *
    */
   DerivativeForm(const Tensor<order, spacedim, Tensor<1, dim, Number>> &);
 
   /**
    * Read-Write access operator.
+   *
    */
   Tensor<order, dim, Number> &operator[](const unsigned int i);
 
   /**
    * Read-only access operator.
+   *
    */
   const Tensor<order, dim, Number> &operator[](const unsigned int i) const;
 
   /**
    * Assignment operator.
+   *
    */
   DerivativeForm &
   operator=(const Tensor<order + 1, dim, Number> &);
 
   /**
    * Assignment operator.
+   *
    */
   DerivativeForm &
   operator=(const Tensor<order, spacedim, Tensor<1, dim, Number>> &);
 
   /**
    * Assignment operator.
+   *
    */
   DerivativeForm &
   operator=(const Tensor<1, dim, Number> &);
 
   /**
-   * Converts a DerivativeForm <order, dim, dim, Number> to Tensor<order+1, dim,
-   * Number>. In particular, if order == 1 and the derivative is the Jacobian of
-   * $\mathbf F(\mathbf x)$, then Tensor[i] = $\nabla F_i(\mathbf x)$.
+   * Converts a DerivativeForm <order, dim, dim, Number> to Tensor<order+1,
+   * dim,   Number>. In particular, if order == 1 and the derivative is the
+   * Jacobian of     $\mathbf F(\mathbf x)$  , then Tensor[i] =   $\nabla
+   * F_i(\mathbf x)$  .
+   *
    */
   operator Tensor<order + 1, dim, Number>() const;
 
   /**
    * Converts a DerivativeForm<1, dim, 1, Number> to Tensor<1, dim, Number>.
+   *
    */
   operator Tensor<1, dim, Number>() const;
 
   /**
-   * Return the transpose of a rectangular DerivativeForm,
-   * viewed as a two dimensional matrix.
+   * Return the transpose of a rectangular DerivativeForm,   viewed as a two
+   * dimensional matrix.
+   *
    */
   DerivativeForm<1, spacedim, dim, Number>
   transpose() const;
 
   /**
    * Compute the Frobenius norm of this form, i.e., the expression
-   * $\sqrt{\sum_{ij} |DF_{ij}|^2} =
-   * \sqrt{\sum_{ij} |\frac{\partial F_i}{\partial x_j}|^2}$.
+   * $\sqrt{\sum_{ij} |DF_{ij}|^2} = \sqrt{\sum_{ij} |\frac{\partial
+   * F_i}{\partial x_j}|^2}$  .
+   *
    */
   typename numbers::NumberTraits<Number>::real_type
   norm() const;
 
   /**
    * Compute the volume element associated with the jacobian of the
-   * transformation $\mathbf F$. That is to say if $DF$ is square, it computes
-   * $\det(DF)$, in case DF is not square returns $\sqrt{\det(DF^T \,DF)}$.
+   * transformation   $\mathbf F$  . That is to say if   $DF$   is square, it
+   * computes     $\det(DF)$  , in case DF is not square returns
+   * $\sqrt{\det(DF^T \,DF)}$  .
+   *
    */
   Number
   determinant() const;
 
   /**
    * Assuming that the current object stores the Jacobian of a mapping
-   * $\mathbf F$, then the current function computes the <i>covariant</i> form
-   * of the derivative, namely $(\nabla \mathbf F) {\mathbf G}^{-1}$, where
-   * $\mathbf G = (\nabla \mathbf F)^{T}(\nabla \mathbf F)$. If $\nabla \mathbf
-   * F$ is a square matrix (i.e., $\mathbf F:
-   * {\mathbb R}^n \mapsto {\mathbb R}^n$), then this function
-   * simplifies to computing $\nabla {\mathbf F}^{-T}$.
+   * $\mathbf F$  , then the current function computes the <i>covariant</i>
+   * form   of the derivative, namely   $(\nabla \mathbf F) {\mathbf G}^{-1}$
+   * , where     $\mathbf G = (\nabla \mathbf F)^{T}(\nabla \mathbf F)$  . If
+   * $\nabla \mathbf F$   is a square matrix (i.e.,   $\mathbf F: {\mathbb
+   * R}^n \mapsto {\mathbb R}^n$  ), then this function   simplifies to
+   * computing   $\nabla {\mathbf F}^{-T}$  .
+   *
    */
   DerivativeForm<1, dim, spacedim, Number>
   covariant_form() const;
@@ -151,12 +171,14 @@ public:
   /**
    * Determine an estimate for the memory consumption (in bytes) of this
    * object.
+   *
    */
   static std::size_t
   memory_consumption();
 
   /**
    * Exception.
+   *
    */
   DeclException1(ExcInvalidTensorIndex,
                  int,
@@ -164,8 +186,9 @@ public:
 
 private:
   /**
-   * Auxiliary function that computes $A T^{T}$ where A represents the current
-   * object.
+   * Auxiliary function that computes   $A T^{T}$   where A represents the
+   * current   object.
+   *
    */
   DerivativeForm<1, dim, spacedim, Number>
   times_T_t(const Tensor<2, dim, Number> &T) const;
@@ -173,12 +196,13 @@ private:
 
   /**
    * Array of tensors holding the subelements.
+   *
    */
   Tensor<order, dim, Number> tensor[spacedim];
 };
 
 
-/*--------------------------- Inline functions -----------------------------*/
+ /*--------------------------- Inline functions -----------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -404,25 +428,20 @@ DerivativeForm<order, dim, spacedim, Number>::memory_consumption()
 
 
 /**
- * One of the uses of DerivativeForm is to apply it as a linear transformation.
- * This function returns $\nabla \mathbf F(\mathbf x) \Delta \mathbf x$, which
- * approximates the change in $\mathbf F(\mathbf x)$ when $\mathbf x$ is changed
- * by the amount $\Delta \mathbf x$
- * @f[
- *   \nabla \mathbf F(\mathbf x) \; \Delta \mathbf x
- *   \approx
- *   \mathbf F(\mathbf x + \Delta \mathbf x) - \mathbf F(\mathbf x).
- * @f]
- * The transformation corresponds to
- * @f[
- *   [\text{result}]_{i_1,\dots,i_k} = i\sum_{j}
- *   \left[\nabla \mathbf F(\mathbf x)\right]_{i_1,\dots,i_k, j}
- *   \Delta x_j
- * @f]
- * in index notation and corresponds to
- * $[\Delta \mathbf x] [\nabla \mathbf F(\mathbf x)]^T$ in matrix notation.
+ * One of the uses of DerivativeForm is to apply it as a linear transformation. This function returns   $\nabla \mathbf F(\mathbf x) \Delta \mathbf x$  , which approximates the change in   $\mathbf F(\mathbf x)$   when   $\mathbf x$   is changed by the amount   $\Delta \mathbf x$   @f[
+ * \nabla \mathbf F(\mathbf x) \; \Delta \mathbf x
+ * \approx
+ * \mathbf F(\mathbf x + \Delta \mathbf x)
  *
- * @relatesalso DerivativeForm
+ * - \mathbf F(\mathbf x).
+ * @f] The transformation corresponds to @f[
+ * [\text{result}]_{i_1,\dots,i_k} = i\sum_{j} \left[\nabla \mathbf F(\mathbf
+ * x)\right]_{i_1,\dots,i_k, j} \Delta x_j @f] in index notation and
+ * corresponds to   $[\Delta \mathbf x] [\nabla \mathbf F(\mathbf x)]^T$   in
+ * matrix notation.
+ * @relatesalso   DerivativeForm
+ *
+ *
  */
 template <int spacedim, int dim, typename Number1, typename Number2>
 inline Tensor<1, spacedim, typename ProductType<Number1, Number2>::type>
@@ -438,12 +457,12 @@ apply_transformation(const DerivativeForm<1, dim, spacedim, Number1> &grad_F,
 
 
 /**
- * Similar to the previous apply_transformation().
- * Each row of the result corresponds to one of the rows of @p D_X transformed
- * by @p grad_F, equivalent to $\mathrm{D\_X} \, \mathrm{grad\_F}^T$ in matrix
- * notation.
+ * Similar to the previous apply_transformation(). Each row of the result
+ * corresponds to one of the rows of   @p D_X   transformed by   @p grad_F,
+ * equivalent to   $\mathrm{D\_X} \, \mathrm{grad\_F}^T$   in matrix notation.
+ * @relatesalso   DerivativeForm
  *
- * @relatesalso DerivativeForm
+ *
  */
 // rank=2
 template <int spacedim, int dim, typename Number1, typename Number2>
@@ -465,11 +484,11 @@ apply_transformation(const DerivativeForm<1, dim, spacedim, Number1> &grad_F,
 
 
 /**
- * Similar to the previous apply_transformation().
- * Each row of the result corresponds to one of the rows of @p D_X transformed
- * by @p grad_F.
+ * Similar to the previous apply_transformation(). Each row of the result
+ * corresponds to one of the rows of   @p D_X   transformed by   @p grad_F.
+ * @relatesalso   DerivativeForm
  *
- * @relatesalso DerivativeForm
+ *
  */
 template <int spacedim,
           int dim,
@@ -496,19 +515,13 @@ apply_transformation(
 
 
 /**
- * Similar to the previous apply_transformation(). In matrix notation, it
- * computes $DF2 \, DF1^{T}$. Moreover, the result of this operation $\mathbf A$
- * can be interpreted as a metric tensor in
- * ${\mathbb R}^\text{spacedim}$ which corresponds to the Euclidean metric
- * tensor in
- * ${\mathbb R}^\text{dim}$. For every pair of vectors
- * $\mathbf u, \mathbf v \in {\mathbb R}^\text{spacedim}$, we have:
- * @f[
- *   \mathbf u \cdot \mathbf A \mathbf v =
- *   \text{DF2}^{-1}(\mathbf u) \cdot \text{DF1}^{-1}(\mathbf v)
+ * Similar to the previous apply_transformation(). In matrix notation, it computes   $DF2 \, DF1^{T}$  . Moreover, the result of this operation   $\mathbf A$   can be interpreted as a metric tensor in   ${\mathbb R}^\text{spacedim}$   which corresponds to the Euclidean metric tensor in   ${\mathbb R}^\text{dim}$  . For every pair of vectors   $\mathbf u, \mathbf v \in {\mathbb R}^\text{spacedim}$  , we have: @f[
+ * \mathbf u \cdot \mathbf A \mathbf v =
+ * \text{DF2}^{-1}(\mathbf u) \cdot \text{DF1}^{-1}(\mathbf v)
  * @f]
+ * @relatesalso   DerivativeForm
  *
- * @relatesalso DerivativeForm
+ *
  */
 template <int spacedim, int dim, typename Number1, typename Number2>
 inline Tensor<2, spacedim, typename ProductType<Number1, Number2>::type>
@@ -528,8 +541,9 @@ apply_transformation(const DerivativeForm<1, dim, spacedim, Number1> &DF1,
 /**
  * Transpose of a rectangular DerivativeForm DF, mostly for compatibility
  * reasons.
+ * @relatesalso   DerivativeForm
  *
- * @relatesalso DerivativeForm
+ *
  */
 template <int dim, int spacedim, typename Number>
 inline DerivativeForm<1, spacedim, dim, Number>

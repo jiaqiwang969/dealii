@@ -1,4 +1,4 @@
-//-----------------------------------------------------------
+////-----------------------------------------------------------
 //
 //    Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -42,54 +42,47 @@ namespace SUNDIALS
   namespace internal
   {
     /**
-     * Create a NVectorView of the given @p vector.
-     *
-     * This call is intended to be used as
-     *
+     * Create a NVectorView of the given   @p vector.           This call is
+     * intended to be used as
      * @code
-     *   auto view = make_nvector_view(vector);
+     * auto view = make_nvector_view(vector);
      * @endcode
-     *
      * The resulting object `view` must be kept around as long as any other
-     * object will use the internally viewed N_Vector.
+     * object will use the internally viewed N_Vector.           @tparam
+     * VectorType Type of the viewed vector. This parameter can be
+     * deduced automatically and will respect a potential const-qualifier.
+     * @param   vector The vector to view.       @return   A NVectorView of
+     * the   @p vector.             @related   NVectorView
      *
-     * @tparam VectorType Type of the viewed vector. This parameter can be
-     *   deduced automatically and will respect a potential const-qualifier.
-     * @param vector The vector to view.
-     * @return A NVectorView of the @p vector.
-     *
-     * @related NVectorView
      */
     template <typename VectorType>
     NVectorView<VectorType>
     make_nvector_view(VectorType &vector);
 
     /**
-     * Retrieve the underlying vector attached to N_Vector @p v. This call will
-     * only succeed if the underlying vector is not const. Use
+     * Retrieve the underlying vector attached to N_Vector   @p v.   This call
+     * will     only succeed if the underlying vector is not const. Use
      * unwrap_nvector_const() for this case.
+     * @note   Users must ensure that they ask for the correct VectorType when
+     * calling this function and there are no type-safety checks in place.
+     * @tparam   VectorType Type of the vector that is stored in   @p v
+     * @param   v Vector to unwrap       @return   The vector that is stored
+     * inside   @p v
      *
-     * @note Users must ensure that they ask for the correct VectorType when
-     *   calling this function and there are no type-safety checks in place.
-     *
-     * @tparam VectorType Type of the vector that is stored in @p v
-     * @param v Vector to unwrap
-     * @return The vector that is stored inside @p v
      */
     template <typename VectorType>
     VectorType *
     unwrap_nvector(N_Vector v);
 
     /**
-     * Retrieve the underlying vector attached to N_Vector @p v as a constant
-     * pointer.
+     * Retrieve the underlying vector attached to N_Vector   @p v   as a
+     * constant     pointer.
+     * @note   Users must ensure that they ask for the correct VectorType when
+     * calling this function and there are no type-safety checks in place.
+     * @tparam   VectorType Type of the vector that is stored in   @p v
+     * @param   v Vector to unwrap       @return   The vector that is stored
+     * inside   @p v
      *
-     * @note Users must ensure that they ask for the correct VectorType when
-     *   calling this function and there are no type-safety checks in place.
-     *
-     * @tparam VectorType Type of the vector that is stored in @p v
-     * @param v Vector to unwrap
-     * @return The vector that is stored inside @p v
      */
     template <typename VectorType>
     const VectorType *
@@ -97,66 +90,68 @@ namespace SUNDIALS
 
     /**
      * A view to a vector which can be used whenever a N_Vector is required.
-     *
      * Objects of this class should preferably be created by
      * make_nvector_view() as
-     *
      * @code
-     *   auto view = make_nvector_view(vector);
+     * auto view = make_nvector_view(vector);
      * @endcode
-     *
      * The resulting N_Vector is a view of the actual vector and not owning
      * memory. Also, N_VDestroy() cannot be called on the resulting N_Vector
      * since this would lead to a double delete in the destructor.
+     * @note   SUNDIALS will never call N_VDestroy() on a vector it didn't
+     * create       itself and thus the above constraint is not limiting the
+     * user.           @tparam   VectorType Type of the vector that is stored
+     * in   @p v
      *
-     * @note SUNDIALS will never call N_VDestroy() on a vector it didn't create
-     *   itself and thus the above constraint is not limiting the user.
-     *
-     * @tparam VectorType Type of the vector that is stored in @p v
      */
     template <typename VectorType>
     class NVectorView
     {
     public:
       /**
-       * Default constructor.
+       * Default constructor.             The object is not actually viewing
+       * anything and needs to be assigned to       with operator=(NVectorView
+       * &&).
        *
-       * The object is not actually viewing anything and needs to be assigned to
-       * with operator=(NVectorView &&).
        */
       NVectorView() = default;
 
       /**
-       * Constructor. Create view of @p vector.
+       * Constructor. Create view of   @p vector.
+       *
        */
       NVectorView(VectorType &vector);
 
       /**
        * Move assignment.
+       *
        */
       NVectorView(NVectorView &&) noexcept = default;
 
       /**
        * Move constructor.
+       *
        */
       NVectorView &
       operator=(NVectorView &&) noexcept = default;
 
       /**
        * Explicitly delete copy ctor. This class is move-only.
+       *
        */
       NVectorView(const NVectorView &) = delete;
 
       /**
        * Explicitly delete copy assignment. This class is move-only.
+       *
        */
       NVectorView &
       operator=(const NVectorView &) = delete;
 
       /**
        * Destructor.
+       * @note   This will not destroy the viewed vector.
        *
-       * @note This will not destroy the viewed vector.
        */
       ~NVectorView() = default;
 
@@ -164,17 +159,20 @@ namespace SUNDIALS
        * Implicit conversion to N_Vector. This operator makes the NVectorView
        * look like an actual N_Vector and it can be used directly as an
        * argument in many SUNDIALS functions.
+       *
        */
       operator N_Vector() const;
 
       /**
        * Access the N_Vector that is viewed by this object.
+       *
        */
       N_Vector operator->() const;
 
     private:
       /**
        * Actual pointer to a vector viewed by this class.
+       *
        */
       std::unique_ptr<_generic_N_Vector, std::function<void(N_Vector)>>
         vector_ptr;

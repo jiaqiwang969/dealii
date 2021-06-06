@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -32,7 +32,8 @@ namespace boost
     namespace traits
     {
       /**
-       * Tag adaptor for dealii::BoundingBox.
+       * Tag adaptor for   dealii::BoundingBox.
+       *
        */
       template <int dim, class Number>
       struct tag<dealii::BoundingBox<dim, Number>>
@@ -41,7 +42,8 @@ namespace boost
       };
 
       /**
-       * Point type adaptor for dealii::BoundingBox.
+       * Point type adaptor for   dealii::BoundingBox.
+       *
        */
       template <int dim, class Number>
       struct point_type<dealii::BoundingBox<dim, Number>>
@@ -52,13 +54,15 @@ namespace boost
       /**
        * Access to the D-th coordinate of the lower left  corner of a
        * dealii::BoundingBox.
+       *
        */
       template <int dim, class Number, std::size_t D>
       struct indexed_access<dealii::BoundingBox<dim, Number>, min_corner, D>
       {
         /**
          * Getter function for the D-th coordinate of the lower left corner of
-         * a dealii::BoundingBox.
+         * a   dealii::BoundingBox.
+         *
          */
         static inline double
         get(dealii::BoundingBox<dim, Number> const &box)
@@ -68,7 +72,8 @@ namespace boost
 
         /**
          * Setter function for the D-th coordinate of the lower left corner of
-         * a dealii::BoundingBox.
+         * a   dealii::BoundingBox.
+         *
          */
         static inline void
         set(dealii::BoundingBox<dim, Number> &box, Number value)
@@ -80,13 +85,15 @@ namespace boost
       /**
        * Access to the D-th coordinate of the upper right corner of a
        * dealii::BoundingBox.
+       *
        */
       template <int dim, class Number, std::size_t D>
       struct indexed_access<dealii::BoundingBox<dim, Number>, max_corner, D>
       {
         /**
-         * Getter function for the D-th coordinate of the upper right corner of
-         * a dealii::BoundingBox.
+         * Getter function for the D-th coordinate of the upper right corner
+         * of         a   dealii::BoundingBox.
+         *
          */
         static inline double
         get(dealii::BoundingBox<dim, Number> const &box)
@@ -95,8 +102,9 @@ namespace boost
         }
 
         /**
-         * Setter function for the D-th coordinate of the upper right corner of
-         * a dealii::BoundingBox.
+         * Setter function for the D-th coordinate of the upper right corner
+         * of         a   dealii::BoundingBox.
+         *
          */
         static inline void
         set(dealii::BoundingBox<dim, Number> &box, Number value)

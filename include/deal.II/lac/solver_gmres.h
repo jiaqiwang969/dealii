@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
 //
@@ -37,22 +37,22 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 namespace internal
 {
   /**
    * A namespace for a helper class to the GMRES solver.
+   *
    */
   namespace SolverGMRESImplementation
   {
     /**
      * Class to hold temporary vectors.  This class automatically allocates a
-     * new vector, once it is needed.
+     * new vector, once it is needed.         A future version should also be
+     * able to shift through vectors     automatically, avoiding restart.
      *
-     * A future version should also be able to shift through vectors
-     * automatically, avoiding restart.
      */
 
     template <typename VectorType>
@@ -60,27 +60,30 @@ namespace internal
     {
     public:
       /**
-       * Constructor. Prepares an array of @p VectorType of length @p
+       * Constructor. Prepares an array of   @p VectorType   of length   @p
        * max_size.
+       *
        */
       TmpVectors(const unsigned int max_size, VectorMemory<VectorType> &vmem);
 
       /**
        * Destructor. Delete all allocated vectors.
+       *
        */
       ~TmpVectors() = default;
 
       /**
-       * Get vector number @p i. If this vector was unused before, an error
-       * occurs.
+       * Get vector number   @p i.   If this vector was unused before, an
+       * error       occurs.
+       *
        */
       VectorType &operator[](const unsigned int i) const;
 
       /**
-       * Get vector number @p i. Allocate it if necessary.
-       *
-       * If a vector must be allocated, @p temp is used to reinit it to the
+       * Get vector number   @p i.   Allocate it if necessary.             If
+       * a vector must be allocated,   @p temp   is used to reinit it to the
        * proper dimensions.
+       *
        */
       VectorType &
       operator()(const unsigned int i, const VectorType &temp);
@@ -88,6 +91,7 @@ namespace internal
       /**
        * Return size of data vector. It is used in the solver to store
        * the Arnoldi vectors.
+       *
        */
       unsigned int
       size() const;
@@ -96,11 +100,13 @@ namespace internal
     private:
       /**
        * Pool where vectors are obtained from.
+       *
        */
       VectorMemory<VectorType> &mem;
 
       /**
        * Field for storing the vectors.
+       *
        */
       std::vector<typename VectorMemory<VectorType>::Pointer> data;
     };
@@ -109,67 +115,54 @@ namespace internal
 
 /**
  * Implementation of the Restarted Preconditioned Direct Generalized Minimal
- * Residual Method. The stopping criterion is the norm of the residual.
- *
- * The AdditionalData structure contains the number of temporary vectors used.
- * The size of the Arnoldi basis is this number minus three. Additionally, it
+ * Residual Method. The stopping criterion is the norm of the residual. The
+ * AdditionalData structure contains the number of temporary vectors used. The
+ * size of the Arnoldi basis is this number minus three. Additionally, it
  * allows you to choose between right or left preconditioning. The default is
  * left preconditioning. Finally it includes a flag indicating whether or not
  * the default residual is used as stopping criterion.
  *
- *
- * <h3>Left versus right preconditioning</h3>
- *
- * @p AdditionalData allows you to choose between left and right
- * preconditioning. As expected, this switches between solving for the systems
- * <i>P<sup>-1</sup>A</i> and <i>AP<sup>-1</sup></i>, respectively.
- *
- * A second consequence is the type of residual which is used to measure
- * convergence. With left preconditioning, this is the <b>preconditioned</b>
- * residual, while with right preconditioning, it is the residual of the
- * unpreconditioned system.
- *
+ *  <h3>Left versus right preconditioning</h3> @p AdditionalData   allows you
+ * to choose between left and right preconditioning. As expected, this
+ * switches between solving for the systems <i>P<sup>-1</sup>A</i> and
+ * <i>AP<sup>-1</sup></i>, respectively. A second consequence is the type of
+ * residual which is used to measure convergence. With left preconditioning,
+ * this is the <b>preconditioned</b> residual, while with right
+ * preconditioning, it is the residual of the unpreconditioned system.
  * Optionally, this behavior can be overridden by using the flag
- * AdditionalData::use_default_residual. A <tt>true</tt> value refers to the
+ * AdditionalData::use_default_residual.   A <tt>true</tt> value refers to the
  * behavior described in the previous paragraph, while <tt>false</tt> reverts
  * it. Be aware though that additional residuals have to be computed in this
  * case, impeding the overall performance of the solver.
  *
+ *  <h3>The size of the Arnoldi basis</h3> The maximal basis size is
+ * controlled by   AdditionalData::max_n_tmp_vectors,   and it is this number
+ * minus 2. If the number of iteration steps exceeds this number, all basis
+ * vectors are discarded and the iteration starts anew from the approximation
+ * obtained so far. Note that the minimizing property of GMRes only pertains
+ * to the Krylov space spanned by the Arnoldi basis. Therefore, restarted
+ * GMRes is <b>not</b> minimizing anymore. The choice of the basis length is a
+ * trade- off between memory consumption and convergence speed, since a longer
+ * basis means minimization over a larger space. For the requirements on
+ * matrices and vectors in order to work with this class, see the
+ * documentation of the Solver base class.
  *
- * <h3>The size of the Arnoldi basis</h3>
+ *  <h3>Observing the progress of linear solver iterations</h3> The solve()
+ * function of this class uses the mechanism described in the Solver base
+ * class to determine convergence. This mechanism can also be used to observe
+ * the progress of the iteration.
  *
- * The maximal basis size is controlled by AdditionalData::max_n_tmp_vectors,
- * and it is this number minus 2. If the number of iteration steps exceeds
- * this number, all basis vectors are discarded and the iteration starts anew
- * from the approximation obtained so far.
- *
- * Note that the minimizing property of GMRes only pertains to the Krylov
- * space spanned by the Arnoldi basis. Therefore, restarted GMRes is
- * <b>not</b> minimizing anymore. The choice of the basis length is a trade-
- * off between memory consumption and convergence speed, since a longer basis
- * means minimization over a larger space.
- *
- * For the requirements on matrices and vectors in order to work with this
- * class, see the documentation of the Solver base class.
- *
- *
- * <h3>Observing the progress of linear solver iterations</h3>
- *
- * The solve() function of this class uses the mechanism described in the
- * Solver base class to determine convergence. This mechanism can also be used
- * to observe the progress of the iteration.
+ *  <h3>Eigenvalue and condition number estimates</h3> This class can estimate
+ * eigenvalues and condition number during the solution process. This is done
+ * by creating the Hessenberg matrix during the inner iterations. The
+ * eigenvalues are estimated as the eigenvalues of the Hessenberg matrix and
+ * the condition number is estimated as the ratio of the largest and smallest
+ * singular value of the Hessenberg matrix. The estimates can be obtained by
+ * connecting a function as a slot using   @p   connect_condition_number_slot
+ * and   @p connect_eigenvalues_slot.   These slots will then be called from
+ * the solver with the estimates as argument.
  *
  *
- * <h3>Eigenvalue and condition number estimates</h3>
- *
- * This class can estimate eigenvalues and condition number during the
- * solution process. This is done by creating the Hessenberg matrix during the
- * inner iterations. The eigenvalues are estimated as the eigenvalues of the
- * Hessenberg matrix and the condition number is estimated as the ratio of the
- * largest and smallest singular value of the Hessenberg matrix. The estimates
- * can be obtained by connecting a function as a slot using @p
- * connect_condition_number_slot and @p connect_eigenvalues_slot. These slots
- * will then be called from the solver with the estimates as argument.
  */
 template <class VectorType = Vector<double>>
 class SolverGMRES : public SolverBase<VectorType>
@@ -177,6 +170,7 @@ class SolverGMRES : public SolverBase<VectorType>
 public:
   /**
    * Standardized data struct to pipe additional data to the solver.
+   *
    */
   struct AdditionalData
   {
@@ -185,6 +179,7 @@ public:
      * i.e. do a restart every 28 iterations. Also set preconditioning from
      * left, the residual of the stopping criterion to the default residual,
      * and re-orthogonalization only if necessary.
+     *
      */
     explicit AdditionalData(const unsigned int max_n_tmp_vectors     = 30,
                             const bool         right_preconditioning = false,
@@ -195,21 +190,24 @@ public:
      * Maximum number of temporary vectors. This parameter controls the size
      * of the Arnoldi basis, which for historical reasons is
      * #max_n_tmp_vectors-2. SolverGMRES assumes that there are at least three
-     * temporary vectors, so this value must be greater than or equal to three.
+     * temporary vectors, so this value must be greater than or equal to
+     * three.
+     *
      */
     unsigned int max_n_tmp_vectors;
 
     /**
      * Flag for right preconditioning.
-     *
-     * @note Change between left and right preconditioning will also change
+     * @note   Change between left and right preconditioning will also change
      * the way residuals are evaluated. See the corresponding section in the
      * SolverGMRES.
+     *
      */
     bool right_preconditioning;
 
     /**
      * Flag for the default residual that is used to measure convergence.
+     *
      */
     bool use_default_residual;
 
@@ -218,12 +216,14 @@ public:
      * If set to false, the solver automatically checks for loss of
      * orthogonality every 5 iterations and enables re-orthogonalization only
      * if necessary.
+     *
      */
     bool force_re_orthogonalization;
   };
 
   /**
    * Constructor.
+   *
    */
   SolverGMRES(SolverControl &           cn,
               VectorMemory<VectorType> &mem,
@@ -232,16 +232,19 @@ public:
   /**
    * Constructor. Use an object of type GrowingVectorMemory as a default to
    * allocate memory.
+   *
    */
   SolverGMRES(SolverControl &cn, const AdditionalData &data = AdditionalData());
 
   /**
    * The copy constructor is deleted.
+   *
    */
   SolverGMRES(const SolverGMRES<VectorType> &) = delete;
 
   /**
-   * Solve the linear system $Ax=b$ for x.
+   * Solve the linear system   $Ax=b$   for x.
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -255,6 +258,7 @@ public:
    * outer iteration if every_iteration=true, otherwise called once when
    * iterations are ended (i.e., either because convergence has been achieved,
    * or because divergence has been detected).
+   *
    */
   boost::signals2::connection
   connect_condition_number_slot(const std::function<void(double)> &slot,
@@ -265,6 +269,7 @@ public:
    * outer iteration if every_iteration=true, otherwise called once when
    * iterations are ended (i.e., either because convergence has been achieved,
    * or because divergence has been detected).
+   *
    */
   boost::signals2::connection
   connect_eigenvalues_slot(
@@ -277,6 +282,7 @@ public:
    * outer iteration if every_iteration=true, otherwise called once when
    * iterations are ended (i.e., either because convergence has been achieved,
    * or because divergence has been detected).
+   *
    */
   boost::signals2::connection
   connect_hessenberg_slot(
@@ -285,9 +291,10 @@ public:
 
   /**
    * Connect a slot to retrieve the basis vectors of the Krylov space
-   * generated by the Arnoldi algorithm. Called at once when iterations
-   * are completed (i.e., either because convergence has been achieved,
-   * or because divergence has been detected).
+   * generated by the Arnoldi algorithm. Called at once when iterations   are
+   * completed (i.e., either because convergence has been achieved,   or
+   * because divergence has been detected).
+   *
    */
   boost::signals2::connection
   connect_krylov_space_slot(
@@ -299,6 +306,7 @@ public:
   /**
    * Connect a slot to retrieve a notification when the vectors are
    * re-orthogonalized.
+   *
    */
   boost::signals2::connection
   connect_re_orthogonalization_slot(const std::function<void(int)> &slot);
@@ -313,24 +321,28 @@ public:
 protected:
   /**
    * Includes the maximum number of tmp vectors.
+   *
    */
   AdditionalData additional_data;
 
   /**
    * Signal used to retrieve the estimated condition number. Called once when
    * all iterations are ended.
+   *
    */
   boost::signals2::signal<void(double)> condition_number_signal;
 
   /**
    * Signal used to retrieve the estimated condition numbers. Called on each
    * outer iteration.
+   *
    */
   boost::signals2::signal<void(double)> all_condition_numbers_signal;
 
   /**
    * Signal used to retrieve the estimated eigenvalues. Called once when all
    * iterations are ended.
+   *
    */
   boost::signals2::signal<void(const std::vector<std::complex<double>> &)>
     eigenvalues_signal;
@@ -338,19 +350,22 @@ protected:
   /**
    * Signal used to retrieve the estimated eigenvalues. Called on each outer
    * iteration.
+   *
    */
   boost::signals2::signal<void(const std::vector<std::complex<double>> &)>
     all_eigenvalues_signal;
 
   /**
-   * Signal used to retrieve the Hessenberg matrix. Called once when
-   * all iterations are ended.
+   * Signal used to retrieve the Hessenberg matrix. Called once when   all
+   * iterations are ended.
+   *
    */
   boost::signals2::signal<void(const FullMatrix<double> &)> hessenberg_signal;
 
   /**
    * Signal used to retrieve the Hessenberg matrix. Called on each outer
    * iteration.
+   *
    */
   boost::signals2::signal<void(const FullMatrix<double> &)>
     all_hessenberg_signal;
@@ -358,19 +373,22 @@ protected:
   /**
    * Signal used to retrieve the Krylov space basis vectors. Called once
    * when all iterations are ended.
+   *
    */
   boost::signals2::signal<void(
     const internal::SolverGMRESImplementation::TmpVectors<VectorType> &)>
     krylov_space_signal;
 
   /**
-   * Signal used to retrieve a notification
-   * when the vectors are re-orthogonalized.
+   * Signal used to retrieve a notification   when the vectors are
+   * re-orthogonalized.
+   *
    */
   boost::signals2::signal<void(int)> re_orthogonalize_signal;
 
   /**
    * Implementation of the computation of the norm of the residual.
+   *
    */
   virtual double
   criterion();
@@ -378,6 +396,7 @@ protected:
   /**
    * Transformation of an upper Hessenberg matrix into tridiagonal structure
    * by givens rotation of the last column
+   *
    */
   void
   givens_rotation(Vector<double> &h,
@@ -387,14 +406,16 @@ protected:
                   int             col) const;
 
   /**
-   * Orthogonalize the vector @p vv against the @p dim (orthogonal) vectors
-   * given by the first argument using the modified Gram-Schmidt algorithm.
-   * The factors used for orthogonalization are stored in @p h. The boolean @p
-   * re_orthogonalize specifies whether the modified Gram-Schmidt algorithm
-   * should be applied twice. The algorithm checks loss of orthogonality in
-   * the procedure every fifth step and sets the flag to true in that case.
-   * All subsequent iterations use re-orthogonalization.
-   * Calls the signal re_orthogonalize_signal if it is connected.
+   * Orthogonalize the vector   @p vv   against the   @p dim   (orthogonal)
+   * vectors   given by the first argument using the modified Gram-Schmidt
+   * algorithm.   The factors used for orthogonalization are stored in   @p h.
+   * The boolean   @p     re_orthogonalize specifies whether the modified
+   * Gram-Schmidt algorithm   should be applied twice. The algorithm checks
+   * loss of orthogonality in   the procedure every fifth step and sets the
+   * flag to true in that case.   All subsequent iterations use
+   * re-orthogonalization.   Calls the signal re_orthogonalize_signal if it is
+   * connected.
+   *
    */
   static double
   modified_gram_schmidt(
@@ -413,6 +434,7 @@ protected:
    * during the inner iterations. Uses these estimate to compute the condition
    * number. Calls the signals eigenvalues_signal and cond_signal with these
    * estimates as arguments.
+   *
    */
   static void
   compute_eigs_and_cond(
@@ -426,34 +448,34 @@ protected:
 
   /**
    * Projected system matrix
+   *
    */
   FullMatrix<double> H;
 
   /**
-   * Auxiliary matrix for inverting @p H
+   * Auxiliary matrix for inverting   @p H
+   *
    */
   FullMatrix<double> H1;
 };
 
 /**
  * Implementation of the Generalized minimal residual method with flexible
- * preconditioning (flexible GMRES or FGMRES).
- *
- * This flexible version of the GMRES method allows for the use of a different
- * preconditioner in each iteration step. Therefore, it is also more robust
- * with respect to inaccurate evaluation of the preconditioner. An important
- * application is the use of a Krylov space method inside the
- * preconditioner. As opposed to SolverGMRES which allows one to choose
- * between left and right preconditioning, this solver always applies the
- * preconditioner from the right.
- *
- * FGMRES needs two vectors in each iteration steps yielding a total of
- * <tt>2*SolverFGMRES::%AdditionalData::%max_basis_size+1</tt> auxiliary
+ * preconditioning (flexible GMRES or FGMRES). This flexible version of the
+ * GMRES method allows for the use of a different preconditioner in each
+ * iteration step. Therefore, it is also more robust with respect to
+ * inaccurate evaluation of the preconditioner. An important application is
+ * the use of a Krylov space method inside the preconditioner. As opposed to
+ * SolverGMRES which allows one to choose between left and right
+ * preconditioning, this solver always applies the preconditioner from the
+ * right. FGMRES needs two vectors in each iteration steps yielding a total of
+ * <tt>2*SolverFGMRES::%AdditionalData::%max_basis_size+1</tt>   auxiliary
  * vectors. Otherwise, FGMRES requires roughly the same number of operations
  * per iteration compared to GMRES, except one application of the
- * preconditioner less at each restart and at the end of solve().
+ * preconditioner less at each restart and at the end of solve(). For more
+ * details see   @cite Saad1991  .
  *
- * For more details see @cite Saad1991.
+ *
  */
 template <class VectorType = Vector<double>>
 class SolverFGMRES : public SolverBase<VectorType>
@@ -461,11 +483,13 @@ class SolverFGMRES : public SolverBase<VectorType>
 public:
   /**
    * Standardized data struct to pipe additional data to the solver.
+   *
    */
   struct AdditionalData
   {
     /**
      * Constructor. By default, set the maximum basis size to 30.
+     *
      */
     explicit AdditionalData(const unsigned int max_basis_size = 30)
       : max_basis_size(max_basis_size)
@@ -473,12 +497,14 @@ public:
 
     /**
      * Maximum basis size.
+     *
      */
     unsigned int max_basis_size;
   };
 
   /**
    * Constructor.
+   *
    */
   SolverFGMRES(SolverControl &           cn,
                VectorMemory<VectorType> &mem,
@@ -487,12 +513,14 @@ public:
   /**
    * Constructor. Use an object of type GrowingVectorMemory as a default to
    * allocate memory.
+   *
    */
   SolverFGMRES(SolverControl &       cn,
                const AdditionalData &data = AdditionalData());
 
   /**
-   * Solve the linear system $Ax=b$ for x.
+   * Solve the linear system   $Ax=b$   for x.
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -504,22 +532,25 @@ public:
 private:
   /**
    * Additional flags.
+   *
    */
   AdditionalData additional_data;
 
   /**
    * Projected system matrix
+   *
    */
   FullMatrix<double> H;
 
   /**
-   * Auxiliary matrix for inverting @p H
+   * Auxiliary matrix for inverting   @p H
+   *
    */
   FullMatrix<double> H1;
 };
 
-/*@}*/
-/* --------------------- Inline and template functions ------------------- */
+ /*@}*/ 
+ /* --------------------- Inline and template functions ------------------- */ 
 
 
 #ifndef DOXYGEN

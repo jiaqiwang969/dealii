@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
 //
@@ -37,18 +37,20 @@ namespace LinearAlgebra
   {
     /**
      * This class implements a wrapper to a Trilinos Epetra_Import object,
-     * for use in places where a Utilities::MPI::CommunicationPatternBase object
-     * is required.
+     * for use in places where a   Utilities::MPI::CommunicationPatternBase
+     * object     is required.
+     *
      */
     class CommunicationPattern : public Utilities::MPI::CommunicationPatternBase
     {
     public:
       /**
-       * Initialize the communication pattern. The first argument @p
+       * Initialize the communication pattern. The first argument   @p
        * vector_space_vector_index_set is the index set associated to a
-       * VectorSpaceVector object. The second argument @p
+       * VectorSpaceVector object. The second argument   @p
        * read_write_vector_index_set is the index set associated to a
        * ReadWriteVector object.
+       *
        */
       CommunicationPattern(const IndexSet &vector_space_vector_index_set,
                            const IndexSet &read_write_vector_index_set,
@@ -56,6 +58,7 @@ namespace LinearAlgebra
 
       /**
        * Reinitialize the object.
+       *
        */
       virtual void
       reinit(const IndexSet &vector_space_vector_index_set,
@@ -64,12 +67,14 @@ namespace LinearAlgebra
 
       /**
        * Return the underlying MPI communicator.
+       *
        */
       virtual const MPI_Comm &
       get_mpi_communicator() const override;
 
       /**
        * Return the underlying Epetra_Import object.
+       *
        */
       const Epetra_Import &
       get_epetra_import() const;
@@ -77,11 +82,13 @@ namespace LinearAlgebra
     private:
       /**
        * Shared pointer to the MPI communicator used.
+       *
        */
       std::shared_ptr<const MPI_Comm> comm;
 
       /**
        * Shared pointer to the Epetra_Import object used.
+       *
        */
       std::unique_ptr<Epetra_Import> importer;
     };

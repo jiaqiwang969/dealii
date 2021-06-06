@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -36,29 +36,27 @@ namespace MeshWorker
   {
     /**
      * A class that, instead of assembling into a matrix or vector, outputs
-     * the results on a cell to a gnuplot patch.
-     *
-     * This assembler expects that LocalResults contains quadrature values set
-     * with LocalResults::quadrature_value(). When it is initialized with the
+     * the results on a cell to a gnuplot patch.         This assembler
+     * expects that LocalResults contains quadrature values set     with
+     * LocalResults::quadrature_value().   When it is initialized with the
      * number of quadrature points in a single (!) space direction and the
      * number of data fields to be displayed, it initializes LocalResults
      * automatically. The number of data fields in local results will be
      * increased by dim in order to accommodate for the coordinates of the
-     * data points.
+     * data points.         While data slots for the space coordinates are
+     * allocated automatically,     these coordinates are not entered. It is
+     * up to the user to enter the     coordinates in the first dim data
+     * entries at every point. This adds the     flexibility to output
+     * transformed coordinates or even something     completely different.
+     * @note   In the current implementation, only cell data can be written.
      *
-     * While data slots for the space coordinates are allocated automatically,
-     * these coordinates are not entered. It is up to the user to enter the
-     * coordinates in the first dim data entries at every point. This adds the
-     * flexibility to output transformed coordinates or even something
-     * completely different.
-     *
-     * @note In the current implementation, only cell data can be written.
      */
     class GnuplotPatch
     {
     public:
       /**
        * Constructor.
+       *
        */
       GnuplotPatch();
 
@@ -70,23 +68,24 @@ namespace MeshWorker
        * is <tt>n+dim</tt> and the first dim should be the space coordinates
        * of the points. Nevertheless, it is up to the user to set these values
        * to whatever is desired.
+       *
        */
       void
       initialize(const unsigned int n_points, const unsigned int n_vectors);
 
       /**
        * Set the stream #os to which data is written. If no stream is selected
-       * with this function, data goes to @p deallog.
+       * with this function, data goes to   @p deallog.
+       *
        */
       void
       initialize_stream(std::ostream &stream);
 
       /**
        * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * assembling.             The   @p info   object refers to a cell if
+       * <code>!face</code>  , or else to an       interior or boundary face.
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <int dim>
       void
@@ -94,13 +93,15 @@ namespace MeshWorker
 
       /**
        * Write the patch to the output stream.
+       *
        */
       template <int dim>
       void
       assemble(const DoFInfo<dim> &info);
 
       /**
-       * @warning Not implemented yet
+       * @warning   Not implemented yet
+       *
        */
       template <int dim>
       void
@@ -109,7 +110,8 @@ namespace MeshWorker
     private:
       /**
        * Write the object T either to the stream #os, if initialize_stream()
-       * has been called, or to @p deallog if no pointer has been set.
+       * has been called, or to   @p deallog   if no pointer has been set.
+       *
        */
       template <typename T>
       void
@@ -117,23 +119,27 @@ namespace MeshWorker
 
       /**
        * Write an end-of-line marker either to the stream #os, if
-       * initialize_stream has been called, or to @p deallog if no pointer has
-       * been set.
+       * initialize_stream has been called, or to   @p deallog   if no pointer
+       * has       been set.
+       *
        */
       void
       write_endl() const;
 
       /**
        * The number of output components in each point.
+       *
        */
       unsigned int n_vectors;
       /**
        * The number of points in one direction.
+       *
        */
       unsigned int n_points;
 
       /**
        * Stream to which output is to be written. Set by initialize_stream().
+       *
        */
       std::ostream *os;
     };

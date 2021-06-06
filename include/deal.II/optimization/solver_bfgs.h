@@ -1,4 +1,4 @@
-//-----------------------------------------------------------
+////-----------------------------------------------------------
 //
 //    Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -27,30 +27,38 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Implement the limited memory BFGS minimization method.
+ * Implement the limited memory BFGS minimization method. This class
+ * implements a method to minimize a given function for which only the values
+ * of the function and its derivatives, but not its second derivatives are
+ * available. The BFGS method is a variation of the Newton method for function
+ * minimization in which the Hessian matrix is only approximated. In
+ * particular, the Hessian is updated using the formula of Broyden, Fletcher,
+ * Goldfarb, and Shanno (BFGS):
  *
- * This class implements a method to minimize a given function for which only
- * the values of the function and its derivatives, but not its second
- * derivatives are available. The BFGS method is a variation of the Newton
- * method for function minimization in which the Hessian matrix is only
- * approximated. In particular, the Hessian is updated using the formula of
- * Broyden, Fletcher, Goldfarb, and Shanno (BFGS):
  * @f{align*}{
  * H^{(k+1)} &= \left[
  * I-\rho_{(k)} s^{(k)} \otimes y^{(k)}
  * \right]
  * H^{(k)}
  * \left[
- * I -\rho^{(k)} y^{(k)} \otimes s^{(k)}
+ * I
+ *
+ * -\rho^{(k)} y^{(k)} \otimes s^{(k)}
  * \right]
  * +
  * \rho^{(k)} s^{(k)} \otimes s^{(k)}  \\
- * y^{(k)} &\dealcoloneq g^{(k+1)} - g^{(k)} \\
- * s^{(k)} &\dealcoloneq x^{(k+1)} - x^{(k)} \\
+ * y^{(k)} &\dealcoloneq g^{(k+1)}
+ *
+ * - g^{(k)} \\
+ * s^{(k)} &\dealcoloneq x^{(k+1)}
+ *
+ * - x^{(k)} \\
  * \rho^{(k)} &\dealcoloneq \frac{1}{y^{(k)} \cdot s^{(k)}}
  * @f}
- * for a symmetric positive definite $H$. Limited memory variant is
+ * for a symmetric positive definite   $H$  . Limited memory variant is
  * implemented via the two-loop recursion.
+ *
+ *
  */
 template <typename VectorType>
 class SolverBFGS : public SolverBase<VectorType>
@@ -58,28 +66,33 @@ class SolverBFGS : public SolverBase<VectorType>
 public:
   /**
    * Number type.
+   *
    */
   using Number = typename VectorType::value_type;
 
 
   /**
    * Standardized data struct to pipe additional data to the solver.
+   *
    */
   struct AdditionalData
   {
     /**
      * Constructor.
+     *
      */
     explicit AdditionalData(const unsigned int max_history_size = 5,
                             const bool         debug_output     = false);
 
     /**
      * Maximum history size.
+     *
      */
     unsigned int max_history_size;
 
     /**
      * Print extra debug output to deallog.
+     *
      */
     bool debug_output;
   };
@@ -87,22 +100,20 @@ public:
 
   /**
    * Constructor.
+   *
    */
   explicit SolverBFGS(SolverControl &       residual_control,
                       const AdditionalData &data = AdditionalData());
 
   /**
-   * Solve the unconstrained minimization problem
-   * \f[
-   * \min_{\mathbf x} f(\mathbf x)
-   * \f]
-   * starting from initial state @p x.
+   * Solve the unconstrained minimization problem   \f[ \min_{\mathbf x}
+   * f(\mathbf x) \f]   starting from initial state   @p x.       The function
+   * @p compute   takes two arguments indicating the values of   $x$     and
+   * of the gradient   $g=\nabla f(\mathbf x)=\frac{\partial f}{\partial
+   * \mathbf x}$  . When called, it needs to update the gradient   $g$   at
+   * the given   location   $x$   and return the value of the function being
+   * minimized, i.e.,     $f(\mathbf x)$  .
    *
-   * The function @p compute takes two arguments indicating the values of $x$
-   * and of the gradient $g=\nabla f(\mathbf x)=\frac{\partial f}{\partial
-   * \mathbf x}$. When called, it needs to update the gradient $g$ at the given
-   * location $x$ and return the value of the function being minimized, i.e.,
-   * $f(\mathbf x)$.
    */
   void
   solve(
@@ -110,12 +121,12 @@ public:
     VectorType &                                                     x);
 
   /**
-   * Connect a slot to perform a custom line-search.
+   * Connect a slot to perform a custom line-search.     Given the value of
+   * function   @p f,   the current value of unknown   @p x,     the gradient
+   * @p g   and the search direction   @p p,     return the size   $\alpha$
+   * of the step   $x \leftarrow x + \alpha p$  ,   and update   @p x,     @p
+   * g   and   @p f   accordingly.
    *
-   * Given the value of function @p f, the current value of unknown @p x,
-   * the gradient @p g and the search direction @p p,
-   * return the size $\alpha$ of the step $x \leftarrow x + \alpha p$,
-   * and update @p x, @p g and @p f accordingly.
    */
   boost::signals2::connection
   connect_line_search_slot(
@@ -124,30 +135,29 @@ public:
       &slot);
 
   /**
-   * Connect a slot to perform a custom preconditioning.
-   *
-   * The preconditioner is applied inside the two loop recursion to
-   * vector `g` using the history of position increments `s` and
-   * gradient increments `y`.
-   *
-   * One possibility is to use the oldest `s,y` pair:
+   * Connect a slot to perform a custom preconditioning.     The
+   * preconditioner is applied inside the two loop recursion to   vector `g`
+   * using the history of position increments `s` and   gradient increments
+   * `y`.     One possibility is to use the oldest `s,y` pair:
    * @code
-   *  const auto preconditioner = [](VectorType &                         g,
-   *                                 const FiniteSizeHistory<VectorType> &s,
-   *                                 const FiniteSizeHistory<VectorType> &y) {
-   *    if (s.size() > 0)
-   *      {
-   *        const unsigned int i  = s.size() - 1;
-   *        const auto         yy = y[i] * y[i];
-   *        const auto         sy = s[i] * y[i];
-   *        Assert(yy > 0 && sy > 0, ExcInternalError());
-   *        g *= sy / yy;
-   *      }
-   *  };
-   * @endcode
+   * const auto preconditioner = [](VectorType &                         g,
+   *                               const FiniteSizeHistory<VectorType> &s,
+   *                               const FiniteSizeHistory<VectorType> &y) {
+   *  if (s.size() > 0)
+   *    {
+   *      const unsigned int i  = s.size()
    *
+   * - 1;
+   *      const auto         yy = y[i] y[i];
+   *      const auto         sy = s[i] y[i];
+   *      Assert(yy > 0 && sy > 0, ExcInternalError());
+   *      g= sy / yy;
+   *    }
+   * };
+   * @endcode
    * No preconditioning is performed if the code using this class has not
    * attached anything to the signal.
+   *
    */
   boost::signals2::connection
   connect_preconditioner_slot(
@@ -159,11 +169,13 @@ public:
 protected:
   /**
    * Additional data to the solver.
+   *
    */
   const AdditionalData additional_data;
 
   /**
    * Signal used to perform line search.
+   *
    */
   boost::signals2::signal<
     Number(Number &f, VectorType &x, VectorType &g, const VectorType &p)>
@@ -171,6 +183,7 @@ protected:
 
   /**
    * Signal used to perform preconditioning.
+   *
    */
   boost::signals2::signal<void(VectorType &                         g,
                                const FiniteSizeHistory<VectorType> &s,

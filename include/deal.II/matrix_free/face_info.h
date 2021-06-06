@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
 //
@@ -37,18 +37,17 @@ namespace internal
      * Data type for information about the batches build for vectorization of
      * the face integrals. The setup of the batches for the faces is
      * independent of the cells, and thus, we must store the relation to the
-     * cell indexing for accessing the degrees of freedom.
-     *
-     * Interior faces are stored by the two adjacent cells, which we label as
+     * cell indexing for accessing the degrees of freedom.         Interior
+     * faces are stored by the two adjacent cells, which we label as
      * "interior" and "exterior" side of the face. Normal vectors stored in
      * MappingInfo are only stored once and are the outer normals to the cells
      * on the "interior" side, whereas the sign is the opposite for the
-     * "exterior" side.
+     * "exterior" side.         This data field is stored as a vector for all
+     * faces involved in the     computation. In order to avoid gaps in the
+     * memory representation, the     four 'char' variables are put next to
+     * each other which occupies the     same size as the unsigned integers on
+     * most architectures.
      *
-     * This data field is stored as a vector for all faces involved in the
-     * computation. In order to avoid gaps in the memory representation, the
-     * four 'char' variables are put next to each other which occupies the
-     * same size as the unsigned integers on most architectures.
      */
     template <int vectorization_width>
     struct FaceToCellTopology
@@ -56,7 +55,8 @@ namespace internal
       /**
        * Indices of the faces in the current face batch as compared to the
        * numbers of the cells on the logical "interior" side of the face which
-       * is aligned to the direction of FEEvaluation::get_normal_vector().
+       * is aligned to the direction of   FEEvaluation::get_normal_vector().
+       *
        */
       std::array<unsigned int, vectorization_width> cells_interior;
 
@@ -64,28 +64,29 @@ namespace internal
        * Indices of the faces in the current face batch as compared to the
        * numbers of the cells on the logical "exterior" side of the face which
        * is aligned to the opposite direction of
-       * FEEvaluation::get_normal_vector(). Note that the distinction into
+       * FEEvaluation::get_normal_vector().   Note that the distinction into
        * interior and exterior faces is purely logical and refers to the
        * direction of the normal only. In the actual discretization of a
-       * problem, the discretization typically needs to make sure that interior
-       * and exterior sides are treated properly, such as with upwind fluxes.
-       *
-       * For boundary faces, the numbers are set to
+       * problem, the discretization typically needs to make sure that
+       * interior       and exterior sides are treated properly, such as with
+       * upwind fluxes.             For boundary faces, the numbers are set to
        * `numbers::invalid_unsigned_int`.
+       *
        */
       std::array<unsigned int, vectorization_width> cells_exterior;
 
       /**
-       * Index of the face between 0 and GeometryInfo::faces_per_cell within
-       * the cells on the "exterior" side of the faces.
-       *
+       * Index of the face between 0 and   GeometryInfo::faces_per_cell
+       * within       the cells on the "exterior" side of the faces.
        * For a boundary face, this data field stores the boundary id.
+       *
        */
       types::boundary_id exterior_face_no;
 
       /**
-       * Index of the face between 0 and GeometryInfo::faces_per_cell within
-       * the cells on the "interior" side of the faces.
+       * Index of the face between 0 and   GeometryInfo::faces_per_cell
+       * within       the cells on the "interior" side of the faces.
+       *
        */
       unsigned char interior_face_no;
 
@@ -93,6 +94,7 @@ namespace internal
        * For adaptively refined meshes, the cell on the exterior side of the
        * face might be less refined than the interior side. This index
        * indicates the possible subface index on the exterior side.
+       *
        */
       unsigned char subface_index;
 
@@ -100,24 +102,26 @@ namespace internal
        * In 3D, one of the two cells adjacent to a face might use a different
        * orientation (also called as face orientation, face flip and face
        * rotation) than the standard orientation. This variable stores the
-       * values of face orientation, face flip and face
-       * rotation (for one of the interior or exterior side) for the present
-       * batch of faces in the first free bits. The forth bit is one if the
+       * values of face orientation, face flip and face       rotation (for
+       * one of the interior or exterior side) for the present       batch of
+       * faces in the first free bits. The forth bit is one if the
        * internal cell has non-standard orientation.
+       * @note   In contrast to other place in the library, the
+       * face-orientation         bit (first bit) is flipped.
        *
-       * @note In contrast to other place in the library, the face-orientation
-       *   bit (first bit) is flipped.
        */
       unsigned char face_orientation;
 
       /**
        * Reference-cell type of the given face: 0 for line or quadrilateral,
        * 1 for triangle.
+       *
        */
       unsigned char face_type;
 
       /**
        * Return the memory consumption of the present data structure.
+       *
        */
       std::size_t
       memory_consumption() const
@@ -131,6 +135,7 @@ namespace internal
     /**
      * A data structure that holds the connectivity between the faces and the
      * cells.
+     *
      */
     template <int vectorization_width>
     struct FaceInfo
@@ -138,6 +143,7 @@ namespace internal
       /**
        * Clear all data fields to be in a state similar to after having
        * called the default constructor.
+       *
        */
       void
       clear()
@@ -149,6 +155,7 @@ namespace internal
 
       /**
        * Return the memory consumption of the present data structure.
+       *
        */
       std::size_t
       memory_consumption() const
@@ -161,19 +168,22 @@ namespace internal
       /**
        * Vectorized storage of interior faces, linking to the two cells in the
        * vectorized cell storage.
+       *
        */
       std::vector<FaceToCellTopology<vectorization_width>> faces;
 
       /**
-       * This table translates a triple of the macro cell number, the index of a
-       * face within a cell and the index within the cell batch of vectorization
-       * into the index within the @p faces array.
+       * This table translates a triple of the macro cell number, the index of
+       * a       face within a cell and the index within the cell batch of
+       * vectorization       into the index within the   @p faces   array.
+       *
        */
       ::dealii::Table<3, unsigned int> cell_and_face_to_plain_faces;
 
       /**
        * Stores the boundary ids of the faces in vectorized format using the
        * same indexing as the cell_and_face_to_plain_faces data structure
+       *
        */
       ::dealii::Table<3, types::boundary_id> cell_and_face_boundary_id;
     };

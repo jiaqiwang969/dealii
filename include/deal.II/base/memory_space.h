@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -21,12 +21,13 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/**
- */
+ /**
+  */
 namespace MemorySpace
 {
   /**
    * Structure describing Host memory space.
+   *
    */
   struct Host
   {};
@@ -35,6 +36,7 @@ namespace MemorySpace
 
   /**
    * Structure describing CUDA memory space.
+   *
    */
   struct CUDA
   {};

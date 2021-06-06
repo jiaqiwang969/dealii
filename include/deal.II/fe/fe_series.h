@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
 //
@@ -42,47 +42,34 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup feall */
-/*@{*/
+ /*!@addtogroup feall */ 
+ /*@{*/ 
 
 
 /**
  * This namespace offers functions to calculate expansion series of the
  * solution on the reference element. Coefficients of expansion are often used
- * to estimate local smoothness of the underlying FiniteElement field to decide
- * on h- or p-adaptive refinement strategy.
+ * to estimate local smoothness of the underlying FiniteElement field to
+ * decide on h- or p-adaptive refinement strategy.
+ *
+ *
  */
 namespace FESeries
 {
   /**
-   * A class to calculate expansion of a scalar FE (or a single component
-   * of vector-valued FE) field into Fourier series on a reference element.
-   * The exponential form of the Fourier series is  based on completeness
-   * and Hermitian orthogonality of the set of exponential
-   * functions $ \phi_{\bf k}({\bf x}) = \exp(2 \pi i\, {\bf k} \cdot {\bf x})$.
-   * For example in 1D the L2-orthogonality condition reads
-   * @f[
-   *   \int_0^1 \phi_k(x) \phi_l^\ast(x) dx=\delta_{kl}.
-   * @f]
-   * Note that $ \phi_{\bf k} = \phi_{-\bf k}^\ast $.
+   * A class to calculate expansion of a scalar FE (or a single component   of vector-valued FE) field into Fourier series on a reference element.   The exponential form of the Fourier series is  based on completeness   and Hermitian orthogonality of the set of exponential   functions   $ \phi_{\bf k}({\bf x}) = \exp(2 \pi i\, {\bf k} \cdot {\bf x})$  .   For example in 1D the L2-orthogonality condition reads   @f[
+   * \int_0^1 \phi_k(x) \phi_l^\ast(x) dx=\delta_{kl}.
+   * @f]   Note that   $ \phi_{\bf k} = \phi_{-\bf k}^\ast $  .     The arbitrary scalar FE field on the reference element can be expanded in   the complete orthogonal exponential basis as   @f[
+   * u({\bf x}) = \sum_{\bf k} c_{\bf k} \phi_{\bf k}({\bf x}).
+   * @f]   From the orthogonality property of the basis, it follows that   @f[
+   * c_{\bf k} = \int_{[0,1]^d} u({\bf x}) \phi_{\bf k}^\ast ({\bf x}) d{\bf
+   * x}\,. @f]   It is this complex-valued expansion coefficients, that are
+   * calculated by   this class. Note that   $ u({\bf x}) = \sum_i u_i
+   * N_i({\bf x})$  ,   where   $ N_i({\bf x}) $   are real-valued
+   * FiniteElement shape functions.   Consequently   $ c_{\bf k} \equiv
+   * c_{-\bf k}^\ast $   and   we only need to compute   $ c_{\bf k} $   for
+   * positive indices     $ \bf k $   .
    *
-   * The arbitrary scalar FE field on the reference element can be expanded in
-   * the complete orthogonal exponential basis as
-   * @f[
-   *    u({\bf x})
-   *    = \sum_{\bf k} c_{\bf k} \phi_{\bf k}({\bf x}).
-   * @f]
-   * From the orthogonality property of the basis, it follows that
-   * @f[
-   *    c_{\bf k} =
-   *    \int_{[0,1]^d} u({\bf x}) \phi_{\bf k}^\ast ({\bf x}) d{\bf x}\,.
-   * @f]
-   * It is this complex-valued expansion coefficients, that are calculated by
-   * this class. Note that $ u({\bf x}) = \sum_i u_i N_i({\bf x})$,
-   * where $ N_i({\bf x}) $ are real-valued FiniteElement shape functions.
-   * Consequently $ c_{\bf k} \equiv c_{-\bf k}^\ast $ and
-   * we only need to compute $ c_{\bf k} $ for positive indices
-   * $ \bf k $ .
    */
   template <int dim, int spacedim = dim>
   class Fourier : public Subscriptor
@@ -91,22 +78,23 @@ namespace FESeries
     using CoefficientType = typename std::complex<double>;
 
     /**
-     * Constructor that initializes all required data structures.
-     *
-     * The @p n_coefficients_per_direction defines the number of coefficients in
-     * each direction, @p fe_collection is the hp::FECollection for which
-     * expansion will be used and @p q_collection is the hp::QCollection used to
-     * integrate the expansion for each FiniteElement in @p fe_collection.
-     *
-     * As the Fourier expansion can only be performed on scalar fields, this
-     * class does not operate on vector-valued finite elements and will
-     * therefore throw an assertion. However, each component of a finite element
-     * field can be treated as a scalar field, respectively, on which Fourier
+     * Constructor that initializes all required data structures.         The
+     * @p n_coefficients_per_direction   defines the number of coefficients in
+     * each direction,   @p fe_collection   is the   hp::FECollection   for
+     * which     expansion will be used and   @p q_collection   is the
+     * hp::QCollection   used to     integrate the expansion for each
+     * FiniteElement in   @p fe_collection.           As the Fourier expansion
+     * can only be performed on scalar fields, this     class does not operate
+     * on vector-valued finite elements and will     therefore throw an
+     * assertion. However, each component of a finite element     field can be
+     * treated as a scalar field, respectively, on which Fourier
      * expansions are again possible. For this purpose, the optional parameter
-     * @p component defines which component of each FiniteElement will be used.
-     * The default value of @p component only applies to scalar FEs, in which
-     * case it indicates that the sole component is to be decomposed. For
-     * vector-valued FEs, a non-default value must be explicitly provided.
+     * @p component   defines which component of each FiniteElement will be
+     * used.     The default value of   @p component   only applies to scalar
+     * FEs, in which     case it indicates that the sole component is to be
+     * decomposed. For     vector-valued FEs, a non-default value must be
+     * explicitly provided.
+     *
      */
     Fourier(const std::vector<unsigned int> &      n_coefficients_per_direction,
             const hp::FECollection<dim, spacedim> &fe_collection,
@@ -114,13 +102,13 @@ namespace FESeries
             const unsigned int component = numbers::invalid_unsigned_int);
 
     /**
-     * A non-default constructor. The @p n_coefficients_per_direction defines the
-     * number of modes in each direction, @p fe_collection is the hp::FECollection
-     * for which expansion will be used and @p q_collection is the hp::QCollection
-     * used to integrate the expansion for each FiniteElement
-     * in @p fe_collection.
+     * A non-default constructor. The   @p n_coefficients_per_direction
+     * defines the     number of modes in each direction,   @p fe_collection
+     * is the   hp::FECollection       for which expansion will be used and
+     * @p q_collection   is the   hp::QCollection       used to integrate the
+     * expansion for each FiniteElement     in   @p fe_collection.
+     * @deprecated   Use a different constructor instead.
      *
-     * @deprecated Use a different constructor instead.
      */
     DEAL_II_DEPRECATED
     Fourier(const unsigned int                     n_coefficients_per_direction,
@@ -128,9 +116,10 @@ namespace FESeries
             const hp::QCollection<dim> &           q_collection);
 
     /**
-     * Calculate @p fourier_coefficients of the cell vector field given by
-     * @p local_dof_values corresponding to FiniteElement with
-     * @p cell_active_fe_index .
+     * Calculate   @p fourier_coefficients   of the cell vector field given by
+     * @p local_dof_values   corresponding to FiniteElement with       @p
+     * cell_active_fe_index   .
+     *
      */
     template <typename Number>
     void
@@ -140,40 +129,43 @@ namespace FESeries
 
     /**
      * Return the number of coefficients in each coordinate direction for the
-     * finite element associated with @p index in the provided hp::FECollection.
+     * finite element associated with   @p index   in the provided
+     * hp::FECollection.
+     *
      */
     unsigned int
     get_n_coefficients_per_direction(const unsigned int index) const;
 
     /**
      * Calculate all transformation matrices to transfer the finite element
-     * solution to the series expansion representation.
+     * solution to the series expansion representation.         These matrices
+     * will be generated on demand by calling calculate() and     stored for
+     * recurring purposes. Usually, this operation consumes a lot of
+     * workload. With this function, all matrices will be calculated in
+     * advance.     This way, we can separate their costly generation from the
+     * actual     application.
      *
-     * These matrices will be generated on demand by calling calculate() and
-     * stored for recurring purposes. Usually, this operation consumes a lot of
-     * workload. With this function, all matrices will be calculated in advance.
-     * This way, we can separate their costly generation from the actual
-     * application.
      */
     void
     precalculate_all_transformation_matrices();
 
     /**
      * Write all transformation matrices of this object to a stream for the
-     * purpose of serialization.
-     *
-     * Since any of its transformation matrices has to be generated only once
-     * for a given scenario, it is common practice to determine them in advance
-     * calling precalculate_all_transformation_matrices() and keep them via
+     * purpose of serialization.         Since any of its transformation
+     * matrices has to be generated only once     for a given scenario, it is
+     * common practice to determine them in advance     calling
+     * precalculate_all_transformation_matrices() and keep them via
      * serialization.
+     *
      */
     template <class Archive>
     void
     save_transformation_matrices(Archive &ar, const unsigned int version);
 
     /**
-     * Read all transformation matrices from a stream and recover them for this
-     * object.
+     * Read all transformation matrices from a stream and recover them for
+     * this     object.
+     *
      */
     template <class Archive>
     void
@@ -181,6 +173,7 @@ namespace FESeries
 
     /**
      * Test for equality of two series expansion objects.
+     *
      */
     bool
     operator==(const Fourier<dim, spacedim> &fourier) const;
@@ -188,38 +181,46 @@ namespace FESeries
   private:
     /**
      * Number of coefficients in each direction for each finite element in the
-     * registered hp::FECollection.
+     * registered   hp::FECollection.
+     *
      */
     const std::vector<unsigned int> n_coefficients_per_direction;
 
     /**
-     * hp::FECollection for which transformation matrices will be calculated.
+     * hp::FECollection   for which transformation matrices will be
+     * calculated.
+     *
      */
     SmartPointer<const hp::FECollection<dim, spacedim>> fe_collection;
 
     /**
-     * hp::QCollection used in calculation of transformation matrices.
+     * hp::QCollection   used in calculation of transformation matrices.
+     *
      */
     const hp::QCollection<dim> q_collection;
 
     /**
-     * Angular frequencies $ 2 \pi {\bf k} $ .
+     * Angular frequencies   $ 2 \pi {\bf k} $   .
+     *
      */
     Table<dim, Tensor<1, dim>> k_vectors;
 
     /**
      * Transformation matrices for each FiniteElement.
+     *
      */
     std::vector<FullMatrix<CoefficientType>> fourier_transform_matrices;
 
     /**
      * Auxiliary vector to store unrolled coefficients.
+     *
      */
     std::vector<CoefficientType> unrolled_coefficients;
 
     /**
      * Which component of FiniteElement should be used to calculate the
      * expansion.
+     *
      */
     const unsigned int component;
   };
@@ -227,46 +228,23 @@ namespace FESeries
 
 
   /**
-   * A class to calculate expansion of a scalar FE (or a single component
-   * of vector-valued FE) field into series of Legendre functions on a
-   * reference element.
+   * A class to calculate expansion of a scalar FE (or a single component   of vector-valued FE) field into series of Legendre functions on a   reference element.     Legendre functions are solutions to Legendre's differential equation   @f[
+   *  \frac{d}{dx}\left([1-x^2] \frac{d}{dx} P_n(x)\right) +
+   *  n[n+1] P_n(x) = 0
+   * @f]   and can be expressed using Rodrigues' formula   @f[
+   * P_n(x) = \frac{1}{2^n n!} \frac{d^n}{dx^n}[x^2-1]^n.
+   * @f]   These polynomials are orthogonal with respect to the   $ L^2 $   inner   product on the interval   $ [-1;1] $     @f[
+   * \int_{-1}^1 P_m(x) P_n(x) = \frac{2}{2n + 1} \delta_{mn}
+   * @f]   and are complete.   A family of   $ L^2 $  -orthogonal polynomials on   $ [0;1] $   can be   constructed via   @f[
+   * \widetilde P_m = \sqrt{2} P_m(2x-1).
+   * @f]       An arbitrary scalar FE field on the reference element   $ [0;1] $   can be   expanded in the complete orthogonal basis as   @f[
+   * u(x) = \sum_{m} c_m \widetilde P_{m}(x).
+   * @f]   From the orthogonality property of the basis, it follows that   @f[
+   * c_m = \frac{2m+1}{2} \int_0^1 u(x) \widetilde P_m(x) dx . @f]   This
+   * class calculates coefficients   $ c_{\bf k} $   using     $ dim $
+   * -dimensional Legendre polynomials constructed from     $ \widetilde
+   * P_m(x) $   using tensor product rule.
    *
-   * Legendre functions are solutions to Legendre's differential equation
-   * @f[
-   *    \frac{d}{dx}\left([1-x^2] \frac{d}{dx} P_n(x)\right) +
-   *    n[n+1] P_n(x) = 0
-   * @f]
-   * and can be expressed using Rodrigues' formula
-   * @f[
-   *    P_n(x) = \frac{1}{2^n n!} \frac{d^n}{dx^n}[x^2-1]^n.
-   * @f]
-   * These polynomials are orthogonal with respect to the $ L^2 $ inner
-   * product on the interval $ [-1;1] $
-   * @f[
-   *    \int_{-1}^1 P_m(x) P_n(x) = \frac{2}{2n + 1} \delta_{mn}
-   * @f]
-   * and are complete.
-   * A family of $ L^2 $-orthogonal polynomials on $ [0;1] $ can be
-   * constructed via
-   * @f[
-   *    \widetilde P_m = \sqrt{2} P_m(2x-1).
-   * @f]
-   *
-   *
-   * An arbitrary scalar FE field on the reference element $ [0;1] $ can be
-   * expanded in the complete orthogonal basis as
-   * @f[
-   *    u(x)
-   *    = \sum_{m} c_m \widetilde P_{m}(x).
-   * @f]
-   * From the orthogonality property of the basis, it follows that
-   * @f[
-   *    c_m = \frac{2m+1}{2}
-   *    \int_0^1 u(x) \widetilde P_m(x) dx .
-   * @f]
-   * This class calculates coefficients $ c_{\bf k} $ using
-   * $ dim $-dimensional Legendre polynomials constructed from
-   * $ \widetilde P_m(x) $ using tensor product rule.
    */
   template <int dim, int spacedim = dim>
   class Legendre : public Subscriptor
@@ -275,22 +253,23 @@ namespace FESeries
     using CoefficientType = double;
 
     /**
-     * Constructor that initializes all required data structures.
-     *
-     * The @p n_coefficients_per_direction defines the number of coefficients in
-     * each direction, @p fe_collection is the hp::FECollection for which
-     * expansion will be used and @p q_collection is the hp::QCollection used to
-     * integrate the expansion for each FiniteElement in @p fe_collection.
-     *
-     * As the Legendre expansion can only be performed on scalar fields, this
-     * class does not operate on vector-valued finite elements and will
-     * therefore throw an assertion. However, each component of a finite element
+     * Constructor that initializes all required data structures.         The
+     * @p n_coefficients_per_direction   defines the number of coefficients in
+     * each direction,   @p fe_collection   is the   hp::FECollection   for
+     * which     expansion will be used and   @p q_collection   is the
+     * hp::QCollection   used to     integrate the expansion for each
+     * FiniteElement in   @p fe_collection.           As the Legendre
+     * expansion can only be performed on scalar fields, this     class does
+     * not operate on vector-valued finite elements and will     therefore
+     * throw an assertion. However, each component of a finite element
      * field can be treated as a scalar field, respectively, on which Legendre
      * expansions are again possible. For this purpose, the optional parameter
-     * @p component defines which component of each FiniteElement will be used.
-     * The default value of @p component only applies to scalar FEs, in which
-     * case it indicates that the sole component is to be decomposed. For
-     * vector-valued FEs, a non-default value must be explicitly provided.
+     * @p component   defines which component of each FiniteElement will be
+     * used.     The default value of   @p component   only applies to scalar
+     * FEs, in which     case it indicates that the sole component is to be
+     * decomposed. For     vector-valued FEs, a non-default value must be
+     * explicitly provided.
+     *
      */
     Legendre(const std::vector<unsigned int> &n_coefficients_per_direction,
              const hp::FECollection<dim, spacedim> &fe_collection,
@@ -298,12 +277,13 @@ namespace FESeries
              const unsigned int component = numbers::invalid_unsigned_int);
 
     /**
-     * A non-default constructor. The @p size_in_each_direction defines the number
-     * of coefficients in each direction, @p fe_collection is the hp::FECollection
-     * for which expansion will be used and @p q_collection is the hp::QCollection
-     * used to integrate the expansion for each FiniteElement in @p fe_collection.
+     * A non-default constructor. The   @p size_in_each_direction   defines
+     * the number     of coefficients in each direction,   @p fe_collection
+     * is the   hp::FECollection       for which expansion will be used and
+     * @p q_collection   is the   hp::QCollection       used to integrate the
+     * expansion for each FiniteElement in   @p fe_collection.
+     * @deprecated   Use a different constructor instead.
      *
-     * @deprecated Use a different constructor instead.
      */
     DEAL_II_DEPRECATED
     Legendre(const unsigned int n_coefficients_per_direction,
@@ -311,9 +291,10 @@ namespace FESeries
              const hp::QCollection<dim> &           q_collection);
 
     /**
-     * Calculate @p legendre_coefficients of the cell vector field given by
-     * @p local_dof_values corresponding to FiniteElement with
-     * @p cell_active_fe_index .
+     * Calculate   @p legendre_coefficients   of the cell vector field given
+     * by       @p local_dof_values   corresponding to FiniteElement with
+     * @p cell_active_fe_index   .
+     *
      */
     template <typename Number>
     void
@@ -323,40 +304,43 @@ namespace FESeries
 
     /**
      * Return the number of coefficients in each coordinate direction for the
-     * finite element associated with @p index in the provided hp::FECollection.
+     * finite element associated with   @p index   in the provided
+     * hp::FECollection.
+     *
      */
     unsigned int
     get_n_coefficients_per_direction(const unsigned int index) const;
 
     /**
      * Calculate all transformation matrices to transfer the finite element
-     * solution to the series expansion representation.
+     * solution to the series expansion representation.         These matrices
+     * will be generated on demand by calling calculate() and     stored for
+     * recurring purposes. Usually, this operation consumes a lot of
+     * workload. With this function, all matrices will be calculated in
+     * advance.     This way, we can separate their costly generation from the
+     * actual     application.
      *
-     * These matrices will be generated on demand by calling calculate() and
-     * stored for recurring purposes. Usually, this operation consumes a lot of
-     * workload. With this function, all matrices will be calculated in advance.
-     * This way, we can separate their costly generation from the actual
-     * application.
      */
     void
     precalculate_all_transformation_matrices();
 
     /**
      * Write all transformation matrices of this object to a stream for the
-     * purpose of serialization.
-     *
-     * Since any of its transformation matrices has to be generated only once
-     * for a given scenario, it is common practice to determine them in advance
-     * calling precalculate_all_transformation_matrices() and keep them via
+     * purpose of serialization.         Since any of its transformation
+     * matrices has to be generated only once     for a given scenario, it is
+     * common practice to determine them in advance     calling
+     * precalculate_all_transformation_matrices() and keep them via
      * serialization.
+     *
      */
     template <class Archive>
     void
     save_transformation_matrices(Archive &ar, const unsigned int version);
 
     /**
-     * Read all transformation matrices from a stream and recover them for this
-     * object.
+     * Read all transformation matrices from a stream and recover them for
+     * this     object.
+     *
      */
     template <class Archive>
     void
@@ -364,6 +348,7 @@ namespace FESeries
 
     /**
      * Test for equality of two series expansion objects.
+     *
      */
     bool
     operator==(const Legendre<dim, spacedim> &legendre) const;
@@ -371,33 +356,40 @@ namespace FESeries
   private:
     /**
      * Number of coefficients in each direction for each finite element in the
-     * registered hp::FECollection.
+     * registered   hp::FECollection.
+     *
      */
     const std::vector<unsigned int> n_coefficients_per_direction;
 
     /**
-     * hp::FECollection for which transformation matrices will be calculated.
+     * hp::FECollection   for which transformation matrices will be
+     * calculated.
+     *
      */
     SmartPointer<const hp::FECollection<dim, spacedim>> fe_collection;
 
     /**
-     * hp::QCollection used in calculation of transformation matrices.
+     * hp::QCollection   used in calculation of transformation matrices.
+     *
      */
     const hp::QCollection<dim> q_collection;
 
     /**
      * Transformation matrices for each FiniteElement.
+     *
      */
     std::vector<FullMatrix<CoefficientType>> legendre_transform_matrices;
 
     /**
      * Auxiliary vector to store unrolled coefficients.
+     *
      */
     std::vector<CoefficientType> unrolled_coefficients;
 
     /**
      * Which component of FiniteElement should be used to calculate the
      * expansion.
+     *
      */
     const unsigned int component;
   };
@@ -405,21 +397,19 @@ namespace FESeries
 
 
   /**
-   * Calculate the @p norm of subsets of @p coefficients defined by
-   * @p predicate being constant. Return the pair of vectors of predicate values
-   * and the vector of calculated subset norms.
-   *
-   * @p predicate should return a pair of <code>bool</code> and <code>unsigned
+   * Calculate the   @p norm   of subsets of   @p coefficients   defined by
+   * @p predicate   being constant. Return the pair of vectors of predicate
+   * values   and the vector of calculated subset norms.       @p predicate
+   * should return a pair of   <code>bool</code>   and <code>unsigned
    * int</code>. The former is a flag whether a given TableIndices should be
    * used in calculation, whereas the latter is the unrolled value of indices
-   * according to which the subsets of coefficients will be formed.
+   * according to which the subsets of coefficients will be formed.     Only
+   * those coefficients will be considered which are larger than     @p
+   * smallest_abs_coefficient.
+   * @note   Only the following values of   @p norm_type   are implemented and
+   * make   sense in this case: mean, L1_norm, L2_norm, Linfty_norm. The mean
+   * norm ca   only be applied to real valued coefficients.
    *
-   * Only those coefficients will be considered which are larger than
-   * @p smallest_abs_coefficient.
-   *
-   * @note Only the following values of @p norm_type are implemented and make
-   * sense in this case: mean, L1_norm, L2_norm, Linfty_norm. The mean norm ca
-   * only be applied to real valued coefficients.
    */
   template <int dim, typename CoefficientType>
   std::pair<std::vector<unsigned int>, std::vector<double>>
@@ -430,16 +420,17 @@ namespace FESeries
                        const double smallest_abs_coefficient = 1e-10);
 
   /**
-   * Linear regression least-square fit of $y = k \, x + b$.
-   * The size of the input vectors should be equal and more than 1.
-   * The returned pair will contain $k$ (first) and $b$ (second).
+   * Linear regression least-square fit of   $y = k \, x + b$  .   The size of
+   * the input vectors should be equal and more than 1.   The returned pair
+   * will contain   $k$   (first) and   $b$   (second).
+   *
    */
   std::pair<double, double>
   linear_regression(const std::vector<double> &x, const std::vector<double> &y);
 
 } // namespace FESeries
 
-/*@}*/
+ /*@}*/ 
 
 
 
@@ -628,7 +619,7 @@ template <class Archive>
 inline void
 FESeries::Fourier<dim, spacedim>::save_transformation_matrices(
   Archive &ar,
-  const unsigned int /*version*/)
+  const unsigned int  /*version*/ )
 {
   // Store information about those resources which have been used to generate
   // the transformation matrices.
@@ -658,7 +649,7 @@ template <class Archive>
 inline void
 FESeries::Fourier<dim, spacedim>::load_transformation_matrices(
   Archive &ar,
-  const unsigned int /*version*/)
+  const unsigned int  /*version*/ )
 {
   // Check whether the currently registered resources are compatible with
   // the transformation matrices to load.
@@ -706,7 +697,7 @@ template <class Archive>
 inline void
 FESeries::Legendre<dim, spacedim>::save_transformation_matrices(
   Archive &ar,
-  const unsigned int /*version*/)
+  const unsigned int  /*version*/ )
 {
   // Store information about those resources which have been used to generate
   // the transformation matrices.
@@ -736,7 +727,7 @@ template <class Archive>
 inline void
 FESeries::Legendre<dim, spacedim>::load_transformation_matrices(
   Archive &ar,
-  const unsigned int /*version*/)
+  const unsigned int  /*version*/ )
 {
   // Check whether the currently registered resources are compatible with
   // the transformation matrices to load.

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -41,71 +41,52 @@ namespace MeshWorker
    * The namespace containing objects that can be used to assemble data
    * computed on cells and faces into global objects. This can reach from
    * collecting the total error estimate from cell and face contributions to
-   * assembling matrices and multilevel matrices.
-   *
-   * <h3>Data models</h3>
-   *
+   * assembling matrices and multilevel matrices.     <h3>Data models</h3>
    * The class chosen from this namespace determines which data model is used.
    * For the local as well as the global objects, we have the choice between
-   * two models:
-   *
-   * <h4>The comprehensive data model</h4>
-   *
-   * This is the structure set up by the FESystem class. Globally, this means,
-   * data is assembled into one residual vector and into one matrix. These
-   * objects may be block vectors and block matrices, but the process of
-   * assembling ignores this fact.
-   *
-   * Similarly, there is only a single cell vector and cell matrix,
-   * respectively, which is indexed by all degrees of freedom of the FESystem.
-   * When building the cell matrix, it is necessary to distinguish between the
-   * different components of the system and select the right operator for each
-   * pair.
-   *
-   * <h4>The blocked data model</h4>
-   *
+   * two models:     <h4>The comprehensive data model</h4>     This is the
+   * structure set up by the FESystem class. Globally, this means,   data is
+   * assembled into one residual vector and into one matrix. These   objects
+   * may be block vectors and block matrices, but the process of   assembling
+   * ignores this fact.     Similarly, there is only a single cell vector and
+   * cell matrix,   respectively, which is indexed by all degrees of freedom
+   * of the FESystem.   When building the cell matrix, it is necessary to
+   * distinguish between the   different components of the system and select
+   * the right operator for each   pair.     <h4>The blocked data model</h4>
    * Here, all the blocks are treated separately (in spite of using FESystem
    * for its convenience in other places). For instance, no block matrix is
    * assembled, but a list of blocks, which can be combined later by
    * BlockMatrixArray. Locally, this means, that each matrix block of a system
    * is generated separately and assembled into the corresponding global
-   * block.
-   *
-   * This approach is advantageous, if the number of matrices for each block
-   * position in the global system is different. For instance, block
-   * preconditioners for the Oseen problem require 3 pressure matrices, but
-   * only one divergence and one advection-diffusion operator for velocities.
-   *
-   * Additionally, this approach enables the construction of a system of
-   * equations from building blocks for each equation and coupling operator.
-   *
-   * Nevertheless, since a separate FEValues object must be created for each
-   * base element, it is not quite clear a priori, which data model is more
-   * efficient.
-   *
+   * block.     This approach is advantageous, if the number of matrices for
+   * each block   position in the global system is different. For instance,
+   * block   preconditioners for the Oseen problem require 3 pressure
+   * matrices, but   only one divergence and one advection-diffusion operator
+   * for velocities.     Additionally, this approach enables the construction
+   * of a system of   equations from building blocks for each equation and
+   * coupling operator.     Nevertheless, since a separate FEValues object
+   * must be created for each   base element, it is not quite clear a priori,
+   * which data model is more   efficient.
    * @ingroup MeshWorker
+   *
    */
   namespace Assembler
   {
     /**
-     * Assemble local residuals into global residuals.
-     *
-     * The global residuals are expected as an FEVectors object. The local
-     * residuals are block vectors.
-     *
-     * Depending on whether the BlockInfo object was initialize with
-     * BlockInfo::initialize_local(), the comprehensive or block data model is
-     * used locally.
-     *
-     * In the block model, each of the blocks of the local vectors corresponds
-     * to the restriction of a single block of the system to this cell (see
-     * @ref GlossBlock).
-     * Thus, the size of this local block is the number of degrees of freedom
-     * of the corresponding base element of the FESystem.
-     *
-     * @todo Comprehensive model currently not implemented.
-     *
+     * Assemble local
+     * residuals into global residuals.         The global residuals are
+     * expected as an FEVectors object. The local     residuals are block
+     * vectors.         Depending on whether the BlockInfo object was
+     * initialize with       BlockInfo::initialize_local(),   the
+     * comprehensive or block data model is     used locally.         In the
+     * block model, each of the blocks of the local vectors corresponds     to
+     * the restriction of a single block of the system to this cell (see
+     * @ref GlossBlock  ).     Thus, the size of this local block is the
+     * number of degrees of freedom     of the corresponding base element of
+     * the FESystem.           @todo   Comprehensive model currently not
+     * implemented.
      * @ingroup MeshWorker
+     *
      */
     template <typename VectorType>
     class ResidualLocalBlocksToGlobalBlocks
@@ -113,12 +94,14 @@ namespace MeshWorker
     public:
       /**
        * Copy the BlockInfo and the matrix pointers into local variables.
+       *
        */
       void
       initialize(const BlockInfo *block_info, AnyData &residuals);
 
       /**
        * Initialize the constraints.
+       *
        */
       void
       initialize(
@@ -126,10 +109,9 @@ namespace MeshWorker
 
       /**
        * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * assembling.             The   @p info   object refers to a cell if
+       * <code>!face</code>  , or else to an       interior or boundary face.
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
@@ -138,6 +120,7 @@ namespace MeshWorker
 
       /**
        * Assemble the local residuals into the global residuals.
+       *
        */
       template <class DOFINFO>
       void
@@ -145,6 +128,7 @@ namespace MeshWorker
 
       /**
        * Assemble both local residuals into the global residuals.
+       *
        */
       template <class DOFINFO>
       void
@@ -153,6 +137,7 @@ namespace MeshWorker
     private:
       /**
        * Assemble a single local residual into the global.
+       *
        */
       void
       assemble(VectorType &                                global,
@@ -161,11 +146,13 @@ namespace MeshWorker
 
       /**
        * The global vectors, stored as an AnyData container of pointers.
+       *
        */
       AnyData residuals;
 
       /**
        * A pointer to the object containing the block structure.
+       *
        */
       SmartPointer<const BlockInfo,
                    ResidualLocalBlocksToGlobalBlocks<VectorType>>
@@ -173,6 +160,7 @@ namespace MeshWorker
 
       /**
        * A pointer to the object containing constraints.
+       *
        */
       SmartPointer<const AffineConstraints<typename VectorType::value_type>,
                    ResidualLocalBlocksToGlobalBlocks<VectorType>>
@@ -182,29 +170,23 @@ namespace MeshWorker
 
     /**
      * A helper class assembling local matrices into global matrices.
-     *
      * The global matrices are expected as a vector of MatrixBlock objects,
      * each containing a matrix object with a function corresponding to
-     * SparseMatrix::add() and information on the block row and column this
-     * matrix represents in a block system.
-     *
-     * The local matrices are expected as a similar vector of MatrixBlock
-     * objects, but containing a FullMatrix.
-     *
-     * Like with ResidualLocalBlocksToGlobalBlocks, the initialization of the
-     * BlockInfo object decides whether the comprehensive data model or the
-     * block model is used.
-     *
-     * In the comprehensive model, each of the LocalMatrixBlocks has
-     * coordinates (0,0) and dimensions equal to the number of degrees of
-     * freedom of the FESystem.
-     *
-     * In the comprehensive model, each block has its own block coordinates
-     * and the size depends on the associated FESystem::base_element(). These
-     * blocks can be generated separately and will be assembled into the
-     * correct matrix block by this object.
-     *
+     * SparseMatrix::add()   and information on the block row and column this
+     * matrix represents in a block system.         The local matrices are
+     * expected as a similar vector of MatrixBlock     objects, but containing
+     * a FullMatrix.         Like with ResidualLocalBlocksToGlobalBlocks, the
+     * initialization of the     BlockInfo object decides whether the
+     * comprehensive data model or the     block model is used.         In the
+     * comprehensive model, each of the LocalMatrixBlocks has     coordinates
+     * (0,0) and dimensions equal to the number of degrees of     freedom of
+     * the FESystem.         In the comprehensive model, each block has its
+     * own block coordinates     and the size depends on the associated
+     * FESystem::base_element().   These     blocks can be generated
+     * separately and will be assembled into the     correct matrix block by
+     * this object.
      * @ingroup MeshWorker
+     *
      */
     template <typename MatrixType, typename number = double>
     class MatrixLocalBlocksToGlobalBlocks
@@ -213,12 +195,14 @@ namespace MeshWorker
       /**
        * Constructor, initializing the #threshold, which limits how small
        * numbers may be to be entered into the matrix.
+       *
        */
       MatrixLocalBlocksToGlobalBlocks(double threshold = 1.e-12);
 
       /**
        * Copy the BlockInfo and the matrix pointers into local variables and
        * initialize cell matrix vectors.
+       *
        */
       void
       initialize(const BlockInfo *              block_info,
@@ -226,6 +210,7 @@ namespace MeshWorker
 
       /**
        * Initialize the constraints.
+       *
        */
       void
       initialize(
@@ -233,10 +218,9 @@ namespace MeshWorker
 
       /**
        * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * assembling.             The   @p info   object refers to a cell if
+       * <code>!face</code>  , or else to an       interior or boundary face.
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
@@ -245,6 +229,7 @@ namespace MeshWorker
 
       /**
        * Assemble the local matrices into the global matrices.
+       *
        */
       template <class DOFINFO>
       void
@@ -252,6 +237,7 @@ namespace MeshWorker
 
       /**
        * Assemble all local matrices into the global matrices.
+       *
        */
       template <class DOFINFO>
       void
@@ -260,6 +246,7 @@ namespace MeshWorker
     private:
       /**
        * Assemble a single local matrix into a global one.
+       *
        */
       void
       assemble(MatrixBlock<MatrixType> &                   global,
@@ -271,6 +258,7 @@ namespace MeshWorker
 
       /**
        * The global matrices, stored as a vector of pointers.
+       *
        */
       SmartPointer<MatrixBlockVector<MatrixType>,
                    MatrixLocalBlocksToGlobalBlocks<MatrixType, number>>
@@ -278,12 +266,14 @@ namespace MeshWorker
 
       /**
        * A pointer to the object containing the block structure.
+       *
        */
       SmartPointer<const BlockInfo,
                    MatrixLocalBlocksToGlobalBlocks<MatrixType, number>>
         block_info;
       /**
        * A pointer to the object containing constraints.
+       *
        */
 
       SmartPointer<const AffineConstraints<typename MatrixType::value_type>,
@@ -294,6 +284,7 @@ namespace MeshWorker
        * The smallest positive number that will be entered into the global
        * matrix. All smaller absolute values will be treated as zero and will
        * not be assembled.
+       *
        */
       const double threshold;
     };
@@ -302,24 +293,20 @@ namespace MeshWorker
      * A helper class assembling local matrices into global multilevel
      * matrices. This class is the multilevel equivalent of
      * MatrixLocalBlocksToGlobalBlocks and documentation of that class applies
-     * here to a large extend.
-     *
-     * The global matrices are expected as a vector of pointers to MatrixBlock
-     * objects, each containing a MGLevelObject with matrices with a function
-     * corresponding to SparseMatrix::add() and information on the block row
-     * and column this matrix represents in a block system.
-     *
-     * The local matrices are a similar vector of MatrixBlock objects, but
-     * containing a FullMatrix.
-     *
-     * If local refinement occurs, the Multigrid method needs more matrices,
-     * two for continuous elements and another two if numerical fluxes are
-     * computed on interfaces. The second set can be added using
-     * initialize_edge_flux(). Once added, the contributions in all
-     * participating matrices will be assembled from the cell and face
-     * matrices automatically.
-     *
+     * here to a large extend.         The global matrices are expected as a
+     * vector of pointers to MatrixBlock     objects, each containing a
+     * MGLevelObject with matrices with a function     corresponding to
+     * SparseMatrix::add()   and information on the block row     and column
+     * this matrix represents in a block system.         The local matrices
+     * are a similar vector of MatrixBlock objects, but     containing a
+     * FullMatrix.         If local refinement occurs, the Multigrid method
+     * needs more matrices,     two for continuous elements and another two if
+     * numerical fluxes are     computed on interfaces. The second set can be
+     * added using     initialize_edge_flux(). Once added, the contributions
+     * in all     participating matrices will be assembled from the cell and
+     * face     matrices automatically.
      * @ingroup MeshWorker
+     *
      */
     template <typename MatrixType, typename number = double>
     class MGMatrixLocalBlocksToGlobalBlocks
@@ -333,18 +320,21 @@ namespace MeshWorker
       /**
        * Constructor, initializing the #threshold, which limits how small
        * numbers may be to be entered into the matrix.
+       *
        */
       MGMatrixLocalBlocksToGlobalBlocks(double threshold = 1.e-12);
 
       /**
        * Copy the BlockInfo and the matrix pointers into local variables and
        * initialize cell matrix vectors.
+       *
        */
       void
       initialize(const BlockInfo *block_info, MatrixPtrVector &matrices);
 
       /**
        * Initialize the multilevel constraints.
+       *
        */
       void
       initialize(const MGConstrainedDoFs &mg_constrained_dofs);
@@ -353,6 +343,7 @@ namespace MeshWorker
        * Multigrid methods on locally refined meshes need additional matrices.
        * For discontinuous Galerkin methods, these are two flux matrices
        * across the refinement edge, which are set by this method.
+       *
        */
       void
       initialize_edge_flux(MatrixPtrVector &up, MatrixPtrVector &down);
@@ -361,16 +352,16 @@ namespace MeshWorker
        * Multigrid methods on locally refined meshes need additional matrices.
        * For discontinuous Galerkin methods, these are two flux matrices
        * across the refinement edge, which are set by this method.
+       *
        */
       void
       initialize_interfaces(MatrixPtrVector &interface_in,
                             MatrixPtrVector &interface_out);
       /**
        * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * assembling.             The   @p info   object refers to a cell if
+       * <code>!face</code>  , or else to an       interior or boundary face.
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
@@ -379,6 +370,7 @@ namespace MeshWorker
 
       /**
        * Assemble the local matrices into the global matrices.
+       *
        */
       template <class DOFINFO>
       void
@@ -386,6 +378,7 @@ namespace MeshWorker
 
       /**
        * Assemble all local matrices into the global matrices.
+       *
        */
       template <class DOFINFO>
       void
@@ -394,6 +387,7 @@ namespace MeshWorker
     private:
       /**
        * Assemble a single local matrix into a global one.
+       *
        */
       void
       assemble(MatrixType &                                global,
@@ -408,6 +402,7 @@ namespace MeshWorker
 
       /**
        * Assemble a single local matrix into a global one.
+       *
        */
       void
       assemble_fluxes(MatrixType &                                global,
@@ -421,6 +416,7 @@ namespace MeshWorker
 
       /**
        * Assemble a single local matrix into a global one.
+       *
        */
       void
       assemble_up(MatrixType &                                global,
@@ -434,6 +430,7 @@ namespace MeshWorker
 
       /**
        * Assemble a single local matrix into a global one.
+       *
        */
       void
       assemble_down(MatrixType &                                global,
@@ -447,6 +444,7 @@ namespace MeshWorker
 
       /**
        * Assemble a single local matrix into a global one.
+       *
        */
       void
       assemble_in(MatrixType &                                global,
@@ -460,6 +458,7 @@ namespace MeshWorker
 
       /**
        * Assemble a single local matrix into a global one.
+       *
        */
       void
       assemble_out(MatrixType &                                global,
@@ -473,35 +472,41 @@ namespace MeshWorker
 
       /**
        * The level matrices, stored as a vector of pointers.
+       *
        */
       MatrixPtrVectorPtr matrices;
 
       /**
        * The flux matrix between the fine and the coarse level at refinement
        * edges.
+       *
        */
       MatrixPtrVectorPtr flux_down;
 
       /**
        * The flux matrix between the coarse and the fine level at refinement
        * edges.
+       *
        */
       MatrixPtrVectorPtr flux_up;
 
       /**
        * The interface matrix between the fine and the coarse level at
        * refinement edges.
+       *
        */
       MatrixPtrVectorPtr interface_out;
 
       /**
        * The interface matrix between the coarse and the fine level at
        * refinement edges.
+       *
        */
       MatrixPtrVectorPtr interface_in;
 
       /**
        * A pointer to the object containing the block structure.
+       *
        */
       SmartPointer<const BlockInfo,
                    MGMatrixLocalBlocksToGlobalBlocks<MatrixType, number>>
@@ -509,6 +514,7 @@ namespace MeshWorker
 
       /**
        * A pointer to the object containing constraints.
+       *
        */
       SmartPointer<const MGConstrainedDoFs,
                    MGMatrixLocalBlocksToGlobalBlocks<MatrixType, number>>
@@ -519,6 +525,7 @@ namespace MeshWorker
        * The smallest positive number that will be entered into the global
        * matrix. All smaller absolute values will be treated as zero and will
        * not be assembled.
+       *
        */
       const double threshold;
     };

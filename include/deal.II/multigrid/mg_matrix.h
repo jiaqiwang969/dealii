@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2021 by the deal.II authors
 //
@@ -30,8 +30,8 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup mg */
-/*@{*/
+ /*!@addtogroup mg */ 
+ /*@{*/ 
 
 namespace mg
 {
@@ -39,6 +39,7 @@ namespace mg
    * Multilevel matrix. This matrix stores an MGLevelObject of
    * LinearOperator objects. It implements the interface defined in
    * MGMatrixBase, so that it can be used as a matrix in Multigrid.
+   *
    */
   template <typename VectorType = Vector<double>>
   class Matrix : public MGMatrixBase<VectorType>
@@ -46,12 +47,14 @@ namespace mg
   public:
     /**
      * Default constructor for an empty object.
+     *
      */
     Matrix() = default;
 
     /**
      * Constructor setting up pointers to the matrices in <tt>M</tt> by
      * calling initialize().
+     *
      */
     template <typename MatrixType>
     Matrix(const MGLevelObject<MatrixType> &M);
@@ -59,6 +62,7 @@ namespace mg
     /**
      * Initialize the object such that the level multiplication uses the
      * matrices in <tt>M</tt>
+     *
      */
     template <typename MatrixType>
     void
@@ -66,12 +70,14 @@ namespace mg
 
     /**
      * Reset the object.
+     *
      */
     void
     reset();
 
     /**
      * Access matrix on a level.
+     *
      */
     const LinearOperator<VectorType> &operator[](unsigned int level) const;
 
@@ -98,6 +104,7 @@ namespace mg
 
     /**
      * Memory used by this object.
+     *
      */
     std::size_t
     memory_consumption() const;
@@ -111,19 +118,23 @@ namespace mg
 
 /**
  * Multilevel matrix selecting from block matrices. This class implements the
- * interface defined by MGMatrixBase.  The template parameter @p MatrixType
- * should be a block matrix class like BlockSparseMatrix or @p
+ * interface defined by MGMatrixBase.  The template parameter   @p MatrixType
+ * should be a block matrix class like BlockSparseMatrix or   @p
  * BlockSparseMatrixEZ. Then, this class stores a pointer to a MGLevelObject
- * of this matrix class. In each @p vmult, the block selected on
+ * of this matrix class. In each   @p vmult,   the block selected on
  * initialization will be multiplied with the vector provided.
+ *
+ *
  */
 template <typename MatrixType, typename number>
 class MGMatrixSelect : public MGMatrixBase<Vector<number>>
 {
 public:
   /**
-   * Constructor. @p row and @p col are the coordinate of the selected block.
-   * The other argument is handed over to the @p SmartPointer constructor.
+   * Constructor.   @p row   and   @p col   are the coordinate of the selected
+   * block.   The other argument is handed over to the   @p SmartPointer
+   * constructor.
+   *
    */
   MGMatrixSelect(const unsigned int         row    = 0,
                  const unsigned int         col    = 0,
@@ -131,19 +142,22 @@ public:
 
   /**
    * Set the matrix object to be used. The matrix object must exist longer as
-   * the @p MGMatrixSelect object, since only a pointer is stored.
+   * the   @p MGMatrixSelect   object, since only a pointer is stored.
+   *
    */
   void
   set_matrix(MGLevelObject<MatrixType> *M);
 
   /**
    * Select the block for multiplication.
+   *
    */
   void
   select_block(const unsigned int row, const unsigned int col);
 
   /**
    * Matrix-vector-multiplication on a certain level.
+   *
    */
   virtual void
   vmult(const unsigned int    level,
@@ -152,6 +166,7 @@ public:
 
   /**
    * Adding matrix-vector-multiplication on a certain level.
+   *
    */
   virtual void
   vmult_add(const unsigned int    level,
@@ -160,6 +175,7 @@ public:
 
   /**
    * Transpose matrix-vector-multiplication on a certain level.
+   *
    */
   virtual void
   Tvmult(const unsigned int    level,
@@ -168,6 +184,7 @@ public:
 
   /**
    * Adding transpose matrix-vector-multiplication on a certain level.
+   *
    */
   virtual void
   Tvmult_add(const unsigned int    level,
@@ -177,22 +194,25 @@ public:
 private:
   /**
    * Pointer to the matrix objects on each level.
+   *
    */
   SmartPointer<MGLevelObject<MatrixType>, MGMatrixSelect<MatrixType, number>>
     matrix;
   /**
    * Row coordinate of selected block.
+   *
    */
   unsigned int row;
   /**
    * Column coordinate of selected block.
+   *
    */
   unsigned int col;
 };
 
-/*@}*/
+ /*@}*/ 
 
-/*----------------------------------------------------------------------*/
+ /*----------------------------------------------------------------------*/ 
 
 namespace mg
 {
@@ -314,7 +334,7 @@ namespace mg
 } // namespace mg
 
 
-/*----------------------------------------------------------------------*/
+ /*----------------------------------------------------------------------*/ 
 
 template <typename MatrixType, typename number>
 MGMatrixSelect<MatrixType, number>::MGMatrixSelect(const unsigned int row,

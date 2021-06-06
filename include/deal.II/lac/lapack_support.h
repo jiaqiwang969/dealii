@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2021 by the deal.II authors
 //
@@ -28,11 +28,13 @@ namespace types
 #ifdef LAPACK_WITH_64BIT_BLAS_INDICES
   /**
    * Integer type in BLAS.
+   *
    */
   using blas_int = long long;
 #else
   /**
    * Integer type in BLAS.
+   *
    */
   using blas_int = int;
 #endif
@@ -41,6 +43,8 @@ namespace types
 /**
  * A namespace containing constants, exceptions, enumerations, and other
  * utilities used by the deal.II LAPACK bindings.
+ *
+ *
  */
 namespace LAPACKSupport
 {
@@ -51,6 +55,7 @@ namespace LAPACKSupport
    * columns represent the eigenvectors of the original content of the matrix.
    * The elements of this enumeration are therefore used to track what is
    * currently being stored by this object.
+   *
    */
   enum State
   {
@@ -74,6 +79,7 @@ namespace LAPACKSupport
 
   /**
    * %Function printing the name of a State.
+   *
    */
   inline const char *
   state_name(State s)
@@ -104,6 +110,7 @@ namespace LAPACKSupport
   /**
    * A matrix can have certain features allowing for optimization, but hard to
    * test. These are listed here.
+   *
    */
   enum Property
   {
@@ -123,6 +130,7 @@ namespace LAPACKSupport
 
   /**
    * %Function printing the name of a Property.
+   *
    */
   inline const char *
   property_name(const Property s)
@@ -149,43 +157,53 @@ namespace LAPACKSupport
 
   /**
    * Character constant.
+   *
    */
   static const char A = 'A';
   /**
    * Character constant.
+   *
    */
   static const char N = 'N';
   /**
    * Character constant.
+   *
    */
   static const char O = 'O';
   /**
    * Character constant.
+   *
    */
   static const char T = 'T';
   /**
    * Character constant.
+   *
    */
   static const char U = 'U';
   /**
    * Character constant.
+   *
    */
   static const char L = 'L';
   /**
    * Character constant.
+   *
    */
   static const char V = 'V';
   /**
    * Integer constant.
+   *
    */
   static const types::blas_int zero = 0;
   /**
    * Integer constant.
+   *
    */
   static const types::blas_int one = 1;
 
   /**
    * A LAPACK function returned an error code.
+   *
    */
   DeclException2(ExcErrorCode,
                  std::string,
@@ -197,6 +215,7 @@ namespace LAPACKSupport
    * Exception thrown when a matrix is not in a suitable state for an
    * operation. For instance, a LAPACK routine may have left the matrix in an
    * unusable state, then vmult does not make sense anymore.
+   *
    */
   DeclException1(
     ExcState,
@@ -207,6 +226,7 @@ namespace LAPACKSupport
   /**
    * Exception thrown when a matrix does not have suitable properties for an
    * operation.
+   *
    */
   DeclException1(ExcProperty,
                  Property,
@@ -216,6 +236,7 @@ namespace LAPACKSupport
   /**
    * This exception is thrown if a certain LAPACK function is not available
    * because no LAPACK installation was detected during configuration.
+   *
    */
   DeclException1(
     ExcMissing,

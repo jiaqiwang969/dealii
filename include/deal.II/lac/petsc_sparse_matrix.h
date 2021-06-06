@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
 //
@@ -44,9 +44,9 @@ namespace PETScWrappers
    * that do the actual work depending on the actual matrix type (much like
    * using virtual functions). Only the functions creating a matrix of
    * specific type differ, and are implemented in this particular class.
-   *
    * @ingroup PETScWrappers
    * @ingroup Matrix1
+   *
    */
   class SparseMatrix : public MatrixBase
   {
@@ -57,34 +57,37 @@ namespace PETScWrappers
      * classes) that take one or other of the matrix classes as its template
      * parameters can tune their behavior based on the variables in this
      * class.
+     *
      */
     struct Traits
     {
       /**
        * It is safe to elide additions of zeros to individual elements of this
        * matrix.
+       *
        */
       static const bool zero_addition_can_be_elided = true;
     };
 
     /**
      * Default constructor. Create an empty matrix.
+     *
      */
     SparseMatrix();
 
     /**
-     * Create a sparse matrix of dimensions @p m times @p n, with an initial
-     * guess of @p n_nonzero_per_row nonzero elements per row. PETSc is able
-     * to cope with the situation that more than this number of elements is
-     * later allocated for a row, but this involves copying data, and is thus
-     * expensive.
+     * Create a sparse matrix of dimensions   @p m   times   @p n,   with an
+     * initial     guess of   @p n_nonzero_per_row   nonzero elements per row.
+     * PETSc is able     to cope with the situation that more than this number
+     * of elements is     later allocated for a row, but this involves copying
+     * data, and is thus     expensive.         The   @p is_symmetric   flag
+     * determines whether we should tell PETSc that     the matrix is going to
+     * be symmetric (as indicated by the call     <tt>MatSetOption(mat,
+     * MAT_SYMMETRIC)</tt>. Note that the PETSc     documentation states that
+     * one cannot form an ILU decomposition of a     matrix for which this
+     * flag has been set to   @p true,   only an ICC. The     default value of
+     * this flag is   @p false.
      *
-     * The @p is_symmetric flag determines whether we should tell PETSc that
-     * the matrix is going to be symmetric (as indicated by the call
-     * <tt>MatSetOption(mat, MAT_SYMMETRIC)</tt>. Note that the PETSc
-     * documentation states that one cannot form an ILU decomposition of a
-     * matrix for which this flag has been set to @p true, only an ICC. The
-     * default value of this flag is @p false.
      */
     SparseMatrix(const size_type m,
                  const size_type n,
@@ -92,20 +95,19 @@ namespace PETScWrappers
                  const bool      is_symmetric = false);
 
     /**
-     * Initialize a rectangular matrix with @p m rows and @p n columns.  The
-     * maximal number of nonzero entries for each row separately is given by
-     * the @p row_lengths array.
-     *
-     * Just as for the other constructors: PETSc is able to cope with the
+     * Initialize a rectangular matrix with   @p m   rows and   @p n
+     * columns.  The     maximal number of nonzero entries for each row
+     * separately is given by     the   @p row_lengths   array.         Just
+     * as for the other constructors: PETSc is able to cope with the
      * situation that more than this number of elements is later allocated for
      * a row, but this involves copying data, and is thus expensive.
-     *
-     * The @p is_symmetric flag determines whether we should tell PETSc that
-     * the matrix is going to be symmetric (as indicated by the call
+     * The   @p is_symmetric   flag determines whether we should tell PETSc
+     * that     the matrix is going to be symmetric (as indicated by the call
      * <tt>MatSetOption(mat, MAT_SYMMETRIC)</tt>. Note that the PETSc
      * documentation states that one cannot form an ILU decomposition of a
-     * matrix for which this flag has been set to @p true, only an ICC. The
-     * default value of this flag is @p false.
+     * matrix for which this flag has been set to   @p true,   only an ICC.
+     * The     default value of this flag is   @p false.
+     *
      */
     SparseMatrix(const size_type               m,
                  const size_type               n,
@@ -114,20 +116,20 @@ namespace PETScWrappers
 
     /**
      * Initialize a sparse matrix using the given sparsity pattern.
-     *
      * Note that PETSc can be very slow if you do not provide it with a good
      * estimate of the lengths of rows. Using the present function is a very
      * efficient way to do this, as it uses the exact number of nonzero
      * entries for each row of the matrix by using the given sparsity pattern
-     * argument. If the @p preset_nonzero_locations flag is @p true, this
-     * function in addition not only sets the correct row sizes up front, but
-     * also pre-allocated the correct nonzero entries in the matrix.
+     * argument. If the   @p preset_nonzero_locations   flag is   @p true,
+     * this     function in addition not only sets the correct row sizes up
+     * front, but     also pre-allocated the correct nonzero entries in the
+     * matrix.         PETsc allows to later add additional nonzero entries to
+     * a matrix, by     simply writing to these elements. However, this will
+     * then lead to     additional memory allocations which are very
+     * inefficient and will     greatly slow down your program. It is
+     * therefore significantly more     efficient to get memory allocation
+     * right from the start.
      *
-     * PETsc allows to later add additional nonzero entries to a matrix, by
-     * simply writing to these elements. However, this will then lead to
-     * additional memory allocations which are very inefficient and will
-     * greatly slow down your program. It is therefore significantly more
-     * efficient to get memory allocation right from the start.
      */
     template <typename SparsityPatternType>
     explicit SparseMatrix(const SparsityPatternType &sparsity_pattern,
@@ -141,17 +143,20 @@ namespace PETScWrappers
      * exists to allow for the obvious notation <tt>matrix=0</tt>, which sets
      * all elements of the matrix to zero, but keep the sparsity pattern
      * previously used.
+     *
      */
     SparseMatrix &
     operator=(const double d);
 
     /**
      * The copy constructor is deleted.
+     *
      */
     SparseMatrix(const SparseMatrix &) = delete;
 
     /**
      * The copy assignment operator is deleted.
+     *
      */
     SparseMatrix &
     operator=(const SparseMatrix &) = delete;
@@ -160,6 +165,7 @@ namespace PETScWrappers
      * Throw away the present matrix and generate one that has the same
      * properties as if it were created by the constructor of this class with
      * the same argument list as the present function.
+     *
      */
     void
     reinit(const size_type m,
@@ -171,6 +177,7 @@ namespace PETScWrappers
      * Throw away the present matrix and generate one that has the same
      * properties as if it were created by the constructor of this class with
      * the same argument list as the present function.
+     *
      */
     void
     reinit(const size_type               m,
@@ -180,28 +187,27 @@ namespace PETScWrappers
 
     /**
      * Initialize a sparse matrix using the given sparsity pattern.
-     *
      * Note that PETSc can be very slow if you do not provide it with a good
      * estimate of the lengths of rows. Using the present function is a very
      * efficient way to do this, as it uses the exact number of nonzero
      * entries for each row of the matrix by using the given sparsity pattern
-     * argument. If the @p preset_nonzero_locations flag is @p true, this
-     * function in addition not only sets the correct row sizes up front, but
-     * also pre-allocated the correct nonzero entries in the matrix.
+     * argument. If the   @p preset_nonzero_locations   flag is   @p true,
+     * this     function in addition not only sets the correct row sizes up
+     * front, but     also pre-allocated the correct nonzero entries in the
+     * matrix.         PETsc allows to later add additional nonzero entries to
+     * a matrix, by     simply writing to these elements. However, this will
+     * then lead to     additional memory allocations which are very
+     * inefficient and will     greatly slow down your program. It is
+     * therefore significantly more     efficient to get memory allocation
+     * right from the start.         Despite the fact that it would seem to be
+     * an obvious win, setting the       @p preset_nonzero_locations   flag to
+     * @p true   doesn't seem to accelerate     program. Rather on the
+     * contrary, it seems to be able to slow down     entire programs
+     * somewhat. This is surprising, since we can use     efficient function
+     * calls into PETSc that allow to create multiple     entries at once;
+     * nevertheless, given the fact that it is inefficient,     the respective
+     * flag has a default value equal to   @p false.
      *
-     * PETsc allows to later add additional nonzero entries to a matrix, by
-     * simply writing to these elements. However, this will then lead to
-     * additional memory allocations which are very inefficient and will
-     * greatly slow down your program. It is therefore significantly more
-     * efficient to get memory allocation right from the start.
-     *
-     * Despite the fact that it would seem to be an obvious win, setting the
-     * @p preset_nonzero_locations flag to @p true doesn't seem to accelerate
-     * program. Rather on the contrary, it seems to be able to slow down
-     * entire programs somewhat. This is surprising, since we can use
-     * efficient function calls into PETSc that allow to create multiple
-     * entries at once; nevertheless, given the fact that it is inefficient,
-     * the respective flag has a default value equal to @p false.
      */
     template <typename SparsityPatternType>
     void
@@ -212,27 +218,30 @@ namespace PETScWrappers
      * Return a reference to the MPI communicator object in use with this
      * matrix. Since this is a sequential matrix, it returns the MPI_COMM_SELF
      * communicator.
+     *
      */
     virtual const MPI_Comm &
     get_mpi_communicator() const override;
 
     /**
      * Return the number of rows of this matrix.
+     *
      */
     size_t
     m() const;
 
     /**
      * Return the number of columns of this matrix.
+     *
      */
     size_t
     n() const;
 
     /**
-     * Perform the matrix-matrix multiplication $C = AB$, or,
-     * $C = A \text{diag}(V) B$ given a compatible vector $V$.
+     * Perform the matrix-matrix multiplication   $C = AB$  , or,       $C = A
+     * \text{diag}(V) B$   given a compatible vector   $V$  .         This
+     * function calls   MatrixBase::mmult()   to do the actual work.
      *
-     * This function calls MatrixBase::mmult() to do the actual work.
      */
     void
     mmult(SparseMatrix &      C,
@@ -241,10 +250,10 @@ namespace PETScWrappers
 
     /**
      * Perform the matrix-matrix multiplication with the transpose of
-     * <tt>this</tt>, i.e., $C = A^T B$, or,
-     * $C = A^T \text{diag}(V) B$ given a compatible vector $V$.
+     * <tt>this</tt>, i.e.,   $C = A^T B$  , or,       $C = A^T \text{diag}(V)
+     * B$   given a compatible vector   $V$  .         This function calls
+     * MatrixBase::Tmmult()   to do the actual work.
      *
-     * This function calls MatrixBase::Tmmult() to do the actual work.
      */
     void
     Tmmult(SparseMatrix &      C,
@@ -256,6 +265,7 @@ namespace PETScWrappers
      * Do the actual work for the respective reinit() function and the
      * matching constructor, i.e. create a matrix. Getting rid of the previous
      * matrix is left to the caller.
+     *
      */
     void
     do_reinit(const size_type m,
@@ -265,6 +275,7 @@ namespace PETScWrappers
 
     /**
      * Same as previous function.
+     *
      */
     void
     do_reinit(const size_type               m,
@@ -274,6 +285,7 @@ namespace PETScWrappers
 
     /**
      * Same as previous function.
+     *
      */
     template <typename SparsityPatternType>
     void
@@ -295,78 +307,71 @@ namespace PETScWrappers
      * functions that do the actual work depending on the actual matrix type
      * (much like using virtual functions). Only the functions creating a
      * matrix of specific type differ, and are implemented in this particular
-     * class.
-     *
-     * There are a number of comments on the communication model as well as
-     * access to individual elements in the documentation to the parallel
-     * vector class. These comments apply here as well.
-     *
-     *
-     * <h3>Partitioning of matrices</h3>
-     *
-     * PETSc partitions parallel matrices so that each MPI process "owns" a
-     * certain number of rows (i.e. only this process stores the respective
-     * entries in these rows). The number of rows each process owns has to be
-     * passed to the constructors and reinit() functions via the argument @p
-     * local_rows. The individual values passed as @p local_rows on all the
-     * MPI processes of course have to add up to the global number of rows of
-     * the matrix.
-     *
-     * In addition to this, PETSc also partitions the rectangular chunk of the
-     * matrix it owns (i.e. the @p local_rows times n() elements in the
-     * matrix), so that matrix vector multiplications can be performed
-     * efficiently. This column-partitioning therefore has to match the
-     * partitioning of the vectors with which the matrix is multiplied, just
-     * as the row-partitioning has to match the partitioning of destination
+     * class.         There are a number of comments on the communication
+     * model as well as     access to individual elements in the documentation
+     * to the parallel     vector class. These comments apply here as well.
+     * <h3>Partitioning of matrices</h3>         PETSc partitions parallel
+     * matrices so that each MPI process "owns" a     certain number of rows
+     * (i.e. only this process stores the respective     entries in these
+     * rows). The number of rows each process owns has to be     passed to the
+     * constructors and reinit() functions via the argument   @p
+     * local_rows. The individual values passed as   @p local_rows   on all
+     * the     MPI processes of course have to add up to the global number of
+     * rows of     the matrix.         In addition to this, PETSc also
+     * partitions the rectangular chunk of the     matrix it owns (i.e. the
+     * @p local_rows   times n() elements in the     matrix), so that matrix
+     * vector multiplications can be performed     efficiently. This
+     * column-partitioning therefore has to match the     partitioning of the
+     * vectors with which the matrix is multiplied, just     as the
+     * row-partitioning has to match the partitioning of destination
      * vectors. This partitioning is passed to the constructors and reinit()
-     * functions through the @p local_columns variable, which again has to add
-     * up to the global number of columns in the matrix. The name @p
+     * functions through the   @p local_columns   variable, which again has to
+     * add     up to the global number of columns in the matrix. The name   @p
      * local_columns may be named inappropriately since it does not reflect
      * that only these columns are stored locally, but it reflects the fact
      * that these are the columns for which the elements of incoming vectors
-     * are stored locally.
-     *
-     * To make things even more complicated, PETSc needs a very good estimate
-     * of the number of elements to be stored in each row to be efficient.
-     * Otherwise it spends most of the time with allocating small chunks of
-     * memory, a process that can slow down programs to a crawl if it happens
-     * to often. As if a good estimate of the number of entries per row isn't
-     * even, it even needs to split this as follows: for each row it owns, it
-     * needs an estimate for the number of elements in this row that fall into
-     * the columns that are set apart for this process (see above), and the
-     * number of elements that are in the rest of the columns.
-     *
-     * Since in general this information is not readily available, most of the
+     * are stored locally.         To make things even more complicated, PETSc
+     * needs a very good estimate     of the number of elements to be stored
+     * in each row to be efficient.     Otherwise it spends most of the time
+     * with allocating small chunks of     memory, a process that can slow
+     * down programs to a crawl if it happens     to often. As if a good
+     * estimate of the number of entries per row isn't     even, it even needs
+     * to split this as follows: for each row it owns, it     needs an
+     * estimate for the number of elements in this row that fall into     the
+     * columns that are set apart for this process (see above), and the
+     * number of elements that are in the rest of the columns.         Since
+     * in general this information is not readily available, most of the
      * initializing functions of this class assume that all of the number of
-     * elements you give as an argument to @p n_nonzero_per_row or by @p
+     * elements you give as an argument to   @p n_nonzero_per_row   or by   @p
      * row_lengths fall into the columns "owned" by this process, and none
      * into the other ones. This is a fair guess for most of the rows, since
      * in a good domain partitioning, nodes only interact with nodes that are
      * within the same subdomain. It does not hold for nodes on the interfaces
      * of subdomain, however, and for the rows corresponding to these nodes,
      * PETSc will have to allocate additional memory, a costly process.
-     *
      * The only way to avoid this is to tell PETSc where the actual entries of
      * the matrix will be. For this, there are constructors and reinit()
      * functions of this class that take a DynamicSparsityPattern object
      * containing all this information. While in the general case it is
      * sufficient if the constructors and reinit() functions know the number
      * of local rows and columns, the functions getting a sparsity pattern
-     * also need to know the number of local rows (@p local_rows_per_process)
-     * and columns (@p local_columns_per_process) for all other processes, in
-     * order to compute which parts of the matrix are which. Thus, it is not
+     * also need to know the number of local rows (  @p
+     * local_rows_per_process)       and columns (  @p
+     * local_columns_per_process)   for all other processes, in     order to
+     * compute which parts of the matrix are which. Thus, it is not
      * sufficient to just count the number of degrees of freedom that belong
      * to a particular process, but you have to have the numbers for all
      * processes available at all processes.
-     *
      * @ingroup PETScWrappers
      * @ingroup Matrix1
+     *
      */
     class SparseMatrix : public MatrixBase
     {
     public:
       /**
        * Declare type for container size.
+       *
        */
       using size_type = types::global_dof_index;
 
@@ -376,6 +381,7 @@ namespace PETScWrappers
        * matrix classes) that take one or other of the matrix classes as its
        * template parameters can tune their behavior based on the variables in
        * this class.
+       *
        */
       struct Traits
       {
@@ -385,41 +391,42 @@ namespace PETScWrappers
          * trigger collective operations synchronizing buffers on multiple
          * processes. If an addition is elided on one process, this may lead
          * to other processes hanging in an infinite waiting loop.
+         *
          */
         static const bool zero_addition_can_be_elided = false;
       };
 
       /**
        * Default constructor. Create an empty matrix.
+       *
        */
       SparseMatrix();
 
       /**
        * Destructor to free the PETSc object.
+       *
        */
       ~SparseMatrix() override;
 
       /**
        * Initialize using the given sparsity pattern with communication
-       * happening over the provided @p communicator.
-       *
-       * For the meaning of the @p local_rows_per_process and @p
+       * happening over the provided   @p communicator.               For the
+       * meaning of the   @p local_rows_per_process   and   @p
        * local_columns_per_process parameters, see the class documentation.
-       *
        * Note that PETSc can be very slow if you do not provide it with a good
        * estimate of the lengths of rows. Using the present function is a very
        * efficient way to do this, as it uses the exact number of nonzero
        * entries for each row of the matrix by using the given sparsity
-       * pattern argument. If the @p preset_nonzero_locations flag is @p true,
-       * this function in addition not only sets the correct row sizes up
-       * front, but also pre-allocated the correct nonzero entries in the
-       * matrix.
-       *
-       * PETsc allows to later add additional nonzero entries to a matrix, by
-       * simply writing to these elements. However, this will then lead to
-       * additional memory allocations which are very inefficient and will
-       * greatly slow down your program. It is therefore significantly more
+       * pattern argument. If the   @p preset_nonzero_locations   flag is   @p
+       * true,         this function in addition not only sets the correct row
+       * sizes up       front, but also pre-allocated the correct nonzero
+       * entries in the       matrix.             PETsc allows to later add
+       * additional nonzero entries to a matrix, by       simply writing to
+       * these elements. However, this will then lead to       additional
+       * memory allocations which are very inefficient and will       greatly
+       * slow down your program. It is therefore significantly more
        * efficient to get memory allocation right from the start.
+       *
        */
       template <typename SparsityPatternType>
       SparseMatrix(const MPI_Comm &              communicator,
@@ -437,36 +444,37 @@ namespace PETScWrappers
        * operator only exists to allow for the obvious notation
        * <tt>matrix=0</tt>, which sets all elements of the matrix to zero, but
        * keep the sparsity pattern previously used.
+       *
        */
       SparseMatrix &
       operator=(const value_type d);
 
 
       /**
-       * Make a copy of the PETSc matrix @p other. It is assumed that both
+       * Make a copy of the PETSc matrix   @p other.   It is assumed that both
        * matrices have the same SparsityPattern.
+       *
        */
       void
       copy_from(const SparseMatrix &other);
 
       /**
        * Initialize using the given sparsity pattern with communication
-       * happening over the provided @p communicator.
-       *
-       * Note that PETSc can be very slow if you do not provide it with a good
+       * happening over the provided   @p communicator.               Note
+       * that PETSc can be very slow if you do not provide it with a good
        * estimate of the lengths of rows. Using the present function is a very
        * efficient way to do this, as it uses the exact number of nonzero
        * entries for each row of the matrix by using the given sparsity
-       * pattern argument. If the @p preset_nonzero_locations flag is @p true,
-       * this function in addition not only sets the correct row sizes up
-       * front, but also pre-allocated the correct nonzero entries in the
-       * matrix.
-       *
-       * PETsc allows to later add additional nonzero entries to a matrix, by
-       * simply writing to these elements. However, this will then lead to
-       * additional memory allocations which are very inefficient and will
-       * greatly slow down your program. It is therefore significantly more
+       * pattern argument. If the   @p preset_nonzero_locations   flag is   @p
+       * true,         this function in addition not only sets the correct row
+       * sizes up       front, but also pre-allocated the correct nonzero
+       * entries in the       matrix.             PETsc allows to later add
+       * additional nonzero entries to a matrix, by       simply writing to
+       * these elements. However, this will then lead to       additional
+       * memory allocations which are very inefficient and will       greatly
+       * slow down your program. It is therefore significantly more
        * efficient to get memory allocation right from the start.
+       *
        */
       template <typename SparsityPatternType>
       void
@@ -482,6 +490,7 @@ namespace PETScWrappers
        * global number of rows and columns and the entries of the IndexSet
        * give the rows and columns for the calling processor. Note that only
        * ascending, 1:1 IndexSets are supported.
+       *
        */
       template <typename SparsityPatternType>
       void
@@ -491,9 +500,10 @@ namespace PETScWrappers
              const MPI_Comm &           communicator);
 
       /**
-       * Initialize this matrix to have the same structure as @p other. This
-       * will not copy the values of the other matrix, but you can use
-       * copy_from() for this.
+       * Initialize this matrix to have the same structure as   @p other.
+       * This       will not copy the values of the other matrix, but you can
+       * use       copy_from() for this.
+       *
        */
       void
       reinit(const SparseMatrix &other);
@@ -501,16 +511,18 @@ namespace PETScWrappers
       /**
        * Return a reference to the MPI communicator object in use with this
        * matrix.
+       *
        */
       virtual const MPI_Comm &
       get_mpi_communicator() const override;
 
       /**
-       * @addtogroup Exceptions
-       * @{
+       * @addtogroup   Exceptions         @{
+       *
        */
       /**
        * Exception
+       *
        */
       DeclException2(ExcLocalRowsTooLarge,
                      int,
@@ -521,30 +533,29 @@ namespace PETScWrappers
       //@}
 
       /**
-       * Return the square of the norm of the vector $v$ with respect to the
-       * norm induced by this matrix, i.e. $\left(v^\ast,Mv\right)$. This is
-       * useful, e.g. in the finite element context, where the $L_2$ norm of a
-       * function equals the matrix norm with respect to the mass matrix of
-       * the vector representing the nodal values of the finite element
-       * function.
-       *
+       * Return the square of the norm of the vector   $v$   with respect to
+       * the       norm induced by this matrix, i.e.
+       * $\left(v^\ast,Mv\right)$  . This is       useful, e.g. in the finite
+       * element context, where the   $L_2$   norm of a       function equals
+       * the matrix norm with respect to the mass matrix of       the vector
+       * representing the nodal values of the finite element       function.
        * Obviously, the matrix needs to be quadratic for this operation.
-       *
        * The implementation of this function is not as efficient as the one in
-       * the @p MatrixBase class used in deal.II (i.e. the original one, not
-       * the PETSc wrapper class) since PETSc doesn't support this operation
-       * and needs a temporary vector.
+       * the   @p MatrixBase   class used in deal.II (i.e. the original one,
+       * not       the PETSc wrapper class) since PETSc doesn't support this
+       * operation       and needs a temporary vector.
+       *
        */
       PetscScalar
       matrix_norm_square(const Vector &v) const;
 
       /**
-       * Compute the matrix scalar product $\left(u^\ast,Mv\right)$.
-       *
+       * Compute the matrix scalar product   $\left(u^\ast,Mv\right)$  .
        * The implementation of this function is not as efficient as the one in
-       * the @p MatrixBase class used in deal.II (i.e. the original one, not
-       * the PETSc wrapper class) since PETSc doesn't support this operation
-       * and needs a temporary vector.
+       * the   @p MatrixBase   class used in deal.II (i.e. the original one,
+       * not       the PETSc wrapper class) since PETSc doesn't support this
+       * operation       and needs a temporary vector.
+       *
        */
       PetscScalar
       matrix_scalar_product(const Vector &u, const Vector &v) const;
@@ -552,6 +563,7 @@ namespace PETScWrappers
       /**
        * Return the partitioning of the domain space of this matrix, i.e., the
        * partitioning of the vectors this matrix has to be multiplied with.
+       *
        */
       IndexSet
       locally_owned_domain_indices() const;
@@ -560,15 +572,16 @@ namespace PETScWrappers
        * Return the partitioning of the range space of this matrix, i.e., the
        * partitioning of the vectors that result from matrix-vector
        * products.
+       *
        */
       IndexSet
       locally_owned_range_indices() const;
 
       /**
-       * Perform the matrix-matrix multiplication $C = AB$, or,
-       * $C = A \text{diag}(V) B$ given a compatible vector $V$.
+       * Perform the matrix-matrix multiplication   $C = AB$  , or,         $C
+       * = A \text{diag}(V) B$   given a compatible vector   $V$  .
+       * This function calls   MatrixBase::mmult()   to do the actual work.
        *
-       * This function calls MatrixBase::mmult() to do the actual work.
        */
       void
       mmult(SparseMatrix &      C,
@@ -577,10 +590,10 @@ namespace PETScWrappers
 
       /**
        * Perform the matrix-matrix multiplication with the transpose of
-       * <tt>this</tt>, i.e., $C = A^T B$, or,
-       * $C = A^T \text{diag}(V) B$ given a compatible vector $V$.
+       * <tt>this</tt>, i.e.,   $C = A^T B$  , or,         $C = A^T
+       * \text{diag}(V) B$   given a compatible vector   $V$  .
+       * This function calls   MatrixBase::Tmmult()   to do the actual work.
        *
-       * This function calls MatrixBase::Tmmult() to do the actual work.
        */
       void
       Tmmult(SparseMatrix &      C,
@@ -590,11 +603,13 @@ namespace PETScWrappers
     private:
       /**
        * Copy of the communicator object to be used for this parallel vector.
+       *
        */
       MPI_Comm communicator;
 
       /**
        * Same as previous functions.
+       *
        */
       template <typename SparsityPatternType>
       void
@@ -606,6 +621,7 @@ namespace PETScWrappers
 
       /**
        * Same as previous functions.
+       *
        */
       template <typename SparsityPatternType>
       void
@@ -634,4 +650,4 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_PETSC
 
 #endif
-/*--------------------------- petsc_sparse_matrix.h -------------------------*/
+ /*--------------------------- petsc_sparse_matrix.h -------------------------*/ 

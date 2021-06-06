@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2014 - 2020 by the deal.II authors
 //
@@ -45,16 +45,16 @@ namespace internal
      * deal.II information in a form that FEEvaluation and friends can use for
      * vectorized access. Since no vectorization over cells is available with
      * the DoFHandler/Triangulation cell iterators, the interface to
-     * FEEvaluation's vectorization model is to use @p
-     * VectorizedArray::n_array_element copies of the same element. This
+     * FEEvaluation's vectorization model is to use   @p
+     * VectorizedArray::n_array_element   copies of the same element. This
      * interface is thus primarily useful for evaluating several operators on
-     * the same cell, e.g., when assembling cell matrices.
-     *
-     * As opposed to the Mapping classes in deal.II, this class does not
-     * actually provide a boundary description that can be used to evaluate
-     * the geometry, but it rather provides the evaluated geometry from a
+     * the same cell, e.g., when assembling cell matrices.         As opposed
+     * to the Mapping classes in deal.II, this class does not     actually
+     * provide a boundary description that can be used to evaluate     the
+     * geometry, but it rather provides the evaluated geometry from a
      * given deal.II mapping (as passed to the constructor of this class) in a
      * form accessible to FEEvaluation.
+     *
      */
     template <int dim, typename Number, typename VectorizedArrayType>
     class MappingDataOnTheFly
@@ -69,6 +69,7 @@ namespace internal
        * geometry, no finite element has to be specified and the simplest
        * element, FE_Nothing, is used internally for the underlying FEValues
        * object.
+       *
        */
       MappingDataOnTheFly(const Mapping<dim> & mapping,
                           const Quadrature<1> &quadrature,
@@ -76,14 +77,16 @@ namespace internal
 
       /**
        * Constructor. This constructor is equivalent to the other one except
-       * that it makes the object use a $Q_1$ mapping (i.e., an object of type
-       * MappingQGeneric(1)) implicitly.
+       * that it makes the object use a   $Q_1$   mapping (i.e., an object of
+       * type       MappingQGeneric(1)) implicitly.
+       *
        */
       MappingDataOnTheFly(const Quadrature<1> &quadrature,
                           const UpdateFlags    update_flags);
 
       /**
        * Initialize with the given cell iterator.
+       *
        */
       void
       reinit(typename dealii::Triangulation<dim>::cell_iterator cell);
@@ -91,12 +94,14 @@ namespace internal
       /**
        * Return whether reinit() has been called at least once, i.e., a cell
        * has been set.
+       *
        */
       bool
       is_initialized() const;
 
       /**
        * Return a triangulation iterator to the current cell.
+       *
        */
       typename dealii::Triangulation<dim>::cell_iterator
       get_cell() const;
@@ -106,6 +111,7 @@ namespace internal
        * certain quantities (only mapping-related ones like Jacobians or
        * mapped quadrature points are accessible, as no finite element data is
        * actually used).
+       *
        */
       const dealii::FEValues<dim> &
       get_fe_values() const;
@@ -115,12 +121,14 @@ namespace internal
        * MappingInfoStorage of the same format as the data fields in
        * MappingInfo. This ensures compatibility with the precomputed data
        * fields in the MappingInfo class.
+       *
        */
       const MappingInfoStorage<dim, dim, Number, VectorizedArrayType> &
       get_data_storage() const;
 
       /**
        * Return a reference to 1D quadrature underlying this object.
+       *
        */
       const Quadrature<1> &
       get_quadrature() const;
@@ -129,35 +137,40 @@ namespace internal
       /**
        * A cell iterator in case we generate the data on the fly to be able to
        * check if we need to re-generate the information stored in this class.
+       *
        */
       typename dealii::Triangulation<dim>::cell_iterator present_cell;
 
       /**
        * Dummy finite element object necessary for initializing the FEValues
        * object.
+       *
        */
       FE_Nothing<dim> fe_dummy;
 
       /**
        * An underlying FEValues object that performs the (scalar) evaluation.
+       *
        */
       dealii::FEValues<dim> fe_values;
 
       /**
        * Get 1D quadrature formula to be used for reinitializing shape info.
+       *
        */
       const Quadrature<1> quadrature_1d;
 
       /**
        * The storage part created for a single cell and held in analogy to
        * MappingInfo.
+       *
        */
       MappingInfoStorage<dim, dim, Number, VectorizedArrayType>
         mapping_info_storage;
     };
 
 
-    /*-------------------------- Inline functions ---------------------------*/
+     /*-------------------------- Inline functions ---------------------------*/ 
 
     template <int dim, typename Number, typename VectorizedArrayType>
     inline MappingDataOnTheFly<dim, Number, VectorizedArrayType>::

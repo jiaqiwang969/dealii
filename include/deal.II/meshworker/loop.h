@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2020 by the deal.II authors
 //
@@ -43,6 +43,7 @@ namespace internal
 {
   /**
    * Find out if an iterator supports inactive cells.
+   *
    */
   template <class DI>
   inline bool
@@ -80,12 +81,14 @@ namespace MeshWorker
 {
   /**
    * Collection of parameters to control the execution of MeshWorker loops.
+   *
    */
   class LoopControl
   {
   public:
     /**
      * Constructor.
+     *
      */
     LoopControl()
       : own_cells(true)
@@ -96,33 +99,41 @@ namespace MeshWorker
     {}
 
     /**
-     * Loop over cells owned by this process. Defaults to <code>true</code>.
+     * Loop over cells owned by this process. Defaults to   <code>true</code>
+     * .
+     *
      */
     bool own_cells;
 
     /**
      * Loop over cells not owned by this process. Defaults to
-     * <code>false</code>.
+     * <code>false</code>  .
+     *
      */
     bool ghost_cells;
 
     /**
      * Enumeration describing when to do assembly on a face: see, e.g.,
-     * MeshWorker::LoopControl::faces_to_ghost for an example of how the value
-     * of this enumeration is interpreted in a particular circumstance.
+     * MeshWorker::LoopControl::faces_to_ghost   for an example of how the
+     * value     of this enumeration is interpreted in a particular
+     * circumstance.
+     *
      */
     enum FaceOption
     {
       /**
        * Do not perform assembly on a face.
+       *
        */
       never,
       /**
        * Perform assembly on one face.
+       *
        */
       one,
       /**
        * Perform assembly on both faces.
+       *
        */
       both
     };
@@ -131,30 +142,111 @@ namespace MeshWorker
      * Control for looping over faces between a locally owned cell and a ghost
      * cell:
      *
-     * - never: Do not assembly these faces.
-     * - one: Only one of the processes will assemble these faces (from the
-     *   finer side or the process with the lower MPI rank).
-     * - both: Both processes will assemble these faces. Note that these faces
-     *   are never assembled from both sides on a single process.
      *
-     * The default is <code>one</code>.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - never: Do not assembly these faces.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - one: Only one of the processes will assemble these faces (from the       finer side or the process with the lower MPI rank).
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - both: Both processes will assemble these faces. Note that these faces       are never assembled from both sides on a single process.         The default is   <code>one</code>  .
+     *
      */
     FaceOption faces_to_ghost;
 
     /**
      * Control for looping over faces between two locally owned cells:
      *
-     * - never: Do not assemble face terms.
-     * - one: Assemble once (always coming from the finer side).
-     * - both: Assemble each face twice (not implemented for hanging nodes!).
      *
-     * The default is <code>one</code>.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - never: Do not assemble face terms.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - one: Assemble once (always coming from the finer side).
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - both: Assemble each face twice (not implemented for hanging nodes!).         The default is   <code>one</code>  .
+     *
      */
     FaceOption own_faces;
 
     /**
      * A flag to determine if cells integrals should be done before or after
-     * face integrals. The default is <code>true</code>.
+     * face integrals. The default is   <code>true</code>  .
+     *
      */
     bool cells_first;
   };
@@ -167,24 +259,20 @@ namespace MeshWorker
    * <tt>boundary_worker</tt> and <tt>face_worker</tt> are the same ones
    * handed to loop(). While there we only run the loop over all cells, here,
    * we do a single cell and, if necessary, its faces, interior and boundary.
-   *
    * Upon return, the DoFInfo objects in the DoFInfoBox are filled with the
    * data computed on the cell and each of the faces. Thus, after the
-   * execution of this function, we are ready to call DoFInfoBox::assemble()
-   * to distribute the local data into global data.
-   *
-   * @param cell is the cell we work on
-   * @param dof_info is the object into which local results are entered. It is
-   * expected to have been set up for the right types of data.
-   * @param info is the object containing additional data only needed for
-   * internal processing.
-   * @param cell_worker defines the local action on each cell.
-   * @param boundary_worker defines the local action on boundary faces
-   * @param face_worker defines the local action on interior faces.
-   * @param loop_control control structure to specify what actions should be
-   * performed.
-   *
+   * execution of this function, we are ready to call   DoFInfoBox::assemble()
+   * to distribute the local data into global data.       @param   cell is the
+   * cell we work on     @param   dof_info is the object into which local
+   * results are entered. It is   expected to have been set up for the right
+   * types of data.     @param   info is the object containing additional data
+   * only needed for   internal processing.     @param   cell_worker defines
+   * the local action on each cell.     @param   boundary_worker defines the
+   * local action on boundary faces     @param   face_worker defines the local
+   * action on interior faces.     @param   loop_control control structure to
+   * specify what actions should be   performed.
    * @ingroup MeshWorker
+   *
    */
   template <class INFOBOX, class DOFINFO, int dim, int spacedim, class ITERATOR>
   void
@@ -421,13 +509,11 @@ namespace MeshWorker
    * Unilaterally refined interior faces are handled automatically by the
    * loop. Most of the work in this loop is done in cell_action(), which also
    * receives most of the parameters of this function. See the documentation
-   * there for more details.
-   *
-   * If you don't want anything to be done on cells, interior or boundary
-   * faces to happen, simply pass the Null pointer to one of the function
-   * arguments.
-   *
+   * there for more details.     If you don't want anything to be done on
+   * cells, interior or boundary   faces to happen, simply pass the Null
+   * pointer to one of the function   arguments.
    * @ingroup MeshWorker
+   *
    */
   template <int dim,
             int spacedim,
@@ -485,8 +571,8 @@ namespace MeshWorker
   /**
    * Simplified interface for loop() if specialized for integration, using the
    * virtual functions in LocalIntegrator.
-   *
    * @ingroup MeshWorker
+   *
    */
   template <int dim, int spacedim, class ITERATOR, class ASSEMBLER>
   void

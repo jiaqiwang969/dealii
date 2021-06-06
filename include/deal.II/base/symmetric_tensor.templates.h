@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
 //
@@ -725,8 +725,8 @@ namespace internal
     template <typename Number>
     Tensor<2, 1, Number>
     dediagonalize_tensor(const dealii::SymmetricTensor<2, 1, Number> &T,
-                         const double /*rotation_angle*/,
-                         const unsigned int /*axis*/ = 0)
+                         const double  /*rotation_angle*/ ,
+                         const unsigned int  /*axis*/  = 0)
     {
       AssertThrow(false, ExcNotImplemented());
       return Tensor<2, 1, Number>({{T[0][0]}});
@@ -737,7 +737,7 @@ namespace internal
     Tensor<2, 2, Number>
     dediagonalize_tensor(const dealii::SymmetricTensor<2, 2, Number> &T,
                          const double rotation_angle,
-                         const unsigned int /*axis*/ = 0)
+                         const unsigned int  /*axis*/  = 0)
     {
       const Tensor<2, 2> R =
         dealii::Physics::Transformations::Rotations::rotation_matrix_2d(
@@ -781,7 +781,7 @@ namespace internal
     std::array<std::pair<Number, Tensor<1, 1, Number>>, 1>
     perform_eigenvector_decomposition(
       const SymmetricTensor<2, 1, Number> &T,
-      const SymmetricTensorEigenvectorMethod /*method*/)
+      const SymmetricTensorEigenvectorMethod  /*method*/ )
     {
       return {{std::make_pair(T[0][0], Tensor<1, 1, Number>({1.0}))}};
     }
@@ -1015,30 +1015,30 @@ namespace internal
 
 template <>
 std::array<adouble, 1>
-eigenvalues(const SymmetricTensor<2, 1, adouble> & /*T*/);
+eigenvalues(const SymmetricTensor<2, 1, adouble> &  /*T*/ );
 
 template <>
 std::array<adouble, 2>
-eigenvalues(const SymmetricTensor<2, 2, adouble> & /*T*/);
+eigenvalues(const SymmetricTensor<2, 2, adouble> &  /*T*/ );
 
 template <>
 std::array<adouble, 3>
-eigenvalues(const SymmetricTensor<2, 3, adouble> & /*T*/);
+eigenvalues(const SymmetricTensor<2, 3, adouble> &  /*T*/ );
 
 template <>
 std::array<std::pair<adouble, Tensor<1, 1, adouble>>, 1>
-eigenvectors(const SymmetricTensor<2, 1, adouble> & /*T*/,
-             const SymmetricTensorEigenvectorMethod /*method*/);
+eigenvectors(const SymmetricTensor<2, 1, adouble> &  /*T*/ ,
+             const SymmetricTensorEigenvectorMethod  /*method*/ );
 
 template <>
 std::array<std::pair<adouble, Tensor<1, 2, adouble>>, 2>
-eigenvectors(const SymmetricTensor<2, 2, adouble> & /*T*/,
-             const SymmetricTensorEigenvectorMethod /*method*/);
+eigenvectors(const SymmetricTensor<2, 2, adouble> &  /*T*/ ,
+             const SymmetricTensorEigenvectorMethod  /*method*/ );
 
 template <>
 std::array<std::pair<adouble, Tensor<1, 3, adouble>>, 3>
-eigenvectors(const SymmetricTensor<2, 3, adouble> & /*T*/,
-             const SymmetricTensorEigenvectorMethod /*method*/);
+eigenvectors(const SymmetricTensor<2, 3, adouble> &  /*T*/ ,
+             const SymmetricTensorEigenvectorMethod  /*method*/ );
 #endif
 
 DEAL_II_NAMESPACE_CLOSE

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
 //
@@ -66,7 +66,10 @@ class FunctionParser;
  * in an input file matches a certain pattern, such as "being boolean", "an
  * integer value", etc.
  *
+ *
  * @ingroup input
+ *
+ *
  */
 namespace Patterns
 {
@@ -75,48 +78,54 @@ namespace Patterns
    * mostly to define the interface of patterns, and to force derived classes
    * to have a <tt>clone</tt> function. It is thus, in the languages of the
    * "Design Patterns" book (Gamma et al.), a "prototype".
+   *
    */
   class PatternBase
   {
   public:
     /**
      * Make destructor of this and all derived classes virtual.
+     *
      */
     virtual ~PatternBase() = default;
 
     /**
      * Return <tt>true</tt> if the given string matches the pattern.
+     *
      */
     virtual bool
     match(const std::string &test_string) const = 0;
 
     /**
-     * List of possible description output formats.
+     * List of possible description output formats.         Capitalization
+     * chosen for similarity to   ParameterHandler::OutputStyle.
      *
-     * Capitalization chosen for similarity to ParameterHandler::OutputStyle.
      */
     enum OutputStyle
     {
       /**
        * Simple text suitable for machine parsing in the static public member
        * functions for all of the built in inheriting classes.
-       *
        * Preferably human readable, but machine parsing is more critical.
+       *
        */
       Machine,
       /**
        * Easily human readable plain text format suitable for plain text
        * documentation.
+       *
        */
       Text,
       /**
        * Easily human readable LaTeX format suitable for printing in manuals.
+       *
        */
       LaTeX
     };
 
     /**
      * Return a string describing the pattern.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const = 0;
@@ -125,10 +134,9 @@ namespace Patterns
      * Return a pointer to an exact copy of the object. This is necessary
      * since we want to store objects of this type in containers, were we need
      * to copy objects without knowledge of their actual data type (we only
-     * have pointers to the base class).
+     * have pointers to the base class).         Ownership of the objects
+     * returned by this function is passed to the     caller of this function.
      *
-     * Ownership of the objects returned by this function is passed to the
-     * caller of this function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const = 0;
@@ -144,9 +152,9 @@ namespace Patterns
      * many thousands of objects of this type around, and since the
      * memory_consumption mechanism is used to find out where memory in the
      * range of many megabytes is, this seems like a reasonable approximation.
-     *
      * On the other hand, if you know that your class deviates from this
      * assumption significantly, you can still overload this function.
+     *
      */
     virtual std::size_t
     memory_consumption() const;
@@ -154,6 +162,7 @@ namespace Patterns
 
   /**
    * Return pointer to the correct derived class based on description.
+   *
    */
   std::unique_ptr<PatternBase>
   pattern_factory(const std::string &description);
@@ -161,9 +170,10 @@ namespace Patterns
   namespace internal
   {
     /**
-     * Escape the string @p input for the specified @p style so that characters
-     * will appear as intended. For example, characters like _ can not be
-     * written as is in LateX and have to be escaped as \_.
+     * Escape the string   @p input   for the specified   @p style   so that
+     * characters     will appear as intended. For example, characters like _
+     * can not be     written as is in LateX and have to be escaped as \_.
+     *
      */
     std::string
     escape(const std::string &input, const PatternBase::OutputStyle style);
@@ -177,14 +187,13 @@ namespace Patterns
    * standard library, both bounds of this interval are inclusive; the reason
    * is that in practice in most cases, one needs closed intervals, but these
    * can only be realized with inclusive bounds for non-integer values. We
-   * thus stay consistent by always using closed intervals.
+   * thus stay consistent by always using closed intervals.     If the upper
+   * bound given to the constructor is smaller than the   lower bound, then
+   * every integer is allowed.     Giving bounds may be useful if for example
+   * a value can only be positive   and less than a reasonable upper bound
+   * (for example the number of   refinement steps to be performed), or in
+   * many other cases.
    *
-   * If the upper bound given to the constructor is smaller than the
-   * lower bound, then every integer is allowed.
-   *
-   * Giving bounds may be useful if for example a value can only be positive
-   * and less than a reasonable upper bound (for example the number of
-   * refinement steps to be performed), or in many other cases.
    */
   class Integer : public PatternBase
   {
@@ -193,6 +202,7 @@ namespace Patterns
      * Minimal integer value. If the numeric_limits class is available use
      * this information to obtain the extremal values, otherwise set it so
      * that this class understands that all values are allowed.
+     *
      */
     static const int min_int_value;
 
@@ -200,20 +210,20 @@ namespace Patterns
      * Maximal integer value. If the numeric_limits class is available use
      * this information to obtain the extremal values, otherwise set it so
      * that this class understands that all values are allowed.
+     *
      */
     static const int max_int_value;
 
     /**
-     * Constructor. Bounds can be specified within which a valid
-     * parameter has to be. If the upper bound is smaller than the
-     * lower bound, then the entire set of integers is implied. The
-     * default values are chosen such that no bounds are enforced on
-     * parameters.
+     * Constructor. Bounds can be specified within which a valid     parameter
+     * has to be. If the upper bound is smaller than the     lower bound, then
+     * the entire set of integers is implied. The     default values are
+     * chosen such that no bounds are enforced on     parameters.         Note
+     * that the range implied by an object of the current type     is
+     * inclusive of both bounds values, i.e., the   @p upper_bound   is     an
+     * allowed value, rather than indicating a half-open value as     is often
+     * done in other contexts.
      *
-     * Note that the range implied by an object of the current type
-     * is inclusive of both bounds values, i.e., the @p upper_bound is
-     * an allowed value, rather than indicating a half-open value as
-     * is often done in other contexts.
      */
     Integer(const int lower_bound = min_int_value,
             const int upper_bound = max_int_value);
@@ -221,6 +231,7 @@ namespace Patterns
     /**
      * Return <tt>true</tt> if the string is an integer and its value is
      * within the specified range.
+     *
      */
     virtual bool
     match(const std::string &test_string) const override;
@@ -229,6 +240,7 @@ namespace Patterns
      * Return a description of the pattern that valid strings are expected to
      * match. If bounds were specified to the constructor, then include them
      * into this description.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -237,6 +249,7 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
@@ -245,29 +258,33 @@ namespace Patterns
      * Create a new object if the start of description matches
      * description_init.  Ownership of that object is transferred to the
      * caller of this function.
+     *
      */
     static std::unique_ptr<Integer>
     create(const std::string &description);
 
   private:
     /**
-     * Value of the lower bound. A number that satisfies the
-     * @ref match
+     * Value of
+     * the lower bound. A number that satisfies the       @ref match
      * operation of this class must be equal to this value or larger, if the
      * bounds of the interval for a valid range.
+     *
      */
     const int lower_bound;
 
     /**
-     * Value of the upper bound. A number that satisfies the
-     * @ref match
+     * Value of
+     * the upper bound. A number that satisfies the       @ref match
      * operation of this class must be equal to this value or less, if the
      * bounds of the interval for a valid range.
+     *
      */
     const int upper_bound;
 
     /**
      * Initial part of description
+     *
      */
     static const char *description_init;
   };
@@ -279,15 +296,13 @@ namespace Patterns
    * standard library, both bounds of this interval are inclusive; the reason
    * is that in practice in most cases, one needs closed intervals, but these
    * can only be realized with inclusive bounds for non-integer values. We
-   * thus stay consistent by always using closed intervals.
+   * thus stay consistent by always using closed intervals.     If the upper
+   * bound given to the constructor is smaller than the   lower bound, then
+   * every double precision number is allowed.     Giving bounds may be useful
+   * if for example a value can only be positive   and less than a reasonable
+   * upper bound (for example damping parameters   are frequently only
+   * reasonable if between zero and one), or in many other   cases.
    *
-   * If the upper bound given to the constructor is smaller than the
-   * lower bound, then every double precision number is allowed.
-   *
-   * Giving bounds may be useful if for example a value can only be positive
-   * and less than a reasonable upper bound (for example damping parameters
-   * are frequently only reasonable if between zero and one), or in many other
-   * cases.
    */
   class Double : public PatternBase
   {
@@ -295,21 +310,23 @@ namespace Patterns
     /**
      * Minimal double value used as default value, taken from
      * <tt>std::numeric_limits</tt>.
+     *
      */
     static const double min_double_value;
 
     /**
      * Maximal double value used as default value, taken from
      * <tt>std::numeric_limits</tt>.
+     *
      */
     static const double max_double_value;
 
     /**
-     * Constructor. Bounds can be specified within which a valid
-     * parameter has to be. If the upper bound is smaller than the
-     * lower bound, then the entire set of double precision numbers is
-     * implied. The default values are chosen such that no bounds are
-     * enforced on parameters.
+     * Constructor. Bounds can be specified within which a valid     parameter
+     * has to be. If the upper bound is smaller than the     lower bound, then
+     * the entire set of double precision numbers is     implied. The default
+     * values are chosen such that no bounds are     enforced on parameters.
+     *
      */
     Double(const double lower_bound = min_double_value,
            const double upper_bound = max_double_value);
@@ -317,6 +334,7 @@ namespace Patterns
     /**
      * Return <tt>true</tt> if the string is a number and its value is within
      * the specified range.
+     *
      */
     virtual bool
     match(const std::string &test_string) const override;
@@ -325,6 +343,7 @@ namespace Patterns
      * Return a description of the pattern that valid strings are expected to
      * match. If bounds were specified to the constructor, then include them
      * into this description.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -333,51 +352,50 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * Creates a new object on the heap using @p new if the given
-     * @p description is a valid format (for example created by calling
-     * description() on an existing object), or @p nullptr otherwise. Ownership
-     * of the returned object is transferred to the caller of this function,
-     * which should be freed using @p delete.
+     * Creates a new object on the heap using   @p new   if the given       @p
+     * description   is a valid format (for example created by calling
+     * description() on an existing object), or   @p nullptr   otherwise.
+     * Ownership     of the returned object is transferred to the caller of
+     * this function,     which should be freed using   @p delete.
+     *
      */
     static std::unique_ptr<Double>
     create(const std::string &description);
 
   private:
     /**
-     * Value of the lower bound. A number that satisfies the
-     * @ref match
+     * Value of
+     * the lower bound. A number that satisfies the       @ref match
      * operation of this class must be equal to this value or larger, if the
      * bounds of the interval form a valid range.
+     *
      */
     const double lower_bound;
 
     /**
-     * Value of the upper bound. A number that satisfies the
-     * @ref match
+     * Value of
+     * the upper bound. A number that satisfies the       @ref match
      * operation of this class must be equal to this value or less, if the
      * bounds of the interval form a valid range.
+     *
      */
     const double upper_bound;
 
     /**
      * Initial part of description
+     *
      */
     static const char *description_init;
   };
 
   /**
-   * Test for the string being one of a sequence of values given like a
-   * regular expression. For example, if the string given to the constructor
-   * is <tt>"red|blue|black"</tt>, then the
-   * @ref match
-   * function returns <tt>true</tt> exactly if the string is either "red" or
-   * "blue" or "black". Spaces around the pipe signs do not matter and are
-   * eliminated.
+   *
    */
   class Selection : public PatternBase
   {
@@ -385,12 +403,14 @@ namespace Patterns
     /**
      * Constructor. Take the given parameter as the specification of valid
      * strings.
+     *
      */
     Selection(const std::string &seq);
 
     /**
      * Return <tt>true</tt> if the string is an element of the description
      * list passed to the constructor.
+     *
      */
     virtual bool
     match(const std::string &test_string) const override;
@@ -399,6 +419,7 @@ namespace Patterns
      * Return a description of the pattern that valid strings are expected to
      * match. Here, this is the list of valid strings passed to the
      * constructor.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -407,6 +428,7 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
@@ -414,6 +436,7 @@ namespace Patterns
     /**
      * Determine an estimate for the memory consumption (in bytes) of this
      * object.
+     *
      */
     std::size_t
     memory_consumption() const override;
@@ -422,6 +445,7 @@ namespace Patterns
      * Create a new object if the start of description matches
      * description_init.  Ownership of that object is transferred to the
      * caller of this function.
+     *
      */
     static std::unique_ptr<Selection>
     create(const std::string &description);
@@ -430,11 +454,13 @@ namespace Patterns
     /**
      * List of valid strings as passed to the constructor. We don't make this
      * string constant, as we process it somewhat in the constructor.
+     *
      */
     std::string sequence;
 
     /**
      * Initial part of description
+     *
      */
     static const char *description_init;
   };
@@ -446,6 +472,7 @@ namespace Patterns
    * With two additional parameters, the number of elements this list has to
    * have can be specified. If none is specified, the list may have zero or
    * more entries.
+   *
    */
   class List : public PatternBase
   {
@@ -454,16 +481,16 @@ namespace Patterns
      * Maximal integer value. If the numeric_limits class is available use
      * this information to obtain the extremal values, otherwise set it so
      * that this class understands that all values are allowed.
+     *
      */
     static const unsigned int max_int_value;
 
     /**
      * Constructor. Take the given parameter as the specification of valid
-     * elements of the list.
+     * elements of the list.         The three other arguments can be used to
+     * denote minimal and maximal     allowable lengths of the list, and the
+     * string that is used as a     separator between elements of the list.
      *
-     * The three other arguments can be used to denote minimal and maximal
-     * allowable lengths of the list, and the string that is used as a
-     * separator between elements of the list.
      */
     List(const PatternBase &base_pattern,
          const unsigned int min_elements = 0,
@@ -473,24 +500,28 @@ namespace Patterns
 
     /**
      * Return the internally stored separator.
+     *
      */
     const std::string &
     get_separator() const;
 
     /**
      * Return the internally stored base pattern.
+     *
      */
     const PatternBase &
     get_base_pattern() const;
 
     /**
      * Copy constructor.
+     *
      */
     List(const List &other);
 
     /**
      * Return <tt>true</tt> if the string is a comma-separated list of strings
      * each of which match the pattern given to the constructor.
+     *
      */
     virtual bool
     match(const std::string &test_string) const override;
@@ -498,6 +529,7 @@ namespace Patterns
     /**
      * Return a description of the pattern that valid strings are expected to
      * match.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -506,6 +538,7 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
@@ -514,6 +547,7 @@ namespace Patterns
      * Create a new object if the start of description matches
      * description_init.  Ownership of that object is transferred to the
      * caller of this function.
+     *
      */
     static std::unique_ptr<List>
     create(const std::string &description);
@@ -521,17 +555,19 @@ namespace Patterns
     /**
      * Determine an estimate for the memory consumption (in bytes) of this
      * object.
+     *
      */
     std::size_t
     memory_consumption() const override;
 
     /**
-     * @addtogroup Exceptions
-     * @{
+     * @addtogroup   Exceptions       @{
+     *
      */
 
     /**
      * Exception.
+     *
      */
     DeclException2(ExcInvalidRange,
                    int,
@@ -542,26 +578,31 @@ namespace Patterns
   private:
     /**
      * Copy of the pattern that each element of the list has to satisfy.
+     *
      */
     std::unique_ptr<PatternBase> pattern;
 
     /**
      * Minimum number of elements the list must have.
+     *
      */
     const unsigned int min_elements;
 
     /**
      * Maximum number of elements the list must have.
+     *
      */
     const unsigned int max_elements;
 
     /**
      * Separator between elements of the list.
+     *
      */
     const std::string separator;
 
     /**
      * Initial part of description
+     *
      */
     static const char *description_init;
   };
@@ -571,15 +612,14 @@ namespace Patterns
    * This pattern matches a list of comma-separated values each of which
    * denotes a pair of key and value. Both key and value have to match a
    * pattern given to the constructor. For each entry of the map, parameters
-   * have to be entered in the form <code>key: value</code>. In other words, a
-   * map is described in the form <code>key1: value1, key2: value2, key3:
-   * value3, ...</code>. Two constructor arguments allow to choose a delimiter
-   * between pairs other than the comma, and a delimiter between key and value
-   * other than colon.
+   * have to be entered in the form   <code>key: value</code>  . In other
+   * words, a   map is described in the form <code>key1: value1, key2: value2,
+   * key3:   value3, ...</code>. Two constructor arguments allow to choose a
+   * delimiter   between pairs other than the comma, and a delimiter between
+   * key and value   other than colon.     With two additional parameters, the
+   * number of elements this list has to   have can be specified. If none is
+   * specified, the map may have zero or   more entries.
    *
-   * With two additional parameters, the number of elements this list has to
-   * have can be specified. If none is specified, the map may have zero or
-   * more entries.
    */
   class Map : public PatternBase
   {
@@ -588,16 +628,17 @@ namespace Patterns
      * Maximal integer value. If the numeric_limits class is available use
      * this information to obtain the extremal values, otherwise set it so
      * that this class understands that all values are allowed.
+     *
      */
     static const unsigned int max_int_value;
 
     /**
      * Constructor. Take the given parameter as the specification of valid
-     * elements of the list.
+     * elements of the list.         The four other arguments can be used to
+     * denote minimal and maximal     allowable lengths of the list as well as
+     * the separators used to delimit     pairs of the map and the symbol used
+     * to separate keys and values.
      *
-     * The four other arguments can be used to denote minimal and maximal
-     * allowable lengths of the list as well as the separators used to delimit
-     * pairs of the map and the symbol used to separate keys and values.
      */
     Map(const PatternBase &key_pattern,
         const PatternBase &value_pattern,
@@ -608,12 +649,14 @@ namespace Patterns
 
     /**
      * Copy constructor.
+     *
      */
     Map(const Map &other);
 
     /**
      * Return <tt>true</tt> if the string is a comma-separated list of strings
      * each of which match the pattern given to the constructor.
+     *
      */
     virtual bool
     match(const std::string &test_string) const override;
@@ -621,6 +664,7 @@ namespace Patterns
     /**
      * Return a description of the pattern that valid strings are expected to
      * match.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -629,6 +673,7 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
@@ -637,6 +682,7 @@ namespace Patterns
      * Create a new object if the start of description matches
      * description_init.  Ownership of that object is transferred to the
      * caller of this function.
+     *
      */
     static std::unique_ptr<Map>
     create(const std::string &description);
@@ -644,41 +690,47 @@ namespace Patterns
     /**
      * Determine an estimate for the memory consumption (in bytes) of this
      * object.
+     *
      */
     std::size_t
     memory_consumption() const override;
 
     /**
      * Return a reference to the key pattern.
+     *
      */
     const PatternBase &
     get_key_pattern() const;
 
     /**
      * Return a reference to the value pattern.
+     *
      */
     const PatternBase &
     get_value_pattern() const;
 
     /**
      * Return the separator of the map entries.
+     *
      */
     const std::string &
     get_separator() const;
 
     /**
      * Return the key-value separator.
+     *
      */
     const std::string &
     get_key_value_separator() const;
 
     /**
-     * @addtogroup Exceptions
-     * @{
+     * @addtogroup   Exceptions       @{
+     *
      */
 
     /**
      * Exception.
+     *
      */
     DeclException2(ExcInvalidRange,
                    int,
@@ -690,33 +742,39 @@ namespace Patterns
     /**
      * Copy of the patterns that each key and each value of the map has to
      * satisfy.
+     *
      */
     std::unique_ptr<PatternBase> key_pattern;
     std::unique_ptr<PatternBase> value_pattern;
 
     /**
      * Minimum number of elements the list must have.
+     *
      */
     const unsigned int min_elements;
 
     /**
      * Maximum number of elements the list must have.
+     *
      */
     const unsigned int max_elements;
 
     /**
      * Separator between elements of the list.
+     *
      */
     const std::string separator;
 
 
     /**
      * Separator between keys and values.
+     *
      */
     const std::string key_value_separator;
 
     /**
      * Initial part of description
+     *
      */
     static const char *description_init;
   };
@@ -725,10 +783,8 @@ namespace Patterns
 
   /**
    * This pattern matches colon-separated values of arbitrary types. Each type
-   * has to match a pattern given to the constructor.
-   *
-   * An example usage is the following:
-   *
+   * has to match a pattern given to the constructor.     An example usage is
+   * the following:
    * @code
    * std::vector< std::unique_ptr<Patterns::PatternBase> > ps;
    *
@@ -740,9 +796,7 @@ namespace Patterns
    *
    * bool check = ps.match("5 : 3.14 : Ciao"); // check = true
    * @endcode
-   *
-   * or, if you want to exploit ParameterHandler::add_parameter():
-   *
+   * or, if you want to exploit   ParameterHandler::add_parameter():
    * @code
    * using T = std::tuple<std::string, Point<3>, unsigned int>;
    *
@@ -761,31 +815,30 @@ namespace Patterns
    * deallog << Patterns::Tools::Convert<T>::to_string(a) << std::endl;
    * // DEAL::Mondo : 2.000000, 3.000000, 4.000000 : 34
    * @endcode
-   *
    * The constructor expects a vector of Patterns, and optionally a string
    * specifying the separator to use when parsing the Tuple from a string.
+   * The default separator is a colon, owing to the fact that a pair is in
+   * fact   a tuple with two elements.
    *
-   * The default separator is a colon, owing to the fact that a pair is in fact
-   * a tuple with two elements.
    */
   class Tuple : public PatternBase
   {
   public:
     /**
      * Constructor. Use a vector of unique pointers to Patterns to construct
-     * the tuple.
+     * the tuple.           @param   patterns The pattern each object of the
+     * Tuple should match       @param   separator An optional string used to
+     * delimit each element     Constructor.
      *
-     * @param patterns The pattern each object of the Tuple should match
-     * @param separator An optional string used to delimit each element
-     * Constructor.
      */
     Tuple(const std::vector<std::unique_ptr<PatternBase>> &patterns,
           const std::string &                              separator = ":");
 
     /**
-     * Constructor. Same as above, specialized for const char *. This is
+     * Constructor. Same as above, specialized for const char. This is
      * necessary to avoid compilers errors due to the variadic constructors
      * provided below.
+     *
      */
     Tuple(const std::vector<std::unique_ptr<PatternBase>> &patterns,
           const char *                                     separator);
@@ -793,40 +846,41 @@ namespace Patterns
 
     /**
      * Constructor. Creates a Tuple from more than one class derived from
-     * PatternBase.
+     * PatternBase.           @param   separator What separator to use.
+     * @param   patterns The list of patterns to use
      *
-     * @param separator What separator to use.
-     * @param patterns The list of patterns to use
      */
     template <class... PatternTypes>
     Tuple(const std::string &separator, const PatternTypes &... patterns);
 
     /**
-     * Constructor. This is needed to allow users to specify
-     * directly the separator without using std::string(";").
+     * Constructor. This is needed to allow users to specify     directly the
+     * separator without using   std::string(";").           Since we support
+     * a pure variadic templates version, without this     specialization, the
+     * compiler will fail with cryptic errors.
      *
-     * Since we support a pure variadic templates version, without this
-     * specialization, the compiler will fail with cryptic errors.
      */
     template <class... PatternTypes>
     Tuple(const char *separator, const PatternTypes &... patterns);
 
     /**
      * Constructor. Same as above, using the default separator.
+     * @param   patterns The list of patterns to use
      *
-     * @param patterns The list of patterns to use
      */
     template <typename... Patterns>
     Tuple(const Patterns &... patterns);
 
     /**
      * Copy constructor.
+     *
      */
     Tuple(const Tuple &other);
 
     /**
-     * Return <tt>true</tt> if the string is a list of strings
-     * each of which matches the patterns given to the constructor.
+     * Return <tt>true</tt> if the string is a list of strings     each of
+     * which matches the patterns given to the constructor.
+     *
      */
     virtual bool
     match(const std::string &test_string) const override;
@@ -834,6 +888,7 @@ namespace Patterns
     /**
      * Return a description of the pattern that valid strings are expected to
      * match.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -842,6 +897,7 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
@@ -850,6 +906,7 @@ namespace Patterns
      * Create a new object if the start of description matches
      * description_init.  Ownership of that object is transferred to the
      * caller of this function.
+     *
      */
     static std::unique_ptr<Tuple>
     create(const std::string &description);
@@ -857,18 +914,21 @@ namespace Patterns
     /**
      * Determine an estimate for the memory consumption (in bytes) of this
      * object.
+     *
      */
     std::size_t
     memory_consumption() const override;
 
     /**
      * Return a reference to the i-th pattern in the tuple.
+     *
      */
     const PatternBase &
     get_pattern(const unsigned int i) const;
 
     /**
      * Return the separator of the tuple entries.
+     *
      */
     const std::string &
     get_separator() const;
@@ -876,16 +936,19 @@ namespace Patterns
   private:
     /**
      * Copy of the patterns stored in the Tuple.
+     *
      */
     std::vector<std::unique_ptr<PatternBase>> patterns;
 
     /**
      * Separator between elements of the list.
+     *
      */
     const std::string separator;
 
     /**
      * Initial part of description.
+     *
      */
     static const char *description_init;
   };
@@ -897,21 +960,23 @@ namespace Patterns
    * constructor argument. The input is allowed to be empty or contain values
    * more than once and have an arbitrary number of spaces around commas. Of
    * course commas are not allowed inside the values given to the constructor.
-   *
    * For example, if the string to the constructor was <tt>"ucd|gmv|eps"</tt>,
    * then the following would be legal inputs: "eps", "gmv, eps", or "".
+   *
    */
   class MultipleSelection : public PatternBase
   {
   public:
     /**
-     * Constructor. @p seq is a list of valid options separated by "|".
+     * Constructor.   @p seq   is a list of valid options separated by "|".
+     *
      */
     MultipleSelection(const std::string &seq);
 
     /**
      * Return <tt>true</tt> if the string is an element of the description
      * list passed to the constructor.
+     *
      */
     virtual bool
     match(const std::string &test_string) const override;
@@ -920,6 +985,7 @@ namespace Patterns
      * Return a description of the pattern that valid strings are expected to
      * match. Here, this is the list of valid strings passed to the
      * constructor.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -928,6 +994,7 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
@@ -936,6 +1003,7 @@ namespace Patterns
      * Create a new object if the start of description matches
      * description_init.  Ownership of that object is transferred to the
      * caller of this function.
+     *
      */
     static std::unique_ptr<MultipleSelection>
     create(const std::string &description);
@@ -943,17 +1011,19 @@ namespace Patterns
     /**
      * Determine an estimate for the memory consumption (in bytes) of this
      * object.
+     *
      */
     std::size_t
     memory_consumption() const override;
 
     /**
-     * @addtogroup Exceptions
-     * @{
+     * @addtogroup   Exceptions       @{
+     *
      */
 
     /**
      * Exception.
+     *
      */
     DeclException1(
       ExcCommasNotAllowed,
@@ -965,11 +1035,13 @@ namespace Patterns
     /**
      * List of valid strings as passed to the constructor. We don't make this
      * string constant, as we process it somewhat in the constructor.
+     *
      */
     std::string sequence;
 
     /**
      * Initial part of description
+     *
      */
     static const char *description_init;
   };
@@ -977,18 +1049,21 @@ namespace Patterns
   /**
    * Test for the string being either "true" or "false". This is mapped to the
    * Selection class.
+   *
    */
   class Bool : public Selection
   {
   public:
     /**
      * Constructor.
+     *
      */
     Bool();
 
     /**
      * Return a description of the pattern that valid strings are expected to
      * match.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -997,6 +1072,7 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
@@ -1005,6 +1081,7 @@ namespace Patterns
      * Create a new object if the start of description matches
      * description_init.  Ownership of that object is transferred to the
      * caller of this function.
+     *
      */
     static std::unique_ptr<Bool>
     create(const std::string &description);
@@ -1012,12 +1089,14 @@ namespace Patterns
   private:
     /**
      * Initial part of description
+     *
      */
     static const char *description_init;
   };
 
   /**
    * Always returns <tt>true</tt> when testing a string.
+   *
    */
   class Anything : public PatternBase
   {
@@ -1025,12 +1104,14 @@ namespace Patterns
     /**
      * Constructor. (Allow for at least one non-virtual function in this
      * class, as otherwise sometimes no virtual table is emitted.)
+     *
      */
     Anything() = default;
 
     /**
      * Return <tt>true</tt> if the string matches its constraints, i.e.
      * always.
+     *
      */
     virtual bool
     match(const std::string &test_string) const override;
@@ -1038,6 +1119,7 @@ namespace Patterns
     /**
      * Return a description of the pattern that valid strings are expected to
      * match. Here, this is the string <tt>"[Anything]"</tt>.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -1046,6 +1128,7 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
@@ -1054,6 +1137,7 @@ namespace Patterns
      * Create a new object if the start of description matches
      * description_init.  Ownership of that object is transferred to the
      * caller of this function.
+     *
      */
     static std::unique_ptr<Anything>
     create(const std::string &description);
@@ -1061,6 +1145,7 @@ namespace Patterns
   private:
     /**
      * Initial part of description
+     *
      */
     static const char *description_init;
   };
@@ -1074,11 +1159,11 @@ namespace Patterns
    * want to write output). Functionally, the class is therefore equivalent to
    * the Anything class. However, it allows to specify the <i>intent</i> of a
    * parameter. The flag given to the constructor also allows to specify
-   * whether the file is supposed to be an input or output file.
-   *
-   * The reason for the existence of this class is to support graphical user
+   * whether the file is supposed to be an input or output file.     The
+   * reason for the existence of this class is to support graphical user
    * interfaces for editing parameter files. These may open a file selection
    * dialog if the filename is supposed to represent an input file.
+   *
    */
   class FileName : public PatternBase
   {
@@ -1086,15 +1171,18 @@ namespace Patterns
     /**
      * Files can be used for input or output. This can be specified in the
      * constructor by choosing the flag <tt>type</tt>.
+     *
      */
     enum FileType
     {
       /**
        * Open for input.
+       *
        */
       input = 0,
       /**
        * Open for output.
+       *
        */
       output = 1
     };
@@ -1102,12 +1190,14 @@ namespace Patterns
     /**
      * Constructor.  The type of the file can be specified by choosing the
      * flag.
+     *
      */
     FileName(const FileType type = input);
 
     /**
      * Return <tt>true</tt> if the string matches its constraints, i.e.
      * always.
+     *
      */
     virtual bool
     match(const std::string &test_string) const override;
@@ -1115,6 +1205,7 @@ namespace Patterns
     /**
      * Return a description of the pattern that valid strings are expected to
      * match. Here, this is the string <tt>"[Filename]"</tt>.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -1123,12 +1214,14 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
      * file type flag
+     *
      */
     FileType file_type;
 
@@ -1136,6 +1229,7 @@ namespace Patterns
      * Create a new object if the start of description matches
      * description_init.  Ownership of that object is transferred to the
      * caller of this function.
+     *
      */
     static std::unique_ptr<FileName>
     create(const std::string &description);
@@ -1143,6 +1237,7 @@ namespace Patterns
   private:
     /**
      * Initial part of description
+     *
      */
     static const char *description_init;
   };
@@ -1154,23 +1249,24 @@ namespace Patterns
    * string that is given in a parameter file actually corresponds to an
    * existing directory. Functionally, the class is therefore equivalent to
    * the Anything class. However, it allows to specify the <i>intent</i> of a
-   * parameter.
+   * parameter.     The reason for the existence of this class is to support
+   * graphical user   interfaces for editing parameter files. These may open a
+   * file selection   dialog to select or create a directory.
    *
-   * The reason for the existence of this class is to support graphical user
-   * interfaces for editing parameter files. These may open a file selection
-   * dialog to select or create a directory.
    */
   class DirectoryName : public PatternBase
   {
   public:
     /**
      * Constructor.
+     *
      */
     DirectoryName() = default;
 
     /**
      * Return <tt>true</tt> if the string matches its constraints, i.e.
      * always.
+     *
      */
     virtual bool
     match(const std::string &test_string) const override;
@@ -1178,6 +1274,7 @@ namespace Patterns
     /**
      * Return a description of the pattern that valid strings are expected to
      * match. Here, this is the string <tt>"[Filename]"</tt>.
+     *
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
@@ -1186,6 +1283,7 @@ namespace Patterns
      * Return a copy of the present object, which is newly allocated on the
      * heap. Ownership of that object is transferred to the caller of this
      * function.
+     *
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
@@ -1194,6 +1292,7 @@ namespace Patterns
      * Create a new object if the start of description matches
      * description_init.  Ownership of that object is transferred to the
      * caller of this function.
+     *
      */
     static std::unique_ptr<DirectoryName>
     create(const std::string &description);
@@ -1201,17 +1300,17 @@ namespace Patterns
   private:
     /**
      * Initial part of description
+     *
      */
     static const char *description_init;
   };
 
 
   /**
-   * Namespace for a few classes and functions that act on values and patterns,
-   * and allow to convert from non elementary types to strings and vice versa.
-   *
-   * A typical usage of these tools is in the following example:
-   *
+   * Namespace for a few classes and functions that act on values and
+   * patterns,   and allow to convert from non elementary types to strings and
+   * vice versa.     A typical usage of these tools is in the following
+   * example:
    * @code
    * using T = std::vector<unsigned int>;
    *
@@ -1235,15 +1334,12 @@ namespace Patterns
    * std::cout << internal::RankInfo<T>::list_rank << std::endl; // Outputs 1
    * std::cout << internal::RankInfo<T>::map_rank  << std::endl; // Outputs 0
    * @endcode
-   *
-   * Convert<T> is used by the function Patterns::Tools::add_parameter() in this
-   * namespace. Internally it uses the internal::RankInfo<T> class to decide how
-   * many different separators are required to convert the given type to a
-   * string.
-   *
-   * For example, to write vectors of vectors, the default is to use "," for the
-   * first (inner) separator, and ";" for the second (outer) separator, i.e.
-   *
+   * Convert<T> is used by the function   Patterns::Tools::add_parameter()
+   * in this   namespace. Internally it uses the   internal::RankInfo<T>
+   * class to decide how   many different separators are required to convert
+   * the given type to a   string.     For example, to write vectors of
+   * vectors, the default is to use "," for the   first (inner) separator, and
+   * ";" for the second (outer) separator, i.e.
    * @code
    * std::vector<std::vector<unsigned int>> vec;
    * vec = Convert<decltype(vec)>::to_value("1,2,3 ; 4,5,6");
@@ -1251,74 +1347,67 @@ namespace Patterns
    * s = convert<decltype(vec[0])>::to_string(vec[0]);
    * // s now contains the string "1,2,3"
    * @endcode
-   *
-   * Separators for Patterns::List and Patterns::Map compatible types are
-   * selected according to the
-   * rank of the list and map objects, using the arrays
-   * Patterns::Tools::internal::default_list_separator and
-   * Patterns::Tools::internal::default_map_separator.
-   *
-   * They are currently set to:
-   *
+   * Separators for   Patterns::List   and   Patterns::Map   compatible types
+   * are   selected according to the   rank of the list and map objects, using
+   * the arrays     Patterns::Tools::internal::default_list_separator   and
+   * Patterns::Tools::internal::default_map_separator.       They are
+   * currently set to:
    * @code
    * default_list_separator{{","  ,  ";"  ,  "|"  ,   "%"}};
    * default_map_separator {{":"  ,  "="  ,  "@"  ,   "#"}};
    * @endcode
-   *
-   * When one needs a mixture of Patterns::List and Patterns::Map types, their
-   * RankInfo is computed by taking the maximum of the vector_rank of the Key
-   * and of the Value type, so that, for example, it is possible to have the
-   * following
+   * When one needs a mixture of   Patterns::List   and   Patterns::Map
+   * types, their   RankInfo is computed by taking the maximum of the
+   * vector_rank of the Key   and of the Value type, so that, for example, it
+   * is possible to have the   following
    * @code
    * ... // Build compare class
    * std::map<std::vector<unsigned int>, std::vector<double>, compare> map;
    *
    * map = convert<decltype(map)>::to_value(
-   *   "1,2,3 : 5.0,6.0,7.0  ; 8,9,10 : 11.0,12.0,13.0");
+   * "1,2,3 : 5.0,6.0,7.0  ; 8,9,10 : 11.0,12.0,13.0");
    *
    * @endcode
-   *
    * Some non elementary types are supported, like Point(), or
-   * std::complex<double>. If you wish to support more types, you have to
+   * std::complex<double>.   If you wish to support more types, you have to
    * specialize the Convert struct as well as the RankInfo struct.
-   *
    * @ingroup input
+   *
    */
   namespace Tools
   {
     /**
      * Converter class. This class is used to generate strings and Patterns
      * associated to the given type, and to convert from a string to the given
-     * type and vice versa.
+     * type and vice versa.         The second template parameter is used
+     * internally to allow for advanced     SFINAE (substitution failure is
+     * not an error) tricks used to specialise     this class for arbitrary
+     * STL containers and maps.
      *
-     * The second template parameter is used internally to allow for advanced
-     * SFINAE (substitution failure is not an error) tricks used to specialise
-     * this class for arbitrary STL containers and maps.
      */
     template <class T, class Enable = void>
     struct Convert
     {
       /**
-       * Return a std::unique_ptr to a Pattern that can be used to interpret a
-       * string as the type of the template argument, and the other way around.
+       * Return a   std::unique_ptr   to a Pattern that can be used to
+       * interpret a       string as the type of the template argument, and
+       * the other way around.             While the current function (in the
+       * general Convert template) is       deleted, it is implemented and
+       * available in the specializations of the       Convert       class
+       * template for particular kinds of template arguments   @p T.
        *
-       * While the current function (in the general Convert template) is
-       * deleted, it is implemented and available in the specializations of the
-       * Convert
-       * class template for particular kinds of template arguments @p T.
        */
       static std::unique_ptr<Patterns::PatternBase>
       to_pattern() = delete;
 
       /**
-       * Return a string containing a textual version of the variable s. Use the
-       * pattern passed to perform the conversion, or create and use a default
-       * one.
+       * Return a string containing a textual version of the variable s. Use
+       * the       pattern passed to perform the conversion, or create and use
+       * a default       one.             While the current function (in the
+       * general Convert template) is       deleted, it is implemented and
+       * available in the specializations of the       Convert       class
+       * template for particular kinds of template arguments   @p T.
        *
-       * While the current function (in the general Convert template) is
-       * deleted, it is implemented and available in the specializations of the
-       * Convert
-       * class template for particular kinds of template arguments @p T.
        */
       static std::string
       to_string(const T &                    s,
@@ -1328,11 +1417,11 @@ namespace Patterns
       /**
        * Convert a string to a value, using the given pattern. Use the pattern
        * passed to perform the conversion, or create and use a default one.
-       *
        * While the current function (in the general Convert template) is
-       * deleted, it is implemented and available in the specializations of the
-       * Convert
-       * class template for particular kinds of template arguments @p T.
+       * deleted, it is implemented and available in the specializations of
+       * the       Convert       class template for particular kinds of
+       * template arguments   @p T.
+       *
        */
       static T
       to_value(const std::string &          s,
@@ -1342,21 +1431,19 @@ namespace Patterns
 
     /**
      * A utility function that simplifies the conversion to strings of
-     * arbitrarily complex types.
-     *
-     * This function calls the method Convert<T>::to_string() with the default
-     * pattern. An example usage is the following:
-     *
+     * arbitrarily complex types.         This function calls the method
+     * Convert<T>::to_string()   with the default     pattern. An example
+     * usage is the following:
      * @code
      * auto t = std::make_tuple(1.0, std::make_pair(1, "ciao"));
      * auto s = Patterns::Tools::to_string(t);
      *
      * std::cout << s; // will print "1 % 1 : ciao""
      * @endcode
+     * See the documentation of the class   Patterns::Tools::Convert,   and of
+     * the     helper class   Patterns::Tools::RankInfo   for details on the
+     * way separators     are selected when outputting STL container types.
      *
-     * See the documentation of the class Patterns::Tools::Convert, and of the
-     * helper class Patterns::Tools::RankInfo for details on the way separators
-     * are selected when outputting STL container types.
      */
     template <typename T>
     std::string
@@ -1364,11 +1451,9 @@ namespace Patterns
 
     /**
      * A utility function that simplifies the conversion from strings to
-     * arbitrary types.
-     *
-     * This function calls the method Convert<T>::to_value() with the default
-     * pattern. An example usage is the following:
-     *
+     * arbitrary types.         This function calls the method
+     * Convert<T>::to_value()   with the default     pattern. An example usage
+     * is the following:
      * @code
      * auto t = std::make_tuple(1.0, std::make_pair(1, "ciao"));
      * // replace the value of 't' by the parsed content of the string argument:
@@ -1377,27 +1462,27 @@ namespace Patterns
      * auto s = Patterns::Tools::to_string(t);
      * std::cout << s; // will print "2 % 3 : mondo""
      * @endcode
+     * See the documentation of the class   Patterns::Tools::Convert,   and of
+     * the     helper class   Patterns::Tools::RankInfo   for details on the
+     * separators you     should use in your string patterns when converting
+     * from a string to a     container type.         Notice that the current
+     * content of variable   @p t   is ignored. Its type is     used to infer
+     * how to interpret the string. If the string is successfully     parsed,
+     * then   @p t   will be set to the parsed content of   @p s.
      *
-     * See the documentation of the class Patterns::Tools::Convert, and of the
-     * helper class Patterns::Tools::RankInfo for details on the separators you
-     * should use in your string patterns when converting from a string to a
-     * container type.
-     *
-     * Notice that the current content of variable @p t is ignored. Its type is
-     * used to infer how to interpret the string. If the string is successfully
-     * parsed, then @p t will be set to the parsed content of @p s.
      */
     template <typename T>
     void
     to_value(const std::string &s, T &t);
 
     /**
-     * @addtogroup Exceptions
-     * @{
+     * @addtogroup   Exceptions       @{
+     *
      */
 
     /**
      * Exception.
+     *
      */
     DeclException2(ExcNoMatch,
                    std::string,
@@ -1450,27 +1535,24 @@ namespace Patterns
     {
       /**
        * Store information about the rank types of the given class.
-       *
        * A class has Rank equal to the number of different separators
        * that are required to uniquely identify its element(s) in a string.
-       *
        * This class is used to detect whether the class T is compatible
-       * with a Patterns::List pattern or with a Patterns::Map pattern.
+       * with a   Patterns::List   pattern or with a   Patterns::Map
+       * pattern.             Objects like Point() or   std::complex<double>
+       * are vector-likes, and       have vector_rank 1. Elementary types,
+       * like `int`, `unsigned int`,       `double`, etc. have vector_rank 0.
+       * `std::vector`,     `std::list`   and in       general containers have
+       * rank equal to 1 + vector_rank of the contained       type. Similarly
+       * for map types.             A class with   list_rank::value   = 0 is
+       * either elementary or a       map. A class with   map_rank::value   =
+       * 0 is either a List compatible       class, or an elementary type.
+       * Elementary types are not compatible with   Patterns::List,   but non
+       * elementary types, like Point(), or   std::complex<double>,   are
+       * compatible       with the List type. Adding more compatible types is
+       * a matter of adding       a specialization of this struct for the
+       * given type.
        *
-       * Objects like Point() or std::complex<double> are vector-likes, and
-       * have vector_rank 1. Elementary types, like `int`, `unsigned int`,
-       * `double`, etc. have vector_rank 0. `std::vector`, `std::list` and in
-       * general containers have rank equal to 1 + vector_rank of the contained
-       * type. Similarly for map types.
-       *
-       * A class with list_rank::value = 0 is either elementary or a
-       * map. A class with map_rank::value = 0 is either a List compatible
-       * class, or an elementary type.
-       *
-       * Elementary types are not compatible with Patterns::List, but non
-       * elementary types, like Point(), or std::complex<double>, are compatible
-       * with the List type. Adding more compatible types is a matter of adding
-       * a specialization of this struct for the given type.
        */
       template <class T, class Enable = void>
       struct RankInfo
@@ -2142,7 +2224,9 @@ namespace Patterns
       }
 
       /**
-       * Convert a string to a value, using the given pattern, or a default one.
+       * Convert a string to a value, using the given pattern, or a default
+       * one.
+       *
        */
       static T
       to_value(const std::string &          s,

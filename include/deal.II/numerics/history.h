@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -27,23 +27,21 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A helper class to store a finite-size collection of objects of type `T`.
- * If the number of elements exceeds the specified maximum size of the
- * container, the oldest element is removed. Additionally, random access and
- * removal of elements is implemented. Indexing is done relative to the last
- * added element.
+ * A helper class to store a finite-size collection of objects of type `T`. If
+ * the number of elements exceeds the specified maximum size of the container,
+ * the oldest element is removed. Additionally, random access and removal of
+ * elements is implemented. Indexing is done relative to the last added
+ * element. In order to optimize the container for usage with memory-demanding
+ * objects (i.e. linear algebra vectors), the removal of an element does not
+ * free the memory. Instead the element is being kept in a separate cache so
+ * that subsequent addition does not require re-allocation of memory. The
+ * primary usage of this class is in solvers to store a history of vectors.
+ * That is, if at the iteration   $k$   we store   $m$   vectors from previous
+ * iterations   $\{k-1,k-2,...,k-m\}$  , then addition of the new element will
+ * make the object contain elements from iterations
+ * $\{k,k-1,k-2,...,k-m+1\}$  .
  *
- * In order to optimize the container for usage with
- * memory-demanding objects (i.e. linear algebra vectors), the removal of an
- * element does not free the memory. Instead the element
- * is being kept in a separate cache so that subsequent addition does not
- * require re-allocation of memory.
  *
- * The primary usage of this class is in solvers to store a history of vectors.
- * That is, if at the iteration $k$ we store $m$ vectors from previous
- * iterations
- * $\{k-1,k-2,...,k-m\}$, then addition of the new element will make
- * the object contain elements from iterations $\{k,k-1,k-2,...,k-m+1\}$.
  */
 template <typename T>
 class FiniteSizeHistory
@@ -54,58 +52,62 @@ public:
     "This class requires that the elements of type T are default constructible.");
 
   /**
-   * Constructor.
+   * Constructor.       @param   max_elements maximum number of elements to be
+   * stored in the   history.
    *
-   * @param max_elements maximum number of elements to be stored in the
-   * history.
    */
   FiniteSizeHistory(const std::size_t max_elements = 0);
 
   /**
-   * Add new object by copying.
-   * If the maximum number of elements is reached, the oldest element is
-   * removed.
+   * Add new object by copying.   If the maximum number of elements is
+   * reached, the oldest element is   removed.
+   *
    */
   void
   add(const T &element);
 
   /**
-   * Remove an element with index @p index,
-   * counting from the last added element.
-   * `index==0` therefore corresponds to removing
-   * the newset element.
+   * Remove an element with index   @p index,     counting from the last added
+   * element.   `index==0` therefore corresponds to removing   the newset
+   * element.
+   *
    */
   void
   remove(const std::size_t index);
 
   /**
-   * Read/write access to an element with index @p index,
-   * counting from the last added element.
-   * `index==0` therefore corresponds to the newset element.
+   * Read/write access to an element with index   @p index,     counting from
+   * the last added element.   `index==0` therefore corresponds to the newset
+   * element.
+   *
    */
   T &operator[](const std::size_t index);
 
   /**
-   * Read access to an element with index @p index,
-   * counting from the last added element.
-   * `index==0` therefore corresponds to the newset element.
+   * Read access to an element with index   @p index,     counting from the
+   * last added element.   `index==0` therefore corresponds to the newset
+   * element.
+   *
    */
   const T &operator[](const std::size_t index) const;
 
   /**
    * Return the current size of the history.
+   *
    */
   std::size_t
   size() const;
 
   /**
    * Return the maximum allowed size of the history.
+   *
    */
   std::size_t
   max_size() const;
 
   /**
    * Clear the contents, including the cache.
+   *
    */
   void
   clear();
@@ -113,17 +115,20 @@ public:
 private:
   /**
    * Maximum number of elements to be stored.
+   *
    */
   std::size_t max_n_elements;
 
   /**
    * A deque which stores the data.
+   *
    */
   std::deque<std::unique_ptr<T>> data;
 
   /**
-   * A deque to cache data, in particular for the case when
-   * removal is followed by addition.
+   * A deque to cache data, in particular for the case when   removal is
+   * followed by addition.
+   *
    */
   std::deque<std::unique_ptr<T>> cache;
 };

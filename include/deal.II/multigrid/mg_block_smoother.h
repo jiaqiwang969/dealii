@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
 //
@@ -32,18 +32,21 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*
- * MGSmootherBase is defined in mg_base.h
- */
+/* MGSmootherBase is defined in mg_base.h
 
-/*!@addtogroup mg */
-/*@{*/
+* 
+* */
+
+ /*!@addtogroup mg */ 
+ /*@{*/ 
 
 /**
  * General smoother class for block vectors. This class gives complete freedom
  * to the choice of a block smoother by being initialized with a matrix and a
  * smoother object. Therefore, the smoother object for each level must be
  * constructed by hand.
+ *
+ *
  */
 template <typename MatrixType, class RelaxationType, typename number>
 class MGSmootherBlock : public MGSmoother<BlockVector<number>>
@@ -51,6 +54,7 @@ class MGSmootherBlock : public MGSmoother<BlockVector<number>>
 public:
   /**
    * Constructor.
+   *
    */
   MGSmootherBlock(const unsigned int steps     = 1,
                   const bool         variable  = false,
@@ -62,14 +66,12 @@ public:
    * Initialize for matrices. The parameter <tt>matrices</tt> can be any
    * object having functions <tt>get_minlevel()</tt> and
    * <tt>get_maxlevel()</tt> as well as an <tt>operator[]</tt> returning a
-   * reference to @p MatrixType.
+   * reference to   @p MatrixType.       The same convention is used for the
+   * parameter <tt>smoothers</tt>, such   that <tt>operator[]</tt> returns the
+   * object doing the block-smoothing on   a single level.     This function
+   * stores pointers to the level matrices and smoothing   operator for each
+   * level.
    *
-   * The same convention is used for the parameter <tt>smoothers</tt>, such
-   * that <tt>operator[]</tt> returns the object doing the block-smoothing on
-   * a single level.
-   *
-   * This function stores pointers to the level matrices and smoothing
-   * operator for each level.
    */
   template <class MGMatrixType, class MGRelaxationType>
   void
@@ -77,20 +79,23 @@ public:
 
   /**
    * Empty all vectors.
+   *
    */
   void
   clear();
 
   /**
    * Switch on/off reversed. This is mutually exclusive with transpose().
+   *
    */
   void
   set_reverse(const bool);
 
   /**
-   * Implementation of the interface for @p Multigrid. This function does
+   * Implementation of the interface for   @p Multigrid.   This function does
    * nothing, which by comparison with the definition of this function means
    * that the smoothing operator equals the null operator.
+   *
    */
   virtual void
   smooth(const unsigned int         level,
@@ -99,6 +104,7 @@ public:
 
   /**
    * Memory used by this object.
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -106,28 +112,32 @@ public:
 private:
   /**
    * Pointer to the matrices.
+   *
    */
   MGLevelObject<LinearOperator<BlockVector<number>>> matrices;
 
   /**
    * Pointer to the matrices.
+   *
    */
   MGLevelObject<LinearOperator<BlockVector<number>>> smoothers;
 
   /**
    * Reverse?
+   *
    */
   bool reverse;
 
   /**
    * Memory for auxiliary vectors.
+   *
    */
   SmartPointer<VectorMemory<BlockVector<number>>,
                MGSmootherBlock<MatrixType, RelaxationType, number>>
     mem;
 };
 
-/**@}*/
+ /**@}*/ 
 
 //---------------------------------------------------------------------------
 

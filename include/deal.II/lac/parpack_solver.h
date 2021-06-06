@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -137,75 +137,70 @@ extern "C"
 /**
  * Interface for using PARPACK. PARPACK is a collection of Fortran77
  * subroutines designed to solve large scale eigenvalue problems. Here we
- * interface to the routines <code>pdneupd</code>, <code>pdseupd</code>,
- * <code>pdnaupd</code>, <code>pdsaupd</code> of PARPACK.  The package is
+ * interface to the routines   <code>pdneupd</code>, <code>pdseupd</code>  ,
+ * <code>pdnaupd</code>, <code>pdsaupd</code>   of PARPACK.  The package is
  * designed to compute a few eigenvalues and corresponding eigenvectors of a
  * general n by n matrix A. It is most appropriate for large sparse matrices
- * A.
+ * A. In this class we make use of the method applied to the generalized
+ * eigenspectrum problem   $(A-\lambda B)x=0$  , for   $x\neq0$  ; where   $A$
+ * is a system matrix,   $B$   is a mass matrix, and   $\lambda, x$   are a
+ * set of eigenvalues and eigenvectors respectively. The ArpackSolver can be
+ * used in application codes in the following way:
  *
- * In this class we make use of the method applied to the generalized
- * eigenspectrum problem $(A-\lambda B)x=0$, for $x\neq0$; where $A$ is a
- * system matrix, $B$ is a mass matrix, and $\lambda, x$ are a set of
- * eigenvalues and eigenvectors respectively.
- *
- * The ArpackSolver can be used in application codes in the following way:
  * @code
- *   SolverControl solver_control (1000, 1e-9);
- *   const unsigned int num_arnoldi_vectors = 2*size_of_spectrum + 2;
- *   PArpackSolver<V>::AdditionalData
- *     additional_data(num_arnoldi_vectors,
- *                     dealii::PArpackSolver<V>::largest_magnitude,
- *                     true);
+ * SolverControl solver_control (1000, 1e-9);
+ * const unsigned int num_arnoldi_vectors = 2*size_of_spectrum + 2;
+ * PArpackSolver<V>::AdditionalData
+ *   additional_data(num_arnoldi_vectors,
+ *                   dealii::PArpackSolver<V>::largest_magnitude,
+ *                   true);
  *
- *    PArpackSolver<V> eigensolver (solver_control,
- *                                  mpi_communicator,
- *                                  additional_data);
- *    eigensolver.set_shift(sigma);
- *    eigensolver.reinit(locally_owned_dofs);
- *    eigensolver.solve (A,
- *                       B,
- *                       OP,
- *                       lambda,
- *                       x,
- *                       size_of_spectrum);
+ *  PArpackSolver<V> eigensolver (solver_control,
+ *                                mpi_communicator,
+ *                                additional_data);
+ *  eigensolver.set_shift(sigma);
+ *  eigensolver.reinit(locally_owned_dofs);
+ *  eigensolver.solve (A,
+ *                     B,
+ *                     OP,
+ *                     lambda,
+ *                     x,
+ *                     size_of_spectrum);
  * @endcode
- * for the generalized eigenvalue problem $Ax=B\lambda x$, where the variable
- * <code>size_of_spectrum</code> tells PARPACK the number of
- * eigenvector/eigenvalue pairs to solve for. Here, <code>lambda</code> is a
- * vector that will contain the eigenvalues computed, <code>x</code> a vector
- * of objects of type <code>V</code> that will contain the eigenvectors
- * computed.
+ * for the generalized eigenvalue problem   $Ax=B\lambda x$  , where the
+ * variable   <code>size_of_spectrum</code>   tells PARPACK the number of
+ * eigenvector/eigenvalue pairs to solve for. Here,   <code>lambda</code>   is
+ * a vector that will contain the eigenvalues computed,   <code>x</code>   a
+ * vector of objects of type   <code>V</code>   that will contain the
+ * eigenvectors computed. Currently, only three modes of (P)Arpack are
+ * implemented. In mode 3 (default),   <code>OP</code>   is an inverse
+ * operation for the matrix <code>A
  *
- * Currently, only three modes of (P)Arpack are implemented. In mode 3
- * (default), <code>OP</code> is an inverse operation for the matrix <code>A -
- * sigma * B</code>, where <code> sigma </code> is a shift value, set to zero
- * by default. Whereas in mode 2, <code>OP</code> is an inverse of
- * <code>M</code>. Finally, mode 1 corresponds to standard eigenvalue problem
- * without spectral transformation $Ax=\lambda x$. The mode can be specified via
- * AdditionalData object. Note that for shift-and-invert (mode=3), the sought
- * eigenpairs are those after the spectral transformation is applied.
+ *  - sigma B</code>, where   <code> sigma </code>   is a shift value, set to zero by default. Whereas in mode 2,   <code>OP</code>   is an inverse of   <code>M</code>  . Finally, mode 1 corresponds to standard eigenvalue problem without spectral transformation   $Ax=\lambda x$  . The mode can be specified via AdditionalData object. Note that for shift-and-invert (mode=3), the sought eigenpairs are those after the spectral transformation is applied.
+ * The   <code>OP</code>   can be specified by using a LinearOperator:
  *
- * The <code>OP</code> can be specified by using a LinearOperator:
  * @code
- *   const double shift = 5.0;
- *   const auto op_A = linear_operator<vector_t>(A);
- *   const auto op_B = linear_operator<vector_t>(B);
- *   const auto op_shift = op_A - shift * op_B;
- *   SolverControl solver_control_lin (1000, 1e-10,false,false);
+ * const double shift = 5.0;
+ * const auto op_A = linear_operator<vector_t>(A);
+ * const auto op_B = linear_operator<vector_t>(B);
+ * const auto op_shift = op_A
  *
- *   SolverCG<vector_t> cg(solver_control_lin);
- *   const auto op_shift_invert =
- *     inverse_operator(op_shift, cg, PreconditionIdentity ());
+ * - shift op_B;
+ * SolverControl solver_control_lin (1000, 1e-10,false,false);
+ *
+ * SolverCG<vector_t> cg(solver_control_lin);
+ * const auto op_shift_invert =
+ *   inverse_operator(op_shift, cg, PreconditionIdentity ());
  * @endcode
  *
  * The class is intended to be used with MPI and can work on arbitrary vector
  * and matrix distributed classes.  Both symmetric and non-symmetric
- * <code>A</code> are supported.
+ * <code>A</code>   are supported. For further information on how the PARPACK
+ * routines   <code>pdneupd</code>  ,   <code>pdseupd</code>,
+ * <code>pdnaupd</code>, <code>pdsaupd</code>   work and also how to set the
+ * parameters appropriately please take a look into the PARPACK manual.
  *
- * For further information on how the PARPACK routines <code>pdneupd</code>,
- * <code>pdseupd</code>, <code>pdnaupd</code>, <code>pdsaupd</code> work and
- * also how to set the parameters appropriately please take a look into the
- * PARPACK manual.
+ *
  */
 template <typename VectorType>
 class PArpackSolver : public Subscriptor
@@ -213,6 +208,7 @@ class PArpackSolver : public Subscriptor
 public:
   /**
    * Declare the type for container size.
+   *
    */
   using size_type = types::global_dof_index;
 
@@ -220,43 +216,50 @@ public:
    * An enum that lists the possible choices for which eigenvalues to compute
    * in the solve() function. Note, that this corresponds to the problem after
    * shift-and-invert (the only currently supported spectral transformation)
-   * is applied.
+   * is applied.     A particular choice is limited based on symmetric or
+   * non-symmetric matrix     <code>A</code>   considered.
    *
-   * A particular choice is limited based on symmetric or non-symmetric matrix
-   * <code>A</code> considered.
    */
   enum WhichEigenvalues
   {
     /**
      * The algebraically largest eigenvalues.
+     *
      */
     algebraically_largest,
     /**
      * The algebraically smallest eigenvalues.
+     *
      */
     algebraically_smallest,
     /**
      * The eigenvalue with the largest magnitudes.
+     *
      */
     largest_magnitude,
     /**
      * The eigenvalue with the smallest magnitudes.
+     *
      */
     smallest_magnitude,
     /**
      * The eigenvalues with the largest real parts.
+     *
      */
     largest_real_part,
     /**
      * The eigenvalues with the smallest real parts.
+     *
      */
     smallest_real_part,
     /**
      * The eigenvalues with the largest imaginary parts.
+     *
      */
     largest_imaginary_part,
     /**
      * The eigenvalues with the smallest imaginary parts.
+     *
      */
     smallest_imaginary_part,
     /**
@@ -264,6 +267,7 @@ public:
      * the other half from the low end. If the number of requested
      * eigenvectors is odd, then the extra eigenvector comes from the high end
      * of the spectrum.
+     *
      */
     both_ends
   };
@@ -271,6 +275,7 @@ public:
   /**
    * Standardized data struct to pipe additional data to the solver, should it
    * be needed.
+   *
    */
   struct AdditionalData
   {
@@ -287,12 +292,14 @@ public:
 
   /**
    * Access to the object that controls convergence.
+   *
    */
   SolverControl &
   control() const;
 
   /**
    * Constructor.
+   *
    */
   PArpackSolver(SolverControl &       control,
                 const MPI_Comm &      mpi_communicator,
@@ -300,51 +307,55 @@ public:
 
   /**
    * Initialize internal variables.
+   *
    */
   void
   reinit(const IndexSet &locally_owned_dofs);
 
   /**
-   * Initialize internal variables when working with BlockVectors.
-   * @p locally_owned_dofs is used to set the dimension of the problem,
-   * whereas @p partitioning is used for calling the reinit of the deal.II
+   * Initialize internal variables when working with BlockVectors.     @p
+   * locally_owned_dofs   is used to set the dimension of the problem,
+   * whereas   @p partitioning   is used for calling the reinit of the deal.II
    * blockvectors used.
+   *
    */
   void
   reinit(const IndexSet &             locally_owned_dofs,
          const std::vector<IndexSet> &partitioning);
 
   /**
-   * Initialize internal variables from the input @p distributed_vector.
+   * Initialize internal variables from the input   @p distributed_vector.
+   *
    */
   void
   reinit(const VectorType &distributed_vector);
 
   /**
    * Set initial vector for building Krylov space.
+   *
    */
   void
   set_initial_vector(const VectorType &vec);
 
   /**
-   * Set shift @p sigma for shift-and-invert spectral transformation.
-   *
+   * Set shift   @p sigma   for shift-and-invert spectral transformation.
    * If this function is not called, the shift is assumed to be zero.
+   * @note   only relevant for   <code>mode=3</code>   (see the general
+   * documentation of this   class for a definition of what the different
+   * modes are).
    *
-   * @note only relevant for <code>mode=3</code> (see the general documentation of this
-   * class for a definition of what the different modes are).
    */
   void
   set_shift(const std::complex<double> sigma);
 
   /**
-   * Solve the generalized eigensprectrum problem $A x=\lambda B x$ by calling
-   * the <code>pd(n/s)eupd</code> and <code>pd(n/s)aupd</code> functions of
-   * PARPACK.
+   * Solve the generalized eigensprectrum problem   $A x=\lambda B x$   by
+   * calling   the   <code>pd(n/s)eupd</code> and <code>pd(n/s)aupd</code>
+   * functions of   PARPACK.     In   <code>mode=3</code>  ,   @p inverse
+   * should correspond to   $[A-\sigma B]^{-1}$  ,   whereas in
+   * <code>mode=2</code>   it should represent   $B^{-1}$  . For
+   * <code>mode=1</code>   both   @p B   and   @p inverse   are ignored.
    *
-   * In <code>mode=3</code>, @p inverse should correspond to $[A-\sigma B]^{-1}$,
-   * whereas in <code>mode=2</code> it should represent $B^{-1}$. For
-   * <code>mode=1</code> both @p B and @p inverse are ignored.
    */
   template <typename MatrixType1, typename MatrixType2, typename INVERSE>
   void
@@ -357,6 +368,7 @@ public:
 
   /**
    * Same as above but takes eigenvectors as pointers.
+   *
    */
   template <typename MatrixType1, typename MatrixType2, typename INVERSE>
   void
@@ -369,6 +381,7 @@ public:
 
   /**
    * Return the memory consumption of this class in bytes.
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -377,11 +390,13 @@ protected:
   /**
    * Reference to the object that controls convergence of the iterative
    * solver.
+   *
    */
   SolverControl &solver_control;
 
   /**
    * Store a copy of the flags for this particular solver.
+   *
    */
   const AdditionalData additional_data;
 
@@ -389,11 +404,13 @@ protected:
 
   /**
    * C++ MPI communicator.
+   *
    */
   MPI_Comm mpi_communicator;
 
   /**
    * Fortran MPI communicator.
+   *
    */
   MPI_Fint mpi_communicator_fortran;
 
@@ -401,54 +418,64 @@ protected:
 
   /**
    * Length of the work array workl.
+   *
    */
   int lworkl;
 
   /**
    * Double precision  work array of length lworkl
+   *
    */
   std::vector<double> workl;
 
   /**
    * Double precision  work array of length 3*N
+   *
    */
   std::vector<double> workd;
 
   /**
    * Number of local degrees of freedom.
+   *
    */
   int nloc;
 
   /**
    * Number of Arnoldi basis vectors specified in additional_data
+   *
    */
   int ncv;
 
 
   /**
    * The leading dimension of the array v
+   *
    */
   int ldv;
 
   /**
    * Double precision vector of size ldv by NCV.  Will contains the final set
    * of Arnoldi basis vectors.
+   *
    */
   std::vector<double> v;
 
   /**
    * An auxiliary flag which is set to true when initial vector is provided.
+   *
    */
   bool initial_vector_provided;
 
   /**
    * The initial residual vector, possibly from a previous run.  On output, it
    * contains the final residual vector.
+   *
    */
   std::vector<double> resid;
 
   /**
    * The leading dimension of the array Z equal to nloc.
+   *
    */
   int ldz;
 
@@ -456,56 +483,64 @@ protected:
    * A vector of minimum size of nloc by NEV+1.  Z contains the B-orthonormal
    * Ritz vectors of the eigensystem A*z = lambda*B*z corresponding to the
    * Ritz value approximations.
+   *
    */
   std::vector<double> z;
 
   /**
    * The size of the workev array.
+   *
    */
   int lworkev;
 
   /**
    * Double precision  work array of dimension 3* NCV.
+   *
    */
   std::vector<double> workev;
 
   /**
    * A vector of dimension NCV.
+   *
    */
   std::vector<int> select;
 
   /**
    * Temporary vectors used between Arpack and deal.II
+   *
    */
   VectorType src, dst, tmp;
 
   /**
    * Indices of local degrees of freedom.
+   *
    */
   std::vector<types::global_dof_index> local_indices;
 
   /**
    * Real part of the shift
+   *
    */
   double sigmar;
 
   /**
    * Imaginary part of the shift
+   *
    */
   double sigmai;
 
 private:
   /**
-   * Initialize internal variables which depend on
-   * @p locally_owned_dofs.
-   *
+   * Initialize internal variables which depend on     @p locally_owned_dofs.
    * This function is called inside the reinit() functions
+   *
    */
   void
   internal_reinit(const IndexSet &locally_owned_dofs);
 
   /**
    * PArpackExcInfoPdnaupds.
+   *
    */
   DeclException2(PArpackExcConvergedEigenvectors,
                  int,
@@ -711,7 +746,7 @@ PArpackSolver<VectorType>::internal_reinit(const IndexSet &locally_owned_dofs)
   z.resize(ldz * ncv, 0.); // TODO we actually need only ldz*nev
 
   // WORKEV  Double precision  work array of dimension 3*NCV.
-  lworkev = additional_data.symmetric ? 0 /*not used in symmetric case*/
+  lworkev = additional_data.symmetric ? 0  /*not used in symmetric case*/ 
                                         :
                                         3 * ncv;
   workev.resize(lworkev, 0.);

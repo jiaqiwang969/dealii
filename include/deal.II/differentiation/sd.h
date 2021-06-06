@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2020 by the deal.II authors
 //
@@ -35,17 +35,29 @@ DEAL_II_NAMESPACE_OPEN
 namespace Differentiation
 {
   /**
-   * Wrappers for symbolic differentiation libraries. Currently there is support
-   * for the following libraries:
-   *   - SymEngine
+   * Wrappers for symbolic differentiation libraries. Currently there is
+   * support   for the following libraries:
    *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *  - SymEngine
    * @ingroup auto_symb_diff
+   *
    */
   namespace SD
   {
     /**
      * This namespace defines the classes and functions that help provide a
      * structured interface to symbolic numbers and operations.
+     *
      */
     namespace internal
     {}

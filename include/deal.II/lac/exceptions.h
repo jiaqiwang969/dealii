@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2019 by the deal.II authors
 //
@@ -25,28 +25,33 @@ DEAL_II_NAMESPACE_OPEN
 namespace LACExceptions
 {
   /**
-   * @addtogroup Exceptions
+   * @addtogroup   Exceptions
+   *
    */
   //@{
 
   /**
    * This function only works for quadratic matrices.
+   *
    */
   DeclExceptionMsg(ExcNotQuadratic,
                    "This function only works for quadratic objects!");
 
   /**
    * The operation cannot be finished since the matrix is singular.
+   *
    */
   DeclException0(ExcSingular);
 
   /**
    * Block indices of two block objects are different.
+   *
    */
   DeclException0(ExcDifferentBlockIndices);
 
   /**
    * The operation requires a sparsity pattern.
+   *
    */
   DeclExceptionMsg(
     ExcNeedsSparsityPattern,
@@ -58,10 +63,10 @@ namespace LACExceptions
   /**
    * Exception thrown when a PETSc function reports an error. If possible,
    * this exception uses the message provided by
-   * <code>PetscErrorMessage</code> to print a description of the error.
+   * <code>PetscErrorMessage</code>   to print a description of the error.
+   * @note   For backwards compatibility this is defined whether or not
+   * deal.II   is compiled with PETSc.
    *
-   * @note For backwards compatibility this is defined whether or not deal.II
-   * is compiled with PETSc.
    */
   class ExcPETScError : public dealii::ExceptionBase
   {
@@ -77,6 +82,7 @@ namespace LACExceptions
   /**
    * An error of a Trilinos function was encountered. Check the Trilinos
    * documentation for details.
+   *
    */
   DeclException1(ExcTrilinosError,
                  int,

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
 //
@@ -133,6 +133,7 @@ namespace CUDAWrappers
     /**
      * Transpose a N x M matrix stored in a one-dimensional array to a M x N
      * matrix stored in a one-dimensional array.
+     *
      */
     template <typename Number>
     void
@@ -152,6 +153,7 @@ namespace CUDAWrappers
 
     /**
      * Same as above but the source and the destination are the same vector.
+     *
      */
     template <typename Number>
     void
@@ -169,7 +171,9 @@ namespace CUDAWrappers
 
 
     /**
-     * Allocate an array to the device and copy @p array_host to the device.
+     * Allocate an array to the device and copy   @p array_host   to the
+     * device.
+     *
      */
     template <typename Number1>
     void
@@ -192,6 +196,7 @@ namespace CUDAWrappers
 
     /**
      * Helper class to (re)initialize MatrixFree object.
+     *
      */
     template <int dim, typename Number>
     class ReinitHelper

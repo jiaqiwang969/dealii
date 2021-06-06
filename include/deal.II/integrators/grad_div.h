@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -36,16 +36,16 @@ namespace LocalIntegrators
   /**
    * Local integrators related to the grad-div operator and its boundary
    * traces
-   *
    * @ingroup Integrators
+   *
    */
   namespace GradDiv
   {
     /**
-     * The weak form of the grad-div operator penalizing volume changes
-     * @f[
-     *  \int_Z \nabla\cdot u \nabla \cdot v \,dx
+     * The weak form of the grad-div operator penalizing volume changes     @f[
+     * \int_Z \nabla\cdot u \nabla \cdot v \,dx
      * @f]
+     *
      */
     template <int dim>
     void
@@ -76,10 +76,10 @@ namespace LocalIntegrators
     }
 
     /**
-     * The weak form of the grad-div residual
-     * @f[
-     *  \int_Z \nabla\cdot u \nabla \cdot v \,dx
+     * The weak form of the grad-div residual     @f[
+     * \int_Z \nabla\cdot u \nabla \cdot v \,dx
      * @f]
+     *
      */
     template <int dim, typename number>
     void
@@ -110,12 +110,19 @@ namespace LocalIntegrators
     }
 
     /**
-     * The matrix for the weak boundary condition of Nitsche type for linear
-     * elasticity:
-     * @f[
-     * \int_F \Bigl(\gamma (u \cdot n)(v \cdot n)  - \nabla\cdot u
-     * v\cdot n - u \cdot n \nabla \cdot v \Bigr)\;ds.
+     * The matrix for the weak boundary condition of Nitsche type for linear     elasticity:     @f[
+     * \int_F \Bigl(\gamma (u \cdot n)(v \cdot n)
+     *
+     *
+     *
+     *
+     *
+     * - \nabla\cdot u
+     * v\cdot n
+     *
+     * - u \cdot n \nabla \cdot v \Bigr)\;ds.
      * @f]
+     *
      */
     template <int dim>
     inline void
@@ -155,19 +162,55 @@ namespace LocalIntegrators
     }
 
     /**
-     * Weak boundary condition for the Laplace operator by Nitsche, vector
-     * valued version, namely on the face <i>F</i> the vector
-     * @f[
+     * Weak boundary condition for the Laplace operator by Nitsche, vector     valued version, namely on the face <i>F</i> the vector     @f[
      * \int_F \Bigl(\gamma (\mathbf u \cdot \mathbf n- \mathbf g \cdot
      * \mathbf n) (\mathbf v \cdot \mathbf n)
-     * - \nabla \cdot \mathbf u (\mathbf v \cdot \mathbf n)
-     * - (\mathbf u-\mathbf g) \cdot \mathbf n \nabla \cdot v\Bigr)\;ds.
-     * @f]
      *
-     * Here, <i>u</i> is the finite element function whose values and gradient
-     * are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,
-     * respectively. <i>g</i> is the inhomogeneous boundary value in the
-     * argument <tt>data</tt>. $\gamma$ is the usual penalty parameter.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - \nabla \cdot \mathbf u (\mathbf v \cdot \mathbf n)
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - (\mathbf u-\mathbf g) \cdot \mathbf n \nabla \cdot v\Bigr)\;ds.
+     * @f]         Here, <i>u</i> is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively. <i>g</i> is the inhomogeneous boundary value in the     argument <tt>data</tt>.   $\gamma$   is the usual penalty parameter.
+     *
      */
     template <int dim>
     void
@@ -215,6 +258,7 @@ namespace LocalIntegrators
     /**
      * The interior penalty flux for the grad-div operator. See
      * ip_residual() for details.
+     *
      */
 
     template <int dim>
@@ -287,15 +331,55 @@ namespace LocalIntegrators
     }
 
     /**
-     * Grad-div residual term for the symmetric interior penalty method:
-     * @f[
+     * Grad-div residual term for the symmetric interior penalty method:     @f[
      * \int_F \Bigl( \gamma [\mathbf u \cdot\mathbf n]
      * \cdot[\mathbf v \cdot \mathbf n]
-     * - \{\nabla \cdot \mathbf u\}[\mathbf v\cdot \mathbf n]
-     * - [\mathbf u\times \mathbf n]\{\nabla\cdot \mathbf v\} \Bigr) \; ds.
-     * @f]
      *
-     * See for instance Hansbo and Larson, 2002
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - \{\nabla \cdot \mathbf u\}[\mathbf v\cdot \mathbf n]
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - [\mathbf u\times \mathbf n]\{\nabla\cdot \mathbf v\} \Bigr) \; ds.
+     * @f]         See for instance Hansbo and Larson, 2002
+     *
      */
     template <int dim>
     void

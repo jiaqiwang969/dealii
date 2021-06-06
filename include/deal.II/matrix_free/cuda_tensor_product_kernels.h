@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
 //
@@ -35,8 +35,8 @@ namespace CUDAWrappers
     /**
      * In this namespace, the evaluator routines that evaluate the tensor
      * products are implemented.
-     *
      * @ingroup CUDAWrappers
+     *
      */
     // TODO: for now only the general variant is implemented
     enum EvaluatorVariant
@@ -50,8 +50,8 @@ namespace CUDAWrappers
 
     /**
      * Generic evaluator framework.
-     *
      * @ingroup CUDAWrappers
+     *
      */
     template <EvaluatorVariant variant,
               int              dim,
@@ -66,10 +66,10 @@ namespace CUDAWrappers
 
 
     /**
-     * Internal evaluator for 1d-3d shape function using the tensor product form
-     * of the basis functions.
-     *
+     * Internal evaluator for 1d-3d shape function using the tensor product
+     * form     of the basis functions.
      * @ingroup CUDAWrappers
+     *
      */
     template <int dim, int fe_degree, int n_q_points_1d, typename Number>
     struct EvaluatorTensorProduct<evaluate_general,
@@ -89,6 +89,7 @@ namespace CUDAWrappers
       /**
        * Evaluate the values of a finite element function at the quadrature
        * points.
+       *
        */
       template <int direction, bool dof_to_quad, bool add, bool in_place>
       __device__ void
@@ -96,7 +97,8 @@ namespace CUDAWrappers
 
       /**
        * Evaluate the gradient of a finite element function at the quadrature
-       * points for a given @p direction.
+       * points for a given   @p direction.
+       *
        */
       template <int direction, bool dof_to_quad, bool add, bool in_place>
       __device__ void
@@ -104,6 +106,7 @@ namespace CUDAWrappers
 
       /**
        * Helper function for values() and gradients().
+       *
        */
       template <int direction, bool dof_to_quad, bool add, bool in_place>
       __device__ void
@@ -111,41 +114,48 @@ namespace CUDAWrappers
 
       /**
        * Evaluate the finite element function at the quadrature points.
+       *
        */
       __device__ void
       value_at_quad_pts(Number *u);
 
       /**
-       * Helper function for integrate(). Integrate the finite element function.
+       * Helper function for integrate(). Integrate the finite element
+       * function.
+       *
        */
       __device__ void
       integrate_value(Number *u);
 
       /**
-       * Evaluate the gradients of the finite element function at the quadrature
-       * points.
+       * Evaluate the gradients of the finite element function at the
+       * quadrature       points.
+       *
        */
       __device__ void
       gradient_at_quad_pts(const Number *const u, Number *grad_u[dim]);
 
       /**
-       * Evaluate the values and the gradients of the finite element function at
-       *  the quadrature points.
+       * Evaluate the values and the gradients of the finite element function
+       * at        the quadrature points.
+       *
        */
       __device__ void
       value_and_gradient_at_quad_pts(Number *const u, Number *grad_u[dim]);
 
       /**
-       * Helper function for integrate(). Integrate the gradients of the finite
-       * element function.
+       * Helper function for integrate(). Integrate the gradients of the
+       * finite       element function.
+       *
        */
       template <bool add>
       __device__ void
       integrate_gradient(Number *u, Number *grad_u[dim]);
 
       /**
-       * Helper function for integrate(). Integrate the values and the gradients
-       * of the finite element function.
+       * Helper function for integrate(). Integrate the values and the
+       * gradients       of the finite element function.
+       *
        */
       __device__ void
       integrate_value_and_gradient(Number *u, Number *grad_u[dim]);

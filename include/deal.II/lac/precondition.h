@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
 //
@@ -54,9 +54,10 @@ namespace LinearAlgebra
 #endif
 
 
-/*! @addtogroup Preconditioners
- *@{
- */
+/*!   @addtogroup   Preconditioners  @{  
+
+* 
+* */
 
 
 /**
@@ -65,45 +66,52 @@ namespace LinearAlgebra
  * preconditioner. Therefore, you must use the identity provided here to avoid
  * preconditioning. It can be used in the following way:
  *
+ *
  * @code
  * SolverControl           solver_control (1000, 1e-12);
  * SolverCG<>              cg (solver_control);
  * cg.solve (system_matrix, solution, system_rhs, PreconditionIdentity());
  * @endcode
  *
- * See the step-3 tutorial program for an example and additional explanations.
+ * See the   step-3   tutorial program for an example and additional
+ * explanations. Alternatively, the IdentityMatrix class can be used to
+ * precondition in this way.
  *
- * Alternatively, the IdentityMatrix class can be used to precondition in this
- * way.
+ *
  */
 class PreconditionIdentity : public Subscriptor
 {
 public:
   /**
    * Declare type for container size.
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
    * This function is only present to provide the interface of a
    * preconditioner to be handed to a smoother.  This does nothing.
+   *
    */
   struct AdditionalData
   {
     /**
      * Constructor.
+     *
      */
     AdditionalData() = default;
   };
 
   /**
    * Constructor, sets the domain and range sizes to their defaults.
+   *
    */
   PreconditionIdentity();
 
   /**
    * The matrix argument is ignored and here just for compatibility with more
    * complex preconditioners.
+   *
    */
   template <typename MatrixType>
   void
@@ -112,6 +120,7 @@ public:
 
   /**
    * Apply preconditioner.
+   *
    */
   template <class VectorType>
   void
@@ -120,6 +129,7 @@ public:
   /**
    * Apply transpose preconditioner. Since this is the identity, this function
    * is the same as vmult().
+   *
    */
   template <class VectorType>
   void
@@ -127,6 +137,7 @@ public:
 
   /**
    * Apply preconditioner, adding to the previous value.
+   *
    */
   template <class VectorType>
   void
@@ -135,6 +146,7 @@ public:
   /**
    * Apply transpose preconditioner, adding. Since this is the identity, this
    * function is the same as vmult_add().
+   *
    */
   template <class VectorType>
   void
@@ -143,6 +155,7 @@ public:
   /**
    * This function is only present to provide the interface of a
    * preconditioner to be handed to a smoother.  This does nothing.
+   *
    */
   void
   clear()
@@ -150,20 +163,20 @@ public:
 
   /**
    * Return the dimension of the codomain (or range) space. Note that the
-   * matrix is of dimension $m \times n$.
+   * matrix is of dimension   $m \times n$  .
+   * @note   This function should only be called if the preconditioner has
+   * been   initialized.
    *
-   * @note This function should only be called if the preconditioner has been
-   * initialized.
    */
   size_type
   m() const;
 
   /**
    * Return the dimension of the domain space. Note that the matrix is of
-   * dimension $m \times n$.
+   * dimension   $m \times n$  .
+   * @note   This function should only be called if the preconditioner has
+   * been   initialized.
    *
-   * @note This function should only be called if the preconditioner has been
-   * initialized.
    */
   size_type
   n() const;
@@ -171,11 +184,13 @@ public:
 private:
   /**
    * The dimension of the range space.
+   *
    */
   size_type n_rows;
 
   /**
    * The dimension of the domain space.
+   *
    */
   size_type n_columns;
 };
@@ -185,23 +200,25 @@ private:
 /**
  * Preconditioning with Richardson's method. This preconditioner just scales
  * the vector with a constant relaxation factor provided by the AdditionalData
- * object.
- *
- * In Krylov-space methods, this preconditioner should not have any effect.
- * Using SolverRichardson, the two relaxation parameters will be just
+ * object. In Krylov-space methods, this preconditioner should not have any
+ * effect. Using SolverRichardson, the two relaxation parameters will be just
  * multiplied. Still, this class is useful in multigrid smoother objects
  * (MGSmootherRelaxation).
+ *
+ *
  */
 class PreconditionRichardson : public Subscriptor
 {
 public:
   /**
    * Declare type for container size.
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
    * Parameters for Richardson preconditioner.
+   *
    */
   class AdditionalData
   {
@@ -209,11 +226,13 @@ public:
     /**
      * Constructor. Block size must be given since there is no reasonable
      * default parameter.
+     *
      */
     AdditionalData(const double relaxation = 1.);
 
     /**
      * Relaxation parameter.
+     *
      */
     double relaxation;
   };
@@ -221,11 +240,13 @@ public:
   /**
    * Constructor, sets the relaxation parameter, domain and range sizes to
    * their default.
+   *
    */
   PreconditionRichardson();
 
   /**
    * Change the relaxation parameter.
+   *
    */
   void
   initialize(const AdditionalData &parameters);
@@ -234,6 +255,7 @@ public:
    * Change the relaxation parameter in a way consistent with other
    * preconditioners. The matrix argument is ignored and here just for
    * compatibility with more complex preconditioners.
+   *
    */
   template <typename MatrixType>
   void
@@ -241,6 +263,7 @@ public:
 
   /**
    * Apply preconditioner.
+   *
    */
   template <class VectorType>
   void
@@ -249,12 +272,14 @@ public:
   /**
    * Apply transpose preconditioner. Since this is the identity, this function
    * is the same as vmult().
+   *
    */
   template <class VectorType>
   void
   Tvmult(VectorType &, const VectorType &) const;
   /**
    * Apply preconditioner, adding to the previous value.
+   *
    */
   template <class VectorType>
   void
@@ -263,6 +288,7 @@ public:
   /**
    * Apply transpose preconditioner, adding. Since this is the identity, this
    * function is the same as vmult_add().
+   *
    */
   template <class VectorType>
   void
@@ -271,6 +297,7 @@ public:
   /**
    * This function is only present to provide the interface of a
    * preconditioner to be handed to a smoother.  This does nothing.
+   *
    */
   void
   clear()
@@ -278,20 +305,20 @@ public:
 
   /**
    * Return the dimension of the codomain (or range) space. Note that the
-   * matrix is of dimension $m \times n$.
+   * matrix is of dimension   $m \times n$  .
+   * @note   This function should only be called if the preconditioner has
+   * been   initialized.
    *
-   * @note This function should only be called if the preconditioner has been
-   * initialized.
    */
   size_type
   m() const;
 
   /**
    * Return the dimension of the domain space. Note that the matrix is of
-   * dimension $m \times n$.
+   * dimension   $m \times n$  .
+   * @note   This function should only be called if the preconditioner has
+   * been   initialized.
    *
-   * @note This function should only be called if the preconditioner has been
-   * initialized.
    */
   size_type
   n() const;
@@ -299,16 +326,19 @@ public:
 private:
   /**
    * The relaxation parameter multiplied with the vectors.
+   *
    */
   double relaxation;
 
   /**
    * The dimension of the range space.
+   *
    */
   size_type n_rows;
 
   /**
    * The dimension of the domain space.
+   *
    */
   size_type n_columns;
 };
@@ -321,20 +351,18 @@ private:
  * preconditioning methods are based on matrix entries, these have to be
  * implemented as member functions of the underlying matrix implementation.
  * This class now is intended to allow easy access to these member functions
- * from LAC solver classes.
- *
- * It seems that all builtin preconditioners have a relaxation parameter, so
- * please use PreconditionRelaxation for these.
- *
- * You will usually not want to create a named object of this type, although
+ * from LAC solver classes. It seems that all builtin preconditioners have a
+ * relaxation parameter, so please use PreconditionRelaxation for these. You
+ * will usually not want to create a named object of this type, although
  * possible. The most common use is like this:
+ *
  * @code
  * SolverGMRES<SparseMatrix<double> Vector<double>> gmres(control,memory,500);
  *
  * gmres.solve(
- *   matrix, solution, right_hand_side,
- *   PreconditionUseMatrix<SparseMatrix<double>,Vector<double> >(
- *     matrix, &SparseMatrix<double>::template precondition_Jacobi<double>));
+ * matrix, solution, right_hand_side,
+ * PreconditionUseMatrix<SparseMatrix<double>,Vector<double> >(
+ *   matrix, &SparseMatrix<double>::template precondition_Jacobi<double>));
  * @endcode
  * This creates an unnamed object to be passed as the fourth parameter to the
  * solver function of the SolverGMRES class. It assumes that the SparseMatrix
@@ -342,17 +370,19 @@ private:
  * (source and destination) as parameters (Actually, there is no function like
  * that, the existing function takes a third parameter, denoting the
  * relaxation parameter; this example is therefore only meant to illustrate
- * the general idea).
+ * the general idea). Note that due to the default template parameters, the
+ * above example could be written shorter as follows:
  *
- * Note that due to the default template parameters, the above example could
- * be written shorter as follows:
  * @code
  * ...
  * gmres.solve(
- *   matrix, solution, right_hand_side,
- *   PreconditionUseMatrix<>(
- *     matrix,&SparseMatrix<double>::template precondition_Jacobi<double>));
+ * matrix, solution, right_hand_side,
+ * PreconditionUseMatrix<>(
+ *   matrix,&SparseMatrix<double>::template precondition_Jacobi<double>));
  * @endcode
+ *
+ *
+ *
  */
 template <typename MatrixType = SparseMatrix<double>,
           class VectorType    = Vector<double>>
@@ -361,6 +391,7 @@ class PreconditionUseMatrix : public Subscriptor
 public:
   /**
    * Type of the preconditioning function of the matrix.
+   *
    */
   using function_ptr = void (MatrixType::*)(VectorType &,
                                             const VectorType &) const;
@@ -369,12 +400,14 @@ public:
    * Constructor.  This constructor stores a reference to the matrix object
    * for later use and selects a preconditioning method, which must be a
    * member function of that matrix.
+   *
    */
   PreconditionUseMatrix(const MatrixType &M, const function_ptr method);
 
   /**
    * Execute preconditioning. Calls the function passed to the constructor of
    * this object with the two arguments given here.
+   *
    */
   void
   vmult(VectorType &dst, const VectorType &src) const;
@@ -382,11 +415,13 @@ public:
 private:
   /**
    * Pointer to the matrix in use.
+   *
    */
   const MatrixType &matrix;
 
   /**
    * Pointer to the preconditioning function.
+   *
    */
   const function_ptr precondition;
 };
@@ -397,6 +432,8 @@ private:
  * Base class for other preconditioners. Here, only some common features
  * Jacobi, SOR and SSOR preconditioners are implemented. For preconditioning,
  * refer to derived classes.
+ *
+ *
  */
 template <typename MatrixType = SparseMatrix<double>>
 class PreconditionRelaxation : public Subscriptor
@@ -404,22 +441,26 @@ class PreconditionRelaxation : public Subscriptor
 public:
   /**
    * Declare type for container size.
+   *
    */
   using size_type = typename MatrixType::size_type;
 
   /**
    * Class for parameters.
+   *
    */
   class AdditionalData
   {
   public:
     /**
      * Constructor.
+     *
      */
     AdditionalData(const double relaxation = 1.);
 
     /**
      * Relaxation parameter.
+     *
      */
     double relaxation;
   };
@@ -428,6 +469,7 @@ public:
    * Initialize matrix and relaxation parameter. The matrix is just stored in
    * the preconditioner object. The relaxation parameter should be larger than
    * zero and smaller than 2 for numerical reasons. It defaults to 1.
+   *
    */
   void
   initialize(const MatrixType &    A,
@@ -435,20 +477,23 @@ public:
 
   /**
    * Release the matrix and reset its pointer.
+   *
    */
   void
   clear();
 
   /**
    * Return the dimension of the codomain (or range) space. Note that the
-   * matrix is of dimension $m \times n$.
+   * matrix is of dimension   $m \times n$  .
+   *
    */
   size_type
   m() const;
 
   /**
    * Return the dimension of the domain space. Note that the matrix is of
-   * dimension $m \times n$.
+   * dimension   $m \times n$  .
+   *
    */
   size_type
   n() const;
@@ -456,11 +501,13 @@ public:
 protected:
   /**
    * Pointer to the matrix object.
+   *
    */
   SmartPointer<const MatrixType, PreconditionRelaxation<MatrixType>> A;
 
   /**
    * Relaxation parameter.
+   *
    */
   double relaxation;
 };
@@ -468,11 +515,8 @@ protected:
 
 
 /**
- * Jacobi preconditioner using matrix built-in function.  The
- * <tt>MatrixType</tt> class used is required to have a function
- * <tt>precondition_Jacobi(VectorType&, const VectorType&, double</tt>). This
- * class satisfies the
- * @ref ConceptRelaxationType "relaxation concept".
+ * Jacobi preconditioner using matrix built-in function.  The <tt>MatrixType</tt> class used is required to have a function <tt>precondition_Jacobi(VectorType&, const VectorType&, double</tt>). This class satisfies the   @ref ConceptRelaxationType   "relaxation concept".
+ *
  *
  * @code
  * // Declare related objects
@@ -488,10 +532,13 @@ protected:
  *
  * PreconditionJacobi<SparseMatrix<double> > precondition;
  * precondition.initialize(
- *   A, PreconditionJacobi<SparseMatrix<double>>::AdditionalData(.6));
+ * A, PreconditionJacobi<SparseMatrix<double>>::AdditionalData(.6));
  *
  * solver.solve (A, x, b, precondition);
  * @endcode
+ *
+ *
+ *
  */
 template <typename MatrixType = SparseMatrix<double>>
 class PreconditionJacobi : public PreconditionRelaxation<MatrixType>
@@ -499,12 +546,14 @@ class PreconditionJacobi : public PreconditionRelaxation<MatrixType>
 public:
   /**
    * An alias to the base class AdditionalData.
+   *
    */
   using AdditionalData =
     typename PreconditionRelaxation<MatrixType>::AdditionalData;
 
   /**
    * Apply preconditioner.
+   *
    */
   template <class VectorType>
   void
@@ -513,6 +562,7 @@ public:
   /**
    * Apply transpose preconditioner. Since this is a symmetric preconditioner,
    * this function is the same as vmult().
+   *
    */
   template <class VectorType>
   void
@@ -520,6 +570,7 @@ public:
 
   /**
    * Perform one step of the preconditioned Richardson iteration.
+   *
    */
   template <class VectorType>
   void
@@ -527,6 +578,7 @@ public:
 
   /**
    * Perform one transposed step of the preconditioned Richardson iteration.
+   *
    */
   template <class VectorType>
   void
@@ -536,29 +588,18 @@ public:
 
 /**
  * SOR preconditioner using matrix built-in function.
+ *  Assuming the matrix <i>A = D + L + U</i> is split into its diagonal <i>D</i> as well as the strict lower and upper triangles <i>L</i> and <i>U</i>, then the SOR preconditioner with relaxation parameter <i>r</i> is @f[
+ * P^{-1} = r (D+rL)^{-1}.
+ * @f] It is this operator <i>P<sup>-1</sup></i>, which is implemented by vmult() through forward substitution. Analogously, Tvmult() implements the operation of <i>r(D+rU)<sup>-1</sup></i>.
+ *  The SOR iteration itself can be directly written as @f[
+ * x^{k+1} = x^k
  *
- * Assuming the matrix <i>A = D + L + U</i> is split into its diagonal
- * <i>D</i> as well as the strict lower and upper triangles <i>L</i> and
- * <i>U</i>, then the SOR preconditioner with relaxation parameter <i>r</i> is
- * @f[
- *  P^{-1} = r (D+rL)^{-1}.
- * @f]
- * It is this operator <i>P<sup>-1</sup></i>, which is implemented by vmult()
- * through forward substitution. Analogously, Tvmult() implements the
- * operation of <i>r(D+rU)<sup>-1</sup></i>.
+ * - r D^{-1} \bigl(L x^{k+1} + U x^k
  *
- * The SOR iteration itself can be directly written as
- * @f[
- *  x^{k+1} = x^k - r D^{-1} \bigl(L x^{k+1} + U x^k - b\bigr).
- * @f]
- * Using the right hand side <i>b</i> and the previous iterate <i>x</i>, this
- * is the operation implemented by step().
+ * - b\bigr).
+ * @f] Using the right hand side <i>b</i> and the previous iterate <i>x</i>, this is the operation implemented by step().
+ * The MatrixType class used is required to have functions <tt>precondition_SOR(VectorType&, const VectorType&, double)</tt> and <tt>precondition_TSOR(VectorType&, const VectorType&, double)</tt>. This class satisfies the   @ref ConceptRelaxationType   "relaxation concept".
  *
- * The MatrixType class used is required to have functions
- * <tt>precondition_SOR(VectorType&, const VectorType&, double)</tt> and
- * <tt>precondition_TSOR(VectorType&, const VectorType&, double)</tt>. This
- * class satisfies the
- * @ref ConceptRelaxationType "relaxation concept".
  *
  * @code
  * // Declare related objects
@@ -574,10 +615,13 @@ public:
  *
  * PreconditionSOR<SparseMatrix<double> > precondition;
  * precondition.initialize(
- *   A, PreconditionSOR<SparseMatrix<double>>::AdditionalData(.6));
+ * A, PreconditionSOR<SparseMatrix<double>>::AdditionalData(.6));
  *
  * solver.solve (A, x, b, precondition);
  * @endcode
+ *
+ *
+ *
  */
 template <typename MatrixType = SparseMatrix<double>>
 class PreconditionSOR : public PreconditionRelaxation<MatrixType>
@@ -585,12 +629,14 @@ class PreconditionSOR : public PreconditionRelaxation<MatrixType>
 public:
   /**
    * An alias to the base class AdditionalData.
+   *
    */
   using AdditionalData =
     typename PreconditionRelaxation<MatrixType>::AdditionalData;
 
   /**
    * Apply preconditioner.
+   *
    */
   template <class VectorType>
   void
@@ -598,6 +644,7 @@ public:
 
   /**
    * Apply transpose preconditioner.
+   *
    */
   template <class VectorType>
   void
@@ -605,6 +652,7 @@ public:
 
   /**
    * Perform one step of the preconditioned Richardson iteration.
+   *
    */
   template <class VectorType>
   void
@@ -612,6 +660,7 @@ public:
 
   /**
    * Perform one transposed step of the preconditioned Richardson iteration.
+   *
    */
   template <class VectorType>
   void
@@ -621,11 +670,8 @@ public:
 
 
 /**
- * SSOR preconditioner using matrix built-in function.  The
- * <tt>MatrixType</tt> class used is required to have a function
- * <tt>precondition_SSOR(VectorType&, const VectorType&, double)</tt>. This
- * class satisfies the
- * @ref ConceptRelaxationType "relaxation concept".
+ * SSOR preconditioner using matrix built-in function.  The <tt>MatrixType</tt> class used is required to have a function <tt>precondition_SSOR(VectorType&, const VectorType&, double)</tt>. This class satisfies the   @ref ConceptRelaxationType   "relaxation concept".
+ *
  *
  * @code
  * // Declare related objects
@@ -641,10 +687,13 @@ public:
  *
  * PreconditionSSOR<SparseMatrix<double> > precondition;
  * precondition.initialize(
- *   A, PreconditionSSOR<SparseMatrix<double>>::AdditionalData(.6));
+ * A, PreconditionSSOR<SparseMatrix<double>>::AdditionalData(.6));
  *
  * solver.solve (A, x, b, precondition);
  * @endcode
+ *
+ *
+ *
  */
 template <typename MatrixType = SparseMatrix<double>>
 class PreconditionSSOR : public PreconditionRelaxation<MatrixType>
@@ -652,17 +701,20 @@ class PreconditionSSOR : public PreconditionRelaxation<MatrixType>
 public:
   /**
    * An alias to the base class AdditionalData.
+   *
    */
   using AdditionalData =
     typename PreconditionRelaxation<MatrixType>::AdditionalData;
 
   /**
    * Declare type for container size.
+   *
    */
   using size_type = typename MatrixType::size_type;
 
   /**
    * An alias to the base class.
+   *
    */
   using BaseClass = PreconditionRelaxation<MatrixType>;
 
@@ -671,6 +723,7 @@ public:
    * Initialize matrix and relaxation parameter. The matrix is just stored in
    * the preconditioner object. The relaxation parameter should be larger than
    * zero and smaller than 2 for numerical reasons. It defaults to 1.
+   *
    */
   void
   initialize(const MatrixType &                        A,
@@ -679,6 +732,7 @@ public:
 
   /**
    * Apply preconditioner.
+   *
    */
   template <class VectorType>
   void
@@ -687,6 +741,7 @@ public:
   /**
    * Apply transpose preconditioner. Since this is a symmetric preconditioner,
    * this function is the same as vmult().
+   *
    */
   template <class VectorType>
   void
@@ -695,6 +750,7 @@ public:
 
   /**
    * Perform one step of the preconditioned Richardson iteration
+   *
    */
   template <class VectorType>
   void
@@ -702,6 +758,7 @@ public:
 
   /**
    * Perform one transposed step of the preconditioned Richardson iteration.
+   *
    */
   template <class VectorType>
   void
@@ -711,6 +768,7 @@ private:
   /**
    * An array that stores for each matrix row where the first position after
    * the diagonal is located.
+   *
    */
   std::vector<std::size_t> pos_right_of_diagonal;
 };
@@ -721,6 +779,7 @@ private:
  * <tt>MatrixType</tt> class used is required to have functions
  * <tt>PSOR(VectorType&, const VectorType&, double)</tt> and
  * <tt>TPSOR(VectorType&, const VectorType&, double)</tt>.
+ *
  *
  * @code
  * // Declare related objects
@@ -744,6 +803,9 @@ private:
  *
  * solver.solve (A, x, b, precondition);
  * @endcode
+ *
+ *
+ *
  */
 template <typename MatrixType = SparseMatrix<double>>
 class PreconditionPSOR : public PreconditionRelaxation<MatrixType>
@@ -751,24 +813,24 @@ class PreconditionPSOR : public PreconditionRelaxation<MatrixType>
 public:
   /**
    * Declare type for container size.
+   *
    */
   using size_type = typename MatrixType::size_type;
 
   /**
    * Parameters for PreconditionPSOR.
+   *
    */
   class AdditionalData
   {
   public:
     /**
-     * Constructor. For the parameters' description, see below.
-     *
-     * The permutation vectors are stored as a reference. Therefore, it has to
+     * Constructor. For the parameters' description, see below.         The
+     * permutation vectors are stored as a reference. Therefore, it has to
      * be assured that the lifetime of the vector exceeds the lifetime of the
-     * preconditioner.
+     * preconditioner.         The relaxation parameter should be larger than
+     * zero and smaller than 2     for numerical reasons. It defaults to 1.
      *
-     * The relaxation parameter should be larger than zero and smaller than 2
-     * for numerical reasons. It defaults to 1.
      */
     AdditionalData(
       const std::vector<size_type> &permutation,
@@ -779,28 +841,29 @@ public:
 
     /**
      * Storage for the permutation vector.
+     *
      */
     const std::vector<size_type> &permutation;
     /**
      * Storage for the inverse permutation vector.
+     *
      */
     const std::vector<size_type> &inverse_permutation;
     /**
      * Relaxation parameters
+     *
      */
     typename PreconditionRelaxation<MatrixType>::AdditionalData parameters;
   };
 
   /**
    * Initialize matrix and relaxation parameter. The matrix is just stored in
-   * the preconditioner object.
+   * the preconditioner object.     The permutation vector is stored as a
+   * pointer. Therefore, it has to be   assured that the lifetime of the
+   * vector exceeds the lifetime of the   preconditioner.     The relaxation
+   * parameter should be larger than zero and smaller than 2   for numerical
+   * reasons. It defaults to 1.
    *
-   * The permutation vector is stored as a pointer. Therefore, it has to be
-   * assured that the lifetime of the vector exceeds the lifetime of the
-   * preconditioner.
-   *
-   * The relaxation parameter should be larger than zero and smaller than 2
-   * for numerical reasons. It defaults to 1.
    */
   void
   initialize(const MatrixType &            A,
@@ -812,19 +875,19 @@ public:
 
   /**
    * Initialize matrix and relaxation parameter. The matrix is just stored in
-   * the preconditioner object.
+   * the preconditioner object.     For more detail about possible parameters,
+   * see the class documentation   and the documentation of the
+   * PreconditionPSOR::AdditionalData   class.     After this function is
+   * called the preconditioner is ready to be used   (using the
+   * <code>vmult</code>   function of derived classes).
    *
-   * For more detail about possible parameters, see the class documentation
-   * and the documentation of the PreconditionPSOR::AdditionalData class.
-   *
-   * After this function is called the preconditioner is ready to be used
-   * (using the <code>vmult</code> function of derived classes).
    */
   void
   initialize(const MatrixType &A, const AdditionalData &additional_data);
 
   /**
    * Apply preconditioner.
+   *
    */
   template <class VectorType>
   void
@@ -832,6 +895,7 @@ public:
 
   /**
    * Apply transpose preconditioner.
+   *
    */
   template <class VectorType>
   void
@@ -840,10 +904,12 @@ public:
 private:
   /**
    * Storage for the permutation vector.
+   *
    */
   const std::vector<size_type> *permutation;
   /**
    * Storage for the inverse permutation vector.
+   *
    */
   const std::vector<size_type> *inverse_permutation;
 };
@@ -851,139 +917,117 @@ private:
 
 
 /**
- * Preconditioning with a Chebyshev polynomial for symmetric positive definite
- * matrices. This preconditioner is based on an iteration of an inner
- * preconditioner of type @p PreconditionerType with coefficients that are
- * adapted to optimally cover an eigenvalue range between the largest
- * eigenvalue $\lambda_{\max{}}$ down to a given lower eigenvalue
- * $\lambda_{\min{}}$ specified by the optional parameter
- * @p smoothing_range. The algorithm is based on the following three-term
- * recurrence:
- * @f[
- *  x^{n+1} = x^{n} + \rho_n \rho_{n-1} (x^{n} - x^{n-1}) +
- *     \frac{\rho_n}{\lambda_{\max{}}-\lambda_{\min{}}} P^{-1} (b-Ax^n).
- * @f]
- * where the parameter $\rho_0$ is set to $\rho_0 = 2
+ * Preconditioning with a Chebyshev polynomial for symmetric positive definite matrices. This preconditioner is based on an iteration of an inner preconditioner of type   @p PreconditionerType   with coefficients that are adapted to optimally cover an eigenvalue range between the largest eigenvalue   $\lambda_{\max{}}$   down to a given lower eigenvalue   $\lambda_{\min{}}$   specified by the optional parameter   @p smoothing_range.   The algorithm is based on the following three-term recurrence: @f[
+ * x^{n+1} = x^{n} + \rho_n \rho_{n-1} (x^{n}
+ *
+ * - x^{n-1}) +
+ *   \frac{\rho_n}{\lambda_{\max{}}-\lambda_{\min{}}} P^{-1} (b-Ax^n).
+ * @f] where the parameter   $\rho_0$   is set to   $\rho_0 = 2
  * \frac{\lambda_{\max{}}-\lambda_{\min{}}}{\lambda_{\max{}}+\lambda_{\min{}}}$
- * for the maximal eigenvalue $\lambda_{\max{}}$ and updated via $\rho_n =
- * \left(2\frac{\lambda_{\max{}}+\lambda_{\min{}}}
- * {\lambda_{\max{}}-\lambda_{\min{}}} - \rho_{n-1}\right)^{-1}$. The
- * Chebyshev polynomial is constructed to strongly damp the eigenvalue range
- * between $\lambda_{\min{}}$ and $\lambda_{\max{}}$ and is visualized e.g. in
- * Utilities::LinearAlgebra::chebyshev_filter().
+ * for the maximal eigenvalue   $\lambda_{\max{}}$   and updated via   $\rho_n
+ * = \left(2\frac{\lambda_{\max{}}+\lambda_{\min{}}}
+ * {\lambda_{\max{}}-\lambda_{\min{}}}
  *
- * The typical use case for the preconditioner is a Jacobi preconditioner
- * specified through DiagonalMatrix, which is also the default value for the
- * preconditioner. Note that if the degree variable is set to one, the
- * Chebyshev iteration corresponds to a Jacobi preconditioner (or the
- * underlying preconditioner type) with relaxation parameter according to the
- * specified smoothing range.
- *
- * Besides the default choice of a pointwise Jacobi preconditioner, this class
- * also allows for more advanced types of preconditioners, for example
- * iterating block-Jacobi preconditioners in DG methods.
- *
- * Apart from the inner preconditioner object, this iteration does not need
- * access to matrix entries, which makes it an ideal ingredient for
- * matrix-free computations. In that context, this class can be used as a
- * multigrid smoother that is trivially %parallel (assuming that matrix-vector
- * products are %parallel and the inner preconditioner is %parallel). Its use
- * is demonstrated in the step-37 and step-59 tutorial programs.
- *
- * <h4>Estimation of the eigenvalues</h4>
- *
- * The Chebyshev method relies on an estimate of the eigenvalues of the matrix
- * which are computed during the first invocation of vmult(). The algorithm
- * invokes a conjugate gradient solver (i.e., Lanczos iteration) so symmetry
- * and positive definiteness of the (preconditioned) matrix system are
- * required. The eigenvalue algorithm can be controlled by
- * PreconditionChebyshev::AdditionalData::eig_cg_n_iterations specifying how
+ * - \rho_{n-1}\right)^{-1}$  . The Chebyshev polynomial is constructed to
+ * strongly damp the eigenvalue range between   $\lambda_{\min{}}$   and
+ * $\lambda_{\max{}}$   and is visualized e.g. in
+ * Utilities::LinearAlgebra::chebyshev_filter(). The typical use case for the
+ * preconditioner is a Jacobi preconditioner specified through DiagonalMatrix,
+ * which is also the default value for the preconditioner. Note that if the
+ * degree variable is set to one, the Chebyshev iteration corresponds to a
+ * Jacobi preconditioner (or the underlying preconditioner type) with
+ * relaxation parameter according to the specified smoothing range. Besides
+ * the default choice of a pointwise Jacobi preconditioner, this class also
+ * allows for more advanced types of preconditioners, for example iterating
+ * block-Jacobi preconditioners in DG methods. Apart from the inner
+ * preconditioner object, this iteration does not need access to matrix
+ * entries, which makes it an ideal ingredient for matrix-free computations.
+ * In that context, this class can be used as a multigrid smoother that is
+ * trivially %parallel (assuming that matrix-vector products are %parallel and
+ * the inner preconditioner is %parallel). Its use is demonstrated in the
+ * step-37   and   step-59   tutorial programs. <h4>Estimation of the
+ * eigenvalues</h4> The Chebyshev method relies on an estimate of the
+ * eigenvalues of the matrix which are computed during the first invocation of
+ * vmult(). The algorithm invokes a conjugate gradient solver (i.e., Lanczos
+ * iteration) so symmetry and positive definiteness of the (preconditioned)
+ * matrix system are required. The eigenvalue algorithm can be controlled by
+ * PreconditionChebyshev::AdditionalData::eig_cg_n_iterations   specifying how
  * many iterations should be performed. The iterations are started from an
  * initial vector that depends on the vector type. For the classes
- * dealii::Vector or dealii::LinearAlgebra::distributed::Vector, which have
- * fast element access, it is a vector with entries `(-5.5, -4.5, -3.5,
- * -2.5, ..., 3.5, 4.5, 5.5)` with appropriate epilogue and adjusted such that
- * its mean is always zero, which works well for the Laplacian. This setup is
- * stable in parallel in the sense that for a different number of processors
- * but the same ordering of unknowns, the same initial vector and thus
- * eigenvalue distribution will be computed, apart from roundoff errors. For
- * other vector types, the initial vector contains all ones, scaled by the
- * length of the vector, except for the very first entry that is zero,
- * triggering high-frequency content again.
+ * dealii::Vector   or   dealii::LinearAlgebra::distributed::Vector,   which
+ * have fast element access, it is a vector with entries `(-5.5,
  *
+ *  - .5,
+ *
+ *  - .5,
+ *
+ *
+ *
+ *  - .5, ..., 3.5, 4.5, 5.5)` with appropriate epilogue and adjusted such that its mean is always zero, which works well for the Laplacian. This setup is stable in parallel in the sense that for a different number of processors but the same ordering of unknowns, the same initial vector and thus eigenvalue distribution will be computed, apart from roundoff errors. For other vector types, the initial vector contains all ones, scaled by the length of the vector, except for the very first entry that is zero, triggering high-frequency content again.
  * The computation of eigenvalues happens the first time one of the vmult(),
  * Tvmult(), step() or Tstep() functions is called or when
  * estimate_eigenvalues() is called directly. In the latter case, it is
  * necessary to provide a temporary vector of the same layout as the source
- * and destination vectors used during application of the preconditioner.
- *
- * The estimates for minimum and maximum eigenvalue are taken from SolverCG
- * (even if the solver did not converge in the requested number of
- * iterations). Finally, the maximum eigenvalue is multiplied by a safety
- * factor of 1.2.
- *
+ * and destination vectors used during application of the preconditioner. The
+ * estimates for minimum and maximum eigenvalue are taken from SolverCG (even
+ * if the solver did not converge in the requested number of iterations).
+ * Finally, the maximum eigenvalue is multiplied by a safety factor of 1.2.
  * Due to the cost of the eigenvalue estimate, this class is most appropriate
  * if it is applied repeatedly, e.g. in a smoother for a geometric multigrid
  * solver, that can in turn be used to solve several linear systems.
- *
- * <h4>Bypassing the eigenvalue computation</h4>
- *
- * In some contexts, the automatic eigenvalue computation of this class may
- * result in bad quality, or it may be unstable when used in parallel with
- * different enumerations of the degrees of freedom, making computations
- * strongly dependent on the parallel configuration. It is possible to bypass
- * the automatic eigenvalue computation by setting
- * AdditionalData::eig_cg_n_iterations to zero, and provide the variable
- * AdditionalData::max_eigenvalue instead. The minimal eigenvalue is
- * implicitly specified via `max_eigenvalue/smoothing_range`.
-
- * <h4>Using the PreconditionChebyshev as a solver</h4>
- *
- * If the range <tt>[max_eigenvalue/smoothing_range, max_eigenvalue]</tt>
- * contains all eigenvalues of the preconditioned matrix system and the degree
- * (i.e., number of iterations) is high enough, this class can also be used as
- * a direct solver. For an error estimation of the Chebyshev iteration that
- * can be used to determine the number of iteration, see Varga (2009).
- *
- * In order to use Chebyshev as a solver, set the degree to
- * numbers::invalid_unsigned_int to force the automatic computation of the
+ * <h4>Bypassing the eigenvalue computation</h4> In some contexts, the
+ * automatic eigenvalue computation of this class may result in bad quality,
+ * or it may be unstable when used in parallel with different enumerations of
+ * the degrees of freedom, making computations strongly dependent on the
+ * parallel configuration. It is possible to bypass the automatic eigenvalue
+ * computation by setting   AdditionalData::eig_cg_n_iterations   to zero, and
+ * provide the variable   AdditionalData::max_eigenvalue   instead. The
+ * minimal eigenvalue is implicitly specified via
+ * `max_eigenvalue/smoothing_range`. <h4>Using the PreconditionChebyshev as a
+ * solver</h4> If the range <tt>[max_eigenvalue/smoothing_range,
+ * max_eigenvalue]</tt> contains all eigenvalues of the preconditioned matrix
+ * system and the degree (i.e., number of iterations) is high enough, this
+ * class can also be used as a direct solver. For an error estimation of the
+ * Chebyshev iteration that can be used to determine the number of iteration,
+ * see Varga (2009). In order to use Chebyshev as a solver, set the degree to
+ * numbers::invalid_unsigned_int   to force the automatic computation of the
  * number of iterations needed to reach a given target tolerance. In this
  * case, the target tolerance is read from the variable
- * PreconditionChebyshev::AdditionalData::smoothing_range (it needs to be a
- * number less than one to force any iterations obviously).
+ * PreconditionChebyshev::AdditionalData::smoothing_range   (it needs to be a
+ * number less than one to force any iterations obviously). For details on the
+ * algorithm, see section 5.1 of
  *
- * For details on the algorithm, see section 5.1 of
  * @code{.bib}
  * @book{Varga2009,
- *   Title     = {Matrix iterative analysis},
- *   Author    = {Varga, R. S.},
- *   Publisher = {Springer},
- *   Address   = {Berlin},
- *   Edition   = {2nd},
- *   Year      = {2009},
+ * Title     = {Matrix iterative analysis},
+ * Author    = {Varga, R. S.},
+ * Publisher = {Springer},
+ * Address   = {Berlin},
+ * Edition   = {2nd},
+ * Year      = {2009},
  * }
  * @endcode
  *
- * <h4>Requirements on the templated classes</h4>
+ * <h4>Requirements on the templated classes</h4> The class MatrixType must be
+ * derived from Subscriptor because a SmartPointer to MatrixType is held in
+ * the class. In particular, this means that the matrix object needs to
+ * persist during the lifetime of PreconditionChebyshev. The preconditioner is
+ * held in a shared_ptr that is copied into the AdditionalData member variable
+ * of the class, so the variable used for initialization can safely be
+ * discarded after calling initialize(). Both the matrix and the
+ * preconditioner need to provide   @p vmult()   functions for the
+ * matrix-vector product and   @p m()   functions for accessing the number of
+ * rows in the (square) matrix. Furthermore, the matrix must provide
+ * <tt>el(i,i)</tt> methods for accessing the matrix diagonal in case the
+ * preconditioner type is DiagonalMatrix. Even though it is highly recommended
+ * to pass the inverse diagonal entries inside a separate preconditioner
+ * object for implementing the Jacobi method (which is the only possible way
+ * to operate this class when computing in %parallel with MPI because there is
+ * no knowledge about the locally stored range of entries that would be needed
+ * from the matrix alone), there is a backward compatibility function that can
+ * extract the diagonal in case of a serial computation.
  *
- * The class MatrixType must be derived from Subscriptor because a
- * SmartPointer to MatrixType is held in the class. In particular, this means
- * that the matrix object needs to persist during the lifetime of
- * PreconditionChebyshev. The preconditioner is held in a shared_ptr that is
- * copied into the AdditionalData member variable of the class, so the
- * variable used for initialization can safely be discarded after calling
- * initialize(). Both the matrix and the preconditioner need to provide
- * @p vmult() functions for the matrix-vector product and @p m() functions for
- * accessing the number of rows in the (square) matrix. Furthermore, the
- * matrix must provide <tt>el(i,i)</tt> methods for accessing the matrix
- * diagonal in case the preconditioner type is DiagonalMatrix. Even though
- * it is highly recommended to pass the inverse diagonal entries inside a
- * separate preconditioner object for implementing the Jacobi method (which is
- * the only possible way to operate this class when computing in %parallel
- * with MPI because there is no knowledge about the locally stored range of
- * entries that would be needed from the matrix alone), there is a backward
- * compatibility function that can extract the diagonal in case of a serial
- * computation.
+ *
  */
 template <typename MatrixType         = SparseMatrix<double>,
           typename VectorType         = Vector<double>,
@@ -993,17 +1037,20 @@ class PreconditionChebyshev : public Subscriptor
 public:
   /**
    * Declare type for container size.
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
    * Standardized data struct to pipe additional parameters to the
    * preconditioner.
+   *
    */
   struct AdditionalData
   {
     /**
      * Constructor.
+     *
      */
     AdditionalData(const unsigned int degree              = 1,
                    const double       smoothing_range     = 0.,
@@ -1012,7 +1059,8 @@ public:
                    const double       max_eigenvalue      = 1);
 
     /**
-     *  Copy assignment operator.
+     * Copy assignment operator.
+     *
      */
     AdditionalData &
     operator=(const AdditionalData &other_data);
@@ -1021,12 +1069,12 @@ public:
      * This determines the degree of the Chebyshev polynomial. The degree of
      * the polynomial gives the number of matrix-vector products to be
      * performed for one application of the vmult() operation. Degree one
-     * corresponds to a damped Jacobi method.
+     * corresponds to a damped Jacobi method.         If the degree is set to
+     * numbers::invalid_unsigned_int,   the algorithm     will automatically
+     * determine the number of necessary iterations based     on the usual
+     * Chebyshev error formula as mentioned in the discussion of     the main
+     * class.
      *
-     * If the degree is set to numbers::invalid_unsigned_int, the algorithm
-     * will automatically determine the number of necessary iterations based
-     * on the usual Chebyshev error formula as mentioned in the discussion of
-     * the main class.
      */
     unsigned int degree;
 
@@ -1036,10 +1084,12 @@ public:
      * number less than 1, an estimate for the largest and for the smallest
      * eigenvalue will be calculated internally. For a smoothing range larger
      * than one, the Chebyshev polynomial will act in the interval
-     * $[\lambda_\mathrm{max}/ \tt{smoothing\_range}, \lambda_\mathrm{max}]$,
-     * where $\lambda_\mathrm{max}$ is an estimate of the maximum eigenvalue
-     * of the matrix. A choice of <tt>smoothing_range</tt> between 5 and 20 is
-     * useful in case the preconditioner is used as a smoother in multigrid.
+     * $[\lambda_\mathrm{max}/ \tt{smoothing\_range}, \lambda_\mathrm{max}]$
+     * ,     where   $\lambda_\mathrm{max}$   is an estimate of the maximum
+     * eigenvalue     of the matrix. A choice of <tt>smoothing_range</tt>
+     * between 5 and 20 is     useful in case the preconditioner is used as a
+     * smoother in multigrid.
+     *
      */
     double smoothing_range;
 
@@ -1048,30 +1098,35 @@ public:
      * eigenvalue. If set to zero, no computations are performed. Instead, the
      * user must supply a largest eigenvalue via the variable
      * PreconditionChebyshev::AdditionalData::max_eigenvalue.
+     *
      */
     unsigned int eig_cg_n_iterations;
 
     /**
      * Tolerance for CG iterations performed for finding the maximum
      * eigenvalue.
+     *
      */
     double eig_cg_residual;
 
     /**
-     * Maximum eigenvalue to work with. Only in effect if @p
+     * Maximum eigenvalue to work with. Only in effect if   @p
      * eig_cg_n_iterations is set to zero, otherwise this parameter is
      * ignored.
+     *
      */
     double max_eigenvalue;
 
     /**
      * Constraints to be used for the operator given. This variable is used to
      * zero out the correct entries when creating an initial guess.
+     *
      */
     AffineConstraints<double> constraints;
 
     /**
      * Stores the preconditioner object that the Chebyshev is wrapped around.
+     *
      */
     std::shared_ptr<PreconditionerType> preconditioner;
   };
@@ -1079,6 +1134,7 @@ public:
 
   /**
    * Constructor.
+   *
    */
   PreconditionChebyshev();
 
@@ -1087,11 +1143,11 @@ public:
    * preconditioner, and additional flags if there are any. This function
    * works only if the input matrix has an operator <tt>el(i,i)</tt> for
    * accessing all the elements in the diagonal. Alternatively, the diagonal
-   * can be supplied with the help of the AdditionalData field.
-   *
-   * This function calculates an estimate of the eigenvalue range of the
-   * matrix weighted by its diagonal using a modified CG iteration in case the
+   * can be supplied with the help of the AdditionalData field.     This
+   * function calculates an estimate of the eigenvalue range of the   matrix
+   * weighted by its diagonal using a modified CG iteration in case the
    * given number of iterations is positive.
+   *
    */
   void
   initialize(const MatrixType &    matrix,
@@ -1100,6 +1156,7 @@ public:
   /**
    * Compute the action of the preconditioner on <tt>src</tt>, storing the
    * result in <tt>dst</tt>.
+   *
    */
   void
   vmult(VectorType &dst, const VectorType &src) const;
@@ -1107,38 +1164,44 @@ public:
   /**
    * Compute the action of the transposed preconditioner on <tt>src</tt>,
    * storing the result in <tt>dst</tt>.
+   *
    */
   void
   Tvmult(VectorType &dst, const VectorType &src) const;
 
   /**
    * Perform one step of the preconditioned Richardson iteration.
+   *
    */
   void
   step(VectorType &dst, const VectorType &src) const;
 
   /**
    * Perform one transposed step of the preconditioned Richardson iteration.
+   *
    */
   void
   Tstep(VectorType &dst, const VectorType &src) const;
 
   /**
    * Resets the preconditioner.
+   *
    */
   void
   clear();
 
   /**
    * Return the dimension of the codomain (or range) space. Note that the
-   * matrix is of dimension $m \times n$.
+   * matrix is of dimension   $m \times n$  .
+   *
    */
   size_type
   m() const;
 
   /**
    * Return the dimension of the domain space. Note that the matrix is of
-   * dimension $m \times n$.
+   * dimension   $m \times n$  .
+   *
    */
   size_type
   n() const;
@@ -1146,28 +1209,34 @@ public:
   /**
    * A struct that contains information about the eigenvalue estimation
    * performed by the PreconditionChebychev class.
+   *
    */
   struct EigenvalueInformation
   {
     /**
      * Estimate for the smallest eigenvalue.
+     *
      */
     double min_eigenvalue_estimate;
     /**
      * Estimate for the largest eigenvalue.
+     *
      */
     double max_eigenvalue_estimate;
     /**
      * Number of CG iterations performed or 0.
+     *
      */
     unsigned int cg_iterations;
     /**
      * The degree of the Chebyshev polynomial (either as set using
-     * AdditionalData::degree or estimated as described there).
+     * AdditionalData::degree   or estimated as described there).
+     *
      */
     unsigned int degree;
     /**
      * Constructor initializing with invalid values.
+     *
      */
     EigenvalueInformation()
       : min_eigenvalue_estimate{std::numeric_limits<double>::max()}
@@ -1178,16 +1247,15 @@ public:
   };
 
   /**
-   * Compute eigenvalue estimates required for the preconditioner.
-   *
-   * This function is called automatically on first use of the preconditioner
-   * if it is not called by the user. The layout of the vector @p src is used
+   * Compute eigenvalue estimates required for the preconditioner.     This
+   * function is called automatically on first use of the preconditioner   if
+   * it is not called by the user. The layout of the vector   @p src   is used
    * to create internal temporary vectors and its content does not matter.
-   *
    * Initializes the factors theta and delta based on an eigenvalue
    * computation. If the user set provided values for the largest eigenvalue
    * in AdditionalData, no computation is performed and the information given
    * by the user is used.
+   *
    */
   EigenvalueInformation
   estimate_eigenvalues(const VectorType &src) const;
@@ -1195,6 +1263,7 @@ public:
 private:
   /**
    * A pointer to the underlying matrix.
+   *
    */
   SmartPointer<
     const MatrixType,
@@ -1203,53 +1272,61 @@ private:
 
   /**
    * Internal vector used for the <tt>vmult</tt> operation.
+   *
    */
   mutable VectorType solution_old;
 
   /**
    * Internal vector used for the <tt>vmult</tt> operation.
+   *
    */
   mutable VectorType temp_vector1;
 
   /**
    * Internal vector used for the <tt>vmult</tt> operation.
+   *
    */
   mutable VectorType temp_vector2;
 
   /**
    * Stores the additional data passed to the initialize function, obtained
    * through a copy operation.
+   *
    */
   AdditionalData data;
 
   /**
    * Average of the largest and smallest eigenvalue under consideration.
+   *
    */
   double theta;
 
   /**
    * Half the interval length between the largest and smallest eigenvalue
    * under consideration.
+   *
    */
   double delta;
 
   /**
    * Stores whether the preconditioner has been set up and eigenvalues have
    * been computed.
+   *
    */
   bool eigenvalues_are_initialized;
 
   /**
    * A mutex to avoid that multiple vmult() invocations by different threads
    * overwrite the temporary vectors.
+   *
    */
   mutable Threads::Mutex mutex;
 };
 
 
 
-/*@}*/
-/* ---------------------------------- Inline functions ------------------- */
+ /*@}*/ 
+ /* ---------------------------------- Inline functions ------------------- */ 
 
 #ifndef DOXYGEN
 

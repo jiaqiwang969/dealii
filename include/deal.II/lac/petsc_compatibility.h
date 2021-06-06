@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
 //
@@ -13,10 +13,10 @@
 //
 // ---------------------------------------------------------------------
 
-/*
- * Rather than using ifdefs everywhere, try to wrap older versions of PETSc
- * functions in one place.
- */
+/* Rather than using ifdefs everywhere, try to wrap older versions of PETSc functions in one place.
+
+* 
+* */
 #ifndef dealii_petsc_compatibility_h
 #define dealii_petsc_compatibility_h
 
@@ -41,6 +41,7 @@ namespace PETScWrappers
    * Set an option in the global PETSc database. This function just wraps
    * PetscOptionsSetValue with a version check (the signature of this function
    * changed in PETSc 3.7.0).
+   *
    */
   inline void
   set_option_value(const std::string &name, const std::string &value)
@@ -60,11 +61,11 @@ namespace PETScWrappers
   /**
    * Destroy a PETSc matrix. This function wraps MatDestroy with a version
    * check (the signature of this function changed in PETSc 3.2.0).
-   *
-   * @warning Since the primary intent of this function is to enable RAII
+   * @warning   Since the primary intent of this function is to enable RAII
    * semantics in the PETSc wrappers, this function will not throw an
    * exception if an error occurs, but instead just returns the error code
    * given by MatDestroy.
+   *
    */
   inline PetscErrorCode
   destroy_matrix(Mat &matrix)
@@ -78,12 +79,11 @@ namespace PETScWrappers
   /**
    * Destroy a Krylov Subspace (KSP) PETSc solver. This function wraps
    * KSPDestroy with a version check (the signature of this function changed
-   * in PETSc 3.2.0).
+   * in PETSc 3.2.0).       @warning   Since the primary intent of this
+   * function is to enable RAII   semantics in the PETSc wrappers, this
+   * function will not throw an   exception if an error occurs, but instead
+   * just returns the error code   given by MatDestroy.
    *
-   * @warning Since the primary intent of this function is to enable RAII
-   * semantics in the PETSc wrappers, this function will not throw an
-   * exception if an error occurs, but instead just returns the error code
-   * given by MatDestroy.
    */
   inline PetscErrorCode
   destroy_krylov_solver(KSP &krylov_solver)
@@ -96,10 +96,10 @@ namespace PETScWrappers
 
   /**
    * Set a PETSc matrix option. This function wraps MatSetOption with a
-   * version check.
+   * version check.       @warning   The argument option_value is ignored in
+   * versions of PETSc   before 3.0.0 since the corresponding function did not
+   * take this argument.
    *
-   * @warning The argument option_value is ignored in versions of PETSc
-   * before 3.0.0 since the corresponding function did not take this argument.
    */
   inline void
   set_matrix_option(Mat &           matrix,
@@ -115,6 +115,7 @@ namespace PETScWrappers
   /**
    * Tell PETSc that we are not planning on adding new entries to the
    * matrix. Generate errors in debug mode.
+   *
    */
   inline void
   close_matrix(Mat &matrix)
@@ -129,9 +130,10 @@ namespace PETScWrappers
 
 
   /**
-   * Tell PETSc to keep the SparsityPattern entries even if we delete a
-   * row with clear_rows() which calls MatZeroRows(). Otherwise one can
-   * not write into that row afterwards.
+   * Tell PETSc to keep the SparsityPattern entries even if we delete a   row
+   * with clear_rows() which calls MatZeroRows(). Otherwise one can   not
+   * write into that row afterwards.
+   *
    */
   inline void
   set_keep_zero_rows(Mat &matrix)

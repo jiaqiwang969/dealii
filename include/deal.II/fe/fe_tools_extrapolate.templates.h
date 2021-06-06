@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
 //
@@ -61,9 +61,9 @@ namespace FETools
 
       template <class InVector>
       void
-      extrapolate_parallel(const InVector & /*u2_relevant*/,
-                           const DoFHandler<dim, spacedim> & /*dof2*/,
-                           OutVector & /*u2*/)
+      extrapolate_parallel(const InVector &  /*u2_relevant*/ ,
+                           const DoFHandler<dim, spacedim> &  /*dof2*/ ,
+                           OutVector &  /*u2*/ )
       {
         Assert(false, ExcNotImplemented())
       }
@@ -426,9 +426,9 @@ namespace FETools
 
       template <class InVector>
       void
-      extrapolate_parallel(const InVector & /*u2_relevant*/,
-                           const DoFHandler<1, 1> & /*dof2*/,
-                           OutVector & /*u2*/)
+      extrapolate_parallel(const InVector &  /*u2_relevant*/ ,
+                           const DoFHandler<1, 1> &  /*dof2*/ ,
+                           OutVector &  /*u2*/ )
       {}
     };
 
@@ -443,9 +443,9 @@ namespace FETools
 
       template <class InVector>
       void
-      extrapolate_parallel(const InVector & /*u2_relevant*/,
-                           const DoFHandler<1, 2> & /*dof2*/,
-                           OutVector & /*u2*/)
+      extrapolate_parallel(const InVector &  /*u2_relevant*/ ,
+                           const DoFHandler<1, 2> &  /*dof2*/ ,
+                           OutVector &  /*u2*/ )
       {}
     };
 
@@ -460,9 +460,9 @@ namespace FETools
 
       template <class InVector>
       void
-      extrapolate_parallel(const InVector & /*u2_relevant*/,
-                           const DoFHandler<1, 3> & /*dof2*/,
-                           OutVector & /*u2*/)
+      extrapolate_parallel(const InVector &  /*u2_relevant*/ ,
+                           const DoFHandler<1, 3> &  /*dof2*/ ,
+                           OutVector &  /*u2*/ )
       {}
     };
 
@@ -1644,7 +1644,7 @@ namespace FETools
 
     template <class VectorType, class DH>
     void
-    reinit_ghosted(const DH & /*dh*/, VectorType & /*vector*/)
+    reinit_ghosted(const DH &  /*dh*/, VectorType & /*vector*/ )
     {
       Assert(false, ExcNotImplemented());
     }
@@ -1832,5 +1832,5 @@ namespace FETools
 
 DEAL_II_NAMESPACE_CLOSE
 
-/*--------------------   fe_tools_extrapolate_templates.h -------------------*/
+ /*--------------------   fe_tools_extrapolate_templates.h -------------------*/ 
 #endif // dealii_fe_tools_extrapolate_templates_H

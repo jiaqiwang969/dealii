@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2021 by the deal.II authors
 //
@@ -44,26 +44,22 @@ namespace internal
 
     /**
      * Store the indices of the degrees of freedom which are located on
-     * objects of dimension @p dim.
-     *
-     * <h3>Information for all DoFObjects classes</h3>
-     *
-     * The DoFObjects classes store the global indices of the degrees of
-     * freedom for each cell on a certain level. The global index or number of
-     * a degree of freedom is the zero-based index of the according value in
-     * the solution vector and the row and column index in the global matrix
-     * or the multigrid matrix for this level. These indices refer to the
-     * unconstrained vectors and matrices, where we have not taken account of
-     * the constraints introduced by hanging nodes.
-     *
-     * Since vertices are not associated with a particular level, the indices
-     * associated with vertices are not stored in the DoFObjects classes but
-     * rather in the DoFHandler::vertex_dofs array.
-     *
-     * The DoFObjects classes are not used directly, but objects of these
-     * classes are included in the DoFLevel and DoFFaces classes.
-     *
+     * objects of dimension   @p dim.           <h3>Information for all
+     * DoFObjects classes</h3>         The DoFObjects classes store the global
+     * indices of the degrees of     freedom for each cell on a certain level.
+     * The global index or number of     a degree of freedom is the zero-based
+     * index of the according value in     the solution vector and the row and
+     * column index in the global matrix     or the multigrid matrix for this
+     * level. These indices refer to the     unconstrained vectors and
+     * matrices, where we have not taken account of     the constraints
+     * introduced by hanging nodes.         Since vertices are not associated
+     * with a particular level, the indices     associated with vertices are
+     * not stored in the DoFObjects classes but     rather in the
+     * DoFHandler::vertex_dofs   array.         The DoFObjects classes are not
+     * used directly, but objects of these     classes are included in the
+     * DoFLevel and DoFFaces classes.
      * @ingroup dofs
+     *
      */
     template <int dim>
     class DoFObjects
@@ -71,22 +67,23 @@ namespace internal
     public:
       /**
        * Store the global indices of the degrees of freedom.
+       *
        */
       std::vector<types::global_dof_index> dofs;
 
     public:
       /**
-       * Set the global index of the @p local_index-th degree of freedom
-       * located on the object with number @p obj_index to the value given by
-       * the last argument. The @p dof_handler argument is used to access the
-       * finite element that is to be used to compute the location where this
-       * data is stored.
-       *
-       * The third argument, @p fe_index, must equal zero. It is otherwise
+       * Set the global index of the   @p local_index-th   degree of freedom
+       * located on the object with number   @p obj_index   to the value given
+       * by       the last argument. The   @p dof_handler   argument is used
+       * to access the       finite element that is to be used to compute the
+       * location where this       data is stored.             The third
+       * argument,   @p fe_index,   must equal zero. It is otherwise
        * unused, but we retain the argument so that we can use the same
        * interface for non-hp- and hp-finite element methods, in effect making
        * it possible to share the DoFAccessor class hierarchy between hp- and
        * non-hp-classes.
+       *
        */
       template <int dh_dim, int spacedim>
       void
@@ -97,16 +94,16 @@ namespace internal
                     const types::global_dof_index               global_index);
 
       /**
-       * Return the global index of the @p local_index-th degree of freedom
-       * located on the object with number @p obj_index. The @p dof_handler
-       * argument is used to access the finite element that is to be used to
-       * compute the location where this data is stored.
+       * Return the global index of the   @p local_index-th   degree of
+       * freedom       located on the object with number   @p obj_index.   The
+       * @p dof_handler         argument is used to access the finite element
+       * that is to be used to       compute the location where this data is
+       * stored.             The third argument,   @p fe_index,   must equal
+       * zero. It is otherwise       unused, but we retain the argument so
+       * that we can use the same       interface for non-hp- and hp-finite
+       * element methods, in effect making       it possible to share the
+       * DoFAccessor class hierarchy between hp- and       non-hp-classes.
        *
-       * The third argument, @p fe_index, must equal zero. It is otherwise
-       * unused, but we retain the argument so that we can use the same
-       * interface for non-hp- and hp-finite element methods, in effect making
-       * it possible to share the DoFAccessor class hierarchy between hp- and
-       * non-hp-classes.
        */
       template <int dh_dim, int spacedim>
       types::global_dof_index
@@ -119,6 +116,7 @@ namespace internal
        * Return the value 1. The meaning of this function becomes clear by
        * looking at what the corresponding functions in the classes
        * internal::hp::DoFObjects
+       *
        */
       template <int dh_dim, int spacedim>
       unsigned int
@@ -129,6 +127,7 @@ namespace internal
       /**
        * Similar to the function above. Assert that the given index is zero,
        * and then return true.
+       *
        */
       template <int dh_dim, int spacedim>
       bool
@@ -140,6 +139,7 @@ namespace internal
       /**
        * Determine an estimate for the memory consumption (in bytes) of this
        * object.
+       *
        */
       std::size_t
       memory_consumption() const;
@@ -148,6 +148,7 @@ namespace internal
        * Read or write the data of this object to or from a stream for the
        * purpose of serialization using the [BOOST serialization
        * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+       *
        */
       template <class Archive>
       void

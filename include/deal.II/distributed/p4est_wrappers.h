@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
 //
@@ -59,9 +59,10 @@ namespace internal
     /**
      * A structure whose explicit specializations contain alias to the
      * relevant p4est_* and p8est_* types. Using this structure, for example
-     * by saying <tt>types<dim>::connectivity</tt> we can write code in a
+     * by saying   <tt>types<dim>::connectivity</tt>   we can write code in a
      * dimension independent way, either referring to p4est_connectivity_t or
      * p8est_connectivity_t, depending on template argument.
+     *
      */
     template <int>
     struct types;
@@ -115,9 +116,11 @@ namespace internal
     /**
      * A structure whose explicit specializations contain pointers to the
      * relevant p4est_* and p8est_* functions. Using this structure, for
-     * example by saying functions<dim>::quadrant_compare, we can write code
-     * in a dimension independent way, either calling p4est_quadrant_compare
-     * or p8est_quadrant_compare, depending on template argument.
+     * example by saying   functions<dim>::quadrant_compare,   we can write
+     * code     in a dimension independent way, either calling
+     * p4est_quadrant_compare     or p8est_quadrant_compare, depending on
+     * template argument.
+     *
      */
     template <int dim>
     struct functions;
@@ -499,6 +502,7 @@ namespace internal
      * prototypes, which are used to execute callback functions for faces,
      * edges, and corners that require local neighborhood information, i.e.
      * the neighboring cells
+     *
      */
     template <int dim>
     struct iter;
@@ -531,8 +535,9 @@ namespace internal
 
 
     /**
-     * Initialize the GeometryInfo<dim>::max_children_per_cell children of the
-     * cell p4est_cell.
+     * Initialize the   GeometryInfo<dim>::max_children_per_cell   children of
+     * the     cell p4est_cell.
+     *
      */
     template <int dim>
     void
@@ -545,6 +550,7 @@ namespace internal
 
     /**
      * Initialize quadrant to represent a coarse cell.
+     *
      */
     template <int dim>
     void
@@ -554,6 +560,7 @@ namespace internal
 
     /**
      * Return whether q1 and q2 are equal
+     *
      */
     template <int dim>
     bool
@@ -564,6 +571,7 @@ namespace internal
 
     /**
      * Return whether q1 is an ancestor of q2
+     *
      */
     template <int dim>
     bool
@@ -574,6 +582,7 @@ namespace internal
 
     /**
      * Return whether the children of a coarse cell are stored locally
+     *
      */
     template <int dim>
     bool
@@ -583,6 +592,7 @@ namespace internal
 
     /**
      * Deep copy a p4est connectivity object.
+     *
      */
     template <int dim>
     typename types<dim>::connectivity *

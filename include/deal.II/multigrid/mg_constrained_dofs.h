@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -41,7 +41,10 @@ class DoFHandler;
  * Collection of boundary constraints and refinement edge constraints for
  * level vectors.
  *
+ *
  * @ingroup mg
+ *
+ *
  */
 class MGConstrainedDoFs : public Subscriptor
 {
@@ -51,26 +54,24 @@ public:
    * Fill the internal data structures with hanging node constraints extracted
    * from the dof handler object. Works with natural boundary conditions only.
    * There exists a sister function setting up boundary constraints as well.
-   *
    * This function ensures that on every level, degrees of freedom at interior
    * edges of a refinement level are treated corrected but leaves degrees of
    * freedom at the boundary of the domain untouched assuming that no
-   * Dirichlet boundary conditions for them exist.
+   * Dirichlet boundary conditions for them exist.     Furthermore, this call
+   * sets up an AffineConstraints object on each   level that contains
+   * possible periodicity constraints in case those   have been added to the
+   * underlying triangulation. The AffineConstraints   object can be queried
+   * by get_level_constraints(level). Note that the   current implementation
+   * of periodicity constraints in this class does   not support rotation
+   * matrices in the periodicity definition, i.e., the   respective argument
+   * in the   GridTools::collect_periodic_faces()   may not   be different
+   * from the identity matrix.   If no level_relevant_dofs are passed as the
+   * second argument, the function   uses the locally relevant level DoFs,
+   * extracted by     DoFTools::extract_locally_relevant_level_dofs().
+   * Otherwise, the   user-provided IndexSets, which should define a superset
+   * of locally relevant   DoFs, are used on each level to allow the user to
+   * add additional indices to   the set of constrained DoFs.
    *
-   * Furthermore, this call sets up an AffineConstraints object on each
-   * level that contains possible periodicity constraints in case those
-   * have been added to the underlying triangulation. The AffineConstraints
-   * object can be queried by get_level_constraints(level). Note that the
-   * current implementation of periodicity constraints in this class does
-   * not support rotation matrices in the periodicity definition, i.e., the
-   * respective argument in the GridTools::collect_periodic_faces() may not
-   * be different from the identity matrix.
-   * If no level_relevant_dofs are passed as the second argument, the function
-   * uses the locally relevant level DoFs, extracted by
-   * DoFTools::extract_locally_relevant_level_dofs(). Otherwise, the
-   * user-provided IndexSets, which should define a superset of locally relevant
-   * DoFs, are used on each level to allow the user to add additional indices to
-   * the set of constrained DoFs.
    */
   template <int dim, int spacedim>
   void
@@ -79,14 +80,12 @@ public:
                MGLevelObject<IndexSet>());
 
   /**
-   * Fill the internal data structures with information
-   * about Dirichlet boundary dofs.
+   * Fill the internal data structures with information   about Dirichlet
+   * boundary dofs.     The initialize() function has to be called before   to
+   * set hanging node constraints.     This function can be called multiple
+   * times to allow considering   different sets of boundary_ids for different
+   * components.
    *
-   * The initialize() function has to be called before
-   * to set hanging node constraints.
-   *
-   * This function can be called multiple times to allow considering
-   * different sets of boundary_ids for different components.
    */
   template <int dim, int spacedim>
   void
@@ -96,36 +95,32 @@ public:
     const ComponentMask &               component_mask = ComponentMask());
 
   /**
-   * Add user defined constraints to be used on level @p level.
-   *
-   * The user can call this function multiple times and any new,
-   * conflicting constraints will overwrite the previous constraints
-   * for that DoF.
-   *
+   * Add user defined constraints to be used on level   @p level.       The
+   * user can call this function multiple times and any new,   conflicting
+   * constraints will overwrite the previous constraints   for that DoF.
    * Before the transfer, the user defined constraints will be distributed
    * to the source vector, and then any DoF index set using
-   * make_zero_boundary_constraints() will be overwritten with
-   * value zero.
+   * make_zero_boundary_constraints() will be overwritten with   value zero.
+   * @note   This is currently only implemented for MGTransferMatrixFree.
    *
-   * @note This is currently only implemented for MGTransferMatrixFree.
    */
   void
   add_user_constraints(const unsigned int               level,
                        const AffineConstraints<double> &constraints_on_level);
 
   /**
-   * Fill the internal data structures with information
-   * about no normal flux boundary dofs.
-   *
-   * This function is limited to meshes whose no normal flux boundaries
-   * have faces which are normal to the x-, y-, or z-axis. Also, for a
-   * specific boundary id, all faces must be facing in the same direction,
-   * i.e., a boundary normal to the x-axis must have a different boundary
-   * id than a boundary normal to the y- or z-axis and so on. If the mesh
-   * was produced, for example, using the <tt>GridGenerator::hyper_cube()</tt>
-   * function, setting <tt>colorize=true</tt> during mesh generation and calling
+   * Fill the internal data structures with information   about no normal flux
+   * boundary dofs.     This function is limited to meshes whose no normal
+   * flux boundaries   have faces which are normal to the x-, y-, or z-axis.
+   * Also, for a   specific boundary id, all faces must be facing in the same
+   * direction,   i.e., a boundary normal to the x-axis must have a different
+   * boundary   id than a boundary normal to the y- or z-axis and so on. If
+   * the mesh   was produced, for example, using the
+   * <tt>GridGenerator::hyper_cube()</tt>     function, setting
+   * <tt>colorize=true</tt> during mesh generation and calling
    * make_no_normal_flux_constraints() for each no normal flux boundary is
    * sufficient.
+   *
    */
   template <int dim, int spacedim>
   void
@@ -135,12 +130,14 @@ public:
 
   /**
    * Reset the data structures.
+   *
    */
   void
   clear();
 
   /**
    * Determine whether a dof index is subject to a boundary constraint.
+   *
    */
   bool
   is_boundary_index(const unsigned int            level,
@@ -148,6 +145,7 @@ public:
 
   /**
    * Determine whether a dof index is at the refinement edge.
+   *
    */
   bool
   at_refinement_edge(const unsigned int            level,
@@ -155,10 +153,11 @@ public:
 
 
   /**
-   * Determine whether the (i,j) entry of the interface matrix
-   * on a given level should be set. This is taken in terms of
-   * dof i, that is, return true if i is at a refinement edge,
-   * j is not, and both are not on the external boundary.
+   * Determine whether the (i,j) entry of the interface matrix   on a given
+   * level should be set. This is taken in terms of   dof i, that is, return
+   * true if i is at a refinement edge,   j is not, and both are not on the
+   * external boundary.
+   *
    */
   bool
   is_interface_matrix_entry(const unsigned int            level,
@@ -167,9 +166,10 @@ public:
 
   /**
    * Return the indices of level dofs on the given level that are subject to
-   * Dirichlet boundary conditions (as set by the @p function_map parameter in
-   * initialize()).  The indices are restricted to the set of locally relevant
-   * level dofs.
+   * Dirichlet boundary conditions (as set by the   @p function_map
+   * parameter in   initialize()).  The indices are restricted to the set of
+   * locally relevant   level dofs.
+   *
    */
   const IndexSet &
   get_boundary_indices(const unsigned int level) const;
@@ -178,6 +178,7 @@ public:
   /**
    * Return the indices of dofs on the given level that lie on an refinement
    * edge (dofs on faces to neighbors that are coarser).
+   *
    */
   const IndexSet &
   get_refinement_edge_indices(unsigned int level) const;
@@ -185,6 +186,7 @@ public:
 
   /**
    * Return if Dirichlet boundary indices are set in initialize().
+   *
    */
   bool
   have_boundary_indices() const;
@@ -192,6 +194,7 @@ public:
   /**
    * Return the AffineConstraints object for a given level, containing
    * periodicity constraints (if enabled on the triangulation).
+   *
    */
   const AffineConstraints<double> &
   get_level_constraints(const unsigned int level) const;
@@ -200,8 +203,9 @@ public:
    * Return the user defined constraint matrix for a given level. These
    * constraints are set using the function add_user_constraints() and
    * should not contain constraints for DoF indices set in
-   * make_zero_boundary_constraints() as they will be overwritten during
-   * the transfer.
+   * make_zero_boundary_constraints() as they will be overwritten during   the
+   * transfer.
+   *
    */
   const AffineConstraints<double> &
   get_user_constraint_matrix(const unsigned int level) const;
@@ -209,23 +213,27 @@ public:
 private:
   /**
    * The indices of boundary dofs for each level.
+   *
    */
   std::vector<IndexSet> boundary_indices;
 
   /**
    * The degrees of freedom on a given level that live on the refinement edge
    * between the level and cells on a coarser level.
+   *
    */
   std::vector<IndexSet> refinement_edge_indices;
 
   /**
-   * Constraint matrices containing information regarding potential
-   * periodic boundary conditions for each level .
+   * Constraint matrices containing information regarding potential   periodic
+   * boundary conditions for each level .
+   *
    */
   std::vector<AffineConstraints<double>> level_constraints;
 
   /**
    * Constraint matrices defined by user.
+   *
    */
   std::vector<AffineConstraints<double>> user_constraints;
 };

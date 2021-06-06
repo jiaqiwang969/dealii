@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -35,16 +35,16 @@ namespace LocalIntegrators
 {
   /**
    * @brief Local integrators related to elasticity problems.
-   *
    * @ingroup Integrators
+   *
    */
   namespace Elasticity
   {
     /**
      * The linear elasticity operator in weak form, namely double contraction
-     * of symmetric gradients.
+     * of symmetric gradients.         \f[ \int_Z \varepsilon(u):
+     * \varepsilon(v)\,dx \f]
      *
-     * \f[ \int_Z \varepsilon(u): \varepsilon(v)\,dx \f]
      */
     template <int dim>
     inline void
@@ -76,8 +76,10 @@ namespace LocalIntegrators
 
     /**
      * Vector-valued residual operator for linear elasticity in weak form
+     * \f[
      *
-     * \f[ - \int_Z \varepsilon(u): \varepsilon(v) \,dx \f]
+     * - \int_Z \varepsilon(u): \varepsilon(v) \,dx \f]
+     *
      */
     template <int dim, typename number>
     inline void
@@ -111,12 +113,15 @@ namespace LocalIntegrators
 
 
     /**
-     * The matrix for the weak boundary condition of Nitsche type for linear
-     * elasticity:
-     * @f[
-     * \int_F \Bigl(\gamma u \cdot v - n^T \epsilon(u) v - u \epsilon(v)
+     * The matrix for the weak boundary condition of Nitsche type for linear     elasticity:     @f[
+     * \int_F \Bigl(\gamma u \cdot v
+     *
+     * - n^T \epsilon(u) v
+     *
+     * - u \epsilon(v)
      * n\Bigr)\;ds.
      * @f]
+     *
      */
     template <int dim>
     inline void
@@ -166,12 +171,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * The matrix for the weak boundary condition of Nitsche type for the
-     * tangential displacement in linear elasticity:
-     * @f[
-     * \int_F \Bigl(\gamma u_\tau \cdot v_\tau - n^T \epsilon(u_\tau) v_\tau -
+     * The matrix for the weak boundary condition of Nitsche type for the     tangential displacement in linear elasticity:     @f[
+     * \int_F \Bigl(\gamma u_\tau \cdot v_\tau
+     *
+     * - n^T \epsilon(u_\tau) v_\tau
+     *
+     * -
      * u_\tau^T \epsilon(v_\tau) n\Bigr)\;ds.
      * @f]
+     *
      */
     template <int dim>
     inline void
@@ -239,18 +247,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * Weak boundary condition for the elasticity operator by Nitsche, namely
-     * on the face <i>F</i> the vector
-     * @f[
-     * \int_F \Bigl(\gamma (u-g) \cdot v - n^T \epsilon(u) v - (u-g) \epsilon(v)
-     * n^T\Bigr)\;ds.
-     * @f]
+     * Weak boundary condition for the elasticity operator by Nitsche, namely     on the face <i>F</i> the vector     @f[
+     * \int_F \Bigl(\gamma (u-g) \cdot v
      *
-     * Here, <i>u</i> is the finite element function whose values and gradient
-     * are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,
-     * respectively. <i>g</i> is the inhomogeneous boundary value in the
-     * argument <tt>data</tt>. $n$ is the outer normal vector and $\gamma$ is
-     * the usual penalty parameter.
+     * - n^T \epsilon(u) v
+     *
+     * - (u-g) \epsilon(v)
+     * n^T\Bigr)\;ds.
+     * @f]         Here, <i>u</i> is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively. <i>g</i> is the inhomogeneous boundary value in the     argument <tt>data</tt>.   $n$   is the outer normal vector and   $\gamma$   is     the usual penalty parameter.
+     *
      */
     template <int dim, typename number>
     void
@@ -297,12 +302,34 @@ namespace LocalIntegrators
     }
 
     /**
-     * The weak boundary condition of Nitsche type for the tangential
-     * displacement in linear elasticity:
-     * @f[
-     * \int_F \Bigl(\gamma (u_\tau-g_\tau) \cdot v_\tau - n^T \epsilon(u_\tau) v
+     * The weak boundary condition of Nitsche type for the tangential     displacement in linear elasticity:     @f[
+     * \int_F \Bigl(\gamma (u_\tau-g_\tau) \cdot v_\tau
+     *
+     * - n^T \epsilon(u_\tau) v
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
      * - (u_\tau-g_\tau) \epsilon(v_\tau) n\Bigr)\;ds.
      * @f]
+     *
      */
     template <int dim, typename number>
     inline void
@@ -370,17 +397,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * Homogeneous weak boundary condition for the elasticity operator by
-     * Nitsche, namely on the face <i>F</i> the vector
-     * @f[
-     * \int_F \Bigl(\gamma u \cdot v - n^T \epsilon(u) v - u \epsilon(v)
-     * n^T\Bigr)\;ds.
-     * @f]
+     * Homogeneous weak boundary condition for the elasticity operator by     Nitsche, namely on the face <i>F</i> the vector     @f[
+     * \int_F \Bigl(\gamma u \cdot v
      *
-     * Here, <i>u</i> is the finite element function whose values and gradient
-     * are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,
-     * respectively. $n$ is the outer normal vector and $\gamma$ is the usual
-     * penalty parameter.
+     * - n^T \epsilon(u) v
+     *
+     * - u \epsilon(v)
+     * n^T\Bigr)\;ds.
+     * @f]         Here, <i>u</i> is the finite element function whose values and gradient     are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,     respectively.   $n$   is the outer normal vector and   $\gamma$   is the usual     penalty parameter.
+     *
      */
     template <int dim, typename number>
     void
@@ -426,6 +451,7 @@ namespace LocalIntegrators
 
     /**
      * The interior penalty flux for symmetric gradients.
+     *
      */
     template <int dim>
     inline void
@@ -534,6 +560,7 @@ namespace LocalIntegrators
     }
     /**
      * Elasticity residual term for the symmetric interior penalty method.
+     *
      */
     template <int dim, typename number>
     void

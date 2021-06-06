@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2020 by the deal.II authors
 //
@@ -34,32 +34,23 @@ namespace parallel
 {
   namespace distributed
   {
-    /*! @addtogroup Vectors
-     *@{
-     */
+    /*!   @addtogroup   Vectors      @{      
+* */
 
     /**
      * An implementation of block vectors based on distributed deal.II
      * vectors. While the base class provides for most of the interface, this
      * class handles the actual allocation of vectors and provides functions
      * that are specific to the underlying vector type.
+     * @note   Instantiations for this template are provided for <tt>  @<float@>       and   @<double@></tt>;   others can be generated in application programs     (see the section on       @ref Instantiations       in the manual).           @see         @ref GlossBlockLA   "Block (linear algebra)"
+     * @deprecated   Use   LinearAlgebra::distributed::BlockVector   instead.
      *
-     * @note Instantiations for this template are provided for <tt>@<float@>
-     * and @<double@></tt>; others can be generated in application programs
-     * (see the section on
-     * @ref Instantiations
-     * in the manual).
-     *
-     * @see
-     * @ref GlossBlockLA "Block (linear algebra)"
-     *
-     * @deprecated Use LinearAlgebra::distributed::BlockVector instead.
      */
     template <typename Number>
     using BlockVector DEAL_II_DEPRECATED =
       LinearAlgebra::distributed::BlockVector<Number>;
 
-    /*@}*/
+     /*@}*/ 
   } // namespace distributed
 } // namespace parallel
 

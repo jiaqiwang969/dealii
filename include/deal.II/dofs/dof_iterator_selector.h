@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
 //
@@ -51,13 +51,13 @@ namespace internal
 
 
     /**
-     * Define some types for DoF handling in one dimension.
+     * Define some
+     * types for DoF handling in one dimension.         The types have the
+     * same meaning as those declared in
+     * internal::TriangulationImplementation::Iterators<1,spacedim>,   only
+     * the     treatment of templates is a little more complicated. See the
+     * @ref Iterators       module for more information.
      *
-     * The types have the same meaning as those declared in
-     * internal::TriangulationImplementation::Iterators<1,spacedim>, only the
-     * treatment of templates is a little more complicated. See the
-     * @ref Iterators
-     * module for more information.
      */
     template <int spacedim, bool lda>
     struct Iterators<1, spacedim, lda>
@@ -93,13 +93,13 @@ namespace internal
 
 
     /**
-     * Define some types for DoF handling in two dimensions.
+     * Define some
+     * types for DoF handling in two dimensions.         The types have the
+     * same meaning as those declared in
+     * internal::TriangulationImplementation::Iterators<2,spacedim>,   only
+     * the     treatment of templates is a little more complicated. See the
+     * @ref Iterators       module for more information.
      *
-     * The types have the same meaning as those declared in
-     * internal::TriangulationImplementation::Iterators<2,spacedim>, only the
-     * treatment of templates is a little more complicated. See the
-     * @ref Iterators
-     * module for more information.
      */
     template <int spacedim, bool lda>
     struct Iterators<2, spacedim, lda>
@@ -133,13 +133,13 @@ namespace internal
 
 
     /**
-     * Define some types for DoF handling in three dimensions.
+     * Define some
+     * types for DoF handling in three dimensions.         The types have the
+     * same meaning as those declared in
+     * internal::TriangulationImplementation::Iterators<3,spacedim>,   only
+     * the     treatment of templates is a little more complicated. See the
+     * @ref Iterators       module for more information.
      *
-     * The types have the same meaning as those declared in
-     * internal::TriangulationImplementation::Iterators<3,spacedim>, only the
-     * treatment of templates is a little more complicated. See the
-     * @ref Iterators
-     * module for more information.
      */
     template <int spacedim, bool lda>
     struct Iterators<3, spacedim, lda>

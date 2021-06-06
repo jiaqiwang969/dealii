@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2020 by the deal.II authors
 //
@@ -27,38 +27,39 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * @name Indirectly applying constraints to LinearOperator
+ * @name   Indirectly applying constraints to LinearOperator
+ *
+ *
  */
 //@{
 
 
 /**
- * This function takes an AffineConstraints object @p constraints and
- * an operator exemplar @p exemplar (this exemplar is usually a linear
- * operator that describes the system matrix - it is only used to create
- * domain and range vectors of appropriate sizes, its action <tt>vmult</tt>
- * is never used). A LinearOperator object associated with the "homogeneous
- * action" of the underlying AffineConstraints object is returned:
+ * This function takes an AffineConstraints object   @p constraints   and an
+ * operator exemplar   @p exemplar   (this exemplar is usually a linear
+ * operator that describes the system matrix
  *
- * Applying the LinearOperator object on a vector <code>u</code> results in a
- * vector <code>v</code> that stores the result of calling
- * AffineConstraints::distribute() on <code>u</code> - with one important
- * difference: inhomogeneities are not applied, but always treated as 0
- * instead.
+ *  - it is only used to create domain and range vectors of appropriate sizes, its action <tt>vmult</tt> is never used). A LinearOperator object associated with the "homogeneous action" of the underlying AffineConstraints object is returned:
+ * Applying the LinearOperator object on a vector   <code>u</code>   results
+ * in a vector   <code>v</code>   that stores the result of calling
+ * AffineConstraints::distribute()   on   <code>u</code>
  *
- * The LinearOperator object created by this function is primarily used
- * internally in constrained_linear_operator() to build up a modified system
- * of linear equations. How to solve a linear system of equations with this
- * approach is explained in detail in the
- * @ref constraints
- * module.
+ *  - with one important difference: inhomogeneities are not applied, but always treated as 0 instead.
+ * The LinearOperator
+ * object created by this function is primarily used internally in
+ * constrained_linear_operator() to build up a modified system of linear
+ * equations. How to solve a linear system of equations with this approach is
+ * explained in detail in the   @ref constraints   module.
  *
  *
- * @note Currently, this function may not work correctly for distributed data
- * structures.
  *
- * @relatesalso LinearOperator
+ * @note   Currently, this function may not work correctly for distributed
+ * data structures.
+ * @relatesalso   LinearOperator
+ *
  * @ingroup constraints
+ *
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -144,14 +145,16 @@ distribute_constraints_linear_operator(
 
 
 /**
- * Given a AffineConstraints @p constraints and an operator exemplar @p
+ * Given a AffineConstraints   @p constraints   and an operator exemplar   @p
  * exemplar, return a LinearOperator that is the projection to the subspace of
  * constrained degrees of freedom, i.e. all entries of the result vector that
  * correspond to unconstrained degrees of freedom are set to zero.
  *
+ * @relatesalso   LinearOperator
  *
- * @relatesalso LinearOperator
  * @ingroup constraints
+ *
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -206,40 +209,39 @@ project_to_constrained_linear_operator(
 
 
 /**
- * Given a AffineConstraints object @p constraints and a LinearOperator
- * @p linop, this function creates a LinearOperator object consisting of the
+ * Given a AffineConstraints object   @p constraints   and a LinearOperator
+ * @p linop,   this function creates a LinearOperator object consisting of the
  * composition of three operations and a regularization:
+ *
  * @code
- *   Ct * linop * C + Id_c;
+ * Ct linop C + Id_c;
  * @endcode
  * with
+ *
  * @code
- *   C = distribute_constraints_linear_operator(constraints, linop);
- *   Ct = transpose_operator(C);
- *   Id_c = project_to_constrained_linear_operator(constraints, linop);
+ * C = distribute_constraints_linear_operator(constraints, linop);
+ * Ct = transpose_operator(C);
+ * Id_c = project_to_constrained_linear_operator(constraints, linop);
  * @endcode
- * and <code>Id_c</code> is the projection to the subspace consisting of all
- * vector entries associated with constrained degrees of freedom.
+ * and   <code>Id_c</code>   is the projection to the subspace consisting of
+ * all vector entries associated with constrained degrees of freedom.
+ *  This LinearOperator object is used together with constrained_right_hand_side() to build up the following modified system of linear equations: @f[
+ * (C^T A C + Id_c) x = C^T (b
  *
- * This LinearOperator object is used together with
- * constrained_right_hand_side() to build up the following modified system of
- * linear equations:
- * @f[
- *   (C^T A C + Id_c) x = C^T (b - A\,k)
- * @f]
- * with a given (unconstrained) system matrix $A$, right hand side $b$, and
- * linear constraints $C$ with inhomogeneities $k$.
- *
- * A detailed explanation of this approach is given in the
- * @ref constraints
- * module.
+ * - A\,k)
+ * @f] with a given (unconstrained) system matrix   $A$  , right hand side   $b$  , and linear constraints   $C$   with inhomogeneities   $k$  .
+ * A detailed
+ * explanation of this approach is given in the   @ref constraints   module.
  *
  *
- * @note Currently, this function may not work correctly for distributed data
- * structures.
  *
- * @relatesalso LinearOperator
+ * @note   Currently, this function may not work correctly for distributed
+ * data structures.
+ * @relatesalso   LinearOperator
+ *
  * @ingroup constraints
+ *
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -255,37 +257,39 @@ constrained_linear_operator(
 
 
 /**
- * Given a AffineConstraints object @p constraints, a LinearOperator @p
- * linop and a right-hand side @p right_hand_side, this function creates a
+ * Given a AffineConstraints object   @p constraints,   a LinearOperator   @p
+ * linop and a right-hand side   @p right_hand_side,   this function creates a
  * PackagedOperation that stores the following computation:
+ *
  * @code
- *   Ct * (right_hand_side - linop * k)
+ * Ct (right_hand_side
+ *
+ * - linop k)
  * @endcode
  * with
+ *
  * @code
- *   C = distribute_constraints_linear_operator(constraints, linop);
- *   Ct = transpose_operator(C);
+ * C = distribute_constraints_linear_operator(constraints, linop);
+ * Ct = transpose_operator(C);
  * @endcode
  *
- * This LinearOperator object is used together with
- * constrained_right_hand_side() to build up the following modified system of
- * linear equations:
- * @f[
- *   (C^T A C + Id_c) x = C^T (b - A\,k)
- * @f]
- * with a given (unconstrained) system matrix $A$, right hand side $b$, and
- * linear constraints $C$ with inhomogeneities $k$.
+ *  This LinearOperator object is used together with constrained_right_hand_side() to build up the following modified system of linear equations: @f[
+ * (C^T A C + Id_c) x = C^T (b
  *
- * A detailed explanation of this approach is given in the
- * @ref constraints
- * module.
+ * - A\,k)
+ * @f] with a given (unconstrained) system matrix   $A$  , right hand side   $b$  , and linear constraints   $C$   with inhomogeneities   $k$  .
+ * A detailed
+ * explanation of this approach is given in the   @ref constraints   module.
  *
  *
- * @note Currently, this function may not work correctly for distributed data
- * structures.
  *
- * @relatesalso LinearOperator
+ * @note   Currently, this function may not work correctly for distributed
+ * data structures.
+ * @relatesalso   LinearOperator
+ *
  * @ingroup constraints
+ *
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 PackagedOperation<Range>
@@ -304,7 +308,7 @@ constrained_right_hand_side(
 
     GrowingVectorMemory<Domain>            vector_memory;
     typename VectorMemory<Domain>::Pointer k(vector_memory);
-    linop.reinit_domain_vector(*k, /*bool fast=*/false);
+    linop.reinit_domain_vector(*k,  /*bool fast=*/ false);
     constraints.distribute(*k);
 
     v += Ct * (right_hand_side - linop * *k);

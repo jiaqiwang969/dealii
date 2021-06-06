@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
 //
@@ -178,7 +178,8 @@ namespace internal
 {
   /**
    * Default implementation for serial vectors. Here we don't need to make a
-   * copy into a ghosted vector, so just return a reference to @p prev.
+   * copy into a ghosted vector, so just return a reference to   @p prev.
+   *
    */
   template <class VectorType>
   const VectorType &
@@ -195,6 +196,7 @@ namespace internal
 #ifdef DEAL_II_WITH_TRILINOS
   /**
    * Specialization for Trilinos. Use the ghosted vector.
+   *
    */
   template <>
   inline const TrilinosWrappers::MPI::Vector &

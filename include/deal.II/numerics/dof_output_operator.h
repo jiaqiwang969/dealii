@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2018 by the deal.II authors
 //
@@ -38,19 +38,14 @@ namespace Algorithms
   /**
    * An output operator writing a separate file in each step and writing the
    * vectors as finite element functions with respect to a given DoFHandler.
+   *
    */
   template <typename VectorType, int dim, int spacedim = dim>
   class DoFOutputOperator : public OutputOperator<VectorType>
   {
   public:
-    /*
-     * Constructor. The <tt>filename</tt> is the common base name of
-     * all files and the argument <tt>digits</tt> should be the number
-     * of digits of the highest number in the sequence. File names by
-     * default have the form "outputNNN" with NNN the number set by the
-     * last step command. Numbers with less digits are filled with
-     * zeros from the left.
-     */
+    /*     Constructor. The <tt>filename</tt> is the common base name of     all files and the argument <tt>digits</tt> should be the number     of digits of the highest number in the sequence. File names by     default have the form "outputNNN" with NNN the number set by the     last step command. Numbers with less digits are filled with     zeros from the left.    
+* */
     DoFOutputOperator(const std::string &filename_base = std::string("output"),
                       const unsigned int digits        = 3);
 

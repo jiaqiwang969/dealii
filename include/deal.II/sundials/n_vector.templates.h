@@ -1,4 +1,4 @@
-//-----------------------------------------------------------
+////-----------------------------------------------------------
 //
 //    Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -48,47 +48,56 @@ namespace SUNDIALS
      * An internal class that stores a pointer to a vector and manages the
      * memory if necessary. Objects of this class are used as the `content`
      * field in the SUNDIALS N_Vector module. In addition, this class has a
-     * flag to store whether the stored vector should be treated as const. When
-     * get() is called on a non-const object of this class the flag is checked
-     * and an exception is thrown if the vector is actually const. Thus, we
-     * retain a kind of "runtime const correctness" although the static const
-     * correctness is lost because SUNDIALS N_Vector does not support constness.
+     * flag to store whether the stored vector should be treated as const.
+     * When     get() is called on a non-const object of this class the flag
+     * is checked     and an exception is thrown if the vector is actually
+     * const. Thus, we     retain a kind of "runtime const correctness"
+     * although the static const     correctness is lost because SUNDIALS
+     * N_Vector does not support constness.
+     *
      */
     template <typename VectorType>
     class NVectorContent
     {
     public:
       /**
-       * Create a non-owning content with an existing @p vector.
-       * @param vector The underlying vector to wrap in this object.
+       * Create a non-owning content with an existing   @p vector.
+       * @param   vector The underlying vector to wrap in this object.
+       *
        */
       NVectorContent(VectorType *vector);
 
       /**
-       * Create a non-owning content with an existing const @p vector. If this
-       * constructor is used, access is only allowed via the get() const method.
-       * @param vector The underlying vector to wrap in this object.
+       * Create a non-owning content with an existing const   @p vector.   If
+       * this       constructor is used, access is only allowed via the get()
+       * const method.         @param   vector The underlying vector to wrap
+       * in this object.
+       *
        */
       NVectorContent(const VectorType *vector);
 
       /**
-       * Allocate a new (non-const) vector wrapped in a new content object. The
-       * vector will be deallocated automatically when this object is destroyed.
+       * Allocate a new (non-const) vector wrapped in a new content object.
+       * The       vector will be deallocated automatically when this object
+       * is destroyed.
+       * @note   This constructor is intended for the N_VClone() call of
+       * SUNDIALS.
        *
-       * @note This constructor is intended for the N_VClone() call of SUNDIALS.
        */
       NVectorContent();
 
       /**
        * Non-const access to the stored vector. Only allowed if a constructor
-       * different than NVectorContent(const VectorType *vector) was used.
+       * different than NVectorContent(const VectorTypevector) was used.
        * @return
+       *
        */
       VectorType *
       get();
 
       /**
        * Const access to the stored vector. Always allowed.
+       *
        */
       const VectorType *
       get() const;
@@ -100,28 +109,31 @@ namespace SUNDIALS
       /**
        * Vector memory which might be used to allocate storage if
        * NVectorContent() is called.
+       *
        */
       GrowingVectorMemory<VectorType> mem;
 
       /**
        * Actually stored vector content.
+       *
        */
       PointerType vector;
 
       /**
        * Flag storing whether the stored pointer is to be treated as const. If
-       * the pointer passed in the constructor was indeed const, it is cast away
-       * but this flag will be set to true. Access to the pointer must then
-       * check that this flag is set correctly.
+       * the pointer passed in the constructor was indeed const, it is cast
+       * away       but this flag will be set to true. Access to the pointer
+       * must then       check that this flag is set correctly.
+       *
        */
       const bool is_const;
     };
 
     /**
-     * Helper to create a vector with all operations and the given @p content.
+     * Helper to create a vector with all operations and the given   @p
+     * content.             @param   content The vector content to attach to
+     * the N_Vector.       @return   A new N_Vector
      *
-     * @param content The vector content to attach to the N_Vector.
-     * @return A new N_Vector
      */
     template <typename VectorType>
     N_Vector
@@ -129,7 +141,8 @@ namespace SUNDIALS
 
     /**
      * Helper to create an empty vector with all operations but no content.
-     * @return A new N_Vector
+     * @return   A new N_Vector
+     *
      */
     template <typename VectorType>
     N_Vector
@@ -139,6 +152,7 @@ namespace SUNDIALS
      * Collection of all operations specified by SUNDIALS N_Vector
      * documentation. These functions are attached to the generic N_Vector
      * structure.
+     *
      */
     namespace NVectorOperations
     {
@@ -277,6 +291,7 @@ namespace SUNDIALS
       /**
        * Sundials likes a void* but we want to use the above functions
        * internally with a safe type.
+       *
        */
       template <
         typename VectorType,
@@ -307,7 +322,7 @@ SUNDIALS::internal::NVectorContent<VectorType>::NVectorContent()
 template <typename VectorType>
 SUNDIALS::internal::NVectorContent<VectorType>::NVectorContent(
   VectorType *vector)
-  : vector(vector, [](VectorType *) { /* not owning memory -> don't free*/ })
+  : vector(vector, [](VectorType *) {  /* not owning memory -> don't free*/  })
   , is_const(false)
 {}
 
@@ -317,7 +332,7 @@ template <typename VectorType>
 SUNDIALS::internal::NVectorContent<VectorType>::NVectorContent(
   const VectorType *vector)
   : vector(const_cast<VectorType *>(vector),
-           [](VectorType *) { /* not owning memory -> don't free*/ })
+           [](VectorType *) {  /* not owning memory -> don't free*/  })
   , is_const(true)
 {}
 
@@ -938,7 +953,7 @@ SUNDIALS::internal::create_empty_nvector()
   N_Vector v = N_VNewEmpty();
   Assert(v != nullptr, ExcInternalError());
 
-  /* constructors, destructors, and utility operations */
+   /* constructors, destructors, and utility operations */ 
   v->ops->nvgetvectorid = NVectorOperations::get_vector_id;
   v->ops->nvclone       = NVectorOperations::clone<VectorType>;
   v->ops->nvcloneempty  = NVectorOperations::clone_empty;
@@ -950,7 +965,7 @@ SUNDIALS::internal::create_empty_nvector()
   v->ops->nvgetlength = NVectorOperations::get_global_length<VectorType>;
 #  endif
 
-  /* standard vector operations */
+   /* standard vector operations */ 
   v->ops->nvlinearsum = NVectorOperations::linear_sum<VectorType>;
   v->ops->nvconst     = NVectorOperations::set_constant<VectorType>;
   v->ops->nvprod      = NVectorOperations::elementwise_product<VectorType>;
@@ -972,9 +987,9 @@ SUNDIALS::internal::create_empty_nvector()
   //  v->ops->nvconstrmask   = undef;
   //  v->ops->nvminquotient  = undef;
 
-  /* fused and vector array operations are disabled (NULL) by default */
+   /* fused and vector array operations are disabled (NULL) by default */ 
 
-  /* local reduction operations */
+   /* local reduction operations */ 
   //  v->ops->nvdotprodlocal     = undef;
   //  v->ops->nvmaxnormlocal     = undef;
   //  v->ops->nvminlocal         = undef;

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
 //
@@ -30,94 +30,98 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 namespace internal
 {
   /**
    * Class containing the non-parameter non-template values used by the
    * SolverBicgstab class.
+   *
    */
   class SolverBicgstabData
   {
   protected:
     /**
      * Auxiliary value.
+     *
      */
     double alpha;
     /**
      * Auxiliary value.
+     *
      */
     double beta;
     /**
      * Auxiliary value.
+     *
      */
     double omega;
     /**
      * Auxiliary value.
+     *
      */
     double rho;
     /**
      * Auxiliary value.
+     *
      */
     double rhobar;
 
     /**
      * Current iteration step.
+     *
      */
     unsigned int step;
 
     /**
      * Residual.
+     *
      */
     double res;
 
     /**
      * Default constructor. This is protected so that only SolverBicgstab can
      * create instances.
+     *
      */
     SolverBicgstabData();
   };
 } // namespace internal
 
 /**
- * Bicgstab algorithm by van der Vorst.
+ * Bicgstab algorithm by van der Vorst. For the requirements on matrices and
+ * vectors in order to work with this class, see the documentation of the
+ * Solver base class. Like all other solver classes, this class has a local
+ * structure called   @p   AdditionalData which is used to pass additional
+ * parameters to the solver, like damping parameters or the number of
+ * temporary vectors. We use this additional structure instead of passing
+ * these values directly to the constructor because this makes the use of the
+ * @p SolverSelector   and other classes much easier and guarantees that these
+ * will continue to work even if number or type of the additional parameters
+ * for a certain solver changes. The Bicgstab-method has two additional
+ * parameters: the first is a boolean, deciding whether to compute the actual
+ * residual in each step (  @p true)   or to use the length of the computed
+ * orthogonal residual (  @p false).   Note that computing the residual causes
+ * a third matrix-vector-multiplication, though no additional preconditioning,
+ * in each step. The reason for doing this is, that the size of the
+ * orthogonalized residual computed during the iteration may be larger by
+ * orders of magnitude than the true residual. This is due to numerical
+ * instabilities related to badly conditioned matrices. Since this instability
+ * results in a bad stopping criterion, the default for this parameter is   @p
+ * true.   Whenever the user knows that the estimated residual works
+ * reasonably as well, the flag should be set to   @p false   in order to
+ * increase the performance of the solver. The second parameter is the size of
+ * a breakdown criterion. It is difficult to find a general good criterion, so
+ * if things do not work for you, try to change this value.
  *
- * For the requirements on matrices and vectors in order to work with this
- * class, see the documentation of the Solver base class.
- *
- * Like all other solver classes, this class has a local structure called @p
- * AdditionalData which is used to pass additional parameters to the solver,
- * like damping parameters or the number of temporary vectors. We use this
- * additional structure instead of passing these values directly to the
- * constructor because this makes the use of the @p SolverSelector and other
- * classes much easier and guarantees that these will continue to work even if
- * number or type of the additional parameters for a certain solver changes.
- *
- * The Bicgstab-method has two additional parameters: the first is a boolean,
- * deciding whether to compute the actual residual in each step (@p true) or
- * to use the length of the computed orthogonal residual (@p false). Note that
- * computing the residual causes a third matrix-vector-multiplication, though
- * no additional preconditioning, in each step. The reason for doing this is,
- * that the size of the orthogonalized residual computed during the iteration
- * may be larger by orders of magnitude than the true residual. This is due to
- * numerical instabilities related to badly conditioned matrices. Since this
- * instability results in a bad stopping criterion, the default for this
- * parameter is @p true. Whenever the user knows that the estimated residual
- * works reasonably as well, the flag should be set to @p false in order to
- * increase the performance of the solver.
- *
- * The second parameter is the size of a breakdown criterion. It is difficult
- * to find a general good criterion, so if things do not work for you, try to
- * change this value.
+ *  <h3>Observing the progress of linear solver iterations</h3> The solve()
+ * function of this class uses the mechanism described in the Solver base
+ * class to determine convergence. This mechanism can also be used to observe
+ * the progress of the iteration.
  *
  *
- * <h3>Observing the progress of linear solver iterations</h3>
- *
- * The solve() function of this class uses the mechanism described in the
- * Solver base class to determine convergence. This mechanism can also be used
- * to observe the progress of the iteration.
  */
 template <typename VectorType = Vector<double>>
 class SolverBicgstab : public SolverBase<VectorType>,
@@ -126,22 +130,20 @@ class SolverBicgstab : public SolverBase<VectorType>,
 public:
   /**
    * There are two possibilities to compute the residual: one is an estimate
-   * using the computed value @p tau. The other is exact computation using
+   * using the computed value   @p tau.   The other is exact computation using
    * another matrix vector multiplication. This increases the costs of the
    * algorithm, so it is should be set to false whenever the problem allows
-   * it.
+   * it.     Bicgstab is susceptible to breakdowns, so we need a parameter
+   * telling us,   which numbers are considered zero.
    *
-   * Bicgstab is susceptible to breakdowns, so we need a parameter telling us,
-   * which numbers are considered zero.
    */
   struct AdditionalData
   {
     /**
-     * Constructor.
+     * Constructor.         The default is to perform an exact residual
+     * computation and breakdown     parameter is the minimum finite value
+     * representable by the value_type of     VectorType.
      *
-     * The default is to perform an exact residual computation and breakdown
-     * parameter is the minimum finite value representable by the value_type of
-     * VectorType.
      */
     explicit AdditionalData(
       const bool   exact_residual = true,
@@ -152,16 +154,19 @@ public:
     {}
     /**
      * Flag for exact computation of residual.
+     *
      */
     bool exact_residual;
     /**
      * Breakdown threshold.
+     *
      */
     double breakdown;
   };
 
   /**
    * Constructor.
+   *
    */
   SolverBicgstab(SolverControl &           cn,
                  VectorMemory<VectorType> &mem,
@@ -170,17 +175,20 @@ public:
   /**
    * Constructor. Use an object of type GrowingVectorMemory as a default to
    * allocate memory.
+   *
    */
   SolverBicgstab(SolverControl &       cn,
                  const AdditionalData &data = AdditionalData());
 
   /**
    * Virtual destructor.
+   *
    */
   virtual ~SolverBicgstab() override = default;
 
   /**
    * Solve primal problem only.
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -192,51 +200,61 @@ public:
 protected:
   /**
    * A pointer to the solution vector passed to solve().
+   *
    */
   VectorType *Vx;
 
   /**
    * Auxiliary vector.
+   *
    */
   typename VectorMemory<VectorType>::Pointer Vr;
 
   /**
    * Auxiliary vector.
+   *
    */
   typename VectorMemory<VectorType>::Pointer Vrbar;
 
   /**
    * Auxiliary vector.
+   *
    */
   typename VectorMemory<VectorType>::Pointer Vp;
 
   /**
    * Auxiliary vector.
+   *
    */
   typename VectorMemory<VectorType>::Pointer Vy;
 
   /**
    * Auxiliary vector.
+   *
    */
   typename VectorMemory<VectorType>::Pointer Vz;
 
   /**
    * Auxiliary vector.
+   *
    */
   typename VectorMemory<VectorType>::Pointer Vt;
 
   /**
    * Auxiliary vector.
+   *
    */
   typename VectorMemory<VectorType>::Pointer Vv;
 
   /**
    * A pointer to the right hand side vector passed to solve().
+   *
    */
   const VectorType *Vb;
 
   /**
    * Computation of the stopping criterion.
+   *
    */
   template <typename MatrixType>
   double
@@ -246,6 +264,7 @@ protected:
    * Interface for derived class.  This function gets the current iteration
    * vector, the residual and the update vector in each step. It can be used
    * for graphical output of the convergence history.
+   *
    */
   virtual void
   print_vectors(const unsigned int step,
@@ -255,6 +274,7 @@ protected:
 
   /**
    * Additional parameters.
+   *
    */
   AdditionalData additional_data;
 
@@ -262,6 +282,7 @@ private:
   /**
    * A structure returned by the iterate() function representing what it found
    * is happening during the iteration.
+   *
    */
   struct IterationResult
   {
@@ -279,14 +300,15 @@ private:
   /**
    * The iteration loop itself. The function returns a structure indicating
    * what happened in this function.
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   IterationResult
   iterate(const MatrixType &A, const PreconditionerType &preconditioner);
 };
 
-/*@}*/
-/*-------------------------Inline functions -------------------------------*/
+ /*@}*/ 
+ /*-------------------------Inline functions -------------------------------*/ 
 
 #ifndef DOXYGEN
 

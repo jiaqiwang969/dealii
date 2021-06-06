@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2021 by the deal.II authors
 //
@@ -98,14 +98,14 @@ namespace internal
    * functions 'values', 'gradients' in the individual coordinate
    * directions. The apply functions for values are provided through one of
    * the template classes EvaluatorTensorProduct which in turn are selected
-   * from the MatrixFreeFunctions::ElementType template argument.
-   *
+   * from the   MatrixFreeFunctions::ElementType   template argument.
    * There are two specialized implementation classes
    * FEEvaluationImplCollocation (for Gauss-Lobatto elements where the nodal
    * points and the quadrature points coincide and the 'values' operation is
    * identity) and FEEvaluationImplTransformToCollocation (which can be
    * transformed to a collocation space and can then use the identity in these
    * spaces), which both allow for shorter code.
+   *
    */
   template <MatrixFreeFunctions::ElementType type,
             int                              dim,
@@ -138,8 +138,9 @@ namespace internal
 
 
   /**
-   * Specialization for MatrixFreeFunctions::tensor_none, which cannot use the
-   * sum-factorization kernels.
+   * Specialization for   MatrixFreeFunctions::tensor_none,   which cannot use
+   * the   sum-factorization kernels.
+   *
    */
   template <int dim, int fe_degree, int n_q_points_1d, typename Number>
   struct FEEvaluationImpl<MatrixFreeFunctions::tensor_none,
@@ -835,10 +836,10 @@ namespace internal
    * This struct implements the change between two different bases. This is an
    * ingredient in the FEEvaluationImplTransformToCollocation class where we
    * first transform to the appropriate basis where we can compute the
-   * derivative through collocation techniques.
+   * derivative through collocation techniques.     This class allows for
+   * dimension-independent application of the operation,   implemented by
+   * template recursion. It has been tested up to 6D.
    *
-   * This class allows for dimension-independent application of the operation,
-   * implemented by template recursion. It has been tested up to 6D.
    */
   template <EvaluatorVariant  variant,
             EvaluatorQuantity quantity,
@@ -855,24 +856,23 @@ namespace internal
     /**
      * This applies the transformation that contracts over the rows of the
      * coefficient array, generating values along the columns of the
-     * coefficient array.
+     * coefficient array.           @param   n_components The number of vector
+     * components.       @param   transformation_matrix The coefficient matrix
+     * handed in as a                         vector, using   @p basis_size_1
+     * rows and   @p basis_size_2                           columns if
+     * interpreted as a matrix.       @param   values_in    The array of the
+     * input of size basis_size_1^dim. It                         may alias
+     * with values_out       @param   values_out   The array of size
+     * basis_size_2^dim where the results                         of the
+     * transformation are stored. It may alias with
+     * the values_in array.       @param   basis_size_1_variable In case the
+     * template argument basis_size_1     is zero, the size of the first basis
+     * can alternatively be passed in as a     run time argument. The template
+     * argument takes precedence in case it is     nonzero for efficiency
+     * reasons.       @param   basis_size_2_variable In case the template
+     * argument basis_size_1     is zero, the size of the second basis can
+     * alternatively be passed in as a     run time argument.
      *
-     * @param n_components The number of vector components.
-     * @param transformation_matrix The coefficient matrix handed in as a
-     *                     vector, using @p basis_size_1 rows and @p basis_size_2
-     *                     columns if interpreted as a matrix.
-     * @param values_in    The array of the input of size basis_size_1^dim. It
-     *                     may alias with values_out
-     * @param values_out   The array of size basis_size_2^dim where the results
-     *                     of the transformation are stored. It may alias with
-     *                     the values_in array.
-     * @param basis_size_1_variable In case the template argument basis_size_1
-     * is zero, the size of the first basis can alternatively be passed in as a
-     * run time argument. The template argument takes precedence in case it is
-     * nonzero for efficiency reasons.
-     * @param basis_size_2_variable In case the template argument basis_size_1
-     * is zero, the size of the second basis can alternatively be passed in as a
-     * run time argument.
      */
 #ifndef DEBUG
     DEAL_II_ALWAYS_INLINE
@@ -971,32 +971,30 @@ namespace internal
     /**
      * This applies the transformation that contracts over the columns of the
      * coefficient array, generating values along the rows of the coefficient
-     * array.
+     * array.           @param   n_components The number of vector components.
+     * @param   transformation_matrix The coefficient matrix handed in as a
+     * vector, using   @p basis_size_1   rows and   @p basis_size_2
+     * columns if interpreted as a matrix.       @param   add_into_result
+     * Define whether the result should be added into the
+     * array   @p values_out   (if true) or overwrite the
+     * previous content. The result is undefined in case
+     * values_in and values_out point to the same array and
+     * @p add_into_result   is true, in which case an
+     * exception is thrown.       @param   values_in    The array of the input
+     * of size basis_size_2^dim. It                         may alias with
+     * values_out. Note that the previous                         content of
+     * @p values_in   is overwritten within the
+     * function.       @param   values_out   The array of size
+     * basis_size_1^dim where the results                         of the
+     * transformation are stored. It may alias with
+     * the   @p values_in   array.       @param   basis_size_1_variable In
+     * case the template argument basis_size_1     is zero, the size of the
+     * first basis can alternatively be passed in as a     run time argument.
+     * The template argument takes precedence in case it is     nonzero for
+     * efficiency reasons.       @param   basis_size_2_variable In case the
+     * template argument basis_size_1     is zero, the size of the second
+     * basis can alternatively be passed in as a     run time argument.
      *
-     * @param n_components The number of vector components.
-     * @param transformation_matrix The coefficient matrix handed in as a
-     *                     vector, using @p basis_size_1 rows and @p basis_size_2
-     *                     columns if interpreted as a matrix.
-     * @param add_into_result Define whether the result should be added into the
-     *                     array @p values_out (if true) or overwrite the
-     *                     previous content. The result is undefined in case
-     *                     values_in and values_out point to the same array and
-     *                     @p add_into_result is true, in which case an
-     *                     exception is thrown.
-     * @param values_in    The array of the input of size basis_size_2^dim. It
-     *                     may alias with values_out. Note that the previous
-     *                     content of @p values_in is overwritten within the
-     *                     function.
-     * @param values_out   The array of size basis_size_1^dim where the results
-     *                     of the transformation are stored. It may alias with
-     *                     the @p values_in array.
-     * @param basis_size_1_variable In case the template argument basis_size_1
-     * is zero, the size of the first basis can alternatively be passed in as a
-     * run time argument. The template argument takes precedence in case it is
-     * nonzero for efficiency reasons.
-     * @param basis_size_2_variable In case the template argument basis_size_1
-     * is zero, the size of the second basis can alternatively be passed in as a
-     * run time argument.
      */
 #ifndef DEBUG
     DEAL_II_ALWAYS_INLINE
@@ -1134,22 +1132,22 @@ namespace internal
     /**
      * This operation applies a mass-matrix-like operation, consisting of a
      * do_forward() operation, multiplication by the coefficients in the
-     * quadrature points, and the do_backward() operation.
+     * quadrature points, and the do_backward() operation.           @param
+     * n_components The number of vector components.       @param
+     * transformation_matrix The coefficient matrix handed in as a
+     * vector, using   @p basis_size_1   rows and   @p basis_size_2
+     * columns if interpreted as a matrix.       @param   coefficients The
+     * array of coefficients by which the result is
+     * multiplied. Its length must be either
+     * basis_size_2^dim or n_components*basis_size_2^dim.       @param
+     * values_in    The array of the input of size basis_size_2^dim. It
+     * may alias with values_out.       @param   scratch_data Array to hold
+     * temporary data during the operation.                         Must be of
+     * length basis_size_2^dim.       @param   values_out   The array of size
+     * basis_size_1^dim where the results                         of the
+     * transformation are stored. It may alias with
+     * the values_in array.
      *
-     * @param n_components The number of vector components.
-     * @param transformation_matrix The coefficient matrix handed in as a
-     *                     vector, using @p basis_size_1 rows and @p basis_size_2
-     *                     columns if interpreted as a matrix.
-     * @param coefficients The array of coefficients by which the result is
-     *                     multiplied. Its length must be either
-     *                     basis_size_2^dim or n_components*basis_size_2^dim.
-     * @param values_in    The array of the input of size basis_size_2^dim. It
-     *                     may alias with values_out.
-     * @param scratch_data Array to hold temporary data during the operation.
-     *                     Must be of length basis_size_2^dim.
-     * @param values_out   The array of size basis_size_1^dim where the results
-     *                     of the transformation are stored. It may alias with
-     *                     the values_in array.
      */
     static void
     do_mass(const unsigned int            n_components,
@@ -1238,10 +1236,10 @@ namespace internal
    * FE_Q shape functions on Gauss-Lobatto elements integrated with
    * Gauss-Lobatto quadrature. The assumption of this class is that the shape
    * 'values' operation is identity, which allows us to write shorter code.
-   *
    * In literature, this form of evaluation is often called spectral
    * evaluation, spectral collocation or simply collocation, meaning the same
    * location for shape functions and evaluation space (quadrature points).
+   *
    */
   template <int dim, int fe_degree, typename Number>
   struct FEEvaluationImplCollocation
@@ -1419,6 +1417,7 @@ namespace internal
    * in the quadrature points (i.e., the collocation space) and then perform
    * the evaluation of the first and second derivatives in this transformed
    * space, using the identity operation for the shape values.
+   *
    */
   template <int dim, int fe_degree, int n_q_points_1d, typename Number>
   struct FEEvaluationImplTransformToCollocation
@@ -1542,7 +1541,7 @@ namespace internal
                       nullptr,
                       gradients_quad,
                       nullptr,
-                      /*add_into_values_array=*/integration_flag &
+                       /*add_into_values_array=*/ integration_flag &
                         EvaluationFlags::values);
 
         // transform back to the original space
@@ -1569,17 +1568,18 @@ namespace internal
   /**
    * This class chooses an appropriate evaluation strategy based on the
    * template parameters and the shape_info variable which contains runtime
-   * parameters for the strategy underlying FEEvaluation::evaluate(), i.e.
-   * this calls internal::FEEvaluationImpl::evaluate(),
-   * internal::FEEvaluationImplCollocation::evaluate() or
-   * internal::FEEvaluationImplTransformToCollocation::evaluate() with
+   * parameters for the strategy underlying   FEEvaluation::evaluate(),   i.e.
+   * this calls   internal::FEEvaluationImpl::evaluate(),
+   * internal::FEEvaluationImplCollocation::evaluate()   or
+   * internal::FEEvaluationImplTransformToCollocation::evaluate()   with
    * appropriate template parameters. In case the template parameters
    * fe_degree and n_q_points_1d contain valid information (i.e. fe_degree>-1
    * and n_q_points_1d>0), we simply pass these values to the respective
    * template specializations.  Otherwise, we perform a runtime matching of
    * the runtime parameters to find the correct specialization. This matching
-   * currently supports $0\leq fe\_degree \leq 9$ and $degree+1\leq
-   * n\_q\_points\_1d\leq fe\_degree+2$.
+   * currently supports   $0\leq fe\_degree \leq 9$   and   $degree+1\leq
+   * n\_q\_points\_1d\leq fe\_degree+2$  .
+   *
    */
   template <int dim, typename Number>
   struct FEEvaluationImplEvaluateSelector
@@ -1731,17 +1731,18 @@ namespace internal
   /**
    * This class chooses an appropriate evaluation strategy based on the
    * template parameters and the shape_info variable which contains runtime
-   * parameters for the strategy underlying FEEvaluation::integrate(), i.e.
-   * this calls internal::FEEvaluationImpl::integrate(),
-   * internal::FEEvaluationImplCollocation::integrate() or
-   * internal::FEEvaluationImplTransformToCollocation::integrate() with
+   * parameters for the strategy underlying   FEEvaluation::integrate(),
+   * i.e.   this calls   internal::FEEvaluationImpl::integrate(),
+   * internal::FEEvaluationImplCollocation::integrate()   or
+   * internal::FEEvaluationImplTransformToCollocation::integrate()   with
    * appropriate template parameters. In case the template parameters
    * fe_degree and n_q_points_1d contain valid information (i.e. fe_degree>-1
    * and n_q_points_1d>0), we simply pass these values to the respective
    * template specializations.  Otherwise, we perform a runtime matching of
    * the runtime parameters to find the correct specialization. This matching
-   * currently supports $0\leq fe\_degree \leq 9$ and $degree+1\leq
-   * n\_q\_points\_1d\leq fe\_degree+2$.
+   * currently supports   $0\leq fe\_degree \leq 9$   and   $degree+1\leq
+   * n\_q\_points\_1d\leq fe\_degree+2$  .
+   *
    */
   template <int dim, typename Number>
   struct FEEvaluationImplIntegrateSelector
@@ -2277,6 +2278,7 @@ namespace internal
 
     /**
      * Interpolate the values on the cell quadrature points onto a face.
+     *
      */
     template <bool do_evaluate, bool add_into_output>
     static void
@@ -2931,7 +2933,7 @@ namespace internal
           .shape_data_on_face[0][fe_degree + (integrate ?
                                                 (2 - (face_nos[0] % 2)) :
                                                 (1 + (face_nos[0] % 2)))] :
-        VectorizedArrayType(0.0 /*dummy*/);
+        VectorizedArrayType(0.0  /*dummy*/ );
 
     constexpr unsigned int static_dofs_per_component =
       fe_degree > -1 ? Utilities::pow(fe_degree + 1, dim) :
@@ -3236,7 +3238,7 @@ namespace internal
                                    ++v)
                                 ind1[v] =
                                   indices[v] +
-                                  index_array_hermite[0 /*TODO*/][2 * i] *
+                                  index_array_hermite[0  /*TODO*/ ][2 * i] *
                                     strides[v];
                               unsigned int ind2[VectorizedArrayType::size()];
                               DEAL_II_OPENMP_SIMD_PRAGMA
@@ -3245,7 +3247,7 @@ namespace internal
                                    ++v)
                                 ind2[v] =
                                   indices[v] +
-                                  index_array_hermite[0 /*TODO*/][2 * i + 1] *
+                                  index_array_hermite[0  /*TODO*/ ][2 * i + 1] *
                                     strides[v];
                               proc.hermite_grad_vectorized_indexed(
                                 temp1[i_],
@@ -3779,7 +3781,7 @@ namespace internal
                                fe_degree,
                                n_q_points_1d,
                                VectorizedArrayType>::
-            evaluate_in_face(/* n_components */ 1,
+            evaluate_in_face( /* n_components */  1,
                              data,
                              temp1,
                              values_quad + comp * n_q_points,
@@ -3794,7 +3796,7 @@ namespace internal
                                fe_degree,
                                n_q_points_1d,
                                VectorizedArrayType>::
-            evaluate_in_face(/* n_components */ 1,
+            evaluate_in_face( /* n_components */  1,
                              data,
                              temp1,
                              values_quad + comp * n_q_points,
@@ -4049,7 +4051,7 @@ namespace internal
 
         FEFaceNormalEvaluationImpl<dim, fe_degree, VectorizedArrayType>::
           template interpolate<false, false>(
-            /* n_components */ 1,
+             /* n_components */  1,
             data,
             temp1,
             values_array + comp * data.dofs_per_component_on_cell,
@@ -4077,7 +4079,7 @@ namespace internal
                                          fe_degree,
                                          n_q_points_1d,
                                          VectorizedArrayType>::
-            integrate_in_face(/* n_components */ 1,
+            integrate_in_face( /* n_components */  1,
                               data,
                               temp1,
                               values_quad + comp * n_q_points,
@@ -4092,7 +4094,7 @@ namespace internal
                                          fe_degree,
                                          n_q_points_1d,
                                          VectorizedArrayType>::
-            integrate_in_face(/* n_components */ 1,
+            integrate_in_face( /* n_components */  1,
                               data,
                               temp1,
                               values_quad + comp * n_q_points,
@@ -4134,6 +4136,7 @@ namespace internal
   /**
    * This struct implements the action of the inverse mass matrix operation
    * using an FEEvaluationBaseData argument.
+   *
    */
   template <int dim, typename Number>
   struct CellwiseInverseMassMatrixImplBasic
@@ -4258,6 +4261,7 @@ namespace internal
   /**
    * This struct implements the action of the inverse mass matrix operation
    * using an FEEvaluationBaseData argument.
+   *
    */
   template <int dim, typename Number>
   struct CellwiseInverseMassMatrixImplFlexible
@@ -4323,7 +4327,10 @@ namespace internal
     }
 
     /**
-     * Version for degree = -1
+     * Version for degree =
+     *
+     * -
+     *
      */
     template <int fe_degree, int = 0>
     static bool
@@ -4345,6 +4352,7 @@ namespace internal
   /**
    * This struct implements the action of the inverse mass matrix operation
    * using an FEEvaluationBaseData argument.
+   *
    */
   template <int dim, typename Number>
   struct CellwiseInverseMassMatrixImplTransformFromQPoints

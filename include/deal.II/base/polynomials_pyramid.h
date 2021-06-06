@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -27,11 +27,15 @@ DEAL_II_NAMESPACE_OPEN
  * A namespace for functions and classes that provide support for simplex
  * reference cell entities, i.e., triangles and tetrahedrons.
  *
- *  @ingroup simplex
+ * @ingroup simplex
+ *
+ *
  */
 /**
  * Polynomials defined on pyramid entities. This class is basis of
  * FE_PyramidP.
+ *
+ *
  */
 template <int dim>
 class ScalarLagrangePolynomialPyramid : public ScalarPolynomialsBase<dim>
@@ -39,20 +43,20 @@ class ScalarLagrangePolynomialPyramid : public ScalarPolynomialsBase<dim>
 public:
   /**
    * Make the dimension available to the outside.
+   *
    */
   static const unsigned int dimension = dim;
 
-  /*
-   * Constructor taking the polynomial @p degree as input.
-   *
-   * @note Currently, only linear polynomials (degree=1) are implemented.
-   */
+  /*   Constructor taking the polynomial   @p degree   as input.    
+*   @note   Currently, only linear polynomials (degree=1) are implemented.  
+* */
   ScalarLagrangePolynomialPyramid(const unsigned int degree);
 
   /**
-   * @copydoc ScalarPolynomialsBase::evaluate()
+   * @copydoc     ScalarPolynomialsBase::evaluate()
+   * @note   Currently, only the vectors   @p values   and   @p grads   are
+   * filled.
    *
-   * @note Currently, only the vectors @p values and @p grads are filled.
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -66,9 +70,9 @@ public:
   compute_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_derivative()
+   * @note   Currently, only implemented for first derivative.
    *
-   * @note Currently, only implemented for first derivative.
    */
   template <int order>
   Tensor<order, dim>
@@ -83,35 +87,35 @@ public:
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_3rd_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_3rd_derivative()
+   * @note   Not implemented yet.
    *
-   * @note Not implemented yet.
    */
   Tensor<3, dim>
   compute_3rd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_4th_derivative()
+   * @copydoc     ScalarPolynomialsBase::compute_4th_derivative()
+   * @note   Not implemented yet.
    *
-   * @note Not implemented yet.
    */
   Tensor<4, dim>
   compute_4th_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_grad()
+   * @copydoc     ScalarPolynomialsBase::compute_grad()
+   * @note   Not implemented yet.
    *
-   * @note Not implemented yet.
    */
   Tensor<1, dim>
   compute_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_grad_grad()
+   * @copydoc     ScalarPolynomialsBase::compute_grad_grad()
+   * @note   Not implemented yet.
    *
-   * @note Not implemented yet.
    */
   Tensor<2, dim>
   compute_grad_grad(const unsigned int i, const Point<dim> &p) const override;

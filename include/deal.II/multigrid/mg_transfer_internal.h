@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
 //
@@ -35,11 +35,10 @@ namespace internal
   {
     /**
      * Internal function for filling the copy indices from global to level
-     * indices
+     * indices         If   @p skip_interface_dofs   is false, the mapping
+     * will also contain     DoFs at the interface between levels. This is
+     * desirable when     transferring solution vectors instead of residuals.
      *
-     * If @p skip_interface_dofs is false, the mapping will also contain
-     * DoFs at the interface between levels. This is desirable when
-     * transferring solution vectors instead of residuals.
      */
     template <int dim, int spacedim>
     void
@@ -63,6 +62,7 @@ namespace internal
      * Given the collection of child cells in lexicographic ordering as seen
      * from the parent, this function computes the first index of the given
      * child
+     *
      */
     template <int dim>
     unsigned int
@@ -74,6 +74,7 @@ namespace internal
      * A structure that stores data related to the finite element contained in
      * the DoFHandler. Used only for the initialization using
      * <tt>setup_transfer</tt>.
+     *
      */
     template <typename Number>
     struct ElementInfo
@@ -81,24 +82,28 @@ namespace internal
       /**
        * A variable storing the degree of the finite element. The selection of
        * the computational kernel is based on this number.
+       *
        */
       unsigned int fe_degree;
 
       /**
        * A variable storing whether the element is continuous and there is a
        * joint degree of freedom in the center of the 1D line.
+       *
        */
       bool element_is_continuous;
 
       /**
        * A variable storing the number of components in the finite element.
+       *
        */
       unsigned int n_components;
 
       /**
-       * A variable storing the number of degrees of freedom on all child cells.
-       * It is <tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt> for DG elements and
-       * somewhat less for continuous elements.
+       * A variable storing the number of degrees of freedom on all child
+       * cells.       It is <tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt> for
+       * DG elements and       somewhat less for continuous elements.
+       *
        */
       unsigned int n_child_cell_dofs;
 
@@ -106,18 +111,21 @@ namespace internal
        * An array that holds the numbering between the numbering of degrees of
        * freedom in the finite element and the lexicographic numbering needed
        * for the tensor product application.
+       *
        */
       std::vector<unsigned int> lexicographic_numbering;
 
       /**
-       * This variable holds the one-dimensional embedding (prolongation) matrix
-       * from mother element to all the children.
+       * This variable holds the one-dimensional embedding (prolongation)
+       * matrix       from mother element to all the children.
+       *
        */
       std::vector<Number> prolongation_matrix_1d;
     };
 
     /**
      * Set up most of the internal data structures of MGTransferMatrixFree
+     *
      */
     template <int dim, typename Number>
     void

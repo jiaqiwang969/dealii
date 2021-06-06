@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -120,55 +120,47 @@ dseupd_(int *         rvec,
 /**
  * Interface for using ARPACK. ARPACK is a collection of Fortran77 subroutines
  * designed to solve large scale eigenvalue problems.  Here we interface to
- * the routines <code>dnaupd</code> and <code>dneupd</code> of ARPACK.
- * If the operator is specified to be symmetric we use the symmetric interface
- * <code>dsaupd</code> and <code>dseupd</code> of ARPACK instead.  The
+ * the routines   <code>dnaupd</code> and <code>dneupd</code>   of ARPACK. If
+ * the operator is specified to be symmetric we use the symmetric interface
+ * <code>dsaupd</code> and <code>dseupd</code>   of ARPACK instead.  The
  * package is designed to compute a few eigenvalues and corresponding
  * eigenvectors of a general n by n matrix A. It is most appropriate for large
- * sparse matrices A.
+ * sparse matrices A. In this class we make use of the method applied to the
+ * generalized eigenspectrum problem   $(A-\lambda B)x=0$  , for   $x\neq0$  ;
+ * where   $A$   is a system matrix,   $B$   is a mass matrix, and   $\lambda,
+ * x$   are a set of eigenvalues and eigenvectors respectively. The
+ * ArpackSolver can be used in application codes with serial objects in the
+ * following way:
  *
- * In this class we make use of the method applied to the generalized
- * eigenspectrum problem $(A-\lambda B)x=0$, for $x\neq0$; where $A$ is a
- * system matrix, $B$ is a mass matrix, and $\lambda, x$ are a set of
- * eigenvalues and eigenvectors respectively.
- *
- * The ArpackSolver can be used in application codes with serial objects in
- * the following way:
  * @code
  * SolverControl solver_control(1000, 1e-9);
  * ArpackSolver solver(solver_control);
  * solver.solve(A, B, OP, lambda, x, size_of_spectrum);
  * @endcode
- * for the generalized eigenvalue problem $Ax=B\lambda x$, where the variable
- * <code>size_of_spectrum</code> tells ARPACK the number of
- * eigenvector/eigenvalue pairs to solve for. Here, <code>lambda</code> is a
- * vector that will contain the eigenvalues computed, <code>x</code> a vector
- * that will contain the eigenvectors computed, and <code>OP</code> is an
- * inverse operation for the matrix <code>A</code>. Shift and invert
- * transformation around zero is applied.
+ * for the generalized eigenvalue problem   $Ax=B\lambda x$  , where the
+ * variable   <code>size_of_spectrum</code>   tells ARPACK the number of
+ * eigenvector/eigenvalue pairs to solve for. Here,   <code>lambda</code>   is
+ * a vector that will contain the eigenvalues computed,   <code>x</code>   a
+ * vector that will contain the eigenvectors computed, and   <code>OP</code>
+ * is an inverse operation for the matrix   <code>A</code>  . Shift and invert
+ * transformation around zero is applied. Through the AdditionalData the user
+ * can specify some of the parameters to be set. For further information on
+ * how the ARPACK routines   <code>dsaupd</code>  ,   <code>dseupd</code>,
+ * <code>dnaupd</code> and <code>dneupd</code>   work and also how to set the
+ * parameters appropriately please take a look into the ARPACK manual.
  *
- * Through the AdditionalData the user can specify some of the parameters to
- * be set.
  *
- * For further information on how the ARPACK routines <code>dsaupd</code>,
- * <code>dseupd</code>, <code>dnaupd</code> and <code>dneupd</code> work
- * and also how to set the parameters appropriately
- * please take a look into the ARPACK manual.
- *
- * @note Whenever you eliminate degrees of freedom using AffineConstraints,
- * you generate spurious eigenvalues and eigenvectors. If you make sure
- * that the diagonals of eliminated matrix rows are all equal to one, you
- * get a single additional eigenvalue. But beware that some functions in
- * deal.II set these diagonals to rather arbitrary (from the point of view
- * of eigenvalue problems) values. See also
- * @ref step_36 "step-36"
+ * @note   Whenever you eliminate degrees of freedom using AffineConstraints, you generate spurious eigenvalues and eigenvectors. If you make sure that the diagonals of eliminated matrix rows are all equal to one, you get a single additional eigenvalue. But beware that some functions in deal.II set these diagonals to rather arbitrary (from the point of view of eigenvalue problems) values. See also   @ref step_36   "  step-36  "
  * for an example.
+ *
+ *
  */
 class ArpackSolver : public Subscriptor
 {
 public:
   /**
    * Declare the type for container size.
+   *
    */
   using size_type = types::global_dof_index;
 
@@ -176,39 +168,48 @@ public:
   /**
    * An enum that lists the possible choices for which eigenvalues to compute
    * in the solve() function.
+   *
    */
   enum WhichEigenvalues
   {
     /**
      * The algebraically largest eigenvalues.
+     *
      */
     algebraically_largest,
     /**
      * The algebraically smallest eigenvalues.
+     *
      */
     algebraically_smallest,
     /**
      * The eigenvalue with the largest magnitudes.
+     *
      */
     largest_magnitude,
     /**
      * The eigenvalue with the smallest magnitudes.
+     *
      */
     smallest_magnitude,
     /**
      * The eigenvalues with the largest real parts.
+     *
      */
     largest_real_part,
     /**
      * The eigenvalues with the smallest real parts.
+     *
      */
     smallest_real_part,
     /**
      * The eigenvalues with the largest imaginary parts.
+     *
      */
     largest_imaginary_part,
     /**
      * The eigenvalues with the smallest imaginary parts.
+     *
      */
     smallest_imaginary_part,
     /**
@@ -216,12 +217,14 @@ public:
      * the other half from the low end. If the number of requested
      * eigenvectors is odd, then the extra eigenvector comes from the high end
      * of the spectrum.
+     *
      */
     both_ends
   };
 
   /**
    * Standardized data struct to pipe additional data to the solver.
+   *
    */
   struct AdditionalData
   {
@@ -229,6 +232,7 @@ public:
      * Constructor. By default, set the number of Arnoldi vectors (Lanczos
      * vectors if the problem is symmetric) to 15. Set the solver to find the
      * eigenvalues of largest magnitude for a non-symmetric problem).
+     *
      */
     explicit AdditionalData(
       const unsigned int     number_of_arnoldi_vectors = 15,
@@ -239,95 +243,94 @@ public:
      * Number of Arnoldi/Lanczos vectors. This number should be less than the
      * size of the problem but greater than 2 times the number of eigenvalues
      * (or n_eigenvalues if it is set) plus one.
+     *
      */
     const unsigned int number_of_arnoldi_vectors;
 
     /**
      * Specify the eigenvalues of interest.
+     *
      */
     const WhichEigenvalues eigenvalue_of_interest;
 
     /**
      * Specify if the problem is symmetric or not.
+     *
      */
     const bool symmetric;
   };
 
   /**
    * Access to the object that controls convergence.
+   *
    */
   SolverControl &
   control() const;
 
   /**
    * Constructor.
+   *
    */
   ArpackSolver(SolverControl &       control,
                const AdditionalData &data = AdditionalData());
 
   /**
    * Set initial vector for building Krylov space.
+   *
    */
   template <typename VectorType>
   void
   set_initial_vector(const VectorType &vec);
 
   /**
-   * Set shift @p sigma for shift-and-invert spectral transformation.
-   *
+   * Set shift   @p sigma   for shift-and-invert spectral transformation.
    * If this function is not called, the shift is assumed to be zero.
+   *
    */
   void
   set_shift(const std::complex<double> sigma);
 
   /**
-   * Solve the generalized eigensprectrum problem $A x=\lambda B x$ by calling
-   * the <code>dsaupd</code> and <code>dseupd</code> or
-   * <code>dnaupd</code> and <code>dneupd</code> functions of ARPACK.
-   *
+   * Solve the generalized eigensprectrum problem   $A x=\lambda B x$   by
+   * calling   the   <code>dsaupd</code> and <code>dseupd</code>   or
+   * <code>dnaupd</code> and <code>dneupd</code>   functions of ARPACK.
    * The function returns a vector of eigenvalues of length <i>n</i> and a
-   * vector of eigenvectors of length <i>n</i> in the symmetric case
-   * and of length <i>n+1</i> in the non-symmetric case. In the symmetric case
-   * all eigenvectors are real. In the non-symmetric case complex eigenvalues
+   * vector of eigenvectors of length <i>n</i> in the symmetric case   and of
+   * length <i>n+1</i> in the non-symmetric case. In the symmetric case   all
+   * eigenvectors are real. In the non-symmetric case complex eigenvalues
    * always occur as complex conjugate pairs. Therefore the eigenvector for an
    * eigenvalue with nonzero complex part is stored by putting the real and
    * the imaginary parts in consecutive real-valued vectors. The eigenvector
    * of the complex conjugate eigenvalue does not need to be stored, since it
-   * is just the complex conjugate of the stored eigenvector. Thus, if the last
-   * n-th eigenvalue has a nonzero imaginary part, Arpack needs in total n+1
-   * real-valued vectors to store real and imaginary parts of the eigenvectors.
-   *
-   * @param A The operator for which we want to compute eigenvalues. Actually,
-   * this parameter is entirely unused.
-   *
-   * @param B The inner product of the underlying space, typically the mass
-   * matrix. For constrained problems, it can be a partial mass matrix, like
-   * for instance the velocity mass matrix of a Stokes problem. Only its
-   * function <code>vmult()</code> is used.
-   *
-   * @param inverse This is the possibly shifted inverse that is actually used
-   * instead of <code>A</code>. Only its function <code>vmult()</code> is
-   * used.
-   *
-   * @param eigenvalues is a vector of complex numbers in which the
-   * eigenvalues are returned.
-   *
-   * @param eigenvectors is a <b>real</b> vector of eigenvectors, containing
-   * the real parts of all eigenvectors and the imaginary parts of the
-   * eigenvectors corresponding to complex conjugate eigenvalue pairs.
-   * Therefore, its length should be <i>n</i> in the symmetric case and
-   * <i>n+1</i> in the non-symmetric case. In the non-symmetric case the storage
-   * scheme leads for example to the following pattern. Suppose that the first
-   * two eigenvalues are real and the third and fourth are a complex conjugate
-   * pair. Asking for three eigenpairs results in <i>[real(v1),real(v2),
+   * is just the complex conjugate of the stored eigenvector. Thus, if the
+   * last   n-th eigenvalue has a nonzero imaginary part, Arpack needs in
+   * total n+1   real-valued vectors to store real and imaginary parts of the
+   * eigenvectors.       @param   A The operator for which we want to compute
+   * eigenvalues. Actually,   this parameter is entirely unused.       @param
+   * B The inner product of the underlying space, typically the mass   matrix.
+   * For constrained problems, it can be a partial mass matrix, like   for
+   * instance the velocity mass matrix of a Stokes problem. Only its
+   * function   <code>vmult()</code>   is used.       @param   inverse This is
+   * the possibly shifted inverse that is actually used   instead of
+   * <code>A</code>. Only its function <code>vmult()</code>   is   used.
+   * @param   eigenvalues is a vector of complex numbers in which the
+   * eigenvalues are returned.       @param   eigenvectors is a <b>real</b>
+   * vector of eigenvectors, containing   the real parts of all eigenvectors
+   * and the imaginary parts of the   eigenvectors corresponding to complex
+   * conjugate eigenvalue pairs.   Therefore, its length should be <i>n</i> in
+   * the symmetric case and   <i>n+1</i> in the non-symmetric case. In the
+   * non-symmetric case the storage   scheme leads for example to the
+   * following pattern. Suppose that the first   two eigenvalues are real and
+   * the third and fourth are a complex conjugate   pair. Asking for three
+   * eigenpairs results in <i>[real(v1),real(v2),
    * real(v3),imag(v3)]</i>. Note that we get the same pattern if we ask for
-   * four eigenpairs in this example, since the fourth eigenvector is simply the
-   * complex conjugate of the third one.
+   * four eigenpairs in this example, since the fourth eigenvector is simply
+   * the   complex conjugate of the third one.       @param   n_eigenvalues
+   * The purpose of this parameter is not clear, but it   is safe to set it to
+   * the size of   <code>eigenvalues</code>   or greater.   Leave it at its
+   * default zero, which will be reset to the size of
+   * <code>eigenvalues</code>   internally.
    *
-   * @param n_eigenvalues The purpose of this parameter is not clear, but it
-   * is safe to set it to the size of <code>eigenvalues</code> or greater.
-   * Leave it at its default zero, which will be reset to the size of
-   * <code>eigenvalues</code> internally.
    */
   template <typename VectorType,
             typename MatrixType1,
@@ -345,27 +348,32 @@ protected:
   /**
    * Reference to the object that controls convergence of the iterative
    * solver.
+   *
    */
   SolverControl &solver_control;
 
   /**
    * Store a copy of the flags for this particular solver.
+   *
    */
   const AdditionalData additional_data;
 
   /**
    * Store an initial vector
+   *
    */
   bool                initial_vector_provided;
   std::vector<double> resid;
 
   /**
    * Real part of the shift
+   *
    */
   double sigmar;
 
   /**
    * Imaginary part of the shift
+   *
    */
   double sigmai;
 
@@ -373,6 +381,7 @@ protected:
 private:
   /**
    * Exceptions.
+   *
    */
   DeclException2(ArpackExcInvalidNumberofEigenvalues,
                  int,
@@ -535,7 +544,7 @@ template <typename VectorType,
           typename MatrixType2,
           typename INVERSE>
 inline void
-ArpackSolver::solve(const MatrixType1 & /*system_matrix*/,
+ArpackSolver::solve(const MatrixType1 &  /*system_matrix*/ ,
                     const MatrixType2 &                mass_matrix,
                     const INVERSE &                    inverse,
                     std::vector<std::complex<double>> &eigenvalues,

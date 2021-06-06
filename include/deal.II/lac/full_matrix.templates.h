@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
 //
@@ -1545,7 +1545,7 @@ FullMatrix<number>::cholesky(const FullMatrix<number2> &A)
     }
   else
     {
-      /* reinit *this to 0 */
+       /* reinit *this to 0 */ 
       this->reinit(A.m(), A.n());
 
       for (size_type i = 0; i < this->n_cols(); ++i)

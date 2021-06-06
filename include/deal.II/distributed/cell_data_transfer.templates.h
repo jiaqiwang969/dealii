@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -111,7 +111,7 @@ namespace parallel
                  Triangulation<dim, spacedim>::CellStatus status) {
           return this->pack_callback(cell, status);
         },
-        /*returns_variable_size_data=*/transfer_variable_size_data);
+         /*returns_variable_size_data=*/ transfer_variable_size_data);
     }
 
 
@@ -297,10 +297,10 @@ namespace parallel
       // We don't have to pack the whole container if there is just one entry.
       if (input_vectors.size() == 1)
         return Utilities::pack(
-          cell_data[0], /*allow_compression=*/transfer_variable_size_data);
+          cell_data[0],  /*allow_compression=*/ transfer_variable_size_data);
       else
         return Utilities::pack(
-          cell_data, /*allow_compression=*/transfer_variable_size_data);
+          cell_data,  /*allow_compression=*/ transfer_variable_size_data);
     }
 
 
@@ -325,12 +325,12 @@ namespace parallel
         cell_data.push_back(Utilities::unpack<value_type>(
           data_range.begin(),
           data_range.end(),
-          /*allow_compression=*/transfer_variable_size_data));
+           /*allow_compression=*/ transfer_variable_size_data));
       else
         cell_data = Utilities::unpack<std::vector<value_type>>(
           data_range.begin(),
           data_range.end(),
-          /*allow_compression=*/transfer_variable_size_data);
+           /*allow_compression=*/ transfer_variable_size_data);
 
       // Check if sizes match.
       Assert(cell_data.size() == all_out.size(), ExcInternalError());
@@ -375,6 +375,6 @@ namespace parallel
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* DEAL_II_WITH_P4EST */
+#endif  /* DEAL_II_WITH_P4EST */ 
 
-#endif /* dealii_distributed_cell_data_transfer_templates_h */
+#endif  /* dealii_distributed_cell_data_transfer_templates_h */ 

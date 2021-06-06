@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
 //
@@ -39,7 +39,7 @@ namespace internal
 {
   namespace MatrixFreeFunctions
   {
-    /* ------------------------ MappingInfoStorage implementation ---------- */
+     /* ------------------------ MappingInfoStorage implementation ---------- */ 
 
     template <int structdim,
               int spacedim,
@@ -262,7 +262,7 @@ namespace internal
 
 
 
-    /* ------------------------ MappingInfo implementation ----------------- */
+     /* ------------------------ MappingInfo implementation ----------------- */ 
 
     template <int dim, typename Number, typename VectorizedArrayType>
     void
@@ -496,7 +496,7 @@ namespace internal
 
 
 
-    /* ------------------------- initialization of cells ------------------- */
+     /* ------------------------- initialization of cells ------------------- */ 
 
     // Copy a vectorized array of one type to another type
     template <typename VectorizedArrayType1, typename VectorizedArrayType2>
@@ -547,6 +547,7 @@ namespace internal
 
       /**
        * Internal temporary data used for the initialization.
+       *
        */
       template <int dim, typename Number, typename VectorizedArrayType>
       struct LocalData
@@ -654,6 +655,7 @@ namespace internal
 
       /**
        * Helper function called internally during the initialize function.
+       *
        */
       template <int dim, typename VectorizedArrayType>
       void
@@ -1207,6 +1209,7 @@ namespace internal
        * This invokes the FEValues part of the initialization of MappingQ,
        * storing the resulting quadrature points and an initial representation
        * of Jacobians in two arrays.
+       *
        */
       template <int dim>
       void
@@ -1359,6 +1362,7 @@ namespace internal
        * into the tensor product interpolators of the matrix-free framework,
        * using a polynomial expansion of the cell geometry in terms of
        * MappingQ.
+       *
        */
       template <int dim,
                 typename Number,
@@ -1683,7 +1687,7 @@ namespace internal
 
 
 
-    /* ------------------------- initialization of faces ------------------- */
+     /* ------------------------- initialization of faces ------------------- */ 
 
     // Namespace with implementation of extraction of values on face
     // range
@@ -2268,6 +2272,7 @@ namespace internal
        * into the tensor product interpolators of the matrix-free framework,
        * using a polynomial expansion of the cell geometry in terms of
        * MappingQ.
+       *
        */
       template <int dim,
                 typename Number,
@@ -3357,7 +3362,7 @@ namespace internal
 
 
 
-    /* ------------------------------------------------------------------ */
+     /* ------------------------------------------------------------------ */ 
 
     template <typename Number, typename VectorizedArrayType>
     FPArrayComparator<Number, VectorizedArrayType>::FPArrayComparator(

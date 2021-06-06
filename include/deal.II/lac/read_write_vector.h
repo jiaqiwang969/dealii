@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
 //
@@ -92,42 +92,39 @@ namespace LinearAlgebra
 
 namespace LinearAlgebra
 {
-  /*! @addtogroup Vectors
-   *@{
-   */
+  /*!   @addtogroup   Vectors    @{    
+* */
 
   /**
-   * ReadWriteVector is intended to represent vectors in ${\mathbb R}^N$ for
-   * which it stores all or a subset of elements. The latter case in important
-   * in parallel computations, where $N$ may be so large that no processor can
-   * actually all elements of a solution vector, but where this is also not
-   * necessary: one typically only has to store the values of degrees of
-   * freedom that live on cells that are locally owned plus potentially those
-   * degrees of freedom that live on ghost cells.
-   *
-   * This class allows to access individual elements to be read or written.
+   * ReadWriteVector is intended to represent vectors in   ${\mathbb R}^N$
+   * for   which it stores all or a subset of elements. The latter case in
+   * important   in parallel computations, where   $N$   may be so large that
+   * no processor can   actually all elements of a solution vector, but where
+   * this is also not   necessary: one typically only has to store the values
+   * of degrees of   freedom that live on cells that are locally owned plus
+   * potentially those   degrees of freedom that live on ghost cells.     This
+   * class allows to access individual elements to be read or written.
    * However, it does not allow global operations such as taking the norm.
    * ReadWriteVector can be used to read and write elements in vectors derived
-   * from VectorSpaceVector such as TrilinosWrappers::MPI::Vector and
-   * PETScWrappers::MPI::Vector.
+   * from VectorSpaceVector such as   TrilinosWrappers::MPI::Vector   and
+   * PETScWrappers::MPI::Vector.       <h3>Storing elements</h3> Most of the
+   * time, one will simply read from or   write into a vector of the current
+   * class using the global numbers of   these degrees of freedom. This is
+   * done using operator()() or operator[]()   which call global_to_local() to
+   * transform the <i>global</i> index into a   <i>local</i> one. In such
+   * cases, it is clear that one can only access   elements of the vector that
+   * the current object indeed stores.     However, it is also possible to
+   * access elements in the order in which   they are stored by the current
+   * object. In other words, one is not   interested in accessing elements
+   * with their <i>global</i> indices, but   instead using an enumeration that
+   * only takes into account the elements   that are actually stored. This is
+   * facilitated by the local_element()   function. To this end, it is
+   * necessary to know <i>in which order</i> the   current class stores its
+   * element. The elements of all the consecutive   ranges are stored in
+   * ascending order of the first index of each range.   The function
+   * IndexSet::largest_range_starting_index()   can be used to   get the first
+   * index of the largest range.
    *
-   * <h3>Storing elements</h3> Most of the time, one will simply read from or
-   * write into a vector of the current class using the global numbers of
-   * these degrees of freedom. This is done using operator()() or operator[]()
-   * which call global_to_local() to transform the <i>global</i> index into a
-   * <i>local</i> one. In such cases, it is clear that one can only access
-   * elements of the vector that the current object indeed stores.
-   *
-   * However, it is also possible to access elements in the order in which
-   * they are stored by the current object. In other words, one is not
-   * interested in accessing elements with their <i>global</i> indices, but
-   * instead using an enumeration that only takes into account the elements
-   * that are actually stored. This is facilitated by the local_element()
-   * function. To this end, it is necessary to know <i>in which order</i> the
-   * current class stores its element. The elements of all the consecutive
-   * ranges are stored in ascending order of the first index of each range.
-   * The function IndexSet::largest_range_starting_index() can be used to
-   * get the first index of the largest range.
    */
   template <typename Number>
   class ReadWriteVector : public Subscriptor
@@ -137,6 +134,7 @@ namespace LinearAlgebra
      * Declare standard types used in all containers. These types parallel
      * those in the <tt>C++</tt> standard libraries <tt>vector<...></tt>
      * class.
+     *
      */
     using value_type      = Number;
     using pointer         = value_type *;
@@ -149,54 +147,60 @@ namespace LinearAlgebra
     using real_type       = typename numbers::NumberTraits<Number>::real_type;
 
     /**
-     * @name 1: Basic Object-handling
+     * @name   1: Basic Object-handling
+     *
      */
     //@{
     /**
      * Empty constructor.
+     *
      */
     ReadWriteVector();
 
     /**
      * Copy constructor.
+     *
      */
     ReadWriteVector(const ReadWriteVector<Number> &in_vector);
 
     /**
      * Construct a vector given the size, the stored elements have their
      * index in [0,size).
+     *
      */
     explicit ReadWriteVector(const size_type size);
 
     /**
      * Construct a vector whose stored elements indices are given by the
-     * IndexSet @p locally_stored_indices.
+     * IndexSet   @p locally_stored_indices.
+     *
      */
     explicit ReadWriteVector(const IndexSet &locally_stored_indices);
 
     /**
      * Destructor.
+     *
      */
     ~ReadWriteVector() override = default;
 
     /**
-     * Set the global size of the vector to @p size. The stored elements have
-     * their index in [0,size).
-     *
-     * If the flag @p omit_zeroing_entries is set to false, the memory will be
+     * Set the global size of the vector to   @p size.   The stored elements
+     * have     their index in [0,size).         If the flag   @p
+     * omit_zeroing_entries   is set to false, the memory will be
      * initialized with zero, otherwise the memory will be untouched (and the
      * user must make sure to fill it with reasonable data before using it).
+     *
      */
     virtual void
     reinit(const size_type size, const bool omit_zeroing_entries = false);
 
     /**
-     * Uses the same IndexSet as the one of the input vector @p in_vector and
-     * allocates memory for this vector.
-     *
-     * If the flag @p omit_zeroing_entries is set to false, the memory will be
+     * Uses the same IndexSet as the one of the input vector   @p in_vector
+     * and     allocates memory for this vector.         If the flag   @p
+     * omit_zeroing_entries   is set to false, the memory will be
      * initialized with zero, otherwise the memory will be untouched (and the
      * user must make sure to fill it with reasonable data before using it).
+     *
      */
     template <typename Number2>
     void
@@ -204,13 +208,13 @@ namespace LinearAlgebra
            const bool                      omit_zeroing_entries = false);
 
     /**
-     * Initializes the vector. The indices are specified by @p
+     * Initializes the vector. The indices are specified by   @p
+     * locally_stored_indices.         If the flag   @p omit_zeroing_entries
+     * is set to false, the memory will be     initialized with zero,
+     * otherwise the memory will be untouched (and the     user must make sure
+     * to fill it with reasonable data before using it).
      * locally_stored_indices.
      *
-     * If the flag @p omit_zeroing_entries is set to false, the memory will be
-     * initialized with zero, otherwise the memory will be untouched (and the
-     * user must make sure to fill it with reasonable data before using it).
-     * locally_stored_indices.
      */
     virtual void
     reinit(const IndexSet &locally_stored_indices,
@@ -222,13 +226,12 @@ namespace LinearAlgebra
     /**
      * Initialize this ReadWriteVector by supplying access to all locally
      * available entries in the given ghosted or non-ghosted vector.
+     * @note   This function currently copies the values from the argument
+     * into     the ReadWriteVector, so modifications here will not modify
+     * @p trilinos_vec.           This function is mainly written for
+     * backwards-compatibility to get     element access to a ghosted
+     * TrilinosWrappers::MPI::Vector   inside the     library.
      *
-     * @note This function currently copies the values from the argument into
-     * the ReadWriteVector, so modifications here will not modify @p trilinos_vec.
-     *
-     * This function is mainly written for backwards-compatibility to get
-     * element access to a ghosted TrilinosWrappers::MPI::Vector inside the
-     * library.
      */
     void
     reinit(const TrilinosWrappers::MPI::Vector &trilinos_vec);
@@ -236,65 +239,69 @@ namespace LinearAlgebra
 #endif
 
     /**
-     * Apply the functor @p func to each element of the vector. The functor
-     * should look like
+     * Apply the functor   @p func   to each element of the vector. The
+     * functor     should look like
      * @code
      * struct Functor
      * {
-     *   void operator() (Number &value);
+     * void operator() (Number &value);
      * };
      * @endcode
      *
-     * @note This function requires that the header read_write_vector.templates.h
-     * be included.
+     * @note   This function requires that the header
+     * read_write_vector.templates.h     be included.
+     *
      */
     template <typename Functor>
     void
     apply(const Functor &func);
 
     /**
-     * Swap the contents of this vector and the other vector @p v. One could
-     * do this operation with a temporary variable and copying over the data
-     * elements, but this function is significantly more efficient since it
-     * only swaps the pointers to the data of the two vectors and therefore
-     * does not need to allocate temporary storage and move data around.
+     * Swap the contents of this vector and the other vector   @p v.   One
+     * could     do this operation with a temporary variable and copying over
+     * the data     elements, but this function is significantly more
+     * efficient since it     only swaps the pointers to the data of the two
+     * vectors and therefore     does not need to allocate temporary storage
+     * and move data around.         This function is analogous to the   @p
+     * swap   function of all C++     standard containers. Also, there is a
+     * global function     <tt>swap(u,v)</tt> that simply calls
+     * <tt>u.swap(v)</tt>, again in     analogy to standard functions.
      *
-     * This function is analogous to the @p swap function of all C++
-     * standard containers. Also, there is a global function
-     * <tt>swap(u,v)</tt> that simply calls <tt>u.swap(v)</tt>, again in
-     * analogy to standard functions.
      */
     void
     swap(ReadWriteVector<Number> &v);
 
     /**
-     * Copies the data and the IndexSet of the input vector @p in_vector.
+     * Copies the data and the IndexSet of the input vector   @p in_vector.
+     *
      */
     ReadWriteVector<Number> &
     operator=(const ReadWriteVector<Number> &in_vector);
 
     /**
-     * Copies the data and the IndexSet of the input vector @p in_vector.
+     * Copies the data and the IndexSet of the input vector   @p in_vector.
+     *
      */
     template <typename Number2>
     ReadWriteVector<Number> &
     operator=(const ReadWriteVector<Number2> &in_vector);
 
     /**
-     * Sets all elements of the vector to the scalar @p s. This operation is
-     * only allowed if @p s is equal to zero.
+     * Sets all elements of the vector to the scalar   @p s.   This operation
+     * is     only allowed if   @p s   is equal to zero.
+     *
      */
     ReadWriteVector<Number> &
     operator=(const Number s);
 
     /**
      * Imports all the elements present in the vector's IndexSet from the
-     * input vector @p vec. VectorOperation::values @p operation
-     * is used to decide if the elements in @p V should be added to the
+     * input vector   @p vec.     VectorOperation::values     @p operation
+     * is used to decide if the elements in   @p V   should be added to the
      * current vector or replace the current elements.
+     * @note   The parameter   @p communication_pattern   is ignored since we
+     * are       dealing with a serial vector here.
      *
-     * @note The parameter @p communication_pattern is ignored since we are
-     *   dealing with a serial vector here.
      */
     void
     import(const dealii::Vector<Number> &vec,
@@ -304,12 +311,12 @@ namespace LinearAlgebra
 
     /**
      * Imports all the elements present in the vector's IndexSet from the
-     * input vector @p vec. VectorOperation::values @p operation
-     * is used to decide if the elements in @p V should be added to the
+     * input vector   @p vec.     VectorOperation::values     @p operation
+     * is used to decide if the elements in   @p V   should be added to the
      * current vector or replace the current elements.
+     * @note   The parameter   @p communication_pattern   is ignored since we
+     * are       dealing with a serial vector here.
      *
-     * @note The parameter @p communication_pattern is ignored since we are
-     *   dealing with a serial vector here.
      */
     void
     import(const LinearAlgebra::Vector<Number> &vec,
@@ -319,11 +326,12 @@ namespace LinearAlgebra
 
     /**
      * Imports all the elements present in the vector's IndexSet from the
-     * input vector @p vec. VectorOperation::values @p operation
-     * is used to decide if the elements in @p V should be added to the
+     * input vector   @p vec.     VectorOperation::values     @p operation
+     * is used to decide if the elements in   @p V   should be added to the
      * current vector or replace the current elements. The last parameter can
      * be used if the same communication pattern is used multiple times. This
      * can be used to improve performance.
+     *
      */
     template <typename MemorySpace>
     void
@@ -334,12 +342,13 @@ namespace LinearAlgebra
 
 #ifdef DEAL_II_WITH_PETSC
     /**
-     * Imports all the elements present in the vector's IndexSet from the input
-     * vector @p petsc_vec. VectorOperation::values @p operation is used to decide
-     * if the elements in @p V should be added to the current vector or replace
-     * the current elements. The last parameter can be used if the same
-     * communication pattern is used multiple times. This can be used to improve
-     * performance.
+     * Imports all the elements present in the vector's IndexSet from the
+     * input     vector   @p petsc_vec.     VectorOperation::values     @p
+     * operation   is used to decide     if the elements in   @p V   should be
+     * added to the current vector or replace     the current elements. The
+     * last parameter can be used if the same     communication pattern is
+     * used multiple times. This can be used to improve     performance.
+     *
      */
     void
     import(const PETScWrappers::MPI::Vector &petsc_vec,
@@ -350,14 +359,14 @@ namespace LinearAlgebra
 
 #ifdef DEAL_II_WITH_TRILINOS
     /**
-     * Imports all the elements present in the vector's IndexSet from the input
-     * vector @p trilinos_vec. VectorOperation::values @p operation is used to
-     * decide if the elements in @p V should be added to the current vector or
-     * replace the current elements. The last parameter can be used if the same
-     * communication pattern is used multiple times. This can be used to improve
-     * performance.
+     * Imports all the elements present in the vector's IndexSet from the
+     * input     vector   @p trilinos_vec.     VectorOperation::values     @p
+     * operation   is used to     decide if the elements in   @p V   should be
+     * added to the current vector or     replace the current elements. The
+     * last parameter can be used if the same     communication pattern is
+     * used multiple times. This can be used to improve     performance.
+     * @note   The   @p trilinos_vec   is not allowed to have ghost entries.
      *
-     * @note The @p trilinos_vec is not allowed to have ghost entries.
      */
     void
     import(const TrilinosWrappers::MPI::Vector &trilinos_vec,
@@ -368,12 +377,13 @@ namespace LinearAlgebra
 #  ifdef DEAL_II_WITH_MPI
 #    ifdef DEAL_II_TRILINOS_WITH_TPETRA
     /**
-     * Imports all the elements present in the vector's IndexSet from the input
-     * vector @p tpetra_vec. VectorOperation::values @p operation is used to
-     * decide if the elements in @p V should be added to the current vector or
-     * replace the current elements. The last parameter can be used if the same
-     * communication pattern is used multiple times. This can be used to improve
-     * performance.
+     * Imports all the elements present in the vector's IndexSet from the
+     * input     vector   @p tpetra_vec.     VectorOperation::values     @p
+     * operation   is used to     decide if the elements in   @p V   should be
+     * added to the current vector or     replace the current elements. The
+     * last parameter can be used if the same     communication pattern is
+     * used multiple times. This can be used to improve     performance.
+     *
      */
     void
     import(const TpetraWrappers::Vector<Number> &tpetra_vec,
@@ -383,12 +393,13 @@ namespace LinearAlgebra
 #    endif
 
     /**
-     * Imports all the elements present in the vector's IndexSet from the input
-     * vector @p epetra_vec. VectorOperation::values @p operation is used to
-     * decide if the elements in @p V should be added to the current vector or
-     * replace the current elements. The last parameter can be used if the same
-     * communication pattern is used multiple times. This can be used to improve
-     * performance.
+     * Imports all the elements present in the vector's IndexSet from the
+     * input     vector   @p epetra_vec.     VectorOperation::values     @p
+     * operation   is used to     decide if the elements in   @p V   should be
+     * added to the current vector or     replace the current elements. The
+     * last parameter can be used if the same     communication pattern is
+     * used multiple times. This can be used to improve     performance.
+     *
      */
     void
     import(const EpetraWrappers::Vector &epetra_vec,
@@ -401,9 +412,11 @@ namespace LinearAlgebra
 #ifdef DEAL_II_WITH_CUDA
     /**
      * Import all the elements present in the vector's IndexSet from the input
-     * vector @p cuda_vec. VectorOperation::values @p operation is used to
-     * decide if the elements in @p V should be added to the current vector or
-     * replace the current elements. The last parameter is not used.
+     * vector   @p cuda_vec.     VectorOperation::values     @p operation   is
+     * used to     decide if the elements in   @p V   should be added to the
+     * current vector or     replace the current elements. The last parameter
+     * is not used.
+     *
      */
     void
     import(const CUDAWrappers::Vector<Number> &cuda_vec,
@@ -419,6 +432,7 @@ namespace LinearAlgebra
      * this space but may, in fact store only a subset. The number of elements
      * stored is returned by n_elements() and is smaller or equal to the
      * number returned by the current function.
+     *
      */
     size_type
     size() const;
@@ -426,9 +440,9 @@ namespace LinearAlgebra
     /**
      * This function returns the number of elements stored. It is smaller or
      * equal to the dimension of the vector space that is modeled by an object
-     * of this kind. This dimension is return by size().
+     * of this kind. This dimension is return by size().           @deprecated
+     * use locally_owned_size() instead.
      *
-     * @deprecated use locally_owned_size() instead.
      */
     DEAL_II_DEPRECATED
     size_type
@@ -437,20 +451,23 @@ namespace LinearAlgebra
     /**
      * Return the local size of the vector, i.e., the number of indices
      * owned locally.
+     *
      */
     size_type
     locally_owned_size() const;
 
     /**
      * Return the IndexSet that represents the indices of the elements stored.
+     *
      */
     const IndexSet &
     get_stored_elements() const;
 
     /**
-     * Make the @p ReadWriteVector class a bit like the <tt>vector<></tt>
+     * Make the   @p ReadWriteVector   class a bit like the <tt>vector<></tt>
      * class of the C++ standard library by returning iterators to the start
      * and end of the <i>locally stored</i> elements of this vector.
+     *
      */
     iterator
     begin();
@@ -458,6 +475,7 @@ namespace LinearAlgebra
     /**
      * Return constant iterator to the start of the locally stored elements
      * of the vector.
+     *
      */
     const_iterator
     begin() const;
@@ -465,6 +483,7 @@ namespace LinearAlgebra
     /**
      * Return an iterator pointing to the element past the end of the array
      * of locally stored entries.
+     *
      */
     iterator
     end();
@@ -472,6 +491,7 @@ namespace LinearAlgebra
     /**
      * Return a constant iterator pointing to the element past the end of the
      * array of the locally stored entries.
+     *
      */
     const_iterator
     end() const;
@@ -479,58 +499,61 @@ namespace LinearAlgebra
 
 
     /**
-     * @name 2: Data-Access
+     * @name   2: Data-Access
+     *
      */
     //@{
 
     /**
-     * Read access to the data in the position corresponding to @p
-     * global_index. An exception is thrown if @p global_index is not stored
-     * by the current object.
+     * Read access to the data in the position corresponding to   @p
+     * global_index. An exception is thrown if   @p global_index   is not
+     * stored     by the current object.
+     *
      */
     Number
     operator()(const size_type global_index) const;
 
     /**
-     * Read and write access to the data in the position corresponding to @p
-     * global_index. An exception is thrown if @p global_index is not stored
-     * by the current object.
+     * Read and write access to the data in the position corresponding to   @p
+     * global_index. An exception is thrown if   @p global_index   is not
+     * stored     by the current object.
+     *
      */
     Number &
     operator()(const size_type global_index);
 
     /**
-     * Read access to the data in the position corresponding to @p
-     * global_index. An exception is thrown if @p global_index is not stored
-     * by the current object.
+     * Read access to the data in the position corresponding to   @p
+     * global_index. An exception is thrown if   @p global_index   is not
+     * stored     by the current object.         This function does the same
+     * thing as operator().
      *
-     * This function does the same thing as operator().
      */
     Number operator[](const size_type global_index) const;
 
     /**
-     * Read and write access to the data in the position corresponding to @p
-     * global_index. An exception is thrown if @p global_index is not stored
-     * by the current object.
+     * Read and write access to the data in the position corresponding to   @p
+     * global_index. An exception is thrown if   @p global_index   is not
+     * stored     by the current object.         This function does the same
+     * thing as operator().
      *
-     * This function does the same thing as operator().
      */
     Number &operator[](const size_type global_index);
 
     /**
      * Instead of getting individual elements of a vector via operator(),
      * this function allows getting a whole set of elements at once. The
-     * indices of the elements to be read are stated in the first argument, the
-     * corresponding values are returned in the second.
-     *
-     * If the current vector is called @p v, then this function is the equivalent
+     * indices of the elements to be read are stated in the first argument,
+     * the     corresponding values are returned in the second.         If the
+     * current vector is called   @p v,   then this function is the equivalent
      * to the code
      * @code
-     *   for (unsigned int i=0; i<indices.size(); ++i)
-     *     values[i] = v[indices[i]];
+     * for (unsigned int i=0; i<indices.size(); ++i)
+     *   values[i] = v[indices[i]];
      * @endcode
+     * @pre   The sizes of the   @p indices   and   @p values   arrays must be
+     * identical.
      *
-     * @pre The sizes of the @p indices and @p values arrays must be identical.
      */
     template <typename Number2>
     void
@@ -543,26 +566,24 @@ namespace LinearAlgebra
      * contrast to the previous function, this function obtains the
      * indices of the elements by dereferencing all elements of the iterator
      * range provided by the first two arguments, and puts the vector
-     * values into memory locations obtained by dereferencing a range
-     * of iterators starting at the location pointed to by the third
-     * argument.
-     *
-     * If the current vector is called @p v, then this function is the equivalent
-     * to the code
+     * values into memory locations obtained by dereferencing a range     of
+     * iterators starting at the location pointed to by the third
+     * argument.         If the current vector is called   @p v,   then this
+     * function is the equivalent     to the code
      * @code
-     *   ForwardIterator indices_p = indices_begin;
-     *   OutputIterator  values_p  = values_begin;
-     *   while (indices_p != indices_end)
-     *   {
-     *     *values_p = v[*indices_p];
-     *     ++indices_p;
-     *     ++values_p;
-     *   }
+     * ForwardIterator indices_p = indices_begin;
+     * OutputIterator  values_p  = values_begin;
+     * while (indices_p != indices_end)
+     * {
+     *  values_p = v[*indices_p];
+     *   ++indices_p;
+     *   ++values_p;
+     * }
      * @endcode
+     * @pre   It must be possible to write into as many memory locations
+     * starting at   @p values_begin   as there are iterators between
+     * @p indices_begin   and   @p indices_end.
      *
-     * @pre It must be possible to write into as many memory locations
-     *   starting at @p values_begin as there are iterators between
-     *   @p indices_begin and @p indices_end.
      */
     template <typename ForwardIterator, typename OutputIterator>
     void
@@ -571,27 +592,27 @@ namespace LinearAlgebra
                          OutputIterator        values_begin) const;
 
     /**
-     * Read access to the data field specified by @p local_index. When you
+     * Read access to the data field specified by   @p local_index.   When you
      * access elements in the order in which they are stored, it is necessary
      * that you know in which they are stored. In other words, you need to
      * know the map between the global indices of the elements this class
      * stores, and the local indices into the contiguous array of these global
      * elements. For this, see the general documentation of this class.
-     *
      * Performance: Direct array access (fast).
+     *
      */
     Number
     local_element(const size_type local_index) const;
 
     /**
-     * Read and write access to the data field specified by @p local_index.
+     * Read and write access to the data field specified by   @p local_index.
      * When you access elements in the order in which they are stored, it is
      * necessary that you know in which they are stored. In other words, you
      * need to know the map between the global indices of the elements this
      * class stores, and the local indices into the contiguous array of these
      * global elements. For this, see the general documentation of this class.
-     *
      * Performance: Direct array access (fast).
+     *
      */
     Number &
     local_element(const size_type local_index);
@@ -599,13 +620,15 @@ namespace LinearAlgebra
 
 
     /**
-     * @name 3: Modification of vectors
+     * @name   3: Modification of vectors
+     *
      */
     //@{
 
     /**
-     * This function adds a whole set of values stored in @p values to the
-     * vector components specified by @p indices.
+     * This function adds a whole set of values stored in   @p values   to the
+     * vector components specified by   @p indices.
+     *
      */
     template <typename Number2>
     void
@@ -615,6 +638,7 @@ namespace LinearAlgebra
     /**
      * This function is similar to the previous one but takes a
      * ReadWriteVector of values.
+     *
      */
     template <typename Number2>
     void
@@ -625,6 +649,7 @@ namespace LinearAlgebra
      * Take an address where <tt>n_elements</tt> are stored contiguously and
      * add them into the vector. Handles all cases which are not covered by
      * the other two <tt>add()</tt> functions above.
+     *
      */
     template <typename Number2>
     void
@@ -633,7 +658,8 @@ namespace LinearAlgebra
         const Number2 *  values);
 
     /**
-     * Prints the vector to the output stream @p out.
+     * Prints the vector to the output stream   @p out.
+     *
      */
     void
     print(std::ostream &     out,
@@ -642,6 +668,7 @@ namespace LinearAlgebra
 
     /**
      * Return the memory consumption of this class in bytes.
+     *
      */
     std::size_t
     memory_consumption() const;
@@ -652,8 +679,9 @@ namespace LinearAlgebra
 #  ifdef DEAL_II_TRILINOS_WITH_TPETRA
     /**
      * Import all the elements present in the vector's IndexSet from the input
-     * vector @p tpetra_vector. This is an helper function and it should not be
-     * used directly.
+     * vector   @p tpetra_vector.   This is an helper function and it should
+     * not be     used directly.
+     *
      */
     void
     import(
@@ -667,8 +695,9 @@ namespace LinearAlgebra
 
     /**
      * Import all the elements present in the vector's IndexSet from the input
-     * vector @p multivector. This is an helper function and it should not be
-     * used directly.
+     * vector   @p multivector.   This is an helper function and it should not
+     * be     used directly.
+     *
      */
     void
     import(const Epetra_MultiVector &multivector,
@@ -680,7 +709,8 @@ namespace LinearAlgebra
 #endif
 
     /**
-     * Return the local position of @p global_index.
+     * Return the local position of   @p global_index.
+     *
      */
     unsigned int
     global_to_local(const types::global_dof_index global_index) const
@@ -693,6 +723,7 @@ namespace LinearAlgebra
 
     /**
      * A helper function that is used to resize the val array.
+     *
      */
     void
     resize_val(const size_type new_allocated_size);
@@ -700,8 +731,9 @@ namespace LinearAlgebra
 #if defined(DEAL_II_WITH_TRILINOS) && defined(DEAL_II_WITH_MPI)
 #  ifdef DEAL_II_TRILINOS_WITH_TPETRA
     /**
-     * Return a TpetraWrappers::CommunicationPattern and store it for future
-     * use.
+     * Return a   TpetraWrappers::CommunicationPattern   and store it for
+     * future     use.
+     *
      */
     TpetraWrappers::CommunicationPattern
     create_tpetra_comm_pattern(const IndexSet &source_index_set,
@@ -709,8 +741,9 @@ namespace LinearAlgebra
 #  endif
 
     /**
-     * Return a EpetraWrappers::CommunicationPattern and store it for future
-     * use.
+     * Return a   EpetraWrappers::CommunicationPattern   and store it for
+     * future     use.
+     *
      */
     EpetraWrappers::CommunicationPattern
     create_epetra_comm_pattern(const IndexSet &source_index_set,
@@ -719,28 +752,33 @@ namespace LinearAlgebra
 
     /**
      * Indices of the elements stored.
+     *
      */
     IndexSet stored_elements;
 
     /**
      * IndexSet of the elements of the last imported vector;
+     *
      */
     IndexSet source_stored_elements;
 
     /**
      * CommunicationPattern for the communication between the
      * source_stored_elements IndexSet and the current vector.
+     *
      */
     std::shared_ptr<Utilities::MPI::CommunicationPatternBase> comm_pattern;
 
     /**
      * Pointer to the array of local elements of this vector.
+     *
      */
     std::unique_ptr<Number[], decltype(std::free) *> values;
 
     /**
      * For parallel loops with TBB, this member variable stores the affinity
      * information of loops.
+     *
      */
     mutable std::shared_ptr<::dealii::parallel::internal::TBBPartitioner>
       thread_loop_partitioner;
@@ -751,9 +789,10 @@ namespace LinearAlgebra
 
   private:
     /**
-     * This class provides a wrapper around a Functor which acts on
-     * single elements of the vector. This is necessary to use
-     * tbb::parallel_for which requires a TBBForFunctor.
+     * This class provides a wrapper around a Functor which acts on     single
+     * elements of the vector. This is necessary to use
+     * tbb::parallel_for   which requires a TBBForFunctor.
+     *
      */
     template <typename Functor>
     class FunctorTemplate
@@ -761,11 +800,13 @@ namespace LinearAlgebra
     public:
       /**
        * Constructor. Take a functor and store a copy of it.
+       *
        */
       FunctorTemplate(ReadWriteVector<Number> &parent, const Functor &functor);
 
       /**
        * Evaluate the element with the stored copy of the functor.
+       *
        */
       virtual void
       operator()(const size_type begin, const size_type end);
@@ -773,20 +814,22 @@ namespace LinearAlgebra
     private:
       /**
        * Alias to the ReadWriteVector object that owns the FunctorTemplate.
+       *
        */
       ReadWriteVector &parent;
 
       /**
        * Copy of the functor.
+       *
        */
       const Functor &functor;
     };
   };
 
-  /*@}*/
+   /*@}*/ 
 
 
-  /*---------------------------- Inline functions ---------------------------*/
+   /*---------------------------- Inline functions ---------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -1080,11 +1123,12 @@ namespace LinearAlgebra
 
 
 /**
- * Global function @p swap which overloads the default implementation of the
- * C++ standard library which uses a temporary object. The function simply
+ * Global function   @p swap   which overloads the default implementation of
+ * the C++ standard library which uses a temporary object. The function simply
  * exchanges the data of the two vectors.
+ * @relatesalso   Vector
  *
- * @relatesalso Vector
+ *
  */
 template <typename Number>
 inline void

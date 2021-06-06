@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2018 by the deal.II authors
 //
@@ -35,6 +35,7 @@ namespace TrilinosWrappers
    * A helper function that queries the size of an Epetra_BlockMap object
    * and calls either the 32 or 64 bit function to get the number of global
    * elements in the map.
+   *
    */
   inline TrilinosWrappers::types::int_type
   n_global_elements(const Epetra_BlockMap &map)
@@ -49,6 +50,7 @@ namespace TrilinosWrappers
   /**
    * A helper function that finds the minimum global index value on the
    * calling processor by calling either the 32 or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type
   min_my_gid(const Epetra_BlockMap &map)
@@ -63,6 +65,7 @@ namespace TrilinosWrappers
   /**
    * A helper function that finds the maximum global index value on the
    * calling processor by calling either the 32 or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type
   max_my_gid(const Epetra_BlockMap &map)
@@ -77,6 +80,7 @@ namespace TrilinosWrappers
   /**
    * A helper function that converts a local index to a global one calling
    * either the 32 or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type
   global_index(const Epetra_BlockMap &               map,
@@ -93,6 +97,7 @@ namespace TrilinosWrappers
    * A helper function that returns a pointer to the array containing the
    * global indices assigned to the current process by calling either the 32
    * or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type *
   my_global_elements(const Epetra_BlockMap &map)
@@ -107,6 +112,7 @@ namespace TrilinosWrappers
   /**
    * A helper function that finds the global number of rows by calling
    * either the 32 or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type
   n_global_rows(const Epetra_CrsGraph &graph)
@@ -121,6 +127,7 @@ namespace TrilinosWrappers
   /**
    * A helper function that finds the global number of columns by calling
    * either the 32 or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type
   n_global_cols(const Epetra_CrsGraph &graph)
@@ -135,6 +142,7 @@ namespace TrilinosWrappers
   /**
    * A helper function that finds the number of global entries by calling
    * either the 32 or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type
   n_global_entries(const Epetra_CrsGraph &graph)
@@ -147,8 +155,9 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the global row index by calling
-   * either the 32 or 64 bit function.
+   * A helper function that finds the global row index by calling   either the
+   * 32 or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type
   global_row_index(const Epetra_CrsMatrix &              matrix,
@@ -162,8 +171,9 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the global column index by calling
-   * either the 32 or 64 bit function.
+   * A helper function that finds the global column index by calling   either
+   * the 32 or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type
   global_column_index(const Epetra_CrsMatrix &              matrix,
@@ -179,6 +189,7 @@ namespace TrilinosWrappers
   /**
    * A helper function that finds the global length of a vector by calling
    * either the 32 or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type
   global_length(const Epetra_MultiVector &vector)
@@ -193,6 +204,7 @@ namespace TrilinosWrappers
   /**
    * A helper function that finds the global number of rows by calling
    * either the 32 or 64 bit function.
+   *
    */
   inline TrilinosWrappers::types::int_type
   n_global_rows(const Epetra_RowMatrix &matrix)

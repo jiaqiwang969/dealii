@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
 //
@@ -40,9 +40,8 @@ namespace LinearAlgebra
 
 namespace LinearAlgebra
 {
-  /*! @addtogroup Vectors
-   *@{
-   */
+  /*!   @addtogroup   Vectors    @{    
+* */
 
   /**
    * VectorSpaceVector is an abstract class that is used to define the
@@ -50,6 +49,7 @@ namespace LinearAlgebra
    * implement global operations. This class is complementary of
    * ReadWriteVector which allows the access of individual elements but does
    * not allow global operations.
+   *
    */
   template <typename Number>
   class VectorSpaceVector
@@ -62,49 +62,56 @@ namespace LinearAlgebra
     /**
      * Change the dimension to that of the vector V. The elements of V are not
      * copied.
+     *
      */
     virtual void
     reinit(const VectorSpaceVector<Number> &V,
            const bool                       omit_zeroing_entries = false) = 0;
 
     /**
-     * Sets all elements of the vector to the scalar @p s. This operation is
-     * only allowed if @p s is equal to zero.
+     * Sets all elements of the vector to the scalar   @p s.   This operation
+     * is     only allowed if   @p s   is equal to zero.
+     *
      */
     virtual VectorSpaceVector<Number> &
     operator=(const Number s) = 0;
 
     /**
      * Multiply the entire vector by a fixed factor.
+     *
      */
     virtual VectorSpaceVector<Number> &
     operator*=(const Number factor) = 0;
 
     /**
      * Divide the entire vector by a fixed factor.
+     *
      */
     virtual VectorSpaceVector<Number> &
     operator/=(const Number factor) = 0;
 
     /**
-     * Add the vector @p V to the present one.
+     * Add the vector   @p V   to the present one.
+     *
      */
     virtual VectorSpaceVector<Number> &
     operator+=(const VectorSpaceVector<Number> &V) = 0;
 
     /**
-     * Subtract the vector @p V from the present one.
+     * Subtract the vector   @p V   from the present one.
+     *
      */
     virtual VectorSpaceVector<Number> &
     operator-=(const VectorSpaceVector<Number> &V) = 0;
 
     /**
      * Import all the elements present in the vector's IndexSet from the input
-     * vector @p V. VectorOperation::values @p operation is used to decide if
-     * the elements in @p V should be added to the current vector or replace the
-     * current elements. The last parameter can be used if the same
-     * communication pattern is used multiple times. This can be used to improve
-     * performance.
+     * vector   @p V.     VectorOperation::values     @p operation   is used
+     * to decide if     the elements in   @p V   should be added to the
+     * current vector or replace the     current elements. The last parameter
+     * can be used if the same     communication pattern is used multiple
+     * times. This can be used to improve     performance.
+     *
      */
     virtual void
     import(const ReadWriteVector<Number> &V,
@@ -114,23 +121,28 @@ namespace LinearAlgebra
 
     /**
      * Return the scalar product of two vectors.
+     *
      */
     virtual Number operator*(const VectorSpaceVector<Number> &V) const = 0;
 
     /**
-     * Add @p a to all components. Note that @p a is a scalar not a vector.
+     * Add   @p a   to all components. Note that   @p a   is a scalar not a
+     * vector.
+     *
      */
     virtual void
     add(const Number a) = 0;
 
     /**
      * Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.
+     *
      */
     virtual void
     add(const Number a, const VectorSpaceVector<Number> &V) = 0;
 
     /**
      * Multiple addition of scaled vectors, i.e. <tt>*this += a*V+b*W</tt>.
+     *
      */
     virtual void
     add(const Number                     a,
@@ -141,6 +153,7 @@ namespace LinearAlgebra
     /**
      * Scaling and simple addition of a multiple of a vector, i.e. <tt>*this =
      * s*(*this)+a*V</tt>.
+     *
      */
     virtual void
     sadd(const Number                     s,
@@ -151,24 +164,28 @@ namespace LinearAlgebra
      * Scale each element of this vector by the corresponding element in the
      * argument. This function is mostly meant to simulate multiplication (and
      * immediate re-assignment) by a diagonal scaling matrix.
+     *
      */
     virtual void
     scale(const VectorSpaceVector<Number> &scaling_factors) = 0;
 
     /**
      * Assignment <tt>*this = a*V</tt>.
+     *
      */
     virtual void
     equ(const Number a, const VectorSpaceVector<Number> &V) = 0;
 
     /**
      * Return whether the vector contains only elements with value zero.
+     *
      */
     virtual bool
     all_zero() const = 0;
 
     /**
      * Return the mean value of all the entries of this vector.
+     *
      */
     virtual value_type
     mean_value() const = 0;
@@ -176,6 +193,7 @@ namespace LinearAlgebra
     /**
      * Return the l<sub>1</sub> norm of the vector (i.e., the sum of the
      * absolute values of all entries among all processors).
+     *
      */
     virtual real_type
     l1_norm() const = 0;
@@ -183,6 +201,7 @@ namespace LinearAlgebra
     /**
      * Return the l<sub>2</sub> norm of the vector (i.e., the square root of
      * the sum of the square of all entries among all processors).
+     *
      */
     virtual real_type
     l2_norm() const = 0;
@@ -190,6 +209,7 @@ namespace LinearAlgebra
     /**
      * Return the maximum norm of the vector (i.e., the maximum absolute value
      * among all entries and among all processors).
+     *
      */
     virtual real_type
     linfty_norm() const = 0;
@@ -200,19 +220,18 @@ namespace LinearAlgebra
      * words, the result of this function is the same as if the user called
      * @code
      * this->add(a, V);
-     * return_value = *this * W;
+     * return_value =this W;
      * @endcode
-     *
      * The reason this function exists is that this operation involves less
      * memory transfer than calling the two functions separately. This method
-     * only needs to load three vectors, @p this, @p V, @p W, whereas calling
-     * separate methods means to load the calling vector @p this twice. Since
-     * most vector operations are memory transfer limited, this reduces the
-     * time by 25\% (or 50\% if @p W equals @p this).
+     * only needs to load three vectors,   @p this,     @p V,     @p W,
+     * whereas calling     separate methods means to load the calling vector
+     * @p this   twice. Since     most vector operations are memory transfer
+     * limited, this reduces the     time by 25\% (or 50\% if   @p W   equals
+     * @p this).           For complex-valued vectors, the scalar product in
+     * the second step is     implemented as       $\left<v,w\right>=\sum_i
+     * v_i \bar{w_i}$  .
      *
-     * For complex-valued vectors, the scalar product in the second step is
-     * implemented as
-     * $\left<v,w\right>=\sum_i v_i \bar{w_i}$.
      */
     virtual Number
     add_and_dot(const Number                     a,
@@ -221,6 +240,7 @@ namespace LinearAlgebra
 
     /**
      * This function does nothing and only exists for backward compatibility.
+     *
      */
     virtual void compress(VectorOperation::values)
     {}
@@ -228,6 +248,7 @@ namespace LinearAlgebra
     /**
      * Return the global size of the vector, equal to the sum of the number of
      * locally owned indices among all processors.
+     *
      */
     virtual size_type
     size() const = 0;
@@ -240,14 +261,17 @@ namespace LinearAlgebra
      * a vector is created on only one processor, then the result would
      * satisfy
      * @code
-     *  vec.locally_owned_elements() == complete_index_set(vec.size())
+     * vec.locally_owned_elements() == complete_index_set(vec.size())
      * @endcode
+     *
+     *
      */
     virtual dealii::IndexSet
     locally_owned_elements() const = 0;
 
     /**
-     * Print the vector to the output stream @p out.
+     * Print the vector to the output stream   @p out.
+     *
      */
     virtual void
     print(std::ostream &     out,
@@ -257,6 +281,7 @@ namespace LinearAlgebra
 
     /**
      * Return the memory consumption of this class in bytes.
+     *
      */
     virtual std::size_t
     memory_consumption() const = 0;
@@ -264,10 +289,11 @@ namespace LinearAlgebra
     /**
      * Destructor. Declared as virtual so that inheriting classes (which may
      * manage their own memory) are destroyed correctly.
+     *
      */
     virtual ~VectorSpaceVector() = default;
   };
-  /*@}*/
+   /*@}*/ 
 } // namespace LinearAlgebra
 
 // ---------------------------- Free functions --------------------------
@@ -277,6 +303,7 @@ namespace LinearAlgebra
   /**
    * Shift all entries of the vector by a constant factor so that the mean
    * value of the vector becomes zero.
+   *
    */
   template <typename Number>
   void

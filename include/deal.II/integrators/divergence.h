@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -38,8 +38,8 @@ namespace LocalIntegrators
   /**
    * @brief Local integrators related to the divergence operator and its
    * trace.
-   *
    * @ingroup Integrators
+   *
    */
   namespace Divergence
   {
@@ -48,6 +48,7 @@ namespace LocalIntegrators
      * \f[ \int_Z v\nabla \cdot \mathbf u \,dx \f] This is the strong
      * divergence operator and the trial space should be at least
      * <b>H</b><sup>div</sup>. The test functions may be discontinuous.
+     *
      */
     template <int dim>
     void
@@ -83,10 +84,10 @@ namespace LocalIntegrators
      * The residual of the divergence operator in strong form. \f[ \int_Z
      * v\nabla \cdot \mathbf u \,dx \f] This is the strong divergence operator
      * and the trial space should be at least <b>H</b><sup>div</sup>. The test
-     * functions may be discontinuous.
+     * functions may be discontinuous.         The function cell_matrix() is
+     * the Frechet derivative of this function     with respect to the test
+     * functions.
      *
-     * The function cell_matrix() is the Frechet derivative of this function
-     * with respect to the test functions.
      */
     template <int dim, typename number>
     void
@@ -113,13 +114,15 @@ namespace LocalIntegrators
 
 
     /**
-     * The residual of the divergence operator in weak form. \f[ - \int_Z
+     * The residual of the divergence operator in weak form. \f[
+     *
+     * - \int_Z
      * \nabla v \cdot \mathbf u \,dx \f] This is the weak divergence operator
      * and the test space should be at least <b>H</b><sup>1</sup>. The trial
-     * functions may be discontinuous.
+     * functions may be discontinuous.           @todo   Verify: The function
+     * cell_matrix() is the Frechet derivative of     this function with
+     * respect to the test functions.
      *
-     * @todo Verify: The function cell_matrix() is the Frechet derivative of
-     * this function with respect to the test functions.
      */
     template <int dim, typename number>
     void
@@ -147,10 +150,10 @@ namespace LocalIntegrators
 
     /**
      * Cell matrix for gradient. The derivative is on the trial function. \f[
-     * \int_Z \nabla u \cdot \mathbf v\,dx \f]
-     *
-     * This is the strong gradient and the trial space should be at least in
+     * \int_Z \nabla u \cdot \mathbf v\,dx \f]         This is the strong
+     * gradient and the trial space should be at least in
      * <i>H</i><sup>1</sup>. The test functions can be discontinuous.
+     *
      */
     template <int dim>
     void
@@ -187,10 +190,10 @@ namespace LocalIntegrators
      * The residual of the gradient operator in strong form. \f[ \int_Z
      * \mathbf v\cdot\nabla u \,dx \f] This is the strong gradient operator
      * and the trial space should be at least <b>H</b><sup>1</sup>. The test
-     * functions may be discontinuous.
+     * functions may be discontinuous.         The function gradient_matrix()
+     * is the Frechet derivative of this     function with respect to the test
+     * functions.
      *
-     * The function gradient_matrix() is the Frechet derivative of this
-     * function with respect to the test functions.
      */
     template <int dim, typename number>
     void
@@ -217,13 +220,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * The residual of the gradient operator in weak form. \f[ -\int_Z
+     * The residual of the gradient operator in weak form. \f[
+     *
+     * -\int_Z
      * \nabla\cdot \mathbf v u \,dx \f] This is the weak gradient operator and
      * the test space should be at least <b>H</b><sup>div</sup>. The trial
-     * functions may be discontinuous.
+     * functions may be discontinuous.           @todo   Verify: The function
+     * gradient_matrix() is the Frechet derivative     of this function with
+     * respect to the test functions.
      *
-     * @todo Verify: The function gradient_matrix() is the Frechet derivative
-     * of this function with respect to the test functions.
      */
     template <int dim, typename number>
     void
@@ -250,9 +255,8 @@ namespace LocalIntegrators
     }
 
     /**
-     * The trace of the divergence operator, namely the product of the normal
-     * component of the vector valued trial space and the test space.
-     * @f[ \int_F (\mathbf u\cdot \mathbf n) v \,ds @f]
+     * The trace of the divergence operator, namely the product of the normal     component of the vector valued trial space and the test space.     @f[ \int_F (\mathbf u\cdot \mathbf n) v \,ds @f]
+     *
      */
     template <int dim>
     void
@@ -281,11 +285,10 @@ namespace LocalIntegrators
     }
 
     /**
-     * The trace of the divergence operator, namely the product of the normal
-     * component of the vector valued trial space and the test space.
-     * @f[
+     * The trace of the divergence operator, namely the product of the normal     component of the vector valued trial space and the test space.     @f[
      * \int_F (\mathbf u\cdot \mathbf n) v \,ds
      * @f]
+     *
      */
     template <int dim, typename number>
     void
@@ -313,11 +316,10 @@ namespace LocalIntegrators
     }
 
     /**
-     * The trace of the gradient operator, namely the product of the normal
-     * component of the vector valued test space and the trial space.
-     * @f[
+     * The trace of the gradient operator, namely the product of the normal     component of the vector valued test space and the trial space.     @f[
      * \int_F u (\mathbf v\cdot \mathbf n) \,ds
      * @f]
+     *
      */
     template <int dim, typename number>
     void
@@ -345,13 +347,11 @@ namespace LocalIntegrators
     }
 
     /**
-     * The trace of the divergence operator, namely the product of the jump of
-     * the normal component of the vector valued trial function and the mean
-     * value of the test function.
-     * @f[
+     * The trace of the divergence operator, namely the product of the jump of     the normal component of the vector valued trial function and the mean     value of the test function.     @f[
      * \int_F (\mathbf u_1\cdot \mathbf n_1 + \mathbf u_2 \cdot \mathbf n_2)
      * \frac{v_1+v_2}{2} \,ds
      * @f]
+     *
      */
     template <int dim>
     void
@@ -404,13 +404,13 @@ namespace LocalIntegrators
     }
 
     /**
-     * The jump of the normal component
-     * @f[
+     * The jump of the normal component     @f[
      * \int_F
-     *  (\mathbf u_1\cdot \mathbf n_1 + \mathbf u_2 \cdot \mathbf n_2)
-     *  (\mathbf v_1\cdot \mathbf n_1 + \mathbf v_2 \cdot \mathbf n_2)
+     * (\mathbf u_1\cdot \mathbf n_1 + \mathbf u_2 \cdot \mathbf n_2)
+     * (\mathbf v_1\cdot \mathbf n_1 + \mathbf v_2 \cdot \mathbf n_2)
      * \,ds
      * @f]
+     *
      */
     template <int dim>
     void
@@ -461,11 +461,11 @@ namespace LocalIntegrators
 
     /**
      * The <i>L</i><sup>2</sup>-norm of the divergence over the quadrature set
-     * determined by the FEValuesBase object.
+     * determined by the FEValuesBase object.         The vector is expected
+     * to consist of dim vectors of length equal to the     number of
+     * quadrature points. The number of components of the finite     element
+     * has to be equal to the space dimension.
      *
-     * The vector is expected to consist of dim vectors of length equal to the
-     * number of quadrature points. The number of components of the finite
-     * element has to be equal to the space dimension.
      */
     template <int dim>
     double

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
 //
@@ -33,101 +33,87 @@ namespace Utilities
 {
   /**
    * A collection of linear-algebra utilities.
+   *
    */
   namespace LinearAlgebra
   {
     /**
-     * Return the elements of a continuous Givens rotation matrix and
-     * the norm of the input vector.
+     * Return the elements of a continuous Givens rotation matrix and     the
+     * norm of the input vector.         That is for a given     pair   @p x
+     * and   @p y,   return   $c$   ,   $s$   and   $\sqrt{x^2+y^2}$   such
+     * that     \f[ \begin{bmatrix} c  & s \\
      *
-     * That is for a given
-     * pair @p x and @p y, return $c$ , $s$ and $\sqrt{x^2+y^2}$ such that
-     * \f[
-     * \begin{bmatrix}
-     * c  & s \\
-     * -s & c
-     * \end{bmatrix}
-     * \begin{bmatrix}
-     * x \\
-     * y
-     * \end{bmatrix}
-     * =
-     * \begin{bmatrix}
-     * \sqrt{x^2+y^2} \\
-     * 0
-     * \end{bmatrix}
-     * \f]
      *
-     * @note The function is implemented for real valued numbers only.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * -s & c \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} =
+     * \begin{bmatrix} \sqrt{x^2+y^2} \\ 0 \end{bmatrix} \f]
+     * @note   The function is implemented for real valued numbers only.
+     *
      */
     template <typename NumberType>
     std::array<NumberType, 3>
     givens_rotation(const NumberType &x, const NumberType &y);
 
     /**
-     * Return the elements of a hyperbolic rotation matrix.
+     * Return the elements of a hyperbolic rotation matrix.         That is
+     * for a given     pair   @p x   and   @p y,   return   $c$   ,   $s$
+     * and   $r$   such that     \f[ \begin{bmatrix} c  &
      *
-     * That is for a given
-     * pair @p x and @p y, return $c$ , $s$ and $r$ such that
-     * \f[
-     * \begin{bmatrix}
-     * c  & -s \\
-     * -s & c
-     * \end{bmatrix}
-     * \begin{bmatrix}
-     * x \\
-     * y
-     * \end{bmatrix}
-     * =
-     * \begin{bmatrix}
-     * r \\
-     * 0
-     * \end{bmatrix}
-     * \f]
+     * -s \\
      *
-     * Real valued solution only exists if $|x|>|g|$, the function will
-     * throw an error otherwise.
      *
-     * @note The function is implemented for real valued numbers only.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * -s & c \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} =
+     * \begin{bmatrix} r \\ 0 \end{bmatrix} \f]         Real valued solution
+     * only exists if   $|x|>|g|$  , the function will     throw an error
+     * otherwise.
+     * @note   The function is implemented for real valued numbers only.
+     *
      */
     template <typename NumberType>
     std::array<NumberType, 3>
     hyperbolic_rotation(const NumberType &x, const NumberType &y);
 
     /**
-     * Estimate an upper bound for the largest eigenvalue of @p H by a @p k -step
-     * Lanczos process starting from the initial vector @p v0. Typical
-     * values of @p k are below 10. This estimator computes a k-step Lanczos
-     * decomposition $H V_k=V_k T_k+f_k e_k^T$ where $V_k$ contains k Lanczos
-     * basis, $V_k^TV_k=I_k$, $T_k$ is the tridiagonal Lanczos matrix, $f_k$ is
-     * a residual vector $f_k^TV_k=0$, and $e_k$ is the k-th canonical basis of
-     * $R^k$. The returned value is $ ||T_k||_2 + ||f_k||_2$.
-     * If @p eigenvalues is not <code>nullptr</code>, the eigenvalues of $T_k$ will be written there.
+     * Estimate an upper bound for the largest eigenvalue of   @p H   by a
+     * @p k
      *
-     * @p vector_memory is used to allocate memory for temporary vectors.
-     * OperatorType has to provide <code>vmult</code> operation with
-     * VectorType.
-     *
-     * This function implements the algorithm from
+     *  - tep     Lanczos process starting from the initial vector   @p v0.   Typical     values of   @p k   are below 10. This estimator computes a k-step Lanczos     decomposition   $H V_k=V_k T_k+f_k e_k^T$   where   $V_k$   contains k Lanczos     basis,   $V_k^TV_k=I_k$  ,   $T_k$   is the tridiagonal Lanczos matrix,   $f_k$   is     a residual vector   $f_k^TV_k=0$  , and   $e_k$   is the k-th canonical basis of       $R^k$  . The returned value is   $ ||T_k||_2 + ||f_k||_2$  .     If   @p eigenvalues   is not   <code>nullptr</code>  , the eigenvalues of   $T_k$   will be written there.           @p vector_memory   is used to allocate memory for temporary vectors.     OperatorType has to provide   <code>vmult</code>   operation with     VectorType.         This function implements the algorithm from
      * @code{.bib}
      * @article{Zhou2006,
-     *   Title   = {Self-consistent-field Calculations Using Chebyshev-filtered
-     *              Subspace Iteration},
-     *   Author  = {Zhou, Yunkai and Saad, Yousef and Tiago, Murilo L. and
-     *              Chelikowsky, James R.},
-     *   Journal = {Journal of Computational Physics},
-     *   Year    = {2006},
-     *   Volume  = {219},
-     *   Pages   = {172--184},
+     * Title   = {Self-consistent-field Calculations Using Chebyshev-filtered
+     *            Subspace Iteration},
+     * Author  = {Zhou, Yunkai and Saad, Yousef and Tiago, Murilo L. and
+     *            Chelikowsky, James R.},
+     * Journal = {Journal of Computational Physics},
+     * Year    = {2006},
+     * Volume  = {219},
+     * Pages   = {172--184},
      * }
      * @endcode
      *
-     * @note This function uses Lapack routines to compute the largest
-     * eigenvalue of $T_k$.
-     *
-     * @note This function provides an alternate estimate to that obtained from
-     * several steps of SolverCG with
+     * @note   This function uses Lapack routines to compute the largest
+     * eigenvalue of   $T_k$  .
+     * @note   This function provides an alternate estimate to that obtained
+     * from     several steps of SolverCG with
      * SolverCG<VectorType>::connect_eigenvalues_slot().
+     *
      */
     template <typename OperatorType, typename VectorType>
     double
@@ -138,51 +124,48 @@ namespace Utilities
                                std::vector<double> *     eigenvalues = nullptr);
 
     /**
-     * Apply Chebyshev polynomial of the operator @p H to @p x. For a
-     * non-defective operator $H$ with a complete set of eigenpairs
-     * $H \psi_i = \lambda_i \psi_i$, the action of a polynomial filter $p$ is
-     * given by $p(H)x =\sum_i a_i p(\lambda_i) \psi_i$, where $x=: \sum_i a_i
-     * \psi_i$. Thus by appropriately choosing the polynomial filter, one can
-     * alter the eigenmodes contained in $x$.
+     * Apply Chebyshev polynomial of the operator   @p H   to   @p x.   For a
+     * non-defective operator   $H$   with a complete set of eigenpairs
+     * $H \psi_i = \lambda_i \psi_i$  , the action of a polynomial filter
+     * $p$   is     given by   $p(H)x =\sum_i a_i p(\lambda_i) \psi_i$  ,
+     * where   $x=: \sum_i a_i \psi_i$  . Thus by appropriately choosing the
+     * polynomial filter, one can     alter the eigenmodes contained in   $x$
+     * .         This function uses Chebyshev polynomials of first kind. Below
+     * is an     example of polynomial   $T_n(x)$   of degree   $n=8$
+     * normalized to unity at       $-1.2$  .   <table> <tr> <td
+     * align="center">
+           @image html chebyshev8.png
+     * </td> </tr> </table>       By introducing a linear mapping   $L$   from
+     * @p unwanted_spectrum   to       $[-1,1]$  , we can dump the
+     * corresponding modes in   @p x.   The higher     the polynomial degree
+     * $n$  , the more rapid it grows outside of the       $[-1,1]$  . In
+     * order to avoid numerical overflow, we normalize     polynomial filter
+     * to unity at   @p tau.   Thus, the filtered operator     is   $p(H) =
+     * T_n(L(H))/T_n(L(\tau))$  .         The action of the Chebyshev filter
+     * only requires     evaluation of   <code>vmult()</code>   of   @p H
+     * and is based on the     recursion equation for Chebyshev polynomial of
+     * degree   $n$  :       $T_{n}(x) = 2x T_{n-1}(x)
      *
-     * This function uses Chebyshev polynomials of first kind. Below is an
-     * example of polynomial $T_n(x)$ of degree $n=8$ normalized to unity at
-     * $-1.2$. <table> <tr> <td align="center">
-     *       @image html chebyshev8.png
-     *     </td>
-     *   </tr>
-     * </table>
-     * By introducing a linear mapping $L$ from @p unwanted_spectrum to
-     * $[-1,1]$, we can dump the corresponding modes in @p x. The higher
-     * the polynomial degree $n$, the more rapid it grows outside of the
-     * $[-1,1]$. In order to avoid numerical overflow, we normalize
-     * polynomial filter to unity at @p tau. Thus, the filtered operator
-     * is $p(H) = T_n(L(H))/T_n(L(\tau))$.
-     *
-     * The action of the Chebyshev filter only requires
-     * evaluation of <code>vmult()</code> of @p H and is based on the
-     * recursion equation for Chebyshev polynomial of degree $n$:
-     * $T_{n}(x) = 2x T_{n-1}(x) - T_{n-2}(x)$ with $T_0(x)=1$ and $T_1(x)=x$.
-     *
-     * @p vector_memory is used to allocate memory for temporary objects.
-     *
+     * - T_{n-2}(x)$   with   $T_0(x)=1$   and   $T_1(x)=x$  .           @p
+     * vector_memory   is used to allocate memory for temporary objects.
      * This function implements the algorithm (with a minor fix of sign of
-     * $\sigma_1$) from
+     * $\sigma_1$  ) from
      * @code{.bib}
      * @article{Zhou2014,
-     *   Title   = {Chebyshev-filtered subspace iteration method free of sparse
-     *              diagonalization for solving the Kohn--Sham equation},
-     *   Author  = {Zhou, Yunkai and Chelikowsky, James R and Saad, Yousef},
-     *   Journal = {Journal of Computational Physics},
-     *   Year    = {2014},
-     *   Volume  = {274},
-     *   Pages   = {770--782},
+     * Title   = {Chebyshev-filtered subspace iteration method free of sparse
+     *            diagonalization for solving the Kohn--Sham equation},
+     * Author  = {Zhou, Yunkai and Chelikowsky, James R and Saad, Yousef},
+     * Journal = {Journal of Computational Physics},
+     * Year    = {2014},
+     * Volume  = {274},
+     * Pages   = {770--782},
      * }
      * @endcode
      *
-     * @note If @p tau is equal to
-     * <code>std::numeric_limits<double>::infinity()</code>, no normalization
-     * will be performed.
+     * @note   If   @p tau   is equal to
+     * <code>std::numeric_limits<double>::infinity()</code>  , no
+     * normalization     will be performed.
+     *
      */
     template <typename OperatorType, typename VectorType>
     void
@@ -198,7 +181,7 @@ namespace Utilities
 } // namespace Utilities
 
 
-/*------------------------- Implementation ----------------------------*/
+ /*------------------------- Implementation ----------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -230,8 +213,8 @@ namespace Utilities
   {
     template <typename NumberType>
     std::array<std::complex<NumberType>, 3>
-    hyperbolic_rotation(const std::complex<NumberType> & /*f*/,
-                        const std::complex<NumberType> & /*g*/)
+    hyperbolic_rotation(const std::complex<NumberType> &  /*f*/ ,
+                        const std::complex<NumberType> &  /*g*/ )
     {
       AssertThrow(false, ExcNotImplemented());
       std::array<NumberType, 3> res;
@@ -264,8 +247,8 @@ namespace Utilities
 
     template <typename NumberType>
     std::array<std::complex<NumberType>, 3>
-    givens_rotation(const std::complex<NumberType> & /*f*/,
-                    const std::complex<NumberType> & /*g*/)
+    givens_rotation(const std::complex<NumberType> &  /*f*/ ,
+                    const std::complex<NumberType> &  /*g*/ )
     {
       AssertThrow(false, ExcNotImplemented());
       std::array<NumberType, 3> res;

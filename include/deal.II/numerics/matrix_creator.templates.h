@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
 //
@@ -649,7 +649,7 @@ namespace MatrixCreator
                        (coefficient != nullptr ? update_quadrature_points :
                                                  UpdateFlags(0)),
                      coefficient,
-                     /*rhs_function=*/nullptr,
+                      /*rhs_function=*/ nullptr,
                      q_collection,
                      mapping_collection);
 
@@ -798,7 +798,7 @@ namespace MatrixCreator
                        (coefficient != nullptr ? update_quadrature_points :
                                                  UpdateFlags(0)),
                      coefficient,
-                     /*rhs_function=*/nullptr,
+                      /*rhs_function=*/ nullptr,
                      q,
                      mapping);
     MatrixCreator::internal::AssemblerData::CopyData<number> copy_data;
@@ -1236,34 +1236,34 @@ namespace MatrixCreator
 
     template <>
     void inline create_boundary_mass_matrix_1<1, 3, float>(
-      DoFHandler<1, 3>::active_cell_iterator const & /*cell*/,
+      DoFHandler<1, 3>::active_cell_iterator const &  /*cell*/ ,
       MatrixCreator::internal::AssemblerBoundary::Scratch const &,
       MatrixCreator::internal::AssemblerBoundary::CopyData<1, 3, float>
-        & /*copy_data*/,
+        &  /*copy_data*/ ,
       Mapping<1, 3> const &,
       FiniteElement<1, 3> const &,
       Quadrature<0> const &,
       std::map<types::boundary_id, const Function<3, float> *> const
-        & /*boundary_functions*/,
-      Function<3, float> const *const /*coefficient*/,
-      std::vector<unsigned int> const & /*component_mapping*/)
+        &  /*boundary_functions*/ ,
+      Function<3, float> const *const  /*coefficient*/ ,
+      std::vector<unsigned int> const &  /*component_mapping*/ )
     {
       Assert(false, ExcNotImplemented());
     }
 
     template <>
     void inline create_boundary_mass_matrix_1<1, 3, double>(
-      DoFHandler<1, 3>::active_cell_iterator const & /*cell*/,
+      DoFHandler<1, 3>::active_cell_iterator const &  /*cell*/ ,
       MatrixCreator::internal::AssemblerBoundary::Scratch const &,
       MatrixCreator::internal::AssemblerBoundary::CopyData<1, 3, double>
-        & /*copy_data*/,
+        &  /*copy_data*/ ,
       Mapping<1, 3> const &,
       FiniteElement<1, 3> const &,
       Quadrature<0> const &,
       std::map<types::boundary_id, const Function<3, double> *> const
-        & /*boundary_functions*/,
-      Function<3, double> const *const /*coefficient*/,
-      std::vector<unsigned int> const & /*component_mapping*/)
+        &  /*boundary_functions*/ ,
+      Function<3, double> const *const  /*coefficient*/ ,
+      std::vector<unsigned int> const &  /*component_mapping*/ )
     {
       Assert(false, ExcNotImplemented());
     }
@@ -1880,7 +1880,7 @@ namespace MatrixCreator
                        (coefficient != nullptr ? update_quadrature_points :
                                                  UpdateFlags(0)),
                      coefficient,
-                     /*rhs_function=*/nullptr,
+                      /*rhs_function=*/ nullptr,
                      q_collection,
                      mapping_collection);
     MatrixCreator::internal::AssemblerData::CopyData<double> copy_data;
@@ -2026,7 +2026,7 @@ namespace MatrixCreator
                        (coefficient != nullptr ? update_quadrature_points :
                                                  UpdateFlags(0)),
                      coefficient,
-                     /*rhs_function=*/nullptr,
+                      /*rhs_function=*/ nullptr,
                      q,
                      mapping);
     MatrixCreator::internal::AssemblerData::CopyData<double> copy_data;

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
 //
@@ -33,21 +33,19 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 /**
- * Power method (von Mises) for eigenvalue computations.
+ * Power method (von Mises) for eigenvalue computations. This method
+ * determines the largest eigenvalue of a matrix by applying increasing powers
+ * of this matrix to a vector. If there is an eigenvalue   $l$   with dominant
+ * absolute value, the iteration vectors will become aligned to its eigenspace
+ * and   $Ax = lx$  . A shift parameter allows to shift the spectrum, so it is
+ * possible to compute the smallest eigenvalue, too. Convergence of this
+ * method is known to be slow.
  *
- * This method determines the largest eigenvalue of a matrix by applying
- * increasing powers of this matrix to a vector. If there is an eigenvalue $l$
- * with dominant absolute value, the iteration vectors will become aligned to
- * its eigenspace and $Ax = lx$.
  *
- * A shift parameter allows to shift the spectrum, so it is possible to
- * compute the smallest eigenvalue, too.
- *
- * Convergence of this method is known to be slow.
  */
 template <typename VectorType = Vector<double>>
 class EigenPower : private SolverBase<VectorType>
@@ -55,21 +53,25 @@ class EigenPower : private SolverBase<VectorType>
 public:
   /**
    * Declare type of container size.
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
    * Standardized data struct to pipe additional data to the solver.
+   *
    */
   struct AdditionalData
   {
     /**
      * Shift parameter. This parameter allows to shift the spectrum to compute
      * a different eigenvalue.
+     *
      */
     double shift;
     /**
      * Constructor. Set the shift parameter.
+     *
      */
     AdditionalData(const double shift = 0.)
       : shift(shift)
@@ -78,6 +80,7 @@ public:
 
   /**
    * Constructor.
+   *
    */
   EigenPower(SolverControl &           cn,
              VectorMemory<VectorType> &mem,
@@ -85,10 +88,11 @@ public:
 
 
   /**
-   * Power method. @p x is the (not necessarily normalized, but nonzero) start
-   * vector for the power method. After the iteration, @p value is the
-   * approximated eigenvalue and @p x is the corresponding eigenvector,
-   * normalized with respect to the l2-norm.
+   * Power method.   @p x   is the (not necessarily normalized, but nonzero)
+   * start   vector for the power method. After the iteration,   @p value   is
+   * the   approximated eigenvalue and   @p x   is the corresponding
+   * eigenvector,   normalized with respect to the l2-norm.
+   *
    */
   template <typename MatrixType>
   void
@@ -97,30 +101,31 @@ public:
 protected:
   /**
    * Shift parameter.
+   *
    */
   AdditionalData additional_data;
 };
 
 /**
- * Inverse iteration (Wieland) for eigenvalue computations.
+ * Inverse iteration (Wieland) for eigenvalue computations. This class
+ * implements an adaptive version of the inverse iteration by Wieland. There
+ * are two choices for the stopping criterion: by default, the norm of the
+ * residual   $A x
  *
- * This class implements an adaptive version of the inverse iteration by
- * Wieland.
- *
- * There are two choices for the stopping criterion: by default, the norm of
- * the residual $A x - l x$ is computed. Since this might not converge to zero
- * for non-symmetric matrices with non-trivial Jordan blocks, it can be
- * replaced by checking the difference of successive eigenvalues. Use
- * AdditionalData::use_residual for switching this option.
- *
- * Usually, the initial guess entering this method is updated after each step,
- * replacing it with the new approximation of the eigenvalue. Using a
- * parameter AdditionalData::relaxation between 0 and 1, this update can be
- * damped. With relaxation parameter 0, no update is performed. This damping
- * allows for slower adaption of the shift value to make sure that the method
+ * - l x$   is computed. Since this might not converge to zero for
+ * non-symmetric matrices with non-trivial Jordan blocks, it can be replaced
+ * by checking the difference of successive eigenvalues. Use
+ * AdditionalData::use_residual   for switching this option. Usually, the
+ * initial guess entering this method is updated after each step, replacing it
+ * with the new approximation of the eigenvalue. Using a parameter
+ * AdditionalData::relaxation   between 0 and 1, this update can be damped.
+ * With relaxation parameter 0, no update is performed. This damping allows
+ * for slower adaption of the shift value to make sure that the method
  * converges to the eigenvalue closest to the initial guess. This can be aided
- * by the parameter AdditionalData::start_adaption, which indicates the first
- * iteration step in which the shift value should be adapted.
+ * by the parameter   AdditionalData::start_adaption,   which indicates the
+ * first iteration step in which the shift value should be adapted.
+ *
+ *
  */
 template <typename VectorType = Vector<double>>
 class EigenInverse : private SolverBase<VectorType>
@@ -128,29 +133,35 @@ class EigenInverse : private SolverBase<VectorType>
 public:
   /**
    * Declare type of container size.
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
    * Standardized data struct to pipe additional data to the solver.
+   *
    */
   struct AdditionalData
   {
     /**
      * Damping of the updated shift value.
+     *
      */
     double relaxation;
 
     /**
      * Start step of adaptive shift parameter.
+     *
      */
     unsigned int start_adaption;
     /**
      * Flag for the stopping criterion.
+     *
      */
     bool use_residual;
     /**
      * Constructor.
+     *
      */
     AdditionalData(double       relaxation     = 1.,
                    unsigned int start_adaption = 6,
@@ -163,17 +174,19 @@ public:
 
   /**
    * Constructor.
+   *
    */
   EigenInverse(SolverControl &           cn,
                VectorMemory<VectorType> &mem,
                const AdditionalData &    data = AdditionalData());
 
   /**
-   * Inverse method. @p value is the start guess for the eigenvalue and @p x
-   * is the (not necessarily normalized, but nonzero) start vector for the
-   * power method. After the iteration, @p value is the approximated
-   * eigenvalue and @p x is the corresponding eigenvector, normalized with
-   * respect to the l2-norm.
+   * Inverse method.   @p value   is the start guess for the eigenvalue and
+   * @p x     is the (not necessarily normalized, but nonzero) start vector
+   * for the   power method. After the iteration,   @p value   is the
+   * approximated   eigenvalue and   @p x   is the corresponding eigenvector,
+   * normalized with   respect to the l2-norm.
+   *
    */
   template <typename MatrixType>
   void
@@ -182,11 +195,12 @@ public:
 protected:
   /**
    * Flags for execution.
+   *
    */
   AdditionalData additional_data;
 };
 
-/*@}*/
+ /*@}*/ 
 //---------------------------------------------------------------------------
 
 

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
 //
@@ -27,34 +27,31 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 /**
  * Implementation of the preconditioned Richardson iteration method. The
- * stopping criterion is the norm of the residual.
+ * stopping criterion is the norm of the residual. For the requirements on
+ * matrices and vectors in order to work with this class, see the
+ * documentation of the Solver base class. Like all other solver classes, this
+ * class has a local structure called   @p   AdditionalData which is used to
+ * pass additional parameters to the solver, like damping parameters or the
+ * number of temporary vectors. We use this additional structure instead of
+ * passing these values directly to the constructor because this makes the use
+ * of the   @p SolverSelector   and other classes much easier and guarantees
+ * that these will continue to work even if number or type of the additional
+ * parameters for a certain solver changes. For the Richardson method, the
+ * additional data is the damping parameter, which is the only content of the
+ * @p AdditionalData   structure. By default, the constructor of the structure
+ * sets it to one.
  *
- * For the requirements on matrices and vectors in order to work with this
- * class, see the documentation of the Solver base class.
- *
- * Like all other solver classes, this class has a local structure called @p
- * AdditionalData which is used to pass additional parameters to the solver,
- * like damping parameters or the number of temporary vectors. We use this
- * additional structure instead of passing these values directly to the
- * constructor because this makes the use of the @p SolverSelector and other
- * classes much easier and guarantees that these will continue to work even if
- * number or type of the additional parameters for a certain solver changes.
- *
- * For the Richardson method, the additional data is the damping parameter,
- * which is the only content of the @p AdditionalData structure. By default,
- * the constructor of the structure sets it to one.
+ *  <h3>Observing the progress of linear solver iterations</h3> The solve()
+ * function of this class uses the mechanism described in the Solver base
+ * class to determine convergence. This mechanism can also be used to observe
+ * the progress of the iteration.
  *
  *
- * <h3>Observing the progress of linear solver iterations</h3>
- *
- * The solve() function of this class uses the mechanism described in the
- * Solver base class to determine convergence. This mechanism can also be used
- * to observe the progress of the iteration.
  */
 template <class VectorType = Vector<double>>
 class SolverRichardson : public SolverBase<VectorType>
@@ -62,28 +59,33 @@ class SolverRichardson : public SolverBase<VectorType>
 public:
   /**
    * Standardized data struct to pipe additional data to the solver.
+   *
    */
   struct AdditionalData
   {
     /**
      * Constructor. By default, set the damping parameter to one.
+     *
      */
     explicit AdditionalData(const double omega                       = 1,
                             const bool   use_preconditioned_residual = false);
 
     /**
      * Relaxation parameter.
+     *
      */
     double omega;
 
     /**
      * Parameter for stopping criterion.
+     *
      */
     bool use_preconditioned_residual;
   };
 
   /**
    * Constructor.
+   *
    */
   SolverRichardson(SolverControl &           cn,
                    VectorMemory<VectorType> &mem,
@@ -92,17 +94,20 @@ public:
   /**
    * Constructor. Use an object of type GrowingVectorMemory as a default to
    * allocate memory.
+   *
    */
   SolverRichardson(SolverControl &       cn,
                    const AdditionalData &data = AdditionalData());
 
   /**
    * Virtual destructor.
+   *
    */
   virtual ~SolverRichardson() override = default;
 
   /**
-   * Solve the linear system $Ax=b$ for x.
+   * Solve the linear system   $Ax=b$   for x.
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -112,7 +117,8 @@ public:
         const PreconditionerType &preconditioner);
 
   /**
-   * Solve $A^Tx=b$ for $x$.
+   * Solve   $A^Tx=b$   for   $x$  .
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -123,6 +129,7 @@ public:
 
   /**
    * Set the damping-coefficient. Default is 1., i.e. no damping.
+   *
    */
   void
   set_omega(const double om = 1.);
@@ -131,6 +138,7 @@ public:
    * Interface for derived class. This function gets the current iteration
    * vector, the residual and the update vector in each step. It can be used
    * for graphical output of the convergence history.
+   *
    */
   virtual void
   print_vectors(const unsigned int step,
@@ -141,21 +149,23 @@ public:
 protected:
   /**
    * Implementation of the computation of the norm of the residual.
-   * Depending on the flags given to the solver, the default
-   * implementation of this function uses either the actual
-   * residual, @p r, or the preconditioned residual, @p d.
+   * Depending on the flags given to the solver, the default   implementation
+   * of this function uses either the actual   residual,   @p r,   or the
+   * preconditioned residual,   @p d.
+   *
    */
   virtual typename VectorType::value_type
   criterion(const VectorType &r, const VectorType &d) const;
 
   /**
    * Control parameters.
+   *
    */
   AdditionalData additional_data;
 };
 
-/*@}*/
-/*----------------- Implementation of the Richardson Method ------------------*/
+ /*@}*/ 
+ /*----------------- Implementation of the Richardson Method ------------------*/ 
 
 #ifndef DOXYGEN
 

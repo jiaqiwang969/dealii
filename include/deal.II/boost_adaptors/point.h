@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -27,7 +27,8 @@ namespace boost
     namespace traits
     {
       /**
-       * Tag adaptor for dealii::Point.
+       * Tag adaptor for   dealii::Point.
+       *
        */
       template <int dim, class Number>
       struct tag<dealii::Point<dim, Number>>
@@ -36,7 +37,8 @@ namespace boost
       };
 
       /**
-       * Coordinate type adaptor for dealii::Point.
+       * Coordinate type adaptor for   dealii::Point.
+       *
        */
       template <int dim, class Number>
       struct coordinate_type<dealii::Point<dim, Number>>
@@ -45,8 +47,9 @@ namespace boost
       };
 
       /**
-       * Coordinate system adaptor for dealii::Point. By default, we assume
-       * that a dealii Point is cartesian point.
+       * Coordinate system adaptor for   dealii::Point.   By default, we
+       * assume       that a dealii Point is cartesian point.
+       *
        */
       template <int dim, class Number>
       struct coordinate_system<dealii::Point<dim, Number>>
@@ -56,6 +59,7 @@ namespace boost
 
       /**
        * Dimension adaptor.
+       *
        */
       template <int dim, class Number>
       struct dimension<dealii::Point<dim, Number>> : boost::mpl::int_<dim>
@@ -63,6 +67,7 @@ namespace boost
 
       /**
        * Getter function for D-th coordinate of a dealii Point.
+       *
        */
       template <std::size_t D, int dim, class Number>
       struct access<dealii::Point<dim, Number>, D>
@@ -75,6 +80,7 @@ namespace boost
 
         /**
          * Setter function for D-th coordinate of a dealii Point.
+         *
          */
         static inline void
         set(dealii::Point<dim, Number> &p, Number value)

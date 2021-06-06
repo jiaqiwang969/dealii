@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -35,16 +35,19 @@ namespace internal
     /**
      * Interface of geometric cell entities with the focus on creating a
      * reduced connectivity table.
+     *
      */
     struct CellTypeBase
     {
       /**
        * Default destructor.
+       *
        */
       virtual ~CellTypeBase() = default;
 
       /**
-       * Number of sub-entities of dimension @p d.
+       * Number of sub-entities of dimension   @p d.
+       *
        */
       virtual unsigned int
       n_entities(const unsigned int d) const
@@ -56,7 +59,8 @@ namespace internal
       }
 
       /**
-       * Number of vertices of the @p e-th sub-entity of dimension @p d.
+       * Number of vertices of the   @p e-th   sub-entity of dimension   @p d.
+       *
        */
       virtual dealii::ArrayView<const unsigned int>
       vertices_of_entity(const unsigned int d, const unsigned int e) const
@@ -69,7 +73,9 @@ namespace internal
       }
 
       /**
-       * Geometric entity type of the @p e-th sub-entity of dimension @p d.
+       * Geometric entity type of the   @p e-th   sub-entity of dimension   @p
+       * d.
+       *
        */
       virtual dealii::ReferenceCell
       type_of_entity(const unsigned int d, const unsigned int e) const
@@ -82,7 +88,8 @@ namespace internal
       }
 
       /**
-       * Number of lines of @p face-th surface.
+       * Number of lines of   @p face-th   surface.
+       *
        */
       virtual unsigned int
       n_lines_of_surface(const unsigned int face) const
@@ -94,7 +101,8 @@ namespace internal
       }
 
       /**
-       * Index of the @p line-th lines of @p face-th surface.
+       * Index of the   @p line-th   lines of   @p face-th   surface.
+       *
        */
       virtual unsigned int
       nth_line_of_surface(const unsigned int line,
@@ -108,7 +116,8 @@ namespace internal
       }
 
       /**
-       * Vertex indices of the @p line-th lines of @p face-th surface.
+       * Vertex indices of the   @p line-th   lines of   @p face-th   surface.
+       *
        */
       virtual const std::array<unsigned int, 2> &
       vertices_of_nth_line_of_surface(const unsigned int line,
@@ -128,6 +137,7 @@ namespace internal
 
     /**
      * Implementation for lines.
+     *
      */
     struct CellTypeLine : public CellTypeBase
     {
@@ -176,6 +186,7 @@ namespace internal
 
     /**
      * Implementation for triangles.
+     *
      */
     struct CellTypeTri : public CellTypeBase
     {
@@ -233,6 +244,7 @@ namespace internal
 
     /**
      * Implementation for quadrilaterals.
+     *
      */
     struct CellTypeQuad : public CellTypeBase
     {
@@ -290,6 +302,7 @@ namespace internal
 
     /**
      * Implementation for tetrahedrons.
+     *
      */
     struct CellTypeTet : public CellTypeBase
     {
@@ -387,6 +400,7 @@ namespace internal
 
     /**
      * Implementation for pyramids.
+     *
      */
 
     struct CellTypePyramid : public CellTypeBase
@@ -510,6 +524,7 @@ namespace internal
 
     /**
      * Implementation for wedges.
+     *
      */
     struct CellTypeWedge : public CellTypeBase
     {
@@ -638,6 +653,7 @@ namespace internal
 
     /**
      * Implementation for hexahedra.
+     *
      */
     struct CellTypeHex : public CellTypeBase
     {
@@ -760,21 +776,26 @@ namespace internal
 
     /**
      * Compressed row storage sparse matrix. This class is similar to
-     * SparsityPattern but reduced to the bare minimum as needed here - in the
-     * context of setting up the connectivity - and allowing direct simplified
-     * access to the entries.
+     * SparsityPattern but reduced to the bare minimum as needed here
+     *
+     *  - in the     context of setting up the connectivity
+     *
+     *  - and allowing direct simplified     access to the entries.
+     *
      */
     template <typename T = unsigned int>
     struct CRS
     {
       /**
        * Default constructor.
+       *
        */
       CRS()
         : ptr{0} {};
 
       /**
        * Constructor which allows to set the internal fields directly.
+       *
        */
       CRS(const std::vector<std::size_t> &ptr, const std::vector<T> &col)
         : ptr(ptr)
@@ -791,32 +812,108 @@ namespace internal
 
 
     /**
-     * Class for storing the reduced connectivity table.
-     *
-     * A full connectivity table contains all possible connectivities of
-     * entities of dimension d and entities of dimension d' with 0<=d,d'<=dim.
+     * Class for storing the reduced connectivity table.         A full
+     * connectivity table contains all possible connectivities of     entities
+     * of dimension d and entities of dimension d' with 0<=d,d'<=dim.
      * However, in the library we only need the following types of
      * connectivities:
-     *  - dim-dimensional neighbors of dim-dimensional entities (connected via
-     *    faces)
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - dim-dimensional neighbors of dim-dimensional entities (connected via        faces)
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
      *  - d-dimensional entity to it's (d-1)-dimension bounding entities
-     *  - quad (2 - 3D), line (1 - 2D/3D) to vertices (0) to be able to process
-     *    the user provided SubCellData during
-     *    Triangulation::create_triangulation().
-     * We call a table, which computes the corresponding entries of a full
-     * connectivity table a reduced table.
      *
-     * The entries of the reduced table are as follows for 1D-3D:
      *
-     * 1D :    | 0 1    2D:    | 0 1 2    3D:    | 0 1 2 3
-     *      ---+-----       ---+-------       ---+--------
-     *       0 |             0 |               0 |
-     *       1 | x n         1 | x             1 | x
-     *                       2 | s x n         2 | s x
-     *                                         3 |     x n
      *
-     * with markers highlighting the reason for the entry x:=bounding entities;
-     * n:= neighboring entities; s:=sub-cell data
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - quad (2
+     *
+     *  - 3D), line (1
+     *
+     *  - 2D/3D) to vertices (0) to be able to process        the user provided SubCellData during          Triangulation::create_triangulation().       We call a table, which computes the corresponding entries of a full     connectivity table a reduced table.         The entries of the reduced table are as follows for 1D-3D:         1D :    | 0 1    2D:    | 0 1 2    3D:    | 0 1 2 3
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - -+-----
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - -+-------
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - -+--------           0 |             0 |               0 |           1 | x n         1 | x             1 | x                           2 | s x n         2 | s x                                             3 |     x n         with markers highlighting the reason for the entry x:=bounding entities;     n:= neighboring entities; s:=sub-cell data
+     *
      */
     template <typename T = unsigned int>
     struct Connectivity
@@ -935,11 +1032,12 @@ namespace internal
 
 
     /**
-     * Determine the neighbors of all cells.
+     * Determine the neighbors of all cells.           @p con_cf
+     * connectivity cell-face       @p con_cc   connectivity cell-cell (for
+     * each cell-face it contains the       index of the neighboring cell or
      *
-     * @p con_cf connectivity cell-face
-     * @p con_cc connectivity cell-cell (for each cell-face it contains the
-     *   index of the neighboring cell or -1 for boundary face)
+     *  -  for boundary face)
+     *
      */
     template <typename T>
     void
@@ -989,10 +1087,10 @@ namespace internal
 
     /**
      * Build entities of dimension d (with 0<d<dim). Entities are described by
-     * a set of vertices.
+     * a set of vertices.         Furthermore, the function determines for
+     * each cell of which d-dimensional     entity it consists of and its
+     * orientation relative to the cell.
      *
-     * Furthermore, the function determines for each cell of which d-dimensional
-     * entity it consists of and its orientation relative to the cell.
      */
     template <int key_length, typename FU>
     void
@@ -1175,8 +1273,9 @@ namespace internal
 
 
     /**
-     * Call the right templated function to be able to use std::array instead
-     * of std::vector.
+     * Call the right templated function to be able to use   std::array
+     * instead     of   std::vector.
+     *
      */
     template <typename FU>
     void
@@ -1235,10 +1334,37 @@ namespace internal
 
     /**
      * Build surface lines described by:
-     *  - connectivity quad -> line
-     *  - orientation of line relative to the quad
      *
-     * Furthermore, the type of the quad is determined.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - connectivity quad
+     *
+     * -> line
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - orientation of line relative to the quad         Furthermore, the type of the quad is determined.
+     *
      */
     inline void
     build_intersection(
@@ -1347,12 +1473,13 @@ namespace internal
 
 
     /**
-     * Build the reduced connectivity table for the given dimension @p dim.
-     *
+     * Build the reduced connectivity table for the given dimension   @p dim.
      * This function is inspired by the publication Anders Logg "Efficient
      * Representation of Computational Meshes" and the FEniCS's DOLFIN mesh
-     * implementation. It has been strongly adjusted to efficiently solely meet
-     * our connectivity needs while sacrificing some of the flexibility there.
+     * implementation. It has been strongly adjusted to efficiently solely
+     * meet     our connectivity needs while sacrificing some of the
+     * flexibility there.
+     *
      */
     template <typename T>
     Connectivity<T>
@@ -1406,7 +1533,7 @@ namespace internal
                 key[l] =
                   temp1
                     .col[temp1.ptr[c] + cell_type->nth_line_of_surface(l, f)] +
-                  1 /*offset!*/;
+                  1  /*offset!*/ ;
 
               for (; l < key.size(); ++l)
                 key[l] = 0;
@@ -1439,6 +1566,7 @@ namespace internal
 
     /**
      * Preprocessing step to remove the template argument dim.
+     *
      */
     template <typename T, int dim>
     Connectivity<T>

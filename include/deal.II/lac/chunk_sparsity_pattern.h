@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2020 by the deal.II authors
 //
@@ -36,14 +36,17 @@ template <typename>
 class ChunkSparseMatrix;
 #endif
 
-/*! @addtogroup Sparsity
- *@{
- */
+/*!   @addtogroup   Sparsity  @{  
+
+* 
+* */
 
 
 
 /**
  * Iterators on sparsity patterns
+ *
+ *
  */
 namespace ChunkSparsityPatternIterators
 {
@@ -53,39 +56,43 @@ namespace ChunkSparsityPatternIterators
   /**
    * Accessor class for iterators into sparsity patterns. This class is also
    * the base class for both const and non-const accessor classes into sparse
-   * matrices.
+   * matrices.     Note that this class only allows read access to elements,
+   * providing their   row and column number. It does not allow modifying the
+   * sparsity pattern   itself.
    *
-   * Note that this class only allows read access to elements, providing their
-   * row and column number. It does not allow modifying the sparsity pattern
-   * itself.
    */
   class Accessor
   {
   public:
     /**
      * Declare the type for container size.
+     *
      */
     using size_type = types::global_dof_index;
 
     /**
      * Constructor.
+     *
      */
     Accessor(const ChunkSparsityPattern *matrix, const size_type row);
 
     /**
      * Constructor. Construct the end accessor for the given sparsity pattern.
+     *
      */
     Accessor(const ChunkSparsityPattern *matrix);
 
     /**
      * Row number of the element represented by this object. This function can
      * only be called for entries for which is_valid_entry() is true.
+     *
      */
     size_type
     row() const;
 
     /**
      * Return the global index from the reduced sparsity pattern.
+     *
      */
     std::size_t
     reduced_index() const;
@@ -93,6 +100,7 @@ namespace ChunkSparsityPatternIterators
     /**
      * Column number of the element represented by this object. This function
      * can only be called for entries for which is_valid_entry() is true.
+     *
      */
     size_type
     column() const;
@@ -105,6 +113,7 @@ namespace ChunkSparsityPatternIterators
      * entries; if you create iterators in this phase of the sparsity
      * pattern's lifetime, you will iterate over elements that are not valid.
      * If this is so, then this function will return false.
+     *
      */
     bool
     is_valid_entry() const;
@@ -112,6 +121,7 @@ namespace ChunkSparsityPatternIterators
 
     /**
      * Comparison. True, if both iterators point to the same matrix position.
+     *
      */
     bool
     operator==(const Accessor &) const;
@@ -120,9 +130,9 @@ namespace ChunkSparsityPatternIterators
     /**
      * Comparison operator. Result is true if either the first row number is
      * smaller or if the row numbers are equal and the first index is smaller.
-     *
      * This function is only valid if both iterators point into the same
      * sparsity pattern.
+     *
      */
     bool
     operator<(const Accessor &) const;
@@ -130,26 +140,31 @@ namespace ChunkSparsityPatternIterators
   protected:
     /**
      * The sparsity pattern we operate on accessed.
+     *
      */
     const ChunkSparsityPattern *sparsity_pattern;
 
     /**
      * The accessor of the (reduced) sparsity pattern.
+     *
      */
     SparsityPatternIterators::Accessor reduced_accessor;
 
     /**
      * Current chunk row number.
+     *
      */
     size_type chunk_row;
 
     /**
      * Current chunk col number.
+     *
      */
     size_type chunk_col;
 
     /**
      * Move the accessor to the next nonzero entry in the matrix.
+     *
      */
     void
     advance();
@@ -162,51 +177,60 @@ namespace ChunkSparsityPatternIterators
 
   /**
    * Iterator that walks over the elements of a sparsity pattern.
+   *
    */
   class Iterator
   {
   public:
     /**
      * Declare the type for container size.
+     *
      */
     using size_type = types::global_dof_index;
 
     /**
-     * Constructor. Create an iterator into the sparsity pattern @p sp for the
-     * given row and the index within it.
+     * Constructor. Create an iterator into the sparsity pattern   @p sp   for
+     * the     given row and the index within it.
+     *
      */
     Iterator(const ChunkSparsityPattern *sp, const size_type row);
 
     /**
      * Prefix increment.
+     *
      */
     Iterator &
     operator++();
 
     /**
      * Postfix increment.
+     *
      */
     Iterator
     operator++(int);
 
     /**
      * Dereferencing operator.
+     *
      */
     const Accessor &operator*() const;
 
     /**
      * Dereferencing operator.
+     *
      */
     const Accessor *operator->() const;
 
     /**
      * Comparison. True, if both iterators point to the same matrix position.
+     *
      */
     bool
     operator==(const Iterator &) const;
 
     /**
      * Inverse of <tt>==</tt>.
+     *
      */
     bool
     operator!=(const Iterator &) const;
@@ -214,9 +238,9 @@ namespace ChunkSparsityPatternIterators
     /**
      * Comparison operator. Result is true if either the first row number is
      * smaller or if the row numbers are equal and the first index is smaller.
-     *
      * This function is only valid if both iterators point into the same
      * matrix.
+     *
      */
     bool
     operator<(const Iterator &) const;
@@ -224,6 +248,7 @@ namespace ChunkSparsityPatternIterators
   private:
     /**
      * Store an object of the accessor class.
+     *
      */
     Accessor accessor;
   };
@@ -232,48 +257,46 @@ namespace ChunkSparsityPatternIterators
 
 
 /**
- * Structure representing the sparsity pattern of a sparse matrix. This class
- * is an example of the "static" type of
- * @ref Sparsity.
- * It uses the compressed row storage (CSR) format to store data.
+ * Structure representing the sparsity pattern of a sparse matrix. This class is an example of the "static"
+ * type of   @ref Sparsity  . It uses the compressed row storage (CSR) format
+ * to store data. The use of this class is demonstrated in   step-51  .
  *
- * The use of this class is demonstrated in step-51.
+ *
  */
 class ChunkSparsityPattern : public Subscriptor
 {
 public:
   /**
    * Declare the type for container size.
+   *
    */
   using size_type = types::global_dof_index;
   /**
    * Typedef an iterator class that allows to walk over all nonzero elements
    * of a sparsity pattern.
+   *
    */
   using const_iterator = ChunkSparsityPatternIterators::Iterator;
 
   /**
    * Typedef an iterator class that allows to walk over all nonzero elements
-   * of a sparsity pattern.
+   * of a sparsity pattern.     Since the iterator does not allow to modify
+   * the sparsity pattern, this   type is the same as that for   @p
+   * const_iterator.
    *
-   * Since the iterator does not allow to modify the sparsity pattern, this
-   * type is the same as that for @p const_iterator.
    */
   using iterator = ChunkSparsityPatternIterators::Iterator;
 
   /**
    * Define a value which is used to indicate that a certain value in the
    * colnums array is unused, i.e. does not represent a certain column number
-   * index.
+   * index.     Indices with this invalid value are used to insert new entries
+   * to the   sparsity pattern using the add() member function, and are
+   * removed when   calling compress().     You should not assume that the
+   * variable declared here has a certain   value. The initialization is given
+   * here only to enable the compiler to   perform some optimizations, but the
+   * actual value of the variable may   change over time.
    *
-   * Indices with this invalid value are used to insert new entries to the
-   * sparsity pattern using the add() member function, and are removed when
-   * calling compress().
-   *
-   * You should not assume that the variable declared here has a certain
-   * value. The initialization is given here only to enable the compiler to
-   * perform some optimizations, but the actual value of the variable may
-   * change over time.
    */
   static const size_type invalid_entry = SparsityPattern::invalid_entry;
 
@@ -281,6 +304,7 @@ public:
    * Initialize the matrix empty, that is with no memory allocated. This is
    * useful if you want such objects as member variables in other classes. You
    * can make the structure usable by calling the reinit() function.
+   *
    */
   ChunkSparsityPattern();
 
@@ -291,21 +315,21 @@ public:
    * amounts of computing time. However, copy constructors are needed if one
    * wants to place a ChunkSparsityPattern in a container, e.g., to write such
    * statements like <tt>v.push_back (ChunkSparsityPattern());</tt>, with
-   * <tt>v</tt> a vector of ChunkSparsityPattern objects.
-   *
-   * Usually, it is sufficient to use the explicit keyword to disallow
-   * unwanted temporaries, but this does not work for <tt>std::vector</tt>.
-   * Since copying a structure like this is not useful anyway because multiple
+   * <tt>v</tt> a vector of ChunkSparsityPattern objects.     Usually, it is
+   * sufficient to use the explicit keyword to disallow   unwanted
+   * temporaries, but this does not work for   <tt>std::vector</tt>.     Since
+   * copying a structure like this is not useful anyway because multiple
    * matrices can use the same sparsity structure, copies are only allowed for
    * empty objects, as described above.
+   *
    */
   ChunkSparsityPattern(const ChunkSparsityPattern &);
 
   /**
-   * Initialize a rectangular matrix.
+   * Initialize a rectangular matrix.       @arg   m number of rows   @arg   n
+   * number of columns   @arg   max_per_row maximum   number of nonzero
+   * entries per row
    *
-   * @arg m number of rows @arg n number of columns @arg max_per_row maximum
-   * number of nonzero entries per row
    */
   ChunkSparsityPattern(const size_type m,
                        const size_type n,
@@ -313,11 +337,10 @@ public:
                        const size_type chunk_size);
 
   /**
-   * Initialize a rectangular matrix.
+   * Initialize a rectangular matrix.       @arg   m number of rows   @arg   n
+   * number of columns   @arg   row_lengths possible   number of nonzero
+   * entries for each row.  This vector must have one entry   for each row.
    *
-   * @arg m number of rows @arg n number of columns @arg row_lengths possible
-   * number of nonzero entries for each row.  This vector must have one entry
-   * for each row.
    */
   ChunkSparsityPattern(const size_type               m,
                        const size_type               n,
@@ -326,22 +349,20 @@ public:
 
   /**
    * Initialize a quadratic matrix of dimension <tt>n</tt> with at most
-   * <tt>max_per_row</tt> nonzero entries per row.
+   * <tt>max_per_row</tt> nonzero entries per row.     This constructor
+   * automatically enables optimized storage of diagonal   elements. To avoid
+   * this, use the constructor taking row and column   numbers separately.
    *
-   * This constructor automatically enables optimized storage of diagonal
-   * elements. To avoid this, use the constructor taking row and column
-   * numbers separately.
    */
   ChunkSparsityPattern(const size_type n,
                        const size_type max_per_row,
                        const size_type chunk_size);
 
   /**
-   * Initialize a quadratic matrix.
+   * Initialize a quadratic matrix.       @arg   m number of rows and columns
+   * @arg   row_lengths possible number of   nonzero entries for each row.
+   * This vector must have one entry for each   row.
    *
-   * @arg m number of rows and columns @arg row_lengths possible number of
-   * nonzero entries for each row.  This vector must have one entry for each
-   * row.
    */
   ChunkSparsityPattern(const size_type               m,
                        const std::vector<size_type> &row_lengths,
@@ -349,6 +370,7 @@ public:
 
   /**
    * Destructor.
+   *
    */
   ~ChunkSparsityPattern() override = default;
 
@@ -356,6 +378,7 @@ public:
    * Copy operator. For this the same holds as for the copy constructor: it is
    * declared, defined and fine to be called, but the latter only for empty
    * objects.
+   *
    */
   ChunkSparsityPattern &
   operator=(const ChunkSparsityPattern &);
@@ -363,10 +386,9 @@ public:
   /**
    * Reallocate memory and set up data structures for a new matrix with <tt>m
    * </tt>rows and <tt>n</tt> columns, with at most <tt>max_per_row</tt>
-   * nonzero entries per row.
+   * nonzero entries per row.     This function simply maps its operations to
+   * the other <tt>reinit</tt>   function.
    *
-   * This function simply maps its operations to the other <tt>reinit</tt>
-   * function.
    */
   void
   reinit(const size_type m,
@@ -377,16 +399,14 @@ public:
   /**
    * Reallocate memory for a matrix of size <tt>m x n</tt>. The number of
    * entries for each row is taken from the array <tt>row_lengths</tt> which
-   * has to give this number of each row <tt>i=1...m</tt>.
-   *
-   * If <tt>m*n==0</tt> all memory is freed, resulting in a total
+   * has to give this number of each row <tt>i=1...m</tt>.     If
+   * <tt>m*n==0</tt> all memory is freed, resulting in a total
    * reinitialization of the object. If it is nonzero, new memory is only
    * allocated if the new size extends the old one. This is done to save time
-   * and to avoid fragmentation of the heap.
+   * and to avoid fragmentation of the heap.     If the number of rows equals
+   * the number of columns then diagonal elements   are stored first in each
+   * row to allow optimized access in relaxation   methods of SparseMatrix.
    *
-   * If the number of rows equals the number of columns then diagonal elements
-   * are stored first in each row to allow optimized access in relaxation
-   * methods of SparseMatrix.
    */
   void
   reinit(const size_type               m,
@@ -396,6 +416,7 @@ public:
 
   /**
    * Same as above, but with an ArrayView argument instead.
+   *
    */
   void
   reinit(const size_type                   m,
@@ -408,12 +429,11 @@ public:
    * represents.  It does so by eliminating unused entries and sorting the
    * remaining ones to allow faster access by usage of binary search
    * algorithms. A special sorting scheme is used for the diagonal entry of
-   * quadratic matrices, which is always the first entry of each row.
+   * quadratic matrices, which is always the first entry of each row.     The
+   * memory which is no more needed is released.     SparseMatrix objects
+   * require the ChunkSparsityPattern objects they are   initialized with to
+   * be compressed, to reduce memory requirements.
    *
-   * The memory which is no more needed is released.
-   *
-   * SparseMatrix objects require the ChunkSparsityPattern objects they are
-   * initialized with to be compressed, to reduce memory requirements.
    */
   void
   compress();
@@ -421,77 +441,72 @@ public:
   /**
    * This function can be used as a replacement for reinit(), subsequent calls
    * to add() and a final call to close() if you know exactly in advance the
-   * entries that will form the matrix sparsity pattern.
-   *
-   * The first two parameters determine the size of the matrix. For the two
-   * last ones, note that a sparse matrix can be described by a sequence of
-   * rows, each of which is represented by a sequence of pairs of column
-   * indices and values. In the present context, the begin() and end()
-   * parameters designate iterators (of forward iterator type) into a
-   * container, one representing one row. The distance between begin() and
-   * end() should therefore be equal to n_rows(). These iterators may be
-   * iterators of <tt>std::vector</tt>, <tt>std::list</tt>, pointers into a
-   * C-style array, or any other iterator satisfying the requirements of a
-   * forward iterator. The objects pointed to by these iterators (i.e. what we
-   * get after applying <tt>operator*</tt> or <tt>operator-></tt> to one of
+   * entries that will form the matrix sparsity pattern.     The first two
+   * parameters determine the size of the matrix. For the two   last ones,
+   * note that a sparse matrix can be described by a sequence of   rows, each
+   * of which is represented by a sequence of pairs of column   indices and
+   * values. In the present context, the begin() and end()   parameters
+   * designate iterators (of forward iterator type) into a   container, one
+   * representing one row. The distance between begin() and   end() should
+   * therefore be equal to n_rows(). These iterators may be   iterators of
+   * <tt>std::vector</tt>,     <tt>std::list</tt>,   pointers into a   C-style
+   * array, or any other iterator satisfying the requirements of a   forward
+   * iterator. The objects pointed to by these iterators (i.e. what we   get
+   * after applying <tt>operator*</tt> or <tt>operator-></tt> to one of
    * these iterators) must be a container itself that provides functions
    * <tt>begin</tt> and <tt>end</tt> designating a range of iterators that
    * describe the contents of one line. Dereferencing these inner iterators
-   * must either yield a pair of an integer as column index and a
-   * value of arbitrary type (such a type would be used if we wanted to
-   * describe a sparse matrix with one such object), or simply an integer (if we
-   * only wanted to describe a sparsity pattern). The function is able to
+   * must either yield a pair of an integer as column index and a   value of
+   * arbitrary type (such a type would be used if we wanted to   describe a
+   * sparse matrix with one such object), or simply an integer (if we   only
+   * wanted to describe a sparsity pattern). The function is able to
    * determine itself whether an integer or a pair is what we get after
-   * dereferencing the inner iterators, through some template magic.
-   *
-   * While the order of the outer iterators denotes the different rows of the
+   * dereferencing the inner iterators, through some template magic.     While
+   * the order of the outer iterators denotes the different rows of the
    * matrix, the order of the inner iterator denoting the columns does not
-   * matter, as they are sorted internal to this function anyway.
-   *
-   * Since that all sounds very complicated, consider the following example
-   * code, which may be used to fill a sparsity pattern:
+   * matter, as they are sorted internal to this function anyway.     Since
+   * that all sounds very complicated, consider the following example   code,
+   * which may be used to fill a sparsity pattern:
    * @code
    * std::vector<std::vector<size_type> > column_indices (n_rows);
    * for (size_type row=0; row<n_rows; ++row)
-   *         // generate necessary columns in this row
-   *   fill_row (column_indices[row]);
+   *       // generate necessary columns in this row
+   * fill_row (column_indices[row]);
    *
    * sparsity.copy_from (n_rows, n_cols,
-   *                     column_indices.begin(),
-   *                     column_indices.end());
+   *                   column_indices.begin(),
+   *                   column_indices.end());
    * @endcode
-   *
    * Note that this example works since the iterators dereferenced yield
    * containers with functions <tt>begin</tt> and <tt>end</tt> (namely
-   * <tt>std::vector</tt>s), and the inner iterators dereferenced yield
-   * integers as column indices. Note that we could have replaced
-   * each of the two <tt>std::vector</tt> occurrences by <tt>std::list</tt>,
-   * and the inner one by <tt>std::set</tt> as well.
-   *
-   * Another example would be as follows, where we initialize a whole matrix,
-   * not only a sparsity pattern:
+   * <tt>std::vector</tt>s),   and the inner iterators dereferenced yield
+   * integers as column indices. Note that we could have replaced   each of
+   * the two   <tt>std::vector</tt>   occurrences by   <tt>std::list</tt>,
+   * and the inner one by   <tt>std::set</tt>   as well.     Another example
+   * would be as follows, where we initialize a whole matrix,   not only a
+   * sparsity pattern:
    * @code
    * std::vector<std::map<size_type,double> > entries (n_rows);
    * for (size_type row=0; row<n_rows; ++row)
-   *         // generate necessary pairs of columns
-   *         // and corresponding values in this row
-   *   fill_row (entries[row]);
+   *       // generate necessary pairs of columns
+   *       // and corresponding values in this row
+   * fill_row (entries[row]);
    *
    * sparsity.copy_from (n_rows, n_cols,
-   *                     column_indices.begin(),
-   *                     column_indices.end());
+   *                   column_indices.begin(),
+   *                   column_indices.end());
    * matrix.reinit (sparsity);
    * matrix.copy_from (column_indices.begin(),
-   *                   column_indices.end());
+   *                 column_indices.end());
    * @endcode
-   *
    * This example works because dereferencing iterators of the inner type
-   * yields a pair of integers and a value, the first of which we
-   * take as column index. As previously, the outer <tt>std::vector</tt> could
-   * be replaced by <tt>std::list</tt>, and the inner
-   * <tt>std::map<size_type,double></tt> could be replaced by
-   * <tt>std::vector<std::pair<size_type,double> ></tt>, or a list or set of
+   * yields a pair of integers and a value, the first of which we   take as
+   * column index. As previously, the outer   <tt>std::vector</tt>   could
+   * be replaced by   <tt>std::list</tt>,   and the inner
+   * <tt>std::map<size_type,double></tt>   could be replaced by
+   * <tt>std::vector<std::pair<size_type,double>   ></tt>, or a list or set of
    * such pairs, as they all return iterators that point to such pairs.
+   *
    */
   template <typename ForwardIterator>
   void
@@ -505,6 +520,7 @@ public:
    * Copy data from an object of type DynamicSparsityPattern. Previous content
    * of this object is lost, and the sparsity pattern is in compressed mode
    * afterwards.
+   *
    */
   template <typename SparsityPatternType>
   void
@@ -512,10 +528,9 @@ public:
 
   /**
    * Take a full matrix and use its nonzero entries to generate a sparse
-   * matrix entry pattern for this object.
+   * matrix entry pattern for this object.     Previous content of this object
+   * is lost, and the sparsity pattern is in   compressed mode afterwards.
    *
-   * Previous content of this object is lost, and the sparsity pattern is in
-   * compressed mode afterwards.
    */
   template <typename number>
   void
@@ -525,18 +540,16 @@ public:
    * Set the sparsity pattern of the chunk sparsity pattern to be given by
    * <tt>chunk_size*chunksize</tt> blocks of the sparsity pattern for chunks
    * specified. Note that the final number of rows <tt>m</tt> of the sparsity
-   * pattern will be approximately <tt>sparsity_pattern_for_chunks.n_rows() *
+   * pattern will be approximately <tt>sparsity_pattern_for_chunks.n_rows()
    * chunk_size</tt> (modulo padding elements in the last chunk) and similarly
-   * for the number of columns <tt>n</tt>.
+   * for the number of columns <tt>n</tt>.     This is a special
+   * initialization option in case you can tell the position   of the chunk
+   * already from the beginning without generating the sparsity   pattern
+   * using <tt>make_sparsity_pattern</tt> calls. This bypasses the   search
+   * for chunks but of course needs to be handled with care in order to   give
+   * a correct sparsity pattern.     Previous content of this object is lost,
+   * and the sparsity pattern is in   compressed mode afterwards.
    *
-   * This is a special initialization option in case you can tell the position
-   * of the chunk already from the beginning without generating the sparsity
-   * pattern using <tt>make_sparsity_pattern</tt> calls. This bypasses the
-   * search for chunks but of course needs to be handled with care in order to
-   * give a correct sparsity pattern.
-   *
-   * Previous content of this object is lost, and the sparsity pattern is in
-   * compressed mode afterwards.
    */
   template <typename Sparsity>
   void
@@ -549,12 +562,14 @@ public:
   /**
    * Return whether the object is empty. It is empty if no memory is
    * allocated, which is the same as that both dimensions are zero.
+   *
    */
   bool
   empty() const;
 
   /**
    * Return the chunk size given as argument when constructing this object.
+   *
    */
   size_type
   get_chunk_size() const;
@@ -563,25 +578,25 @@ public:
    * Return the maximum number of entries per row. Before compression, this
    * equals the number given to the constructor, while after compression, it
    * equals the maximum number of entries actually allocated by the user.
+   *
    */
   size_type
   max_entries_per_row() const;
 
   /**
    * Add a nonzero entry to the matrix. This function may only be called for
-   * non-compressed sparsity patterns.
+   * non-compressed sparsity patterns.     If the entry already exists,
+   * nothing bad happens.
    *
-   * If the entry already exists, nothing bad happens.
    */
   void
   add(const size_type i, const size_type j);
 
   /**
    * Make the sparsity pattern symmetric by adding the sparsity pattern of the
-   * transpose object.
+   * transpose object.     This function throws an exception if the sparsity
+   * pattern does not   represent a quadratic matrix.
    *
-   * This function throws an exception if the sparsity pattern does not
-   * represent a quadratic matrix.
    */
   void
   symmetrize();
@@ -589,6 +604,7 @@ public:
   /**
    * Return number of rows of this matrix, which equals the dimension of the
    * image space.
+   *
    */
   inline size_type
   n_rows() const;
@@ -596,27 +612,32 @@ public:
   /**
    * Return number of columns of this matrix, which equals the dimension of
    * the range space.
+   *
    */
   inline size_type
   n_cols() const;
 
   /**
    * Check if a value at a certain position may be non-zero.
+   *
    */
   bool
   exists(const size_type i, const size_type j) const;
 
   /**
    * Number of entries in a specific row.
+   *
    */
   size_type
   row_length(const size_type row) const;
 
   /**
    * Compute the bandwidth of the matrix represented by this structure. The
-   * bandwidth is the maximum of $|i-j|$ for which the index pair $(i,j)$
-   * represents a nonzero entry of the matrix. Consequently, the maximum
-   * bandwidth a $n\times m$ matrix can have is $\max\{n-1,m-1\}$.
+   * bandwidth is the maximum of   $|i-j|$   for which the index pair
+   * $(i,j)$     represents a nonzero entry of the matrix. Consequently, the
+   * maximum   bandwidth a   $n\times m$   matrix can have is
+   * $\max\{n-1,m-1\}$  .
+   *
    */
   size_type
   bandwidth() const;
@@ -624,16 +645,17 @@ public:
   /**
    * Return the number of nonzero elements of this matrix. Actually, it
    * returns the number of entries in the sparsity pattern; if any of the
-   * entries should happen to be zero, it is counted anyway.
+   * entries should happen to be zero, it is counted anyway.     This function
+   * may only be called if the matrix struct is compressed. It   does not make
+   * too much sense otherwise anyway.
    *
-   * This function may only be called if the matrix struct is compressed. It
-   * does not make too much sense otherwise anyway.
    */
   size_type
   n_nonzero_elements() const;
 
   /**
    * Return whether the structure is compressed or not.
+   *
    */
   bool
   is_compressed() const;
@@ -644,11 +666,10 @@ public:
    * added through other means (implicitly) while building it. For the current
    * class, the result is true if and only if it is square because it then
    * unconditionally stores the diagonal entries whether they have been added
-   * explicitly or not.
+   * explicitly or not.     This function mainly serves the purpose of
+   * describing the current class   in cases where several kinds of sparsity
+   * patterns can be passed as   template arguments.
    *
-   * This function mainly serves the purpose of describing the current class
-   * in cases where several kinds of sparsity patterns can be passed as
-   * template arguments.
    */
   bool
   stores_only_added_elements() const;
@@ -657,34 +678,35 @@ public:
    * Iterator starting at the first entry of the matrix. The resulting
    * iterator can be used to walk over all nonzero entries of the sparsity
    * pattern.
+   *
    */
   iterator
   begin() const;
 
   /**
    * Final iterator.
+   *
    */
   iterator
   end() const;
 
   /**
-   * Iterator starting at the first entry of row <tt>r</tt>.
+   * Iterator starting at the first entry of row <tt>r</tt>.     Note that if
+   * the given row is empty, i.e. does not contain any nonzero   entries, then
+   * the iterator returned by this function equals   <tt>end(r)</tt>. Note
+   * also that the iterator may not be dereferenceable in   that case.
    *
-   * Note that if the given row is empty, i.e. does not contain any nonzero
-   * entries, then the iterator returned by this function equals
-   * <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable in
-   * that case.
    */
   iterator
   begin(const size_type r) const;
 
   /**
    * Final iterator of row <tt>r</tt>. It points to the first element past the
-   * end of line @p r, or past the end of the entire sparsity pattern.
-   *
+   * end of line   @p r,   or past the end of the entire sparsity pattern.
    * Note that the end iterator is not necessarily dereferenceable. This is in
    * particular the case if it is the end iterator for the last row of a
    * matrix.
+   *
    */
   iterator
   end(const size_type r) const;
@@ -692,12 +714,12 @@ public:
   /**
    * Write the data of this object en bloc to a file. This is done in a binary
    * mode, so the output is neither readable by humans nor (probably) by other
-   * computers using a different operating system of number format.
-   *
-   * The purpose of this function is that you can swap out matrices and
-   * sparsity pattern if you are short of memory, want to communicate between
+   * computers using a different operating system of number format.     The
+   * purpose of this function is that you can swap out matrices and   sparsity
+   * pattern if you are short of memory, want to communicate between
    * different programs, or allow objects to be persistent across different
    * runs of the program.
+   *
    */
   void
   block_write(std::ostream &out) const;
@@ -706,14 +728,11 @@ public:
    * Read data that has previously been written by block_write() from a file.
    * This is done using the inverse operations to the above function, so it is
    * reasonably fast because the bitstream is not interpreted except for a few
-   * numbers up front.
+   * numbers up front.     The object is resized on this operation, and all
+   * previous contents are   lost.     A primitive form of error checking is
+   * performed which will recognize the   bluntest attempts to interpret some
+   * data as a vector stored bitwise to a   file, but not more.
    *
-   * The object is resized on this operation, and all previous contents are
-   * lost.
-   *
-   * A primitive form of error checking is performed which will recognize the
-   * bluntest attempts to interpret some data as a vector stored bitwise to a
-   * file, but not more.
    */
   void
   block_read(std::istream &in);
@@ -722,6 +741,7 @@ public:
    * Print the sparsity of the matrix. The output consists of one line per row
    * of the format <tt>[i,j1,j2,j3,...]</tt>. <i>i</i> is the row number and
    * <i>jn</i> are the allocated columns in this row.
+   *
    */
   void
   print(std::ostream &out) const;
@@ -735,9 +755,9 @@ public:
    * patterns are printed in the same way as matrices are displayed, we print
    * the negative of the column index, which means that the <tt>(0,0)</tt>
    * element is in the top left rather than in the bottom left corner.
-   *
    * Print the sparsity pattern in gnuplot by setting the data style to dots
    * or points and use the <tt>plot</tt> command.
+   *
    */
   void
   print_gnuplot(std::ostream &out) const;
@@ -745,22 +765,25 @@ public:
   /**
    * Determine an estimate for the memory consumption (in bytes) of this
    * object. See MemoryConsumption.
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup   Exceptions     @{
+   *
    */
   /**
    * Exception
+   *
    */
   DeclException1(ExcInvalidNumber,
                  size_type,
                  << "The provided number is invalid here: " << arg1);
   /**
    * Exception
+   *
    */
   DeclException2(ExcInvalidIndex,
                  size_type,
@@ -769,6 +792,7 @@ public:
                  << arg2 << ".");
   /**
    * Exception
+   *
    */
   DeclException2(ExcNotEnoughSpace,
                  size_type,
@@ -780,6 +804,7 @@ public:
   /**
    * The operation is only allowed after the SparsityPattern has been set up
    * and compress() was called.
+   *
    */
   DeclExceptionMsg(
     ExcNotCompressed,
@@ -788,6 +813,7 @@ public:
   /**
    * This operation changes the structure of the SparsityPattern and is not
    * possible after compress() has been called.
+   *
    */
   DeclExceptionMsg(
     ExcMatrixIsCompressed,
@@ -795,10 +821,12 @@ public:
     "and is not possible after compress() has been called.");
   /**
    * Exception
+   *
    */
   DeclException0(ExcEmptyObject);
   /**
    * Exception
+   *
    */
   DeclException2(ExcIteratorRange,
                  size_type,
@@ -807,10 +835,12 @@ public:
                  << " elements, but the given number of rows was " << arg2);
   /**
    * Exception
+   *
    */
   DeclException0(ExcMETISNotInstalled);
   /**
    * Exception
+   *
    */
   DeclException1(ExcInvalidNumberOfPartitions,
                  size_type,
@@ -818,6 +848,7 @@ public:
                  << ", but must be greater than zero.");
   /**
    * Exception
+   *
    */
   DeclException2(ExcInvalidArraySize,
                  size_type,
@@ -828,22 +859,26 @@ public:
 private:
   /**
    * Number of rows that this sparsity structure shall represent.
+   *
    */
   size_type rows;
 
   /**
    * Number of columns that this sparsity structure shall represent.
+   *
    */
   size_type cols;
 
   /**
    * The size of chunks.
+   *
    */
   size_type chunk_size;
 
   /**
    * The reduced sparsity pattern. We store only which chunks exist, with each
    * chunk a block in the matrix of size chunk_size by chunk_size.
+   *
    */
   SparsityPattern sparsity_pattern;
 
@@ -856,8 +891,8 @@ private:
 };
 
 
-/*@}*/
-/*---------------------- Inline functions -----------------------------------*/
+ /*@}*/ 
+ /*---------------------- Inline functions -----------------------------------*/ 
 
 #ifndef DOXYGEN
 

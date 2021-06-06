@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -37,11 +37,12 @@ namespace CUDAWrappers
   {
     /**
      * This class creates the mask used in the treatment of hanging nodes in
-     * CUDAWrappers::MatrixFree.
-     * The implementation of this class is explained in <em>Section 3 of
-     * Matrix-Free Finite-Element Computations On Graphics Processors With
-     * Adaptively Refined Unstructured Meshes</em> by Karl Ljungkvist,
-     * SpringSim-HPC, 2017 April 23-26.
+     * CUDAWrappers::MatrixFree.       The implementation of this class is
+     * explained in   <em>  Section 3 of     Matrix-Free Finite-Element
+     * Computations On Graphics Processors With     Adaptively Refined
+     * Unstructured Meshes  </em>   by Karl Ljungkvist,     SpringSim-HPC,
+     * 2017 April 23-26.
+     *
      */
     template <int dim>
     class HangingNodes
@@ -49,6 +50,7 @@ namespace CUDAWrappers
     public:
       /**
        * Constructor.
+       *
        */
       HangingNodes(unsigned int                     fe_degree,
                    const DoFHandler<dim> &          dof_handler,
@@ -56,6 +58,7 @@ namespace CUDAWrappers
 
       /**
        * Compute the value of the constraint mask for a given cell.
+       *
        */
       template <typename CellIterator>
       void
@@ -68,6 +71,7 @@ namespace CUDAWrappers
     private:
       /**
        * Set up line-to-cell mapping for edge constraints in 3D.
+       *
        */
       void
       setup_line_to_cell();
@@ -964,11 +968,11 @@ namespace CUDAWrappers
 
     /**
      * This function resolves the hanging nodes using tensor product.
-     *
-     * The implementation of this class is explained in <em>Matrix-Free
+     * The implementation of this class is explained in   <em>  Matrix-Free
      * Finite-Element Computations On Graphics Processors With Adaptively
-     * Refined Unstructured Meshes</em> by Karl Ljungkvist, SpringSim-HPC, 2017
-     * April 23-26.
+     * Refined Unstructured Meshes  </em>   by Karl Ljungkvist, SpringSim-HPC,
+     * 2017     April 23-26.
+     *
      */
     template <int dim, int fe_degree, bool transpose, typename Number>
     __device__ void

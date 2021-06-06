@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
 //
@@ -24,10 +24,11 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Iterator for constant and non-constant matrices.
+ * Iterator for constant and non-constant matrices. This iterator is
+ * abstracted from the actual matrix type and can be used for any matrix
+ * having the required ACCESSOR type.
  *
- * This iterator is abstracted from the actual matrix type and can be used for
- * any matrix having the required ACCESSOR type.
+ *
  */
 template <class ACCESSOR>
 class MatrixIterator
@@ -35,17 +36,20 @@ class MatrixIterator
 public:
   /**
    * Declare type for container size.
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
    * Typedef for the matrix type (including constness) we are to operate on.
+   *
    */
   using MatrixType = typename ACCESSOR::MatrixType;
 
   /**
    * Constructor. Create an iterator into the matrix <tt>matrix</tt> for the
    * given <tt>row</tt> and the <tt>index</tt> within it.
+   *
    */
   MatrixIterator(MatrixType *    matrix,
                  const size_type row   = 0,
@@ -56,40 +60,47 @@ public:
    * initialization of a constant iterator from a non constant, this function
    * only requires that a conversion from the other iterator's accessor to
    * this accessor object is possible.
+   *
    */
   template <class OtherAccessor>
   MatrixIterator(const MatrixIterator<OtherAccessor> &other);
 
   /**
    * Prefix increment.
+   *
    */
   MatrixIterator &
   operator++();
 
   /**
    * Postfix increment.
+   *
    */
   MatrixIterator
   operator++(int);
 
   /**
    * Dereferencing operator.
+   *
    */
   const ACCESSOR &operator*() const;
 
   /**
    * Dereferencing operator.
+   *
    */
   const ACCESSOR *operator->() const;
 
   /**
    * Comparison. True, if both accessors are equal.
+   *
    */
   bool
   operator==(const MatrixIterator &) const;
 
   /**
    * Inverse of <tt>==</tt>.
+   *
    */
   bool
   operator!=(const MatrixIterator &) const;
@@ -97,8 +108,8 @@ public:
   /**
    * Comparison operator. Result is true if either the first row number is
    * smaller or if the row numbers are equal and the first index is smaller.
-   *
    * This function is only valid if both iterators point into the same matrix.
+   *
    */
   bool
   operator<(const MatrixIterator &) const;
@@ -106,6 +117,7 @@ public:
   /**
    * Comparison operator. Works in the same way as above operator, just the
    * other way round.
+   *
    */
   bool
   operator>(const MatrixIterator &) const;
@@ -113,6 +125,7 @@ public:
 private:
   /**
    * Store an object of the accessor class.
+   *
    */
   ACCESSOR accessor;
 

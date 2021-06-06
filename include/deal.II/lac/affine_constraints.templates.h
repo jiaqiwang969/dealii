@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
 //
@@ -2115,10 +2115,10 @@ namespace internal
   inline void
   import_vector_with_ghost_elements(
     const TrilinosWrappers::MPI::Vector &vec,
-    const IndexSet & /*locally_owned_elements*/,
+    const IndexSet &  /*locally_owned_elements*/ ,
     const IndexSet &               needed_elements,
     TrilinosWrappers::MPI::Vector &output,
-    const std::integral_constant<bool, false> /*is_block_vector*/)
+    const std::integral_constant<bool, false>  /*is_block_vector*/ )
   {
     Assert(!vec.has_ghost_elements(), ExcGhostsPresent());
 #  ifdef DEAL_II_WITH_MPI
@@ -2141,7 +2141,7 @@ namespace internal
     const IndexSet &                  locally_owned_elements,
     const IndexSet &                  needed_elements,
     PETScWrappers::MPI::Vector &      output,
-    const std::integral_constant<bool, false> /*is_block_vector*/)
+    const std::integral_constant<bool, false>  /*is_block_vector*/ )
   {
     output.reinit(locally_owned_elements,
                   needed_elements,
@@ -2157,7 +2157,7 @@ namespace internal
     const IndexSet &                                  locally_owned_elements,
     const IndexSet &                                  needed_elements,
     LinearAlgebra::distributed::Vector<number> &      output,
-    const std::integral_constant<bool, false> /*is_block_vector*/)
+    const std::integral_constant<bool, false>  /*is_block_vector*/ )
   {
     // TODO: the in vector might already have all elements. need to find a
     // way to efficiently avoid the copy then
@@ -2175,11 +2175,11 @@ namespace internal
   template <typename Vector>
   void
   import_vector_with_ghost_elements(
-    const Vector & /*vec*/,
-    const IndexSet & /*locally_owned_elements*/,
-    const IndexSet & /*needed_elements*/,
-    Vector & /*output*/,
-    const std::integral_constant<bool, false> /*is_block_vector*/)
+    const Vector &  /*vec*/ ,
+    const IndexSet &  /*locally_owned_elements*/ ,
+    const IndexSet &  /*needed_elements*/ ,
+    Vector &  /*output*/ ,
+    const std::integral_constant<bool, false>  /*is_block_vector*/ )
   {
     Assert(false, ExcMessage("We shouldn't even get here!"));
   }
@@ -2192,7 +2192,7 @@ namespace internal
     const IndexSet &  locally_owned_elements,
     const IndexSet &  needed_elements,
     VectorType &      output,
-    const std::integral_constant<bool, true> /*is_block_vector*/)
+    const std::integral_constant<bool, true>  /*is_block_vector*/ )
   {
     output.reinit(vec.n_blocks());
 
@@ -2717,19 +2717,18 @@ namespace internal
 
 
     /**
-     * This class is an accessor class to scratch data that is used
-     * during calls to distribute_local_to_global and
+     * This class is an accessor class to scratch data that is used     during
+     * calls to distribute_local_to_global and
      * add_entries_local_to_global. In order to avoid frequent memory
-     * allocation, we keep the data alive from one call to the next in
-     * a static variable. Since we want to allow for different number
-     * types in matrices, this is a template.
+     * allocation, we keep the data alive from one call to the next in     a
+     * static variable. Since we want to allow for different number     types
+     * in matrices, this is a template.         Since each thread gets its
+     * private version of scratch data out of the     ThreadLocalStorage, no
+     * conflicting access can occur. For this to be     valid, we need to make
+     * sure that no call within     distribute_local_to_global is made that by
+     * itself can spawn tasks.     Otherwise, we might end up in a situation
+     * where several threads fight for     the data.
      *
-     * Since each thread gets its private version of scratch data out of the
-     * ThreadLocalStorage, no conflicting access can occur. For this to be
-     * valid, we need to make sure that no call within
-     * distribute_local_to_global is made that by itself can spawn tasks.
-     * Otherwise, we might end up in a situation where several threads fight for
-     * the data.
      */
     template <typename number>
     class ScratchDataAccessor
@@ -2738,6 +2737,7 @@ namespace internal
       /**
        * Constructor. Takes the scratch data object for the current
        * thread out of the provided object and marks it as used.
+       *
        */
       ScratchDataAccessor(
         Threads::ThreadLocalStorage<ScratchData<number>> &tls_scratch_data)
@@ -2752,6 +2752,7 @@ namespace internal
 
       /**
        * Destructor. Mark scratch data as available again.
+       *
        */
       ~ScratchDataAccessor()
       {
@@ -2760,6 +2761,7 @@ namespace internal
 
       /**
        * Dereferencing operator.
+       *
        */
       ScratchData<number> &operator*()
       {
@@ -2768,6 +2770,7 @@ namespace internal
 
       /**
        * Dereferencing operator.
+       *
        */
       ScratchData<number> *operator->()
       {

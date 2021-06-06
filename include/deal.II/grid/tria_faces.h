@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2021 by the deal.II authors
 //
@@ -39,56 +39,61 @@ namespace internal
      * want to enable anisotropic refinement. Therefore the TriaFaces classes
      * store the information belonging to the faces of a triangulation
      * separately from the TriaLevel classes.
+     *
      */
     class TriaFaces
     {
     public:
       /**
        * Constructor.
+       *
        */
       TriaFaces(const unsigned int dim);
 
       /**
-       * Default constructor for Boost::serialization.
+       * Default constructor for   Boost::serialization.
+       *
        */
       TriaFaces() = default;
 
       /**
        * Dimension of the underlying triangulation.
+       *
        */
       unsigned int dim;
 
       /**
        * The TriaObject containing the data of quads.
+       * @note   Used only for dim=3.
        *
-       * @note Used only for dim=3.
        */
       TriaObjects quads;
 
       /**
        * Orientation of each line of each quad.
+       * @note   Used only for dim=3.
        *
-       * @note Used only for dim=3.
        */
       std::vector<unsigned char> quads_line_orientations;
 
       /**
        * Reference cell type of each quad.
+       * @note   Used only for dim=3.
        *
-       * @note Used only for dim=3.
        */
       std::vector<dealii::ReferenceCell> quad_reference_cell;
 
       /**
        * The TriaObject containing the data of lines.
+       * @note   Used only for dim>1.
        *
-       * @note Used only for dim>1.
        */
       TriaObjects lines;
 
       /**
        * Determine an estimate for the memory consumption (in bytes) of this
        * object.
+       *
        */
       std::size_t
       memory_consumption() const;
@@ -97,6 +102,7 @@ namespace internal
        * Read or write the data of this object to or from a stream for the
        * purpose of serialization using the [BOOST serialization
        * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+       *
        */
       template <class Archive>
       void

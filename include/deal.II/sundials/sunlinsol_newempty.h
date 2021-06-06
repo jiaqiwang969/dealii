@@ -1,4 +1,4 @@
-//-----------------------------------------------------------
+////-----------------------------------------------------------
 //
 //    Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -13,15 +13,17 @@
 //
 //-----------------------------------------------------------
 
-/*
- * The functions in this file are based on an implementation distributed within
- * the SUNDIALS package, see the license here:
- * https://computing.llnl.gov/projects/sundials/license.
- * -----------------------------------------------------------------
- * Programmer(s): Daniel Reynolds @ SMU
- *                David J. Gardner, Carol S. Woodward, and
- *                Slaven Peles @ LLNL
- * -----------------------------------------------------------------*/
+/* The functions in this file are based on an implementation distributed within the SUNDIALS package, see the license here: https://computing.llnl.gov/projects/sundials/license.
+* 
+
+* 
+* 
+*  - --------------------------------------------------------------- Programmer(s): Daniel Reynolds @ SMU                David J. Gardner, Carol S. Woodward, and                Slaven Peles @ LLNL
+* 
+
+* 
+* 
+*  - ---------------------------------------------------------------*/
 
 #ifndef dealii_sundials_sunlinsol_newempty_h
 #define dealii_sundials_sunlinsol_newempty_h
@@ -40,17 +42,18 @@ namespace SUNDIALS
     /**
      * Create a new SUNLinearSolver structure without any content and
      * operations set to `nullptr`.
+     *
      */
     inline SUNLinearSolver
     SUNLinSolNewEmpty()
     {
-      /* create linear solver object */
+       /* create linear solver object */ 
       SUNLinearSolver LS = new _generic_SUNLinearSolver;
 
-      /* create linear solver ops structure */
+       /* create linear solver ops structure */ 
       SUNLinearSolver_Ops ops = new _generic_SUNLinearSolver_Ops;
 
-      /* initialize operations to nullptr */
+       /* initialize operations to nullptr */ 
       ops->gettype           = nullptr;
       ops->setatimes         = nullptr;
       ops->setpreconditioner = nullptr;
@@ -65,7 +68,7 @@ namespace SUNDIALS
       ops->space             = nullptr;
       ops->free              = nullptr;
 
-      /* attach ops and initialize content to nullptr */
+       /* attach ops and initialize content to nullptr */ 
       LS->ops     = ops;
       LS->content = nullptr;
 
@@ -73,12 +76,11 @@ namespace SUNDIALS
     }
 
     /**
-     * Free the memory associated with @p solver which was previously allocated
-     * with a call to SUNLinSolNewEmpty().
+     * Free the memory associated with   @p solver   which was previously
+     * allocated     with a call to SUNLinSolNewEmpty().
+     * @note   A call to this function does not deallocate the `content`
+     * field.           @param   solver The solver memory to free
      *
-     * @note A call to this function does not deallocate the `content` field.
-     *
-     * @param solver The solver memory to free
      */
     inline void
     SUNLinSolFreeEmpty(SUNLinearSolver solver)
@@ -86,12 +88,12 @@ namespace SUNDIALS
       if (solver == nullptr)
         return;
 
-      /* free non-nullptr ops structure */
+       /* free non-nullptr ops structure */ 
       if (solver->ops)
         delete solver->ops;
       solver->ops = nullptr;
 
-      /* free overall linear solver object */
+       /* free overall linear solver object */ 
       delete solver;
       return;
     }

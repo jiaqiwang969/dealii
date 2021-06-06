@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -47,8 +47,8 @@ namespace
 {
   /**
    * Helper class to select the right templated implementation.
+   * @note   This class is similar to   internal::FEEvaluationFactory
    *
-   * @note This class is similar to internal::FEEvaluationFactory
    */
   class CellTransferFactory
   {
@@ -94,6 +94,7 @@ namespace
 
   /**
    * Helper class containing the cell-wise prolongation operation.
+   *
    */
   template <int dim, typename Number>
   class CellProlongator
@@ -160,6 +161,7 @@ namespace
 
   /**
    * Helper class containing the cell-wise restriction operation.
+   *
    */
   template <int dim, typename Number>
   class CellRestrictor
@@ -550,7 +552,7 @@ namespace internal
       , mesh_coarse(mesh_coarse)
       , mg_level_fine(mg_level_fine)
       , communicator(
-          mesh_fine.get_communicator() /*TODO: fix for different comms*/)
+          mesh_fine.get_communicator()  /*TODO: fix for different comms*/ )
       , cell_id_translator(n_coarse_cells(mesh_fine),
                            n_global_levels(mesh_fine))
     {
@@ -997,7 +999,7 @@ namespace internal
     GlobalCoarseningFineDoFHandlerView(const DoFHandler<dim> &dof_handler_dst,
                                        const DoFHandler<dim> &dof_handler_src)
       : FineDoFHandlerView<
-          dim>(dof_handler_dst, dof_handler_src, numbers::invalid_unsigned_int /*global coarsening only possible on active levels*/)
+          dim>(dof_handler_dst, dof_handler_src, numbers::invalid_unsigned_int  /*global coarsening only possible on active levels*/ )
     {
       // get reference to triangulations
       const auto &tria_dst = dof_handler_dst.get_triangulation();
@@ -1716,7 +1718,7 @@ namespace internal
           // compute weights globally
           LinearAlgebra::distributed::Vector<Number> weight_vector;
           compute_weights(dof_handler_fine,
-                          numbers::invalid_unsigned_int /*active level*/,
+                          numbers::invalid_unsigned_int  /*active level*/ ,
                           constraint_fine,
                           transfer,
                           weight_vector);

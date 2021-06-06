@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
 //
@@ -93,11 +93,13 @@ namespace internal
 #ifdef DEAL_II_WITH_TBB
     /**
      * This struct takes the loop range from the tbb parallel for loop and
-     * translates it to the actual ranges of the for loop within the vector. It
-     * encodes the grain size but might choose larger values of chunks than the
-     * minimum grain size. The minimum grain size given to tbb is then simple
-     * 1. For affinity reasons, the layout in this loop must be kept in sync
-     * with the respective class for reductions further down.
+     * translates it to the actual ranges of the for loop within the vector.
+     * It     encodes the grain size but might choose larger values of chunks
+     * than the     minimum grain size. The minimum grain size given to tbb is
+     * then simple     1. For affinity reasons, the layout in this loop must
+     * be kept in sync     with the respective class for reductions further
+     * down.
+     *
      */
     template <typename Functor>
     struct TBBForFunctor
@@ -982,6 +984,7 @@ namespace internal
      * The minimum number of chunks (each of size 32) to divide the range
      * [first,last) into two (second part of the if branch in
      * accumulate_recursive).
+     *
      */
     const unsigned int vector_accumulation_recursion_threshold = 128;
 
@@ -1236,28 +1239,32 @@ namespace internal
      * translates it to the actual ranges of the reduction loop inside the
      * vector. It encodes the grain size but might choose larger values of
      * chunks than the minimum grain size. The minimum grain size given to tbb
-     * is 1. For affinity reasons, the layout in this loop must be kept in sync
-     * with the respective class for plain for loops further up.
-     *
+     * is 1. For affinity reasons, the layout in this loop must be kept in
+     * sync     with the respective class for plain for loops further up.
      * Due to this construction, TBB usually only sees a loop of length
-     * 4*num_threads with grain size 1. The actual ranges inside the vector are
-     * computed outside of TBB because otherwise TBB would split the ranges in
-     * some unpredictable position which destroys exact bitwise
+     * 4*num_threads with grain size 1. The actual ranges inside the vector
+     * are     computed outside of TBB because otherwise TBB would split the
+     * ranges in     some unpredictable position which destroys exact bitwise
      * reproducibility. An important part of this is that inside
-     * TBBReduceFunctor::operator() the recursive calls to accumulate are done
-     * sequentially on one item a time (even though we could directly run it on
-     * the whole range given through the tbb::blocked_range times the chunk size
-     * - but that would be unpredictable). Thus, the values we cannot control
-     * are the positions in the array that gets filled - but up to that point
-     * the algorithm TBB sees is just a parallel for and nothing unpredictable
-     * can happen.
+     * TBBReduceFunctor::operator()   the recursive calls to accumulate are
+     * done     sequentially on one item a time (even though we could directly
+     * run it on     the whole range given through the   tbb::blocked_range
+     * times the chunk size
      *
-     * To sum up: Once the number of threads and the vector size are fixed, we
-     * have an exact layout of how the calls into the recursive function will
-     * happen. Inside the recursive function, we again only depend on the
-     * length. Finally, the concurrent threads write into different positions in
-     * a result vector in a thread-safe way and the addition in the short array
-     * is again serial.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *  - but that would be unpredictable). Thus, the values we cannot control     are the positions in the array that gets filled
+     *
+     *  - but up to that point     the algorithm TBB sees is just a parallel for and nothing unpredictable     can happen.         To sum up: Once the number of threads and the vector size are fixed, we     have an exact layout of how the calls into the recursive function will     happen. Inside the recursive function, we again only depend on the     length. Finally, the concurrent threads write into different positions in     a result vector in a thread-safe way and the addition in the short array     is again serial.
+     *
      */
     template <typename Operation, typename ResultType>
     struct TBBReduceFunctor
@@ -1302,8 +1309,9 @@ namespace internal
       }
 
       /**
-       * An operator used by TBB to work on a given @p range of chunks
+       * An operator used by TBB to work on a given   @p range   of chunks
        * [range.begin(), range.end()).
+       *
        */
       void
       operator()(const tbb::blocked_range<size_type> &range) const
@@ -1346,8 +1354,9 @@ namespace internal
 
 
     /**
-     * This is the general caller for parallel reduction operations that work in
-     * parallel.
+     * This is the general caller for parallel reduction operations that work
+     * in     parallel.
+     *
      */
     template <typename Operation, typename ResultType>
     void
@@ -1408,11 +1417,11 @@ namespace internal
       static void
       copy(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number2, MemorySpace>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {
         static_assert(
           std::is_same<MemorySpace, ::dealii::MemorySpace::CUDA>::value &&
@@ -1423,156 +1432,156 @@ namespace internal
       static void
       set(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        const Number /*s*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        const Number  /*s*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       add_vector(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       subtract_vector(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       add_factor(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        Number /*a*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        Number  /*a*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       add_av(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        const Number /*a*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        const Number  /*a*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       add_avpbw(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        const Number /*a*/,
-        const Number /*b*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        const Number  /*a*/ ,
+        const Number  /*b*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
+          &  /*v_data*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*w_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*w_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       sadd_xv(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        const Number /*x*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        const Number  /*x*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       sadd_xav(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        const Number /*x*/,
-        const Number /*a*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        const Number  /*x*/ ,
+        const Number  /*a*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       sadd_xavbw(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        const Number /*x*/,
-        const Number /*a*/,
-        const Number /*b*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        const Number  /*x*/ ,
+        const Number  /*a*/ ,
+        const Number  /*b*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
+          &  /*v_data*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*w_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*w_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       multiply_factor(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        const Number /*factor*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        const Number  /*factor*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       scale(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       equ_au(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        const Number /*a*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        const Number  /*a*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static void
       equ_aubv(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        const Number /*a*/,
-        const Number /*b*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        const Number  /*a*/ ,
+        const Number  /*b*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
+          &  /*v_data*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*w_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*w_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static Number
       dot(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number2, MemorySpace>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {
         return Number();
       }
@@ -1581,21 +1590,21 @@ namespace internal
       static void
       norm_2(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        real_type & /*sum*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        real_type &  /*sum*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static Number
       mean_value(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*data*/)
+          &  /*data*/ )
       {
         return Number();
       }
@@ -1604,35 +1613,35 @@ namespace internal
       static void
       norm_1(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        real_type & /*sum*/,
-        Number * /*values*/,
-        Number * /*values_dev*/)
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        real_type &  /*sum*/ ,
+        Number *  /*values*/ ,
+        Number *  /*values_dev*/ )
       {}
 
       template <typename real_type>
       static void
       norm_p(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        real_type & /*sum*/,
-        real_type /*p*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        real_type &  /*sum*/ ,
+        real_type  /*p*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
 
       static Number
       add_and_dot(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        const Number /*a*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        const Number  /*a*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*v_data*/,
+          &  /*v_data*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace>
-          & /*w_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*w_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {
         return Number();
       }
@@ -1641,12 +1650,12 @@ namespace internal
       static void
       import_elements(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner> &
-        /*thread_loop_partitioner*/,
-        const size_type /*size*/,
-        VectorOperation::values /*operation*/,
+         /*thread_loop_partitioner*/ ,
+        const size_type  /*size*/ ,
+        VectorOperation::values  /*operation*/ ,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace2>
-          & /*v_data*/,
-        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> & /*data*/)
+          &  /*v_data*/ ,
+        ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace> &  /*data*/ )
       {}
     };
 
@@ -2029,7 +2038,7 @@ namespace internal
       static void
       import_elements(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner>
-          & /*thread_loop_partitioner*/,
+          &  /*thread_loop_partitioner*/ ,
         const size_type         size,
         VectorOperation::values operation,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace2>
@@ -2546,7 +2555,7 @@ namespace internal
       static void
       import_elements(
         const std::shared_ptr<::dealii::parallel::internal::TBBPartitioner>
-          & /*thread_loop_partitioner*/,
+          &  /*thread_loop_partitioner*/ ,
         const size_type         size,
         VectorOperation::values operation,
         const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpace2>

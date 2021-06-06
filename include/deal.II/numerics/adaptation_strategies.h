@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2020 by the deal.II authors
 //
@@ -31,36 +31,35 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * When data is transferred during adaptation, it is not trivial to decide
- * how to process data from former cells on the old mesh that have been changed
+ * When data is transferred during adaptation, it is not trivial to decide how
+ * to process data from former cells on the old mesh that have been changed
  * into current cells on the new mesh. Or in other words, how data should be
- * stored in the cells on the adapted mesh.
+ * stored in the cells on the adapted mesh. In this namespace, we offer a few
+ * strategies that cope with this problem. Such strategies can be passed to
+ * the CellDataTransfer and   parallel::distributed::CellDataTransfer
+ * constructors.
  *
- * In this namespace, we offer a few strategies that cope with this
- * problem. Such strategies can be passed to the CellDataTransfer and
- * parallel::distributed::CellDataTransfer constructors.
+ *
  */
 namespace AdaptationStrategies
 {
   /**
    * For refinement, all strategies take the parent cell and its associated
    * data. They return a vector containing data for each individual child that
-   * the parent cell will be refined to.
+   * the parent cell will be refined to.     The ordering of values in the
+   * vector for children data corresponds to the   index when calling
+   * TriaAccessor::child_index.
    *
-   * The ordering of values in the vector for children data corresponds to the
-   * index when calling TriaAccessor::child_index.
    */
   namespace Refinement
   {
     /**
-     * Return a vector containing copies of data of the parent cell for each
-     * child.
-     *
-     * @f[
-     *   d_{K_c} = d_{K_p}
-     *   \qquad
-     *   \forall K_c \text{ children of } K_p
+     * Return a vector containing copies of data of the parent cell for each     child.         @f[
+     * d_{K_c} = d_{K_p}
+     * \qquad
+     * \forall K_c \text{ children of } K_p
      * @f]
+     *
      */
     template <int dim, int spacedim, typename value_type>
     std::vector<value_type>
@@ -69,17 +68,12 @@ namespace AdaptationStrategies
              const value_type parent_value);
 
     /**
-     * Return a vector which contains data of the parent cell being equally
-     * divided among all children.
+     * Return a vector which contains data of the parent cell being equally     divided among all children.         @f[
+     * d_{K_c} = d_{K_p} / n_\text{children}
+     * \qquad
+     * \forall K_c \text{ children of } K_p
+     * @f]         This strategy preserves the   $l_1$  -norm of the corresponding global data     Vector before and after adaptation.
      *
-     * @f[
-     *   d_{K_c} = d_{K_p} / n_\text{children}
-     *   \qquad
-     *   \forall K_c \text{ children of } K_p
-     * @f]
-     *
-     * This strategy preserves the $l_1$-norm of the corresponding global data
-     * Vector before and after adaptation.
      */
     template <int dim, int spacedim, typename value_type>
     std::vector<value_type>
@@ -88,17 +82,12 @@ namespace AdaptationStrategies
           const value_type parent_value);
 
     /**
-     * Return a vector which contains squared data of the parent cell being
-     * equally divided among the squares of all children.
+     * Return a vector which contains squared data of the parent cell being     equally divided among the squares of all children.         @f[
+     * d_{K_c}^2 = d_{K_p}^2 / n_\text{children}
+     * \qquad
+     * \forall K_c \text{ children of } K_p
+     * @f]         This strategy preserves the   $l_2$  -norm of the corresponding global data     Vector before and after adaptation.
      *
-     * @f[
-     *   d_{K_c}^2 = d_{K_p}^2 / n_\text{children}
-     *   \qquad
-     *   \forall K_c \text{ children of } K_p
-     * @f]
-     *
-     * This strategy preserves the $l_2$-norm of the corresponding global data
-     * Vector before and after adaptation.
      */
     template <int dim, int spacedim, typename value_type>
     std::vector<value_type>
@@ -110,21 +99,20 @@ namespace AdaptationStrategies
   /**
    * For coarsening, all strategies take the parent cell and a vector of data
    * that belonged to its former children. They return the value that will be
-   * assigned to the parent cell.
+   * assigned to the parent cell.     The ordering of values in the vector for
+   * children data corresponds to the   index when calling
+   * TriaAccessor::child_index.
    *
-   * The ordering of values in the vector for children data corresponds to the
-   * index when calling TriaAccessor::child_index.
    */
   namespace Coarsening
   {
     /**
-     * Check if data on all children match, and return value of the first child.
-     *
-     * @f[
-     *   d_{K_p} = d_{K_c}
-     *   \qquad
-     *   \forall K_c \text{ children of } K_p
+     * Check if data on all children match, and return value of the first child.         @f[
+     * d_{K_p} = d_{K_c}
+     * \qquad
+     * \forall K_c \text{ children of } K_p
      * @f]
+     *
      */
     template <int dim, int spacedim, typename value_type>
     value_type
@@ -134,16 +122,12 @@ namespace AdaptationStrategies
       const std::vector<value_type> &children_values);
 
     /**
-     * Return sum of data on all children.
+     * Return sum of data on all children.         @f[
+     * d_{K_p} = \sum d_{K_c}
+     * \qquad
+     * \forall K_c \text{ children of } K_p
+     * @f]         This strategy preserves the   $l_1$  -norm of the corresponding global data     vector before and after adaptation.
      *
-     * @f[
-     *   d_{K_p} = \sum d_{K_c}
-     *   \qquad
-     *   \forall K_c \text{ children of } K_p
-     * @f]
-     *
-     * This strategy preserves the $l_1$-norm of the corresponding global data
-     * vector before and after adaptation.
      */
     template <int dim, int spacedim, typename value_type>
     value_type
@@ -152,16 +136,12 @@ namespace AdaptationStrategies
         const std::vector<value_type> &children_values);
 
     /**
-     * Return $ l_2 $-norm of data on all children.
+     * Return   $ l_2 $  -norm of data on all children.         @f[
+     * d_{K_p}^2 = \sum d_{K_c}^2
+     * \qquad
+     * \forall K_c \text{ children of } K_p
+     * @f]         This strategy preserves the   $l_2$  -norm of the corresponding global data     vector before and after adaptation.
      *
-     * @f[
-     *   d_{K_p}^2 = \sum d_{K_c}^2
-     *   \qquad
-     *   \forall K_c \text{ children of } K_p
-     * @f]
-     *
-     * This strategy preserves the $l_2$-norm of the corresponding global data
-     * vector before and after adaptation.
      */
     template <int dim, int spacedim, typename value_type>
     value_type
@@ -170,13 +150,12 @@ namespace AdaptationStrategies
             const std::vector<value_type> &children_values);
 
     /**
-     * Return mean value of data on all children.
-     *
-     * @f[
-     *   d_{K_p} = \sum d_{K_c} / n_\text{children}
-     *   \qquad
-     *   \forall K_c \text{ children of } K_p
+     * Return mean value of data on all children.         @f[
+     * d_{K_p} = \sum d_{K_c} / n_\text{children}
+     * \qquad
+     * \forall K_c \text{ children of } K_p
      * @f]
+     *
      */
     template <int dim, int spacedim, typename value_type>
     value_type
@@ -185,13 +164,12 @@ namespace AdaptationStrategies
          const std::vector<value_type> &children_values);
 
     /**
-     * Return maximum value of data on all children.
-     *
-     * @f[
-     *   d_{K_p} = \max \left( d_{K_c} \right)
-     *   \qquad
-     *   \forall K_c \text{ children of } K_p
+     * Return maximum value of data on all children.         @f[
+     * d_{K_p} = \max \left( d_{K_c} \right)
+     * \qquad
+     * \forall K_c \text{ children of } K_p
      * @f]
+     *
      */
     template <int dim, int spacedim, typename value_type>
     value_type
@@ -203,7 +181,7 @@ namespace AdaptationStrategies
 
 
 
-/* ---------------- template functions ---------------- */
+ /* ---------------- template functions ---------------- */ 
 
 #ifndef DOXYGEN
 
@@ -350,4 +328,4 @@ namespace AdaptationStrategies
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* dealii_adaptation_strategies_h */
+#endif  /* dealii_adaptation_strategies_h */ 

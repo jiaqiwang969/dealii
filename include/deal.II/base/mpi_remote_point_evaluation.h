@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
 //
@@ -32,30 +32,31 @@ namespace Utilities
   {
     /**
      * Helper class to access values on non-matching grids.
+     * @note   The name of the fields are chosen with the method
+     * evaluate_and_process() in mind. Here, quantities are       computed at
+     * specified arbitrary positioned points (and even on remote
+     * processes in the MPI universe) cell by cell and these values are sent
+     * to requesting processes, which receive the result and resort the
+     * result according to the points.
      *
-     * @note The name of the fields are chosen with the method
-     *   evaluate_and_process() in mind. Here, quantities are
-     *   computed at specified arbitrary positioned points (and even on remote
-     *   processes in the MPI universe) cell by cell and these values are sent
-     *   to requesting processes, which receive the result and resort the
-     *   result according to the points.
      */
     template <int dim, int spacedim = dim>
     class RemotePointEvaluation
     {
     public:
       /**
-       * Constructor.
+       * Constructor.               @param   tolerance Tolerance in terms of
+       * unit cell coordinates for         determining all cells around a
+       * point passed to the class during         reinit(). Depending on the
+       * problem, it might be necessary to adjust         the tolerance in
+       * order to be able to identify a cell.         Floating point
+       * arithmetic implies that a point will, in general, not         lie
+       * exactly on a vertex, edge, or face.         @param
+       * enforce_unique_mapping Enforce unique mapping, i.e.,
+       * (one-to-one) relation of points and cells.         @param
+       * rtree_level RTree level to be used during the construction of the
+       * bounding boxes.
        *
-       * @param tolerance Tolerance in terms of unit cell coordinates for
-       *   determining all cells around a point passed to the class during
-       *   reinit(). Depending on the problem, it might be necessary to adjust
-       *   the tolerance in order to be able to identify a cell.
-       *   Floating point arithmetic implies that a point will, in general, not
-       *   lie exactly on a vertex, edge, or face.
-       * @param enforce_unique_mapping Enforce unique mapping, i.e.,
-       *   (one-to-one) relation of points and cells.
-       * @param rtree_level RTree level to be used during the construction of the bounding boxes.
        */
       RemotePointEvaluation(const double       tolerance              = 1e-6,
                             const bool         enforce_unique_mapping = false,
@@ -63,16 +64,17 @@ namespace Utilities
 
       /**
        * Destructor.
+       *
        */
       ~RemotePointEvaluation();
 
       /**
        * Set up internal data structures and communication pattern based on
-       * a list of points @p points and mesh description (@p tria and @p
-       * mapping).
+       * a list of points   @p points   and mesh description (  @p tria   and
+       * @p         mapping).               @warning   This is a collective
+       * call that needs to be executed by all         processors in the
+       * communicator.
        *
-       * @warning This is a collective call that needs to be executed by all
-       *   processors in the communicator.
        */
       void
       reinit(const std::vector<Point<spacedim>> &points,
@@ -81,39 +83,42 @@ namespace Utilities
 
       /**
        * Data of points positioned in a cell.
+       *
        */
       struct CellData
       {
         /**
          * Level and index of cells.
+         *
          */
         std::vector<std::pair<int, int>> cells;
 
         /**
          * Pointers to beginning and ending of the (reference) points
          * associated to the cell.
+         *
          */
         std::vector<unsigned int> reference_point_ptrs;
 
         /**
          * Reference points in the interval [0,1]^dim.
+         *
          */
         std::vector<Point<dim>> reference_point_values;
       };
 
       /**
-       * Evaluate function @p evaluation_function in the given  points and
-       * triangulation. The result is stored in @p output.
+       * Evaluate function   @p evaluation_function   in the given  points and
+       * triangulation. The result is stored in   @p output.
+       * @note   If the map of points to cells is not a         one-to-one
+       * relation (is_map_unique()==false), the result needs to be
+       * processed with the help of get_point_ptrs(). This         might be
+       * the case if a point coincides with a geometric entity (e.g.,
+       * vertex) that is shared by multiple cells or a point is outside of the
+       * computational domain.               @warning   This is a collective
+       * call that needs to be executed by all         processors in the
+       * communicator.
        *
-       * @note If the map of points to cells is not a
-       *   one-to-one relation (is_map_unique()==false), the result needs to be
-       *   processed with the help of get_point_ptrs(). This
-       *   might be the case if a point coincides with a geometric entity (e.g.,
-       *   vertex) that is shared by multiple cells or a point is outside of the
-       *   computational domain.
-       *
-       * @warning This is a collective call that needs to be executed by all
-       *   processors in the communicator.
        */
       template <typename T>
       void
@@ -125,11 +130,11 @@ namespace Utilities
 
       /**
        * This method is the inverse of the method evaluate_and_process(). It
-       * makes the data at the points, provided by @p input, available in the
-       * function @p evaluation_function.
+       * makes the data at the points, provided by   @p input,   available in
+       * the       function   @p evaluation_function.                 @warning
+       * This is a collective call that needs to be executed by all
+       * processors in the communicator.
        *
-       * @warning This is a collective call that needs to be executed by all
-       *   processors in the communicator.
        */
       template <typename T>
       void
@@ -142,35 +147,41 @@ namespace Utilities
       /**
        * Return a CRS-like data structure to determine the position of the
        * result corresponding a point and the amount.
+       *
        */
       const std::vector<unsigned int> &
       get_point_ptrs() const;
 
       /**
-       * Return if points and cells have a one-to-one relation. This is not the
-       * case if a point is not owned by any cell (the point is outside of the
-       * domain) or if multiple cells own the point (the point is positioned
-       * on a geometric entity shared by neighboring cells).
+       * Return if points and cells have a one-to-one relation. This is not
+       * the       case if a point is not owned by any cell (the point is
+       * outside of the       domain) or if multiple cells own the point (the
+       * point is positioned       on a geometric entity shared by neighboring
+       * cells).
+       *
        */
       bool
       is_map_unique() const;
 
       /**
        * Return the Triangulation object used during reinit().
+       *
        */
       const Triangulation<dim, spacedim> &
       get_triangulation() const;
 
       /**
        * Return the Mapping object used during reinit().
+       *
        */
       const Mapping<dim, spacedim> &
       get_mapping() const;
 
       /**
        * Return if the internal data structures have been set up and if yes
-       * whether they are still valid (and not invalidated due to changes of the
-       * Triangulation).
+       * whether they are still valid (and not invalidated due to changes of
+       * the       Triangulation).
+       *
        */
       bool
       is_ready() const;
@@ -179,22 +190,26 @@ namespace Utilities
       /**
        * Tolerance to be used while determining the surrounding cells of a
        * point.
+       *
        */
       const double tolerance;
 
       /**
        * Enforce unique mapping, i.e., (one-to-one) relation of points and
        * cells.
+       *
        */
       const bool enforce_unique_mapping;
 
       /**
        * RTree level to be used during the construction of the bounding boxes.
+       *
        */
       const unsigned int rtree_level;
 
       /**
        * Storage for the status of the triangulation signal.
+       *
        */
       boost::signals2::connection tria_signal;
 
@@ -202,21 +217,25 @@ namespace Utilities
        * Flag indicating if the reinit() function has been called and if yes
        * the triangulation has not been modified since then (potentially
        * invalidating the communication pattern).
+       *
        */
       bool ready_flag;
 
       /**
        * Reference to the Triangulation object used during reinit().
+       *
        */
       SmartPointer<const Triangulation<dim, spacedim>> tria;
 
       /**
        * Reference to the Mapping object used during reinit().
+       *
        */
       SmartPointer<const Mapping<dim, spacedim>> mapping;
 
       /**
        * (One-to-one) relation of points and cells.
+       *
        */
       bool unique_mapping;
 
@@ -224,44 +243,53 @@ namespace Utilities
        * Since for each point multiple or no results can be available, the
        * pointers in this vector indicate the first and last entry associated
        * with a point in a CRS-like fashion.
+       *
        */
       std::vector<unsigned int> point_ptrs;
 
       /**
        * Permutation index within a recv buffer.
+       *
        */
       std::vector<unsigned int> recv_permutation;
 
       /**
        * Pointers of ranges within a receive buffer that are filled by ranks
        * specified by recv_ranks.
+       *
        */
       std::vector<unsigned int> recv_ptrs;
 
       /**
        * Ranks from where data is received.
+       *
        */
       std::vector<unsigned int> recv_ranks;
 
       /**
-       * Point data sorted according to cells so that evaluation (incl. reading
-       * of degrees of freedoms) needs to performed only once per cell.
+       * Point data sorted according to cells so that evaluation (incl.
+       * reading       of degrees of freedoms) needs to performed only once
+       * per cell.
+       *
        */
       CellData cell_data;
 
       /**
        * Permutation index within a send buffer.
+       *
        */
       std::vector<unsigned int> send_permutation;
 
       /**
        * Ranks to send to.
+       *
        */
       std::vector<unsigned int> send_ranks;
 
       /**
        * Pointers of ranges within a send buffer to be sent to the ranks
        * specified by send_ranks.
+       *
        */
       std::vector<unsigned int> send_ptrs;
     };

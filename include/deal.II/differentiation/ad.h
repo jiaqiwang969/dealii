@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2018 by the deal.II authors
 //
@@ -34,17 +34,42 @@ DEAL_II_NAMESPACE_OPEN
  * A namespace that encapsulates various classes and helper functions related
  * to automatic and symbolic differentiation.
  *
+ *
  * @ingroup auto_symb_diff
+ *
+ *
  */
 namespace Differentiation
 {
   /**
    * Wrappers for automatic differentiation libraries. Currently there is
    * support for the following libraries:
-   *   - ADOL-C
-   *   - Sacado (a component of Trilinos)
    *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *  - ADOL-C
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *  - Sacado (a component of Trilinos)
    * @ingroup auto_symb_diff
+   *
    */
   namespace AD
   {}

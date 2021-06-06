@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
 //
@@ -46,9 +46,10 @@ namespace TrilinosWrappers
 #endif
 
 
-/*! @addtogroup Vectors
- *@{
- */
+/*!   @addtogroup   Vectors  @{  
+
+* 
+* */
 
 
 /**
@@ -57,14 +58,14 @@ namespace TrilinosWrappers
  * allocation of vectors and provides functions that are specific to the
  * underlying vector type.
  *
- * @note Instantiations for this template are provided for <tt>@<float@> and
- * @<double@></tt>; others can be generated in application programs (see the
- * section on
- * @ref Instantiations
- * in the manual).
  *
- * @see
- * @ref GlossBlockLA "Block (linear algebra)"
+ * @note
+ * Instantiations for this template are provided for <tt>  @<float@>   and
+ * @<double@></tt>;   others can be generated in application programs (see the
+ * section on   @ref Instantiations   in the manual).
+ * @see     @ref GlossBlockLA   "Block (linear algebra)"
+ *
+ *
  */
 template <typename Number>
 class BlockVector : public BlockVectorBase<Vector<Number>>
@@ -72,16 +73,19 @@ class BlockVector : public BlockVectorBase<Vector<Number>>
 public:
   /**
    * Typedef the base class for simpler access to its own alias.
+   *
    */
   using BaseClass = BlockVectorBase<Vector<Number>>;
 
   /**
    * Typedef the type of the underlying vector.
+   *
    */
   using BlockType = typename BaseClass::BlockType;
 
   /**
    * Import the alias from the base class.
+   *
    */
   using value_type      = typename BaseClass::value_type;
   using real_type       = typename BaseClass::real_type;
@@ -98,17 +102,17 @@ public:
    * any arguments, it generates an object with no blocks. Given one argument,
    * it initializes <tt>n_blocks</tt> blocks, but these blocks have size zero.
    * The third variant finally initializes all blocks to the same size
-   * <tt>block_size</tt>.
+   * <tt>block_size</tt>.     Confer the other constructor further down if you
+   * intend to use blocks of   different sizes.
    *
-   * Confer the other constructor further down if you intend to use blocks of
-   * different sizes.
    */
   explicit BlockVector(const unsigned int n_blocks   = 0,
                        const size_type    block_size = 0);
 
   /**
-   * Copy Constructor. Dimension set to that of @p v, all components are
-   * copied from @p v.
+   * Copy Constructor. Dimension set to that of   @p v,   all components are
+   * copied from   @p v.
+   *
    */
   BlockVector(const BlockVector<Number> &V);
 
@@ -116,20 +120,21 @@ public:
   /**
    * Move constructor. Creates a new vector by stealing the internal data of
    * the given argument vector.
+   *
    */
-  BlockVector(BlockVector<Number> && /*v*/) noexcept = default;
+  BlockVector(BlockVector<Number> &&  /*v*/ ) noexcept = default;
 
   /**
    * Copy constructor taking a BlockVector of another data type. This will
    * fail if there is no conversion path from <tt>OtherNumber</tt> to
    * <tt>Number</tt>. Note that you may lose accuracy when copying to a
-   * BlockVector with data elements with less accuracy.
+   * BlockVector with data elements with less accuracy.     Older versions of
+   * gcc did not honor the   @p explicit   keyword on template   constructors.
+   * In such cases, it is easy to accidentally write code that   can be very
+   * inefficient, since the compiler starts performing hidden   conversions.
+   * To avoid this, this function is disabled if we have detected   a broken
+   * compiler during configuration.
    *
-   * Older versions of gcc did not honor the @p explicit keyword on template
-   * constructors. In such cases, it is easy to accidentally write code that
-   * can be very inefficient, since the compiler starts performing hidden
-   * conversions. To avoid this, this function is disabled if we have detected
-   * a broken compiler during configuration.
    */
   template <typename OtherNumber>
   explicit BlockVector(const BlockVector<OtherNumber> &v);
@@ -138,6 +143,7 @@ public:
   /**
    * A copy constructor taking a (parallel) Trilinos block vector and copying
    * it into the deal.II own format.
+   *
    */
   BlockVector(const TrilinosWrappers::MPI::BlockVector &v);
 
@@ -145,12 +151,14 @@ public:
   /**
    * Constructor. Set the number of blocks to <tt>block_sizes.size()</tt> and
    * initialize each block with <tt>block_sizes[i]</tt> zero elements.
+   *
    */
   BlockVector(const std::vector<size_type> &block_sizes);
 
   /**
    * Constructor. Initialize vector to the structure found in the BlockIndices
    * argument.
+   *
    */
   BlockVector(const BlockIndices &block_indices);
 
@@ -159,9 +167,10 @@ public:
    * Initialize the vector with the elements pointed to by the range of
    * iterators given as second and third argument. Apart from the first
    * argument, this constructor is in complete analogy to the respective
-   * constructor of the <tt>std::vector</tt> class, but the first argument is
-   * needed in order to know how to subdivide the block vector into different
-   * blocks.
+   * constructor of the   <tt>std::vector</tt>   class, but the first argument
+   * is   needed in order to know how to subdivide the block vector into
+   * different   blocks.
+   *
    */
   template <typename InputIterator>
   BlockVector(const std::vector<size_type> &block_sizes,
@@ -170,28 +179,24 @@ public:
 
   /**
    * Destructor. Clears memory
+   *
    */
   ~BlockVector() override = default;
 
   /**
-   * Call the compress() function on all the subblocks.
-   *
-   * This functionality only needs to be called if using MPI based vectors and
-   * exists in other objects for compatibility.
-   *
-   * See
-   * @ref GlossCompress "Compressing distributed objects"
+   * Call the compress() function on all the subblocks.     This functionality only needs to be called if using MPI based vectors and   exists in other objects for compatibility.     See     @ref GlossCompress   "Compressing distributed objects"
    * for more information.
+   *
    */
   void
   compress(::dealii::VectorOperation::values operation =
              ::dealii::VectorOperation::unknown);
 
   /**
-   * Returns `false` as this is a serial block vector.
+   * Returns `false` as this is a serial block vector.     This functionality
+   * only needs to be called if using MPI based vectors and   exists in other
+   * objects for compatibility.
    *
-   * This functionality only needs to be called if using MPI based vectors and
-   * exists in other objects for compatibility.
    */
   bool
   has_ghost_elements() const;
@@ -199,6 +204,7 @@ public:
   /**
    * Copy operator: fill all components of the vector with the given scalar
    * value.
+   *
    */
   BlockVector &
   operator=(const value_type s);
@@ -206,6 +212,7 @@ public:
   /**
    * Copy operator for arguments of the same type. Resize the present vector
    * if necessary.
+   *
    */
   BlockVector<Number> &
   operator=(const BlockVector<Number> &v);
@@ -213,13 +220,15 @@ public:
   /**
    * Move the given vector. This operator replaces the present vector with
    * the contents of the given argument vector.
+   *
    */
   BlockVector<Number> &
-  operator=(BlockVector<Number> && /*v*/) = default; // NOLINT
+  operator=(BlockVector<Number> &&  /*v*/ ) = default; // NOLINT
 
   /**
    * Copy operator for template arguments of different types. Resize the
    * present vector if necessary.
+   *
    */
   template <class Number2>
   BlockVector<Number> &
@@ -227,6 +236,7 @@ public:
 
   /**
    * Copy a regular vector into a block vector.
+   *
    */
   BlockVector<Number> &
   operator=(const Vector<Number> &V);
@@ -235,6 +245,7 @@ public:
   /**
    * A copy constructor from a Trilinos block vector to a deal.II block
    * vector.
+   *
    */
   BlockVector<Number> &
   operator=(const TrilinosWrappers::MPI::BlockVector &V);
@@ -242,15 +253,13 @@ public:
 
   /**
    * Reinitialize the BlockVector to contain <tt>n_blocks</tt> blocks of size
-   * <tt>block_size</tt> each.
+   * <tt>block_size</tt> each.     If the second argument is left at its
+   * default value, then the block   vector allocates the specified number of
+   * blocks but leaves them at zero   size. You then need to later
+   * reinitialize the individual blocks, and call   collect_sizes() to update
+   * the block system's knowledge of its individual   block's sizes.     If
+   * <tt>omit_zeroing_entries==false</tt>, the vector is filled with zeros.
    *
-   * If the second argument is left at its default value, then the block
-   * vector allocates the specified number of blocks but leaves them at zero
-   * size. You then need to later reinitialize the individual blocks, and call
-   * collect_sizes() to update the block system's knowledge of its individual
-   * block's sizes.
-   *
-   * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with zeros.
    */
   void
   reinit(const unsigned int n_blocks,
@@ -260,18 +269,16 @@ public:
   /**
    * Reinitialize the BlockVector such that it contains
    * <tt>block_sizes.size()</tt> blocks. Each block is reinitialized to
-   * dimension <tt>block_sizes[i]</tt>.
-   *
-   * If the number of blocks is the same as before this function was called,
-   * all vectors remain the same and reinit() is called for each vector.
-   *
-   * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with zeros.
-   *
+   * dimension <tt>block_sizes[i]</tt>.     If the number of blocks is the
+   * same as before this function was called,   all vectors remain the same
+   * and reinit() is called for each vector.     If
+   * <tt>omit_zeroing_entries==false</tt>, the vector is filled with zeros.
    * Note that you must call this (or the other reinit() functions) function,
    * rather than calling the reinit() functions of an individual block, to
    * allow the block vector to update its caches of vector sizes. If you call
    * reinit() on one of the blocks, then subsequent actions on this object may
    * yield unpredictable results since they may be routed to the wrong block.
+   *
    */
   void
   reinit(const std::vector<size_type> &block_sizes,
@@ -279,12 +286,11 @@ public:
 
   /**
    * Reinitialize the BlockVector to reflect the structure found in
-   * BlockIndices.
+   * BlockIndices.     If the number of blocks is the same as before this
+   * function was called,   all vectors remain the same and reinit() is called
+   * for each vector.     If <tt>omit_zeroing_entries==false</tt>, the vector
+   * is filled with zeros.
    *
-   * If the number of blocks is the same as before this function was called,
-   * all vectors remain the same and reinit() is called for each vector.
-   *
-   * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with zeros.
    */
   void
   reinit(const BlockIndices &block_indices,
@@ -292,16 +298,15 @@ public:
 
   /**
    * Change the dimension to that of the vector <tt>V</tt>. The same applies
-   * as for the other reinit() function.
+   * as for the other reinit() function.     The elements of <tt>V</tt> are
+   * not copied, i.e.  this function is the   same as calling <tt>reinit
+   * (V.size(), omit_zeroing_entries)</tt>.     Note that you must call this
+   * (or the other reinit() functions) function,   rather than calling the
+   * reinit() functions of an individual block, to   allow the block vector to
+   * update its caches of vector sizes. If you call   reinit() of one of the
+   * blocks, then subsequent actions of this object may   yield unpredictable
+   * results since they may be routed to the wrong block.
    *
-   * The elements of <tt>V</tt> are not copied, i.e.  this function is the
-   * same as calling <tt>reinit (V.size(), omit_zeroing_entries)</tt>.
-   *
-   * Note that you must call this (or the other reinit() functions) function,
-   * rather than calling the reinit() functions of an individual block, to
-   * allow the block vector to update its caches of vector sizes. If you call
-   * reinit() of one of the blocks, then subsequent actions of this object may
-   * yield unpredictable results since they may be routed to the wrong block.
    */
   template <typename Number2>
   void
@@ -311,6 +316,7 @@ public:
   /**
    * Multiply each element of this vector by the corresponding element of
    * <tt>v</tt>.
+   *
    */
   template <class BlockVector2>
   void
@@ -321,17 +327,18 @@ public:
    * could do this operation with a temporary variable and copying over the
    * data elements, but this function is significantly more efficient since it
    * only swaps the pointers to the data of the two vectors and therefore does
-   * not need to allocate temporary storage and move data around.
-   *
-   * This function is analogous to the swap() function of all C++ standard
+   * not need to allocate temporary storage and move data around.     This
+   * function is analogous to the swap() function of all C++ standard
    * containers. Also, there is a global function swap(u,v) that simply calls
    * <tt>u.swap(v)</tt>, again in analogy to standard functions.
+   *
    */
   void
   swap(BlockVector<Number> &v);
 
   /**
    * Print to a stream.
+   *
    */
   void
   print(std::ostream &     out,
@@ -343,6 +350,7 @@ public:
    * Write the vector en bloc to a stream. This is done in a binary mode, so
    * the output is neither readable by humans nor (probably) by other
    * computers using a different operating system or number format.
+   *
    */
   void
   block_write(std::ostream &out) const;
@@ -350,33 +358,32 @@ public:
   /**
    * Read a vector en block from a file. This is done using the inverse
    * operations to the above function, so it is reasonably fast because the
-   * bitstream is not interpreted.
-   *
-   * The vector is resized if necessary.
-   *
+   * bitstream is not interpreted.     The vector is resized if necessary.
    * A primitive form of error checking is performed which will recognize the
    * bluntest attempts to interpret some data as a vector stored bitwise to a
    * file, but not more.
+   *
    */
   void
   block_read(std::istream &in);
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup   Exceptions     @{
+   *
    */
 
   /**
    * Exception
+   *
    */
   DeclException0(ExcIteratorRangeDoesNotMatchVectorSize);
   //@}
 };
 
-/*@}*/
+ /*@}*/ 
 
 #ifndef DOXYGEN
-/*----------------------- Inline functions ----------------------------------*/
+ /*----------------------- Inline functions ----------------------------------*/ 
 
 
 
@@ -481,8 +488,9 @@ BlockVector<Number>::scale(const BlockVector2 &v)
  * Global function which overloads the default implementation of the C++
  * standard library which uses a temporary object. The function simply
  * exchanges the data of the two vectors.
+ * @relatesalso   BlockVector
  *
- * @relatesalso BlockVector
+ *
  */
 template <typename Number>
 inline void
@@ -502,6 +510,7 @@ namespace internal
     /**
      * A helper class used internally in linear_operator.h. Specialization for
      * BlockVector<number>.
+     *
      */
     template <typename number>
     class ReinitHelper<BlockVector<number>>
@@ -527,11 +536,13 @@ namespace internal
     };
 
   } // namespace LinearOperatorImplementation
-} /* namespace internal */
+}  /* namespace internal */ 
 
 
 /**
- * Declare dealii::BlockVector as serial vector.
+ * Declare   dealii::BlockVector   as serial vector.
+ *
+ *
  */
 template <typename Number>
 struct is_serial_vector<BlockVector<Number>> : std::true_type

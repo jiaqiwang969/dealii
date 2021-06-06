@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
 //
@@ -27,10 +27,10 @@ namespace LinearAlgebra
   namespace CUDAWrappers
   {
     /**
-     * Provide atomicAdd for floats.
-     *
-     * @deprecated Use atomicAdd(address, val) directly.
+     * Provide atomicAdd for floats.           @deprecated   Use
+     * atomicAdd(address, val) directly.
      * @ingroup CUDAWrappers
+     *
      */
     DEAL_II_DEPRECATED
     inline __device__ float
@@ -42,10 +42,10 @@ namespace LinearAlgebra
 
 
     /**
-     * Provide atomicAdd for doubles.
-     *
-     * @deprecated Use atomicAdd(address, val) directly.
+     * Provide atomicAdd for doubles.           @deprecated   Use
+     * atomicAdd(address, val) directly.
      * @ingroup CUDAWrappers
+     *
      */
     DEAL_II_DEPRECATED
     inline __device__ double
@@ -58,8 +58,8 @@ namespace LinearAlgebra
 
     /**
      * Provide atomicMax for floats.
-     *
      * @ingroup CUDAWrappers
+     *
      */
     inline __device__ float
     atomicMax_wrapper(float *address, float val)
@@ -82,8 +82,8 @@ namespace LinearAlgebra
 
     /**
      * Provide atomicMax for doubles.
-     *
      * @ingroup CUDAWrappers
+     *
      */
     inline __device__ double
     atomicMax_wrapper(double *address, double val)

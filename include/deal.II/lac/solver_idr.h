@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
 //
@@ -33,45 +33,51 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 namespace internal
 {
   /**
    * A namespace for a helper class to the IDR(s) solver.
+   *
    */
   namespace SolverIDRImplementation
   {
     /**
-     * Class to hold temporary vectors whose size depends on
-     * the solver parameter s.
+     * Class to hold temporary vectors whose size depends on     the solver
+     * parameter s.
+     *
      */
     template <typename VectorType>
     class TmpVectors
     {
     public:
       /**
-       * Constructor. Prepares an array of @p VectorType of length @p s_param.
+       * Constructor. Prepares an array of   @p VectorType   of length   @p
+       * s_param.
+       *
        */
       TmpVectors(const unsigned int s_param, VectorMemory<VectorType> &vmem);
 
       /**
        * Destructor. Delete all allocated vectors.
+       *
        */
       ~TmpVectors() = default;
 
       /**
-       * Get vector number @p i. If this vector was unused before, an error
-       * occurs.
+       * Get vector number   @p i.   If this vector was unused before, an
+       * error       occurs.
+       *
        */
       VectorType &operator[](const unsigned int i) const;
 
       /**
-       * Get vector number @p i. Allocate it if necessary.
-       *
-       * If a vector must be allocated, @p temp is used to reinit it to the
+       * Get vector number   @p i.   Allocate it if necessary.             If
+       * a vector must be allocated,   @p temp   is used to reinit it to the
        * proper dimensions.
+       *
        */
       VectorType &
       operator()(const unsigned int i, const VectorType &temp);
@@ -79,11 +85,13 @@ namespace internal
     private:
       /**
        * Pool where vectors are obtained from.
+       *
        */
       VectorMemory<VectorType> &mem;
 
       /**
        * Field for storing the vectors.
+       *
        */
       std::vector<typename VectorMemory<VectorType>::Pointer> data;
     };
@@ -93,24 +101,26 @@ namespace internal
 /**
  * This class implements the IDR(s) method used for solving nonsymmetric,
  * indefinite linear systems, developed in <a
- * href="https://epubs.siam.org/doi/abs/10.1137/070685804">
- * IDR(s): A Family of Simple and Fast Algorithms for Solving Large
- * Nonsymmetric Systems of Linear Equations by Martin B. van Gijzen and Peter
- * Sonneveld </a>. The implementation here is the preconditioned version from <a
- * href="https://dl.acm.org/citation.cfm?id=2049667">
- * Algorithm 913: An Elegant IDR(s) Variant that Efficiently Exploits
- * Biorthogonality Properties
- * by Martin B. van Gijzen and Peter Sonneveld</a>. The local structure
- * @p AdditionalData takes the value for the parameter s which can be any
- * integer greater than or equal to 1. For <code>s=1</code>, this method has
- * similar convergence to BiCGStab.
+ * href="https://epubs.siam.org/doi/abs/10.1137/070685804"> IDR(s): A Family
+ * of Simple and Fast Algorithms for Solving Large Nonsymmetric Systems of
+ * Linear Equations by Martin B. van Gijzen and Peter Sonneveld </a>. The
+ * implementation here is the preconditioned version from <a
+ * href="https://dl.acm.org/citation.cfm?id=2049667"> Algorithm 913: An
+ * Elegant IDR(s) Variant that Efficiently Exploits Biorthogonality Properties
+ * by Martin B. van Gijzen and Peter Sonneveld</a>. The local structure   @p
+ * AdditionalData   takes the value for the parameter s which can be any
+ * integer greater than or equal to 1. For   <code>s=1</code>  , this method
+ * has similar convergence to BiCGStab.
  *
- * @note Each iteration of IDR(s) requires <code>s+1</code> preconditioning steps
- * and matrix-vector products. In this implementation the residual is updated
- * and convergence is checked after each of these inner steps inside the outer
- * iteration. If the user enables the history data, the residual at each of
- * these steps is stored and therefore there will be multiple values per
- * iteration.
+ *
+ * @note   Each iteration of IDR(s) requires   <code>s+1</code>
+ * preconditioning steps and matrix-vector products. In this implementation
+ * the residual is updated and convergence is checked after each of these
+ * inner steps inside the outer iteration. If the user enables the history
+ * data, the residual at each of these steps is stored and therefore there
+ * will be multiple values per iteration.
+ *
+ *
  */
 template <class VectorType = Vector<double>>
 class SolverIDR : public SolverBase<VectorType>
@@ -118,11 +128,13 @@ class SolverIDR : public SolverBase<VectorType>
 public:
   /**
    * Structure for storing additional data needed by the solver.
+   *
    */
   struct AdditionalData
   {
     /**
      * Constructor. By default, an IDR(2) method is used.
+     *
      */
     explicit AdditionalData(const unsigned int s = 2)
       : s(s)
@@ -133,6 +145,7 @@ public:
 
   /**
    * Constructor.
+   *
    */
   SolverIDR(SolverControl &           cn,
             VectorMemory<VectorType> &mem,
@@ -141,17 +154,20 @@ public:
   /**
    * Constructor. Use an object of type GrowingVectorMemory as a default to
    * allocate memory.
+   *
    */
   explicit SolverIDR(SolverControl &       cn,
                      const AdditionalData &data = AdditionalData());
 
   /**
    * Virtual destructor.
+   *
    */
   virtual ~SolverIDR() override = default;
 
   /**
-   * Solve the linear system <code>Ax=b</code> for x.
+   * Solve the linear system   <code>Ax=b</code>   for x.
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -165,6 +181,7 @@ protected:
    * Interface for derived class. This function gets the current iteration
    * vector, the residual and the update vector in each step. It can be used
    * for graphical output of the convergence history.
+   *
    */
   virtual void
   print_vectors(const unsigned int step,
@@ -175,12 +192,13 @@ protected:
 private:
   /**
    * Additional solver parameters.
+   *
    */
   AdditionalData additional_data;
 };
 
-/*@}*/
-/*------------------------- Implementation ----------------------------*/
+ /*@}*/ 
+ /*------------------------- Implementation ----------------------------*/ 
 
 #ifndef DOXYGEN
 

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
 //
@@ -64,26 +64,23 @@ DEAL_II_NAMESPACE_OPEN
  * implementation. The storage scheme is tailored towards several loops
  * performed with the same data, i.e., typically doing many matrix-vector
  * products or residual computations on the same mesh. The class is used in
- * step-37 and step-48.
+ * step-37   and   step-48  . This class does not implement any operations
+ * involving finite element basis functions, i.e., regarding the operation
+ * performed on the cells. For these operations, the class FEEvaluation is
+ * designed to use the data collected in this class. The stored data can be
+ * subdivided into three main components:
  *
- * This class does not implement any operations involving finite element basis
- * functions, i.e., regarding the operation performed on the cells. For these
- * operations, the class FEEvaluation is designed to use the data collected in
- * this class.
  *
- * The stored data can be subdivided into three main components:
  *
- * - DoFInfo: It stores how local degrees of freedom relate to global degrees
- * of freedom. It includes a description of constraints that are evaluated as
- * going through all local degrees of freedom on a cell.
+ *  - DoFInfo: It stores how local degrees of freedom relate to global degrees of freedom. It includes a description of constraints that are evaluated as going through all local degrees of freedom on a cell.
  *
- * - MappingInfo: It stores the transformations from real to unit cells that
- * are necessary in order to build derivatives of finite element functions and
- * find location of quadrature weights in physical space.
  *
- * - ShapeInfo: It contains the shape functions of the finite element,
- * evaluated on the unit cell.
  *
+ *  - MappingInfo: It stores the transformations from real to unit cells that are necessary in order to build derivatives of finite element functions and find location of quadrature weights in physical space.
+ *
+ *
+ *
+ *  - ShapeInfo: It contains the shape functions of the finite element, evaluated on the unit cell.
  * Besides the initialization routines, this class implements only a single
  * operation, namely a loop over all cells (cell_loop()). This loop is
  * scheduled in such a way that cells that share degrees of freedom are not
@@ -92,22 +89,19 @@ DEAL_II_NAMESPACE_OPEN
  * access to these vectors and matrices. This class does not implement any
  * shape values, all it does is to cache the respective data. To implement
  * finite element operations, use the class FEEvaluation (or some of the
- * related classes).
- *
- * This class traverses the cells in a different order than the usual
- * Triangulation class in deal.II, in order to be flexible with respect to
- * parallelization in shared memory and vectorization.
- *
+ * related classes). This class traverses the cells in a different order than
+ * the usual Triangulation class in deal.II, in order to be flexible with
+ * respect to parallelization in shared memory and vectorization.
  * Vectorization is implemented by merging several topological cells into one
  * so-called macro cell. This enables the application of all cell-related
  * operations for several cells with one CPU instruction and is one of the
  * main features of this framework.
+ * For details on usage of this class, see the description of FEEvaluation or the   @ref matrixfree   "matrix-free module".
  *
- * For details on usage of this class, see the description of FEEvaluation or
- * the
- * @ref matrixfree "matrix-free module".
  *
  * @ingroup matrixfree
+ *
+ *
  */
 
 template <int dim,
@@ -123,12 +117,14 @@ public:
   /**
    * An alias for the underlying number type specified by the template
    * argument.
+   *
    */
   using value_type            = Number;
   using vectorized_value_type = VectorizedArrayType;
 
   /**
    * The dimension set by the template argument `dim`.
+   *
    */
   static const unsigned int dimension = dim;
 
@@ -140,76 +136,78 @@ public:
    * cells with access to the same vector entries are accessed
    * simultaneously), the third with the block size for task parallel
    * scheduling, the fourth the update flags that should be stored by this
-   * class.
-   *
-   * The fifth parameter specifies the level in the triangulation from which
-   * the indices are to be used. If the level is set to
-   * numbers::invalid_unsigned_int, the active cells are traversed, and
+   * class.     The fifth parameter specifies the level in the triangulation
+   * from which   the indices are to be used. If the level is set to
+   * numbers::invalid_unsigned_int,   the active cells are traversed, and
    * otherwise the cells in the given level. This option has no effect in case
-   * a DoFHandler is given.
-   *
-   * The parameter @p initialize_plain_indices indicates whether the DoFInfo
-   * class should also allow for access to vectors without resolving
-   * constraints.
-   *
-   * The two parameters `initialize_indices` and `initialize_mapping` allow
-   * the user to disable some of the initialization processes. For example, if
-   * only the scheduling that avoids touching the same vector/matrix indices
-   * simultaneously is to be found, the mapping needs not be
-   * initialized. Likewise, if the mapping has changed from one iteration to
-   * the next but the topology has not (like when using a deforming mesh with
-   * MappingQEulerian), it suffices to initialize the mapping only.
-   *
-   * The two parameters `cell_vectorization_categories` and
+   * a DoFHandler is given.     The parameter   @p initialize_plain_indices
+   * indicates whether the DoFInfo   class should also allow for access to
+   * vectors without resolving   constraints.     The two parameters
+   * `initialize_indices` and `initialize_mapping` allow   the user to disable
+   * some of the initialization processes. For example, if   only the
+   * scheduling that avoids touching the same vector/matrix indices
+   * simultaneously is to be found, the mapping needs not be   initialized.
+   * Likewise, if the mapping has changed from one iteration to   the next but
+   * the topology has not (like when using a deforming mesh with
+   * MappingQEulerian), it suffices to initialize the mapping only.     The
+   * two parameters `cell_vectorization_categories` and
    * `cell_vectorization_categories_strict` control the formation of batches
    * for vectorization over several cells. It is used implicitly when working
    * with hp-adaptivity but can also be useful in other contexts, such as in
    * local time stepping where one would like to control which elements
    * together form a batch of cells. The array `cell_vectorization_categories`
    * is accessed by the number given by cell->active_cell_index() when working
-   * on the active cells with `mg_level` set to `numbers::invalid_unsigned_int`
-   * and by cell->index() for the level cells. By default, the different
-   * categories in `cell_vectorization_category` can be mixed and the algorithm
-   * is allowed to merge lower category numbers with the next higher categories
-   * if it is necessary inside the algorithm, in order to avoid partially
-   * filled SIMD lanes as much as possible. This gives a better utilization of
-   * the vectorization but might need special treatment, in particular for
-   * face integrals. If set to @p true, the algorithm will instead keep
+   * on the active cells with `mg_level` set to
+   * `numbers::invalid_unsigned_int`     and by cell->index() for the level
+   * cells. By default, the different   categories in
+   * `cell_vectorization_category` can be mixed and the algorithm   is allowed
+   * to merge lower category numbers with the next higher categories   if it
+   * is necessary inside the algorithm, in order to avoid partially   filled
+   * SIMD lanes as much as possible. This gives a better utilization of   the
+   * vectorization but might need special treatment, in particular for   face
+   * integrals. If set to   @p true,   the algorithm will instead keep
    * different categories separate and not mix them in a single vectorized
    * array.
+   *
    */
   struct AdditionalData
   {
     /**
      * Collects options for task parallelism. See the documentation of the
-     * member variable MatrixFree::AdditionalData::tasks_parallel_scheme for a
-     * thorough description.
+     * member variable   MatrixFree::AdditionalData::tasks_parallel_scheme
+     * for a     thorough description.
+     *
      */
     enum TasksParallelScheme
     {
       /**
        * Perform application in serial.
+       *
        */
       none = internal::MatrixFreeFunctions::TaskInfo::none,
       /**
        * Partition the cells into two levels and afterwards form chunks.
+       *
        */
       partition_partition =
         internal::MatrixFreeFunctions::TaskInfo::partition_partition,
       /**
        * Partition on the global level and color cells within the partitions.
+       *
        */
       partition_color =
         internal::MatrixFreeFunctions::TaskInfo::partition_color,
       /**
        * Use the traditional coloring algorithm: this is like
-       * TasksParallelScheme::partition_color, but only uses one partition.
+       * TasksParallelScheme::partition_color,   but only uses one partition.
+       *
        */
       color = internal::MatrixFreeFunctions::TaskInfo::color
     };
 
     /**
      * Constructor for AdditionalData.
+     *
      */
     AdditionalData(
       const TasksParallelScheme tasks_parallel_scheme = partition_partition,
@@ -245,6 +243,7 @@ public:
 
     /**
      * Copy constructor.
+     *
      */
     AdditionalData(const AdditionalData &other)
       : tasks_parallel_scheme(other.tasks_parallel_scheme)
@@ -270,6 +269,7 @@ public:
 
     /**
      * Copy assignment.
+     *
      */
     AdditionalData &
     operator=(const AdditionalData &other)
@@ -299,50 +299,48 @@ public:
 
     /**
      * Set the scheme for task parallelism. There are four options available.
-     * If set to @p none, the operator application is done in serial without
-     * shared memory parallelism. If this class is used together with MPI and
-     * MPI is also used for parallelism within the nodes, this flag should be
-     * set to @p none. The default value is @p partition_partition, i.e. we
-     * actually use multithreading with the first option described below.
-     *
-     * The first option @p partition_partition is to partition the cells on
-     * two levels in onion-skin-like partitions and forming chunks of
-     * tasks_block_size after the partitioning. The partitioning finds sets of
-     * independent cells that enable working in parallel without accessing the
-     * same vector entries at the same time.
-     *
-     * The second option @p partition_color is to use a partition on the
-     * global level and color cells within the partitions (where all chunks
-     * within a color are independent). Here, the subdivision into chunks of
-     * cells is done before the partitioning, which might give worse
-     * partitions but better cache performance if degrees of freedom are not
-     * renumbered.
-     *
-     * The third option @p color is to use a traditional algorithm of coloring
-     * on the global level. This scheme is a special case of the second option
-     * where only one partition is present. Note that for problems with
-     * hanging nodes, there are quite many colors (50 or more in 3D), which
-     * might degrade parallel performance (bad cache behavior, many
-     * synchronization points).
-     *
-     * @note Threading support is currently experimental for the case inner
+     * If set to   @p none,   the operator application is done in serial
+     * without     shared memory parallelism. If this class is used together
+     * with MPI and     MPI is also used for parallelism within the nodes,
+     * this flag should be     set to   @p none.   The default value is   @p
+     * partition_partition,   i.e. we     actually use multithreading with the
+     * first option described below.         The first option   @p
+     * partition_partition   is to partition the cells on     two levels in
+     * onion-skin-like partitions and forming chunks of     tasks_block_size
+     * after the partitioning. The partitioning finds sets of     independent
+     * cells that enable working in parallel without accessing the     same
+     * vector entries at the same time.         The second option   @p
+     * partition_color   is to use a partition on the     global level and
+     * color cells within the partitions (where all chunks     within a color
+     * are independent). Here, the subdivision into chunks of     cells is
+     * done before the partitioning, which might give worse     partitions but
+     * better cache performance if degrees of freedom are not     renumbered.
+     * The third option   @p color   is to use a traditional algorithm of
+     * coloring     on the global level. This scheme is a special case of the
+     * second option     where only one partition is present. Note that for
+     * problems with     hanging nodes, there are quite many colors (50 or
+     * more in 3D), which     might degrade parallel performance (bad cache
+     * behavior, many     synchronization points).
+     * @note   Threading support is currently experimental for the case inner
      * face integrals are performed and it is recommended to use MPI
      * parallelism if possible. While the scheme has been verified to work
      * with the `partition_partition` option in case of usual DG elements, no
      * comprehensive tests have been performed for systems of more general
      * elements, like combinations of continuous and discontinuous elements
      * that add face integrals to all terms.
+     *
      */
     TasksParallelScheme tasks_parallel_scheme;
 
     /**
      * Set the number of so-called macro cells that should form one
      * partition. If zero size is given, the class tries to find a good size
-     * for the blocks based on MultithreadInfo::n_threads() and the number of
-     * cells present. Otherwise, the given number is used. If the given number
-     * is larger than one third of the number of total cells, this means no
-     * parallelism. Note that in the case vectorization is used, a macro cell
-     * consists of more than one physical cell.
+     * for the blocks based on   MultithreadInfo::n_threads()   and the number
+     * of     cells present. Otherwise, the given number is used. If the given
+     * number     is larger than one third of the number of total cells, this
+     * means no     parallelism. Note that in the case vectorization is used,
+     * a macro cell     consists of more than one physical cell.
+     *
      */
     unsigned int tasks_block_size;
 
@@ -356,6 +354,7 @@ public:
      * must be specified by this field (even though second derivatives might
      * still be evaluated on Cartesian cells without this option set here,
      * since there the Jacobian describes the mapping completely).
+     *
      */
     UpdateFlags mapping_update_flags;
 
@@ -365,18 +364,17 @@ public:
      * integrals in order to effectively vectorize also in the case of hanging
      * nodes (which require different subface settings on the two sides) or
      * some cells in the batch of a VectorizedArray of cells that are adjacent
-     * to the boundary and others that are not.
-     *
-     * If set to a value different from update_general (default), the face
-     * information is explicitly built. Currently, MatrixFree supports to
-     * cache the following data on faces: inverse Jacobians, Jacobian
-     * determinants (JxW), quadrature points, data for Hessians (derivative of
+     * to the boundary and others that are not.         If set to a value
+     * different from update_general (default), the face     information is
+     * explicitly built. Currently, MatrixFree supports to     cache the
+     * following data on faces: inverse Jacobians, Jacobian     determinants
+     * (JxW), quadrature points, data for Hessians (derivative of
      * Jacobians), and normal vectors.
+     * @note   In order to be able to perform a `face_operation` or
+     * `boundary_operation` in the   MatrixFree::loop()`,   either this field
+     * or       @p mapping_update_flags_inner_faces   must be set to a value
+     * different     from   UpdateFlags::update_default.
      *
-     * @note In order to be able to perform a `face_operation` or
-     * `boundary_operation` in the MatrixFree::loop()`, either this field or
-     * @p mapping_update_flags_inner_faces must be set to a value different
-     * from UpdateFlags::update_default.
      */
     UpdateFlags mapping_update_flags_boundary_faces;
 
@@ -386,18 +384,17 @@ public:
      * integrals in order to effectively vectorize also in the case of hanging
      * nodes (which require different subface settings on the two sides) or
      * some cells in the batch of a VectorizedArray of cells that are adjacent
-     * to the boundary and others that are not.
-     *
-     * If set to a value different from update_general (default), the face
-     * information is explicitly built. Currently, MatrixFree supports to
-     * cache the following data on faces: inverse Jacobians, Jacobian
-     * determinants (JxW), quadrature points, data for Hessians (derivative of
+     * to the boundary and others that are not.         If set to a value
+     * different from update_general (default), the face     information is
+     * explicitly built. Currently, MatrixFree supports to     cache the
+     * following data on faces: inverse Jacobians, Jacobian     determinants
+     * (JxW), quadrature points, data for Hessians (derivative of
      * Jacobians), and normal vectors.
+     * @note   In order to be able to perform a `face_operation` or
+     * `boundary_operation` in the   MatrixFree::loop()`,   either this field
+     * or       @p mapping_update_flags_boundary_faces   must be set to a
+     * value different     from   UpdateFlags::update_default.
      *
-     * @note In order to be able to perform a `face_operation` or
-     * `boundary_operation` in the MatrixFree::loop()`, either this field or
-     * @p mapping_update_flags_boundary_faces must be set to a value different
-     * from UpdateFlags::update_default.
      */
     UpdateFlags mapping_update_flags_inner_faces;
 
@@ -415,17 +412,15 @@ public:
      * face_number)</code>. However, currently no coupling terms to neighbors
      * can be computed with this approach because the neighbors are not laid
      * out by the VectorizedArray data layout with an
-     * array-of-struct-of-array-type data structures.
+     * array-of-struct-of-array-type data structures.         Note that you
+     * should only compute this data field in case you really     need it as
+     * it more than doubles the memory required by the mapping data     on
+     * faces.         If set to a value different from update_general
+     * (default), the face     information is explicitly built. Currently,
+     * MatrixFree supports to     cache the following data on faces: inverse
+     * Jacobians, Jacobian     determinants (JxW), quadrature points, data for
+     * Hessians (derivative of     Jacobians), and normal vectors.
      *
-     * Note that you should only compute this data field in case you really
-     * need it as it more than doubles the memory required by the mapping data
-     * on faces.
-     *
-     * If set to a value different from update_general (default), the face
-     * information is explicitly built. Currently, MatrixFree supports to
-     * cache the following data on faces: inverse Jacobians, Jacobian
-     * determinants (JxW), quadrature points, data for Hessians (derivative of
-     * Jacobians), and normal vectors.
      */
     UpdateFlags mapping_update_flags_faces_by_cells;
 
@@ -435,7 +430,8 @@ public:
      * (which is the default value), the active cells are gone through,
      * otherwise the level given by this parameter. Note that if you specify
      * to work on a level, its dofs must be distributed by using
-     * <code>dof_handler.distribute_mg_dofs(fe);</code>.
+     * <code>dof_handler.distribute_mg_dofs(fe);</code>  .
+     *
      */
     unsigned int mg_level;
 
@@ -443,27 +439,28 @@ public:
      * Controls whether to enable reading from vectors without resolving
      * constraints, i.e., just read the local values of the vector. By
      * default, this option is enabled. In case you want to use
-     * FEEvaluationBase::read_dof_values_plain, this flag needs to be set.
+     * FEEvaluationBase::read_dof_values_plain,   this flag needs to be set.
+     *
      */
     bool store_plain_indices;
 
     /**
      * Option to control whether the indices stored in the DoFHandler
-     * should be read and the pattern for task parallelism should be
-     * set up in the initialize method of MatrixFree. The default
-     * value is true. Can be disabled in case the mapping should be
-     * recomputed (e.g. when using a deforming mesh described through
-     * MappingEulerian) but the topology of cells has remained the
-     * same.
+     * should be read and the pattern for task parallelism should be     set
+     * up in the initialize method of MatrixFree. The default     value is
+     * true. Can be disabled in case the mapping should be     recomputed
+     * (e.g. when using a deforming mesh described through
+     * MappingEulerian) but the topology of cells has remained the     same.
+     *
      */
     bool initialize_indices;
 
     /**
      * Option to control whether the mapping information should be
-     * computed in the initialize method of MatrixFree. The default
-     * value is true. Can be disabled when only some indices should be
-     * set up (e.g. when only a set of independent cells should be
-     * computed).
+     * computed in the initialize method of MatrixFree. The default     value
+     * is true. Can be disabled when only some indices should be     set up
+     * (e.g. when only a set of independent cells should be     computed).
+     *
      */
     bool initialize_mapping;
 
@@ -478,6 +475,7 @@ public:
      * the fabric, it may be faster to not overlap and wait for the data to
      * arrive. The default is true, i.e., communication and computation are
      * overlapped.
+     *
      */
     bool overlap_communication_computation;
 
@@ -487,6 +485,7 @@ public:
      * MatrixFree should have access to all neighbors on locally owned cells,
      * this option enables adding the respective faces at the end of the face
      * range.
+     *
      */
     bool hold_all_faces_to_owned_cells;
 
@@ -495,66 +494,74 @@ public:
      * categories when building the information for vectorization. It is used
      * implicitly when working with hp-adaptivity but can also be useful in
      * other contexts, such as in local time stepping where one would like to
-     * control which elements together form a batch of cells.
-     *
-     * This array is accessed by the number given by cell->active_cell_index()
-     * when working on the active cells with @p mg_level set to numbers::invalid_unsigned_int and
-     * by cell->index() for the level cells.
-     *
-     * @note This field is empty upon construction of AdditionalData. It is
+     * control which elements together form a batch of cells.         This
+     * array is accessed by the number given by cell->active_cell_index()
+     * when working on the active cells with   @p mg_level   set to
+     * numbers::invalid_unsigned_int   and     by cell->index() for the level
+     * cells.
+     * @note   This field is empty upon construction of AdditionalData. It is
      * the responsibility of the user to resize this field to
      * `triangulation.n_active_cells()` or `triangulation.n_cells(level)` when
      * filling data.
+     *
      */
     std::vector<unsigned int> cell_vectorization_category;
 
     /**
-     * By default, the different categories in @p cell_vectorization_category
-     * can be mixed and the algorithm is allowed to merge lower categories with
-     * the next higher categories if it is necessary inside the algorithm. This
-     * gives a better utilization of the vectorization but might need special
-     * treatment, in particular for face integrals. If set to @p true, the
+     * By default, the different categories in   @p
+     * cell_vectorization_category       can be mixed and the algorithm is
+     * allowed to merge lower categories with     the next higher categories
+     * if it is necessary inside the algorithm. This     gives a better
+     * utilization of the vectorization but might need special     treatment,
+     * in particular for face integrals. If set to   @p true,   the
      * algorithm will instead keep different categories separate and not mix
      * them in a single vectorized array.
+     *
      */
     bool cell_vectorization_categories_strict;
 
     /**
      * Shared-memory MPI communicator. Default: MPI_COMM_SELF.
+     *
      */
     MPI_Comm communicator_sm;
   };
 
   /**
-   * @name 1: Construction and initialization
+   * @name   1: Construction and initialization
+   *
    */
   //@{
   /**
    * Default empty constructor. Does nothing.
+   *
    */
   MatrixFree();
 
   /**
    * Copy constructor, calls copy_from
+   *
    */
   MatrixFree(const MatrixFree<dim, Number, VectorizedArrayType> &other);
 
   /**
    * Destructor.
+   *
    */
   ~MatrixFree() override = default;
 
   /**
    * Extracts the information needed to perform loops over cells. The
    * DoFHandler and AffineConstraints objects describe the layout of degrees
-   * of freedom, the DoFHandler and the mapping describe the
-   * transformations from unit to real cell, and the finite element
-   * underlying the DoFHandler together with the quadrature formula
-   * describe the local operations. Note that the finite element underlying
-   * the DoFHandler must either be scalar or contain several copies of the
-   * same element. Mixing several different elements into one FESystem is
-   * not allowed. In that case, use the initialization function with
-   * several DoFHandler arguments.
+   * of freedom, the DoFHandler and the mapping describe the   transformations
+   * from unit to real cell, and the finite element   underlying the
+   * DoFHandler together with the quadrature formula   describe the local
+   * operations. Note that the finite element underlying   the DoFHandler must
+   * either be scalar or contain several copies of the   same element. Mixing
+   * several different elements into one FESystem is   not allowed. In that
+   * case, use the initialization function with   several DoFHandler
+   * arguments.
+   *
    */
   template <typename QuadratureType, typename number2, typename MappingType>
   void
@@ -565,10 +572,10 @@ public:
          const AdditionalData &            additional_data = AdditionalData());
 
   /**
-   * Initializes the data structures. Same as above, but using a $Q_1$
-   * mapping.
+   * Initializes the data structures. Same as above, but using a   $Q_1$
+   * mapping.       @deprecated   Use the overload taking a Mapping object
+   * instead.
    *
-   * @deprecated Use the overload taking a Mapping object instead.
    */
   template <typename QuadratureType, typename number2>
   DEAL_II_DEPRECATED void
@@ -579,24 +586,24 @@ public:
 
   /**
    * Extracts the information needed to perform loops over cells. The
-   * DoFHandler and AffineConstraints objects describe the layout of degrees of
-   * freedom, the DoFHandler and the mapping describe the transformations from
-   * unit to real cell, and the finite element underlying the DoFHandler
-   * together with the quadrature formula describe the local operations. As
-   * opposed to the scalar case treated with the other initialization
-   * functions, this function allows for problems with two or more different
-   * finite elements. The DoFHandlers to each element must be passed as
-   * pointers to the initialization function. Alternatively, a system of
-   * several components may also be represented by a single DoFHandler with an
-   * FESystem element. The prerequisite for this case is that each base
-   * element of the FESystem must be compatible with the present class, such
-   * as the FE_Q or FE_DGQ classes.
-   *
-   * This function also allows for using several quadrature formulas, e.g.
-   * when the description contains independent integrations of elements of
-   * different degrees. However, the number of different quadrature formulas
-   * can be sets independently from the number of DoFHandlers, when several
+   * DoFHandler and AffineConstraints objects describe the layout of degrees
+   * of   freedom, the DoFHandler and the mapping describe the transformations
+   * from   unit to real cell, and the finite element underlying the
+   * DoFHandler   together with the quadrature formula describe the local
+   * operations. As   opposed to the scalar case treated with the other
+   * initialization   functions, this function allows for problems with two or
+   * more different   finite elements. The DoFHandlers to each element must be
+   * passed as   pointers to the initialization function. Alternatively, a
+   * system of   several components may also be represented by a single
+   * DoFHandler with an   FESystem element. The prerequisite for this case is
+   * that each base   element of the FESystem must be compatible with the
+   * present class, such   as the FE_Q or FE_DGQ classes.     This function
+   * also allows for using several quadrature formulas, e.g.   when the
+   * description contains independent integrations of elements of   different
+   * degrees. However, the number of different quadrature formulas   can be
+   * sets independently from the number of DoFHandlers, when several
    * elements are always integrated with the same quadrature formula.
+   *
    */
   template <typename QuadratureType, typename number2, typename MappingType>
   void
@@ -607,9 +614,10 @@ public:
          const AdditionalData &additional_data = AdditionalData());
 
   /**
-   * Initializes the data structures. Same as above, but  using DoFHandlerType.
+   * Initializes the data structures. Same as above, but  using
+   * DoFHandlerType.       @deprecated   Use the overload taking a DoFHandler
+   * object instead.
    *
-   * @deprecated Use the overload taking a DoFHandler object instead.
    */
   template <typename QuadratureType,
             typename number2,
@@ -623,10 +631,10 @@ public:
          const AdditionalData &additional_data = AdditionalData());
 
   /**
-   * Initializes the data structures. Same as above, but  using a $Q_1$
-   * mapping.
+   * Initializes the data structures. Same as above, but  using a   $Q_1$
+   * mapping.       @deprecated   Use the overload taking a Mapping object
+   * instead.
    *
-   * @deprecated Use the overload taking a Mapping object instead.
    */
   template <typename QuadratureType, typename number2>
   DEAL_II_DEPRECATED void
@@ -636,9 +644,10 @@ public:
          const AdditionalData &additional_data = AdditionalData());
 
   /**
-   * Initializes the data structures. Same as above, but  using DoFHandlerType.
+   * Initializes the data structures. Same as above, but  using
+   * DoFHandlerType.       @deprecated   Use the overload taking a DoFHandler
+   * object instead.
    *
-   * @deprecated Use the overload taking a DoFHandler object instead.
    */
   template <typename QuadratureType, typename number2, typename DoFHandlerType>
   DEAL_II_DEPRECATED void
@@ -653,6 +662,7 @@ public:
    * from the DoFHandler. Moreover, only a single quadrature formula is used,
    * as might be necessary when several components in a vector-valued problem
    * are integrated together based on the same quadrature formula.
+   *
    */
   template <typename QuadratureType, typename number2, typename MappingType>
   void
@@ -663,9 +673,10 @@ public:
          const AdditionalData &additional_data = AdditionalData());
 
   /**
-   * Initializes the data structures. Same as above, but  using DoFHandlerType.
+   * Initializes the data structures. Same as above, but  using
+   * DoFHandlerType.       @deprecated   Use the overload taking a DoFHandler
+   * object instead.
    *
-   * @deprecated Use the overload taking a DoFHandler object instead.
    */
   template <typename QuadratureType,
             typename number2,
@@ -679,10 +690,10 @@ public:
          const AdditionalData &additional_data = AdditionalData());
 
   /**
-   * Initializes the data structures. Same as above, but  using a $Q_1$
-   * mapping.
+   * Initializes the data structures. Same as above, but  using a   $Q_1$
+   * mapping.       @deprecated   Use the overload taking a Mapping object
+   * instead.
    *
-   * @deprecated Use the overload taking a Mapping object instead.
    */
   template <typename QuadratureType, typename number2>
   DEAL_II_DEPRECATED void
@@ -692,9 +703,10 @@ public:
          const AdditionalData &additional_data = AdditionalData());
 
   /**
-   * Initializes the data structures. Same as above, but  using DoFHandlerType.
+   * Initializes the data structures. Same as above, but  using
+   * DoFHandlerType.       @deprecated   Use the overload taking a DoFHandler
+   * object instead.
    *
-   * @deprecated Use the overload taking a DoFHandler object instead.
    */
   template <typename QuadratureType, typename number2, typename DoFHandlerType>
   DEAL_II_DEPRECATED void
@@ -707,6 +719,7 @@ public:
    * Copy function. Creates a deep copy of all data structures. It is usually
    * enough to keep the data for different operations once, so this function
    * should not be needed very often.
+   *
    */
   void
   copy_from(
@@ -716,16 +729,18 @@ public:
    * Refreshes the geometry data stored in the MappingInfo fields when the
    * underlying geometry has changed (e.g. by a mapping that can deform
    * through a change in the spatial configuration like MappingFEField)
-   * whereas the topology of the mesh and unknowns have remained the
-   * same. Compared to reinit(), this operation only has to re-generate the
+   * whereas the topology of the mesh and unknowns have remained the   same.
+   * Compared to reinit(), this operation only has to re-generate the
    * geometry arrays and can thus be significantly cheaper (depending on the
    * cost to evaluate the geometry).
+   *
    */
   void
   update_mapping(const Mapping<dim> &mapping);
 
   /**
-   * Same as above but with hp::MappingCollection.
+   * Same as above but with   hp::MappingCollection.
+   *
    */
   void
   update_mapping(const std::shared_ptr<hp::MappingCollection<dim>> &mapping);
@@ -733,6 +748,7 @@ public:
   /**
    * Clear all data fields and brings the class into a condition similar to
    * after having called the default constructor.
+   *
    */
   void
   clear();
@@ -747,60 +763,65 @@ public:
    * bottleneck in particular for high-degree DG methods, therefore a more
    * restrictive way of exchange is clearly beneficial. Note that this
    * selection applies to FEFaceEvaluation objects assigned to the exterior
-   * side of cells accessing `FaceToCellTopology::exterior_cells` only; all
-   * <i>interior</i> objects are available in any case.
+   * side of cells accessing   `FaceToCellTopology::exterior_cells`   only;
+   * all   <i>interior</i> objects are available in any case.
+   *
    */
   enum class DataAccessOnFaces
   {
     /**
      * The loop does not involve any FEFaceEvaluation access into neighbors,
      * as is the case with only boundary integrals (but no interior face
-     * integrals) or when doing mass matrices in a MatrixFree::cell_loop()
+     * integrals) or when doing mass matrices in a   MatrixFree::cell_loop()
      * like setup.
+     *
      */
     none,
 
     /**
      * The loop does only involve FEFaceEvaluation access into neighbors by
-     * function values, such as FEFaceEvaluation::gather_evaluate() with
-     * argument EvaluationFlags::values, but no access to shape function
-     * derivatives (which typically need to access more data). For FiniteElement
-     * types where only some of the shape functions have support on a face, such
-     * as an FE_DGQ element with Lagrange polynomials with nodes on the element
-     * surface, the data exchange is reduced from `(k+1)^dim` to
-     * `(k+1)^(dim-1)`.
+     * function values, such as   FEFaceEvaluation::gather_evaluate()   with
+     * argument   EvaluationFlags::values,   but no access to shape function
+     * derivatives (which typically need to access more data). For
+     * FiniteElement     types where only some of the shape functions have
+     * support on a face, such     as an FE_DGQ element with Lagrange
+     * polynomials with nodes on the element     surface, the data exchange is
+     * reduced from `(k+1)^dim` to     `(k+1)^(dim-1)`.
+     *
      */
     values,
 
     /**
-     * Same as above. To be used if data has to be accessed from exterior faces
-     * if FEFaceEvaluation was reinitialized by providing the cell batch number
-     * and a face number. This configuration is useful in the context of
-     * cell-centric loops.
+     * Same as above. To be used if data has to be accessed from exterior
+     * faces     if FEFaceEvaluation was reinitialized by providing the cell
+     * batch number     and a face number. This configuration is useful in the
+     * context of     cell-centric loops.           @pre
+     * AdditionalData::hold_all_faces_to_owned_cells   has to enabled.
      *
-     * @pre AdditionalData::hold_all_faces_to_owned_cells has to enabled.
      */
     values_all_faces,
 
     /**
      * The loop does involve FEFaceEvaluation access into neighbors by
      * function values and gradients, but no second derivatives, such as
-     * FEFaceEvaluation::gather_evaluate() with EvaluationFlags::values and
-     * EvaluationFlags::gradients set. For FiniteElement types where only some
-     * of the shape functions have non-zero value and first derivative on a
-     * face, such as an FE_DGQHermite element, the data exchange is reduced,
-     * e.g. from `(k+1)^dim` to `2(k+1)^(dim-1)`. Note that for bases that do
-     * not have this special property, the full neighboring data is sent anyway.
+     * FEFaceEvaluation::gather_evaluate()   with   EvaluationFlags::values
+     * and       EvaluationFlags::gradients   set. For FiniteElement types
+     * where only some     of the shape functions have non-zero value and
+     * first derivative on a     face, such as an FE_DGQHermite element, the
+     * data exchange is reduced,     e.g. from `(k+1)^dim` to
+     * `2(k+1)^(dim-1)`. Note that for bases that do     not have this special
+     * property, the full neighboring data is sent anyway.
+     *
      */
     gradients,
 
     /**
-     * Same as above. To be used if data has to be accessed from exterior faces
-     * if FEFaceEvaluation was reinitialized by providing the cell batch number
-     * and a face number. This configuration is useful in the context of
-     * cell-centric loops.
+     * Same as above. To be used if data has to be accessed from exterior
+     * faces     if FEFaceEvaluation was reinitialized by providing the cell
+     * batch number     and a face number. This configuration is useful in the
+     * context of     cell-centric loops.           @pre
+     * AdditionalData::hold_all_faces_to_owned_cells   has to enabled.
      *
-     * @pre AdditionalData::hold_all_faces_to_owned_cells has to enabled.
      */
     gradients_all_faces,
 
@@ -809,53 +830,53 @@ public:
      * is typically more expensive than the other options, but also the most
      * conservative one because the full data of elements behind the faces to
      * be computed locally will be exchanged.
+     *
      */
     unspecified
   };
 
   /**
-   * @name 2: Matrix-free loops
+   * @name   2: Matrix-free loops
+   *
    */
   //@{
   /**
    * This method runs the loop over all cells (in parallel) and performs the
    * MPI data exchange on the source vector and destination vector.
-   *
-   * @param cell_operation `std::function` with the signature <tt>cell_operation
-   * (const MatrixFree<dim,Number> &, OutVector &, InVector &,
-   * std::pair<unsigned int,unsigned int> &)</tt> where the first argument
-   * passes the data of the calling class and the last argument defines the
-   * range of cells which should be worked on (typically more than one cell
-   * should be worked on in order to reduce overheads).  One can pass a pointer
-   * to an object in this place if it has an `operator()` with the correct set
-   * of arguments since such a pointer can be converted to the function object.
-   *
-   * @param dst Destination vector holding the result. If the vector is of
-   * type LinearAlgebra::distributed::Vector (or composite objects thereof
-   * such as LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::compress() at the end of the call
+   * @param   cell_operation   `std::function`   with the signature
+   * <tt>cell_operation   (const MatrixFree<dim,Number> &, OutVector &,
+   * InVector &,     std::pair<unsigned   int,unsigned int> &)</tt> where the
+   * first argument   passes the data of the calling class and the last
+   * argument defines the   range of cells which should be worked on
+   * (typically more than one cell   should be worked on in order to reduce
+   * overheads).  One can pass a pointer   to an object in this place if it
+   * has an `operator()` with the correct set   of arguments since such a
+   * pointer can be converted to the function object.       @param   dst
+   * Destination vector holding the result. If the vector is of   type
+   * LinearAlgebra::distributed::Vector   (or composite objects thereof   such
+   * as   LinearAlgebra::distributed::BlockVector),   the loop calls
+   * LinearAlgebra::distributed::Vector::compress()   at the end of the call
    * internally. For other vectors, including parallel Trilinos or PETSc
    * vectors, no such call is issued. Note that Trilinos/Epetra or PETSc
    * vectors do currently not work in parallel because the present class uses
    * MPI-local index addressing, as opposed to the global addressing implied
-   * by those external libraries.
-   *
-   * @param src Input vector. If the vector is of type
-   * LinearAlgebra::distributed::Vector (or composite objects thereof such as
-   * LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::update_ghost_values() at the start of
-   * the call internally to make sure all necessary data is locally
+   * by those external libraries.       @param   src Input vector. If the
+   * vector is of type     LinearAlgebra::distributed::Vector   (or composite
+   * objects thereof such as     LinearAlgebra::distributed::BlockVector),
+   * the loop calls
+   * LinearAlgebra::distributed::Vector::update_ghost_values()   at the start
+   * of   the call internally to make sure all necessary data is locally
    * available. Note, however, that the vector is reset to its original state
    * at the end of the loop, i.e., if the vector was not ghosted upon entry of
-   * the loop, it will not be ghosted upon finishing the loop.
-   *
-   * @param zero_dst_vector If this flag is set to `true`, the vector `dst`
-   * will be set to zero inside the loop. Use this case in case you perform a
+   * the loop, it will not be ghosted upon finishing the loop.       @param
+   * zero_dst_vector If this flag is set to `true`, the vector `dst`   will be
+   * set to zero inside the loop. Use this case in case you perform a
    * typical `vmult()` operation on a matrix object, as it will typically be
    * faster than calling `dst = 0;` before the loop separately. This is
    * because the vector entries are set to zero only on subranges of the
    * vector, making sure that the vector entries stay in caches as much as
    * possible.
+   *
    */
   template <typename OutVector, typename InVector>
   void
@@ -871,48 +892,44 @@ public:
   /**
    * This is the second variant to run the loop over all cells, now providing
    * a function pointer to a member function of class `CLASS`. This method
-   * obviates the need to define a lambda function or to call std::bind to bind
-   * the class into the given
-   * function in case the local function needs to access data in the class
-   * (i.e., it is a non-static member function).
-   *
-   * @param cell_operation Pointer to member function of `CLASS` with the
-   * signature <tt>cell_operation (const MatrixFree<dim,Number> &, OutVector &,
-   * InVector &, std::pair<unsigned int,unsigned int> &)</tt> where the first
-   * argument passes the data of the calling class and the last argument
-   * defines the range of cells which should be worked on (typically more than
-   * one cell should be worked on in order to reduce overheads).
-   *
-   * @param owning_class The object which provides the `cell_operation`
-   * call. To be compatible with this interface, the class must allow to call
-   * `owning_class->cell_operation(...)`.
-   *
-   * @param dst Destination vector holding the result. If the vector is of
-   * type LinearAlgebra::distributed::Vector (or composite objects thereof
-   * such as LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::compress() at the end of the call
+   * obviates the need to define a lambda function or to call   std::bind   to
+   * bind   the class into the given   function in case the local function
+   * needs to access data in the class   (i.e., it is a non-static member
+   * function).       @param   cell_operation Pointer to member function of
+   * `CLASS` with the   signature <tt>cell_operation (const
+   * MatrixFree<dim,Number> &, OutVector &,   InVector &,   std::pair<unsigned
+   * int,unsigned int> &)</tt> where the first   argument passes the data of
+   * the calling class and the last argument   defines the range of cells
+   * which should be worked on (typically more than   one cell should be
+   * worked on in order to reduce overheads).       @param   owning_class The
+   * object which provides the `cell_operation`   call. To be compatible with
+   * this interface, the class must allow to call
+   * `owning_class->cell_operation(...)`.       @param   dst Destination
+   * vector holding the result. If the vector is of   type
+   * LinearAlgebra::distributed::Vector   (or composite objects thereof   such
+   * as   LinearAlgebra::distributed::BlockVector),   the loop calls
+   * LinearAlgebra::distributed::Vector::compress()   at the end of the call
    * internally. For other vectors, including parallel Trilinos or PETSc
    * vectors, no such call is issued. Note that Trilinos/Epetra or PETSc
    * vectors do currently not work in parallel because the present class uses
    * MPI-local index addressing, as opposed to the global addressing implied
-   * by those external libraries.
-   *
-   * @param src Input vector. If the vector is of type
-   * LinearAlgebra::distributed::Vector (or composite objects thereof such as
-   * LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::update_ghost_values() at the start of
-   * the call internally to make sure all necessary data is locally
+   * by those external libraries.       @param   src Input vector. If the
+   * vector is of type     LinearAlgebra::distributed::Vector   (or composite
+   * objects thereof such as     LinearAlgebra::distributed::BlockVector),
+   * the loop calls
+   * LinearAlgebra::distributed::Vector::update_ghost_values()   at the start
+   * of   the call internally to make sure all necessary data is locally
    * available. Note, however, that the vector is reset to its original state
    * at the end of the loop, i.e., if the vector was not ghosted upon entry of
-   * the loop, it will not be ghosted upon finishing the loop.
-   *
-   * @param zero_dst_vector If this flag is set to `true`, the vector `dst`
-   * will be set to zero inside the loop. Use this case in case you perform a
+   * the loop, it will not be ghosted upon finishing the loop.       @param
+   * zero_dst_vector If this flag is set to `true`, the vector `dst`   will be
+   * set to zero inside the loop. Use this case in case you perform a
    * typical `vmult()` operation on a matrix object, as it will typically be
    * faster than calling `dst = 0;` before the loop separately. This is
    * because the vector entries are set to zero only on subranges of the
    * vector, making sure that the vector entries stay in caches as much as
    * possible.
+   *
    */
   template <typename CLASS, typename OutVector, typename InVector>
   void
@@ -928,6 +945,7 @@ public:
 
   /**
    * Same as above, but for class member functions which are non-const.
+   *
    */
   template <typename CLASS, typename OutVector, typename InVector>
   void
@@ -942,17 +960,15 @@ public:
             const bool      zero_dst_vector = false) const;
 
   /**
-   * This function is similar to the cell_loop with an std::function object to
-   * specify to operation to be performed on cells, but adds two additional
-   * functors to execute some additional work before and after the cell
-   * integrals are computed.
-   *
-   * The two additional functors work on a range of degrees of freedom,
-   * expressed in terms of the degree-of-freedom numbering of the selected
-   * DoFHandler `dof_handler_index_pre_post` in MPI-local indices. The
-   * arguments to the functors represent a range of degrees of freedom at a
-   * granularity of
-   * internal::MatrixFreeFunctions::DoFInfo::chunk_size_zero_vector entries
+   * This function is similar to the cell_loop with an   std::function
+   * object to   specify to operation to be performed on cells, but adds two
+   * additional   functors to execute some additional work before and after
+   * the cell   integrals are computed.     The two additional functors work
+   * on a range of degrees of freedom,   expressed in terms of the
+   * degree-of-freedom numbering of the selected   DoFHandler
+   * `dof_handler_index_pre_post` in MPI-local indices. The   arguments to the
+   * functors represent a range of degrees of freedom at a   granularity of
+   * internal::MatrixFreeFunctions::DoFInfo::chunk_size_zero_vector   entries
    * (except for the last chunk which is set to the number of locally owned
    * entries) in the form `[first, last)`. The idea of these functors is to
    * bring operations on vectors closer to the point where they accessed in a
@@ -961,69 +977,20 @@ public:
    * relevant unknowns before they are first touched in the cell_operation
    * (including the MPI data exchange), allowing to execute some vector update
    * that the `src` vector depends upon. The `operation_after_loop` is similar
-   * - it starts to execute on a range of DoFs once all DoFs in that range
-   * have been touched for the last time by the `cell_operation`
-   * (including the MPI data exchange), allowing e.g. to compute some vector
-   * operations that depend on the result of the current cell loop in `dst` or
-   * want to modify `src`. The efficiency of caching depends on the numbering
-   * of the degrees of freedom because of the granularity of the ranges.
    *
-   * @param cell_operation Pointer to member function of `CLASS` with the
-   * signature <tt>cell_operation (const MatrixFree<dim,Number> &, OutVector &,
-   * InVector &, std::pair<unsigned int,unsigned int> &)</tt> where the first
-   * argument passes the data of the calling class and the last argument
-   * defines the range of cells which should be worked on (typically more than
-   * one cell should be worked on in order to reduce overheads).
    *
-   * @param owning_class The object which provides the `cell_operation`
-   * call. To be compatible with this interface, the class must allow to call
-   * `owning_class->cell_operation(...)`.
    *
-   * @param dst Destination vector holding the result. If the vector is of
-   * type LinearAlgebra::distributed::Vector (or composite objects thereof
-   * such as LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::compress() at the end of the call
-   * internally. For other vectors, including parallel Trilinos or PETSc
-   * vectors, no such call is issued. Note that Trilinos/Epetra or PETSc
-   * vectors do currently not work in parallel because the present class uses
-   * MPI-local index addressing, as opposed to the global addressing implied
-   * by those external libraries.
    *
-   * @param src Input vector. If the vector is of type
-   * LinearAlgebra::distributed::Vector (or composite objects thereof such as
-   * LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::update_ghost_values() at the start of
-   * the call internally to make sure all necessary data is locally
-   * available. Note, however, that the vector is reset to its original state
-   * at the end of the loop, i.e., if the vector was not ghosted upon entry of
-   * the loop, it will not be ghosted upon finishing the loop.
    *
-   * @param operation_before_loop This functor can be used to perform an
-   * operation on entries of the `src` and `dst` vectors (or other vectors)
-   * before the operation on cells first touches a particular DoF according to
-   * the general description in the text above. This function is passed a
-   * range of the locally owned degrees of freedom on the selected
-   * `dof_handler_index_pre_post` (in MPI-local numbering).
    *
-   * @param operation_after_loop This functor can be used to perform an
-   * operation on entries of the `src` and `dst` vectors (or other vectors)
-   * after the operation on cells last touches a particular DoF according to
-   * the general description in the text above. This function is passed a
-   * range of the locally owned degrees of freedom on the selected
-   * `dof_handler_index_pre_post` (in MPI-local numbering).
    *
-   * @param dof_handler_index_pre_post Since MatrixFree can be initialized
-   * with a vector of DoFHandler objects, each of them will in general have
-   * vector sizes and thus different ranges returned to
-   * `operation_before_loop` and `operation_after_loop`. Use this variable to
-   * specify which one of the DoFHandler objects the index range should be
-   * associated to. Defaults to the `dof_handler_index` 0.
-   *
-   * @note The close locality of the `operation_before_loop` and
+   *  - it starts to execute on a range of DoFs once all DoFs in that range   have been touched for the last time by the `cell_operation`   (including the MPI data exchange), allowing e.g. to compute some vector   operations that depend on the result of the current cell loop in `dst` or   want to modify `src`. The efficiency of caching depends on the numbering   of the degrees of freedom because of the granularity of the ranges.       @param   cell_operation Pointer to member function of `CLASS` with the   signature <tt>cell_operation (const MatrixFree<dim,Number> &, OutVector &,   InVector &,   std::pair<unsigned   int,unsigned int> &)</tt> where the first   argument passes the data of the calling class and the last argument   defines the range of cells which should be worked on (typically more than   one cell should be worked on in order to reduce overheads).       @param   owning_class The object which provides the `cell_operation`   call. To be compatible with this interface, the class must allow to call   `owning_class->cell_operation(...)`.       @param   dst Destination vector holding the result. If the vector is of   type   LinearAlgebra::distributed::Vector   (or composite objects thereof   such as   LinearAlgebra::distributed::BlockVector),   the loop calls     LinearAlgebra::distributed::Vector::compress()   at the end of the call   internally. For other vectors, including parallel Trilinos or PETSc   vectors, no such call is issued. Note that Trilinos/Epetra or PETSc   vectors do currently not work in parallel because the present class uses   MPI-local index addressing, as opposed to the global addressing implied   by those external libraries.       @param   src Input vector. If the vector is of type     LinearAlgebra::distributed::Vector   (or composite objects thereof such as     LinearAlgebra::distributed::BlockVector),   the loop calls     LinearAlgebra::distributed::Vector::update_ghost_values()   at the start of   the call internally to make sure all necessary data is locally   available. Note, however, that the vector is reset to its original state   at the end of the loop, i.e., if the vector was not ghosted upon entry of   the loop, it will not be ghosted upon finishing the loop.       @param   operation_before_loop This functor can be used to perform an   operation on entries of the `src` and `dst` vectors (or other vectors)   before the operation on cells first touches a particular DoF according to   the general description in the text above. This function is passed a   range of the locally owned degrees of freedom on the selected   `dof_handler_index_pre_post` (in MPI-local numbering).       @param   operation_after_loop This functor can be used to perform an   operation on entries of the `src` and `dst` vectors (or other vectors)   after the operation on cells last touches a particular DoF according to   the general description in the text above. This function is passed a   range of the locally owned degrees of freedom on the selected   `dof_handler_index_pre_post` (in MPI-local numbering).       @param   dof_handler_index_pre_post Since MatrixFree can be initialized   with a vector of DoFHandler objects, each of them will in general have   vector sizes and thus different ranges returned to   `operation_before_loop` and `operation_after_loop`. Use this variable to   specify which one of the DoFHandler objects the index range should be   associated to. Defaults to the `dof_handler_index` 0.
+   * @note   The close locality of the `operation_before_loop` and
    * `operation_after_loop` is currently only implemented for the MPI-only
    * case. In case threading is enabled, the complete `operation_before_loop`
    * is scheduled before the parallel loop, and `operation_after_loop` is
    * scheduled strictly afterwards, due to the complicated dependencies.
+   *
    */
   template <typename CLASS, typename OutVector, typename InVector>
   void
@@ -1043,6 +1010,7 @@ public:
 
   /**
    * Same as above, but for class member functions which are non-const.
+   *
    */
   template <typename CLASS, typename OutVector, typename InVector>
   void
@@ -1061,8 +1029,9 @@ public:
             const unsigned int dof_handler_index_pre_post = 0) const;
 
   /**
-   * Same as above, but taking an `std::function` as the `cell_operation`
+   * Same as above, but taking an   `std::function`   as the `cell_operation`
    * rather than a class member function.
+   *
    */
   template <typename OutVector, typename InVector>
   void
@@ -1084,75 +1053,66 @@ public:
    * data exchange on the source vector and destination vector. As opposed to
    * the other variants that only runs a function on cells, this method also
    * takes as arguments a function for the interior faces and for the boundary
-   * faces, respectively.
-   *
-   * @param cell_operation `std::function` with the signature <tt>cell_operation
+   * faces, respectively.       @param   cell_operation   `std::function`
+   * with the signature <tt>cell_operation   (const MatrixFree<dim,Number> &,
+   * OutVector &, InVector &,     std::pair<unsigned   int,unsigned int>
+   * &)</tt> where the first argument   passes the data of the calling class
+   * and the last argument defines the   range of cells which should be worked
+   * on (typically more than one cell   should be worked on in order to reduce
+   * overheads). One can pass a pointer   to an object in this place if it has
+   * an   <code>operator()</code>   with the   correct set of arguments since
+   * such a pointer can be converted to the   function object.       @param
+   * face_operation   `std::function`   with the signature <tt>face_operation
    * (const MatrixFree<dim,Number> &, OutVector &, InVector &,
-   * std::pair<unsigned int,unsigned int> &)</tt> where the first argument
-   * passes the data of the calling class and the last argument defines the
-   * range of cells which should be worked on (typically more than one cell
-   * should be worked on in order to reduce overheads). One can pass a pointer
-   * to an object in this place if it has an <code>operator()</code> with the
-   * correct set of arguments since such a pointer can be converted to the
-   * function object.
-   *
-   * @param face_operation `std::function` with the signature <tt>face_operation
-   * (const MatrixFree<dim,Number> &, OutVector &, InVector &,
-   * std::pair<unsigned int,unsigned int> &)</tt> in analogy to
+   * std::pair<unsigned   int,unsigned int> &)</tt> in analogy to
    * `cell_operation`, but now the part associated to the work on interior
-   * faces. Note that the MatrixFree framework treats periodic faces as interior
-   * ones, so they will be assigned their correct neighbor after applying
-   * periodicity constraints within the face_operation calls.
-   *
-   * @param boundary_operation `std::function` with the signature
+   * faces. Note that the MatrixFree framework treats periodic faces as
+   * interior   ones, so they will be assigned their correct neighbor after
+   * applying   periodicity constraints within the face_operation calls.
+   * @param   boundary_operation   `std::function`   with the signature
    * <tt>boundary_operation (const MatrixFree<dim,Number> &, OutVector &,
-   * InVector &, std::pair<unsigned int,unsigned int> &)</tt> in analogy to
-   * `cell_operation` and `face_operation`, but now the part associated to the
-   * work on boundary faces. Boundary faces are separated by their
+   * InVector &,   std::pair<unsigned   int,unsigned int> &)</tt> in analogy
+   * to   `cell_operation` and `face_operation`, but now the part associated
+   * to the   work on boundary faces. Boundary faces are separated by their
    * `boundary_id` and it is possible to query that id using
-   * MatrixFree::get_boundary_id(). Note that both interior and faces use the
-   * same numbering, and faces in the interior are assigned lower numbers than
-   * the boundary faces.
-   *
-   * @param dst Destination vector holding the result. If the vector is of
-   * type LinearAlgebra::distributed::Vector (or composite objects thereof
-   * such as LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::compress() at the end of the call
-   * internally.
-   *
-   * @param src Input vector. If the vector is of type
-   * LinearAlgebra::distributed::Vector (or composite objects thereof such as
-   * LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::update_ghost_values() at the start of
-   * the call internally to make sure all necessary data is locally
+   * MatrixFree::get_boundary_id().   Note that both interior and faces use
+   * the   same numbering, and faces in the interior are assigned lower
+   * numbers than   the boundary faces.       @param   dst Destination vector
+   * holding the result. If the vector is of   type
+   * LinearAlgebra::distributed::Vector   (or composite objects thereof   such
+   * as   LinearAlgebra::distributed::BlockVector),   the loop calls
+   * LinearAlgebra::distributed::Vector::compress()   at the end of the call
+   * internally.       @param   src Input vector. If the vector is of type
+   * LinearAlgebra::distributed::Vector   (or composite objects thereof such
+   * as     LinearAlgebra::distributed::BlockVector),   the loop calls
+   * LinearAlgebra::distributed::Vector::update_ghost_values()   at the start
+   * of   the call internally to make sure all necessary data is locally
    * available. Note, however, that the vector is reset to its original state
    * at the end of the loop, i.e., if the vector was not ghosted upon entry of
-   * the loop, it will not be ghosted upon finishing the loop.
-   *
-   * @param zero_dst_vector If this flag is set to `true`, the vector `dst`
-   * will be set to zero inside the loop. Use this case in case you perform a
+   * the loop, it will not be ghosted upon finishing the loop.       @param
+   * zero_dst_vector If this flag is set to `true`, the vector `dst`   will be
+   * set to zero inside the loop. Use this case in case you perform a
    * typical `vmult()` operation on a matrix object, as it will typically be
    * faster than calling `dst = 0;` before the loop separately. This is
    * because the vector entries are set to zero only on subranges of the
    * vector, making sure that the vector entries stay in caches as much as
-   * possible.
+   * possible.       @param   dst_vector_face_access Set the type of access
+   * into the vector   `dst` that will happen inside the body of the   @p
+   * face_operation     function. As explained in the description of the
+   * DataAccessOnFaces   struct, the purpose of this selection is to reduce
+   * the amount of data   that must be exchanged over the MPI network (or via
+   * `memcpy` if within   the shared memory region of a node) to gain
+   * performance. Note that there   is no way to communicate this setting with
+   * the FEFaceEvaluation class,   therefore this selection must be made at
+   * this site in addition to what is   implemented inside the
+   * `face_operation` function. As a consequence, there   is also no way to
+   * check that the setting passed to this call is   consistent with what is
+   * later done by `FEFaceEvaluation`, and it is the   user's responsibility
+   * to ensure correctness of data.       @param   src_vector_face_access Set
+   * the type of access into the vector   `src` that will happen inside the
+   * body of the   @p face_operation   function,   in analogy to
+   * `dst_vector_face_access`.
    *
-   * @param dst_vector_face_access Set the type of access into the vector
-   * `dst` that will happen inside the body of the @p face_operation
-   * function. As explained in the description of the DataAccessOnFaces
-   * struct, the purpose of this selection is to reduce the amount of data
-   * that must be exchanged over the MPI network (or via `memcpy` if within
-   * the shared memory region of a node) to gain performance. Note that there
-   * is no way to communicate this setting with the FEFaceEvaluation class,
-   * therefore this selection must be made at this site in addition to what is
-   * implemented inside the `face_operation` function. As a consequence, there
-   * is also no way to check that the setting passed to this call is
-   * consistent with what is later done by `FEFaceEvaluation`, and it is the
-   * user's responsibility to ensure correctness of data.
-   *
-   * @param src_vector_face_access Set the type of access into the vector
-   * `src` that will happen inside the body of the @p face_operation function,
-   * in analogy to `dst_vector_face_access`.
    */
   template <typename OutVector, typename InVector>
   void
@@ -1182,87 +1142,78 @@ public:
   /**
    * This is the second variant to run the loop over all cells, interior
    * faces, and boundary faces, now providing three function pointers to
-   * member functions of class @p CLASS with the signature <code>operation
+   * member functions of class   @p CLASS   with the signature <code>operation
    * (const MatrixFree<dim,Number> &, OutVector &, InVector &,
-   * std::pair<unsigned int,unsigned int>&)const</code>. This method obviates
-   * the need to define a lambda function or to call std::bind to bind
-   * the class into the given
-   * function in case the local function needs to access data in the class
-   * (i.e., it is a non-static member function).
-   *
-   * @param cell_operation Pointer to member function of `CLASS` with the
-   * signature <tt>cell_operation (const MatrixFree<dim,Number> &, OutVector &,
-   * InVector &, std::pair<unsigned int,unsigned int> &)</tt> where the first
-   * argument passes the data of the calling class and the last argument
-   * defines the range of cells which should be worked on (typically more than
-   * one cell should be worked on in order to reduce overheads). Note that the
-   * loop will typically split the `cell_range` into smaller pieces and work
-   * on `cell_operation`, `face_operation`, and `boundary_operation`
+   * std::pair<unsigned   int,unsigned int>&)const</code>. This method
+   * obviates   the need to define a lambda function or to call   std::bind
+   * to bind   the class into the given   function in case the local function
+   * needs to access data in the class   (i.e., it is a non-static member
+   * function).       @param   cell_operation Pointer to member function of
+   * `CLASS` with the   signature <tt>cell_operation (const
+   * MatrixFree<dim,Number> &, OutVector &,   InVector &,   std::pair<unsigned
+   * int,unsigned int> &)</tt> where the first   argument passes the data of
+   * the calling class and the last argument   defines the range of cells
+   * which should be worked on (typically more than   one cell should be
+   * worked on in order to reduce overheads). Note that the   loop will
+   * typically split the `cell_range` into smaller pieces and work   on
+   * `cell_operation`, `face_operation`, and `boundary_operation`
    * alternately, in order to increase the potential reuse of vector entries
-   * in caches.
-   *
-   * @param face_operation Pointer to member function of `CLASS` with the
-   * signature <tt>face_operation (const MatrixFree<dim,Number> &, OutVector &,
-   * InVector &, std::pair<unsigned int,unsigned int> &)</tt> in analogy to
-   * `cell_operation`, but now the part associated to the work on interior
-   * faces. Note that the MatrixFree framework treats periodic faces as
-   * interior ones, so they will be assigned their correct neighbor after
-   * applying periodicity constraints within the face_operation calls.
-   *
-   * @param boundary_operation Pointer to member function of `CLASS` with the
-   * signature <tt>boundary_operation (const MatrixFree<dim,Number> &, OutVector
-   * &, InVector &, std::pair<unsigned int,unsigned int> &)</tt> in analogy to
-   * `cell_operation` and `face_operation`, but now the part associated to the
-   * work on boundary faces. Boundary faces are separated by their
+   * in caches.       @param   face_operation Pointer to member function of
+   * `CLASS` with the   signature <tt>face_operation (const
+   * MatrixFree<dim,Number> &, OutVector &,   InVector &,   std::pair<unsigned
+   * int,unsigned int> &)</tt> in analogy to   `cell_operation`, but now the
+   * part associated to the work on interior   faces. Note that the MatrixFree
+   * framework treats periodic faces as   interior ones, so they will be
+   * assigned their correct neighbor after   applying periodicity constraints
+   * within the face_operation calls.       @param   boundary_operation
+   * Pointer to member function of `CLASS` with the   signature
+   * <tt>boundary_operation (const MatrixFree<dim,Number> &, OutVector   &,
+   * InVector &,   std::pair<unsigned   int,unsigned int> &)</tt> in analogy
+   * to   `cell_operation` and `face_operation`, but now the part associated
+   * to the   work on boundary faces. Boundary faces are separated by their
    * `boundary_id` and it is possible to query that id using
-   * MatrixFree::get_boundary_id(). Note that both interior and faces use the
-   * same numbering, and faces in the interior are assigned lower numbers than
-   * the boundary faces.
-   *
-   * @param owning_class The object which provides the `cell_operation`
-   * call. To be compatible with this interface, the class must allow to call
+   * MatrixFree::get_boundary_id().   Note that both interior and faces use
+   * the   same numbering, and faces in the interior are assigned lower
+   * numbers than   the boundary faces.       @param   owning_class The object
+   * which provides the `cell_operation`   call. To be compatible with this
+   * interface, the class must allow to call
    * `owning_class->cell_operation(...)`, `owning_class->face_operation(...)`,
-   * and `owning_class->boundary_operation(...)`.
-   *
-   * @param dst Destination vector holding the result. If the vector is of
-   * type LinearAlgebra::distributed::Vector (or composite objects thereof
-   * such as LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::compress() at the end of the call
-   * internally.
-   *
-   * @param src Input vector. If the vector is of type
-   * LinearAlgebra::distributed::Vector (or composite objects thereof such as
-   * LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::update_ghost_values() at the start of
-   * the call internally to make sure all necessary data is locally
+   * and `owning_class->boundary_operation(...)`.       @param   dst
+   * Destination vector holding the result. If the vector is of   type
+   * LinearAlgebra::distributed::Vector   (or composite objects thereof   such
+   * as   LinearAlgebra::distributed::BlockVector),   the loop calls
+   * LinearAlgebra::distributed::Vector::compress()   at the end of the call
+   * internally.       @param   src Input vector. If the vector is of type
+   * LinearAlgebra::distributed::Vector   (or composite objects thereof such
+   * as     LinearAlgebra::distributed::BlockVector),   the loop calls
+   * LinearAlgebra::distributed::Vector::update_ghost_values()   at the start
+   * of   the call internally to make sure all necessary data is locally
    * available. Note, however, that the vector is reset to its original state
    * at the end of the loop, i.e., if the vector was not ghosted upon entry of
-   * the loop, it will not be ghosted upon finishing the loop.
-   *
-   * @param zero_dst_vector If this flag is set to `true`, the vector `dst`
-   * will be set to zero inside the loop. Use this case in case you perform a
+   * the loop, it will not be ghosted upon finishing the loop.       @param
+   * zero_dst_vector If this flag is set to `true`, the vector `dst`   will be
+   * set to zero inside the loop. Use this case in case you perform a
    * typical `vmult()` operation on a matrix object, as it will typically be
    * faster than calling `dst = 0;` before the loop separately. This is
    * because the vector entries are set to zero only on subranges of the
    * vector, making sure that the vector entries stay in caches as much as
-   * possible.
+   * possible.       @param   dst_vector_face_access Set the type of access
+   * into the vector   `dst` that will happen inside the body of the   @p
+   * face_operation     function. As explained in the description of the
+   * DataAccessOnFaces   struct, the purpose of this selection is to reduce
+   * the amount of data   that must be exchanged over the MPI network (or via
+   * `memcpy` if within   the shared memory region of a node) to gain
+   * performance. Note that there   is no way to communicate this setting with
+   * the FEFaceEvaluation class,   therefore this selection must be made at
+   * this site in addition to what is   implemented inside the
+   * `face_operation` function. As a consequence, there   is also no way to
+   * check that the setting passed to this call is   consistent with what is
+   * later done by `FEFaceEvaluation`, and it is the   user's responsibility
+   * to ensure correctness of data.       @param   src_vector_face_access Set
+   * the type of access into the vector   `src` that will happen inside the
+   * body of the   @p face_operation   function,   in analogy to
+   * `dst_vector_face_access`.
    *
-   * @param dst_vector_face_access Set the type of access into the vector
-   * `dst` that will happen inside the body of the @p face_operation
-   * function. As explained in the description of the DataAccessOnFaces
-   * struct, the purpose of this selection is to reduce the amount of data
-   * that must be exchanged over the MPI network (or via `memcpy` if within
-   * the shared memory region of a node) to gain performance. Note that there
-   * is no way to communicate this setting with the FEFaceEvaluation class,
-   * therefore this selection must be made at this site in addition to what is
-   * implemented inside the `face_operation` function. As a consequence, there
-   * is also no way to check that the setting passed to this call is
-   * consistent with what is later done by `FEFaceEvaluation`, and it is the
-   * user's responsibility to ensure correctness of data.
-   *
-   * @param src_vector_face_access Set the type of access into the vector
-   * `src` that will happen inside the body of the @p face_operation function,
-   * in analogy to `dst_vector_face_access`.
    */
   template <typename CLASS, typename OutVector, typename InVector>
   void
@@ -1293,6 +1244,7 @@ public:
 
   /**
    * Same as above, but for class member functions which are non-const.
+   *
    */
   template <typename CLASS, typename OutVector, typename InVector>
   void
@@ -1322,67 +1274,58 @@ public:
 
   /**
    * This method runs the loop over all cells (in parallel) similarly as
-   * cell_loop() does. However, this function is intended to be used
-   * for the case if face and boundary integrals should be also
-   * evaluated. In contrast to loop(), the user provides only a single function
-   * that should contain the cell integral over a cell (or batch of cells when
+   * cell_loop() does. However, this function is intended to be used   for the
+   * case if face and boundary integrals should be also   evaluated. In
+   * contrast to loop(), the user provides only a single function   that
+   * should contain the cell integral over a cell (or batch of cells when
    * vectorizing) and the face and boundary integrals over all its faces. This
-   * is referred to in the literature as `element-centric loop` or `cell-centric
-   * loop`.
-   *
-   * To be able to evaluate all face integrals (with values or gradients
-   * from the neighboring cells), all ghost values from neighboring cells are
-   * updated. Use
-   * FEFaceEvalution::reinit(cell, face_no) to access quantities on arbitrary
-   * faces of a cell and the respective neighbors.
-   *
-   * @param cell_operation Pointer to member function of `CLASS` with the
-   * signature <tt>cell_operation (const MatrixFree<dim,Number> &, OutVector &,
-   * InVector &, std::pair<unsigned int,unsigned int> &)</tt> where the first
-   * argument passes the data of the calling class and the last argument
-   * defines the range of cells which should be worked on (typically more than
-   * one cell is passed in from the loop in order to reduce overheads).
-   *
-   * @param owning_class The object which provides the `cell_operation`
-   * call. To be compatible with this interface, the class must allow to call
-   * `owning_class->cell_operation(...)`.
-   *
-   * @param dst Destination vector holding the result. If the vector is of
-   * type LinearAlgebra::distributed::Vector (or composite objects thereof
-   * such as LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::compress() at the end of the call
-   * internally.
-   *
-   * @param src Input vector. If the vector is of type
-   * LinearAlgebra::distributed::Vector (or composite objects thereof such as
-   * LinearAlgebra::distributed::BlockVector), the loop calls
-   * LinearAlgebra::distributed::Vector::update_ghost_values() at the start of
-   * the call internally to make sure all necessary data is locally
+   * is referred to in the literature as `element-centric loop` or
+   * `cell-centric   loop`.     To be able to evaluate all face integrals
+   * (with values or gradients   from the neighboring cells), all ghost values
+   * from neighboring cells are   updated. Use
+   * FEFaceEvalution::reinit(cell,   face_no) to access quantities on
+   * arbitrary   faces of a cell and the respective neighbors.       @param
+   * cell_operation Pointer to member function of `CLASS` with the   signature
+   * <tt>cell_operation (const MatrixFree<dim,Number> &, OutVector &,
+   * InVector &,   std::pair<unsigned   int,unsigned int> &)</tt> where the
+   * first   argument passes the data of the calling class and the last
+   * argument   defines the range of cells which should be worked on
+   * (typically more than   one cell is passed in from the loop in order to
+   * reduce overheads).       @param   owning_class The object which provides
+   * the `cell_operation`   call. To be compatible with this interface, the
+   * class must allow to call   `owning_class->cell_operation(...)`.
+   * @param   dst Destination vector holding the result. If the vector is of
+   * type   LinearAlgebra::distributed::Vector   (or composite objects thereof
+   * such as   LinearAlgebra::distributed::BlockVector),   the loop calls
+   * LinearAlgebra::distributed::Vector::compress()   at the end of the call
+   * internally.       @param   src Input vector. If the vector is of type
+   * LinearAlgebra::distributed::Vector   (or composite objects thereof such
+   * as     LinearAlgebra::distributed::BlockVector),   the loop calls
+   * LinearAlgebra::distributed::Vector::update_ghost_values()   at the start
+   * of   the call internally to make sure all necessary data is locally
    * available. Note, however, that the vector is reset to its original state
    * at the end of the loop, i.e., if the vector was not ghosted upon entry of
-   * the loop, it will not be ghosted upon finishing the loop.
-   *
-   * @param zero_dst_vector If this flag is set to `true`, the vector `dst`
-   * will be set to zero inside the loop. Use this case in case you perform a
+   * the loop, it will not be ghosted upon finishing the loop.       @param
+   * zero_dst_vector If this flag is set to `true`, the vector `dst`   will be
+   * set to zero inside the loop. Use this case in case you perform a
    * typical `vmult()` operation on a matrix object, as it will typically be
    * faster than calling `dst = 0;` before the loop separately. This is
    * because the vector entries are set to zero only on subranges of the
    * vector, making sure that the vector entries stay in caches as much as
-   * possible.
+   * possible.       @param   src_vector_face_access Set the type of access
+   * into the vector   `src` that will happen inside the body of the   @p
+   * cell_operation   function   during face integrals.   As explained in the
+   * description of the DataAccessOnFaces   struct, the purpose of this
+   * selection is to reduce the amount of data   that must be exchanged over
+   * the MPI network (or via `memcpy` if within   the shared memory region of
+   * a node) to gain performance. Note that there   is no way to communicate
+   * this setting with the FEFaceEvaluation class,   therefore this selection
+   * must be made at this site in addition to what is   implemented inside the
+   * `face_operation` function. As a consequence, there   is also no way to
+   * check that the setting passed to this call is   consistent with what is
+   * later done by `FEFaceEvaluation`, and it is the   user's responsibility
+   * to ensure correctness of data.
    *
-   * @param src_vector_face_access Set the type of access into the vector
-   * `src` that will happen inside the body of the @p cell_operation function
-   * during face integrals.
-   * As explained in the description of the DataAccessOnFaces
-   * struct, the purpose of this selection is to reduce the amount of data
-   * that must be exchanged over the MPI network (or via `memcpy` if within
-   * the shared memory region of a node) to gain performance. Note that there
-   * is no way to communicate this setting with the FEFaceEvaluation class,
-   * therefore this selection must be made at this site in addition to what is
-   * implemented inside the `face_operation` function. As a consequence, there
-   * is also no way to check that the setting passed to this call is
-   * consistent with what is later done by `FEFaceEvaluation`, and it is the
-   * user's responsibility to ensure correctness of data.
    */
   template <typename CLASS, typename OutVector, typename InVector>
   void
@@ -1400,6 +1343,7 @@ public:
 
   /**
    * Same as above, but for the class member function which is non-const.
+   *
    */
   template <typename CLASS, typename OutVector, typename InVector>
   void
@@ -1416,7 +1360,8 @@ public:
                       DataAccessOnFaces::unspecified) const;
 
   /**
-   * Same as above, but with std::function.
+   * Same as above, but with   std::function.
+   *
    */
   template <typename OutVector, typename InVector>
   void
@@ -1438,6 +1383,7 @@ public:
    * compute what the subrange for an individual finite element degree is. The
    * finite element degree is associated to the vector component given in the
    * function call.
+   *
    */
   std::pair<unsigned int, unsigned int>
   create_cell_subrange_hp(const std::pair<unsigned int, unsigned int> &range,
@@ -1449,6 +1395,7 @@ public:
    * loop might contain elements of different degrees. Use this function to
    * compute what the subrange for a given index the hp-finite element, as
    * opposed to the finite element degree in the other function.
+   *
    */
   std::pair<unsigned int, unsigned int>
   create_cell_subrange_hp_by_index(
@@ -1458,12 +1405,14 @@ public:
 
   /**
    * In the hp adaptive case, return number of active_fe_indices.
+   *
    */
   unsigned int
   n_active_fe_indices() const;
 
   /**
    * In the hp-adaptive case, return the active_fe_index of a cell range.
+   *
    */
   unsigned int
   get_cell_active_fe_index(
@@ -1471,6 +1420,7 @@ public:
 
   /**
    * In the hp-adaptive case, return the active_fe_index of a face range.
+   *
    */
   unsigned int
   get_face_active_fe_index(const std::pair<unsigned int, unsigned int> range,
@@ -1479,28 +1429,12 @@ public:
   //@}
 
   /**
-   * @name 3: Initialization of vectors
+   * @name   3: Initialization of vectors
+   *
    */
   //@{
   /**
-   * Initialize function for a general vector. The length of the vector is
-   * equal to the total number of degrees in the DoFHandler. If the vector is
-   * of class LinearAlgebra::distributed::Vector@<Number@>, the ghost entries
-   * are set accordingly. For vector-valued problems with several DoFHandlers
-   * underlying this class, the parameter @p vector_component defines which
-   * component is to be used.
    *
-   * For the vectors used with MatrixFree and in FEEvaluation, a vector needs
-   * to hold all
-   * @ref GlossLocallyActiveDof "locally active DoFs"
-   * and also some of the
-   * @ref GlossLocallyRelevantDof "locally relevant DoFs".
-   * The selection of DoFs is such that one can read all degrees of freedom on
-   * all locally relevant elements (locally active) plus the degrees of freedom
-   * that constraints expand into from the locally owned cells. However, not
-   * all locally relevant DoFs are stored because most of them would never be
-   * accessed in matrix-vector products and result in too much data sent
-   * around which impacts the performance.
    */
   template <typename VectorType>
   void
@@ -1508,24 +1442,7 @@ public:
                         const unsigned int dof_handler_index = 0) const;
 
   /**
-   * Initialize function for a distributed vector. The length of the vector is
-   * equal to the total number of degrees in the DoFHandler. If the vector is
-   * of class LinearAlgebra::distributed::Vector@<Number@>, the ghost entries
-   * are set accordingly. For vector-valued problems with several DoFHandlers
-   * underlying this class, the parameter @p vector_component defines which
-   * component is to be used.
    *
-   * For the vectors used with MatrixFree and in FEEvaluation, a vector needs
-   * to hold all
-   * @ref GlossLocallyActiveDof "locally active DoFs"
-   * and also some of the
-   * @ref GlossLocallyRelevantDof "locally relevant DoFs".
-   * The selection of DoFs is such that one can read all degrees of freedom on
-   * all locally relevant elements (locally active) plus the degrees of freedom
-   * that constraints expand into from the locally owned cells. However, not
-   * all locally relevant DoFs are stored because most of them would never be
-   * accessed in matrix-vector products and result in too much data sent
-   * around which impacts the performance.
    */
   template <typename Number2>
   void
@@ -1541,18 +1458,21 @@ public:
    * functions. If you just want to initialize a (parallel) vector, you should
    * usually prefer this data structure as the data exchange information can
    * be reused from one vector to another.
+   *
    */
   const std::shared_ptr<const Utilities::MPI::Partitioner> &
   get_vector_partitioner(const unsigned int dof_handler_index = 0) const;
 
   /**
    * Return the set of cells that are owned by the processor.
+   *
    */
   const IndexSet &
   get_locally_owned_set(const unsigned int dof_handler_index = 0) const;
 
   /**
    * Return the set of ghost cells needed but not owned by the processor.
+   *
    */
   const IndexSet &
   get_ghost_set(const unsigned int dof_handler_index = 0) const;
@@ -1565,19 +1485,21 @@ public:
    * <tt>get_vector_partitioner()->local_to_global</tt> on an entry of the
    * vector. In addition, it only returns the indices for degrees of freedom
    * that are owned locally, not for ghosts.
+   *
    */
   const std::vector<unsigned int> &
   get_constrained_dofs(const unsigned int dof_handler_index = 0) const;
 
   /**
    * Computes a renumbering of degrees of freedom that better fits with the
-   * data layout in MatrixFree according to the given layout of data. Note that
-   * this function does not re-arrange the information stored in this class,
-   * but rather creates a renumbering for consumption of
-   * DoFHandler::renumber_dofs. To have any effect a MatrixFree object must be
-   * set up again using the renumbered DoFHandler and AffineConstraints. Note
-   * that if a DoFHandler calls DoFHandler::renumber_dofs, all information in
-   * MatrixFree becomes invalid.
+   * data layout in MatrixFree according to the given layout of data. Note
+   * that   this function does not re-arrange the information stored in this
+   * class,   but rather creates a renumbering for consumption of
+   * DoFHandler::renumber_dofs.   To have any effect a MatrixFree object must
+   * be   set up again using the renumbered DoFHandler and AffineConstraints.
+   * Note   that if a DoFHandler calls   DoFHandler::renumber_dofs,   all
+   * information in   MatrixFree becomes invalid.
+   *
    */
   void
   renumber_dofs(std::vector<types::global_dof_index> &renumbering,
@@ -1586,11 +1508,14 @@ public:
   //@}
 
   /**
-   * @name 4: General information
+   * @name   4: General information
+   *
    */
   //@{
   /**
-   * Return whether a given FiniteElement @p fe is supported by this class.
+   * Return whether a given FiniteElement   @p fe   is supported by this
+   * class.
+   *
    */
   template <int spacedim>
   static bool
@@ -1598,13 +1523,15 @@ public:
 
   /**
    * Return the number of different DoFHandlers specified at initialization.
+   *
    */
   unsigned int
   n_components() const;
 
   /**
-   * For the finite element underlying the DoFHandler specified by @p
+   * For the finite element underlying the DoFHandler specified by   @p
    * dof_handler_index, return the number of base elements.
+   *
    */
   unsigned int
   n_base_elements(const unsigned int dof_handler_index) const;
@@ -1615,12 +1542,14 @@ public:
    * cells. Note that most data structures in this class do not directly act
    * on this number but rather on n_cell_batches() which gives the number of
    * cells as seen when lumping several cells together with vectorization.
+   *
    */
   unsigned int
   n_physical_cells() const;
 
   /**
-   * @deprecated Use n_cell_batches() instead.
+   * @deprecated   Use n_cell_batches() instead.
+   *
    */
   DEAL_II_DEPRECATED unsigned int
   n_macro_cells() const;
@@ -1628,11 +1557,13 @@ public:
   /**
    * Return the number of cell batches that this structure works on. The
    * batches are formed by application of vectorization over several cells in
-   * general. The cell range in @p cell_loop runs from zero to
+   * general. The cell range in   @p cell_loop   runs from zero to
    * n_cell_batches() (exclusive), so this is the appropriate size if you want
    * to store arrays of data for all cells to be worked on. This number is
-   * approximately `n_physical_cells()/VectorizedArray::%size()`
-   * (depending on how many cell batches that do not get filled up completely).
+   * approximately   `n_physical_cells()/VectorizedArray::%size()`
+   * (depending on how many cell batches that do not get filled up
+   * completely).
+   *
    */
   unsigned int
   n_cell_batches() const;
@@ -1642,6 +1573,7 @@ public:
    * for face integration. Note that not all cells that are ghosted in the
    * triangulation are kept in this data structure, but only the ones which
    * are necessary for evaluating face integrals from both sides.
+   *
    */
   unsigned int
   n_ghost_cell_batches() const;
@@ -1649,9 +1581,10 @@ public:
   /**
    * Return the number of interior face batches that this structure works on.
    * The batches are formed by application of vectorization over several faces
-   * in general. The face range in @p loop runs from zero to
+   * in general. The face range in   @p loop   runs from zero to
    * n_inner_face_batches() (exclusive), so this is the appropriate size if
    * you want to store arrays of data for all interior faces to be worked on.
+   *
    */
   unsigned int
   n_inner_face_batches() const;
@@ -1659,10 +1592,12 @@ public:
   /**
    * Return the number of boundary face batches that this structure works on.
    * The batches are formed by application of vectorization over several faces
-   * in general. The face range in @p loop runs from n_inner_face_batches() to
+   * in general. The face range in   @p loop   runs from
+   * n_inner_face_batches() to
    * n_inner_face_batches()+n_boundary_face_batches() (exclusive), so if you
    * need to store arrays that hold data for all boundary faces but not the
    * interior ones, this number gives the appropriate size.
+   *
    */
   unsigned int
   n_boundary_face_batches() const;
@@ -1670,6 +1605,7 @@ public:
   /**
    * Return the number of faces that are not processed locally but belong to
    * locally owned faces.
+   *
    */
   unsigned int
   n_ghost_inner_face_batches() const;
@@ -1679,6 +1615,7 @@ public:
    * this method can be used to query the boundary id of a given face in the
    * faces' own sorting by lanes in a VectorizedArray. Only valid for an index
    * indicating a boundary face.
+   *
    */
   types::boundary_id
   get_boundary_id(const unsigned int macro_face) const;
@@ -1686,6 +1623,7 @@ public:
   /**
    * Return the boundary ids for the faces within a cell, using the cells'
    * sorting by lanes in the VectorizedArray.
+   *
    */
   std::array<types::boundary_id, VectorizedArrayType::size()>
   get_faces_by_cells_boundary_id(const unsigned int cell_batch_index,
@@ -1693,20 +1631,21 @@ public:
 
   /**
    * Return the DoFHandler with the index as given to the respective
-   * `std::vector` argument in the reinit() function.
+   * `std::vector`   argument in the reinit() function.
+   *
    */
   const DoFHandler<dim> &
   get_dof_handler(const unsigned int dof_handler_index = 0) const;
 
   /**
    * Return the DoFHandler with the index as given to the respective
-   * `std::vector` argument in the reinit() function. Note that if you want to
-   * call this function with a template parameter different than the default
-   * one, you will need to use the `template` before the function call, i.e.,
-   * you will have something like `matrix_free.template
-   * get_dof_handler<hp::DoFHandler<dim>>()`.
+   * `std::vector`   argument in the reinit() function. Note that if you want
+   * to   call this function with a template parameter different than the
+   * default   one, you will need to use the `template` before the function
+   * call, i.e.,   you will have something like `matrix_free.template
+   * get_dof_handler<hp::DoFHandler<dim>>()`.         @deprecated   Use the
+   * non-templated equivalent of this function.
    *
-   * @deprecated Use the non-templated equivalent of this function.
    */
   template <typename DoFHandlerType>
   DEAL_II_DEPRECATED const DoFHandlerType &
@@ -1716,13 +1655,13 @@ public:
    * Return the cell iterator in deal.II speak to a given cell batch
    * (populating several lanes in a VectorizedArray) and the lane index within
    * the vectorization across cells in the renumbering of this structure.
-   *
    * Note that the cell iterators in deal.II go through cells differently to
    * what the cell loop of this class does. This is because several cells are
    * processed together (vectorization across cells), and since cells with
    * neighbors on different MPI processors need to be accessed at a certain
    * time when accessing remote data and overlapping communication with
    * computation.
+   *
    */
   typename DoFHandler<dim>::cell_iterator
   get_cell_iterator(const unsigned int cell_batch_index,
@@ -1733,6 +1672,7 @@ public:
    * This returns the level and index for the cell that would be returned by
    * get_cell_iterator() for the same arguments `cell_batch_index` and
    * `lane_index`.
+   *
    */
   std::pair<int, int>
   get_cell_level_and_index(const unsigned int cell_batch_index,
@@ -1742,13 +1682,13 @@ public:
    * Return the cell iterator in deal.II speak to an interior/exterior cell of
    * a face in a pair of a face batch and lane index. The second element of
    * the pair is the face number so that the face iterator can be accessed:
-   * `pair.first()->face(pair.second());`
+   * `pair.first()->face(pair.second());`     Note that the face iterators in
+   * deal.II go through cells differently to   what the face/boundary loop of
+   * this class does. This is because several   faces are worked on together
+   * (vectorization), and since faces with neighbor   cells on different MPI
+   * processors need to be accessed at a certain time   when accessing remote
+   * data and overlapping communication with computation.
    *
-   * Note that the face iterators in deal.II go through cells differently to
-   * what the face/boundary loop of this class does. This is because several
-   * faces are worked on together (vectorization), and since faces with neighbor
-   * cells on different MPI processors need to be accessed at a certain time
-   * when accessing remote data and overlapping communication with computation.
    */
   std::pair<typename DoFHandler<dim>::cell_iterator, unsigned int>
   get_face_iterator(const unsigned int face_batch_index,
@@ -1757,9 +1697,9 @@ public:
                     const unsigned int fe_component = 0) const;
 
   /**
-   * @copydoc MatrixFree::get_cell_iterator()
+   * @copydoc     MatrixFree::get_cell_iterator()         @deprecated   Use
+   * get_cell_iterator() instead.
    *
-   * @deprecated Use get_cell_iterator() instead.
    */
   DEAL_II_DEPRECATED typename DoFHandler<dim>::active_cell_iterator
   get_hp_cell_iterator(const unsigned int cell_batch_index,
@@ -1773,28 +1713,32 @@ public:
    * using only this class, one usually does not need to bother about that
    * fact since the values are padded with zeros. However, when this class is
    * mixed with deal.II access to cells, care needs to be taken. This function
-   * returns @p true if not all `n_lanes` cells for the given
+   * returns   @p true   if not all `n_lanes` cells for the given
    * `cell_batch_index` correspond to actual cells of the mesh and some are
    * merely present for padding reasons. To find out how many cells are
    * actually used, use the function n_active_entries_per_cell_batch().
+   *
    */
   bool
   at_irregular_cell(const unsigned int cell_batch_index) const;
 
   /**
-   * @deprecated Use n_active_entries_per_cell_batch() instead.
+   * @deprecated   Use n_active_entries_per_cell_batch() instead.
+   *
    */
   DEAL_II_DEPRECATED unsigned int
   n_components_filled(const unsigned int cell_batch_number) const;
 
   /**
-   * This query returns how many cells among the `VectorizedArrayType::size()`
-   * many cells within a cell batch to actual cells in the mesh, rather than
-   * being present for padding reasons. For most given cell batches in
-   * n_cell_batches(), this number is equal to `VectorizedArrayType::size()`,
-   * but there might be one or a few cell batches in the mesh (where the
-   * numbers do not add up) where only some of the cells within a batch are
-   * used, indicated by the function at_irregular_cell().
+   * This query returns how many cells among the
+   * `VectorizedArrayType::size()`     many cells within a cell batch to
+   * actual cells in the mesh, rather than   being present for padding
+   * reasons. For most given cell batches in   n_cell_batches(), this number
+   * is equal to   `VectorizedArrayType::size()`,     but there might be one
+   * or a few cell batches in the mesh (where the   numbers do not add up)
+   * where only some of the cells within a batch are   used, indicated by the
+   * function at_irregular_cell().
+   *
    */
   unsigned int
   n_active_entries_per_cell_batch(const unsigned int cell_batch_index) const;
@@ -1804,15 +1748,17 @@ public:
    * vectorization data types correspond to real faces (both interior and
    * boundary faces, as those use the same indexing but with different ranges)
    * in the mesh. For most given indices in n_inner_faces_batches() and
-   * n_boundary_face_batches(), this is just @p vectorization_length many, but
-   * there might be one or a few meshes (where the numbers do not add up)
-   * where there are less such lanes filled.
+   * n_boundary_face_batches(), this is just   @p vectorization_length   many,
+   * but   there might be one or a few meshes (where the numbers do not add
+   * up)   where there are less such lanes filled.
+   *
    */
   unsigned int
   n_active_entries_per_face_batch(const unsigned int face_batch_index) const;
 
   /**
    * Return the number of degrees of freedom per cell for a given hp-index.
+   *
    */
   unsigned int
   get_dofs_per_cell(const unsigned int dof_handler_index  = 0,
@@ -1820,6 +1766,7 @@ public:
 
   /**
    * Return the number of quadrature points per cell for a given hp-index.
+   *
    */
   unsigned int
   get_n_q_points(const unsigned int quad_index         = 0,
@@ -1828,6 +1775,7 @@ public:
   /**
    * Return the number of degrees of freedom on each face of the cell for
    * given hp-index.
+   *
    */
   unsigned int
   get_dofs_per_face(const unsigned int dof_handler_index  = 0,
@@ -1836,6 +1784,7 @@ public:
   /**
    * Return the number of quadrature points on each face of the cell for
    * given hp-index.
+   *
    */
   unsigned int
   get_n_q_points_face(const unsigned int quad_index         = 0,
@@ -1843,6 +1792,7 @@ public:
 
   /**
    * Return the quadrature rule for given hp-index.
+   *
    */
   const Quadrature<dim> &
   get_quadrature(const unsigned int quad_index         = 0,
@@ -1850,16 +1800,18 @@ public:
 
   /**
    * Return the quadrature rule for given hp-index.
+   *
    */
   const Quadrature<dim - 1> &
   get_face_quadrature(const unsigned int quad_index         = 0,
                       const unsigned int hp_active_fe_index = 0) const;
 
   /**
-   * Return the category the current batch of cells was assigned to. Categories
-   * run between the given values in the field
-   * AdditionalData::cell_vectorization_category for non-hp-DoFHandler types
+   * Return the category the current batch of cells was assigned to.
+   * Categories   run between the given values in the field
+   * AdditionalData::cell_vectorization_category   for non-hp-DoFHandler types
    * and return the active FE index in the hp-adaptive case.
+   *
    */
   unsigned int
   get_cell_category(const unsigned int cell_batch_index) const;
@@ -1867,12 +1819,14 @@ public:
   /**
    * Return the category on the cells on the two sides of the current batch of
    * faces.
+   *
    */
   std::pair<unsigned int, unsigned int>
   get_face_category(const unsigned int macro_face) const;
 
   /**
    * Queries whether or not the indexation has been set.
+   *
    */
   bool
   indices_initialized() const;
@@ -1880,13 +1834,15 @@ public:
   /**
    * Queries whether or not the geometry-related information for the cells has
    * been set.
+   *
    */
   bool
   mapping_initialized() const;
 
   /**
    * Return the level of the mesh to be worked on. Returns
-   * numbers::invalid_unsigned_int if working on active cells.
+   * numbers::invalid_unsigned_int   if working on active cells.
+   *
    */
   unsigned int
   get_mg_level() const;
@@ -1894,6 +1850,7 @@ public:
   /**
    * Return an approximation of the memory consumption of this class in
    * bytes.
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -1901,6 +1858,7 @@ public:
   /**
    * Prints a detailed summary of memory consumption in the different
    * structures of this class to the given output stream.
+   *
    */
   template <typename StreamType>
   void
@@ -1909,6 +1867,7 @@ public:
   /**
    * Prints a summary of this class to the given output stream. It is focused
    * on the indices, and does not print all the data stored.
+   *
    */
   void
   print(std::ostream &out) const;
@@ -1916,53 +1875,58 @@ public:
   //@}
 
   /**
-   * @name 5: Access of internal data structure
+   * @name   5: Access of internal data structure     Note: Expert mode, interface not stable between releases.
    *
-   * Note: Expert mode, interface not stable between releases.
    */
   //@{
   /**
    * Return information on task graph.
+   *
    */
   const internal::MatrixFreeFunctions::TaskInfo &
   get_task_info() const;
 
-  /*
-   * Return geometry-dependent information on the cells.
-   */
+  /*   Return geometry-dependent information on the cells.  
+* */
   const internal::MatrixFreeFunctions::
     MappingInfo<dim, Number, VectorizedArrayType> &
     get_mapping_info() const;
 
   /**
    * Return information on indexation degrees of freedom.
+   *
    */
   const internal::MatrixFreeFunctions::DoFInfo &
   get_dof_info(const unsigned int dof_handler_index_component = 0) const;
 
   /**
    * Return the number of weights in the constraint pool.
+   *
    */
   unsigned int
   n_constraint_pool_entries() const;
 
   /**
    * Return a pointer to the first number in the constraint pool data with
-   * index @p pool_index (to be used together with @p constraint_pool_end()).
+   * index   @p pool_index   (to be used together with   @p
+   * constraint_pool_end()).
+   *
    */
   const Number *
   constraint_pool_begin(const unsigned int pool_index) const;
 
   /**
    * Return a pointer to one past the last number in the constraint pool data
-   * with index @p pool_index (to be used together with @p
+   * with index   @p pool_index   (to be used together with   @p
    * constraint_pool_begin()).
+   *
    */
   const Number *
   constraint_pool_end(const unsigned int pool_index) const;
 
   /**
    * Return the unit cell information for given hp-index.
+   *
    */
   const internal::MatrixFreeFunctions::ShapeInfo<VectorizedArrayType> &
   get_shape_info(const unsigned int dof_handler_index_component = 0,
@@ -1973,6 +1937,7 @@ public:
 
   /**
    * Return the connectivity information of a face.
+   *
    */
   const internal::MatrixFreeFunctions::FaceToCellTopology<
     VectorizedArrayType::size()> &
@@ -1980,31 +1945,24 @@ public:
 
 
   /**
-   * Return the table that translates a triple of the macro cell number,
-   * the index of a face within a cell and the index within the cell batch of
+   * Return the table that translates a triple of the macro cell number,   the
+   * index of a face within a cell and the index within the cell batch of
    * vectorization into the index within the faces array.
+   *
    */
   const Table<3, unsigned int> &
   get_cell_and_face_to_plain_faces() const;
 
   /**
-   * Obtains a scratch data object for internal use. Make sure to release it
-   * afterwards by passing the pointer you obtain from this object to the
-   * release_scratch_data() function. This interface is used by FEEvaluation
-   * objects for storing their data structures.
+   * Obtains a scratch data object for internal use. Make sure to release it   afterwards by passing the pointer you obtain from this object to the   release_scratch_data() function. This interface is used by FEEvaluation   objects for storing their data structures.     The organization of the internal data structure is a thread-local storage   of a list of vectors. Multiple threads will each get a separate storage   field and separate vectors, ensuring thread safety. The mechanism to   acquire and release objects is similar to the mechanisms used for the   local contributions of WorkStream, see     @ref workstream_paper   "the WorkStream paper".
    *
-   * The organization of the internal data structure is a thread-local storage
-   * of a list of vectors. Multiple threads will each get a separate storage
-   * field and separate vectors, ensuring thread safety. The mechanism to
-   * acquire and release objects is similar to the mechanisms used for the
-   * local contributions of WorkStream, see
-   * @ref workstream_paper "the WorkStream paper".
    */
   AlignedVector<VectorizedArrayType> *
   acquire_scratch_data() const;
 
   /**
    * Makes the object of the scratchpad available again.
+   *
    */
   void
   release_scratch_data(const AlignedVector<VectorizedArrayType> *memory) const;
@@ -2017,12 +1975,14 @@ public:
    * at a time, but opposed to the acquire_scratch_data() it is also possible
    * that the thread releasing the scratch data can be different than the one
    * that acquired it.
+   *
    */
   AlignedVector<Number> *
   acquire_scratch_data_non_threadsafe() const;
 
   /**
    * Makes the object of the scratch data available again.
+   *
    */
   void
   release_scratch_data_non_threadsafe(
@@ -2034,6 +1994,7 @@ private:
   /**
    * This is the actual reinit function that sets up the indices for the
    * DoFHandler case.
+   *
    */
   template <typename number2, int q_dim>
   void
@@ -2050,6 +2011,7 @@ private:
    * holds all different weights in the constraints (not part of DoFInfo
    * because several DoFInfo classes can have the same weights which
    * consequently only need to be stored once).
+   *
    */
   template <typename number2>
   void
@@ -2060,6 +2022,7 @@ private:
 
   /**
    * Initializes the DoFHandlers based on a DoFHandler<dim> argument.
+   *
    */
   void
   initialize_dof_handlers(
@@ -2068,12 +2031,14 @@ private:
 
   /**
    * Pointers to the DoFHandlers underlying the current problem.
+   *
    */
   std::vector<SmartPointer<const DoFHandler<dim>>> dof_handlers;
 
   /**
    * Contains the information about degrees of freedom on the individual cells
    * and constraints.
+   *
    */
   std::vector<internal::MatrixFreeFunctions::DoFInfo> dof_info;
 
@@ -2082,24 +2047,28 @@ private:
    * separate field since several vector components might share similar
    * weights, which reduces memory consumption. Moreover, it obviates template
    * arguments on DoFInfo and keeps it a plain field of indices only.
+   *
    */
   std::vector<Number> constraint_pool_data;
 
   /**
    * Contains an indicator to the start of the ith index in the constraint
    * pool data.
+   *
    */
   std::vector<unsigned int> constraint_pool_row_index;
 
   /**
    * Holds information on transformation of cells from reference cell to real
    * cell that is needed for evaluating integrals.
+   *
    */
   internal::MatrixFreeFunctions::MappingInfo<dim, Number, VectorizedArrayType>
     mapping_info;
 
   /**
    * Contains shape value information on the unit cell.
+   *
    */
   Table<4, internal::MatrixFreeFunctions::ShapeInfo<VectorizedArrayType>>
     shape_info;
@@ -2109,6 +2078,7 @@ private:
    * index in this field) and the index within the level, one can reconstruct
    * a deal.II cell iterator and use all the traditional things deal.II offers
    * to do with cell iterators.
+   *
    */
   std::vector<std::pair<unsigned int, unsigned int>> cell_level_index;
 
@@ -2118,6 +2088,7 @@ private:
    * not on the local processor but that are needed to evaluate the cell
    * integrals. In cell_level_index_end_local, we store the number of local
    * cells.
+   *
    */
   unsigned int cell_level_index_end_local;
 
@@ -2125,32 +2096,36 @@ private:
    * Stores the basic layout of the cells and faces to be treated, including
    * the task layout for the shared memory parallelization and possible
    * overlaps between communications and computations with MPI.
+   *
    */
   internal::MatrixFreeFunctions::TaskInfo task_info;
 
   /**
    * Vector holding face information. Only initialized if
    * build_face_info=true.
+   *
    */
   internal::MatrixFreeFunctions::FaceInfo<VectorizedArrayType::size()>
     face_info;
 
   /**
    * Stores whether indices have been initialized.
+   *
    */
   bool indices_are_initialized;
 
   /**
    * Stores whether indices have been initialized.
+   *
    */
   bool mapping_is_initialized;
 
   /**
    * Scratchpad memory for use in evaluation. We allow more than one
    * evaluation object to attach to this field (this, the outer
-   * std::vector), so we need to keep tracked of whether a certain data
-   * field is already used (first part of pair) and keep a list of
-   * objects.
+   * std::vector),   so we need to keep tracked of whether a certain data
+   * field is already used (first part of pair) and keep a list of   objects.
+   *
    */
   mutable Threads::ThreadLocalStorage<
     std::list<std::pair<bool, AlignedVector<VectorizedArrayType>>>>
@@ -2159,19 +2134,21 @@ private:
   /**
    * Scratchpad memory for use in evaluation and other contexts, non-thread
    * safe variant.
+   *
    */
   mutable std::list<std::pair<bool, AlignedVector<Number>>>
     scratch_pad_non_threadsafe;
 
   /**
    * Stored the level of the mesh to be worked on.
+   *
    */
   unsigned int mg_level;
 };
 
 
 
-/*----------------------- Inline functions ----------------------------------*/
+ /*----------------------- Inline functions ----------------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -3195,6 +3172,7 @@ namespace internal
 {
   /**
    * Internal class for exchanging data between vectors.
+   *
    */
   template <int dim, typename Number, typename VectorizedArrayType>
   struct VectorDataExchange
@@ -3209,8 +3187,9 @@ namespace internal
 
 
     /**
-     * Constructor. Takes MF data, flag for face access in DG and
-     * number of components.
+     * Constructor. Takes MF data, flag for face access in DG and     number
+     * of components.
+     *
      */
     VectorDataExchange(
       const dealii::MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -3243,6 +3222,7 @@ namespace internal
 
     /**
      * Destructor.
+     *
      */
     ~VectorDataExchange() // NOLINT
     {
@@ -3256,8 +3236,9 @@ namespace internal
 
 
     /**
-     * Go through all components in MF object and choose the one
-     * whose partitioner is compatible with the Partitioner in this component.
+     * Go through all components in MF object and choose the one     whose
+     * partitioner is compatible with the Partitioner in this component.
+     *
      */
     template <typename VectorType>
     unsigned int
@@ -3288,8 +3269,9 @@ namespace internal
 
 
     /**
-     * Get partitioner for the given @p mf_component taking into
+     * Get partitioner for the given   @p mf_component   taking into
      * account vector_face_access set in constructor.
+     *
      */
     const internal::MatrixFreeFunctions::VectorDataExchange::Base &
     get_partitioner(const unsigned int mf_component) const
@@ -3330,19 +3312,21 @@ namespace internal
 
     /**
      * Start update_ghost_value for serial vectors
+     *
      */
     template <typename VectorType,
               typename std::enable_if<is_serial_or_dummy<VectorType>::value,
                                       VectorType>::type * = nullptr>
     void
-    update_ghost_values_start(const unsigned int /*component_in_block_vector*/,
-                              const VectorType & /*vec*/)
+    update_ghost_values_start(const unsigned int  /*component_in_block_vector*/ ,
+                              const VectorType &  /*vec*/ )
     {}
 
 
     /**
-     * Start update_ghost_value for vectors that do not support
-     * the split into _start() and finish() stages
+     * Start update_ghost_value for vectors that do not support     the split
+     * into _start() and finish() stages
+     *
      */
     template <typename VectorType,
               typename std::enable_if<
@@ -3364,9 +3348,10 @@ namespace internal
 
 
     /**
-     * Start update_ghost_value for vectors that _do_ support
-     * the split into _start() and finish() stages, but don't support
-     * exchange on a subset of DoFs
+     * Start update_ghost_value for vectors that _do_ support     the split
+     * into _start() and finish() stages, but don't support     exchange on a
+     * subset of DoFs
+     *
      */
     template <typename VectorType,
               typename std::enable_if<
@@ -3388,10 +3373,10 @@ namespace internal
 
 
     /**
-     * Finally, start update_ghost_value for vectors that _do_ support
-     * the split into _start() and finish() stages and also support
-     * exchange on a subset of DoFs,
-     * i.e. LinearAlgebra::distributed::Vector
+     * Finally, start update_ghost_value for vectors that _do_ support     the
+     * split into _start() and finish() stages and also support     exchange
+     * on a subset of DoFs,     i.e.   LinearAlgebra::distributed::Vector
+     *
      */
     template <typename VectorType,
               typename std::enable_if<
@@ -3445,24 +3430,26 @@ namespace internal
 
 
     /**
-     * Finish update_ghost_value for vectors that do not support
-     * the split into _start() and finish() stages and serial vectors
+     * Finish update_ghost_value for vectors that do not support     the split
+     * into _start() and finish() stages and serial vectors
+     *
      */
     template <
       typename VectorType,
       typename std::enable_if<!has_update_ghost_values_start<VectorType>::value,
                               VectorType>::type * = nullptr>
     void
-    update_ghost_values_finish(const unsigned int /*component_in_block_vector*/,
-                               const VectorType & /*vec*/)
+    update_ghost_values_finish(const unsigned int  /*component_in_block_vector*/ ,
+                               const VectorType &  /*vec*/ )
     {}
 
 
 
     /**
-     * Finish update_ghost_value for vectors that _do_ support
-     * the split into _start() and finish() stages, but don't support
-     * exchange on a subset of DoFs
+     * Finish update_ghost_value for vectors that _do_ support     the split
+     * into _start() and finish() stages, but don't support     exchange on a
+     * subset of DoFs
+     *
      */
     template <typename VectorType,
               typename std::enable_if<
@@ -3480,10 +3467,10 @@ namespace internal
 
 
     /**
-     * Finish update_ghost_value for vectors that _do_ support
-     * the split into _start() and finish() stages and also support
-     * exchange on a subset of DoFs,
-     * i.e. LinearAlgebra::distributed::Vector
+     * Finish update_ghost_value for vectors that _do_ support     the split
+     * into _start() and finish() stages and also support     exchange on a
+     * subset of DoFs,     i.e.   LinearAlgebra::distributed::Vector
+     *
      */
     template <typename VectorType,
               typename std::enable_if<
@@ -3536,20 +3523,22 @@ namespace internal
 
     /**
      * Start compress for serial vectors
+     *
      */
     template <typename VectorType,
               typename std::enable_if<is_serial_or_dummy<VectorType>::value,
                                       VectorType>::type * = nullptr>
     void
-    compress_start(const unsigned int /*component_in_block_vector*/,
-                   VectorType & /*vec*/)
+    compress_start(const unsigned int  /*component_in_block_vector*/ ,
+                   VectorType &  /*vec*/ )
     {}
 
 
 
     /**
-     * Start compress for vectors that do not support
-     * the split into _start() and finish() stages
+     * Start compress for vectors that do not support     the split into
+     * _start() and finish() stages
+     *
      */
     template <typename VectorType,
               typename std::enable_if<!has_compress_start<VectorType>::value &&
@@ -3567,9 +3556,10 @@ namespace internal
 
 
     /**
-     * Start compress for vectors that _do_ support
-     * the split into _start() and finish() stages, but don't support
-     * exchange on a subset of DoFs
+     * Start compress for vectors that _do_ support     the split into
+     * _start() and finish() stages, but don't support     exchange on a
+     * subset of DoFs
+     *
      */
     template <
       typename VectorType,
@@ -3588,10 +3578,10 @@ namespace internal
 
 
     /**
-     * Start compress for vectors that _do_ support
-     * the split into _start() and finish() stages and also support
-     * exchange on a subset of DoFs,
-     * i.e. LinearAlgebra::distributed::Vector
+     * Start compress for vectors that _do_ support     the split into
+     * _start() and finish() stages and also support     exchange on a subset
+     * of DoFs,     i.e.   LinearAlgebra::distributed::Vector
+     *
      */
     template <
       typename VectorType,
@@ -3643,23 +3633,25 @@ namespace internal
 
 
     /**
-     * Finish compress for vectors that do not support
-     * the split into _start() and finish() stages and serial vectors
+     * Finish compress for vectors that do not support     the split into
+     * _start() and finish() stages and serial vectors
+     *
      */
     template <typename VectorType,
               typename std::enable_if<!has_compress_start<VectorType>::value,
                                       VectorType>::type * = nullptr>
     void
-    compress_finish(const unsigned int /*component_in_block_vector*/,
-                    VectorType & /*vec*/)
+    compress_finish(const unsigned int  /*component_in_block_vector*/ ,
+                    VectorType &  /*vec*/ )
     {}
 
 
 
     /**
-     * Finish compress for vectors that _do_ support
-     * the split into _start() and finish() stages, but don't support
-     * exchange on a subset of DoFs
+     * Finish compress for vectors that _do_ support     the split into
+     * _start() and finish() stages, but don't support     exchange on a
+     * subset of DoFs
+     *
      */
     template <
       typename VectorType,
@@ -3677,10 +3669,10 @@ namespace internal
 
 
     /**
-     * Start compress for vectors that _do_ support
-     * the split into _start() and finish() stages and also support
-     * exchange on a subset of DoFs,
-     * i.e. LinearAlgebra::distributed::Vector
+     * Start compress for vectors that _do_ support     the split into
+     * _start() and finish() stages and also support     exchange on a subset
+     * of DoFs,     i.e.   LinearAlgebra::distributed::Vector
+     *
      */
     template <
       typename VectorType,
@@ -3739,19 +3731,21 @@ namespace internal
 
     /**
      * Reset all ghost values for serial vectors
+     *
      */
     template <typename VectorType,
               typename std::enable_if<is_serial_or_dummy<VectorType>::value,
                                       VectorType>::type * = nullptr>
     void
-    reset_ghost_values(const VectorType & /*vec*/) const
+    reset_ghost_values(const VectorType &  /*vec*/ ) const
     {}
 
 
 
     /**
-     * Reset all ghost values for vector that don't support
-     * exchange on a subset of DoFs
+     * Reset all ghost values for vector that don't support     exchange on a
+     * subset of DoFs
+     *
      */
     template <
       typename VectorType,
@@ -3770,9 +3764,9 @@ namespace internal
 
 
     /**
-     * Reset all ghost values for vector that _do_ support
-     * exchange on a subset of DoFs, i.e.
-     * LinearAlgebra::distributed::Vector
+     * Reset all ghost values for vector that _do_ support     exchange on a
+     * subset of DoFs, i.e.       LinearAlgebra::distributed::Vector
+     *
      */
     template <typename VectorType,
               typename std::enable_if<has_exchange_on_subset<VectorType>::value,
@@ -3814,9 +3808,10 @@ namespace internal
 
 
     /**
-     * Zero out vector region for vector that _do_ support
-     * exchange on a subset of DoFs <==> begin() + ind == local_element(ind),
-     * i.e. LinearAlgebra::distributed::Vector
+     * Zero out vector region for vector that _do_ support     exchange on a
+     * subset of DoFs <==> begin() + ind == local_element(ind),     i.e.
+     * LinearAlgebra::distributed::Vector
+     *
      */
     template <typename VectorType,
               typename std::enable_if<has_exchange_on_subset<VectorType>::value,
@@ -3859,6 +3854,7 @@ namespace internal
      * Zero out vector region for vector that do _not_ support exchange on a
      * subset of DoFs <==> begin() + ind == local_element(ind) but are still a
      * vector type
+     *
      */
     template <
       typename VectorType,
@@ -3876,7 +3872,8 @@ namespace internal
 
     /**
      * Zero out vector region for non-vector types, i.e., classes that do not
-     * have VectorType::value_type
+     * have   VectorType::value_type
+     *
      */
     void
     zero_vector_region(const unsigned int, ...) const
@@ -4788,8 +4785,9 @@ namespace internal
 
 
   /**
-   * An internal class to convert three function pointers to the
-   * scheme with virtual functions above.
+   * An internal class to convert three function pointers to the   scheme with
+   * virtual functions above.
+   *
    */
   template <class MF, typename InVector, typename OutVector>
   struct MFClassWrapper

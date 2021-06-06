@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
 //
@@ -29,12 +29,12 @@ DEAL_II_NAMESPACE_OPEN
 namespace hp
 {
   /**
-   * This class implements a collection of objects.
-   *
-   * It implements the concepts stated in the @ref hpcollection
-   * module described in the doxygen documentation.
-   *
+   * This class
+   * implements a collection of objects.     It implements the concepts stated
+   * in the   @ref hpcollection     module described in the doxygen
+   * documentation.
    * @ingroup hp hpcollection
+   *
    */
   template <typename T>
   class Collection : public Subscriptor
@@ -43,26 +43,29 @@ namespace hp
     /**
      * Default constructor. Leads to an empty collection that can later be
      * filled using push_back().
+     *
      */
     Collection() = default;
 
     /**
      * Add a new object.
+     *
      */
     void
     push_back(const std::shared_ptr<const T> &new_entry);
 
     /**
-     * Return the object which was specified by the user for the
-     * active FE index which is provided as a parameter to this method.
-     *
-     * @pre @p index must be between zero and the number of elements of the
+     * Return the object which was specified by the user for the     active FE
+     * index which is provided as a parameter to this method.           @pre
+     * @p index   must be between zero and the number of elements of the
      * collection.
+     *
      */
     const T &operator[](const unsigned int index) const;
 
     /**
      * Return the number of objects stored in this container.
+     *
      */
     unsigned int
     size() const;
@@ -70,6 +73,7 @@ namespace hp
     /**
      * Determine an estimate for the memory consumption (in bytes) of this
      * object.
+     *
      */
     std::size_t
     memory_consumption() const;
@@ -77,12 +81,13 @@ namespace hp
   private:
     /**
      * The real container, which stores pointers to the different objects.
+     *
      */
     std::vector<std::shared_ptr<const T>> entries;
   };
 
 
-  /* --------------- inline functions ------------------- */
+   /* --------------- inline functions ------------------- */ 
 
 
 

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
 //
@@ -34,46 +34,42 @@ template <typename number>
 class Vector;
 #endif
 
-/*! @addtogroup Matrix2
- *@{
- */
+/*!   @addtogroup   Matrix2  @{  
+
+* 
+* */
 
 
 /**
- * QR-decomposition of a full matrix.
+ * QR-decomposition of a full matrix. This class computes the QR-decomposition
+ * of given matrix by the Householder algorithm. Then, the function
+ * least_squares() can be used to compute the vector   $x$   minimizing
+ * $\|Ax-b\|$   for a given vector   $b$  . The QR decomposition of   $A$   is
+ * useful for this purpose because the minimizer is given by the equation
+ * $x=(A^TA)^{-1}A^Tb=(R^TQ^TQR)^{-1}R^TQ^Tb$   which is easy to compute
+ * because   $Q$   is an orthogonal matrix, and consequently   $Q^TQ=I$  .
+ * Thus,   $x=(R^TR)^{-1}R^TQ^Tb=R^{-1}R^{-T}R^TQ^Tb=R^{-1}Q^Tb$  .
+ * Furthermore,   $R$   is triangular, so applying   $R^{-1}$   to a vector
+ * only involves a backward or forward solve.
  *
- * This class computes the QR-decomposition of given matrix by the
- * Householder algorithm. Then, the function least_squares() can be
- * used to compute the vector $x$ minimizing $\|Ax-b\|$ for a given
- * vector $b$. The QR decomposition of $A$ is useful for this purpose
- * because the minimizer is given by the equation
- * $x=(A^TA)^{-1}A^Tb=(R^TQ^TQR)^{-1}R^TQ^Tb$ which is easy to compute
- * because $Q$ is an orthogonal matrix, and consequently
- * $Q^TQ=I$. Thus,
- * $x=(R^TR)^{-1}R^TQ^Tb=R^{-1}R^{-T}R^TQ^Tb=R^{-1}Q^Tb$. Furthermore,
- * $R$ is triangular, so applying $R^{-1}$ to a vector only involves a
- * backward or forward solve.
+ *  <h3>Implementation details</h3> The class does not in fact store the   $Q$
+ * and   $R$   factors explicitly as matrices. It does store   $R$  , but the
+ * $Q$   factor is stored as the product of Householder reflections of the
+ * form   $Q_i = I-v_i v_i^T$   where the vectors   $v_i$   are so that they
+ * can be stored in the lower-triangular part of an underlying matrix object,
+ * whereas   $R$   is stored in the upper triangular part. The   $v_i$
+ * vectors and the   $R$   matrix now are in conflict because they both want
+ * to use the diagonal entry of the matrix, but we can only store one in these
+ * positions, of course. Consequently, the entries   $(v_i)_i$   are stored
+ * separately in the `diagonal` member variable.
  *
  *
- * <h3>Implementation details</h3>
+ * @note
+ * Instantiations for this template are provided for <tt>  @<float@>   and
+ * @<double@></tt>;   others can be generated in application programs (see the
+ * section on   @ref Instantiations   in the manual).
  *
- * The class does not in fact store the $Q$ and $R$ factors explicitly
- * as matrices. It does store $R$, but the $Q$ factor is stored as the
- * product of Householder reflections of the form $Q_i = I-v_i v_i^T$
- * where the vectors $v_i$ are so that they can be stored in the
- * lower-triangular part of an underlying matrix object, whereas $R$
- * is stored in the upper triangular part.
  *
- * The $v_i$ vectors and the $R$ matrix now are in conflict because they
- * both want to use the diagonal entry of the matrix, but we can only
- * store one in these positions, of course. Consequently, the entries
- * $(v_i)_i$ are stored separately in the `diagonal` member variable.
- *
- * @note Instantiations for this template are provided for <tt>@<float@> and
- * @<double@></tt>; others can be generated in application programs (see the
- * section on
- * @ref Instantiations
- * in the manual).
  */
 template <typename number>
 class Householder
@@ -81,24 +77,27 @@ class Householder
 public:
   /**
    * Declare type of container size type.
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
    * Create an empty object.
+   *
    */
   Householder() = default;
 
   /**
-   * Create an object holding the QR-decomposition of the matrix $A$.
+   * Create an object holding the QR-decomposition of the matrix   $A$  .
+   *
    */
   template <typename number2>
   Householder(const FullMatrix<number2> &A);
 
   /**
-   * Compute the QR-decomposition of the given matrix $A$.
+   * Compute the QR-decomposition of the given matrix   $A$  .     This
+   * overwrites any previously computed QR decomposition.
    *
-   * This overwrites any previously computed QR decomposition.
    */
   template <typename number2>
   void
@@ -107,12 +106,11 @@ public:
   /**
    * Solve the least-squares problem for the right hand side <tt>src</tt>. The
    * returned scalar value is the Euclidean norm of the approximation error.
+   * @arg     @c   dst contains the solution of the least squares problem on
+   * return.       @arg     @c   src contains the right hand side <i>b</i> of
+   * the least squares   problem. It will be changed during the algorithm and
+   * is unusable on   return.
    *
-   * @arg @c dst contains the solution of the least squares problem on return.
-   *
-   * @arg @c src contains the right hand side <i>b</i> of the least squares
-   * problem. It will be changed during the algorithm and is unusable on
-   * return.
    */
   template <typename number2>
   double
@@ -120,6 +118,7 @@ public:
 
   /**
    * This function does the same as the previous one, but for BlockVectors.
+   *
    */
   template <typename number2>
   double
@@ -129,14 +128,16 @@ public:
   /**
    * A wrapper to least_squares(), implementing the standard MatrixType
    * interface.
+   *
    */
   template <class VectorType>
   void
   vmult(VectorType &dst, const VectorType &src) const;
 
   /**
-   * A wrapper to least_squares() that implements multiplication with
-   * the transpose matrix.
+   * A wrapper to least_squares() that implements multiplication with   the
+   * transpose matrix.
+   *
    */
   template <class VectorType>
   void
@@ -145,21 +146,23 @@ public:
 
 private:
   /**
-   * Storage for the diagonal elements of the orthogonal
-   * transformation. See the class documentation for more information.
+   * Storage for the diagonal elements of the orthogonal   transformation. See
+   * the class documentation for more information.
+   *
    */
   std::vector<number> diagonal;
 
   /**
    * Storage that is internally used for the Householder transformation.
+   *
    */
   FullMatrix<double> storage;
 };
 
-/*@}*/
+ /*@}*/ 
 
 #ifndef DOXYGEN
-/*-------------------------Inline functions -------------------------------*/
+ /*-------------------------Inline functions -------------------------------*/ 
 
 // QR-transformation cf. Stoer 1 4.8.2 (p. 191)
 

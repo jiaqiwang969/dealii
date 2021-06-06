@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
 //
@@ -28,25 +28,84 @@ namespace Utilities
     namespace internal
     {
       /**
-       * This enum holds all MPI tags used in point to point MPI communications
-       * inside the deal.II library.
+       * This enum holds all MPI tags used in point to point MPI
+       * communications       inside the deal.II library.             We keep
+       * these tags in a central location so that they are unique within
+       * the library. Otherwise, communication that receives packages might
+       * pick       up packets from a different algorithm. This is especially
+       * true if       MPI_ANY_SOURCE is used.             The list of MPI
+       * functions that use an MPI tag is:
        *
-       * We keep these tags in a central location so that they are unique within
-       * the library. Otherwise, communication that receives packages might pick
-       * up packets from a different algorithm. This is especially true if
-       * MPI_ANY_SOURCE is used.
        *
-       * The list of MPI functions that use an MPI tag is:
-       * - MPI_Send, MPI_Recv, MPI_Sendrecv
-       * - MPI_Isend, MPI_Irecv
-       * - MPI_Probe, MPI_Iprobe
-       * - MPI_Comm_create_group, MPI_Intercomm_create,
-       * Utilities::MPI::create_group
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *  - MPI_Send, MPI_Recv, MPI_Sendrecv
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *  - MPI_Isend, MPI_Irecv
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *  - MPI_Probe, MPI_Iprobe
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *
+       *  - MPI_Comm_create_group, MPI_Intercomm_create,         Utilities::MPI::create_group
+       *
        */
       namespace Tags
       {
         /**
          * The enum with the tags.
+         *
          */
         enum enumeration : std::uint16_t
         {

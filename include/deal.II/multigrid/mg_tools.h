@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
 //
@@ -36,20 +36,23 @@ class DoFHandler;
 class MGConstrainedDoFs;
 #endif
 
-/* !@addtogroup mg */
-/* @{ */
+ /* !@addtogroup mg */ 
+ /* @{ */ 
 
 /**
  * This is a collection of functions operating on, and manipulating the
  * numbers of degrees of freedom in a multilevel triangulation. It is similar
- * in purpose and function to the @p DoFTools namespace, but operates on
+ * in purpose and function to the   @p DoFTools   namespace, but operates on
  * levels of DoFHandler objects. See there and the documentation of the member
  * functions for more information.
+ *
+ *
  */
 namespace MGTools
 {
   /**
    * Compute row length vector for multilevel methods.
+   *
    */
   template <int dim, int spacedim>
   void
@@ -62,6 +65,7 @@ namespace MGTools
   /**
    * Compute row length vector for multilevel methods with optimization for
    * block couplings.
+   *
    */
   template <int dim, int spacedim>
   void
@@ -72,16 +76,16 @@ namespace MGTools
                             const Table<2, DoFTools::Coupling> &flux_couplings);
 
   /**
-   * Write the sparsity structure of the matrix belonging to the specified @p
-   * level. The sparsity pattern is not compressed, so before creating the
-   * actual matrix you have to compress the matrix yourself, using
-   * <tt>SparsityPatternType::compress()</tt>.
-   *
-   * The optional AffineConstraints argument allows to define constraints of
-   * the level matrices like Dirichlet boundary conditions. Note that there is
-   * need to consider hanging nodes on the typical level matrices, since only
-   * one level is considered. See DoFTools::make_sparsity_pattern() for more
+   * Write the sparsity structure of the matrix belonging to the specified
+   * @p     level. The sparsity pattern is not compressed, so before creating
+   * the   actual matrix you have to compress the matrix yourself, using
+   * <tt>SparsityPatternType::compress()</tt>.       The optional
+   * AffineConstraints argument allows to define constraints of   the level
+   * matrices like Dirichlet boundary conditions. Note that there is   need to
+   * consider hanging nodes on the typical level matrices, since only   one
+   * level is considered. See   DoFTools::make_sparsity_pattern()   for more
    * details about the arguments.
+   *
    */
   template <int dim,
             int spacedim,
@@ -96,12 +100,10 @@ namespace MGTools
     const bool                       keep_constrained_dofs = true);
 
   /**
-   * Make a sparsity pattern including fluxes of discontinuous Galerkin
-   * methods.
-   * @see
-   * @ref make_sparsity_pattern
-   * and
-   * @ref DoFTools
+   * Make a
+   * sparsity pattern including fluxes of discontinuous Galerkin   methods.
+   * @see       @ref make_sparsity_pattern     and     @ref DoFTools
+   *
    */
   template <int dim, typename SparsityPatternType, int spacedim>
   void
@@ -111,9 +113,9 @@ namespace MGTools
 
   /**
    * Create sparsity pattern for the fluxes at refinement edges. The matrix
-   * maps a function of the fine level space @p level to the coarser space.
+   * maps a function of the fine level space   @p level   to the coarser
+   * space.     make_flux_sparsity_pattern()
    *
-   * make_flux_sparsity_pattern()
    */
   template <int dim, typename SparsityPatternType, int spacedim>
   void
@@ -124,10 +126,10 @@ namespace MGTools
    * This function does the same as the other with the same name, but it gets
    * two additional coefficient matrices. A matrix entry will only be
    * generated for two basis functions, if there is a non-zero entry linking
-   * their associated components in the coefficient matrix.
+   * their associated components in the coefficient matrix.     There is one
+   * matrix for couplings in a cell and one for the couplings   occurring in
+   * fluxes.
    *
-   * There is one matrix for couplings in a cell and one for the couplings
-   * occurring in fluxes.
    */
   template <int dim, typename SparsityPatternType, int spacedim>
   void
@@ -139,11 +141,10 @@ namespace MGTools
 
   /**
    * Create sparsity pattern for the fluxes at refinement edges. The matrix
-   * maps a function of the fine level space @p level to the coarser space.
-   * This is the version restricting the pattern to the elements actually
-   * needed.
+   * maps a function of the fine level space   @p level   to the coarser
+   * space.   This is the version restricting the pattern to the elements
+   * actually   needed.     make_flux_sparsity_pattern()
    *
-   * make_flux_sparsity_pattern()
    */
   template <int dim, typename SparsityPatternType, int spacedim>
   void
@@ -157,8 +158,9 @@ namespace MGTools
   /**
    * Create sparsity pattern for interface_in/out matrices used in a multigrid
    * computation. These matrices contain an entry representing the coupling of
-   * degrees of freedom on a refinement edge to those not on the refinement edge
-   * of a certain level.
+   * degrees of freedom on a refinement edge to those not on the refinement
+   * edge   of a certain level.
+   *
    */
   template <int dim, int spacedim, typename SparsityPatternType>
   void
@@ -169,10 +171,10 @@ namespace MGTools
 
 
   /**
-   * Count the dofs block-wise on each level.
+   * Count the dofs block-wise on each level.     Result is a vector
+   * containing for each level a vector containing the   number of dofs for
+   * each block (access is <tt>result[level][block]</tt>).
    *
-   * Result is a vector containing for each level a vector containing the
-   * number of dofs for each block (access is <tt>result[level][block]</tt>).
    */
   template <int dim, int spacedim>
   void
@@ -182,11 +184,10 @@ namespace MGTools
     std::vector<unsigned int>                          target_block = {});
 
   /**
-   * Count the dofs component-wise on each level.
+   * Count the dofs component-wise on each level.     Result is a vector
+   * containing for each level a vector containing the   number of dofs for
+   * each component (access is   <tt>result[level][component]</tt>).
    *
-   * Result is a vector containing for each level a vector containing the
-   * number of dofs for each component (access is
-   * <tt>result[level][component]</tt>).
    */
   template <int dim, int spacedim>
   void
@@ -199,21 +200,17 @@ namespace MGTools
   /**
    * Generate a list of those degrees of freedom at the boundary of the domain
    * that should be eliminated from the matrix because they will be
-   * constrained by Dirichlet boundary conditions.
-   *
-   * This is the multilevel equivalent of
-   * VectorTools::interpolate_boundary_values, but since the multilevel method
-   * does not have its own right hand side, the function values returned by
-   * the function object that is part of the function_map argument are
-   * ignored.
-   *
-   * @arg <tt>boundary_indices</tt> is a vector which on return contains all
+   * constrained by Dirichlet boundary conditions.     This is the multilevel
+   * equivalent of     VectorTools::interpolate_boundary_values,   but since
+   * the multilevel method   does not have its own right hand side, the
+   * function values returned by   the function object that is part of the
+   * function_map argument are   ignored.       @arg
+   * <tt>boundary_indices</tt> is a vector which on return contains all
    * indices of degrees of freedom for each level that are at the part of the
    * boundary identified by the function_map argument. Its length has to match
-   * the number of levels in the dof handler object.
+   * the number of levels in the dof handler object.     Previous content in
+   * @p boundary_indices   is not overwritten,   but added to.
    *
-   * Previous content in @p boundary_indices is not overwritten,
-   * but added to.
    */
   template <int dim, int spacedim>
   void
@@ -226,10 +223,9 @@ namespace MGTools
 
   /**
    * The same function as above, but return an IndexSet rather than a
-   * std::set<unsigned int> on each level.
+   * std::set<unsigned   int> on each level.     Previous content in   @p
+   * boundary_indices   is not overwritten,   but added to.
    *
-   * Previous content in @p boundary_indices is not overwritten,
-   * but added to.
    */
   template <int dim, int spacedim>
   void
@@ -241,10 +237,10 @@ namespace MGTools
 
   /**
    * The same function as above, but return an IndexSet rather than a
-   * std::set<unsigned int> on each level and use a std::set of boundary_ids
-   * as input.
+   * std::set<unsigned   int> on each level and use a   std::set   of
+   * boundary_ids   as input.     Previous content in   @p boundary_indices
+   * is not overwritten, but added to.
    *
-   * Previous content in @p boundary_indices is not overwritten, but added to.
    */
   template <int dim, int spacedim>
   void
@@ -257,6 +253,7 @@ namespace MGTools
    * For each level in a multigrid hierarchy, produce an IndexSet that
    * indicates which of the degrees of freedom are along interfaces of this
    * level to cells that only exist on coarser levels.
+   *
    */
   template <int dim, int spacedim>
   void
@@ -264,34 +261,33 @@ namespace MGTools
                                std::vector<IndexSet> &          interface_dofs);
 
   /**
-   * Return the highest possible level that can be used as the coarsest level in
-   * a Multigrid computation, that is, the highest level in the hierarchy whose
-   * mesh covers the entire domain. This corresponds to the minimum level of a
-   * cell on the active mesh. Since each processor only has a local view of the
-   * mesh, each processor must call this function. Note that this is a global
-   * minimum over the entire mesh and therefore each processor will return the
-   * same value.
+   * Return the highest possible level that can be used as the coarsest level
+   * in   a Multigrid computation, that is, the highest level in the hierarchy
+   * whose   mesh covers the entire domain. This corresponds to the minimum
+   * level of a   cell on the active mesh. Since each processor only has a
+   * local view of the   mesh, each processor must call this function. Note
+   * that this is a global   minimum over the entire mesh and therefore each
+   * processor will return the   same value.
+   *
    */
   template <int dim, int spacedim>
   unsigned int
   max_level_for_coarse_mesh(const Triangulation<dim, spacedim> &tria);
 
   /**
-   * Return the imbalance of the parallel distribution of the multigrid
-   * mesh hierarchy. Ideally this value is equal to 1 (every processor owns
-   * the same number of cells on each level, approximately true for most
+   * Return the imbalance of the parallel distribution of the multigrid   mesh
+   * hierarchy. Ideally this value is equal to 1 (every processor owns   the
+   * same number of cells on each level, approximately true for most
    * globally refined meshes). Values greater than 1 estimate the slowdown
    * one should see in a geometric multigrid v-cycle as compared with the same
-   * computation on a perfectly distributed mesh hierarchy.
+   * computation on a perfectly distributed mesh hierarchy.     This function
+   * is a collective MPI call between all ranks of the   Triangulation and
+   * therefore needs to be called from all ranks.
+   * @note   This function requires that
+   * parallel::TriangulationBase::is_multilevel_hierarchy_constructed()     is
+   * true, which can be controlled by setting the
+   * construct_multigrid_hierarchy flag when constructing the   Triangulation.
    *
-   * This function is a collective MPI call between all ranks of the
-   * Triangulation and therefore needs to be called from all ranks.
-   *
-   * @note This function requires that
-   * parallel::TriangulationBase::is_multilevel_hierarchy_constructed()
-   * is true, which can be controlled by setting the
-   * construct_multigrid_hierarchy flag when constructing the
-   * Triangulation.
    */
   template <int dim, int spacedim>
   double
@@ -299,7 +295,7 @@ namespace MGTools
 
 } // namespace MGTools
 
-/* @} */
+ /* @} */ 
 
 DEAL_II_NAMESPACE_CLOSE
 

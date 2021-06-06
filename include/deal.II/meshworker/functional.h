@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -40,10 +40,8 @@ namespace MeshWorker
     /**
      * The class assembling local contributions to a functional into global
      * functionals.
-     *
-     *
-     *
      * @ingroup MeshWorker
+     *
      */
     template <typename number = double>
     class Functional
@@ -52,15 +50,15 @@ namespace MeshWorker
       /**
        * Initialize local data to store functionals. The number <tt>n</tt> is
        * the number of functionals to be computed.
+       *
        */
       void
       initialize(const unsigned int n);
       /**
        * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * assembling.             The   @p info   object refers to a cell if
+       * <code>!face</code>  , or else to an       interior or boundary face.
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
@@ -68,6 +66,7 @@ namespace MeshWorker
 
       /**
        * Assemble the local values into the global vectors.
+       *
        */
       template <class DOFINFO>
       void
@@ -75,6 +74,7 @@ namespace MeshWorker
 
       /**
        * Assemble both local values into the global vectors.
+       *
        */
       template <class DOFINFO>
       void
@@ -82,6 +82,7 @@ namespace MeshWorker
 
       /**
        * The value of the ith entry in #results.
+       *
        */
       number
       operator()(const unsigned int i) const;
@@ -89,6 +90,7 @@ namespace MeshWorker
     private:
       /**
        * The values into which the results are added.
+       *
        */
       std::vector<double> results;
     };
@@ -97,10 +99,10 @@ namespace MeshWorker
      * Compute cell and face contributions of one or several functionals,
      * typically for error estimates. The information in which component the
      * result is stored for a given cell or face is transmitted by its
-     * user_index variable. Hence, you need to make sure to set these variables
-     * appropriately before using this class.
-     *
+     * user_index variable. Hence, you need to make sure to set these
+     * variables     appropriately before using this class.
      * @ingroup MeshWorker
+     *
      */
     template <typename number = double>
     class CellsAndFaces
@@ -108,35 +110,34 @@ namespace MeshWorker
     public:
       /**
        * Constructor. Initialize the member variables.
+       *
        */
       CellsAndFaces();
 
       /**
-       * The initialization function, specifying the @p results vectors and
-       * whether face data should be collected separately.
-       *
-       * @p results should contain two block vectors named "cells" and "faces"
-       * (the latter only if @p separate_faces is true). In each of the two,
-       * each block should have equal size and be large enough to accommodate
-       * all user indices set in the cells and faces covered by the loop it is
-       * used in. Typically, for estimators, this is
-       * Triangulation::n_active_cells() and Triangulation::n_faces(),
-       * respectively.
-       *
-       * The use of BlockVector may seem cumbersome, but it allows us to
+       * The initialization function, specifying the   @p results   vectors
+       * and       whether face data should be collected separately.
+       * @p results   should contain two block vectors named "cells" and
+       * "faces"       (the latter only if   @p separate_faces   is true). In
+       * each of the two,       each block should have equal size and be large
+       * enough to accommodate       all user indices set in the cells and
+       * faces covered by the loop it is       used in. Typically, for
+       * estimators, this is         Triangulation::n_active_cells()   and
+       * Triangulation::n_faces(),         respectively.             The use
+       * of BlockVector may seem cumbersome, but it allows us to
        * assemble several functionals at the same time, one in each block. The
        * typical situation for error estimate is just having a single block in
        * each vector.
+       *
        */
       void
       initialize(AnyData &results, bool separate_faces = true);
 
       /**
        * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * assembling.             The   @p info   object refers to a cell if
+       * <code>!face</code>  , or else to an       interior or boundary face.
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
@@ -144,6 +145,7 @@ namespace MeshWorker
 
       /**
        * Assemble the local values into the global vectors.
+       *
        */
       template <class DOFINFO>
       void
@@ -151,13 +153,15 @@ namespace MeshWorker
 
       /**
        * Assemble both local values into the global vectors.
+       *
        */
       template <class DOFINFO>
       void
       assemble(const DOFINFO &info1, const DOFINFO &info2);
 
       /**
-       * The value of the ith entry in @p results.
+       * The value of the ith entry in   @p results.
+       *
        */
       number
       operator()(const unsigned int i) const;

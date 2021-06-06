@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
 //
@@ -78,33 +78,34 @@ namespace internal
    * library and has not to be handcoded, it nevertheless seriously damages
    * the ability to efficiently run the functions of this class in parallel,
    * since they are quite often blocked by these synchronization points,
-   * slowing everything down by a factor of two or three.
+   * slowing everything down by a factor of two or three.     Thus, every
+   * thread gets an instance of this class to work with and   needs not
+   * allocate memory itself, or synchronize with other threads.     The sizes
+   * of the arrays are initialized with the maximal number of   entries
+   * necessary for the hp-case. Within the loop over individual   cells, we
+   * then resize the arrays as necessary. Since for   std::vector     resizing
+   * to a smaller size doesn't imply memory allocation, this is   fast.
    *
-   * Thus, every thread gets an instance of this class to work with and
-   * needs not allocate memory itself, or synchronize with other threads.
-   *
-   * The sizes of the arrays are initialized with the maximal number of
-   * entries necessary for the hp-case. Within the loop over individual
-   * cells, we then resize the arrays as necessary. Since for std::vector
-   * resizing to a smaller size doesn't imply memory allocation, this is
-   * fast.
    */
   template <int dim, int spacedim, typename number>
   struct ParallelData
   {
     /**
      * The finite element to be used.
+     *
      */
     const dealii::hp::FECollection<dim, spacedim> finite_element;
 
     /**
      * The quadrature formulas to be used for the faces.
+     *
      */
     const dealii::hp::QCollection<dim - 1> face_quadratures;
 
     /**
      * FEFaceValues objects to integrate over the faces of the current and
      * potentially of neighbor cells.
+     *
      */
     dealii::hp::FEFaceValues<dim, spacedim>    fe_face_values_cell;
     dealii::hp::FEFaceValues<dim, spacedim>    fe_face_values_neighbor;
@@ -117,38 +118,43 @@ namespace internal
      * rather globally, since memory allocation is slow, in particular in
      * presence of multiple threads where synchronization makes things even
      * slower.
+     *
      */
     std::vector<std::vector<std::vector<number>>> phi;
 
     /**
      * A vector for the gradients of the finite element function on one cell
-     *
      * Let psi be a short name for <tt>a grad u_h</tt>, where the third
      * index be the component of the finite element, and the second index
      * the number of the quadrature point. The first index denotes the index
      * of the solution vector.
+     *
      */
     std::vector<std::vector<std::vector<Tensor<1, spacedim, number>>>> psi;
 
     /**
      * The same vector for a neighbor cell
+     *
      */
     std::vector<std::vector<std::vector<Tensor<1, spacedim, number>>>>
       neighbor_psi;
 
     /**
      * The normal vectors of the finite element function on one face
+     *
      */
     std::vector<Tensor<1, spacedim>> normal_vectors;
 
     /**
      * Normal vectors of the opposing face.
+     *
      */
     std::vector<Tensor<1, spacedim>> neighbor_normal_vectors;
 
     /**
      * Two arrays needed for the values of coefficients in the jumps, if
      * they are given.
+     *
      */
     std::vector<double>                 coefficient_values1;
     std::vector<dealii::Vector<double>> coefficient_values;
@@ -156,21 +162,25 @@ namespace internal
     /**
      * Array for the products of Jacobian determinants and weights of
      * quadraturs points.
+     *
      */
     std::vector<double> JxW_values;
 
     /**
      * The subdomain id we are to care for.
+     *
      */
     const types::subdomain_id subdomain_id;
     /**
      * The material id we are to care for.
+     *
      */
     const types::material_id material_id;
 
     /**
      * Some more references to input data to the
-     * KellyErrorEstimator::estimate() function.
+     * KellyErrorEstimator::estimate()   function.
+     *
      */
     const std::map<types::boundary_id, const Function<spacedim, number> *>
       *                       neumann_bc;
@@ -179,6 +189,7 @@ namespace internal
 
     /**
      * Constructor.
+     *
      */
     template <class FE>
     ParallelData(const FE &                              fe,
@@ -197,6 +208,7 @@ namespace internal
      * Resize the arrays so that they fit the number of quadrature points
      * associated with the given finite element index into the hp-
      * collections.
+     *
      */
     void
     resize(const unsigned int active_fe_index);
@@ -300,6 +312,7 @@ namespace internal
    * Copy data from the local_face_integrals map of a single ParallelData
    * object into a global such map. This is the copier stage of a WorkStream
    * pipeline.
+   *
    */
   template <int dim, int spacedim>
   void
@@ -335,6 +348,7 @@ namespace internal
   /**
    * Actually do the computation based on the evaluated gradients in
    * ParallelData.
+   *
    */
   template <int dim, int spacedim, typename number>
   std::vector<double>
@@ -484,6 +498,7 @@ namespace internal
   /**
    * A factor to scale the integral for the face at the boundary. Used for
    * Neumann BC.
+   *
    */
   template <int dim, int spacedim>
   double
@@ -522,6 +537,7 @@ namespace internal
 
   /**
    * A factor to scale the integral for the regular face.
+   *
    */
   template <int dim, int spacedim>
   double
@@ -565,6 +581,7 @@ namespace internal
 
   /**
    * A factor to scale the integral for the irregular face.
+   *
    */
   template <int dim, int spacedim>
   double
@@ -612,13 +629,14 @@ namespace internal
   /**
    * A factor used when summing up all the contribution from different faces
    * of each cell.
+   *
    */
   template <int dim, int spacedim>
   double
   cell_factor(
     const typename DoFHandler<dim, spacedim>::active_cell_iterator &cell,
-    const unsigned int /*face_no*/,
-    const DoFHandler<dim, spacedim> & /*dof_handler*/,
+    const unsigned int  /*face_no*/ ,
+    const DoFHandler<dim, spacedim> &  /*dof_handler*/ ,
     const typename KellyErrorEstimator<dim, spacedim>::Strategy strategy)
   {
     switch (strategy)
@@ -651,6 +669,7 @@ namespace internal
    * regular), i.e. either on the other side there is nirvana (face is at
    * boundary), or the other side's refinement level is the same as that of
    * this side, then handle the integration of these both cases together.
+   *
    */
   template <typename InputVector, int dim, int spacedim>
   void
@@ -743,8 +762,9 @@ namespace internal
 
   /**
    * The same applies as for the function above, except that integration is
-   * over face @p face_no of @p cell, where the respective neighbor is
+   * over face   @p face_no   of   @p cell,   where the respective neighbor is
    * refined, so that the integration is a bit more complex.
+   *
    */
   template <typename InputVector, int dim, int spacedim>
   void
@@ -856,10 +876,10 @@ namespace internal
 
 
   /**
-   * Computate the error on the faces of a single cell.
+   * Computate the error on the faces of a single cell.     This function is
+   * only needed in two or three dimensions.  The error   estimator in one
+   * dimension is implemented separately.
    *
-   * This function is only needed in two or three dimensions.  The error
-   * estimator in one dimension is implemented separately.
    */
   template <typename InputVector, int dim, int spacedim>
   void

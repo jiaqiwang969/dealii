@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2020 by the deal.II authors
 //
@@ -36,17 +36,15 @@ class FEValuesBase;
 namespace MeshWorker
 {
   /**
-   * A class that selects vectors from a list of named vectors.
-   *
-   * Since the number of vectors in an AnyData object may grow with every
-   * nesting of applications or loops, it is important to be able to select
-   * those, which are actually used in computing residuals etc. This class
-   * organizes the selection.
-   *
-   * It is used for instance in IntegrationWorker to determine which values,
-   * derivatives or second derivatives are actually computed.
-   *
+   * A class that selects vectors from a list of named vectors.     Since the
+   * number of vectors in an AnyData object may grow with every   nesting of
+   * applications or loops, it is important to be able to select   those,
+   * which are actually used in computing residuals etc. This class
+   * organizes the selection.     It is used for instance in IntegrationWorker
+   * to determine which values,   derivatives or second derivatives are
+   * actually computed.
    * @ingroup MeshWorker
+   *
    */
   class VectorSelector : public Subscriptor
   {
@@ -58,6 +56,7 @@ namespace MeshWorker
      * AnyData object, which will be identified by initialize().  The three
      * bool parameters indicate, whether values, gradients and Hessians of the
      * finite element function are to be computed on each cell or face.
+     *
      */
     void
     add(const std::string &name,
@@ -68,6 +67,7 @@ namespace MeshWorker
     /**
      * Does the same as the function above but it is possible to select a
      * block of the global vector.
+     *
      */
     //      void add(const std::string& name,
     //               const unsigned int selected_block,
@@ -80,75 +80,87 @@ namespace MeshWorker
      * enters the names of vectors, which will be used in the integration loop
      * over cells and faces, this function links the names to actual vectos in
      * a AnyData object.
+     * @note   This function caches the index associated with a name.
+     * Therefore,     it must be called every time after the AnyData object
+     * has changed.
      *
-     * @note This function caches the index associated with a name. Therefore,
-     * it must be called every time after the AnyData object has changed.
      */
     void
     initialize(const AnyData &);
 
     /**
      * Check whether any vector is selected.
+     *
      */
     bool
     empty() const;
 
     /**
      * Return true if values are selected for any vector.
+     *
      */
     bool
     has_values() const;
 
     /**
      * Return true if gradients are selected for any vector.
+     *
      */
     bool
     has_gradients() const;
 
     /**
      * Return true if hessians are selected for any vector.
+     *
      */
     bool
     has_hessians() const;
 
     /**
      * Number of vectors for values
+     *
      */
     unsigned int
     n_values() const;
 
     /**
      * Number of vectors for gradients
+     *
      */
     unsigned int
     n_gradients() const;
 
     /**
      * Number of vectors for Hessians
+     *
      */
     unsigned int
     n_hessians() const;
 
     /**
      * The vector index for the ith value
+     *
      */
     unsigned int
     value_index(const unsigned int i) const;
 
     /**
      * The vector index for the ith gradient
+     *
      */
     unsigned int
     gradient_index(const unsigned int i) const;
 
     /**
      * The vector index for the ith Hessian
+     *
      */
     unsigned int
     hessian_index(const unsigned int i) const;
 
     /**
      * Print the contents of the selection to the stream.
+     *
      */
     template <class StreamType, typename DATA>
     void
@@ -156,6 +168,7 @@ namespace MeshWorker
 
     /**
      * Print the number of selections to the stream.
+     *
      */
     template <class StreamType>
     void
@@ -163,6 +176,7 @@ namespace MeshWorker
 
     /**
      * The memory used by this object.
+     *
      */
     std::size_t
     memory_consumption() const;
@@ -170,16 +184,19 @@ namespace MeshWorker
   protected:
     /**
      * Selection of the vectors used to compute values.
+     *
      */
     NamedSelection value_selection;
 
     /**
      * Selection of the vectors used to compute gradients.
+     *
      */
     NamedSelection gradient_selection;
 
     /**
      * Selection of the vectors used to compute hessians.
+     *
      */
     NamedSelection hessian_selection;
   };
@@ -187,8 +204,8 @@ namespace MeshWorker
   /**
    * Based on VectorSelector, this is the class used by IntegrationInfo to
    * compute values of source vectors in quadrature points.
-   *
    * @ingroup MeshWorker
+   *
    */
   template <int dim, int spacedim = dim, typename Number = double>
   class VectorDataBase : public VectorSelector
@@ -196,66 +213,58 @@ namespace MeshWorker
   public:
     /**
      * Constructor
+     *
      */
     VectorDataBase() = default;
 
     /**
      * Constructor from a base class object
+     *
      */
     VectorDataBase(const VectorSelector &);
 
     /**
      * Initialize with a AnyData object and cache the indices in the
      * VectorSelector base class.
-     *
-     * @note Make sure the VectorSelector base class was filled with
+     * @note   Make sure the VectorSelector base class was filled with
      * reasonable data before calling this function.
+     *
      */
     void
     initialize(const AnyData &);
 
     /**
      * Virtual, but empty destructor.
+     *
      */
     virtual ~VectorDataBase() override = default;
 
     /**
      * The only function added to VectorSelector is an abstract virtual
      * function implemented in the derived class template and called by
-     * IntegrationInfo.
-     *
-     * Depending on the selections made in our base class, this fills the
-     * first three arguments with the local data of the finite element
-     * functions. It is usually called either for the whole FESystem, or for
-     * each base element separately.
-     *
-     * @param values is the vector filled with the values of the finite
-     * element function in the quadrature points.
-     *
-     * @param gradients is the vector filled with the derivatives of the
-     * finite element function in the quadrature points.
-     *
-     * @param hessians is the vector filled with the second derivatives of the
-     * finite element function in the quadrature points.
-     *
-     * @param fe is the FEValuesBase object which is used to compute the
-     * function values. Its UpdateFlags must have been set appropriately.
-     *
-     * @param index is the local index vector. If @p fe refers to base
+     * IntegrationInfo.         Depending on the selections made in our base
+     * class, this fills the     first three arguments with the local data of
+     * the finite element     functions. It is usually called either for the
+     * whole FESystem, or for     each base element separately.
+     * @param   values is the vector filled with the values of the finite
+     * element function in the quadrature points.           @param   gradients
+     * is the vector filled with the derivatives of the     finite element
+     * function in the quadrature points.           @param   hessians is the
+     * vector filled with the second derivatives of the     finite element
+     * function in the quadrature points.           @param   fe is the
+     * FEValuesBase object which is used to compute the     function values.
+     * Its UpdateFlags must have been set appropriately.           @param
+     * index is the local index vector. If   @p fe   refers to base
      * elements of the system, this vector should be sorted by block and the
-     * arguments @p start and @p size below specify the subset of @p indices
-     * used.
-     *
-     * @param component is the first index in @p values, @p gradients and @p
-     * hessians entered in this function.
-     *
-     * @param n_comp is the number of components to be filled.
-     *
-     * @param start is the first index of this block in @p indices, or zero if
-     * no base elements are used.
-     *
-     * @param size is the number of dofs per cell of the current element or
+     * arguments   @p start   and   @p size   below specify the subset of   @p
+     * indices       used.           @param   component is the first index in
+     * @p values,     @p gradients   and   @p       hessians entered in this
+     * function.           @param   n_comp is the number of components to be
+     * filled.           @param   start is the first index of this block in
+     * @p indices,   or zero if     no base elements are used.
+     * @param   size is the number of dofs per cell of the current element or
      * base element.
+     *
      */
     virtual void
     fill(std::vector<std::vector<std::vector<Number>>> &values,
@@ -275,6 +284,7 @@ namespace MeshWorker
      * the other fill() does, but uses the cell level to access a single level
      * out of a hierarchy of level vectors, instead of a global data vector on
      * the active cells.
+     *
      */
     virtual void
     mg_fill(std::vector<std::vector<std::vector<Number>>> &values,
@@ -297,10 +307,10 @@ namespace MeshWorker
 
   /**
    * Based on VectorSelector, this is the class that implements the function
-   * VectorDataBase::fill() for a certain type of vector, using AnyData to
+   * VectorDataBase::fill()   for a certain type of vector, using AnyData to
    * identify vectors by name.
-   *
    * @ingroup MeshWorker
+   *
    */
   template <typename VectorType, int dim, int spacedim = dim>
   class VectorData
@@ -309,16 +319,19 @@ namespace MeshWorker
   public:
     /**
      * Constructor.
+     *
      */
     VectorData() = default;
 
     /**
      * Constructor using a prefilled VectorSelector
+     *
      */
     VectorData(const VectorSelector &);
 
     /**
      * Initialize with an object of named vectors.
+     *
      */
     void
     initialize(const AnyData &);
@@ -326,9 +339,9 @@ namespace MeshWorker
     /**
      * Initialize with a single vector and cache the indices in the
      * VectorSelector base class.
-     *
-     * @note Make sure the VectorSelector base class was filled with
+     * @note   Make sure the VectorSelector base class was filled with
      * reasonable data before calling this function.
+     *
      */
     void
     initialize(const VectorType *, const std::string &name);
@@ -369,6 +382,7 @@ namespace MeshWorker
 
     /**
      * The memory used by this object.
+     *
      */
     std::size_t
     memory_consumption() const;
@@ -377,10 +391,10 @@ namespace MeshWorker
 
   /**
    * Based on VectorSelector, this is the class that implements the function
-   * VectorDataBase::fill() for a certain type of multilevel vectors, using
+   * VectorDataBase::fill()   for a certain type of multilevel vectors, using
    * AnyData to identify vectors by name.
-   *
    * @ingroup MeshWorker
+   *
    */
   template <typename VectorType, int dim, int spacedim = dim>
   class MGVectorData : public VectorData<VectorType, dim, spacedim>
@@ -388,16 +402,19 @@ namespace MeshWorker
   public:
     /**
      * Constructor.
+     *
      */
     MGVectorData() = default;
 
     /**
      * Constructor using a prefilled VectorSelector
+     *
      */
     MGVectorData(const VectorSelector &);
 
     /**
      * Initialize with an object of named vectors
+     *
      */
     void
     initialize(const AnyData &);
@@ -405,9 +422,9 @@ namespace MeshWorker
     /**
      * Initialize with a single vector and cache the indices in the
      * VectorSelector base class.
-     *
-     * @note Make sure the VectorSelector base class was filled with
+     * @note   Make sure the VectorSelector base class was filled with
      * reasonable data before calling this function.
+     *
      */
     void
     initialize(const MGLevelObject<VectorType> *, const std::string &name);

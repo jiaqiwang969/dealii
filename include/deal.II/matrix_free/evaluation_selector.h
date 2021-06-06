@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
 //
@@ -29,16 +29,19 @@ DEAL_II_NAMESPACE_OPEN
  * This class chooses an appropriate evaluation strategy based on the template
  * parameters and the shape_info variable, providing a short-cut to some
  * internal functions.
+ *
+ *
  */
 template <int dim, int fe_degree, int n_q_points_1d, typename Number>
 struct SelectEvaluator
 {
   /**
-   * Chooses an appropriate evaluation strategy for the evaluate function, i.e.
-   * this calls internal::FEEvaluationImpl::evaluate(),
-   * internal::FEEvaluationImplCollocation::evaluate() or
-   * internal::FEEvaluationImplTransformToCollocation::evaluate() with
+   * Chooses an appropriate evaluation strategy for the evaluate function,
+   * i.e.   this calls   internal::FEEvaluationImpl::evaluate(),
+   * internal::FEEvaluationImplCollocation::evaluate()   or
+   * internal::FEEvaluationImplTransformToCollocation::evaluate()   with
    * appropriate template parameters.
+   *
    */
   static void
   evaluate(const unsigned int                     n_components,
@@ -51,11 +54,12 @@ struct SelectEvaluator
            Number *scratch_data);
 
   /**
-   * Chooses an appropriate evaluation strategy for the integrate function, i.e.
-   * this calls internal::FEEvaluationImpl::integrate(),
-   * internal::FEEvaluationImplCollocation::integrate() or
-   * internal::FEEvaluationImplTransformToCollocation::integrate() with
+   * Chooses an appropriate evaluation strategy for the integrate function,
+   * i.e.   this calls   internal::FEEvaluationImpl::integrate(),
+   * internal::FEEvaluationImplCollocation::integrate()   or
+   * internal::FEEvaluationImplTransformToCollocation::integrate()   with
    * appropriate template parameters.
+   *
    */
   static void
   integrate(const unsigned int                     n_components,

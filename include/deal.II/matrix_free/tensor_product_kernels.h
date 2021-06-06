@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2021 by the deal.II authors
 //
@@ -33,24 +33,28 @@ namespace internal
   /**
    * In this namespace, the evaluator routines that evaluate the tensor
    * products are implemented.
+   *
    */
   enum EvaluatorVariant
   {
     /**
      * Do not use anything more than the tensor product structure of the
      * finite element.
+     *
      */
     evaluate_general,
     /**
      * Perform evaluation by exploiting symmetry in the finite element: i.e.,
      * skip some computations by utilizing the symmetry in the shape functions
      * and quadrature points.
+     *
      */
     evaluate_symmetric,
     /**
      * Use symmetry to apply the operator to even and odd parts of the input
      * vector separately: see the documentation of the EvaluatorTensorProduct
      * specialization for more information.
+     *
      */
     evaluate_evenodd,
     /**
@@ -62,6 +66,7 @@ namespace internal
      * use a strategy similar to the even-odd technique but without separate
      * coefficient arrays. See the documentation of the EvaluatorTensorProduct
      * specialization for more information.
+     *
      */
     evaluate_symmetric_hierarchical
   };
@@ -69,20 +74,25 @@ namespace internal
 
 
   /**
-   * Determine which quantity should be computed via the tensor product kernels.
+   * Determine which quantity should be computed via the tensor product
+   * kernels.
+   *
    */
   enum class EvaluatorQuantity
   {
     /**
      * Evaluate/integrate by shape functions.
+     *
      */
     value,
     /**
      * Evaluate/integrate by gradients of the shape functions.
+     *
      */
     gradient,
     /**
      * Evaluate/integrate by hessians of the shape functions.
+     *
      */
     hessian
   };
@@ -94,20 +104,19 @@ namespace internal
    * dimensions using the tensor product form. Depending on the particular
    * layout in the matrix entries, this corresponds to a usual matrix-matrix
    * product or a matrix-matrix product including some symmetries.
+   * @tparam   variant Variant of evaluation used for creating template
+   * specializations     @tparam   dim Dimension of the function     @tparam
+   * n_rows Number of rows in the transformation matrix, which corresponds
+   * to the number of 1d shape functions in the usual tensor
+   * contraction setting     @tparam   n_columns Number of columns in the
+   * transformation matrix, which                     corresponds to the
+   * number of 1d shape functions in the                     usual tensor
+   * contraction setting     @tparam   Number Abstract number type for input
+   * and output arrays     @tparam   Number2 Abstract number type for
+   * coefficient arrays (defaults to                   same type as the
+   * input/output arrays); must implement                   operator* with
+   * Number to be valid
    *
-   * @tparam variant Variant of evaluation used for creating template
-   *                 specializations
-   * @tparam dim Dimension of the function
-   * @tparam n_rows Number of rows in the transformation matrix, which corresponds
-   *                to the number of 1d shape functions in the usual tensor
-   *                contraction setting
-   * @tparam n_columns Number of columns in the transformation matrix, which
-   *                   corresponds to the number of 1d shape functions in the
-   *                   usual tensor contraction setting
-   * @tparam Number Abstract number type for input and output arrays
-   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
-   *                 same type as the input/output arrays); must implement
-   *                 operator* with Number to be valid
    */
   template <EvaluatorVariant variant,
             int              dim,
@@ -122,20 +131,20 @@ namespace internal
 
   /**
    * Internal evaluator for shape function in arbitrary dimension using the
-   * tensor product form of the basis functions.
+   * tensor product form of the basis functions.       @tparam   dim Space
+   * dimension in which this class is applied     @tparam   n_rows Number of
+   * rows in the transformation matrix, which corresponds                  to
+   * the number of 1d shape functions in the usual tensor
+   * contraction setting     @tparam   n_columns Number of columns in the
+   * transformation matrix, which                     corresponds to the
+   * number of 1d shape functions in the                     usual tensor
+   * contraction setting     @tparam   Number Abstract number type for input
+   * and output arrays     @tparam   Number2 Abstract number type for
+   * coefficient arrays (defaults to                   same type as the
+   * input/output arrays); must implement                   operator* with
+   * Number and produce Number as an output to                   be a valid
+   * type
    *
-   * @tparam dim Space dimension in which this class is applied
-   * @tparam n_rows Number of rows in the transformation matrix, which corresponds
-   *                to the number of 1d shape functions in the usual tensor
-   *                contraction setting
-   * @tparam n_columns Number of columns in the transformation matrix, which
-   *                   corresponds to the number of 1d shape functions in the
-   *                   usual tensor contraction setting
-   * @tparam Number Abstract number type for input and output arrays
-   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
-   *                 same type as the input/output arrays); must implement
-   *                 operator* with Number and produce Number as an output to
-   *                 be a valid type
    */
   template <int dim,
             int n_rows,
@@ -157,6 +166,7 @@ namespace internal
     /**
      * Empty constructor. Does nothing. Be careful when using 'values' and
      * related methods because they need to be filled with the other pointer
+     *
      */
     EvaluatorTensorProduct()
       : shape_values(nullptr)
@@ -166,6 +176,7 @@ namespace internal
 
     /**
      * Constructor, taking the data from ShapeInfo
+     *
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values,
                            const AlignedVector<Number2> &shape_gradients,
@@ -241,27 +252,26 @@ namespace internal
 
     /**
      * This function applies the tensor product kernel, corresponding to a
-     * multiplication of 1D stripes, along the given @p direction of the tensor
-     * data in the input array. This function allows the @p in and @p out
-     * arrays to alias for the case n_rows == n_columns, i.e., it is safe to
-     * perform the contraction in place where @p in and @p out point to the
-     * same address. For the case n_rows != n_columns, the output is in general
-     * not correct.
+     * multiplication of 1D stripes, along the given   @p direction   of the
+     * tensor     data in the input array. This function allows the   @p in
+     * and   @p out       arrays to alias for the case n_rows == n_columns,
+     * i.e., it is safe to     perform the contraction in place where   @p in
+     * and   @p out   point to the     same address. For the case n_rows !=
+     * n_columns, the output is in general     not correct.           @tparam
+     * direction Direction that is evaluated       @tparam
+     * contract_over_rows If true, the tensor contraction sums
+     * over the rows in the given   @p shape_data
+     * array, otherwise it sums over the columns       @tparam   add If true,
+     * the result is added to the output vector, else                 the
+     * computed values overwrite the content in the output       @tparam
+     * one_line If true, the kernel is only applied along a single 1D
+     * stripe within a dim-dimensional tensor, not the full
+     * n_rows^dim points as in the   @p false   case.           @param
+     * shape_data Transformation matrix with   @p n_rows   rows and
+     * @p n_columns   columns, stored in row-major format       @param   in
+     * Pointer to the start of the input data vector       @param   out
+     * Pointer to the start of the output data vector
      *
-     * @tparam direction Direction that is evaluated
-     * @tparam contract_over_rows If true, the tensor contraction sums
-     *                            over the rows in the given @p shape_data
-     *                            array, otherwise it sums over the columns
-     * @tparam add If true, the result is added to the output vector, else
-     *             the computed values overwrite the content in the output
-     * @tparam one_line If true, the kernel is only applied along a single 1D
-     *                  stripe within a dim-dimensional tensor, not the full
-     *                  n_rows^dim points as in the @p false case.
-     *
-     * @param shape_data Transformation matrix with @p n_rows rows and
-     *                   @p n_columns columns, stored in row-major format
-     * @param in Pointer to the start of the input data vector
-     * @param out Pointer to the start of the output data vector
      */
     template <int  direction,
               bool contract_over_rows,
@@ -273,38 +283,37 @@ namespace internal
           Number *                        out);
 
     /**
-     * This function applies the tensor product operation to produce face values
-     * from cell values. As opposed to the apply method, this method assumes
-     * that the directions orthogonal to the face have n_rows degrees of
-     * freedom per direction and not n_columns for those directions lower than
-     * the one currently applied. In other words, apply_face() must be called
-     * before calling any interpolation within the face.
+     * This function applies the tensor product operation to produce face
+     * values     from cell values. As opposed to the apply method, this
+     * method assumes     that the directions orthogonal to the face have
+     * n_rows degrees of     freedom per direction and not n_columns for those
+     * directions lower than     the one currently applied. In other words,
+     * apply_face() must be called     before calling any interpolation within
+     * the face.           @tparam   face_direction Direction of the normal
+     * vector (0=x, 1=y, etc)       @tparam   contract_onto_face If true, the
+     * input vector is of size n_rows^dim                                and
+     * interpolation into n_rows^(dim-1) points
+     * is performed. This is a typical scenario in
+     * FEFaceEvaluation::evaluate()   calls. If false,
+     * data from n_rows^(dim-1) points is expanded
+     * into the n_rows^dim points of the higher-
+     * dimensional data array. Derivatives in the
+     * case contract_onto_face==false are summed
+     * together       @tparam   add If true, the result is added to the output
+     * vector, else                 the computed values overwrite the content
+     * in the output       @tparam   max_derivative Sets the number of
+     * derivatives that should be                 computed. 0 means only
+     * values, 1 means values and first                 derivatives, 2 second
+     * derivates. Note that all the                 derivatives access the
+     * data in   @p shape_values   passed to                 the constructor
+     * of the class       @tparam   lex_faces Sets how the evaluation points
+     * on the faces should be                       sorted: lexicographically
+     * or right-hand-system number                       (special treatment of
+     * orientation 1 in 3D). Per default
+     * right-hand-system number is enabled, which is only
+     * working for dimensions up to 3.           @param   in address of the
+     * input data vector       @param   out address of the output data vector
      *
-     * @tparam face_direction Direction of the normal vector (0=x, 1=y, etc)
-     * @tparam contract_onto_face If true, the input vector is of size n_rows^dim
-     *                            and interpolation into n_rows^(dim-1) points
-     *                            is performed. This is a typical scenario in
-     *                            FEFaceEvaluation::evaluate() calls. If false,
-     *                            data from n_rows^(dim-1) points is expanded
-     *                            into the n_rows^dim points of the higher-
-     *                            dimensional data array. Derivatives in the
-     *                            case contract_onto_face==false are summed
-     *                            together
-     * @tparam add If true, the result is added to the output vector, else
-     *             the computed values overwrite the content in the output
-     * @tparam max_derivative Sets the number of derivatives that should be
-     *             computed. 0 means only values, 1 means values and first
-     *             derivatives, 2 second derivates. Note that all the
-     *             derivatives access the data in @p shape_values passed to
-     *             the constructor of the class
-     * @tparam lex_faces Sets how the evaluation points on the faces should be
-     *                   sorted: lexicographically or right-hand-system number
-     *                   (special treatment of orientation 1 in 3D). Per default
-     *                   right-hand-system number is enabled, which is only
-     *                   working for dimensions up to 3.
-     *
-     * @param in address of the input data vector
-     * @param out address of the output data vector
      */
     template <int  face_direction,
               bool contract_onto_face,
@@ -563,17 +572,16 @@ namespace internal
 
 
   /**
-   * Internal evaluator for shape function using the tensor product form
-   * of the basis functions. The same as the other templated class but
-   * without making use of template arguments and variable loop bounds
-   * instead.
+   * Internal evaluator for shape function using the tensor product form   of
+   * the basis functions. The same as the other templated class but   without
+   * making use of template arguments and variable loop bounds   instead.
+   * @tparam   dim Space dimension in which this class is applied     @tparam
+   * Number Abstract number type for input and output arrays     @tparam
+   * Number2 Abstract number type for coefficient arrays (defaults to
+   * same type as the input/output arrays); must implement
+   * operator* with Number and produce Number as an output to
+   * be a valid type
    *
-   * @tparam dim Space dimension in which this class is applied
-   * @tparam Number Abstract number type for input and output arrays
-   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
-   *                 same type as the input/output arrays); must implement
-   *                 operator* with Number and produce Number as an output to
-   *                 be a valid type
    */
   template <int dim, typename Number, typename Number2>
   struct EvaluatorTensorProduct<evaluate_general, dim, 0, 0, Number, Number2>
@@ -585,7 +593,9 @@ namespace internal
 
     /**
      * Empty constructor. Does nothing. Be careful when using 'values' and
-     * related methods because they need to be filled with the other constructor
+     * related methods because they need to be filled with the other
+     * constructor
+     *
      */
     EvaluatorTensorProduct()
       : shape_values(nullptr)
@@ -597,6 +607,7 @@ namespace internal
 
     /**
      * Constructor, taking the data from ShapeInfo
+     *
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values,
                            const AlignedVector<Number2> &shape_gradients,
@@ -627,6 +638,7 @@ namespace internal
 
     /**
      * Constructor, taking the data from ShapeInfo
+     *
      */
     EvaluatorTensorProduct(const Number2 *    shape_values,
                            const Number2 *    shape_gradients,
@@ -993,20 +1005,19 @@ namespace internal
    * of the basis functions. This class specializes the general application of
    * tensor-product based elements for "symmetric" finite elements, i.e., when
    * the shape functions are symmetric about 0.5 and the quadrature points
-   * are, too.
+   * are, too.       @tparam   dim Space dimension in which this class is
+   * applied     @tparam   n_rows Number of rows in the transformation matrix,
+   * which corresponds                  to the number of 1d shape functions in
+   * the usual tensor                  contraction setting     @tparam
+   * n_columns Number of columns in the transformation matrix, which
+   * corresponds to the number of 1d shape functions in the
+   * usual tensor contraction setting     @tparam   Number Abstract number
+   * type for input and output arrays     @tparam   Number2 Abstract number
+   * type for coefficient arrays (defaults to                   same type as
+   * the input/output arrays); must implement                   operator* with
+   * Number and produce Number as an output to                   be a valid
+   * type
    *
-   * @tparam dim Space dimension in which this class is applied
-   * @tparam n_rows Number of rows in the transformation matrix, which corresponds
-   *                to the number of 1d shape functions in the usual tensor
-   *                contraction setting
-   * @tparam n_columns Number of columns in the transformation matrix, which
-   *                   corresponds to the number of 1d shape functions in the
-   *                   usual tensor contraction setting
-   * @tparam Number Abstract number type for input and output arrays
-   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
-   *                 same type as the input/output arrays); must implement
-   *                 operator* with Number and produce Number as an output to
-   *                 be a valid type
    */
   template <int dim,
             int n_rows,
@@ -1027,6 +1038,7 @@ namespace internal
 
     /**
      * Constructor, taking the data from ShapeInfo
+     *
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values,
                            const AlignedVector<Number2> &shape_gradients,
@@ -1559,34 +1571,32 @@ namespace internal
 
   /**
    * Internal evaluator for 1d-3d shape function using the tensor product form
-   * of the basis functions.
+   * of the basis functions.     This class implements a different approach to
+   * the symmetric case for   values, gradients, and Hessians also treated
+   * with the above functions: It   is possible to reduce the cost per
+   * dimension from N^2 to N^2/2, where N   is the number of 1D dofs (there
+   * are only N^2/2 different entries in the   shape matrix, so this is
+   * plausible). The approach is based on the idea of   applying the operator
+   * on the even and odd part of the input vectors   separately, given that
+   * the shape functions evaluated on quadrature points   are symmetric. This
+   * method is presented e.g. in the book "Implementing   Spectral Methods for
+   * Partial Differential Equations" by David A. Kopriva,   Springer, 2009,
+   * section 3.5.3 (Even-Odd-Decomposition). Even though the   experiments in
+   * the book say that the method is not efficient for N<20, it   is more
+   * efficient in the context where the loop bounds are compile-time
+   * constants (templates).       @tparam   dim Space dimension in which this
+   * class is applied     @tparam   n_rows Number of rows in the
+   * transformation matrix, which corresponds                  to the number
+   * of 1d shape functions in the usual tensor                  contraction
+   * setting     @tparam   n_columns Number of columns in the transformation
+   * matrix, which                     corresponds to the number of 1d shape
+   * functions in the                     usual tensor contraction setting
+   * @tparam   Number Abstract number type for input and output arrays
+   * @tparam   Number2 Abstract number type for coefficient arrays (defaults
+   * to                   same type as the input/output arrays); must
+   * implement                   operator* with Number and produce Number as
+   * an output to                   be a valid type
    *
-   * This class implements a different approach to the symmetric case for
-   * values, gradients, and Hessians also treated with the above functions: It
-   * is possible to reduce the cost per dimension from N^2 to N^2/2, where N
-   * is the number of 1D dofs (there are only N^2/2 different entries in the
-   * shape matrix, so this is plausible). The approach is based on the idea of
-   * applying the operator on the even and odd part of the input vectors
-   * separately, given that the shape functions evaluated on quadrature points
-   * are symmetric. This method is presented e.g. in the book "Implementing
-   * Spectral Methods for Partial Differential Equations" by David A. Kopriva,
-   * Springer, 2009, section 3.5.3 (Even-Odd-Decomposition). Even though the
-   * experiments in the book say that the method is not efficient for N<20, it
-   * is more efficient in the context where the loop bounds are compile-time
-   * constants (templates).
-   *
-   * @tparam dim Space dimension in which this class is applied
-   * @tparam n_rows Number of rows in the transformation matrix, which corresponds
-   *                to the number of 1d shape functions in the usual tensor
-   *                contraction setting
-   * @tparam n_columns Number of columns in the transformation matrix, which
-   *                   corresponds to the number of 1d shape functions in the
-   *                   usual tensor contraction setting
-   * @tparam Number Abstract number type for input and output arrays
-   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
-   *                 same type as the input/output arrays); must implement
-   *                 operator* with Number and produce Number as an output to
-   *                 be a valid type
    */
   template <int dim,
             int n_rows,
@@ -1609,6 +1619,7 @@ namespace internal
      * Empty constructor. Does nothing. Be careful when using 'values' and
      * related methods because they need to be filled with the other
      * constructor passing in at least an array for the values.
+     *
      */
     EvaluatorTensorProduct()
       : shape_values(nullptr)
@@ -1619,6 +1630,7 @@ namespace internal
     /**
      * Constructor, taking the data from ShapeInfo (using the even-odd
      * variants stored there)
+     *
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values)
       : shape_values(shape_values.begin())
@@ -1631,6 +1643,7 @@ namespace internal
     /**
      * Constructor, taking the data from ShapeInfo (using the even-odd
      * variants stored there)
+     *
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values,
                            const AlignedVector<Number2> &shape_gradients,
@@ -1707,31 +1720,30 @@ namespace internal
 
     /**
      * This function applies the tensor product kernel, corresponding to a
-     * multiplication of 1D stripes, along the given @p direction of the tensor
-     * data in the input array. This function allows the @p in and @p out
-     * arrays to alias for the case n_rows == n_columns, i.e., it is safe to
-     * perform the contraction in place where @p in and @p out point to the
-     * same address. For the case n_rows != n_columns, the output is only
-     * correct if @p one_line is set to true.
+     * multiplication of 1D stripes, along the given   @p direction   of the
+     * tensor     data in the input array. This function allows the   @p in
+     * and   @p out       arrays to alias for the case n_rows == n_columns,
+     * i.e., it is safe to     perform the contraction in place where   @p in
+     * and   @p out   point to the     same address. For the case n_rows !=
+     * n_columns, the output is only     correct if   @p one_line   is set to
+     * true.           @tparam   direction Direction that is evaluated
+     * @tparam   contract_over_rows If true, the tensor contraction sums
+     * over the rows in the given   @p shape_data
+     * array, otherwise it sums over the columns       @tparam   add If true,
+     * the result is added to the output vector, else                 the
+     * computed values overwrite the content in the output       @tparam
+     * type Determines whether to use the symmetries appearing in
+     * shape values (type=0), shape gradients (type=1) or
+     * second derivatives (type=2, similar to type 0 but
+     * without two additional zero entries)       @tparam   one_line If true,
+     * the kernel is only applied along a single 1D
+     * stripe within a dim-dimensional tensor, not the full
+     * n_rows^dim points as in the   @p false   case.           @param
+     * shape_data Transformation matrix with   @p n_rows   rows and
+     * @p n_columns   columns, stored in row-major format       @param   in
+     * Pointer to the start of the input data vector       @param   out
+     * Pointer to the start of the output data vector
      *
-     * @tparam direction Direction that is evaluated
-     * @tparam contract_over_rows If true, the tensor contraction sums
-     *                            over the rows in the given @p shape_data
-     *                            array, otherwise it sums over the columns
-     * @tparam add If true, the result is added to the output vector, else
-     *             the computed values overwrite the content in the output
-     * @tparam type Determines whether to use the symmetries appearing in
-     *              shape values (type=0), shape gradients (type=1) or
-     *              second derivatives (type=2, similar to type 0 but
-     *              without two additional zero entries)
-     * @tparam one_line If true, the kernel is only applied along a single 1D
-     *                  stripe within a dim-dimensional tensor, not the full
-     *                  n_rows^dim points as in the @p false case.
-     *
-     * @param shape_data Transformation matrix with @p n_rows rows and
-     *                   @p n_columns columns, stored in row-major format
-     * @param in Pointer to the start of the input data vector
-     * @param out Pointer to the start of the output data vector
      */
     template <int  direction,
               bool contract_over_rows,
@@ -1951,31 +1963,30 @@ namespace internal
 
   /**
    * Internal evaluator for 1d-3d shape function using the tensor product form
-   * of the basis functions.
+   * of the basis functions.     This class implements an approach similar to
+   * the even-odd decomposition   but with a different type of symmetry. In
+   * this case, we assume that a   single shape function already shows the
+   * symmetry over the quadrature   points, rather than the complete basis
+   * that is considered in the even-odd   case. In particular, we assume that
+   * the shape functions are ordered as in   the Legendre basis, with
+   * symmetric shape functions in the even slots   (rows of the values array)
+   * and point-symmetric in the odd slots. Like the   even-odd decomposition,
+   * the number of operations are N^2/2 rather than   N^2 FMAs (fused
+   * multiply-add), where N is the number of 1D dofs. The   difference is in
+   * the way the input and output quantities are symmetrized.       @tparam
+   * dim Space dimension in which this class is applied     @tparam   n_rows
+   * Number of rows in the transformation matrix, which corresponds
+   * to the number of 1d shape functions in the usual tensor
+   * contraction setting     @tparam   n_columns Number of columns in the
+   * transformation matrix, which                     corresponds to the
+   * number of 1d shape functions in the                     usual tensor
+   * contraction setting     @tparam   Number Abstract number type for input
+   * and output arrays     @tparam   Number2 Abstract number type for
+   * coefficient arrays (defaults to                   same type as the
+   * input/output arrays); must implement                   operator* with
+   * Number and produce Number as an output to                   be a valid
+   * type
    *
-   * This class implements an approach similar to the even-odd decomposition
-   * but with a different type of symmetry. In this case, we assume that a
-   * single shape function already shows the symmetry over the quadrature
-   * points, rather than the complete basis that is considered in the even-odd
-   * case. In particular, we assume that the shape functions are ordered as in
-   * the Legendre basis, with symmetric shape functions in the even slots
-   * (rows of the values array) and point-symmetric in the odd slots. Like the
-   * even-odd decomposition, the number of operations are N^2/2 rather than
-   * N^2 FMAs (fused multiply-add), where N is the number of 1D dofs. The
-   * difference is in the way the input and output quantities are symmetrized.
-   *
-   * @tparam dim Space dimension in which this class is applied
-   * @tparam n_rows Number of rows in the transformation matrix, which corresponds
-   *                to the number of 1d shape functions in the usual tensor
-   *                contraction setting
-   * @tparam n_columns Number of columns in the transformation matrix, which
-   *                   corresponds to the number of 1d shape functions in the
-   *                   usual tensor contraction setting
-   * @tparam Number Abstract number type for input and output arrays
-   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
-   *                 same type as the input/output arrays); must implement
-   *                 operator* with Number and produce Number as an output to
-   *                 be a valid type
    */
   template <int dim,
             int n_rows,
@@ -1998,6 +2009,7 @@ namespace internal
      * Empty constructor. Does nothing. Be careful when using 'values' and
      * related methods because they need to be filled with the other
      * constructor passing in at least an array for the values.
+     *
      */
     EvaluatorTensorProduct()
       : shape_values(nullptr)
@@ -2008,6 +2020,7 @@ namespace internal
     /**
      * Constructor, taking the data from ShapeInfo (using the even-odd
      * variants stored there)
+     *
      */
     EvaluatorTensorProduct(const AlignedVector<Number> &shape_values)
       : shape_values(shape_values.begin())
@@ -2018,6 +2031,7 @@ namespace internal
     /**
      * Constructor, taking the data from ShapeInfo (using the even-odd
      * variants stored there)
+     *
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values,
                            const AlignedVector<Number2> &shape_gradients,
@@ -2086,30 +2100,29 @@ namespace internal
 
     /**
      * This function applies the tensor product kernel, corresponding to a
-     * multiplication of 1D stripes, along the given @p direction of the tensor
-     * data in the input array. This function allows the @p in and @p out
-     * arrays to alias for the case n_rows == n_columns, i.e., it is safe to
-     * perform the contraction in place where @p in and @p out point to the
-     * same address. For the case n_rows != n_columns, the output is only
-     * correct if @p one_line is set to true.
+     * multiplication of 1D stripes, along the given   @p direction   of the
+     * tensor     data in the input array. This function allows the   @p in
+     * and   @p out       arrays to alias for the case n_rows == n_columns,
+     * i.e., it is safe to     perform the contraction in place where   @p in
+     * and   @p out   point to the     same address. For the case n_rows !=
+     * n_columns, the output is only     correct if   @p one_line   is set to
+     * true.           @tparam   direction Direction that is evaluated
+     * @tparam   contract_over_rows If true, the tensor contraction sums
+     * over the rows in the given   @p shape_data
+     * array, otherwise it sums over the columns       @tparam   add If true,
+     * the result is added to the output vector, else                 the
+     * computed values overwrite the content in the output       @tparam
+     * type Determines whether the evaluation is symmetric in even
+     * rows (type=0) or odd rows (type=1) of   @p shape_data   and
+     * skew-symmetric in odd rows (type=0) or even rows (type=1)       @tparam
+     * one_line If true, the kernel is only applied along a single 1D
+     * stripe within a dim-dimensional tensor, not the full
+     * n_rows^dim points as in the   @p false   case.           @param
+     * shape_data Transformation matrix with   @p n_rows   rows and
+     * @p n_columns   columns, stored in row-major format       @param   in
+     * Pointer to the start of the input data vector       @param   out
+     * Pointer to the start of the output data vector
      *
-     * @tparam direction Direction that is evaluated
-     * @tparam contract_over_rows If true, the tensor contraction sums
-     *                            over the rows in the given @p shape_data
-     *                            array, otherwise it sums over the columns
-     * @tparam add If true, the result is added to the output vector, else
-     *             the computed values overwrite the content in the output
-     * @tparam type Determines whether the evaluation is symmetric in even
-     *              rows (type=0) or odd rows (type=1) of @p shape_data and
-     *              skew-symmetric in odd rows (type=0) or even rows (type=1)
-     * @tparam one_line If true, the kernel is only applied along a single 1D
-     *                  stripe within a dim-dimensional tensor, not the full
-     *                  n_rows^dim points as in the @p false case.
-     *
-     * @param shape_data Transformation matrix with @p n_rows rows and
-     *                   @p n_columns columns, stored in row-major format
-     * @param in Pointer to the start of the input data vector
-     * @param out Pointer to the start of the output data vector
      */
     template <int  direction,
               bool contract_over_rows,
@@ -2333,6 +2346,7 @@ namespace internal
    * evaluate_tensor_product_value_and_gradient because a Point cannot be used
    * within Tensor. Instead, a specialization of this struct upcasts the point
    * to a Tensor<1,dim>.
+   *
    */
   template <typename Number, typename Number2>
   struct ProductTypeNoPoint
@@ -2350,37 +2364,32 @@ namespace internal
 
   /**
    * Compute the polynomial interpolation of a tensor product shape function
-   * $\varphi_i$ given a vector of coefficients $u_i$ in the form
-   * $u_h(\mathbf{x}) = \sum_{i=1}^{k^d} \varphi_i(\mathbf{x}) u_i$. The shape
-   * functions $\varphi_i(\mathbf{x}) =
-   * \prod_{d=1}^{\text{dim}}\varphi_{i_d}^\text{1D}(x_d)$ represent a tensor
-   * product. The function returns a pair with the value of the interpolation
-   * as the first component and the gradient in reference coordinates as the
-   * second component. Note that for compound types (e.g. the `values` field
-   * begin a Point<spacedim> argument), the components of the gradient are
-   * sorted as Tensor<1, dim, Tensor<1, spacedim>> with the derivatives
-   * as the first index; this is a consequence of the generic arguments in the
-   * function.
+   * $\varphi_i$   given a vector of coefficients   $u_i$   in the form
+   * $u_h(\mathbf{x}) = \sum_{i=1}^{k^d} \varphi_i(\mathbf{x}) u_i$  . The
+   * shape   functions   $\varphi_i(\mathbf{x}) =
+   * \prod_{d=1}^{\text{dim}}\varphi_{i_d}^\text{1D}(x_d)$   represent a
+   * tensor   product. The function returns a pair with the value of the
+   * interpolation   as the first component and the gradient in reference
+   * coordinates as the   second component. Note that for compound types (e.g.
+   * the `values` field   begin a Point<spacedim> argument), the components of
+   * the gradient are   sorted as Tensor<1, dim, Tensor<1, spacedim>> with the
+   * derivatives   as the first index; this is a consequence of the generic
+   * arguments in the   function.       @param   poly The underlying
+   * one-dimensional polynomial basis     $\{\varphi^{1D}_{i_1}\}$   given as
+   * a vector of polynomials.       @param   values The expansion coefficients
+   * $u_i$   of type `Number` in   the polynomial interpolation. The
+   * coefficients can be simply `double`   variables but e.g. also
+   * Point<spacedim> in case they define arithmetic   operations with the type
+   * `Number2`.       @param   p The position in reference coordinates where
+   * the interpolation   should be evaluated.       @param   d_linear Flag to
+   * specify whether a d-linear (linear in 1D,   bi-linear in 2D, tri-linear
+   * in 3D) interpolation should be made, which   allows to unroll loops and
+   * considerably speed up evaluation.       @param   renumber Optional
+   * parameter to specify a renumbering in the   coefficient vector, assuming
+   * that `values[renumber[i]]` returns   the lexicographic (tensor product)
+   * entry of the coefficients. If the   vector is entry, the values are
+   * assumed to be sorted lexicographically.
    *
-   * @param poly The underlying one-dimensional polynomial basis
-   * $\{\varphi^{1D}_{i_1}\}$ given as a vector of polynomials.
-   *
-   * @param values The expansion coefficients $u_i$ of type `Number` in
-   * the polynomial interpolation. The coefficients can be simply `double`
-   * variables but e.g. also Point<spacedim> in case they define arithmetic
-   * operations with the type `Number2`.
-   *
-   * @param p The position in reference coordinates where the interpolation
-   * should be evaluated.
-   *
-   * @param d_linear Flag to specify whether a d-linear (linear in 1D,
-   * bi-linear in 2D, tri-linear in 3D) interpolation should be made, which
-   * allows to unroll loops and considerably speed up evaluation.
-   *
-   * @param renumber Optional parameter to specify a renumbering in the
-   * coefficient vector, assuming that `values[renumber[i]]` returns
-   * the lexicographic (tensor product) entry of the coefficients. If the
-   * vector is entry, the values are assumed to be sorted lexicographically.
    */
   template <int dim, typename Number, typename Number2>
   inline std::pair<
@@ -2525,6 +2534,7 @@ namespace internal
 
   /**
    * Same as evaluate_tensor_product_value_and_gradient() but for integration.
+   *
    */
   template <int dim, typename Number, typename Number2>
   inline void

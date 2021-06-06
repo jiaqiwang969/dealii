@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -41,6 +41,7 @@ namespace internal
     /**
      * Struct to distinguish between the value and gradient types of different
      * numbers of components used by the FlexibleEvaluator class.
+     *
      */
     template <int dim, int n_components, typename Number>
     struct EvaluatorTypeTraits
@@ -363,28 +364,30 @@ namespace internal
  * values and gradients on cells on arbitrary reference point positions. These
  * points can change from cell to cell, both with respect to their quantity as
  * well to the location. The two typical use cases are evaluations on
- * non-matching grids and particle simulations.
- *
- * The use of this class is similar to FEValues or FEEvaluation: The class is
- * first initialized to a cell by calling `FEPointEvaluation::reinit(cell,
- * unit_points)`, with the main difference to the other concepts that the
- * underlying points in reference coordinates need to be passed along. Then,
- * upon call to evaluate() or integrate(), the user can compute information at
- * the give points. Eventually, the access functions get_value() or
- * get_gradient() allow to query this information at a specific point index.
- *
- * The functionality is similar to creating an FEValues object with a
- * Quadrature object on the `unit_points` on every cell separately and then
- * calling FEValues::get_function_values or FEValues::get_function_gradients,
+ * non-matching grids and particle simulations. The use of this class is
+ * similar to FEValues or FEEvaluation: The class is first initialized to a
+ * cell by calling   `FEPointEvaluation::reinit(cell,   unit_points)`, with
+ * the main difference to the other concepts that the underlying points in
+ * reference coordinates need to be passed along. Then, upon call to
+ * evaluate() or integrate(), the user can compute information at the give
+ * points. Eventually, the access functions get_value() or get_gradient()
+ * allow to query this information at a specific point index.
+ * The functionality
+ * is similar to creating an FEValues object with a Quadrature object on the
+ * `unit_points` on every cell separately and then calling
+ * FEValues::get_function_values   or   FEValues::get_function_gradients,
  * and for some elements and mappings this is what actually happens
  * internally. For specific combinations of Mapping and FiniteElement
  * realizations, however, there is a much more efficient implementation that
- * avoids the memory allocation and other expensive start-up cost of
- * FEValues. Currently, the functionality is specialized for mappings derived
- * from MappingQGeneric and for finite elements with tensor product structure
- * that work with the @ref matrixfree module. In those cases, the cost implied
+ * avoids the memory allocation and other expensive start-up cost of FEValues.
+ * Currently, the functionality is specialized for mappings derived from
+ * MappingQGeneric and for finite elements with tensor product structure that
+ * work with the   @ref matrixfree   module. In those cases, the cost implied
  * by this class is similar (or sometimes even somewhat lower) than using
- * `FEValues::reinit(cell)` followed by `FEValues::get_function_gradients`.
+ * `FEValues::reinit(cell)`   followed by
+ * `FEValues::get_function_gradients`.
+ *
+ *
  */
 template <int n_components,
           int dim,
@@ -399,22 +402,17 @@ public:
     EvaluatorTypeTraits<dim, n_components, Number>::gradient_type;
 
   /**
-   * Constructor.
-   *
-   * @param mapping The Mapping class describing the actual geometry of a cell
-   * passed to the evaluate() function.
-   *
-   * @param fe The FiniteElement object that is used for the evaluation, which
-   * is typically the same on all cells to be evaluated.
-   *
-   * @param update_flags Specify the quantities to be computed by the mapping
+   * Constructor.       @param   mapping The Mapping class describing the
+   * actual geometry of a cell   passed to the evaluate() function.
+   * @param   fe The FiniteElement object that is used for the evaluation,
+   * which   is typically the same on all cells to be evaluated.       @param
+   * update_flags Specify the quantities to be computed by the mapping
    * during the call of reinit(). During evaluate() or integrate(), this data
    * is queried to produce the desired result (e.g., the gradient of a finite
-   * element solution).
+   * element solution).       @param   first_selected_component For
+   * multi-component FiniteElement   objects, this parameter allows to select
+   * a range of `n_components`   components starting from this parameter.
    *
-   * @param first_selected_component For multi-component FiniteElement
-   * objects, this parameter allows to select a range of `n_components`
-   * components starting from this parameter.
    */
   FEPointEvaluation(const Mapping<dim> &      mapping,
                     const FiniteElement<dim> &fe,
@@ -424,13 +422,11 @@ public:
   /**
    * Set up the mapping information for the given cell, e.g., by computing the
    * Jacobian of the mapping the given points if gradients of the functions
-   * are requested.
-   *
-   * @param[in] cell An iterator to the current cell
-   *
-   * @param[in] unit_points List of points in the reference locations of the
+   * are requested.       @param[in]   cell An iterator to the current cell
+   * @param[in]   unit_points List of points in the reference locations of the
    * current cell where the FiniteElement object should be
    * evaluated/integrated in the evaluate() and integrate() functions.
+   *
    */
   void
   reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
@@ -439,13 +435,12 @@ public:
   /**
    * This function interpolates the finite element solution, represented by
    * `solution_values`, on the cell and `unit_points` passed to reinit().
-   *
-   * @param[in] solution_values This array is supposed to contain the unknown
-   * values on the element as returned by `cell->get_dof_values(global_vector,
-   * solution_values)`.
-   *
-   * @param[in] evaluation_flags Flags specifying which quantities should be
+   * @param[in]   solution_values This array is supposed to contain the
+   * unknown   values on the element as returned by
+   * `cell->get_dof_values(global_vector,   solution_values)`.
+   * @param[in]   evaluation_flags Flags specifying which quantities should be
    * evaluated at the points.
+   *
    */
   void
   evaluate(const ArrayView<const Number> &         solution_values,
@@ -461,17 +456,14 @@ public:
    * (e.g. particles) into a finite element formulation. Of course, by
    * multiplication of a `JxW` information of the data given to
    * submit_value(), the integration can also be represented by this class.
-   *
-   * @param[out] solution_values This array will contain the result of the
+   * @param[out]   solution_values This array will contain the result of the
    * integral, which can be used to during
    * `cell->set_dof_values(solution_values, global_vector)` or
    * `cell->distribute_local_to_global(solution_values, global_vector)`. Note
    * that for multi-component systems where only some of the components are
    * selected by the present class, the entries not touched by this class will
-   * be zeroed out.
-   *
-   * @param[in] integration_flags Flags specifying which quantities should be
-   * integrated at the points.
+   * be zeroed out.       @param[in]   integration_flags Flags specifying
+   * which quantities should be   integrated at the points.
    *
    */
   void
@@ -479,46 +471,51 @@ public:
             const EvaluationFlags::EvaluationFlags &integration_flags);
 
   /**
-   * Return the value at quadrature point number @p point_index after a call to
-   * FEPointEvaluation::evaluate() with EvaluationFlags::value set, or
-   * the value that has been stored there with a call to
-   * FEPointEvaluation::submit_value(). If the object is vector-valued, a
+   * Return the value at quadrature point number   @p point_index   after a
+   * call to     FEPointEvaluation::evaluate()   with   EvaluationFlags::value
+   * set, or   the value that has been stored there with a call to
+   * FEPointEvaluation::submit_value().   If the object is vector-valued, a
    * vector-valued return argument is given.
+   *
    */
   const value_type &
   get_value(const unsigned int point_index) const;
 
   /**
-   * Write a value to the field containing the values on points
-   * with component point_index. Access to the same field as through
-   * get_value(). If applied before the function FEPointEvaluation::integrate()
-   * with EvaluationFlags::values set is called, this specifies the value
-   * which is tested by all basis function on the current cell and
-   * integrated over.
+   * Write a value to the field containing the values on points   with
+   * component point_index. Access to the same field as through   get_value().
+   * If applied before the function   FEPointEvaluation::integrate()     with
+   * EvaluationFlags::values   set is called, this specifies the value   which
+   * is tested by all basis function on the current cell and   integrated
+   * over.
+   *
    */
   void
   submit_value(const value_type &value, const unsigned int point_index);
 
   /**
    * Return the gradient in real coordinates at the point with index
-   * `point_index` after a call to FEPointEvaluation::evaluate() with
-   * EvaluationFlags::gradient set, or the gradient that has been stored there
-   * with a call to FEPointEvaluation::submit_gradient(). The gradient in real
-   * coordinates is obtained by taking the unit gradient (also accessible via
-   * get_unit_gradient()) and applying the inverse Jacobian of the mapping. If
-   * the object is vector-valued, a vector-valued return argument is given.
+   * `point_index` after a call to   FEPointEvaluation::evaluate()   with
+   * EvaluationFlags::gradient   set, or the gradient that has been stored
+   * there   with a call to   FEPointEvaluation::submit_gradient().   The
+   * gradient in real   coordinates is obtained by taking the unit gradient
+   * (also accessible via   get_unit_gradient()) and applying the inverse
+   * Jacobian of the mapping. If   the object is vector-valued, a
+   * vector-valued return argument is given.
+   *
    */
   const gradient_type &
   get_gradient(const unsigned int point_index) const;
 
   /**
    * Return the gradient in unit coordinates at the point with index
-   * `point_index` after a call to FEPointEvaluation::evaluate() with
-   * EvaluationFlags::gradient set, or the gradient that has been stored there
-   * with a call to FEPointEvaluation::submit_gradient(). If the object is
-   * vector-valued, a vector-valued return argument is given. Note that when
-   * vectorization is enabled, values from several points are grouped
-   * together.
+   * `point_index` after a call to   FEPointEvaluation::evaluate()   with
+   * EvaluationFlags::gradient   set, or the gradient that has been stored
+   * there   with a call to   FEPointEvaluation::submit_gradient().   If the
+   * object is   vector-valued, a vector-valued return argument is given. Note
+   * that when   vectorization is enabled, values from several points are
+   * grouped   together.
+   *
    */
   const gradient_type &
   get_unit_gradient(const unsigned int point_index) const;
@@ -527,9 +524,10 @@ public:
    * Write a contribution that is tested by the gradient to the field
    * containing the values on points with the given `point_index`. Access to
    * the same field as through get_gradient(). If applied before the function
-   * FEPointEvaluation::integrate(EvaluationFlags::gradients) is called, this
-   * specifies what is tested by all basis function gradients on the current
-   * cell and integrated over.
+   * FEPointEvaluation::integrate(EvaluationFlags::gradients)   is called,
+   * this   specifies what is tested by all basis function gradients on the
+   * current   cell and integrated over.
+   *
    */
   void
   submit_gradient(const gradient_type &, const unsigned int point_index);
@@ -538,6 +536,7 @@ public:
    * Return the Jacobian of the transformation on the current cell with the
    * given point index. Prerequisite: This class needs to be constructed with
    * UpdateFlags containing `update_jacobian`.
+   *
    */
   DerivativeForm<1, dim, spacedim>
   jacobian(const unsigned int point_index) const;
@@ -547,6 +546,7 @@ public:
    * cell with the given point index. Prerequisite: This class needs to be
    * constructed with UpdateFlags containing `update_inverse_jacobian` or
    * `update_gradients`.
+   *
    */
   DerivativeForm<1, spacedim, dim>
   inverse_jacobian(const unsigned int point_index) const;
@@ -554,6 +554,7 @@ public:
   /**
    * Return the position in real coordinates of the given point index among
    * the points passed to reinit().
+   *
    */
   Point<spacedim>
   real_point(const unsigned int point_index) const;
@@ -561,6 +562,7 @@ public:
   /**
    * Return the position in unit/reference coordinates of the given point
    * index, i.e., the respective point passed to the reinit() function.
+   *
    */
   Point<dim>
   unit_point(const unsigned int point_index) const;
@@ -568,34 +570,40 @@ public:
 private:
   /**
    * Pointer to the Mapping object passed to the constructor.
+   *
    */
   SmartPointer<const Mapping<dim, spacedim>> mapping;
 
   /**
    * Pointer to MappingQGeneric class that enables the fast path of this
    * class.
+   *
    */
   const MappingQGeneric<dim, spacedim> *mapping_q_generic;
 
   /**
    * Pointer to the FiniteElement object passed to the constructor.
+   *
    */
   SmartPointer<const FiniteElement<dim>> fe;
 
   /**
    * Description of the 1D polynomial basis for tensor product elements used
    * for the fast path of this class using tensor product evaluators.
+   *
    */
   std::vector<Polynomials::Polynomial<double>> poly;
 
   /**
    * Store whether the polynomials are linear with nodes at 0 and 1.
+   *
    */
   bool polynomials_are_hat_functions;
 
   /**
    * Renumbering between the unknowns of unknowns implied by the FiniteElement
    * class and a lexicographic numbering used for the tensorized code path.
+   *
    */
   std::vector<unsigned int> renumber;
 
@@ -604,6 +612,7 @@ private:
    * function in a format compatible with the tensor product evaluators. For
    * vector-valued setups, this array uses a `Tensor<1, n_components>` type to
    * collect the unknowns for a particular basis function.
+   *
    */
   std::vector<value_type> solution_renumbered;
 
@@ -612,6 +621,7 @@ private:
    * computed during `integrate()` in a format compatible with the tensor
    * product evaluators. For vector-valued setups, this array uses a
    * `Tensor<1, n_components, VectorizedArray<Number>>` format.
+   *
    */
   AlignedVector<typename internal::FEPointEvaluation::EvaluatorTypeTraits<
     dim,
@@ -621,22 +631,26 @@ private:
 
   /**
    * Temporary array to store the values at the points.
+   *
    */
   std::vector<value_type> values;
 
   /**
    * Temporary array to store the gradients in unit coordinates at the points.
+   *
    */
   std::vector<gradient_type> unit_gradients;
 
   /**
    * Temporary array to store the gradients in real coordinates at the points.
+   *
    */
   std::vector<gradient_type> gradients;
 
   /**
    * Number of unknowns per component, i.e., number of unique basis functions,
    * for the chosen FiniteElement (or base element).
+   *
    */
   unsigned int dofs_per_component;
 
@@ -644,33 +658,39 @@ private:
    * For complicated FiniteElement objects this variable informs us about
    * which unknowns actually carry degrees of freedom in the selected
    * components.
+   *
    */
   std::vector<std::array<bool, n_components>> nonzero_shape_function_component;
 
   /**
    * The desired update flags for the evaluation.
+   *
    */
   UpdateFlags update_flags;
 
   /**
    * The update flags specific for the mapping in the fast evaluation path.
+   *
    */
   UpdateFlags update_flags_mapping;
 
   /**
    * The FEValues object underlying the slow evaluation path.
+   *
    */
   std::shared_ptr<FEValues<dim, spacedim>> fe_values;
 
   /**
    * Array to store temporary data computed by the mapping for the fast
    * evaluation path.
+   *
    */
   internal::FEValuesImplementation::MappingRelatedData<dim, spacedim>
     mapping_data;
 
   /**
    * The reference points specified at reinit().
+   *
    */
   std::vector<Point<dim>> unit_points;
 };

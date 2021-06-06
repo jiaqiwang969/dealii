@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
 //
@@ -31,24 +31,28 @@ namespace ArborXWrappers
   /**
    * Base class for Point-based predicates providing basic functionality for
    * derived classes, not supposed to be used on its own.
+   *
    */
   class PointPredicate
   {
   protected:
     /**
-     * Constructor. @p points is a list of points used by the predicate.
+     * Constructor.   @p points   is a list of points used by the predicate.
+     *
      */
     template <int dim, typename Number>
     PointPredicate(const std::vector<dealii::Point<dim, Number>> &points);
 
     /**
      * Number of points stored in the structure.
+     *
      */
     std::size_t
     size() const;
 
     /**
      * Return the `i`th Point stored in the object.
+     *
      */
     const dealii::Point<3, float> &
     get(unsigned int i) const;
@@ -60,17 +64,20 @@ namespace ArborXWrappers
 
 
   /**
-   * This class defines a predicate used by ArborXWrappers::BVH to determine
-   * for given points which of the bounding boxes used to build the
-   * ArborXWrappers::BVH intersect with them.
-   * @note The class is not supposed to be used in a polymorphic context.
+   * This class defines a predicate used by   ArborXWrappers::BVH   to
+   * determine   for given points which of the bounding boxes used to build
+   * the     ArborXWrappers::BVH   intersect with them.
+   * @note   The class is not supposed to be used in a polymorphic context.
+   *
    */
   class PointIntersectPredicate : private PointPredicate
   {
   public:
     /**
-     * Constructor. @p points is a list of points which we are interested in
-     * knowing if they intersect ArborXWrappers::BVH bounding boxes.
+     * Constructor.   @p points   is a list of points which we are interested
+     * in     knowing if they intersect   ArborXWrappers::BVH   bounding
+     * boxes.
+     *
      */
     template <int dim, typename Number>
     PointIntersectPredicate(
@@ -84,18 +91,20 @@ namespace ArborXWrappers
 
 
   /**
-   * This class defines a predicate used by ArborXWrappers::BVH to determine
-   * for given points which are the nearest bounding boxes/points among the ones
-   * used to build the ArborXWrappers::BVH.
-   * @note The class is not supposed to be used in a polymorphic context.
+   * This class defines a predicate used by   ArborXWrappers::BVH   to
+   * determine   for given points which are the nearest bounding boxes/points
+   * among the ones   used to build the   ArborXWrappers::BVH.
+   * @note   The class is not supposed to be used in a polymorphic context.
+   *
    */
   class PointNearestPredicate : private PointPredicate
   {
   public:
     /**
-     * Constructor. @p points is a list of points for which we are interested in
-     * the @p n_nearest_neighbors in the ArborXWrappers::BVH bounding
-     * boxes/points.
+     * Constructor.   @p points   is a list of points for which we are
+     * interested in     the   @p n_nearest_neighbors   in the
+     * ArborXWrappers::BVH   bounding     boxes/points.
+     *
      */
     template <int dim, typename Number>
     PointNearestPredicate(const std::vector<dealii::Point<dim, Number>> &points,
@@ -103,6 +112,7 @@ namespace ArborXWrappers
 
     /**
      * Return the number of nearest neighbors we are looking for.
+     *
      */
     unsigned int
     get_n_nearest_neighbors() const;
@@ -120,13 +130,15 @@ namespace ArborXWrappers
   /**
    * Base class for BoundingBox predicates providing basic functionality for
    * derived classes, not supposed to be used on its own.
+   *
    */
   class BoundingBoxPredicate
   {
   protected:
     /**
-     * Constructor. @p bounding_boxes is a list of bounding boxes used by the
-     * predicate.
+     * Constructor.   @p bounding_boxes   is a list of bounding boxes used by
+     * the     predicate.
+     *
      */
     template <int dim, typename Number>
     BoundingBoxPredicate(
@@ -134,12 +146,14 @@ namespace ArborXWrappers
 
     /**
      * Number of bounding boxes stored in the structure.
+     *
      */
     std::size_t
     size() const;
 
     /**
      * Return the `i`th BoundingBox stored in the object.
+     *
      */
     const dealii::BoundingBox<3, float> &
     get(unsigned int i) const;
@@ -151,17 +165,20 @@ namespace ArborXWrappers
 
 
   /**
-   * This class is used by ArborXWrappers::BVH to determine for given bounding
-   * boxes which of the bounding boxes used to build the ArborXWrappers::BVH
-   * intersect with them.
-   * @note The class is not supposed to be used in a polymorphic context.
+   * This class is used by   ArborXWrappers::BVH   to determine for given
+   * bounding   boxes which of the bounding boxes used to build the
+   * ArborXWrappers::BVH     intersect with them.
+   * @note   The class is not supposed to be used in a polymorphic context.
+   *
    */
   class BoundingBoxIntersectPredicate : private BoundingBoxPredicate
   {
   public:
     /**
-     * Constructor. @p bounding_boxes is a list of bounding boxes which we are interested in
-     * knowing if they intersect ArborXWrappers::BVH bounding boxes.
+     * Constructor.   @p bounding_boxes   is a list of bounding boxes which we
+     * are interested in     knowing if they intersect   ArborXWrappers::BVH
+     * bounding boxes.
+     *
      */
     template <int dim, typename Number>
     BoundingBoxIntersectPredicate(
@@ -174,18 +191,20 @@ namespace ArborXWrappers
 
 
   /**
-   * This class is used by ArborXWrappers::BVH to determine for given bounding
-   * boxes which are the nearest bounding boxes/points among the ones used to
-   * build the ArborXWrappers::BVH.
-   * @note The class is not supposed to be used in a polymorphic context.
+   * This class is used by   ArborXWrappers::BVH   to determine for given
+   * bounding   boxes which are the nearest bounding boxes/points among the
+   * ones used to   build the   ArborXWrappers::BVH.
+   * @note   The class is not supposed to be used in a polymorphic context.
+   *
    */
   class BoundingBoxNearestPredicate : private BoundingBoxPredicate
   {
   public:
     /**
-     * Constructor. @p bounding_boxes is a list of bounding boxes for which are interested in
-     * knowing the @p n_nearest_neighbors nearest bounding boxes used to build the
-     * ArborXWrappers::BVH.
+     * Constructor.   @p bounding_boxes   is a list of bounding boxes for
+     * which are interested in     knowing the   @p n_nearest_neighbors
+     * nearest bounding boxes used to build the       ArborXWrappers::BVH.
+     *
      */
     template <int dim, typename Number>
     BoundingBoxNearestPredicate(
@@ -194,6 +213,7 @@ namespace ArborXWrappers
 
     /**
      * Return the number of nearest neighbors we are looking for.
+     *
      */
     unsigned int
     get_n_nearest_neighbors() const;
@@ -211,12 +231,15 @@ DEAL_II_NAMESPACE_CLOSE
 
 /**
  * This namespace contains the implementation of AccessTraits used by ArborX.
+ *
+ *
  */
 namespace ArborX
 {
   /**
-   * This struct allows ArborX to use std::vector<dealii::Point> as
+   * This struct allows ArborX to use   std::vector<dealii::Point>   as
    * primitive.
+   *
    */
   template <int dim, typename Number>
   struct AccessTraits<std::vector<dealii::Point<dim, Number>>, PrimitivesTag>
@@ -224,13 +247,15 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Return the size of the vector @p v.
+     * Return the size of the vector   @p v.
+     *
      */
     static std::size_t
     size(const std::vector<dealii::Point<dim, Number>> &v);
 
     /**
-     * Return an ArborX::Point from the dealii::Point `v[i]`.
+     * Return an   ArborX::Point   from the   dealii::Point   `v[i]`.
+     *
      */
     static Point
     get(const std::vector<dealii::Point<dim, Number>> &v, std::size_t i);
@@ -239,8 +264,9 @@ namespace ArborX
 
 
   /**
-   * This struct allows ArborX to use std::vector<dealii::BoundingBox> as
+   * This struct allows ArborX to use   std::vector<dealii::BoundingBox>   as
    * primitive.
+   *
    */
   template <int dim, typename Number>
   struct AccessTraits<std::vector<dealii::BoundingBox<dim, Number>>,
@@ -249,13 +275,15 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Return the size of the vector @p v.
+     * Return the size of the vector   @p v.
+     *
      */
     static std::size_t
     size(const std::vector<dealii::BoundingBox<dim, Number>> &v);
 
     /**
-     * Return an ArborX::Box from the dealii::BoundingBox `v[i]`.
+     * Return an   ArborX::Box   from the   dealii::BoundingBox   `v[i]`.
+     *
      */
     static Box
     get(const std::vector<dealii::BoundingBox<dim, Number>> &v, std::size_t i);
@@ -265,6 +293,7 @@ namespace ArborX
 
   /**
    * This struct allows ArborX to use PointIntersectPredicate as a predicate.
+   *
    */
   template <>
   struct AccessTraits<dealii::ArborXWrappers::PointIntersectPredicate,
@@ -273,14 +302,16 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Number of Point stored in @p pt_intersect.
+     * Number of Point stored in   @p pt_intersect.
+     *
      */
     static std::size_t
     size(const dealii::ArborXWrappers::PointIntersectPredicate &pt_intersect);
 
     /**
-     * Return an Arbox::intersects(ArborX::Point) object constructed from the
-     * `i`th dealii::Point stored in @p pt_intersect.
+     * Return an   Arbox::intersects(ArborX::Point)   object constructed from
+     * the     `i`th   dealii::Point   stored in   @p pt_intersect.
+     *
      */
     static auto
     get(const dealii::ArborXWrappers::PointIntersectPredicate &pt_intersect,
@@ -290,6 +321,7 @@ namespace ArborX
 
   /**
    * This struct allows ArborX to use PointNearestPredicate as a predicate.
+   *
    */
   template <>
   struct AccessTraits<dealii::ArborXWrappers::PointNearestPredicate,
@@ -298,15 +330,17 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Number of Point stored in @p pt_nearest.
+     * Number of Point stored in   @p pt_nearest.
+     *
      */
     static std::size_t
     size(const dealii::ArborXWrappers::PointNearestPredicate &pt_nearest);
 
     /**
-     * Return an Arbox::nearest(ArborX::Point,
-     * PointNearestPredicate::get_n_nearest_neighbors) object constructed from
-     * the `i`th dealii::Point stored in @p pt_nearest.
+     * Return an   Arbox::nearest(ArborX::Point,
+     * PointNearestPredicate::get_n_nearest_neighbors)   object constructed
+     * from     the `i`th   dealii::Point   stored in   @p pt_nearest.
+     *
      */
     static auto
     get(const dealii::ArborXWrappers::PointNearestPredicate &pt_nearest,
@@ -317,6 +351,7 @@ namespace ArborX
   /**
    * This struct allows ArborX to use BoundingBoxIntersectPredicate as a
    * predicate.
+   *
    */
   template <>
   struct AccessTraits<dealii::ArborXWrappers::BoundingBoxIntersectPredicate,
@@ -325,15 +360,17 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Number of BoundingBox stored in @p bb_intersect.
+     * Number of BoundingBox stored in   @p bb_intersect.
+     *
      */
     static std::size_t
     size(const dealii::ArborXWrappers::BoundingBoxIntersectPredicate
            &bb_intersect);
 
     /**
-     * Return an Arbox::intersects(ArborX::Box) object constructed from the
-     * `i`th dealii::BoundingBox stored in @p bb_intersect.
+     * Return an   Arbox::intersects(ArborX::Box)   object constructed from
+     * the     `i`th   dealii::BoundingBox   stored in   @p bb_intersect.
+     *
      */
     static auto
     get(
@@ -345,6 +382,7 @@ namespace ArborX
   /**
    * This struct allows ArborX to use BoundingBoxNearstPredicate as a
    * predicate.
+   *
    */
   template <>
   struct AccessTraits<dealii::ArborXWrappers::BoundingBoxNearestPredicate,
@@ -353,17 +391,18 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Number of BoundingBox stored in @p bb_nearest.
+     * Number of BoundingBox stored in   @p bb_nearest.
+     *
      */
     static std::size_t
     size(const dealii::ArborXWrappers::BoundingBoxNearestPredicate &bb_nearest);
 
     /**
-     * Return an
-     * Arbox::nearest(ArborX::Box,
-     * BoundingBoxtNearestPredicate::get_n_nearest_neighbors) object constructed
-     * from the
-     * `i`th dealii::BoundingBox stored in @p bb_nearest.
+     * Return an       Arbox::nearest(ArborX::Box,
+     * BoundingBoxtNearestPredicate::get_n_nearest_neighbors)   object
+     * constructed     from the     `i`th   dealii::BoundingBox   stored in
+     * @p bb_nearest.
+     *
      */
     static auto
     get(const dealii::ArborXWrappers::BoundingBoxNearestPredicate &bb_nearest,

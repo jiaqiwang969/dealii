@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -28,15 +28,16 @@ namespace Functions
 {
   /**
    * The Bessel functions of first kind or positive integer order.
-   *
    * @ingroup functions
+   *
    */
   template <int dim>
   class Bessel1 : public Function<dim>
   {
   public:
     /**
-     * Constructor. @p wave_number must be nonnegative.
+     * Constructor.   @p wave_number   must be nonnegative.
+     *
      */
     Bessel1(const unsigned int order,
             const double       wave_number,

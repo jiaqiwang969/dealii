@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
 //
@@ -25,23 +25,25 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * Type trait for a serial vector, i.e. a vector class for which storage is not
- * supported to be distributed over processes.
+ * Type trait for a serial vector, i.e. a vector class for which storage is
+ * not supported to be distributed over processes. The specialization
  *
- * The specialization
  * @code
- *   template <>
- *   struct is_serial_vector<VectorType> : std::true_type
- *   {};
+ * template <>
+ * struct is_serial_vector<VectorType> : std::true_type
+ * {};
  * @endcode
  * for a serial vector type, respectively,
+ *
  * @code
- *   template <>
- *   struct is_serial_vector<VectorType> : std::false_type
- *   {};
+ * template <>
+ * struct is_serial_vector<VectorType> : std::false_type
+ * {};
  * @endcode
- * for a vector type with support of distributed storage,
- * must be done in a header file of a vector declaration.
+ * for a vector type with support of distributed storage, must be done in a
+ * header file of a vector declaration.
+ *
+ *
  */
 template <typename T>
 struct is_serial_vector;

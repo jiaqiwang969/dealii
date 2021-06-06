@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2021 by the deal.II authors
 //
@@ -221,12 +221,12 @@ FE_Poly<dim, spacedim>::requires_update_flags(const UpdateFlags flags) const
 
 /**
  * Returns whether we need to correct the Hessians and third derivatives with
- * the derivatives of the Jacobian. This is determined by checking if
- * the jacobian_pushed_forward are zero.
+ * the derivatives of the Jacobian. This is determined by checking if the
+ * jacobian_pushed_forward are zero. Especially for the third derivatives, the
+ * correction term is very expensive, which is why we check if the derivatives
+ * are zero before computing the correction.
  *
- * Especially for the third derivatives, the correction term is very expensive,
- * which is why we check if the derivatives are zero before computing the
- * correction.
+ *
  */
 template <int dim, int spacedim>
 bool

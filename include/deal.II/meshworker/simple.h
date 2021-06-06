@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
 //
@@ -31,11 +31,10 @@
 
 #include <deal.II/multigrid/mg_constrained_dofs.h>
 
-/*
- * The header containing the classes MeshWorker::Assembler::MatrixSimple,
- * MeshWorker::Assembler::MGMatrixSimple, MeshWorker::Assembler::ResidualSimple,
- * and MeshWorker::Assembler::SystemSimple.
- */
+/* The header containing the classes   MeshWorker::Assembler::MatrixSimple,     MeshWorker::Assembler::MGMatrixSimple,     MeshWorker::Assembler::ResidualSimple,   and   MeshWorker::Assembler::SystemSimple.  
+
+* 
+* */
 
 DEAL_II_NAMESPACE_OPEN
 
@@ -44,16 +43,15 @@ namespace MeshWorker
   namespace Assembler
   {
     /**
-     * Assemble residuals without block structure.
-     *
-     * The data structure for this Assembler class is a simple vector on each
-     * cell with entries from zero to FiniteElementData::dofs_per_cell and a
+     * Assemble residuals without block structure.         The data structure
+     * for this Assembler class is a simple vector on each     cell with
+     * entries from zero to   FiniteElementData::dofs_per_cell   and a
      * simple global vector with entries numbered from zero to
-     * DoFHandler::n_dofs(). No BlockInfo is required and the global vector
+     * DoFHandler::n_dofs().   No BlockInfo is required and the global vector
      * may be any type of vector having element access through <tt>operator()
      * (unsigned int)</tt>
-     *
      * @ingroup MeshWorker
+     *
      */
     template <typename VectorType>
     class ResidualSimple
@@ -61,15 +59,16 @@ namespace MeshWorker
     public:
       /**
        * Initialize with an AnyData object holding the result of assembling.
-       *
        * Assembling currently writes into the first vector of
        * <tt>results</tt>.
+       *
        */
       void
       initialize(AnyData &results);
 
       /**
        * Initialize the constraints.
+       *
        */
       void
       initialize(
@@ -77,10 +76,9 @@ namespace MeshWorker
 
       /**
        * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * assembling.             The   @p info   object refers to a cell if
+       * <code>!face</code>  , or else to an       interior or boundary face.
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
@@ -88,9 +86,9 @@ namespace MeshWorker
 
       /**
        * Assemble the local residuals into the global residuals.
-       *
        * Values are added to the previous contents. If constraints are active,
-       * AffineConstraints::distribute_local_to_global() is used.
+       * AffineConstraints::distribute_local_to_global()   is used.
+       *
        */
       template <class DOFINFO>
       void
@@ -98,6 +96,7 @@ namespace MeshWorker
 
       /**
        * Assemble both local residuals into the global residuals.
+       *
        */
       template <class DOFINFO>
       void
@@ -106,11 +105,13 @@ namespace MeshWorker
     protected:
       /**
        * The global residual vectors filled by assemble().
+       *
        */
       AnyData residuals;
 
       /**
        * A pointer to the object containing constraints.
+       *
        */
       SmartPointer<const AffineConstraints<typename VectorType::value_type>,
                    ResidualSimple<VectorType>>
@@ -122,31 +123,28 @@ namespace MeshWorker
      * Assemble local matrices into a single global matrix or several global
      * matrices associated with the same DoFHandler. If these global matrix
      * have a block structure, this structure is not used, but rather the
-     * global numbering of degrees of freedom.
-     *
-     * After being initialized with a SparseMatrix object (or another matrix
-     * offering the same functionality as SparseMatrix::add()) or a vector of
-     * such, this class can be used in a MeshWorker::loop() to assemble the
-     * cell and face matrices into the global matrix.
-     *
-     * If a AffineConstraints has been provided during initialization, this
-     * matrix will be used (AffineConstraints::distribute_local_to_global(), to
-     * be precise) to enter the local matrix into the global sparse matrix.
-     *
-     * The assembler can handle two different types of local data. First, by
-     * default, the obvious choice of taking a single local matrix with
-     * dimensions equal to the number of degrees of freedom of the cell.
-     * Alternatively, a local block structure can be initialized in DoFInfo.
-     * After this, the local data will be arranged as an array of n by n
-     * FullMatrix blocks (n being the number of blocks in the FESystem used by
-     * the DoFHandler in DoFInfo), which are ordered lexicographically with
-     * column index fastest in DoFInfo. If the matrix was initialized with a
-     * vector of several matrices and local block structure is used, then the
-     * first n<sup>2</sup> matrices in LocalResults will be used for the first
-     * matrix in this vector, the second set of n<sup>2</sup> for the second,
-     * and so on.
-     *
+     * global numbering of degrees of freedom.         After being initialized
+     * with a SparseMatrix object (or another matrix     offering the same
+     * functionality as   SparseMatrix::add())   or a vector of     such, this
+     * class can be used in a   MeshWorker::loop()   to assemble the     cell
+     * and face matrices into the global matrix.         If a
+     * AffineConstraints has been provided during initialization, this
+     * matrix will be used   (AffineConstraints::distribute_local_to_global(),
+     * to     be precise) to enter the local matrix into the global sparse
+     * matrix.         The assembler can handle two different types of local
+     * data. First, by     default, the obvious choice of taking a single
+     * local matrix with     dimensions equal to the number of degrees of
+     * freedom of the cell.     Alternatively, a local block structure can be
+     * initialized in DoFInfo.     After this, the local data will be arranged
+     * as an array of n by n     FullMatrix blocks (n being the number of
+     * blocks in the FESystem used by     the DoFHandler in DoFInfo), which
+     * are ordered lexicographically with     column index fastest in DoFInfo.
+     * If the matrix was initialized with a     vector of several matrices and
+     * local block structure is used, then the     first n<sup>2</sup>
+     * matrices in LocalResults will be used for the first     matrix in this
+     * vector, the second set of n<sup>2</sup> for the second,     and so on.
      * @ingroup MeshWorker
+     *
      */
     template <typename MatrixType>
     class MatrixSimple
@@ -155,17 +153,20 @@ namespace MeshWorker
       /**
        * Constructor, initializing the #threshold, which limits how small
        * numbers may be to be entered into the matrix.
+       *
        */
       MatrixSimple(double threshold = 1.e-12);
 
       /**
        * Store the result matrix for later assembling.
+       *
        */
       void
       initialize(MatrixType &m);
 
       /**
        * Store several result matrices for later assembling.
+       *
        */
       void
       initialize(std::vector<MatrixType> &m);
@@ -173,9 +174,10 @@ namespace MeshWorker
       /**
        * Initialize the constraints. After this function has been called with
        * a valid AffineConstraints object, the function
-       * AffineConstraints::distribute_local_to_global() will be used by
+       * AffineConstraints::distribute_local_to_global()   will be used by
        * assemble() to distribute the cell and face matrices into a global
        * sparse matrix.
+       *
        */
       void
       initialize(
@@ -183,10 +185,9 @@ namespace MeshWorker
 
       /**
        * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * assembling.             The   @p info   object refers to a cell if
+       * <code>!face</code>  , or else to an       interior or boundary face.
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
@@ -195,6 +196,7 @@ namespace MeshWorker
       /**
        * Assemble the local matrices associated with a single cell into the
        * global matrix.
+       *
        */
       template <class DOFINFO>
       void
@@ -202,7 +204,8 @@ namespace MeshWorker
 
       /**
        * Assemble all local matrices associated with an interior face in the
-       * @p info1 and @p info2 objects into the global matrix.
+       * @p info1   and   @p info2   objects into the global matrix.
+       *
        */
       template <class DOFINFO>
       void
@@ -211,6 +214,7 @@ namespace MeshWorker
     protected:
       /**
        * The vector of global matrices being assembled.
+       *
        */
       std::vector<SmartPointer<MatrixType, MatrixSimple<MatrixType>>> matrix;
 
@@ -218,13 +222,15 @@ namespace MeshWorker
        * The smallest positive number that will be entered into the global
        * matrix. All smaller absolute values will be treated as zero and will
        * not be assembled.
+       *
        */
       const double threshold;
 
     private:
       /**
-       * Assemble a single matrix <code>M</code> into the element at
-       * <code>index</code> in the vector #matrix.
+       * Assemble a single matrix   <code>M</code>   into the element at
+       * <code>index</code>   in the vector #matrix.
+       *
        */
       void
       assemble(const FullMatrix<double> &                  M,
@@ -234,6 +240,7 @@ namespace MeshWorker
 
       /**
        * A pointer to the object containing constraints.
+       *
        */
       SmartPointer<const AffineConstraints<typename MatrixType::value_type>,
                    MatrixSimple<MatrixType>>
@@ -243,12 +250,11 @@ namespace MeshWorker
 
     /**
      * Assemble local matrices into level matrices without using block
-     * structure.
-     *
-     * @todo The matrix structures needed for assembling level matrices with
-     * local refinement and continuous elements are missing.
-     *
+     * structure.           @todo   The matrix structures needed for
+     * assembling level matrices with     local refinement and continuous
+     * elements are missing.
      * @ingroup MeshWorker
+     *
      */
     template <typename MatrixType>
     class MGMatrixSimple
@@ -257,17 +263,20 @@ namespace MeshWorker
       /**
        * Constructor, initializing the #threshold, which limits how small
        * numbers may be to be entered into the matrix.
+       *
        */
       MGMatrixSimple(double threshold = 1.e-12);
 
       /**
        * Store the result matrix for later assembling.
+       *
        */
       void
       initialize(MGLevelObject<MatrixType> &m);
 
       /**
        * Initialize the multilevel constraints.
+       *
        */
       void
       initialize(const MGConstrainedDoFs &mg_constrained_dofs);
@@ -275,6 +284,7 @@ namespace MeshWorker
       /**
        * Initialize the matrices #flux_up and #flux_down used for local
        * refinement with discontinuous Galerkin methods.
+       *
        */
       void
       initialize_fluxes(MGLevelObject<MatrixType> &flux_up,
@@ -283,31 +293,33 @@ namespace MeshWorker
       /**
        * Initialize the matrices #interface_in and #interface_out used for
        * local refinement with continuous Galerkin methods.
+       *
        */
       void
       initialize_interfaces(MGLevelObject<MatrixType> &interface_in,
                             MGLevelObject<MatrixType> &interface_out);
       /**
        * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * assembling.             The   @p info   object refers to a cell if
+       * <code>!face</code>  , or else to an       interior or boundary face.
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
       initialize_info(DOFINFO &info, bool face) const;
 
       /**
-       * Assemble the matrix DoFInfo::M1[0] into the global matrix.
+       * Assemble the matrix   DoFInfo::M1[0]   into the global matrix.
+       *
        */
       template <class DOFINFO>
       void
       assemble(const DOFINFO &info);
 
       /**
-       * Assemble both local matrices in the @p info1 and @p info2
+       * Assemble both local matrices in the   @p info1   and   @p info2
        * objects into the global matrices.
+       *
        */
       template <class DOFINFO>
       void
@@ -316,6 +328,7 @@ namespace MeshWorker
     private:
       /**
        * Assemble a single matrix into a global matrix.
+       *
        */
       void
       assemble(MatrixType &                                G,
@@ -325,6 +338,7 @@ namespace MeshWorker
 
       /**
        * Assemble a single matrix into a global matrix.
+       *
        */
       void
       assemble(MatrixType &                                G,
@@ -335,6 +349,7 @@ namespace MeshWorker
 
       /**
        * Assemble a single matrix into a global matrix.
+       *
        */
 
       void
@@ -345,6 +360,7 @@ namespace MeshWorker
                   const unsigned int level = numbers::invalid_unsigned_int);
       /**
        * Assemble a single matrix into a global matrix.
+       *
        */
 
       void
@@ -356,6 +372,7 @@ namespace MeshWorker
 
       /**
        * Assemble a single matrix into a global matrix.
+       *
        */
 
       void
@@ -367,6 +384,7 @@ namespace MeshWorker
 
       /**
        * Assemble a single matrix into a global matrix.
+       *
        */
 
       void
@@ -378,6 +396,7 @@ namespace MeshWorker
 
       /**
        * The global matrix being assembled.
+       *
        */
       SmartPointer<MGLevelObject<MatrixType>, MGMatrixSimple<MatrixType>>
         matrix;
@@ -385,6 +404,7 @@ namespace MeshWorker
       /**
        * The matrix used for face flux terms across the refinement edge,
        * coupling coarse to fine.
+       *
        */
       SmartPointer<MGLevelObject<MatrixType>, MGMatrixSimple<MatrixType>>
         flux_up;
@@ -392,6 +412,7 @@ namespace MeshWorker
       /**
        * The matrix used for face flux terms across the refinement edge,
        * coupling fine to coarse.
+       *
        */
       SmartPointer<MGLevelObject<MatrixType>, MGMatrixSimple<MatrixType>>
         flux_down;
@@ -399,6 +420,7 @@ namespace MeshWorker
       /**
        * The matrix used for face contributions for continuous elements across
        * the refinement edge, coupling coarse to fine.
+       *
        */
       SmartPointer<MGLevelObject<MatrixType>, MGMatrixSimple<MatrixType>>
         interface_in;
@@ -406,11 +428,13 @@ namespace MeshWorker
       /**
        * The matrix used for face contributions for continuous elements across
        * the refinement edge, coupling fine to coarse.
+       *
        */
       SmartPointer<MGLevelObject<MatrixType>, MGMatrixSimple<MatrixType>>
         interface_out;
       /**
        * A pointer to the object containing constraints.
+       *
        */
       SmartPointer<const MGConstrainedDoFs, MGMatrixSimple<MatrixType>>
         mg_constrained_dofs;
@@ -419,6 +443,7 @@ namespace MeshWorker
        * The smallest positive number that will be entered into the global
        * matrix. All smaller absolute values will be treated as zero and will
        * not be assembled.
+       *
        */
       const double threshold;
     };
@@ -430,8 +455,8 @@ namespace MeshWorker
      * and face operators should fill the matrix and vector objects in
      * LocalResults and this class will assemble them into matrix and vector
      * objects.
-     *
      * @ingroup MeshWorker
+     *
      */
     template <typename MatrixType, typename VectorType>
     class SystemSimple : private MatrixSimple<MatrixType>,
@@ -440,11 +465,13 @@ namespace MeshWorker
     public:
       /**
        * Constructor setting the threshold value in MatrixSimple.
+       *
        */
       SystemSimple(double threshold = 1.e-12);
 
       /**
        * Store the two objects data is assembled into.
+       *
        */
       void
       initialize(MatrixType &m, VectorType &rhs);
@@ -452,9 +479,10 @@ namespace MeshWorker
       /**
        * Initialize the constraints. After this function has been called with
        * a valid AffineConstraints object, the function
-       * AffineConstraints::distribute_local_to_global() will be used by
+       * AffineConstraints::distribute_local_to_global()   will be used by
        * assemble() to distribute the cell and face matrices into a global
        * sparse matrix.
+       *
        */
       void
       initialize(
@@ -462,25 +490,26 @@ namespace MeshWorker
 
       /**
        * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * assembling.             The   @p info   object refers to a cell if
+       * <code>!face</code>  , or else to an       interior or boundary face.
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
       initialize_info(DOFINFO &info, bool face) const;
 
       /**
-       * Assemble the matrix DoFInfo::M1[0] into the global matrix.
+       * Assemble the matrix   DoFInfo::M1[0]   into the global matrix.
+       *
        */
       template <class DOFINFO>
       void
       assemble(const DOFINFO &info);
 
       /**
-       * Assemble both local matrices in the @p info1 and @p info2
+       * Assemble both local matrices in the   @p info1   and   @p info2
        * objects into the global matrix.
+       *
        */
       template <class DOFINFO>
       void
@@ -488,8 +517,9 @@ namespace MeshWorker
 
     private:
       /**
-       * Assemble a single matrix <code>M</code> into the element at
-       * <code>index</code> in the vector #matrix.
+       * Assemble a single matrix   <code>M</code>   into the element at
+       * <code>index</code>   in the vector #matrix.
+       *
        */
       void
       assemble(const FullMatrix<double> &                  M,

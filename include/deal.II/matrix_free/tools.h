@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -30,13 +30,16 @@ DEAL_II_NAMESPACE_OPEN
 /**
  * A namespace for utility functions in the context of matrix-free operator
  * evaluation.
+ *
+ *
  */
 namespace MatrixFreeTools
 {
   /**
-   * Modify @p additional_data so that cells are categorized
-   * according to their boundary IDs, making face integrals in the case of
+   * Modify   @p additional_data   so that cells are categorized   according
+   * to their boundary IDs, making face integrals in the case of
    * cell-centric loop simpler.
+   *
    */
   template <int dim, typename AdditionalData>
   void
@@ -44,12 +47,13 @@ namespace MatrixFreeTools
                              AdditionalData &          additional_data);
 
   /**
-   * Compute the diagonal of a linear operator (@p diagonal_global), given
-   * @p matrix_free and the local cell integral operation @p local_vmult. The
-   * vector is initialized to the right size in the function.
+   * Compute the diagonal of a linear operator (  @p diagonal_global),   given
+   * @p matrix_free   and the local cell integral operation   @p local_vmult.
+   * The   vector is initialized to the right size in the function.     The
+   * parameters   @p dof_no,     @p quad_no,   and   @p
+   * first_selected_component   are   passed to the constructor of the
+   * FEEvaluation that is internally set up.
    *
-   * The parameters @p dof_no, @p quad_no, and @p first_selected_component are
-   * passed to the constructor of the FEEvaluation that is internally set up.
    */
   template <int dim,
             int fe_degree,
@@ -73,6 +77,7 @@ namespace MatrixFreeTools
 
   /**
    * Same as above but with a class and a function pointer.
+   *
    */
   template <typename CLASS,
             int dim,
@@ -98,12 +103,13 @@ namespace MatrixFreeTools
 
 
   /**
-   * Compute the matrix representation of a linear operator (@p matrix), given
-   * @p matrix_free and the local cell integral operation @p local_vmult.
-   * Constrained entries on the diagonal are set to one.
+   * Compute the matrix representation of a linear operator (  @p matrix),
+   * given     @p matrix_free   and the local cell integral operation   @p
+   * local_vmult.     Constrained entries on the diagonal are set to one.
+   * The parameters   @p dof_no,     @p quad_no,   and   @p
+   * first_selected_component   are   passed to the constructor of the
+   * FEEvaluation that is internally set up.
    *
-   * The parameters @p dof_no, @p quad_no, and @p first_selected_component are
-   * passed to the constructor of the FEEvaluation that is internally set up.
    */
   template <int dim,
             int fe_degree,
@@ -129,6 +135,7 @@ namespace MatrixFreeTools
 
   /**
    * Same as above but with a class and a function pointer.
+   *
    */
   template <typename CLASS,
             int dim,
@@ -694,6 +701,7 @@ namespace MatrixFreeTools
     /**
      * If value type of matrix and constrains equals, return a reference
      * to the given AffineConstraint instance.
+     *
      */
     template <typename MatrixType,
               typename Number,
@@ -715,6 +723,7 @@ namespace MatrixFreeTools
      * If value type of matrix and constrains do not equal, a new
      * AffineConstraint instance with the value type of the matrix is
      * created and a reference to it is returned.
+     *
      */
     template <typename MatrixType,
               typename Number,

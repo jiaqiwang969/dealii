@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -38,40 +38,45 @@ DEAL_II_NAMESPACE_OPEN
 
 /**
  * A collection of %Gmsh related utilities and classes.
+ *
+ *
  */
 namespace Gmsh
 {
   /**
    * A parameter class used to pass options to the %Gmsh executable.
+   *
    */
   class AdditionalParameters
   {
   public:
     /**
      * Set all additional parameters to their default values.
+     *
      */
     AdditionalParameters(const double       characteristic_length = 1.0,
                          const std::string &output_base_name      = "");
 
     /**
-     * Call prm.add_parameter for each member of the AdditionalParameters class.
+     * Call prm.add_parameter for each member of the AdditionalParameters
+     * class.
+     *
      */
     void
     add_parameters(ParameterHandler &prm);
 
     /**
      * The characteristic length used for the definition of the %Gmsh grid.
-     *
      * %Gmsh will try to make sure that the size of each edge is as close as
      * possible to this value.
+     *
      */
     double characteristic_length = 1.0;
 
     /**
-     * Basename for the output files.
+     * Basename for the output files.         If this is left empty, then
+     * temporary files are used, and removed when     not needed any more.
      *
-     * If this is left empty, then temporary files are used, and removed when
-     * not needed any more.
      */
     std::string output_base_name = "";
   };
@@ -79,9 +84,8 @@ namespace Gmsh
 #  ifdef DEAL_II_WITH_OPENCASCADE
   /**
    * Given a smooth closed curve, create a triangulation from it using
-   * %Gmsh.
+   * %Gmsh.     The input curve   @p boundary   should be closed.
    *
-   * The input curve @p boundary should be closed.
    */
   template <int spacedim>
   void

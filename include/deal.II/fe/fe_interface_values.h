@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
 //
@@ -33,11 +33,14 @@ class FEInterfaceValues;
 /**
  * Namespace for views you get from accessing FEInterfaceValues using an
  * extractor.
+ *
+ *
  */
 namespace FEInterfaceViews
 {
   /**
    * The base class for the views.
+   *
    */
   template <int dim, int spacedim = dim>
   class Base
@@ -45,12 +48,14 @@ namespace FEInterfaceViews
   public:
     /**
      * The constructor.
-     **/
+     *
+     */
     Base(const FEInterfaceValues<dim, spacedim> &fe_interface);
 
   protected:
     /**
      * Store a pointer to the FEInterfaceValues instance.
+     *
      */
     const FEInterfaceValues<dim, spacedim> *fe_interface;
   };
@@ -59,6 +64,7 @@ namespace FEInterfaceViews
 
   /**
    * The view of a scalar variable for FEInterfaceValues.
+   *
    */
   template <int dim, int spacedim = dim>
   class Scalar : public Base<dim, spacedim>
@@ -66,18 +72,22 @@ namespace FEInterfaceViews
   public:
     /**
      * This is the type returned for values.
+     *
      */
     using value_type = double;
 
     /**
      * This is the type returned for gradients, for example from
      * average_gradient().
+     *
      */
     using gradient_type =
       typename FEValuesViews::Scalar<dim, spacedim>::gradient_type;
 
     /**
-     * This is the type returned for hessians, for example from jump_hessian().
+     * This is the type returned for hessians, for example from
+     * jump_hessian().
+     *
      */
     using hessian_type =
       typename FEValuesViews::Scalar<dim, spacedim>::hessian_type;
@@ -85,34 +95,34 @@ namespace FEInterfaceViews
     /**
      * This is the type returned for third derivatives, for example from
      * jump_hessian().
+     *
      */
     using third_derivative_type =
       typename FEValuesViews::Scalar<dim, spacedim>::third_derivative_type;
 
     /**
      * Constructor for an object that represents a single scalar component
+     *
      */
     Scalar(const FEInterfaceValues<dim, spacedim> &fe_interface,
            const unsigned int                      component);
 
     /**
-     * Return the value of the shape function
-     * with interface dof index @p interface_dof_index in
-     * quadrature point @p q_point of the component selected by this view.
-     *
-     * The argument @p here_or_there selects between the upstream value and
-     * the downstream value as defined by the direction of the normal vector
-     * in this quadrature point. If @p here_or_there is true, the shape
-     * functions from the first cell of the interface is used.
-     *
-     * In other words, this function returns the limit of the value of the shape
+     * Return the value of the shape function     with interface dof index
+     * @p interface_dof_index   in     quadrature point   @p q_point   of the
+     * component selected by this view.         The argument   @p
+     * here_or_there   selects between the upstream value and     the
+     * downstream value as defined by the direction of the normal vector
+     * in this quadrature point. If   @p here_or_there   is true, the shape
+     * functions from the first cell of the interface is used.         In
+     * other words, this function returns the limit of the value of the shape
      * function in the given quadrature point when approaching it from one of
      * the two cells of the interface.
+     * @note   This function is typically used to pick the upstream or
+     * downstream     value based on a direction. This can be achieved by
+     * using       <code>(direction normal)>0</code>   as the first argument
+     * of this     function.
      *
-     * @note This function is typically used to pick the upstream or downstream
-     * value based on a direction. This can be achieved by using
-     * <code>(direction * normal)>0</code> as the first argument of this
-     * function.
      */
     value_type
     value(const bool         here_or_there,
@@ -120,71 +130,93 @@ namespace FEInterfaceViews
           const unsigned int q_point) const;
 
     /**
-     * Return the jump $\jump{u}=u_1 - u_2$ on the interface for the shape
-     * function
-     * @p interface_dof_index in the quadrature point @p q_point
-     * of the component selected by this view.
+     * Return the jump   $\jump{u}=u_1
+     *
+     * - u_2$   on the interface for the shape     function       @p
+     * interface_dof_index   in the quadrature point   @p q_point       of the
+     * component selected by this view.
+     *
      */
     value_type
     jump(const unsigned int interface_dof_index,
          const unsigned int q_point) const;
 
     /**
-     * Return the average value $\average{u}=\frac{1}{2}(u_1 + u_2)$ on the
-     * interface for the shape
-     * function @p interface_dof_index in the quadrature point @p q_point
-     * of the component selected by this view.
+     * Return the average value   $\average{u}=\frac{1}{2}(u_1 + u_2)$   on
+     * the     interface for the shape     function   @p interface_dof_index
+     * in the quadrature point   @p q_point       of the component selected by
+     * this view.
+     *
      */
     value_type
     average(const unsigned int interface_dof_index,
             const unsigned int q_point) const;
 
     /**
-     * Return the average of the gradient $\average{\nabla u}$ on the interface
-     * for the shape
-     * function @p interface_dof_index in the quadrature point @p q_point
-     * of the component selected by this view.
+     * Return the average of the gradient   $\average{\nabla u}$   on the
+     * interface     for the shape     function   @p interface_dof_index   in
+     * the quadrature point   @p q_point       of the component selected by
+     * this view.
+     *
      */
     gradient_type
     average_gradient(const unsigned int interface_dof_index,
                      const unsigned int q_point) const;
 
     /**
-     * Return the jump of the gradient $\jump{nabla u}$ on the interface for
-     * the shape
-     * function @p interface_dof_index in the quadrature point @p q_point
-     * of the component selected by this view.
+     * Return the jump of the gradient   $\jump{nabla u}$   on the interface
+     * for     the shape     function   @p interface_dof_index   in the
+     * quadrature point   @p q_point       of the component selected by this
+     * view.
+     *
      */
     gradient_type
     jump_gradient(const unsigned int interface_dof_index,
                   const unsigned int q_point) const;
 
     /**
-     * Return the average of the Hessian $\average{\nabla^2 u} =
+     * Return the average of the Hessian   $\average{\nabla^2 u} =
      * \frac{1}{2}\nabla^2 u_{\text{cell0}} + \frac{1}{2} \nabla^2
-     * u_{\text{cell1}}$ on the interface
-     * for the shape function @p interface_dof_index at the quadrature point @p
-     * q_point of the component selected by this view.
+     * u_{\text{cell1}}$   on the interface     for the shape function   @p
+     * interface_dof_index   at the quadrature point   @p       q_point of the
+     * component selected by this view.
+     *
      */
     hessian_type
     average_hessian(const unsigned int interface_dof_index,
                     const unsigned int q_point) const;
 
     /**
-     * Return the jump in the gradient $\jump{\nabla u}=\nabla u_{\text{cell0}}
-     * - \nabla u_{\text{cell1}}$ on the interface for the shape function @p
-     * interface_dof_index at the quadrature point @p q_point of
+     * Return the jump in the gradient   $\jump{\nabla u}=\nabla
+     * u_{\text{cell0}}
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - \nabla u_{\text{cell1}}$   on the interface for the shape function
+     * @p       interface_dof_index at the quadrature point   @p q_point   of
      * the component selected by this view.
+     *
      */
     hessian_type
     jump_hessian(const unsigned int interface_dof_index,
                  const unsigned int q_point) const;
 
     /**
-     * Return the jump in the third derivative $\jump{\nabla^3 u} = \nabla^3
-     * u_{\text{cell0}} - \nabla^3 u_{\text{cell1}}$ on the interface for the
-     * shape function @p interface_dof_index at the quadrature point @p q_point of
-     * the component selected by this view.
+     * Return the jump in the third derivative   $\jump{\nabla^3 u} = \nabla^3
+     * u_{\text{cell0}}
+     *
+     * - \nabla^3 u_{\text{cell1}}$   on the interface for the     shape
+     * function   @p interface_dof_index   at the quadrature point   @p
+     * q_point   of     the component selected by this view.
+     *
      */
     third_derivative_type
     jump_3rd_derivative(const unsigned int interface_dof_index,
@@ -193,6 +225,7 @@ namespace FEInterfaceViews
   private:
     /**
      * The extractor for this view.
+     *
      */
     const FEValuesExtractors::Scalar extractor;
   };
@@ -201,6 +234,7 @@ namespace FEInterfaceViews
 
   /**
    * The view of a vector-valued variable for FEInterfaceValues.
+   *
    */
   template <int dim, int spacedim = dim>
   class Vector : public Base<dim, spacedim>
@@ -208,6 +242,7 @@ namespace FEInterfaceViews
   public:
     /**
      * This is the type returned for values.
+     *
      */
     using value_type =
       typename FEValuesViews::Vector<dim, spacedim>::value_type;
@@ -215,50 +250,53 @@ namespace FEInterfaceViews
     /**
      * This is the type returned for gradients, for example from
      * average_gradient().
+     *
      */
     using gradient_type =
       typename FEValuesViews::Vector<dim, spacedim>::gradient_type;
 
     /**
      * An alias for the type of second derivatives of the view this class
-     * represents. Here, for a set of <code>dim</code> components of the
-     * finite element, the Hessian is a <code>Tensor@<3,dim@></code>.
+     * represents. Here, for a set of   <code>dim</code>   components of the
+     * finite element, the Hessian is a   <code>Tensor@<3,dim@></code>  .
+     *
      */
     using hessian_type =
       typename FEValuesViews::Vector<dim, spacedim>::hessian_type;
 
     /**
      * An alias for the type of third derivatives of the view this class
-     * represents. Here, for a set of <code>dim</code> components of the
-     * finite element, the third derivative is a <code>Tensor@<4,dim@></code>.
+     * represents. Here, for a set of   <code>dim</code>   components of the
+     * finite element, the third derivative is a
+     * <code>Tensor@<4,dim@></code>  .
+     *
      */
     using third_derivative_type =
       typename FEValuesViews::Vector<dim, spacedim>::third_derivative_type;
 
     /**
      * Constructor for an object that represents a vector component
+     *
      */
     Vector(const FEInterfaceValues<dim, spacedim> &fe_interface,
            const unsigned int                      first_vector_component);
 
     /**
      * Return the value of the vector components selected by this view
-     * with interface dof index @p interface_dof_index in
-     * quadrature point @p q_point.
+     * with interface dof index   @p interface_dof_index   in     quadrature
+     * point   @p q_point.           The argument   @p here_or_there   selects
+     * between the upstream value and     the downstream value as defined by
+     * the direction of the normal vector     in this quadrature point. If
+     * @p here_or_there   is true, the shape     functions from the first cell
+     * of the interface is used.         In other words, this function returns
+     * the limit of the value of the shape     function in the given
+     * quadrature point when approaching it from one of     the two cells of
+     * the interface.
+     * @note   This function is typically used to pick the upstream or
+     * downstream     value based on a direction. This can be achieved by
+     * using       <code>(direction normal)>0</code>   as the first argument
+     * of this     function.
      *
-     * The argument @p here_or_there selects between the upstream value and
-     * the downstream value as defined by the direction of the normal vector
-     * in this quadrature point. If @p here_or_there is true, the shape
-     * functions from the first cell of the interface is used.
-     *
-     * In other words, this function returns the limit of the value of the shape
-     * function in the given quadrature point when approaching it from one of
-     * the two cells of the interface.
-     *
-     * @note This function is typically used to pick the upstream or downstream
-     * value based on a direction. This can be achieved by using
-     * <code>(direction * normal)>0</code> as the first argument of this
-     * function.
      */
     value_type
     value(const bool         here_or_there,
@@ -266,67 +304,91 @@ namespace FEInterfaceViews
           const unsigned int q_point) const;
 
     /**
-     * Return the jump vector $[\mathbf{u}]=\mathbf{u_1} - \mathbf{u_2}$ on the
-     * interface for the shape function
-     * @p interface_dof_index in the quadrature point @p q_point.
+     * Return the jump vector   $[\mathbf{u}]=\mathbf{u_1}
+     *
+     * - \mathbf{u_2}$   on the     interface for the shape function       @p
+     * interface_dof_index   in the quadrature point   @p q_point.
+     *
      */
     value_type
     jump(const unsigned int interface_dof_index,
          const unsigned int q_point) const;
 
     /**
-     * Return the average vector $\average{\mathbf{u}}=\frac{1}{2}(\matbf{u_1} +
-     * \mathbf{u_2})$ on the interface for the shape
-     * function @p interface_dof_index in the quadrature point @p q_point.
+     * Return the average vector
+     * $\average{\mathbf{u}}=\frac{1}{2}(\matbf{u_1} + \mathbf{u_2})$   on the
+     * interface for the shape     function   @p interface_dof_index   in the
+     * quadrature point   @p q_point.
+     *
      */
     value_type
     average(const unsigned int interface_dof_index,
             const unsigned int q_point) const;
 
     /**
-     * Return the average of the gradient (a tensor of rank 2) $\average{\nabla
-     * \mathbf{u}}$ on the interface for the shape
-     * function @p interface_dof_index in the quadrature point @p q_point.
+     * Return the average of the gradient (a tensor of rank 2)
+     * $\average{\nabla \mathbf{u}}$   on the interface for the shape
+     * function   @p interface_dof_index   in the quadrature point   @p
+     * q_point.
+     *
      */
     gradient_type
     average_gradient(const unsigned int interface_dof_index,
                      const unsigned int q_point) const;
 
     /**
-     * Return the jump of the gradient (a tensor of rank 2) $\jump{\nabla
-     * \mathbf{u}}$ on the interface for the shape
-     * function @p interface_dof_index in the quadrature point @p q_point.
+     * Return the jump of the gradient (a tensor of rank 2)   $\jump{\nabla
+     * \mathbf{u}}$   on the interface for the shape     function   @p
+     * interface_dof_index   in the quadrature point   @p q_point.
+     *
      */
     gradient_type
     jump_gradient(const unsigned int interface_dof_index,
                   const unsigned int q_point) const;
 
     /**
-     * Return the average of the Hessian $\average{\nabla^2 u} =
+     * Return the average of the Hessian   $\average{\nabla^2 u} =
      * \frac{1}{2}\nabla^2 u_{\text{cell0}} + \frac{1}{2} \nabla^2
-     * u_{\text{cell1}}$ on the interface
-     * for the shape function @p interface_dof_index at the quadrature point @p
-     * q_point of the component selected by this view.
+     * u_{\text{cell1}}$   on the interface     for the shape function   @p
+     * interface_dof_index   at the quadrature point   @p       q_point of the
+     * component selected by this view.
+     *
      */
     hessian_type
     average_hessian(const unsigned int interface_dof_index,
                     const unsigned int q_point) const;
 
     /**
-     * Return the jump in the gradient $\jump{\nabla u}=\nabla u_{\text{cell0}}
-     * - \nabla u_{\text{cell1}}$ on the interface for the shape function @p
-     * interface_dof_index at the quadrature point @p q_point of
+     * Return the jump in the gradient   $\jump{\nabla u}=\nabla
+     * u_{\text{cell0}}
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - \nabla u_{\text{cell1}}$   on the interface for the shape function
+     * @p       interface_dof_index at the quadrature point   @p q_point   of
      * the component selected by this view.
+     *
      */
     hessian_type
     jump_hessian(const unsigned int interface_dof_index,
                  const unsigned int q_point) const;
 
     /**
-     * Return the jump in the third derivative $\jump{\nabla^3 u} = \nabla^3
-     * u_{\text{cell0}} - \nabla^3 u_{\text{cell1}}$ on the interface for the
-     * shape function @p interface_dof_index at the quadrature point @p q_point of
-     * the component selected by this view.
+     * Return the jump in the third derivative   $\jump{\nabla^3 u} = \nabla^3
+     * u_{\text{cell0}}
+     *
+     * - \nabla^3 u_{\text{cell1}}$   on the interface for the     shape
+     * function   @p interface_dof_index   at the quadrature point   @p
+     * q_point   of     the component selected by this view.
+     *
      */
     third_derivative_type
     jump_3rd_derivative(const unsigned int interface_dof_index,
@@ -335,6 +397,7 @@ namespace FEInterfaceViews
   private:
     /**
      * The extractor for this view.
+     *
      */
     const FEValuesExtractors::Vector extractor;
   };
@@ -344,27 +407,24 @@ namespace FEInterfaceViews
 
 /**
  * FEInterfaceValues is a data structure to access and assemble finite element
- * data on interfaces between two cells of a mesh.
- *
- * It provides a way to access averages, jump terms, and similar operations used
- * in Discontinuous Galerkin methods on a face between two neighboring cells.
- * This allows the computation of typical mesh-dependent linear or bilinear
- * forms in a similar way as FEValues does for cells and FEFaceValues does for
- * faces. In
- * the literature, the faces between neighboring cells are called "inner
- * interfaces" or "facets".
- *
- * Internally, this class provides an abstraction for two FEFaceValues
- * objects (or FESubfaceValues when using adaptive refinement). The class
- * introduces a new "interface dof index" that walks over
- * the union of the dof indices of the two FEFaceValues objects. Helper
+ * data on interfaces between two cells of a mesh. It provides a way to access
+ * averages, jump terms, and similar operations used in Discontinuous Galerkin
+ * methods on a face between two neighboring cells. This allows the
+ * computation of typical mesh-dependent linear or bilinear forms in a similar
+ * way as FEValues does for cells and FEFaceValues does for faces. In the
+ * literature, the faces between neighboring cells are called "inner
+ * interfaces" or "facets". Internally, this class provides an abstraction for
+ * two FEFaceValues objects (or FESubfaceValues when using adaptive
+ * refinement). The class introduces a new "interface dof index" that walks
+ * over the union of the dof indices of the two FEFaceValues objects. Helper
  * functions allow translating between the new "interface dof index" and the
  * corresponding "cell index" (0 for the first cell, 1 for the second cell)
- * and "dof index" within that cell.
+ * and "dof index" within that cell. The class is made to be used inside
+ * MeshWorker::mesh_loop().   It is intended to be a low level replacement for
+ * MeshWorker and LocalIntegrators and a higher level abstraction compared to
+ * assembling face terms manually.
  *
- * The class is made to be used inside MeshWorker::mesh_loop(). It is intended
- * to be a low level replacement for MeshWorker and LocalIntegrators and a
- * higher level abstraction compared to assembling face terms manually.
+ *
  */
 template <int dim, int spacedim = dim>
 class FEInterfaceValues
@@ -372,13 +432,15 @@ class FEInterfaceValues
 public:
   /**
    * Number of quadrature points.
+   *
    */
   const unsigned int n_quadrature_points;
 
   /**
    * Construct the FEInterfaceValues with a single FiniteElement (same on both
    * sides of the facet). The FEFaceValues objects will be initialized with
-   * the given @p mapping, @p quadrature, and @p update_flags.
+   * the given   @p mapping,     @p quadrature,   and   @p update_flags.
+   *
    */
   FEInterfaceValues(const Mapping<dim, spacedim> &      mapping,
                     const FiniteElement<dim, spacedim> &fe,
@@ -386,9 +448,9 @@ public:
                     const UpdateFlags                   update_flags);
 
   /**
-   * The same as above but taking a collection of quadrature rules
-   * so that different quadrature rules can be assigned to different
-   * faces.
+   * The same as above but taking a collection of quadrature rules   so that
+   * different quadrature rules can be assigned to different   faces.
+   *
    */
   FEInterfaceValues(const Mapping<dim, spacedim> &      mapping,
                     const FiniteElement<dim, spacedim> &fe,
@@ -396,45 +458,40 @@ public:
                     const UpdateFlags                   update_flags);
 
   /**
-   * Construct the FEInterfaceValues with a single FiniteElement and
-   * a Q1 Mapping.
+   * Construct the FEInterfaceValues with a single FiniteElement and   a Q1
+   * Mapping.     See the constructor above.
    *
-   * See the constructor above.
    */
   FEInterfaceValues(const FiniteElement<dim, spacedim> &fe,
                     const Quadrature<dim - 1> &         quadrature,
                     const UpdateFlags                   update_flags);
 
   /**
-   * Re-initialize this object to be used on a new interface given by two faces
-   * of two neighboring cells. The `cell` and `cell_neighbor` cells will be
-   * referred to through `cell_index` zero and one after this call in all places
-   * where one needs to identify the two cells adjacent to the interface.
+   * Re-initialize this object to be used on a new interface given by two
+   * faces   of two neighboring cells. The `cell` and `cell_neighbor` cells
+   * will be   referred to through `cell_index` zero and one after this call
+   * in all places   where one needs to identify the two cells adjacent to the
+   * interface.     Use   numbers::invalid_unsigned_int   for   @p sub_face_no
+   * or   @p     sub_face_no_neighbor to indicate that you want to work on the
+   * entire face,   not a sub-face.     The arguments (including their order)
+   * are identical to the   @p face_worker     arguments in
+   * MeshWorker::mesh_loop().         @param[in]   cell An iterator to the
+   * first cell adjacent to the interface.     @param[in]   face_no An integer
+   * identifying which face of the first cell the     interface is on.
+   * @param[in]   sub_face_no An integer identifying the subface (child) of
+   * the     face (identified by the previous two arguments) that the
+   * interface     corresponds to. If equal to
+   * numbers::invalid_unsigned_int,   then the     interface is considered to
+   * be the entire face.     @param[in]   cell_neighbor An iterator to the
+   * second cell adjacent to     the interface. The type of this iterator does
+   * not have to equal that     of `cell`, but must be convertible to it. This
+   * allows using an     active cell iterator for `cell`, and
+   * `cell->neighbor(f)` for     `cell_neighbor`, since the return type of
+   * `cell->neighbor(f)` is     simply a cell iterator (not necessarily an
+   * active cell iterator).     @param[in]   face_no_neighbor Like `face_no`,
+   * just for the neighboring     cell.     @param[in]   sub_face_no_neighbor
+   * Like `sub_face_no`, just for the     neighboring cell.
    *
-   * Use numbers::invalid_unsigned_int for @p sub_face_no or @p
-   * sub_face_no_neighbor to indicate that you want to work on the entire face,
-   * not a sub-face.
-   *
-   * The arguments (including their order) are identical to the @p face_worker
-   * arguments in MeshWorker::mesh_loop().
-   *
-   * @param[in] cell An iterator to the first cell adjacent to the interface.
-   * @param[in] face_no An integer identifying which face of the first cell the
-   *   interface is on.
-   * @param[in] sub_face_no An integer identifying the subface (child) of the
-   *   face (identified by the previous two arguments) that the interface
-   *   corresponds to. If equal to numbers::invalid_unsigned_int, then the
-   *   interface is considered to be the entire face.
-   * @param[in] cell_neighbor An iterator to the second cell adjacent to
-   *   the interface. The type of this iterator does not have to equal that
-   *   of `cell`, but must be convertible to it. This allows using an
-   *   active cell iterator for `cell`, and `cell->neighbor(f)` for
-   *   `cell_neighbor`, since the return type of `cell->neighbor(f)` is
-   *   simply a cell iterator (not necessarily an active cell iterator).
-   * @param[in] face_no_neighbor Like `face_no`, just for the neighboring
-   *   cell.
-   * @param[in] sub_face_no_neighbor Like `sub_face_no`, just for the
-   *   neighboring cell.
    */
   template <class CellIteratorType>
   void
@@ -446,190 +503,184 @@ public:
          const unsigned int                               sub_face_no_neighbor);
 
   /**
-   * Re-initialize this object to be used on an interface given by a single face
-   * @p face_no of the cell @p cell. This is useful to use FEInterfaceValues
-   * on boundaries of the domain.
+   * Re-initialize this object to be used on an interface given by a single
+   * face     @p face_no   of the cell   @p cell.   This is useful to use
+   * FEInterfaceValues   on boundaries of the domain.     As a consequence,
+   * members like jump() will assume a value of zero for the   values on the
+   * "other" side. Note that no sub_face_number is needed as a   boundary face
+   * can not neighbor a finer cell.     After calling this function
+   * at_boundary() will return true.
    *
-   * As a consequence, members like jump() will assume a value of zero for the
-   * values on the "other" side. Note that no sub_face_number is needed as a
-   * boundary face can not neighbor a finer cell.
-   *
-   * After calling this function at_boundary() will return true.
    */
   template <class CellIteratorType>
   void
   reinit(const CellIteratorType &cell, const unsigned int face_no);
 
   /**
-   * Return a reference to the FEFaceValues or FESubfaceValues object
-   * of the specified cell of the interface.
+   * Return a reference to the FEFaceValues or FESubfaceValues object   of the
+   * specified cell of the interface.     The   @p cell_index   is either 0 or
+   * 1 and corresponds to the cell index   returned by
+   * interface_dof_to_cell_and_dof_index().
    *
-   * The @p cell_index is either 0 or 1 and corresponds to the cell index
-   * returned by interface_dof_to_cell_and_dof_index().
    */
   const FEFaceValuesBase<dim, spacedim> &
   get_fe_face_values(const unsigned int cell_index) const;
 
   /**
    * Constant reference to the selected mapping object.
+   *
    */
   const Mapping<dim, spacedim> &
   get_mapping() const;
 
   /**
    * Constant reference to the selected finite element object.
+   *
    */
   const FiniteElement<dim, spacedim> &
   get_fe() const;
 
   /**
    * Return a reference to the quadrature object in use.
+   *
    */
   const Quadrature<dim - 1> &
   get_quadrature() const;
 
   /**
    * Return the update flags set.
+   *
    */
   UpdateFlags
   get_update_flags() const;
 
   /**
-   * @name Functions to query information on a given interface
-   * @{
+   * @name   Functions to query information on a given interface     @{
+   *
    */
 
   /**
-   * Return if the current interface is a boundary face or an internal
-   * face with two adjacent cells.
+   * Return if the current interface is a boundary face or an internal   face
+   * with two adjacent cells.     See the corresponding reinit() functions for
+   * details.
    *
-   * See the corresponding reinit() functions for details.
    */
   bool
   at_boundary() const;
 
   /**
-   * Mapped quadrature weight. This value equals the
-   * mapped surface element times the weight of the quadrature
-   * point.
-   *
-   * You can think of the quantity returned by this function as the
-   * surface element $ds$ in the integral that we implement here by
-   * quadrature.
-   *
+   * Mapped quadrature weight. This value equals the   mapped surface element
+   * times the weight of the quadrature   point.     You can think of the
+   * quantity returned by this function as the   surface element   $ds$   in
+   * the integral that we implement here by   quadrature.
    * @dealiiRequiresUpdateFlags{update_JxW_values}
+   *
    */
   double
   JxW(const unsigned int quadrature_point) const;
 
   /**
    * Return the vector of JxW values for each quadrature point.
-   *
    * @dealiiRequiresUpdateFlags{update_JxW_values}
+   *
    */
   const std::vector<double> &
   get_JxW_values() const;
 
   /**
    * Return the normal vector of the interface in each quadrature point.
+   * The return value is identical to
+   * get_fe_face_values(0).get_normal_vectors()   and therefore, are outside
+   * normal vectors from the perspective of the   first cell of this
+   * interface.       @dealiiRequiresUpdateFlags{update_normal_vectors}
    *
-   * The return value is identical to get_fe_face_values(0).get_normal_vectors()
-   * and therefore, are outside normal vectors from the perspective of the
-   * first cell of this interface.
-   *
-   * @dealiiRequiresUpdateFlags{update_normal_vectors}
    */
   const std::vector<Tensor<1, spacedim>> &
   get_normal_vectors() const;
 
   /**
    * Return a reference to the quadrature points in real space.
-   *
    * @dealiiRequiresUpdateFlags{update_quadrature_points}
+   *
    */
   const std::vector<Point<spacedim>> &
   get_quadrature_points() const;
 
   /**
    * Return the number of DoFs (or shape functions) on the current interface.
+   * @note   This number is only available after a call to reinit() and can
+   * change   from one call to reinit() to the next. For example, on a
+   * boundary interface   it is equal to the number of dofs of the single
+   * FEFaceValues object, while   it is twice that for an interior interface
+   * for a DG element. For a   continuous element, it is slightly smaller
+   * because the two cells on the   interface share some of the dofs.
    *
-   * @note This number is only available after a call to reinit() and can change
-   * from one call to reinit() to the next. For example, on a boundary interface
-   * it is equal to the number of dofs of the single FEFaceValues object, while
-   * it is twice that for an interior interface for a DG element. For a
-   * continuous element, it is slightly smaller because the two cells on the
-   * interface share some of the dofs.
    */
   unsigned
   n_current_interface_dofs() const;
 
   /**
-   * Return the set of joint DoF indices. This includes indices from both cells.
-   * If reinit was called with an active cell iterator, the indices are based
-   * on the active indices (returned by `DoFCellAccessor::get_dof_indices()` ),
-   * in case of level cell (that is, if is_level_cell() return true )
-   * the mg dof indices are returned.
-   *
-   * @note This function is only available after a call to reinit() and can
+   * Return the set of joint DoF indices. This includes indices from both
+   * cells.   If reinit was called with an active cell iterator, the indices
+   * are based   on the active indices (returned by
+   * `DoFCellAccessor::get_dof_indices()`   ),   in case of level cell (that
+   * is, if is_level_cell() return true )   the mg dof indices are returned.
+   * @note   This function is only available after a call to reinit() and can
    * change from one call to reinit() to the next.
+   *
    */
   std::vector<types::global_dof_index>
   get_interface_dof_indices() const;
 
   /**
-   * Convert an interface dof index into the corresponding local DoF indices of
-   * the two cells. If an interface DoF is only active on one of the
-   * cells, the other index will be numbers::invalid_unsigned_int.
-   *
-   * For discontinuous finite elements each interface dof will correspond to
+   * Convert an interface dof index into the corresponding local DoF indices
+   * of   the two cells. If an interface DoF is only active on one of the
+   * cells, the other index will be   numbers::invalid_unsigned_int.       For
+   * discontinuous finite elements each interface dof will correspond to
    * exactly one DoF index.
-   *
-   * @note This function is only available after a call to reinit() and can
+   * @note   This function is only available after a call to reinit() and can
    * change from one call to reinit() to the next.
+   *
    */
   std::array<unsigned int, 2>
   interface_dof_to_dof_indices(const unsigned int interface_dof_index) const;
 
   /**
-   * Return the normal in a given quadrature point.
-   *
-   * The normal points in outwards direction as seen from the first cell of
-   * this interface.
-   *
+   * Return the normal in a given quadrature point.     The normal points in
+   * outwards direction as seen from the first cell of   this interface.
    * @dealiiRequiresUpdateFlags{update_normal_vectors}
+   *
    */
   Tensor<1, spacedim>
   normal(const unsigned int q_point_index) const;
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Functions to evaluate data of the shape functions
-   * @{
+   * @name   Functions to evaluate data of the shape functions     @{
+   *
    */
 
   /**
-   * Return component @p component of the value of the shape function
-   * with interface dof index @p interface_dof_index in
-   * quadrature point @p q_point.
-   *
-   * The argument @p here_or_there selects between the value on cell 0 (here, @p true)
-   * and cell 1 (there, @p false). You can also interpret it as "upstream" (@p true)
-   * and "downstream" (@p false) as defined by the direction of the normal
-   * vector
-   * in this quadrature point. If @p here_or_there is true, the shape
-   * functions from the first cell of the interface is used.
-   *
-   * In other words, this function returns the limit of the value of the shape
-   * function in the given quadrature point when approaching it from one of the
-   * two cells of the interface.
-   *
-   * @note This function is typically used to pick the upstream or downstream
-   * value based on a direction. This can be achieved by using
-   * <code>(direction * normal)>0</code> as the first argument of this
+   * Return component   @p component   of the value of the shape function
+   * with interface dof index   @p interface_dof_index   in   quadrature point
+   * @p q_point.       The argument   @p here_or_there   selects between the
+   * value on cell 0 (here,   @p true)     and cell 1 (there,   @p false).
+   * You can also interpret it as "upstream" (  @p true)     and "downstream"
+   * (  @p false)   as defined by the direction of the normal   vector   in
+   * this quadrature point. If   @p here_or_there   is true, the shape
+   * functions from the first cell of the interface is used.     In other
+   * words, this function returns the limit of the value of the shape
+   * function in the given quadrature point when approaching it from one of
+   * the   two cells of the interface.
+   * @note   This function is typically used to pick the upstream or
+   * downstream   value based on a direction. This can be achieved by using
+   * <code>(direction normal)>0</code>   as the first argument of this
    * function.
+   *
    */
   double
   shape_value(const bool         here_or_there,
@@ -638,18 +689,17 @@ public:
               const unsigned int component = 0) const;
 
   /**
-   * Return the jump $\jump{u}=u_{\text{cell0}} - u_{\text{cell1}}$ on the
-   * interface
-   * for the shape function @p interface_dof_index at the quadrature point
-   * @p q_point of component @p component.
+   * Return the jump   $\jump{u}=u_{\text{cell0}}
    *
-   * Note that one can define the jump in
-   * different ways (the value "there" minus the value "here", or the other way
-   * around; both are used in the finite element literature). The definition
-   * here uses "value here minus value there", as seen from the first cell.
+   * - u_{\text{cell1}}$   on the   interface   for the shape function   @p
+   * interface_dof_index   at the quadrature point     @p q_point   of
+   * component   @p component.       Note that one can define the jump in
+   * different ways (the value "there" minus the value "here", or the other
+   * way   around; both are used in the finite element literature). The
+   * definition   here uses "value here minus value there", as seen from the
+   * first cell.     If this is a boundary face (at_boundary() returns true),
+   * then     $\jump{u}=u_{\text{cell0}}$  .
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\jump{u}=u_{\text{cell0}}$.
    */
   double
   jump(const unsigned int interface_dof_index,
@@ -657,13 +707,12 @@ public:
        const unsigned int component = 0) const;
 
   /**
-   * Return the average $\average{u}=\frac{1}{2}u_{\text{cell0}} +
-   * \frac{1}{2}u_{\text{cell1}}$ on the interface
-   * for the shape function @p interface_dof_index at the quadrature point
-   * @p q_point of component @p component.
+   * Return the average   $\average{u}=\frac{1}{2}u_{\text{cell0}} +
+   * \frac{1}{2}u_{\text{cell1}}$   on the interface   for the shape function
+   * @p interface_dof_index   at the quadrature point     @p q_point   of
+   * component   @p component.       If this is a boundary face (at_boundary()
+   * returns true), then     $\average{u}=u_{\text{cell0}}$  .
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\average{u}=u_{\text{cell0}}$.
    */
   double
   average(const unsigned int interface_dof_index,
@@ -671,13 +720,13 @@ public:
           const unsigned int component = 0) const;
 
   /**
-   * Return the average of the gradient $\average{\nabla u} = \frac{1}{2}\nabla
-   * u_{\text{cell0}} + \frac{1}{2} \nabla u_{\text{cell1}}$ on the interface
-   * for the shape function @p interface_dof_index at the quadrature point @p
-   * q_point of component @p component.
-   *
+   * Return the average of the gradient   $\average{\nabla u} =
+   * \frac{1}{2}\nabla u_{\text{cell0}} + \frac{1}{2} \nabla u_{\text{cell1}}$
+   * on the interface   for the shape function   @p interface_dof_index   at
+   * the quadrature point   @p     q_point of component   @p component.
    * If this is a boundary face (at_boundary() returns true), then
-   * $\average{\nabla u}=\nabla u_{\text{cell0}}$.
+   * $\average{\nabla u}=\nabla u_{\text{cell0}}$  .
+   *
    */
   Tensor<1, spacedim>
   average_gradient(const unsigned int interface_dof_index,
@@ -685,14 +734,14 @@ public:
                    const unsigned int component = 0) const;
 
   /**
-   * Return the average of the Hessian $\average{\nabla^2 u} =
+   * Return the average of the Hessian   $\average{\nabla^2 u} =
    * \frac{1}{2}\nabla^2 u_{\text{cell0}} + \frac{1}{2} \nabla^2
-   * u_{\text{cell1}}$ on the interface
-   * for the shape function @p interface_dof_index at the quadrature point @p
-   * q_point of component @p component.
+   * u_{\text{cell1}}$   on the interface   for the shape function   @p
+   * interface_dof_index   at the quadrature point   @p     q_point of
+   * component   @p component.       If this is a boundary face (at_boundary()
+   * returns true), then     $\average{\nabla^2 u}=\nabla^2 u_{\text{cell0}}$
+   * .
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\average{\nabla^2 u}=\nabla^2 u_{\text{cell0}}$.
    */
   Tensor<2, spacedim>
   average_hessian(const unsigned int interface_dof_index,
@@ -700,13 +749,14 @@ public:
                   const unsigned int component = 0) const;
 
   /**
-   * Return the jump in the gradient $\jump{\nabla u}=\nabla u_{\text{cell0}} -
-   * \nabla u_{\text{cell1}}$ on the interface for the shape function @p
-   * interface_dof_index at the quadrature point @p q_point of component @p
-   * component.
+   * Return the jump in the gradient   $\jump{\nabla u}=\nabla
+   * u_{\text{cell0}}
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\jump{\nabla u}=\nabla u_{\text{cell0}}$.
+   * - \nabla u_{\text{cell1}}$   on the interface for the shape function   @p
+   * interface_dof_index at the quadrature point   @p q_point   of component
+   * @p     component.     If this is a boundary face (at_boundary() returns
+   * true), then     $\jump{\nabla u}=\nabla u_{\text{cell0}}$  .
+   *
    */
   Tensor<1, spacedim>
   jump_gradient(const unsigned int interface_dof_index,
@@ -714,14 +764,15 @@ public:
                 const unsigned int component = 0) const;
 
   /**
-   * Return the jump in the Hessian $\jump{\nabla^2 u} = \nabla^2
-   * u_{\text{cell0}} - \nabla^2 u_{\text{cell1}}$ on the interface for the
-   * shape function
-   * @p interface_dof_index at the quadrature point @p q_point of component
-   * @p component.
+   * Return the jump in the Hessian   $\jump{\nabla^2 u} = \nabla^2
+   * u_{\text{cell0}}
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\jump{\nabla^2 u} = \nabla^2 u_{\text{cell0}}$.
+   * - \nabla^2 u_{\text{cell1}}$   on the interface for the   shape function
+   * @p interface_dof_index   at the quadrature point   @p q_point   of
+   * component     @p component.       If this is a boundary face
+   * (at_boundary() returns true), then     $\jump{\nabla^2 u} = \nabla^2
+   * u_{\text{cell0}}$  .
+   *
    */
   Tensor<2, spacedim>
   jump_hessian(const unsigned int interface_dof_index,
@@ -729,13 +780,15 @@ public:
                const unsigned int component = 0) const;
 
   /**
-   * Return the jump in the third derivative $\jump{\nabla^3 u} = \nabla^3
-   * u_{\text{cell0}} - \nabla^3 u_{\text{cell1}}$ on the interface for the
-   * shape function @p interface_dof_index at the quadrature point @p q_point of
-   * component @p component.
+   * Return the jump in the third derivative   $\jump{\nabla^3 u} = \nabla^3
+   * u_{\text{cell0}}
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\jump{\nabla^3 u} = \nabla^3 u_{\text{cell0}}$.
+   * - \nabla^3 u_{\text{cell1}}$   on the interface for the   shape function
+   * @p interface_dof_index   at the quadrature point   @p q_point   of
+   * component   @p component.       If this is a boundary face (at_boundary()
+   * returns true), then     $\jump{\nabla^3 u} = \nabla^3 u_{\text{cell0}}$
+   * .
+   *
    */
   Tensor<3, spacedim>
   jump_3rd_derivative(const unsigned int interface_dof_index,
@@ -747,72 +800,82 @@ public:
    * particular scalar component of the possibly vector-valued finite element.
    * The concept of views is explained in the documentation of the namespace
    * FEValuesViews.
+   *
    */
   const FEInterfaceViews::Scalar<dim, spacedim>
   operator[](const FEValuesExtractors::Scalar &scalar) const;
 
   /**
-   * Create a view of the current FEInterfaceValues object that represents a set
-   * of <code>dim</code> scalar components (i.e. a vector) of the vector-valued
-   * finite element. The concept of views is explained in the documentation of
-   * the namespace FEValuesViews.
+   * Create a view of the current FEInterfaceValues object that represents a
+   * set   of   <code>dim</code>   scalar components (i.e. a vector) of the
+   * vector-valued   finite element. The concept of views is explained in the
+   * documentation of   the namespace FEValuesViews.
+   *
    */
   const FEInterfaceViews::Vector<dim, spacedim>
   operator[](const FEValuesExtractors::Vector &vector) const;
 
   /**
    * @}
+   *
    */
 
 private:
   /**
    * The list of DoF indices for the current interface, filled in reinit().
+   *
    */
   std::vector<types::global_dof_index> interface_dof_indices;
 
   /**
    * The mapping from interface dof to the two local dof indices of the
    * FeFaceValues objects. If an interface DoF is only active on one of the
-   * cells, the other one will have numbers::invalid_unsigned_int.
+   * cells, the other one will have   numbers::invalid_unsigned_int.
+   *
    */
   std::vector<std::array<unsigned int, 2>> dofmap;
 
   /**
    * The FEFaceValues object for the current cell.
+   *
    */
   FEFaceValues<dim, spacedim> internal_fe_face_values;
 
   /**
    * The FEFaceValues object for the current cell if the cell is refined.
+   *
    */
   FESubfaceValues<dim, spacedim> internal_fe_subface_values;
 
   /**
    * The FEFaceValues object for the neighboring cell.
+   *
    */
   FEFaceValues<dim, spacedim> internal_fe_face_values_neighbor;
 
   /**
    * The FEFaceValues object for the neighboring cell if the cell is refined.
+   *
    */
   FESubfaceValues<dim, spacedim> internal_fe_subface_values_neighbor;
 
   /**
    * Pointer to internal_fe_face_values or internal_fe_subface_values,
    * respectively as determined in reinit().
+   *
    */
   FEFaceValuesBase<dim, spacedim> *fe_face_values;
 
   /**
    * Pointer to internal_fe_face_values_neighbor,
-   * internal_fe_subface_values_neighbor, or nullptr, respectively
-   * as determined in reinit().
+   * internal_fe_subface_values_neighbor, or nullptr, respectively   as
+   * determined in reinit().
+   *
    */
   FEFaceValuesBase<dim, spacedim> *fe_face_values_neighbor;
 
-  /* Make the view classes friends of this class, since they access internal
-   * data.
-   */
+  /* Make the view classes friends of this class, since they access internal   data.  
+* */
   template <int, int>
   friend class FEInterfaceViews::Scalar;
   template <int, int>
@@ -823,7 +886,7 @@ private:
 
 #ifndef DOXYGEN
 
-/*---------------------- Inline functions ---------------------*/
+ /*---------------------- Inline functions ---------------------*/ 
 
 template <int dim, int spacedim>
 FEInterfaceValues<dim, spacedim>::FEInterfaceValues(
@@ -1377,7 +1440,7 @@ FEInterfaceValues<dim, spacedim>::jump_3rd_derivative(
 
 
 
-/*------------ Inline functions: FEInterfaceValues------------*/
+ /*------------ Inline functions: FEInterfaceValues------------*/ 
 template <int dim, int spacedim>
 inline const FEInterfaceViews::Scalar<dim, spacedim>
   FEInterfaceValues<dim, spacedim>::

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
 //
@@ -31,19 +31,43 @@ DEAL_II_NAMESPACE_OPEN
 namespace MeshWorker
 {
   /**
-   * Helper copy data struct.
+   * Helper copy data struct.     This class is a good default drop in
+   * CopyData object for the     WorkStream::run()   and
+   * MeshWorker::mesh_loop()   functions.     It arrays of (local) full
+   * matrices, vectors, and local degrees of freedom   index vectors, with
+   * size determined by the corresponding template argument.     In
+   * particular, you can specify the following template arguments
    *
-   * This class is a good default drop in CopyData object for the
-   * WorkStream::run() and MeshWorker::mesh_loop() functions.
    *
-   * It arrays of (local) full matrices, vectors, and local degrees of freedom
-   * index vectors, with size determined by the corresponding template argument.
    *
-   * In particular, you can specify the following template arguments
    *
-   * - @tparam n_matrices: Size of the array of matrices
-   * - @tparam n_vectors: size of the array of vectors
-   * - @tparam n_dof_indices: size of the array of local dof indices
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *  -   @tparam   n_matrices: Size of the array of matrices
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *  -   @tparam   n_vectors: size of the array of vectors
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *  -   @tparam   n_dof_indices: size of the array of local dof indices
+   *
    */
   template <int n_matrices    = 1,
             int n_vectors     = n_matrices,
@@ -51,13 +75,15 @@ namespace MeshWorker
   struct CopyData
   {
     /**
-     * Initialize everything with the same @p size. This is usually the number
-     * of local degrees of freedom.
+     * Initialize everything with the same   @p size.   This is usually the
+     * number     of local degrees of freedom.
+     *
      */
     explicit CopyData(const unsigned int size);
 
     /**
      * For every object, specify the size they should have.
+     *
      */
     explicit CopyData(
       const ndarray<unsigned int, n_matrices, 2> &   matrix_sizes,
@@ -66,22 +92,26 @@ namespace MeshWorker
 
     /**
      * Deep copy constructor.
+     *
      */
     CopyData(const CopyData<n_matrices, n_vectors, n_dof_indices> &other) =
       default;
 
     /**
      * An array of local matrices.
+     *
      */
     std::array<FullMatrix<double>, n_matrices> matrices;
 
     /**
      * An array of local vectors.
+     *
      */
     std::array<Vector<double>, n_vectors> vectors;
 
     /**
      * An array of local degrees of freedom indices.
+     *
      */
     std::array<std::vector<types::global_dof_index>, n_dof_indices>
       local_dof_indices;

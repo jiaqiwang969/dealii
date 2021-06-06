@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2018 by the deal.II authors
 //
@@ -24,4 +24,4 @@ DEAL_II_WARNING(
   "This file is deprecated. Use deal.II/lac/petsc_sparse_matrix.h instead.")
 
 #endif
-/*---------------------- petsc_parallel_sparse_matrix.h ---------------------*/
+ /*---------------------- petsc_parallel_sparse_matrix.h ---------------------*/ 

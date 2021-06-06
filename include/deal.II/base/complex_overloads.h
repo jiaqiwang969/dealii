@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2019 by the deal.II authors
 //
@@ -33,8 +33,9 @@ struct ProductType;
  * Provide an <tt>operator*</tt> that operates on mixed complex floating point
  * types. Annoyingly, the standard library does not provide such an
  * operator...
+ * @relatesalso   ProductType
  *
- * @relatesalso ProductType
+ *
  */
 template <typename T, typename U>
 inline typename std::enable_if<
@@ -51,8 +52,9 @@ operator*(const std::complex<T> &left, const std::complex<U> &right)
  * Provide an <tt>operator/</tt> that operates on mixed complex floating point
  * types. Annoyingly, the standard library does not provide such an
  * operator...
+ * @relatesalso   ProductType
  *
- * @relatesalso ProductType
+ *
  */
 template <typename T, typename U>
 inline typename std::enable_if<
@@ -69,8 +71,9 @@ operator/(const std::complex<T> &left, const std::complex<U> &right)
  * Provide an <tt>operator*</tt> for a scalar multiplication of a complex
  * floating point type with a different real floating point type. Annoyingly,
  * the standard library does not provide such an operator...
+ * @relatesalso   ProductType
  *
- * @relatesalso ProductType
+ *
  */
 template <typename T, typename U>
 inline
@@ -84,11 +87,12 @@ inline
 }
 
 /**
- * Provide an <tt>operator/</tt> for a scalar division of a complex
- * floating point type with a different real floating point type. Annoyingly,
- * the standard library does not provide such an operator...
+ * Provide an <tt>operator/</tt> for a scalar division of a complex floating
+ * point type with a different real floating point type. Annoyingly, the
+ * standard library does not provide such an operator...
+ * @relatesalso   ProductType
  *
- * @relatesalso ProductType
+ *
  */
 template <typename T, typename U>
 inline
@@ -105,8 +109,9 @@ inline
  * Provide an <tt>operator*</tt> for a scalar multiplication of a real
  * floating point type with a different complex floating point type.
  * Annoyingly, the standard library does not provide such an operator...
+ * @relatesalso   ProductType
  *
- * @relatesalso ProductType
+ *
  */
 template <typename T, typename U>
 inline typename
@@ -121,11 +126,12 @@ inline typename
 }
 
 /**
- * Provide an <tt>operator/</tt> for a scalar division of a real
- * floating point type with a different complex floating point type.
- * Annoyingly, the standard library does not provide such an operator...
+ * Provide an <tt>operator/</tt> for a scalar division of a real floating
+ * point type with a different complex floating point type. Annoyingly, the
+ * standard library does not provide such an operator...
+ * @relatesalso   ProductType
  *
- * @relatesalso ProductType
+ *
  */
 template <typename T, typename U>
 inline
@@ -137,7 +143,7 @@ inline
   using result_type = typename ProductType<T, std::complex<U>>::type;
   return static_cast<result_type>(left) / static_cast<result_type>(right);
 }
-#endif /* DEAL_II_HAVE_COMPLEX_OPERATOR_OVERLOADS */
+#endif  /* DEAL_II_HAVE_COMPLEX_OPERATOR_OVERLOADS */ 
 
 DEAL_II_NAMESPACE_CLOSE
 

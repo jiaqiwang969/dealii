@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -34,25 +34,27 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup mapping */
-/*@{*/
+ /*!@addtogroup mapping */ 
+ /*@{*/ 
 
 
 /**
- * This class consistently uses a user-provided finite element on all cells of a
- * triangulation to implement a polynomial mapping.
+ * This class consistently uses a user-provided finite element on all cells of
+ * a triangulation to implement a polynomial mapping. If one initializes this
+ * class with the same FiniteElement as the discretization, one obtains an
+ * iso-parametric mapping. If one initializes this class with an FE_Q(degree)
+ * object, then this class is equivalent to MappingQGeneric(degree). Please
+ * note that no optimizations exploiting tensor-product structures of finite
+ * elements have been added here.
  *
- * If one initializes this class with the same FiniteElement as the
- * discretization, one obtains an iso-parametric mapping.
  *
- * If one initializes this class with an FE_Q(degree) object, then this class is
- * equivalent to MappingQGeneric(degree). Please note that no optimizations
- * exploiting tensor-product structures of finite elements have been added here.
+ * @note   Currently, only implemented for elements with tensor_degree==1 and
+ * n_components==1.
  *
- * @note Currently, only implemented for elements with tensor_degree==1 and
- *   n_components==1.
  *
  * @ingroup simplex
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class MappingFE : public Mapping<dim, spacedim>
@@ -60,11 +62,13 @@ class MappingFE : public Mapping<dim, spacedim>
 public:
   /**
    * Constructor.
+   *
    */
   explicit MappingFE(const FiniteElement<dim, spacedim> &fe);
 
   /**
    * Copy constructor.
+   *
    */
   MappingFE(const MappingFE<dim, spacedim> &mapping);
 
@@ -75,6 +79,7 @@ public:
   /**
    * Return the degree of the mapping, i.e., the degree of the finite element
    * which was passed to the constructor.
+   *
    */
   unsigned int
   get_degree() const;
@@ -89,15 +94,16 @@ public:
   is_compatible_with(const ReferenceCell &reference_cell) const override;
 
   /**
-   * Always returns @p true because the default implementation of functions in
-   * this class preserves vertex locations.
+   * Always returns   @p true   because the default implementation of
+   * functions in   this class preserves vertex locations.
+   *
    */
   virtual bool
   preserves_vertex_locations() const override;
 
   /**
-   * @name Mapping points between reference and real cells
-   * @{
+   * @name   Mapping points between reference and real cells     @{
+   *
    */
 
   // for documentation, see the Mapping base class
@@ -114,11 +120,12 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Functions to transform tensors from reference to real coordinates
-   * @{
+   * @name   Functions to transform tensors from reference to real coordinates     @{
+   *
    */
 
   // for documentation, see the Mapping base class
@@ -158,39 +165,41 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Interface with FEValues
-   * @{
+   * @name   Interface with FEValues     @{
+   *
    */
 
   /**
    * Storage for internal data of polynomial mappings. See
-   * Mapping::InternalDataBase for an extensive description.
-   *
-   * For the current class, the InternalData class stores data that is
-   * computed once when the object is created (in get_data()) as well as data
-   * the class wants to store from between the call to fill_fe_values(),
+   * Mapping::InternalDataBase   for an extensive description.     For the
+   * current class, the InternalData class stores data that is   computed once
+   * when the object is created (in get_data()) as well as data   the class
+   * wants to store from between the call to fill_fe_values(),
    * fill_fe_face_values(), or fill_fe_subface_values() until possible later
    * calls from the finite element to functions such as transform(). The
    * latter class of member variables are marked as 'mutable'.
+   *
    */
   class InternalData : public Mapping<dim, spacedim>::InternalDataBase
   {
   public:
     /**
      * Constructor.
+     *
      */
     InternalData(const FiniteElement<dim, spacedim> &fe);
 
     /**
      * Initialize the object's member variables related to cell data based on
-     * the given arguments.
+     * the given arguments.         The function also calls
+     * compute_shape_function_values() to actually set     the member
+     * variables related to the values and derivatives of the     mapping
+     * shape functions.
      *
-     * The function also calls compute_shape_function_values() to actually set
-     * the member variables related to the values and derivatives of the
-     * mapping shape functions.
      */
     void
     initialize(const UpdateFlags      update_flags,
@@ -201,6 +210,7 @@ public:
      * Initialize the object's member variables related to cell and face data
      * based on the given arguments. In order to initialize cell data, this
      * function calls initialize().
+     *
      */
     void
     initialize_face(const UpdateFlags      update_flags,
@@ -210,6 +220,7 @@ public:
     /**
      * Compute the values and/or derivatives of the shape functions used for
      * the mapping.
+     *
      */
     void
     compute_shape_function_values(const std::vector<Point<dim>> &unit_points);
@@ -218,30 +229,35 @@ public:
     /**
      * Shape function at quadrature point. Shape functions are in tensor
      * product order, so vertices must be reordered to obtain transformation.
+     *
      */
     const double &
     shape(const unsigned int qpoint, const unsigned int shape_nr) const;
 
     /**
      * Shape function at quadrature point. See above.
+     *
      */
     double &
     shape(const unsigned int qpoint, const unsigned int shape_nr);
 
     /**
      * Gradient of shape function in quadrature point. See above.
+     *
      */
     const Tensor<1, dim> &
     derivative(const unsigned int qpoint, const unsigned int shape_nr) const;
 
     /**
      * Gradient of shape function in quadrature point. See above.
+     *
      */
     Tensor<1, dim> &
     derivative(const unsigned int qpoint, const unsigned int shape_nr);
 
     /**
      * Second derivative of shape function in quadrature point. See above.
+     *
      */
     const Tensor<2, dim> &
     second_derivative(const unsigned int qpoint,
@@ -249,12 +265,14 @@ public:
 
     /**
      * Second derivative of shape function in quadrature point. See above.
+     *
      */
     Tensor<2, dim> &
     second_derivative(const unsigned int qpoint, const unsigned int shape_nr);
 
     /**
      * third derivative of shape function in quadrature point. See above.
+     *
      */
     const Tensor<3, dim> &
     third_derivative(const unsigned int qpoint,
@@ -262,12 +280,14 @@ public:
 
     /**
      * third derivative of shape function in quadrature point. See above.
+     *
      */
     Tensor<3, dim> &
     third_derivative(const unsigned int qpoint, const unsigned int shape_nr);
 
     /**
      * fourth derivative of shape function in quadrature point. See above.
+     *
      */
     const Tensor<4, dim> &
     fourth_derivative(const unsigned int qpoint,
@@ -275,59 +295,58 @@ public:
 
     /**
      * fourth derivative of shape function in quadrature point. See above.
+     *
      */
     Tensor<4, dim> &
     fourth_derivative(const unsigned int qpoint, const unsigned int shape_nr);
 
     /**
-     * Return an estimate (in bytes) for the memory consumption of this object.
+     * Return an estimate (in bytes) for the memory consumption of this
+     * object.
+     *
      */
     virtual std::size_t
     memory_consumption() const override;
 
     /**
-     * Values of shape functions. Access by function @p shape.
-     *
+     * Values of shape functions. Access by function   @p shape.
      * Computed once.
+     *
      */
     std::vector<double> shape_values;
 
     /**
-     * Values of shape function derivatives. Access by function @p derivative.
+     * Values of shape function derivatives. Access by function   @p
+     * derivative.           Computed once.
      *
-     * Computed once.
      */
     std::vector<Tensor<1, dim>> shape_derivatives;
 
     /**
-     * Values of shape function second derivatives. Access by function @p
-     * second_derivative.
+     * Values of shape function second derivatives. Access by function   @p
+     * second_derivative.         Computed once.
      *
-     * Computed once.
      */
     std::vector<Tensor<2, dim>> shape_second_derivatives;
 
     /**
-     * Values of shape function third derivatives. Access by function @p
-     * second_derivative.
+     * Values of shape function third derivatives. Access by function   @p
+     * second_derivative.         Computed once.
      *
-     * Computed once.
      */
     std::vector<Tensor<3, dim>> shape_third_derivatives;
 
     /**
-     * Values of shape function fourth derivatives. Access by function @p
-     * second_derivative.
+     * Values of shape function fourth derivatives. Access by function   @p
+     * second_derivative.         Computed once.
      *
-     * Computed once.
      */
     std::vector<Tensor<4, dim>> shape_fourth_derivatives;
 
     /**
      * Unit tangential vectors. Used for the computation of boundary forms and
-     * normal vectors.
+     * normal vectors.         Filled once.
      *
-     * Filled once.
      */
     std::array<std::vector<Tensor<1, dim>>,
                GeometryInfo<dim>::faces_per_cell *(dim - 1)>
@@ -335,52 +354,57 @@ public:
 
     /**
      * Underlying finite element.
+     *
      */
     const FiniteElement<dim, spacedim> &fe;
 
     /**
      * The polynomial degree of the mapping.
+     *
      */
     const unsigned int polynomial_degree;
 
     /**
      * Number of shape functions.
+     *
      */
     const unsigned int n_shape_functions;
 
     /**
      * Tensors of covariant transformation at each of the quadrature points.
-     * The matrix stored is the Jacobian * G^{-1}, where G = Jacobian^{t} *
+     * The matrix stored is the Jacobian G^{-1}, where G = Jacobian^{t}
      * Jacobian, is the first fundamental form of the map; if dim=spacedim
      * then it reduces to the transpose of the inverse of the Jacobian matrix,
-     * which itself is stored in the @p contravariant field of this structure.
+     * which itself is stored in the   @p contravariant   field of this
+     * structure.         Computed on each cell.
      *
-     * Computed on each cell.
      */
     mutable std::vector<DerivativeForm<1, dim, spacedim>> covariant;
 
     /**
      * Tensors of contravariant transformation at each of the quadrature
      * points. The contravariant matrix is the Jacobian of the transformation,
-     * i.e. $J_{ij}=dx_i/d\hat x_j$.
+     * i.e.   $J_{ij}=dx_i/d\hat x_j$  .         Computed on each cell.
      *
-     * Computed on each cell.
      */
     mutable std::vector<DerivativeForm<1, dim, spacedim>> contravariant;
 
     /**
      * Auxiliary vectors for internal use.
+     *
      */
     mutable std::vector<std::vector<Tensor<1, spacedim>>> aux;
 
     /**
-     * Stores the support points of the mapping shape functions on the @p
+     * Stores the support points of the mapping shape functions on the   @p
      * cell_of_current_support_points.
+     *
      */
     mutable std::vector<Point<spacedim>> mapping_support_points;
 
     /**
-     * Stores the cell of which the @p mapping_support_points are stored.
+     * Stores the cell of which the   @p mapping_support_points   are stored.
+     *
      */
     mutable typename Triangulation<dim, spacedim>::cell_iterator
       cell_of_current_support_points;
@@ -388,11 +412,13 @@ public:
     /**
      * The determinant of the Jacobian in each quadrature point. Filled if
      * #update_volume_elements.
+     *
      */
     mutable std::vector<double> volume_elements;
 
     /**
      * Projected quadrature weights.
+     *
      */
     mutable std::vector<double> quadrature_weights;
   };
@@ -453,6 +479,7 @@ public:
 
   /**
    * @}
+   *
    */
 
 protected:
@@ -461,11 +488,13 @@ protected:
   /**
    * The degree of the polynomials used as shape functions for the mapping of
    * cells.
+   *
    */
   const unsigned int polynomial_degree;
 
   /**
    * Return the locations of support points for the mapping.
+   *
    */
   virtual std::vector<Point<spacedim>>
   compute_mapping_support_points(
@@ -477,9 +506,9 @@ private:
 
 
 
-/*@}*/
+ /*@}*/ 
 
-/*----------------------------------------------------------------------*/
+ /*----------------------------------------------------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -611,7 +640,7 @@ MappingFE<dim, spacedim>::preserves_vertex_locations() const
 
 #endif // DOXYGEN
 
-/* -------------- declaration of explicit specializations ------------- */
+ /* -------------- declaration of explicit specializations ------------- */ 
 
 
 DEAL_II_NAMESPACE_CLOSE

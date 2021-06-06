@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2021 by the deal.II authors
 //
@@ -45,20 +45,22 @@ namespace internal
      * of a triangulation, i.e. lines, quads, hexahedra...  Apart from the
      * vector of objects additional information is included, namely vectors
      * indicating the children, the used-status, user-flags, material-ids..
-     *
      * Objects of these classes are included in the TriaLevel and TriaFaces
      * classes.
+     *
      */
     class TriaObjects
     {
     public:
       /**
        * Constructor resetting some data.
+       *
        */
       TriaObjects();
 
       /**
        * Constructor for a specific dimension.
+       *
        */
       TriaObjects(const unsigned int structdim);
 
@@ -67,21 +69,24 @@ namespace internal
       /**
        * Vector of the objects belonging to this level. The index of the
        * object equals the index in this container.
+       *
        */
       std::vector<int> cells;
 
       /**
        * Return number of geometric objects stored by this class.
+       *
        */
       unsigned int
       n_objects() const;
 
       /**
-       * Return a view on the indices of the objects that bound the @p
+       * Return a view on the indices of the objects that bound the   @p
        * index-th object stored by the current object. For example, if
-       * the current object stores cells, then this function returns
-       * the equivalent of an array containing the indices of the
-       * faces that bound the @p index-th cell.
+       * the current object stores cells, then this function returns       the
+       * equivalent of an array containing the indices of the       faces that
+       * bound the   @p index-th   cell.
+       *
        */
       ArrayView<int>
       get_bounding_object_indices(const unsigned int index);
@@ -91,11 +96,10 @@ namespace internal
        * refined, all children are created at the same time, they are appended
        * to the list at least in pairs after each other. We therefore only
        * store the index of the even children, the uneven follow immediately
-       * afterwards.
+       * afterwards.             If an object has no children,
        *
-       * If an object has no children, -1 is stored in this list. An object is
-       * called active if it has no children. The function
-       * TriaAccessorBase::has_children() tests for this.
+       *  -  is stored in this list. An object is       called active if it has no children. The function         TriaAccessorBase::has_children()   tests for this.
+       *
        */
       std::vector<int> children;
 
@@ -103,16 +107,17 @@ namespace internal
        * Store the refinement case each of the cells is refined with. This
        * vector might be replaced by vector<vector<bool> > (dim, vector<bool>
        * (n_cells)) which is more memory efficient.
+       *
        */
       std::vector<std::uint8_t> refinement_cases;
 
       /**
-       * Vector storing whether an object is used in the @p cells vector.
-       *
-       * Since it is difficult to delete elements in a @p vector, when an
+       * Vector storing whether an object is used in the   @p cells   vector.
+       * Since it is difficult to delete elements in a   @p vector,   when an
        * element is not needed any more (e.g. after derefinement), it is not
-       * deleted from the list, but rather the according @p used flag is set
-       * to @p false.
+       * deleted from the list, but rather the according   @p used   flag is
+       * set       to   @p false.
+       *
        */
       std::vector<bool> used;
 
@@ -120,10 +125,9 @@ namespace internal
        * Make available a field for user data, one bit per object. This field
        * is usually used when an operation runs over all cells and needs
        * information whether another cell (e.g. a neighbor) has already been
-       * processed.
-       *
-       * You can clear all used flags using
+       * processed.             You can clear all used flags using
        * Triangulation::clear_user_flags().
+       *
        */
       std::vector<bool> user_flags;
 
@@ -131,6 +135,7 @@ namespace internal
       /**
        * We use this union to store boundary and material data. Because only
        * one out of these two is actually needed here, we use an union.
+       *
        */
       struct BoundaryOrMaterialId
       {
@@ -143,11 +148,13 @@ namespace internal
 
         /**
          * Default constructor.
+         *
          */
         BoundaryOrMaterialId();
 
         /**
          * Return the size of objects of this kind.
+         *
          */
         static std::size_t
         memory_consumption();
@@ -156,6 +163,7 @@ namespace internal
          * Read or write the data of this object to or from a stream for the
          * purpose of serialization using the [BOOST serialization
          * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+         *
          */
         template <class Archive>
         void
@@ -165,35 +173,36 @@ namespace internal
       /**
        * Store boundary and material data. For example, in one dimension, this
        * field stores the material id of a line, which is a number between 0
-       * and numbers::invalid_material_id-1. In more than one dimension, lines
-       * have no material id, but they may be at the boundary; then, we store
-       * the boundary indicator in this field, which denotes to which part of
-       * the boundary this line belongs and which boundary conditions hold on
-       * this part. The boundary indicator also is a number between zero and
-       * numbers::internal_face_boundary_id-1; the id
-       * numbers::internal_face_boundary_id is reserved for lines in the
+       * and   numbers::invalid_material_id-1.   In more than one dimension,
+       * lines       have no material id, but they may be at the boundary;
+       * then, we store       the boundary indicator in this field, which
+       * denotes to which part of       the boundary this line belongs and
+       * which boundary conditions hold on       this part. The boundary
+       * indicator also is a number between zero and
+       * numbers::internal_face_boundary_id-1;   the id
+       * numbers::internal_face_boundary_id   is reserved for lines in the
        * interior and may be used to check whether a line is at the boundary
        * or not, which otherwise is not possible if you don't know which cell
        * it belongs to.
+       *
        */
       std::vector<BoundaryOrMaterialId> boundary_or_material_id;
 
       /**
        * Store manifold ids. This field stores the manifold id of each object,
-       * which is a number between 0 and numbers::flat_manifold_id-1.
+       * which is a number between 0 and   numbers::flat_manifold_id-1.
+       *
        */
       std::vector<types::manifold_id> manifold_id;
 
       /**
        * Return an iterator to the next free slot for a single object. This
-       * function is only used by Triangulation::execute_refinement()
-       * in 3D.
+       * function is only used by   Triangulation::execute_refinement()
+       * in 3D.               @warning   Interestingly, this function is not
+       * used for 1D or 2D       triangulations, where it seems the authors of
+       * the refinement function       insist on reimplementing its contents.
+       * @todo   This function is not instantiated for the codim-one case
        *
-       * @warning Interestingly, this function is not used for 1D or 2D
-       * triangulations, where it seems the authors of the refinement function
-       * insist on reimplementing its contents.
-       *
-       * @todo This function is not instantiated for the codim-one case
        */
       template <int structdim, int dim, int spacedim>
       dealii::TriaRawIterator<dealii::TriaAccessor<structdim, dim, spacedim>>
@@ -201,14 +210,12 @@ namespace internal
 
       /**
        * Return an iterator to the next free slot for a pair of objects. This
-       * function is only used by Triangulation::execute_refinement()
-       * in 3D.
+       * function is only used by   Triangulation::execute_refinement()
+       * in 3D.               @warning   Interestingly, this function is not
+       * used for 1D or 2D       triangulations, where it seems the authors of
+       * the refinement function       insist on reimplementing its contents.
+       * @todo   This function is not instantiated for the codim-one case
        *
-       * @warning Interestingly, this function is not used for 1D or 2D
-       * triangulations, where it seems the authors of the refinement function
-       * insist on reimplementing its contents.
-       *
-       * @todo This function is not instantiated for the codim-one case
        */
       template <int structdim, int dim, int spacedim>
       dealii::TriaRawIterator<dealii::TriaAccessor<structdim, dim, spacedim>>
@@ -216,7 +223,8 @@ namespace internal
 
       /**
        * Return an iterator to the next free slot for a pair of hexes. Only
-       * implemented for <code>G=Hexahedron</code>.
+       * implemented for   <code>G=Hexahedron</code>  .
+       *
        */
       template <int dim, int spacedim>
       typename Triangulation<dim, spacedim>::raw_hex_iterator
@@ -225,30 +233,35 @@ namespace internal
 
       /**
        * Access to user pointers.
+       *
        */
       void *&
       user_pointer(const unsigned int i);
 
       /**
        * Read-only access to user pointers.
+       *
        */
       const void *
       user_pointer(const unsigned int i) const;
 
       /**
        * Access to user indices.
+       *
        */
       unsigned int &
       user_index(const unsigned int i);
 
       /**
        * Read-only access to user pointers.
+       *
        */
       unsigned int
       user_index(const unsigned int i) const;
 
       /**
        * Reset user data to zero.
+       *
        */
       void
       clear_user_data(const unsigned int i);
@@ -256,12 +269,14 @@ namespace internal
       /**
        * Clear all user pointers or indices and reset their type, such that
        * the next access may be either or.
+       *
        */
       void
       clear_user_data();
 
       /**
        * Clear all user flags.
+       *
        */
       void
       clear_user_flags();
@@ -269,6 +284,7 @@ namespace internal
       /**
        * Determine an estimate for the memory consumption (in bytes) of this
        * object.
+       *
        */
       std::size_t
       memory_consumption() const;
@@ -277,6 +293,7 @@ namespace internal
        * Read or write the data of this object to or from a stream for the
        * purpose of serialization using the [BOOST serialization
        * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+       *
        */
       template <class Archive>
       void
@@ -286,28 +303,32 @@ namespace internal
        * Triangulation objects can either access a user pointer or a
        * user index. What you tried to do is trying to access one of those
        * after using the other.
-       *
        * @ingroup Exceptions
+       *
        */
       DeclException0(ExcPointerIndexClash);
 
       /**
        * Counter for next_free_single_* functions
+       *
        */
       unsigned int next_free_single;
 
       /**
        * Counter for next_free_pair_* functions
+       *
        */
       unsigned int next_free_pair;
 
       /**
        * Bool flag for next_free_single_* functions
+       *
        */
       bool reverse_order_next_free_single;
 
       /**
        * The data type storing user pointers or user indices.
+       *
        */
       struct UserData
       {
@@ -323,6 +344,7 @@ namespace internal
 
         /**
          * Default constructor.
+         *
          */
         UserData()
         {
@@ -333,6 +355,7 @@ namespace internal
          * Write the data of this object to a stream for the purpose of
          * serialization using the [BOOST serialization
          * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+         *
          */
         template <class Archive>
         void
@@ -341,6 +364,7 @@ namespace internal
 
       /**
        * Enum describing the possible types of userdata.
+       *
        */
       enum UserDataType
       {
@@ -356,6 +380,7 @@ namespace internal
       /**
        * Pointer which is not used by the library but may be accessed and set
        * by the user to handle data local to a line/quad/etc.
+       *
        */
       std::vector<UserData> user_data;
 
@@ -363,6 +388,7 @@ namespace internal
        * In order to avoid confusion between user pointers and indices, this
        * enum is set by the first function accessing either and subsequent
        * access will not be allowed to change the type of data accessed.
+       *
        */
       mutable UserDataType user_data_type;
     };
@@ -409,7 +435,7 @@ namespace internal
     template <class Archive>
     void
     TriaObjects::BoundaryOrMaterialId::serialize(Archive &ar,
-                                                 const unsigned int /*version*/)
+                                                 const unsigned int  /*version*/ )
     {
       // serialize this
       // structure by

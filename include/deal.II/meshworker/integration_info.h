@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2020 by the deal.II authors
 //
@@ -36,42 +36,36 @@ DEAL_II_NAMESPACE_OPEN
 namespace MeshWorker
 {
   /**
-   * Class for objects handed to local integration functions.
-   *
-   * Objects of this class contain one or more objects of type FEValues,
-   * FEFaceValues or FESubfaceValues to be used in local integration. They are
-   * stored in an array of pointers to the base classes FEValuesBase. The
-   * template parameter VectorType allows the use of different data types for
-   * the global system.
-   *
-   * Additionally, this function contains space to store the values of finite
-   * element functions stored in #global_data in the quadrature points. These
-   * vectors are initialized automatically on each cell or face. In order to
-   * avoid initializing unused vectors, you can use initialize_selector() to
-   * select the vectors by name that you actually want to use.
-   *
-   * <h3>Integration models</h3>
-   *
-   * This class supports two local integration models, corresponding to the
-   * data models in the documentation of the Assembler namespace. One is the
-   * standard model suggested by the use of FESystem. Namely, there is one
+   * Class for objects handed to local integration functions.     Objects of
+   * this class contain one or more objects of type FEValues,   FEFaceValues
+   * or FESubfaceValues to be used in local integration. They are   stored in
+   * an array of pointers to the base classes FEValuesBase. The   template
+   * parameter VectorType allows the use of different data types for   the
+   * global system.     Additionally, this function contains space to store
+   * the values of finite   element functions stored in #global_data in the
+   * quadrature points. These   vectors are initialized automatically on each
+   * cell or face. In order to   avoid initializing unused vectors, you can
+   * use initialize_selector() to   select the vectors by name that you
+   * actually want to use.     <h3>Integration models</h3>     This class
+   * supports two local integration models, corresponding to the   data models
+   * in the documentation of the Assembler namespace. One is the   standard
+   * model suggested by the use of FESystem. Namely, there is one
    * FEValuesBase object in this class, containing all shape functions of the
    * whole system, and having as many components as the system. Using this
    * model involves loops over all system shape functions. It requires to
    * identify the system components for each shape function and to select the
-   * correct bilinear form, usually in an @p if or @p switch statement.
-   *
-   * The second integration model builds one FEValuesBase object per base
-   * element of the system. The degrees of freedom on each cell are renumbered
-   * by block, such that they represent the same block structure as the global
-   * system. Objects performing the integration can then process each block
-   * separately, which improves reusability of code considerably.
-   *
-   * @note As described in DoFInfo, the use of the local block model is
-   * triggered by calling BlockInfo::initialize_local() before using
+   * correct bilinear form, usually in an   @p if   or   @p switch
+   * statement.     The second integration model builds one FEValuesBase
+   * object per base   element of the system. The degrees of freedom on each
+   * cell are renumbered   by block, such that they represent the same block
+   * structure as the global   system. Objects performing the integration can
+   * then process each block   separately, which improves reusability of code
+   * considerably.
+   * @note   As described in DoFInfo, the use of the local block model is
+   * triggered by calling   BlockInfo::initialize_local()   before using
    * initialize() in this class.
-   *
    * @ingroup MeshWorker
+   *
    */
   template <int dim, int spacedim = dim>
   class IntegrationInfo
@@ -86,31 +80,28 @@ namespace MeshWorker
 
     /**
      * Constructor.
+     *
      */
     IntegrationInfo();
 
     /**
-     * Copy constructor, creating a clone to be used by WorkStream::run().
+     * Copy constructor, creating a clone to be used by   WorkStream::run().
+     *
      */
     IntegrationInfo(const IntegrationInfo<dim, spacedim> &other);
 
     /**
      * Build all internal structures, in particular the FEValuesBase objects
-     * and allocate space for data vectors.
-     *
-     * @param el is the finite element of the DoFHandler.
-     *
-     * @param mapping is the Mapping object used to map the mesh cells.
-     *
-     * @param quadrature is a Quadrature formula used in the constructor of
-     * the FEVALUES objects.
-     *
-     * @param flags are the UpdateFlags used in the constructor of the
-     * FEVALUES objects.
-     *
-     * @param local_block_info is an optional parameter for systems of PDE. If
-     * it is provided with reasonable data, then the degrees of freedom on the
+     * and allocate space for data vectors.           @param   el is the
+     * finite element of the DoFHandler.           @param   mapping is the
+     * Mapping object used to map the mesh cells.           @param
+     * quadrature is a Quadrature formula used in the constructor of     the
+     * FEVALUES objects.           @param   flags are the UpdateFlags used in
+     * the constructor of the     FEVALUES objects.           @param
+     * local_block_info is an optional parameter for systems of PDE. If     it
+     * is provided with reasonable data, then the degrees of freedom on the
      * cells will be re-ordered to reflect the block structure of the system.
+     *
      */
     template <class FEVALUES>
     void
@@ -122,12 +113,14 @@ namespace MeshWorker
 
     /**
      * Initialize the data vector and cache the selector.
+     *
      */
     void
     initialize_data(const std::shared_ptr<VectorDataBase<dim, spacedim>> &data);
 
     /**
      * Delete the data created by initialize().
+     *
      */
     void
     clear();
@@ -135,6 +128,7 @@ namespace MeshWorker
     /**
      * Return a reference to the FiniteElement that was used to initialize
      * this object.
+     *
      */
     const FiniteElement<dim, spacedim> &
     finite_element() const;
@@ -146,6 +140,7 @@ namespace MeshWorker
      * This is the access function being used, if initialize() for a single
      * element was used (without the BlockInfo argument). It throws an
      * exception, if applied to a vector of elements.
+     *
      */
     const FEValuesBase<dim, spacedim> &
     fe_values() const;
@@ -154,42 +149,42 @@ namespace MeshWorker
     /**
      * This access function must be used if the initialize() for a group of
      * elements was used (with a valid BlockInfo object).
+     *
      */
     const FEValuesBase<dim, spacedim> &
     fe_values(const unsigned int i) const;
 
     /**
      * The vector containing the values of finite element functions in the
-     * quadrature points.
+     * quadrature points.         There is one vector per selected finite
+     * element function, containing     one vector for each component,
+     * containing vectors with values for each     quadrature point.
      *
-     * There is one vector per selected finite element function, containing
-     * one vector for each component, containing vectors with values for each
-     * quadrature point.
      */
     std::vector<std::vector<std::vector<double>>> values;
 
     /**
      * The vector containing the derivatives of finite element functions in
-     * the quadrature points.
+     * the quadrature points.         There is one vector per selected finite
+     * element function, containing     one vector for each component,
+     * containing vectors with values for each     quadrature point.
      *
-     * There is one vector per selected finite element function, containing
-     * one vector for each component, containing vectors with values for each
-     * quadrature point.
      */
     std::vector<std::vector<std::vector<Tensor<1, spacedim>>>> gradients;
 
     /**
      * The vector containing the second derivatives of finite element
-     * functions in the quadrature points.
+     * functions in the quadrature points.         There is one vector per
+     * selected finite element function, containing     one vector for each
+     * component, containing vectors with values for each     quadrature
+     * point.
      *
-     * There is one vector per selected finite element function, containing
-     * one vector for each component, containing vectors with values for each
-     * quadrature point.
      */
     std::vector<std::vector<std::vector<Tensor<2, spacedim>>>> hessians;
 
     /**
      * Reinitialize internal data structures for use on a cell.
+     *
      */
     template <typename number>
     void
@@ -198,6 +193,7 @@ namespace MeshWorker
     /**
      * Use the finite element functions in #global_data and fill the vectors
      * #values, #gradients and #hessians.
+     *
      */
     template <typename number>
     void
@@ -207,11 +203,13 @@ namespace MeshWorker
     /**
      * The global data vector used to compute function values in quadrature
      * points.
+     *
      */
     std::shared_ptr<VectorDataBase<dim, spacedim>> global_data;
 
     /**
      * The memory used by this object.
+     *
      */
     std::size_t
     memory_consumption() const;
@@ -219,6 +217,7 @@ namespace MeshWorker
   private:
     /**
      * The pointer to the (system) element used for initialization.
+     *
      */
     SmartPointer<const FiniteElement<dim, spacedim>,
                  IntegrationInfo<dim, spacedim>>
@@ -228,6 +227,7 @@ namespace MeshWorker
      * Use the finite element functions in #global_data and fill the vectors
      * #values, #gradients and #hessians with values according to the
      * selector.
+     *
      */
     template <typename TYPE>
     void
@@ -236,83 +236,38 @@ namespace MeshWorker
                     bool split_fevalues) const;
     /**
      * Cache the number of components of the system element.
+     *
      */
     unsigned int n_components;
   };
 
   /**
-   * The object holding the scratch data for integrating over cells and faces.
-   * IntegrationInfoBox serves three main purposes:
-   *
-   * <ol>
-   * <li> It provides the interface needed by MeshWorker::loop(), namely the
-   * two functions post_cell() and post_faces(), as well as the data members
-   * #cell, #boundary, #face, #subface, and #neighbor.
-   *
-   * <li> It contains all information needed to initialize the FEValues and
-   * FEFaceValues objects in the IntegrationInfo data members.
-   *
-   * <li> It stores information on finite element vectors and whether their
-   * data should be used to compute values or derivatives of functions at
-   * quadrature points.
-   *
-   * <li> It makes educated guesses on quadrature rules and update flags, so
-   * that minimal code has to be written when default parameters are
-   * sufficient.
-   * </ol>
-   *
-   * In order to allow for sufficient generality, a few steps have to be
-   * undertaken to use this class.
-   *
-   * First, you should consider if you need values from any vectors in a
-   * AnyData object. If so, fill the VectorSelector objects #cell_selector,
-   * #boundary_selector and #face_selector with their names and the data type
-   * (value, gradient, Hessian) to be extracted.
-   *
-   * Afterwards, you will need to consider UpdateFlags for FEValues objects. A
-   * good start is initialize_update_flags(), which looks at the selectors
-   * filled before and adds all the flags needed to get the selection.
-   * Additional flags can be set with add_update_flags().
-   *
-   * Finally, we need to choose quadrature formulas. In the simplest case, you
-   * might be happy with the default settings, which are <i>n</i>-point Gauss
-   * formulas. If only derivatives of the shape functions are used
-   * (#update_values is not set) <i>n</i> equals the highest polynomial degree
-   * in the FiniteElement, if #update_values is set, <i>n</i> is one higher
-   * than this degree.  If you choose to use Gauss formulas of other size, use
-   * initialize_gauss_quadrature() with appropriate values. Otherwise, you can
-   * fill the variables #cell_quadrature, #boundary_quadrature and
-   * #face_quadrature directly.
-   *
-   * In order to save time, you can set the variables boundary_fluxes and
-   * interior_fluxes of the base class to false, thus telling the
-   * Meshworker::loop() not to loop over those faces.
-   *
-   * All the information in here is used to set up IntegrationInfo objects
-   * correctly, typically in an IntegrationInfoBox.
-   *
+   * The object holding the scratch data for integrating over cells and faces.   IntegrationInfoBox serves three main purposes:       <ol>       <li>   It provides the interface needed by   MeshWorker::loop(),   namely the   two functions post_cell() and post_faces(), as well as the data members   #cell, #boundary, #face, #subface, and #neighbor.       <li>   It contains all information needed to initialize the FEValues and   FEFaceValues objects in the IntegrationInfo data members.       <li>   It stores information on finite element vectors and whether their   data should be used to compute values or derivatives of functions at   quadrature points.       <li>   It makes educated guesses on quadrature rules and update flags, so   that minimal code has to be written when default parameters are   sufficient.     </ol>       In order to allow for sufficient generality, a few steps have to be   undertaken to use this class.     First, you should consider if you need values from any vectors in a   AnyData object. If so, fill the VectorSelector objects #cell_selector,   #boundary_selector and #face_selector with their names and the data type   (value, gradient, Hessian) to be extracted.     Afterwards, you will need to consider UpdateFlags for FEValues objects. A   good start is initialize_update_flags(), which looks at the selectors   filled before and adds all the flags needed to get the selection.   Additional flags can be set with add_update_flags().     Finally, we need to choose quadrature formulas. In the simplest case, you   might be happy with the default settings, which are <i>n</i>-point Gauss   formulas. If only derivatives of the shape functions are used   (#update_values is not set) <i>n</i> equals the highest polynomial degree   in the FiniteElement, if #update_values is set, <i>n</i> is one higher   than this degree.  If you choose to use Gauss formulas of other size, use   initialize_gauss_quadrature() with appropriate values. Otherwise, you can   fill the variables #cell_quadrature, #boundary_quadrature and   #face_quadrature directly.     In order to save time, you can set the variables boundary_fluxes and   interior_fluxes of the base class to false, thus telling the     Meshworker::loop()   not to loop over those faces.     All the information in here is used to set up IntegrationInfo objects   correctly, typically in an IntegrationInfoBox.
    * @ingroup MeshWorker
+   *
    */
   template <int dim, int spacedim = dim>
   class IntegrationInfoBox
   {
   public:
     /**
-     * The type of the @p info object for cells.
+     * The type of the   @p info   object for cells.
+     *
      */
     using CellInfo = IntegrationInfo<dim, spacedim>;
 
     /**
      * Default constructor.
+     *
      */
     IntegrationInfoBox();
 
     /**
-     * Initialize the IntegrationInfo objects contained.
-     *
-     * Before doing so, add update flags necessary to produce the data needed
-     * and also set uninitialized quadrature rules to Gauss formulas, which
+     * Initialize the IntegrationInfo objects contained.         Before doing
+     * so, add update flags necessary to produce the data needed     and also
+     * set uninitialized quadrature rules to Gauss formulas, which
      * integrate polynomial bilinear forms exactly.
+     *
      */
     void
     initialize(const FiniteElement<dim, spacedim> &el,
@@ -320,11 +275,11 @@ namespace MeshWorker
                const BlockInfo *                   block_info = nullptr);
 
     /**
-     * Initialize the IntegrationInfo objects contained.
-     *
-     * Before doing so, add update flags necessary to produce the data needed
-     * and also set uninitialized quadrature rules to Gauss formulas, which
+     * Initialize the IntegrationInfo objects contained.         Before doing
+     * so, add update flags necessary to produce the data needed     and also
+     * set uninitialized quadrature rules to Gauss formulas, which
      * integrate polynomial bilinear forms exactly.
+     *
      */
     template <typename VectorType>
     void
@@ -334,11 +289,11 @@ namespace MeshWorker
                const VectorType &                  dummy,
                const BlockInfo *                   block_info = nullptr);
     /**
-     * Initialize the IntegrationInfo objects contained.
-     *
-     * Before doing so, add update flags necessary to produce the data needed
-     * and also set uninitialized quadrature rules to Gauss formulas, which
+     * Initialize the IntegrationInfo objects contained.         Before doing
+     * so, add update flags necessary to produce the data needed     and also
+     * set uninitialized quadrature rules to Gauss formulas, which
      * integrate polynomial bilinear forms exactly.
+     *
      */
     template <typename VectorType>
     void
@@ -348,19 +303,20 @@ namespace MeshWorker
                const MGLevelObject<VectorType> &   dummy,
                const BlockInfo *                   block_info = nullptr);
     /**
-     * @name FEValues setup
+     * @name   FEValues setup
+     *
      */
-    /* @{ */
+     /* @{ */ 
 
     /**
      * Call this function before initialize() in order to guess the update
-     * flags needed, based on the data selected.
-     *
-     * When computing face fluxes, we normally can use the geometry
-     * (integration weights and normal vectors) from the original cell and
-     * thus can avoid updating these values on the neighboring cell. Set
+     * flags needed, based on the data selected.         When computing face
+     * fluxes, we normally can use the geometry     (integration weights and
+     * normal vectors) from the original cell and     thus can avoid updating
+     * these values on the neighboring cell. Set
      * <tt>neighbor_geometry</tt> to true in order to initialize these values
      * as well.
+     *
      */
     void
     initialize_update_flags(bool neighbor_geometry = false);
@@ -368,24 +324,28 @@ namespace MeshWorker
     /**
      * Add FEValues UpdateFlags for integration on all objects (cells,
      * boundary faces and all interior faces).
+     *
      */
     void
     add_update_flags_all(const UpdateFlags flags);
 
     /**
      * Add FEValues UpdateFlags for integration on cells.
+     *
      */
     void
     add_update_flags_cell(const UpdateFlags flags);
 
     /**
      * Add FEValues UpdateFlags for integration on boundary faces.
+     *
      */
     void
     add_update_flags_boundary(const UpdateFlags flags);
 
     /**
      * Add FEValues UpdateFlags for integration on interior faces.
+     *
      */
     void
     add_update_flags_face(const UpdateFlags flags);
@@ -395,6 +355,7 @@ namespace MeshWorker
      * The four boolean flags indicate whether the additional flags should be
      * set for cell, boundary, interelement face for the cell itself or
      * neighbor cell, or any combination thereof.
+     *
      */
     void
     add_update_flags(const UpdateFlags flags,
@@ -406,11 +367,10 @@ namespace MeshWorker
     /**
      * Assign n-point Gauss quadratures to each of the quadrature rules. Here,
      * a size of zero points means that no loop over these grid entities
-     * should be performed.
+     * should be performed.         If the parameter <tt>force</tt> is true,
+     * then all quadrature sets are     filled with new quadrature rules. If
+     * it is false, then only empty rules     are changed.
      *
-     * If the parameter <tt>force</tt> is true, then all quadrature sets are
-     * filled with new quadrature rules. If it is false, then only empty rules
-     * are changed.
      */
     void
     initialize_gauss_quadrature(unsigned int n_cell_points,
@@ -420,111 +380,117 @@ namespace MeshWorker
 
     /**
      * The memory used by this object.
+     *
      */
     std::size_t
     memory_consumption() const;
 
     /**
-     * The set of update flags for boundary cell integration.
+     * The set of update flags for boundary cell integration.         Defaults
+     * to #update_JxW_values.
      *
-     * Defaults to #update_JxW_values.
      */
     UpdateFlags cell_flags;
     /**
-     * The set of update flags for boundary face integration.
+     * The set of update flags for boundary face integration.         Defaults
+     * to #update_JxW_values and #update_normal_vectors.
      *
-     * Defaults to #update_JxW_values and #update_normal_vectors.
      */
     UpdateFlags boundary_flags;
 
     /**
-     * The set of update flags for interior face integration.
+     * The set of update flags for interior face integration.         Defaults
+     * to #update_JxW_values and #update_normal_vectors.
      *
-     * Defaults to #update_JxW_values and #update_normal_vectors.
      */
     UpdateFlags face_flags;
 
     /**
-     * The set of update flags for interior face integration.
+     * The set of update flags for interior face integration.         Defaults
+     * to #update_default, since quadrature weights are taken from     the
+     * other cell.
      *
-     * Defaults to #update_default, since quadrature weights are taken from
-     * the other cell.
      */
     UpdateFlags neighbor_flags;
 
     /**
      * The quadrature rule used on cells.
+     *
      */
     Quadrature<dim> cell_quadrature;
 
     /**
      * The quadrature rule used on boundary faces.
+     *
      */
     Quadrature<dim - 1> boundary_quadrature;
 
     /**
      * The quadrature rule used on interior faces.
+     *
      */
     Quadrature<dim - 1> face_quadrature;
-    /* @} */
+     /* @} */ 
 
     /**
-     * @name Data vectors
+     * @name   Data vectors
+     *
      */
-    /* @{ */
+     /* @{ */ 
 
     /**
      * Initialize the VectorSelector objects #cell_selector,
      * #boundary_selector and #face_selector in order to save computational
      * effort. If no selectors are used, then values for all named vectors in
-     * DoFInfo::global_data will be computed in all quadrature points.
-     *
+     * DoFInfo::global_data   will be computed in all quadrature points.
      * This function will also add UpdateFlags to the flags stored in this
      * class.
+     *
      */
     /**
-     * Select the vectors from DoFInfo::global_data that should be computed in
-     * the quadrature points on cells.
+     * Select the vectors from   DoFInfo::global_data   that should be
+     * computed in     the quadrature points on cells.
+     *
      */
     MeshWorker::VectorSelector cell_selector;
 
     /**
-     * Select the vectors from DoFInfo::global_data that should be computed in
-     * the quadrature points on boundary faces.
+     * Select the vectors from   DoFInfo::global_data   that should be
+     * computed in     the quadrature points on boundary faces.
+     *
      */
     MeshWorker::VectorSelector boundary_selector;
 
     /**
-     * Select the vectors from DoFInfo::global_data that should be computed in
-     * the quadrature points on interior faces.
+     * Select the vectors from   DoFInfo::global_data   that should be
+     * computed in     the quadrature points on interior faces.
+     *
      */
     MeshWorker::VectorSelector face_selector;
 
     std::shared_ptr<MeshWorker::VectorDataBase<dim, spacedim>> cell_data;
     std::shared_ptr<MeshWorker::VectorDataBase<dim, spacedim>> boundary_data;
     std::shared_ptr<MeshWorker::VectorDataBase<dim, spacedim>> face_data;
-    /* @} */
+     /* @} */ 
 
     /**
-     * @name Interface for MeshWorker::loop()
+     * @name   Interface for   MeshWorker::loop()
+     *
      */
-    /* @{ */
+     /* @{ */ 
     /**
      * A callback function which is called in the loop over all cells, after
      * the action on a cell has been performed and before the faces are dealt
-     * with.
-     *
-     * In order for this function to have this effect, at least either of the
-     * arguments <tt>boundary_worker</tt> or <tt>face_worker</tt> arguments of
-     * loop() should be nonzero. Additionally, <tt>cells_first</tt> should be
-     * true. If <tt>cells_first</tt> is false, this function is called before
-     * any action on a cell is taken.
-     *
-     * And empty function in this class, but can be replaced in other classes
-     * given to loop() instead.
-     *
+     * with.         In order for this function to have this effect, at least
+     * either of the     arguments <tt>boundary_worker</tt> or
+     * <tt>face_worker</tt> arguments of     loop() should be nonzero.
+     * Additionally, <tt>cells_first</tt> should be     true. If
+     * <tt>cells_first</tt> is false, this function is called before     any
+     * action on a cell is taken.         And empty function in this class,
+     * but can be replaced in other classes     given to loop() instead.
      * See loop() and cell_action() for more details of how this function can
      * be used.
+     *
      */
     template <class DOFINFO>
     void
@@ -534,45 +500,48 @@ namespace MeshWorker
      * A callback function which is called in the loop over all cells, after
      * the action on the faces of a cell has been performed and before the
      * cell itself is dealt with (assumes <tt>cells_first</tt> is false).
-     *
      * In order for this function to have a reasonable effect, at least either
      * of the arguments <tt>boundary_worker</tt> or <tt>face_worker</tt>
      * arguments of loop() should be nonzero. Additionally,
-     * <tt>cells_first</tt> should be false.
+     * <tt>cells_first</tt> should be false.         And empty function in
+     * this class, but can be replaced in other classes     given to loop()
+     * instead.         See loop() and cell_action() for more details of how
+     * this function can     be used.
      *
-     * And empty function in this class, but can be replaced in other classes
-     * given to loop() instead.
-     *
-     * See loop() and cell_action() for more details of how this function can
-     * be used.
      */
     template <class DOFINFO>
     void
     post_faces(const DoFInfoBox<dim, DOFINFO> &);
 
     /**
-     * The @p info object for a cell.
+     * The   @p info   object for a cell.
+     *
      */
     CellInfo cell;
     /**
-     * The @p info object for a boundary face.
+     * The   @p info   object for a boundary face.
+     *
      */
     CellInfo boundary;
     /**
-     * The @p info object for a regular interior face, seen from the first cell.
+     * The   @p info   object for a regular interior face, seen from the first
+     * cell.
+     *
      */
     CellInfo face;
     /**
-     * The @p info object for the refined side of an interior face seen from the
-     * first cell.
+     * The   @p info   object for the refined side of an interior face seen
+     * from the     first cell.
+     *
      */
     CellInfo subface;
     /**
-     * The @p info object for an interior face, seen from the other cell.
+     * The   @p info   object for an interior face, seen from the other cell.
+     *
      */
     CellInfo neighbor;
 
-    /* @} */
+     /* @} */ 
   };
 
 

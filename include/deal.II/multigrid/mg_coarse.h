@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
 //
@@ -27,12 +27,14 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup mg */
-/*@{*/
+ /*!@addtogroup mg */ 
+ /*@{*/ 
 
 /**
  * Coarse grid solver using smoother only. This is a little wrapper,
  * transforming a smoother into a coarse grid solver.
+ *
+ *
  */
 template <class VectorType = Vector<double>>
 class MGCoarseGridApplySmoother : public MGCoarseGridBase<VectorType>
@@ -40,28 +42,33 @@ class MGCoarseGridApplySmoother : public MGCoarseGridBase<VectorType>
 public:
   /**
    * Default constructor.
+   *
    */
   MGCoarseGridApplySmoother();
 
   /**
    * Constructor. Store a pointer to the smoother for later use.
+   *
    */
   MGCoarseGridApplySmoother(const MGSmootherBase<VectorType> &coarse_smooth);
 
   /**
    * Clear the pointer.
+   *
    */
   void
   clear();
 
   /**
    * Initialize new data.
+   *
    */
   void
   initialize(const MGSmootherBase<VectorType> &coarse_smooth);
 
   /**
    * Implementation of the abstract function.
+   *
    */
   void
   operator()(const unsigned int level,
@@ -71,6 +78,7 @@ public:
 private:
   /**
    * Reference to the smoother.
+   *
    */
   SmartPointer<const MGSmootherBase<VectorType>,
                MGCoarseGridApplySmoother<VectorType>>
@@ -80,10 +88,11 @@ private:
 
 
 /**
- * Coarse grid multigrid operator for an iterative solver.
+ * Coarse grid multigrid operator for an iterative solver. This class provides
+ * a wrapper for a deal.II iterative solver with a given matrix and
+ * preconditioner as a coarse grid operator.
  *
- * This class provides a wrapper for a deal.II iterative solver with a given
- * matrix and preconditioner as a coarse grid operator.
+ *
  */
 template <class VectorType,
           class SolverType,
@@ -94,12 +103,14 @@ class MGCoarseGridIterativeSolver : public MGCoarseGridBase<VectorType>
 public:
   /**
    * Default constructor.
+   *
    */
   MGCoarseGridIterativeSolver();
 
   /**
-   * Constructor. Only a reference to these objects is stored, so
-   * their lifetime needs to exceed the usage in this class.
+   * Constructor. Only a reference to these objects is stored, so   their
+   * lifetime needs to exceed the usage in this class.
+   *
    */
   MGCoarseGridIterativeSolver(SolverType &              solver,
                               const MatrixType &        matrix,
@@ -108,6 +119,7 @@ public:
   /**
    * Initialize with new data, see the corresponding constructor for more
    * details.
+   *
    */
   void
   initialize(SolverType &              solver,
@@ -116,6 +128,7 @@ public:
 
   /**
    * Clear all pointers.
+   *
    */
   void
   clear();
@@ -123,6 +136,7 @@ public:
   /**
    * Implementation of the abstract function. Calls the solve method of the
    * given solver with matrix, vectors, and preconditioner.
+   *
    */
   virtual void
   operator()(const unsigned int level,
@@ -132,6 +146,7 @@ public:
 private:
   /**
    * Reference to the solver.
+   *
    */
   SmartPointer<SolverType,
                MGCoarseGridIterativeSolver<VectorType,
@@ -142,6 +157,7 @@ private:
 
   /**
    * Reference to the matrix.
+   *
    */
   SmartPointer<const MatrixType,
                MGCoarseGridIterativeSolver<VectorType,
@@ -152,6 +168,7 @@ private:
 
   /**
    * Reference to the preconditioner.
+   *
    */
   SmartPointer<const PreconditionerType,
                MGCoarseGridIterativeSolver<VectorType,
@@ -165,11 +182,11 @@ private:
 
 /**
  * Coarse grid solver by QR factorization implemented in the class
- * Householder.
+ * Householder. Upon initialization, the QR decomposition of the matrix is
+ * computed. then, the operator() uses   Householder::least_squares()   to
+ * compute the action of the inverse.
  *
- * Upon initialization, the QR decomposition of the matrix is computed. then,
- * the operator() uses Householder::least_squares() to compute the action of
- * the inverse.
+ *
  */
 template <typename number = double, class VectorType = Vector<number>>
 class MGCoarseGridHouseholder : public MGCoarseGridBase<VectorType>
@@ -177,11 +194,13 @@ class MGCoarseGridHouseholder : public MGCoarseGridBase<VectorType>
 public:
   /**
    * Constructor, taking the coarse grid matrix.
+   *
    */
   MGCoarseGridHouseholder(const FullMatrix<number> *A = nullptr);
 
   /**
    * Initialize for a new matrix.
+   *
    */
   void
   initialize(const FullMatrix<number> &A);
@@ -194,15 +213,17 @@ public:
 private:
   /**
    * Matrix for QR-factorization.
+   *
    */
   Householder<number> householder;
 };
 
 /**
  * Coarse grid solver using singular value decomposition of LAPACK matrices.
- *
  * Upon initialization, the singular value decomposition of the matrix is
  * computed. then, the operator() uses
+ *
+ *
  */
 template <typename number = double, class VectorType = Vector<number>>
 class MGCoarseGridSVD : public MGCoarseGridBase<VectorType>
@@ -210,11 +231,13 @@ class MGCoarseGridSVD : public MGCoarseGridBase<VectorType>
 public:
   /**
    * Constructor leaving an uninitialized object.
+   *
    */
   MGCoarseGridSVD() = default;
 
   /**
    * Initialize for a new matrix. This resets the dimensions to the
+   *
    */
   void
   initialize(const FullMatrix<number> &A, const double threshold = 0);
@@ -225,7 +248,8 @@ public:
              const VectorType & src) const;
 
   /**
-   * Write the singular values to @p deallog.
+   * Write the singular values to   @p deallog.
+   *
    */
   void
   log() const;
@@ -233,14 +257,15 @@ public:
 private:
   /**
    * Matrix for singular value decomposition.
+   *
    */
   LAPACKFullMatrix<number> matrix;
 };
 
-/*@}*/
+ /*@}*/ 
 
 #ifndef DOXYGEN
-/* ------------------ Functions for MGCoarseGridApplySmoother -----------*/
+ /* ------------------ Functions for MGCoarseGridApplySmoother -----------*/ 
 template <class VectorType>
 MGCoarseGridApplySmoother<VectorType>::MGCoarseGridApplySmoother()
   : coarse_smooth(nullptr)
@@ -284,7 +309,7 @@ MGCoarseGridApplySmoother<VectorType>::operator()(const unsigned int level,
   coarse_smooth->smooth(level, dst, src);
 }
 
-/* ------------------ Functions for MGCoarseGridIterativeSolver ------------ */
+ /* ------------------ Functions for MGCoarseGridIterativeSolver ------------ */ 
 
 template <class VectorType,
           class SolverType,
@@ -365,7 +390,7 @@ MGCoarseGridIterativeSolver<VectorType,
                             SolverType,
                             MatrixType,
                             PreconditionerType>::
-operator()(const unsigned int /*level*/,
+operator()(const unsigned int  /*level*/ ,
            VectorType &      dst,
            const VectorType &src) const
 {
@@ -377,7 +402,7 @@ operator()(const unsigned int /*level*/,
 
 
 
-/* ------------------ Functions for MGCoarseGridHouseholder ------------ */
+ /* ------------------ Functions for MGCoarseGridHouseholder ------------ */ 
 
 template <typename number, class VectorType>
 MGCoarseGridHouseholder<number, VectorType>::MGCoarseGridHouseholder(
@@ -402,7 +427,7 @@ MGCoarseGridHouseholder<number, VectorType>::initialize(
 template <typename number, class VectorType>
 void
 MGCoarseGridHouseholder<number, VectorType>::
-operator()(const unsigned int /*level*/,
+operator()(const unsigned int  /*level*/ ,
            VectorType &      dst,
            const VectorType &src) const
 {
@@ -426,7 +451,7 @@ MGCoarseGridSVD<number, VectorType>::initialize(const FullMatrix<number> &A,
 
 template <typename number, class VectorType>
 void
-MGCoarseGridSVD<number, VectorType>::operator()(const unsigned int /*level*/,
+MGCoarseGridSVD<number, VectorType>::operator()(const unsigned int  /*level*/ ,
                                                 VectorType &      dst,
                                                 const VectorType &src) const
 {

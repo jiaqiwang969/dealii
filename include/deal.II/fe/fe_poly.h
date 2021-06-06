@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2021 by the deal.II authors
 //
@@ -28,46 +28,44 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup febase */
-/*@{*/
+ /*!@addtogroup febase */ 
+ /*@{*/ 
 
 /**
  * This class gives a unified framework for the implementation of
  * FiniteElement classes based on scalar polynomial spaces like the
- * TensorProductPolynomials or PolynomialSpace classes. This
- * class has a corresponding class for tensor-valued finite
- * elements in the FE_PolyTensor class.
+ * TensorProductPolynomials or PolynomialSpace classes. This class has a
+ * corresponding class for tensor-valued finite elements in the FE_PolyTensor
+ * class. Every class that has the following public member variables and
+ * functions can be used as template parameter   @p PolynomialType.
  *
- * Every class that has the following public member variables and
- * functions can be used as template parameter @p PolynomialType.
  *
  * @code
- *  static const unsigned int dimension;
+ * static const unsigned int dimension;
  *
- *  void evaluate (const Point<dim>            &unit_point,
- *                 std::vector<double>         &values,
- *                 std::vector<Tensor<1,dim> > &grads,
- *                 std::vector<Tensor<2,dim> > &grad_grads,
- *                 std::vector<Tensor<3,dim> > &third_derivatives,
- *                 std::vector<Tensor<4,dim> > &fourth_derivatives) const;
+ * void evaluate (const Point<dim>            &unit_point,
+ *               std::vector<double>         &values,
+ *               std::vector<Tensor<1,dim> > &grads,
+ *               std::vector<Tensor<2,dim> > &grad_grads,
+ *               std::vector<Tensor<3,dim> > &third_derivatives,
+ *               std::vector<Tensor<4,dim> > &fourth_derivatives) const;
  *
- *  double compute_value (const unsigned int i,
- *                        const Point<dim> &p) const;
+ * double compute_value (const unsigned int i,
+ *                      const Point<dim> &p) const;
  *
- *  template <int order>
- *  Tensor<order,dim> compute_derivative (const unsigned int i,
- *                                        const Point<dim> &p) const;
+ * template <int order>
+ * Tensor<order,dim> compute_derivative (const unsigned int i,
+ *                                      const Point<dim> &p) const;
  * @endcode
  * Example classes are TensorProductPolynomials, PolynomialSpace or
- * PolynomialsP.
+ * PolynomialsP. This class is not a fully implemented FiniteElement class.
+ * Instead there are several pure virtual functions declared in the
+ * FiniteElement and FiniteElement classes which cannot be implemented by this
+ * class but are left for implementation in derived classes.
+ * @todo   Since nearly all functions for spacedim != dim are specialized,
+ * this class needs cleaning up.
  *
- * This class is not a fully implemented FiniteElement class. Instead there
- * are several pure virtual functions declared in the FiniteElement and
- * FiniteElement classes which cannot be implemented by this class but are
- * left for implementation in derived classes.
  *
- * @todo Since nearly all functions for spacedim != dim are specialized, this
- * class needs cleaning up.
  */
 
 template <int dim, int spacedim = dim>
@@ -76,6 +74,7 @@ class FE_Poly : public FiniteElement<dim, spacedim>
 public:
   /**
    * Constructor.
+   *
    */
   FE_Poly(const ScalarPolynomialsBase<dim> &poly_space,
           const FiniteElementData<dim> &    fe_data,
@@ -84,12 +83,14 @@ public:
 
   /**
    * Copy constructor.
+   *
    */
   FE_Poly(const FE_Poly &fe);
 
   /**
    * Return the polynomial degree of this finite element, i.e. the value
    * passed to the constructor.
+   *
    */
   unsigned int
   get_degree() const;
@@ -100,6 +101,7 @@ public:
 
   /**
    * Return the underlying polynomial space.
+   *
    */
   const ScalarPolynomialsBase<dim> &
   get_poly_space() const;
@@ -108,10 +110,10 @@ public:
    * Return the numbering of the underlying polynomial space compared to
    * lexicographic ordering of the basis functions. Returns
    * PolynomialType::get_numbering().
+   * @note   Some implementations of this class do not support this function,
+   * since no lexicographic ordering of the basis functions is possible
+   * for them. Examples are: FE_SimplexP, FE_WedgeP, and FE_PyramidP.
    *
-   * @note Some implementations of this class do not support this function,
-   *   since no lexicographic ordering of the basis functions is possible
-   *   for them. Examples are: FE_SimplexP, FE_WedgeP, and FE_PyramidP.
    */
   std::vector<unsigned int>
   get_poly_space_numbering() const;
@@ -119,8 +121,8 @@ public:
   /**
    * Return the inverse numbering of the underlying polynomial space. Returns
    * PolynomialType::get_numbering_inverse().
+   * @note   See note of get_poly_space_numbering().
    *
-   * @note See note of get_poly_space_numbering().
    */
   std::vector<unsigned int>
   get_poly_space_numbering_inverse() const;
@@ -129,6 +131,7 @@ public:
    * Return the value of the <tt>i</tt>th shape function at the point
    * <tt>p</tt>. See the FiniteElement base class for more information about
    * the semantics of this function.
+   *
    */
   virtual double
   shape_value(const unsigned int i, const Point<dim> &p) const override;
@@ -137,11 +140,10 @@ public:
    * Return the value of the <tt>component</tt>th vector component of the
    * <tt>i</tt>th shape function at the point <tt>p</tt>. See the
    * FiniteElement base class for more information about the semantics of this
-   * function.
+   * function.     Since this element is scalar, the returned value is the
+   * same as if the   function without the <tt>_component</tt> suffix were
+   * called, provided   that the specified component is zero.
    *
-   * Since this element is scalar, the returned value is the same as if the
-   * function without the <tt>_component</tt> suffix were called, provided
-   * that the specified component is zero.
    */
   virtual double
   shape_value_component(const unsigned int i,
@@ -152,6 +154,7 @@ public:
    * Return the gradient of the <tt>i</tt>th shape function at the point
    * <tt>p</tt>. See the FiniteElement base class for more information about
    * the semantics of this function.
+   *
    */
   virtual Tensor<1, dim>
   shape_grad(const unsigned int i, const Point<dim> &p) const override;
@@ -160,11 +163,10 @@ public:
    * Return the gradient of the <tt>component</tt>th vector component of the
    * <tt>i</tt>th shape function at the point <tt>p</tt>. See the
    * FiniteElement base class for more information about the semantics of this
-   * function.
+   * function.     Since this element is scalar, the returned value is the
+   * same as if the   function without the <tt>_component</tt> suffix were
+   * called, provided   that the specified component is zero.
    *
-   * Since this element is scalar, the returned value is the same as if the
-   * function without the <tt>_component</tt> suffix were called, provided
-   * that the specified component is zero.
    */
   virtual Tensor<1, dim>
   shape_grad_component(const unsigned int i,
@@ -175,6 +177,7 @@ public:
    * Return the tensor of second derivatives of the <tt>i</tt>th shape
    * function at point <tt>p</tt> on the unit cell. See the FiniteElement base
    * class for more information about the semantics of this function.
+   *
    */
   virtual Tensor<2, dim>
   shape_grad_grad(const unsigned int i, const Point<dim> &p) const override;
@@ -183,11 +186,10 @@ public:
    * Return the second derivative of the <tt>component</tt>th vector component
    * of the <tt>i</tt>th shape function at the point <tt>p</tt>. See the
    * FiniteElement base class for more information about the semantics of this
-   * function.
+   * function.     Since this element is scalar, the returned value is the
+   * same as if the   function without the <tt>_component</tt> suffix were
+   * called, provided   that the specified component is zero.
    *
-   * Since this element is scalar, the returned value is the same as if the
-   * function without the <tt>_component</tt> suffix were called, provided
-   * that the specified component is zero.
    */
   virtual Tensor<2, dim>
   shape_grad_grad_component(const unsigned int i,
@@ -198,6 +200,7 @@ public:
    * Return the tensor of third derivatives of the <tt>i</tt>th shape function
    * at point <tt>p</tt> on the unit cell. See the FiniteElement base class
    * for more information about the semantics of this function.
+   *
    */
   virtual Tensor<3, dim>
   shape_3rd_derivative(const unsigned int i,
@@ -207,11 +210,10 @@ public:
    * Return the third derivative of the <tt>component</tt>th vector component
    * of the <tt>i</tt>th shape function at the point <tt>p</tt>. See the
    * FiniteElement base class for more information about the semantics of this
-   * function.
+   * function.     Since this element is scalar, the returned value is the
+   * same as if the   function without the <tt>_component</tt> suffix were
+   * called, provided   that the specified component is zero.
    *
-   * Since this element is scalar, the returned value is the same as if the
-   * function without the <tt>_component</tt> suffix were called, provided
-   * that the specified component is zero.
    */
   virtual Tensor<3, dim>
   shape_3rd_derivative_component(const unsigned int i,
@@ -222,6 +224,7 @@ public:
    * Return the tensor of fourth derivatives of the <tt>i</tt>th shape
    * function at point <tt>p</tt> on the unit cell. See the FiniteElement base
    * class for more information about the semantics of this function.
+   *
    */
   virtual Tensor<4, dim>
   shape_4th_derivative(const unsigned int i,
@@ -231,11 +234,10 @@ public:
    * Return the fourth derivative of the <tt>component</tt>th vector component
    * of the <tt>i</tt>th shape function at the point <tt>p</tt>. See the
    * FiniteElement base class for more information about the semantics of this
-   * function.
+   * function.     Since this element is scalar, the returned value is the
+   * same as if the   function without the <tt>_component</tt> suffix were
+   * called, provided   that the specified component is zero.
    *
-   * Since this element is scalar, the returned value is the same as if the
-   * function without the <tt>_component</tt> suffix were called, provided
-   * that the specified component is zero.
    */
   virtual Tensor<4, dim>
   shape_4th_derivative_component(const unsigned int i,
@@ -244,16 +246,14 @@ public:
 
   /**
    * Return an estimate (in bytes) for the memory consumption of this object.
+   *
    */
   virtual std::size_t
   memory_consumption() const override;
 
 protected:
-  /*
-   * NOTE: The following function has its definition inlined into the class
-   * declaration because we otherwise run into a compiler error with MS Visual
-   * Studio.
-   */
+  /*   NOTE: The following function has its definition inlined into the class   declaration because we otherwise run into a compiler error with MS Visual   Studio.  
+* */
 
 
   virtual std::unique_ptr<
@@ -420,10 +420,9 @@ protected:
       &output_data) const override;
 
   /**
-   * Fields of cell-independent data.
+   * Fields of cell-independent data.     For information about the general
+   * purpose of this class, see the   documentation of the base class.
    *
-   * For information about the general purpose of this class, see the
-   * documentation of the base class.
    */
   class InternalData : public FiniteElement<dim, spacedim>::InternalDataBase
   {
@@ -431,63 +430,55 @@ protected:
     /**
      * Array with shape function values in quadrature points. There is one row
      * for each shape function, containing values for each quadrature point.
-     *
      * In this array, we store the values of the shape function in the
      * quadrature points on the unit cell. Since these values do not change
      * under transformation to the real cell, we only need to copy them over
      * when visiting a concrete cell.
+     *
      */
     Table<2, double> shape_values;
 
     /**
      * Array with shape function gradients in quadrature points. There is one
      * row for each shape function, containing values for each quadrature
-     * point.
+     * point.         We store the gradients in the quadrature points on the
+     * unit cell. We     then only have to apply the transformation (which is
+     * a matrix-vector     multiplication) when visiting an actual cell.
      *
-     * We store the gradients in the quadrature points on the unit cell. We
-     * then only have to apply the transformation (which is a matrix-vector
-     * multiplication) when visiting an actual cell.
      */
     Table<2, Tensor<1, dim>> shape_gradients;
 
     /**
      * Array with shape function hessians in quadrature points. There is one
      * row for each shape function, containing values for each quadrature
-     * point.
+     * point.         We store the hessians in the quadrature points on the
+     * unit cell. We     then only have to apply the transformation when
+     * visiting an actual     cell.
      *
-     * We store the hessians in the quadrature points on the unit cell. We
-     * then only have to apply the transformation when visiting an actual
-     * cell.
      */
     Table<2, Tensor<2, dim>> shape_hessians;
 
     /**
      * Array with shape function third derivatives in quadrature points. There
      * is one row for each shape function, containing values for each
-     * quadrature point.
+     * quadrature point.         We store the third derivatives in the
+     * quadrature points on the unit     cell. We then only have to apply the
+     * transformation when visiting an     actual cell.
      *
-     * We store the third derivatives in the quadrature points on the unit
-     * cell. We then only have to apply the transformation when visiting an
-     * actual cell.
      */
     Table<2, Tensor<3, dim>> shape_3rd_derivatives;
   };
 
   /**
-   * Correct the shape Hessians by subtracting the terms corresponding to the
-   * Jacobian pushed forward gradient.
-   *
-   * Before the correction, the Hessians would be given by
-   * @f[
+   * Correct the shape Hessians by subtracting the terms corresponding to the   Jacobian pushed forward gradient.     Before the correction, the Hessians would be given by   @f[
    * D_{ijk} = \frac{d^2\phi_i}{d \hat x_J d \hat x_K} (J_{jJ})^{-1}
    * (J_{kK})^{-1},
-   * @f]
-   * where $J_{iI}=\frac{d x_i}{d \hat x_I}$. After the correction, the
-   * correct Hessians would be given by
-   * @f[
-   * \frac{d^2 \phi_i}{d x_j d x_k} = D_{ijk} - H_{mjk} \frac{d \phi_i}{d x_m},
-   * @f]
-   * where $H_{ijk}$ is the Jacobian pushed-forward derivative.
+   * @f]   where   $J_{iI}=\frac{d x_i}{d \hat x_I}$  . After the correction, the   correct Hessians would be given by   @f[
+   * \frac{d^2 \phi_i}{d x_j d x_k} = D_{ijk}
+   *
+   * - H_{mjk} \frac{d \phi_i}{d x_m}, @f]   where   $H_{ijk}$   is the
+   * Jacobian pushed-forward derivative.
+   *
    */
   void
   correct_hessians(
@@ -498,26 +489,34 @@ protected:
     const unsigned int n_q_points) const;
 
   /**
-   * Correct the shape third derivatives by subtracting the terms
-   * corresponding to the Jacobian pushed forward gradient and second
-   * derivative.
-   *
-   * Before the correction, the third derivatives would be given by
-   * @f[
+   * Correct the shape third derivatives by subtracting the terms   corresponding to the Jacobian pushed forward gradient and second   derivative.     Before the correction, the third derivatives would be given by   @f[
    * D_{ijkl} = \frac{d^3\phi_i}{d \hat x_J d \hat x_K d \hat x_L} (J_{jJ})^{-1}
    * (J_{kK})^{-1} (J_{lL})^{-1},
-   * @f]
-   * where $J_{iI}=\frac{d x_i}{d \hat x_I}$. After the correction, the
-   * correct third derivative would be given by
-   * @f[
-   * \frac{d^3\phi_i}{d x_j d x_k d x_l} = D_{ijkl} - H_{mjl} \frac{d^2
-   * \phi_i}{d x_k d x_m}
-   * - H_{mkl} \frac{d^2 \phi_i}{d x_j d x_m} - H_{mjk} \frac{d^2 \phi_i}{d x_l
-   * d x_m}
-   * - K_{mjkl} \frac{d \phi_i}{d x_m},
-   * @f]
-   * where $H_{ijk}$ is the Jacobian pushed-forward derivative and $K_{ijkl}$
-   * is the Jacobian pushed-forward second derivative.
+   * @f]   where   $J_{iI}=\frac{d x_i}{d \hat x_I}$  . After the correction, the   correct third derivative would be given by   @f[
+   * \frac{d^3\phi_i}{d x_j d x_k d x_l} = D_{ijkl}
+   *
+   * - H_{mjl} \frac{d^2 \phi_i}{d x_k d x_m}
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * - H_{mkl} \frac{d^2 \phi_i}{d x_j d x_m}
+   *
+   * - H_{mjk} \frac{d^2 \phi_i}{d x_l d x_m}
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * - K_{mjkl} \frac{d \phi_i}{d x_m}, @f]   where   $H_{ijk}$   is the
+   * Jacobian pushed-forward derivative and   $K_{ijkl}$     is the Jacobian
+   * pushed-forward second derivative.
+   *
    */
   void
   correct_third_derivatives(
@@ -530,11 +529,12 @@ protected:
 
   /**
    * The polynomial space.
+   *
    */
   const std::unique_ptr<ScalarPolynomialsBase<dim>> poly_space;
 };
 
-/*@}*/
+ /*@}*/ 
 
 DEAL_II_NAMESPACE_CLOSE
 

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
 //
@@ -33,43 +33,47 @@ namespace VectorTools
 {
   /**
    * Namespace for the flags for point_values() and point_gradients().
+   *
    */
   namespace EvaluationFlags
   {
     /**
      * Flags for point_values() and point_gradients().
+     *
      */
     enum EvaluationFlags
     {
       /**
        * Compute average.
+       *
        */
       avg = 0,
       /**
        * Compute maximum.
+       * @note   Only available for scalar values.
        *
-       * @note Only available for scalar values.
        */
       max = 1,
       /**
        * Compute minimum.
+       * @note   Only available for scalar values.
        *
-       * @note Only available for scalar values.
        */
       min = 2,
       /**
        * Take any value.
+       *
        */
       insert = 3
     };
   } // namespace EvaluationFlags
 
   /**
-   * Given a (distributed) solution vector @p vector, evaluate the values at
-   * the (arbitrary and even remote) points specified by @p evaluation_points.
+   * Given a (distributed) solution vector   @p vector,   evaluate the values
+   * at   the (arbitrary and even remote) points specified by   @p
+   * evaluation_points.         @warning   This is a collective call that
+   * needs to be executed by all     processors in the communicator.
    *
-   * @warning This is a collective call that needs to be executed by all
-   *   processors in the communicator.
    */
   template <int n_components, int dim, int spacedim, typename VectorType>
   std::vector<typename FEPointEvaluation<n_components, dim>::value_type>
@@ -82,15 +86,14 @@ namespace VectorTools
     const EvaluationFlags::EvaluationFlags flags = EvaluationFlags::avg);
 
   /**
-   * Given a (distributed) solution vector @p vector, evaluate the values at
-   * the points specified by @p cache which might have been set up by the
-   * above function.
+   * Given a (distributed) solution vector   @p vector,   evaluate the values
+   * at   the points specified by   @p cache   which might have been set up by
+   * the   above function.
+   * @note   Refinement/coarsening/repartitioning leads to the invalidation of
+   * the     cache so that the above function has to be called again.
+   * @warning   This is a collective call that needs to be executed by all
+   * processors in the communicator.
    *
-   * @note Refinement/coarsening/repartitioning leads to the invalidation of the
-   *   cache so that the above function has to be called again.
-   *
-   * @warning This is a collective call that needs to be executed by all
-   *   processors in the communicator.
    */
   template <int n_components, int dim, int spacedim, typename VectorType>
   std::vector<typename FEPointEvaluation<n_components, dim>::value_type>
@@ -101,8 +104,10 @@ namespace VectorTools
     const EvaluationFlags::EvaluationFlags flags = EvaluationFlags::avg);
 
   /**
-   * Given a (distributed) solution vector @p vector, evaluate the gradients at
-   * the (arbitrary and even remote) points specified by @p evaluation_points.
+   * Given a (distributed) solution vector   @p vector,   evaluate the
+   * gradients at   the (arbitrary and even remote) points specified by   @p
+   * evaluation_points.
+   *
    */
   template <int n_components, int dim, int spacedim, typename VectorType>
   std::vector<typename FEPointEvaluation<n_components, dim>::gradient_type>
@@ -115,12 +120,12 @@ namespace VectorTools
     const EvaluationFlags::EvaluationFlags flags = EvaluationFlags::avg);
 
   /**
-   * Given a (distributed) solution vector @p vector, evaluate the gradients at
-   * the points specified by @p cache which might have been set up by the
-   * above function.
+   * Given a (distributed) solution vector   @p vector,   evaluate the
+   * gradients at   the points specified by   @p cache   which might have been
+   * set up by the   above function.
+   * @note   Refinement/coarsening/repartitioning leads to the invalidation of
+   * the     cache so that the above function has to be called again.
    *
-   * @note Refinement/coarsening/repartitioning leads to the invalidation of the
-   *   cache so that the above function has to be called again.
    */
   template <int n_components, int dim, int spacedim, typename VectorType>
   std::vector<typename FEPointEvaluation<n_components, dim>::gradient_type>
@@ -173,6 +178,7 @@ namespace VectorTools
   {
     /**
      * Perform reduction for scalars.
+     *
      */
     template <typename T>
     T
@@ -202,6 +208,7 @@ namespace VectorTools
 
     /**
      * Perform reduction for tensors.
+     *
      */
     template <int rank, int dim, typename Number>
     Tensor<rank, dim, Number>

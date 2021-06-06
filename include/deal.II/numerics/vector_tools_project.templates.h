@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
 //
@@ -47,6 +47,7 @@ namespace VectorTools
      * Interpolate zero boundary values. We don't need to worry about a
      * mapping here because the function we evaluate for the DoFs is zero in
      * the mapped locations as well as in the original, unmapped locations
+     *
      */
     template <int dim, int spacedim, typename number>
     void
@@ -100,6 +101,7 @@ namespace VectorTools
 
     /**
      * Compute the boundary values to be used in the project() functions.
+     *
      */
     template <int dim,
               int spacedim,
@@ -147,10 +149,8 @@ namespace VectorTools
     }
 
 
-    /*
-     * MatrixFree implementation of project() for an arbitrary number of
-     * components of the FiniteElement.
-     */
+    /*     MatrixFree implementation of project() for an arbitrary number of     components of the FiniteElement.    
+* */
     template <int components, int dim, typename Number, int spacedim>
     void
     project_matrix_free(
@@ -337,7 +337,8 @@ namespace VectorTools
     /**
      * Helper interface for the matrix-free implementation of project(): avoid
      * instantiating the other helper functions for more than one VectorType
-     * by copying from a LinearAlgebra::distributed::Vector.
+     * by copying from a   LinearAlgebra::distributed::Vector.
+     *
      */
     template <int dim, typename VectorType, int spacedim>
     void
@@ -379,6 +380,7 @@ namespace VectorTools
     /**
      * Return whether the boundary values try to constrain a degree of freedom
      * that is already constrained to something else
+     *
      */
     template <typename number>
     bool
@@ -403,6 +405,7 @@ namespace VectorTools
 
     /**
      * Generic implementation of the project() function
+     *
      */
     template <int dim,
               int spacedim,
@@ -698,9 +701,10 @@ namespace VectorTools
     }
 
     /**
-     * Specialization of project() for the case dim==spacedim.
-     * Check if we can use the MatrixFree implementation or need
-     * to use the matrix based one.
+     * Specialization of project() for the case dim==spacedim.     Check if we
+     * can use the MatrixFree implementation or need     to use the matrix
+     * based one.
+     *
      */
     template <typename VectorType, int dim>
     void

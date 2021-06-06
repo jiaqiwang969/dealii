@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
 //
@@ -76,26 +76,25 @@ class FEEvaluation;
  * mapping-related information independent of the degrees of freedom and
  * finite element in use. This class provides access functionality for user
  * code but is otherwise invisible without any public constructor. The usage
- * is through the class FEEvaluation instead.
- *
- * This class has four template arguments:
- *
- * @tparam dim Dimension in which this class is to be used
- *
- * @tparam Number Number format, usually @p double or @p float
- *
- * @tparam is_face Whether the class is used for a cell integrator (with
+ * is through the class FEEvaluation instead. This class has four template
+ * arguments:
+ * @tparam   dim Dimension in which this class is to be used
+ * @tparam   Number Number format, usually   @p double   or   @p float
+ * @tparam   is_face Whether the class is used for a cell integrator (with
  * quadrature dimension the same as the space dimension) or for a face
  * integrator (with quadrature dimension one less)
+ * @tparam   VectorizedArrayType Type of array to be woked on in a vectorized
+ * fashion, defaults to VectorizedArray<Number>
  *
- * @tparam VectorizedArrayType Type of array to be woked on in a vectorized
- *                             fashion, defaults to VectorizedArray<Number>
  *
- * @note Currently only VectorizedArray<Number, width> is supported as
- *       VectorizedArrayType.
+ * @note   Currently only VectorizedArray<Number, width> is supported as
+ * VectorizedArrayType.
+ *
  *
  *
  * @ingroup matrixfree
+ *
+ *
  */
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
 class FEEvaluationBaseData
@@ -109,37 +108,43 @@ public:
 
   /**
    * Destructor.
+   *
    */
   ~FEEvaluationBaseData();
 
   /**
-   * Return the index offset within the geometry fields for the cell the @p
+   * Return the index offset within the geometry fields for the cell the   @p
    * reinit() function has been called for. This index can be used to access
    * an index into a field that has the same compression behavior as the
    * Jacobian of the geometry, e.g., to store an effective coefficient tensors
    * that combines a coefficient with the geometry for lower memory transfer
    * as the available data fields.
+   *
    */
   unsigned int
   get_mapping_data_index_offset() const;
 
   /**
-   * Return the type of the cell the @p reinit() function has been called for.
-   * Valid values are @p cartesian for Cartesian cells (which allows for
-   * considerable data compression), @p affine for cells with affine mappings,
-   * and @p general for general cells without any compressed storage applied.
+   * Return the type of the cell the   @p reinit()   function has been called
+   * for.   Valid values are   @p cartesian   for Cartesian cells (which
+   * allows for   considerable data compression),   @p affine   for cells with
+   * affine mappings,   and   @p general   for general cells without any
+   * compressed storage applied.
+   *
    */
   internal::MatrixFreeFunctions::GeometryType
   get_cell_type() const;
 
   /**
    * Return a reference to the ShapeInfo object currently in use.
+   *
    */
   const internal::MatrixFreeFunctions::ShapeInfo<VectorizedArrayType> &
   get_shape_info() const;
 
   /**
    * Return a reference to the DoFInfo object currently in use.
+   *
    */
   const internal::MatrixFreeFunctions::DoFInfo &
   get_dof_info() const;
@@ -147,20 +152,22 @@ public:
   /**
    * Return the determinant of the Jacobian from the unit to the real cell
    * times the quadrature weight.
+   *
    */
   VectorizedArrayType
   JxW(const unsigned int q_point) const;
 
   /**
-   * Return the inverse and transposed version $J^{-\mathrm T}$ of the
+   * Return the inverse and transposed version   $J^{-\mathrm T}$   of the
    * Jacobian of the mapping between the unit to the real cell defined as
-   * $J_{ij} = d x_i / d\hat x_j$. The $(i,j)$ entry of the returned tensor
-   * contains $d\hat x_j/dx_i$, i.e., columns refer to reference space
-   * coordinates and rows to real cell coordinates. Thus, the returned tensor
-   * represents a covariant transformation, which is used in the
-   * FEEvaluationBase::get_gradient() function to transform the unit cell
-   * gradients to gradients on the real cell by a multiplication $J^{-\mathrm
-   * T} \hat{\nabla} u_h$.
+   * $J_{ij} = d x_i / d\hat x_j$  . The   $(i,j)$   entry of the returned
+   * tensor   contains   $d\hat x_j/dx_i$  , i.e., columns refer to reference
+   * space   coordinates and rows to real cell coordinates. Thus, the returned
+   * tensor   represents a covariant transformation, which is used in the
+   * FEEvaluationBase::get_gradient()   function to transform the unit cell
+   * gradients to gradients on the real cell by a multiplication
+   * $J^{-\mathrm T} \hat{\nabla} u_h$  .
+   *
    */
   Tensor<2, dim, VectorizedArrayType>
   inverse_jacobian(const unsigned int q_point) const;
@@ -174,34 +181,37 @@ public:
    * FaceToCellTopology and selected with the `is_interior_face=false` flag of
    * the constructor, the normal points into the element as a consequence of
    * the single normal vector.
+   * @note   Only implemented in case `is_face == true`.
    *
-   * @note Only implemented in case `is_face == true`.
    */
   Tensor<1, dim, VectorizedArrayType>
   get_normal_vector(const unsigned int q_point) const;
 
   /**
    * Provides a unified interface to access data in a vector of
-   * VectorizedArray fields of length MatrixFree::n_cell_batches() +
-   * MatrixFree::n_ghost_cell_batches() for both cells (plain read) and faces
-   * (indirect addressing).
+   * VectorizedArray fields of length   MatrixFree::n_cell_batches()   +
+   * MatrixFree::n_ghost_cell_batches()   for both cells (plain read) and
+   * faces   (indirect addressing).
+   *
    */
   VectorizedArrayType
   read_cell_data(const AlignedVector<VectorizedArrayType> &array) const;
 
   /**
-   * Provides a unified interface to set data in a vector of
-   * VectorizedArray fields of length MatrixFree::n_cell_batches() +
-   * MatrixFree::n_ghost_cell_batches() for both cells (plain read) and faces
-   * (indirect addressing).
+   * Provides a unified interface to set data in a vector of   VectorizedArray
+   * fields of length   MatrixFree::n_cell_batches()   +
+   * MatrixFree::n_ghost_cell_batches()   for both cells (plain read) and
+   * faces   (indirect addressing).
+   *
    */
   void
   set_cell_data(AlignedVector<VectorizedArrayType> &array,
                 const VectorizedArrayType &         value) const;
 
   /**
-   * The same as above, just for std::array of length of VectorizedArrayType for
-   * arbitrary data type.
+   * The same as above, just for   std::array   of length of
+   * VectorizedArrayType for   arbitrary data type.
+   *
    */
   template <typename T>
   std::array<T, VectorizedArrayType::size()>
@@ -209,8 +219,9 @@ public:
                    &array) const;
 
   /**
-   * The same as above, just for std::array of length of VectorizedArrayType for
-   * arbitrary data type.
+   * The same as above, just for   std::array   of length of
+   * VectorizedArrayType for   arbitrary data type.
+   *
    */
   template <typename T>
   void
@@ -221,6 +232,7 @@ public:
   /**
    * Return the id of the cells this FEEvaluation or FEFaceEvaluation is
    * associated with.
+   *
    */
   std::array<unsigned int, VectorizedArrayType::size()>
   get_cell_ids() const;
@@ -228,6 +240,7 @@ public:
   /**
    * Return the id of the cells/faces this FEEvaluation/FEFaceEvaluation is
    * associated with.
+   *
    */
   std::array<unsigned int, VectorizedArrayType::size()>
   get_cell_or_face_ids() const;
@@ -237,6 +250,7 @@ public:
    * Return the numbering of local degrees of freedom within the evaluation
    * routines of FEEvaluation in terms of the standard numbering on finite
    * elements.
+   *
    */
   const std::vector<unsigned int> &
   get_internal_dof_numbering() const;
@@ -246,38 +260,44 @@ public:
    * of this memory is overwritten during evaluate() and integrate() calls so
    * do not assume it to be stable over those calls. The maximum size you can
    * write into is 3*dofs_per_cell+2*n_q_points.
+   *
    */
   ArrayView<VectorizedArrayType>
   get_scratch_data() const;
 
   /**
    * Return the number of the quadrature formula of the present cell.
+   *
    */
   unsigned int
   get_quadrature_index() const;
 
   /**
    * Return index of the current cell or face.
+   *
    */
   unsigned int
   get_current_cell_index() const;
 
   /**
-   * Return the active FE index for this class for efficient indexing in the hp-
-   * case.
+   * Return the active FE index for this class for efficient indexing in the
+   * hp-   case.
+   *
    */
   unsigned int
   get_active_fe_index() const;
 
   /**
-   * Return the active quadrature index for this class for efficient indexing in
-   * the hp-case.
+   * Return the active quadrature index for this class for efficient indexing
+   * in   the hp-case.
+   *
    */
   unsigned int
   get_active_quadrature_index() const;
 
   /**
    * Return the underlying MatrixFree object.
+   *
    */
   const MatrixFree<dim, Number, VectorizedArrayType> &
   get_matrix_free() const;
@@ -288,6 +308,7 @@ protected:
    * class. Takes all data stored in MatrixFree. If applied to problems with
    * more than one quadrature formula selected during construction of
    * `matrix_free`, `quad_no` allows to select the appropriate formula.
+   *
    */
   FEEvaluationBaseData(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -304,6 +325,7 @@ protected:
   /**
    * Constructor that comes with reduced functionality and works similar as
    * FEValues.
+   *
    */
   FEEvaluationBaseData(
     const Mapping<dim> &      mapping,
@@ -319,6 +341,7 @@ protected:
    * quadrature, and update flags, the underlying geometry evaluation based on
    * FEValues will be deep-copied in order to allow for using in parallel with
    * threads.
+   *
    */
   FEEvaluationBaseData(const FEEvaluationBaseData &other);
 
@@ -327,12 +350,14 @@ protected:
    * mapping, fe, quadrature, and update flags, the underlying geometry
    * evaluation based on FEValues will be deep-copied in order to allow for
    * using in parallel with threads.
+   *
    */
   FEEvaluationBaseData &
   operator=(const FEEvaluationBaseData &other);
 
   /**
    * This is the general array for all data fields.
+   *
    */
   AlignedVector<VectorizedArrayType> *scratch_data_array;
 
@@ -340,23 +365,27 @@ protected:
    * This is the user-visible part of scratch_data_array, only showing the
    * last part of scratch_data_array. The first part is consumed by
    * values_dofs, values_quad, etc.
+   *
    */
   VectorizedArrayType *scratch_data;
 
   /**
    * The number of the quadrature formula of the present cell.
+   *
    */
   const unsigned int quad_no;
 
   /**
    * A pointer to the underlying data.
+   *
    */
   const MatrixFree<dim, Number, VectorizedArrayType> *matrix_info;
 
   /**
-   * A pointer to the underlying DoF indices and constraint description
-   * for the component specified at construction. Also contained in
-   * matrix_info, but it simplifies code if we store a reference to it.
+   * A pointer to the underlying DoF indices and constraint description   for
+   * the component specified at construction. Also contained in   matrix_info,
+   * but it simplifies code if we store a reference to it.
+   *
    */
   const internal::MatrixFreeFunctions::DoFInfo *dof_info;
 
@@ -365,6 +394,7 @@ protected:
    * for the given quadrature formula specified at construction. Also
    * contained in matrix_info, but it simplifies code if we store a reference
    * to it.
+   *
    */
   const internal::MatrixFreeFunctions::MappingInfoStorage<
     (is_face ? dim - 1 : dim),
@@ -374,12 +404,14 @@ protected:
 
   /**
    * The active FE index for this class for efficient indexing in the hp-case.
+   *
    */
   const unsigned int active_fe_index;
 
   /**
    * The active quadrature index for this class for efficient indexing in the
    * hp-case.
+   *
    */
   const unsigned int active_quad_index;
 
@@ -387,6 +419,7 @@ protected:
    * A pointer to the underlying quadrature formula specified at construction.
    * Also contained in matrix_info, but it simplifies code if we store a
    * reference to it.
+   *
    */
   const typename internal::MatrixFreeFunctions::MappingInfoStorage<
     (is_face ? dim - 1 : dim),
@@ -396,6 +429,7 @@ protected:
 
   /**
    * The number of quadrature points in the current evaluation context.
+   *
    */
   const unsigned int n_quadrature_points;
 
@@ -404,12 +438,14 @@ protected:
    * Hessians in 1D at the quadrature points that constitute the tensor
    * product. Also contained in matrix_info, but it simplifies code if we
    * store a reference to it.
+   *
    */
   const internal::MatrixFreeFunctions::ShapeInfo<VectorizedArrayType> *data;
 
   /**
    * A pointer to the Jacobian information of the present cell. Only set to a
    * useful value if on a non-Cartesian cell.
+   *
    */
   const Tensor<2, dim, VectorizedArrayType> *jacobian;
 
@@ -418,74 +454,86 @@ protected:
    * Cartesian cell or on a cell with constant Jacobian, this is just the
    * Jacobian determinant, otherwise the Jacobian determinant times the
    * quadrature weight.
+   *
    */
   const VectorizedArrayType *J_value;
 
   /**
    * A pointer to the normal vectors at faces.
+   *
    */
   const Tensor<1, dim, VectorizedArrayType> *normal_vectors;
 
   /**
    * A pointer to the normal vectors times the jacobian at faces.
+   *
    */
   const Tensor<1, dim, VectorizedArrayType> *normal_x_jacobian;
 
   /**
    * A pointer to the quadrature weights of the underlying quadrature formula.
+   *
    */
   const Number *quadrature_weights;
 
   /**
    * After a call to reinit(), stores the number of the cell we are currently
    * working with.
+   *
    */
   unsigned int cell;
 
   /**
    * Flag holding information whether a face is an interior or exterior face
    * according to the defined direction of the normal.  Not used for cells.
+   *
    */
   bool is_interior_face;
 
   /**
    * Stores the index an FEFaceEvaluation object is currently pointing into
    * (interior face, exterior face, data associated with cell).
+   *
    */
   internal::MatrixFreeFunctions::DoFInfo::DoFAccessIndex dof_access_index;
 
   /**
    * Stores the current number of a face within the given cell in case
    * `is_face==true`, using values between `0` and `2*dim`.
+   *
    */
   unsigned int face_no;
 
   /**
    * Stores the orientation of the given face with respect to the standard
    * orientation, 0 if in standard orientation.
+   *
    */
   unsigned int face_orientation;
 
   /**
    * Stores the subface index of the given face. Usually, this variable takes
-   * the value numbers::invalid_unsigned_int to indicate integration over the
-   * full face, but in case the current physical face has a neighbor that is
-   * more refined, it is a subface and must scale the entries in ShapeInfo
-   * appropriately.
+   * the value   numbers::invalid_unsigned_int   to indicate integration over
+   * the   full face, but in case the current physical face has a neighbor
+   * that is   more refined, it is a subface and must scale the entries in
+   * ShapeInfo   appropriately.
+   *
    */
   unsigned int subface_index;
 
   /**
    * Stores the type of the cell we are currently working with after a call to
-   * reinit(). Valid values are @p cartesian, @p affine and @p general, which
-   * have different implications on how the Jacobian transformations are
-   * stored internally in MappingInfo.
+   * reinit(). Valid values are   @p cartesian,     @p affine   and   @p
+   * general,   which   have different implications on how the Jacobian
+   * transformations are   stored internally in MappingInfo.
+   *
    */
   internal::MatrixFreeFunctions::GeometryType cell_type;
 
   /**
    * Geometry data that can be generated FEValues on the fly with the
    * respective constructor.
+   *
    */
   std::shared_ptr<internal::MatrixFreeFunctions::
                     MappingDataOnTheFly<dim, Number, VectorizedArrayType>>
@@ -505,36 +553,33 @@ protected:
  * constructor. The usage is through the class FEEvaluation instead. It
  * implements a reinit method that is used to set pointers so that operations
  * on quadrature points can be performed quickly, access functions to vectors
- * for the FEEvaluationBase::read_dof_values(),
- * FEEvaluationBase::set_dof_values(), and
- * FEEvaluationBase::distribute_local_to_global() functions, as well as
+ * for the   FEEvaluationBase::read_dof_values(),
+ * FEEvaluationBase::set_dof_values(),   and
+ * FEEvaluationBase::distribute_local_to_global()   functions, as well as
  * methods to access values and gradients of finite element functions. It also
  * inherits the geometry access functions provided by the class
- * FEEvaluationBaseData.
- *
- * This class has five template arguments:
- *
- * @tparam dim Dimension in which this class is to be used
- *
- * @tparam n_components Number of vector components when solving a system of
+ * FEEvaluationBaseData. This class has five template arguments:
+ * @tparam   dim Dimension in which this class is to be used
+ * @tparam   n_components Number of vector components when solving a system of
  * PDEs. If the same operation is applied to several components of a PDE (e.g.
  * a vector Laplace equation), they can be applied simultaneously with one
  * call (and often more efficiently)
- *
- * @tparam Number Number format, usually @p double or @p float
- *
- * @tparam is_face Whether the class is used for a cell integrator (with
+ * @tparam   Number Number format, usually   @p double   or   @p float
+ * @tparam   is_face Whether the class is used for a cell integrator (with
  * quadrature dimension the same as the space dimension) or for a face
  * integrator (with quadrature dimension one less)
+ * @tparam   VectorizedArrayType Type of array to be woked on in a vectorized
+ * fashion, defaults to VectorizedArray<Number>
  *
- * @tparam VectorizedArrayType Type of array to be woked on in a vectorized
- *                             fashion, defaults to VectorizedArray<Number>
  *
- * @note Currently only VectorizedArray<Number, width> is supported as
- *       VectorizedArrayType.
+ * @note   Currently only VectorizedArray<Number, width> is supported as
+ * VectorizedArrayType.
+ *
  *
  *
  * @ingroup matrixfree
+ *
+ *
  */
 template <int dim,
           int n_components_,
@@ -553,72 +598,72 @@ public:
   static constexpr unsigned int n_components = n_components_;
 
   /**
-   * @name 1: Reading from and writing to vectors
+   * @name   1: Reading from and writing to vectors
+   *
    */
   //@{
   /**
-   * For the vector @p src, read out the values on the degrees of freedom of
-   * the current cell, and store them internally. Similar functionality as the
-   * function DoFAccessor::get_interpolated_dof_values when no constraints are
-   * present, but it also includes constraints from hanging nodes, so one can
-   * see it as a similar function to AffineConstraints::read_dof_values as
-   * well. Note that if vectorization is enabled, the DoF values for several
-   * cells are set.
-   *
+   * For the vector   @p src,   read out the values on the degrees of freedom
+   * of   the current cell, and store them internally. Similar functionality
+   * as the   function   DoFAccessor::get_interpolated_dof_values   when no
+   * constraints are   present, but it also includes constraints from hanging
+   * nodes, so one can   see it as a similar function to
+   * AffineConstraints::read_dof_values   as   well. Note that if
+   * vectorization is enabled, the DoF values for several   cells are set.
    * If some constraints on the vector are inhomogeneous, use the function
    * read_dof_values_plain instead and provide the vector with useful data
-   * also in constrained positions by calling AffineConstraints::distribute.
+   * also in constrained positions by calling   AffineConstraints::distribute.
    * When accessing vector entries during the solution of linear systems, the
    * temporary solution should always have homogeneous constraints and this
-   * method is the correct one.
-   *
-   * If the given vector template class is a block vector (determined through
-   * the template function 'IsBlockVector<VectorType>::value', which checks
-   * for vectors derived from dealii::BlockVectorBase) or an
-   * std::vector<VectorType> or std::vector<VectorType *>, this function reads
-   * @p n_components blocks from the block vector starting at the index
-   * @p first_index. For non-block vectors, @p first_index is ignored.
-   *
-   * @note If this class was constructed without a MatrixFree object and the
+   * method is the correct one.     If the given vector template class is a
+   * block vector (determined through   the template function
+   * 'IsBlockVector<VectorType>::value',   which checks   for vectors derived
+   * from   dealii::BlockVectorBase)   or an     std::vector<VectorType>   or
+   * std::vector<VectorType>,   this function reads     @p n_components
+   * blocks from the block vector starting at the index     @p first_index.
+   * For non-block vectors,   @p first_index   is ignored.
+   * @note   If this class was constructed without a MatrixFree object and the
    * information is acquired on the fly through a
-   * DoFHandler<dim>::cell_iterator, only one single cell is used by this
+   * DoFHandler<dim>::cell_iterator,   only one single cell is used by this
    * class and this function extracts the values of the underlying components
    * on the given cell. This call is slower than the ones done through a
    * MatrixFree object and lead to a structure that does not effectively use
    * vectorization in the evaluate routines based on these values (instead,
-   * VectorizedArray::size() same copies are worked on).
+   * VectorizedArray::size()   same copies are worked on).
+   *
    */
   template <typename VectorType>
   void
   read_dof_values(const VectorType &src, const unsigned int first_index = 0);
 
   /**
-   * For the vector @p src, read out the values on the degrees of freedom of
-   * the current cell, and store them internally. Similar functionality as the
-   * function DoFAccessor::get_interpolated_dof_values. As opposed to the
-   * read_dof_values function, this function reads out the plain entries from
-   * vectors, without taking stored constraints into account. This way of
-   * access is appropriate when the constraints have been distributed on the
-   * vector by a call to AffineConstraints::distribute previously. This
-   * function is also necessary when inhomogeneous constraints are to be used,
-   * as MatrixFree can only handle homogeneous constraints. Note that if
-   * vectorization is enabled, the DoF values for several cells are set.
-   *
-   * If the given vector template class is a block vector (determined through
-   * the template function 'IsBlockVector<VectorType>::value', which checks
-   * for vectors derived from dealii::BlockVectorBase) or an
-   * std::vector<VectorType> or std::vector<VectorType *>, this function reads
-   * @p n_components blocks from the block vector starting at the index
-   * @p first_index. For non-block vectors, @p first_index is ignored.
-   *
-   * @note If this class was constructed without a MatrixFree object and the
+   * For the vector   @p src,   read out the values on the degrees of freedom
+   * of   the current cell, and store them internally. Similar functionality
+   * as the   function   DoFAccessor::get_interpolated_dof_values.   As
+   * opposed to the   read_dof_values function, this function reads out the
+   * plain entries from   vectors, without taking stored constraints into
+   * account. This way of   access is appropriate when the constraints have
+   * been distributed on the   vector by a call to
+   * AffineConstraints::distribute   previously. This   function is also
+   * necessary when inhomogeneous constraints are to be used,   as MatrixFree
+   * can only handle homogeneous constraints. Note that if   vectorization is
+   * enabled, the DoF values for several cells are set.     If the given
+   * vector template class is a block vector (determined through   the
+   * template function   'IsBlockVector<VectorType>::value',   which checks
+   * for vectors derived from   dealii::BlockVectorBase)   or an
+   * std::vector<VectorType>   or   std::vector<VectorType>,   this function
+   * reads     @p n_components   blocks from the block vector starting at the
+   * index     @p first_index.   For non-block vectors,   @p first_index   is
+   * ignored.
+   * @note   If this class was constructed without a MatrixFree object and the
    * information is acquired on the fly through a
-   * DoFHandler<dim>::cell_iterator, only one single cell is used by this
+   * DoFHandler<dim>::cell_iterator,   only one single cell is used by this
    * class and this function extracts the values of the underlying components
    * on the given cell. This call is slower than the ones done through a
    * MatrixFree object and lead to a structure that does not effectively use
    * vectorization in the evaluate routines based on these values (instead,
-   * VectorizedArray::size() same copies are worked on).
+   * VectorizedArray::size()   same copies are worked on).
+   *
    */
   template <typename VectorType>
   void
@@ -627,34 +672,33 @@ public:
 
   /**
    * Takes the values stored internally on dof values of the current cell and
-   * sums them into the vector @p dst. The function also applies constraints
-   * during the write operation. The functionality is hence similar to the
-   * function AffineConstraints::distribute_local_to_global. If vectorization
-   * is enabled, the DoF values for several cells are used.
-   *
-   * If the given vector template class is a block vector (determined through
-   * the template function 'IsBlockVector<VectorType>::value', which checks
-   * for vectors derived from dealii::BlockVectorBase) or an
-   * std::vector<VectorType> or std::vector<VectorType *>, this function
-   * writes to @p n_components blocks of the block vector starting at the
-   * index @p first_index. For non-block vectors, @p first_index is ignored.
-   *
-   * The @p mask can be used to suppress the write access for some of the
-   * cells contained in the current cell vectorization batch, e.g. in case of
-   * local time stepping, where some cells are excluded from a call. A value
-   * of `true` in the bitset means that the respective lane index will be
-   * processed, whereas a value of `false` skips this index. The default
-   * setting is a bitset that contains all ones, which will write the
-   * accumulated integrals to all cells in the batch.
-   *
-   * @note If this class was constructed without a MatrixFree object and the
+   * sums them into the vector   @p dst.   The function also applies
+   * constraints   during the write operation. The functionality is hence
+   * similar to the   function
+   * AffineConstraints::distribute_local_to_global.   If vectorization   is
+   * enabled, the DoF values for several cells are used.     If the given
+   * vector template class is a block vector (determined through   the
+   * template function   'IsBlockVector<VectorType>::value',   which checks
+   * for vectors derived from   dealii::BlockVectorBase)   or an
+   * std::vector<VectorType>   or   std::vector<VectorType>,   this function
+   * writes to   @p n_components   blocks of the block vector starting at the
+   * index   @p first_index.   For non-block vectors,   @p first_index   is
+   * ignored.     The   @p mask   can be used to suppress the write access for
+   * some of the   cells contained in the current cell vectorization batch,
+   * e.g. in case of   local time stepping, where some cells are excluded from
+   * a call. A value   of `true` in the bitset means that the respective lane
+   * index will be   processed, whereas a value of `false` skips this index.
+   * The default   setting is a bitset that contains all ones, which will
+   * write the   accumulated integrals to all cells in the batch.
+   * @note   If this class was constructed without a MatrixFree object and the
    * information is acquired on the fly through a
-   * DoFHandler<dim>::cell_iterator, only one single cell is used by this
+   * DoFHandler<dim>::cell_iterator,   only one single cell is used by this
    * class and this function extracts the values of the underlying components
    * on the given cell. This call is slower than the ones done through a
    * MatrixFree object and lead to a structure that does not effectively use
    * vectorization in the evaluate routines based on these values (instead,
-   * VectorizedArray::size() same copies are worked on).
+   * VectorizedArray::size()   same copies are worked on).
+   *
    */
   template <typename VectorType>
   void
@@ -666,7 +710,7 @@ public:
 
   /**
    * Takes the values stored internally on dof values of the current cell and
-   * writes them into the vector @p dst. The function skips the degrees of
+   * writes them into the vector   @p dst.   The function skips the degrees of
    * freedom which are constrained. As opposed to the
    * distribute_local_to_global method, the old values at the position given
    * by the current cell are overwritten. Thus, if a degree of freedom is
@@ -675,32 +719,30 @@ public:
    * is retained. Please note that in a parallel context this function might
    * also touch degrees of freedom owned by other MPI processes, so that a
    * subsequent update or accumulation of ghost values as done by
-   * MatrixFree::loop() might invalidate the degrees of freedom set by this
-   * function.
-   *
-   * If the given vector template class is a block vector (determined through
-   * the template function 'IsBlockVector<VectorType>::value', which checks
-   * for vectors derived from dealii::BlockVectorBase) or an
-   * std::vector<VectorType> or std::vector<VectorType *>, this function
-   * writes to @p n_components blocks of the block vector starting at the
-   * index @p first_index. For non-block vectors, @p first_index is ignored.
-   *
-   * The @p mask can be used to suppress the write access for some
-   * of the cells contained in the current cell vectorization batch, e.g. in
-   * case of local time stepping, where some  cells are excluded from a call.
-   * A value of `true` in the bitset means that the respective lane index will
+   * MatrixFree::loop()   might invalidate the degrees of freedom set by this
+   * function.     If the given vector template class is a block vector
+   * (determined through   the template function
+   * 'IsBlockVector<VectorType>::value',   which checks   for vectors derived
+   * from   dealii::BlockVectorBase)   or an     std::vector<VectorType>   or
+   * std::vector<VectorType>,   this function   writes to   @p n_components
+   * blocks of the block vector starting at the   index   @p first_index.
+   * For non-block vectors,   @p first_index   is ignored.     The   @p mask
+   * can be used to suppress the write access for some   of the cells
+   * contained in the current cell vectorization batch, e.g. in   case of
+   * local time stepping, where some  cells are excluded from a call.   A
+   * value of `true` in the bitset means that the respective lane index will
    * be processed, whereas a value of `false` skips this index. The default
    * setting is a bitset that contains all ones, which will write the
    * accumulated integrals to all cells in the batch.
-   *
-   * @note If this class was constructed without a MatrixFree object and the
+   * @note   If this class was constructed without a MatrixFree object and the
    * information is acquired on the fly through a
-   * DoFHandler<dim>::cell_iterator, only one single cell is used by this
+   * DoFHandler<dim>::cell_iterator,   only one single cell is used by this
    * class and this function extracts the values of the underlying components
    * on the given cell. This call is slower than the ones done through a
    * MatrixFree object and lead to a structure that does not effectively use
    * vectorization in the evaluate routines based on these values (instead,
-   * VectorizedArray::size() same copies are worked on).
+   * VectorizedArray::size()   same copies are worked on).
+   *
    */
   template <typename VectorType>
   void
@@ -711,6 +753,7 @@ public:
 
   /**
    * Same as set_dof_values(), but without resolving constraints.
+   *
    */
   template <typename VectorType>
   void
@@ -723,133 +766,131 @@ public:
   //@}
 
   /**
-   * @name 2: Access to data at quadrature points or the gather vector data
+   * @name   2: Access to data at quadrature points or the gather vector data
+   *
    */
   //@{
   /**
-   * Return the value stored for the local degree of freedom with index @p
+   * Return the value stored for the local degree of freedom with index   @p
    * dof. If the object is vector-valued, a vector-valued return argument is
-   * given. Thus, the argument @p dof can at most run until @p
-   * dofs_per_component rather than @p dofs_per_cell since the different
+   * given. Thus, the argument   @p dof   can at most run until   @p
+   * dofs_per_component rather than   @p dofs_per_cell   since the different
    * components of a vector-valued FE are return together. Note that when
    * vectorization is enabled, values from several cells are grouped
-   * together. If @p set_dof_values was called last, the value corresponds to
-   * the one set there. If @p integrate was called last, it instead
+   * together. If   @p set_dof_values   was called last, the value corresponds
+   * to   the one set there. If   @p integrate   was called last, it instead
    * corresponds to the value of the integrated function with the test
-   * function of the given index.
+   * function of the given index.     Note that the derived class
+   * FEEvaluationAccess overloads this operation   with specializations for
+   * the scalar case (n_components == 1) and for the   vector-valued case
+   * (n_components == dim).
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   value_type
   get_dof_value(const unsigned int dof) const;
 
   /**
    * Write a value to the field containing the degrees of freedom with
-   * component @p dof. Writes to the same field as is accessed through @p
-   * get_dof_value. Therefore, the original data that was read from a vector
-   * is overwritten as soon as a value is submitted.
-   *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
+   * component   @p dof.   Writes to the same field as is accessed through
+   * @p     get_dof_value. Therefore, the original data that was read from a
+   * vector   is overwritten as soon as a value is submitted.     Note that
+   * the derived class FEEvaluationAccess overloads this operation   with
+   * specializations for the scalar case (n_components == 1) and for the
    * vector-valued case (n_components == dim).
+   *
    */
   void
   submit_dof_value(const value_type val_in, const unsigned int dof);
 
   /**
    * Return the value of a finite element function at quadrature point number
-   * @p q_point after a call to FEEvaluation::evaluate() with
-   * EvaluationFlags::values set, or the value that has been stored there with
-   * a call to FEEvaluationBase::submit_value(). If the object is
+   * @p q_point   after a call to   FEEvaluation::evaluate()   with
+   * EvaluationFlags::values   set, or the value that has been stored there
+   * with   a call to   FEEvaluationBase::submit_value().   If the object is
    * vector-valued, a vector-valued return argument is given. Note that when
    * vectorization is enabled, values from several cells are grouped together.
-   *
    * Note that the derived class FEEvaluationAccess overloads this operation
    * with specializations for the scalar case (n_components == 1) and for the
    * vector-valued case (n_components == dim).
+   *
    */
   value_type
   get_value(const unsigned int q_point) const;
 
   /**
    * Write a value to the field containing the values on quadrature points
-   * with component @p q_point. Access to the same field as through
-   * get_value(). If applied before the function FEEvaluation::integrate()
-   * with EvaluationFlags::values set is called, this specifies the value
+   * with component   @p q_point.   Access to the same field as through
+   * get_value(). If applied before the function   FEEvaluation::integrate()
+   * with   EvaluationFlags::values   set is called, this specifies the value
    * which is tested by all basis function on the current cell and integrated
-   * over.
+   * over.     Note that the derived class FEEvaluationAccess overloads this
+   * operation   with specializations for the scalar case (n_components == 1)
+   * and for the   vector-valued case (n_components == dim).
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   void
   submit_value(const value_type val_in, const unsigned int q_point);
 
   /**
    * Return the gradient of a finite element function at quadrature point
-   * number @p q_point after a call to FEEvaluation::evaluate() with
-   * EvaluationFlags::gradients, or the value that has been stored there with
-   * a call to FEEvaluationBase::submit_gradient().
-   *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
+   * number   @p q_point   after a call to   FEEvaluation::evaluate()   with
+   * EvaluationFlags::gradients,   or the value that has been stored there
+   * with   a call to   FEEvaluationBase::submit_gradient().       Note that
+   * the derived class FEEvaluationAccess overloads this operation   with
+   * specializations for the scalar case (n_components == 1) and for the
    * vector-valued case (n_components == dim).
+   *
    */
   gradient_type
   get_gradient(const unsigned int q_point) const;
 
   /**
    * Return the derivative of a finite element function at quadrature point
-   * number @p q_point after a call to
-   * FEEvaluation::evaluate(EvaluationFlags::gradients) the direction normal
-   * to the face: $\boldsymbol \nabla u(\mathbf x_q) \cdot \mathbf n(\mathbf
-   * x_q)$
+   * number   @p q_point   after a call to
+   * FEEvaluation::evaluate(EvaluationFlags::gradients)   the direction normal
+   * to the face:   $\boldsymbol \nabla u(\mathbf x_q) \cdot \mathbf n(\mathbf
+   * x_q)$       This call is equivalent to calling get_gradient()
+   * get_normal_vector()   but will use a more efficient internal
+   * representation of data.     Note that the derived class
+   * FEEvaluationAccess overloads this operation   with specializations for
+   * the scalar case (n_components == 1) and for the   vector-valued case
+   * (n_components == dim).
    *
-   * This call is equivalent to calling get_gradient() * get_normal_vector()
-   * but will use a more efficient internal representation of data.
-   *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   value_type
   get_normal_derivative(const unsigned int q_point) const;
 
   /**
    * Write a contribution that is tested by the gradient to the field
-   * containing the values on quadrature points with component @p q_point.
+   * containing the values on quadrature points with component   @p q_point.
    * Access to the same field as through get_gradient(). If applied before the
-   * function FEEvaluation::integrate(EvaluationFlags::gradients) is called,
-   * this specifies what is tested by all basis function gradients on the
-   * current cell and integrated over.
+   * function   FEEvaluation::integrate(EvaluationFlags::gradients)   is
+   * called,   this specifies what is tested by all basis function gradients
+   * on the   current cell and integrated over.     Note that the derived
+   * class FEEvaluationAccess overloads this operation   with specializations
+   * for the scalar case (n_components == 1) and for the   vector-valued case
+   * (n_components == dim).
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   void
   submit_gradient(const gradient_type grad_in, const unsigned int q_point);
 
   /**
    * Write a contribution that is tested by the gradient to the field
-   * containing the values on quadrature points with component @p
+   * containing the values on quadrature points with component   @p
    * q_point. Access to the same field as through get_gradient() or
    * get_normal_derivative(). If applied before the function
-   * FEEvaluation::integrate(EvaluationFlags::gradients) is called, this
+   * FEEvaluation::integrate(EvaluationFlags::gradients)   is called, this
    * specifies what is tested by all basis function gradients on the current
    * cell and integrated over.
-   *
-   * @note This operation writes the data to the same field as
-   * submit_gradient(). As a consequence, only one of these two can be
-   * used. Usually, the contribution of a potential call to this function must
-   * be added into the contribution for submit_gradient().
-   *
-   * @note The derived class FEEvaluationAccess overloads this operation
+   * @note   This operation writes the data to the same field as
+   * submit_gradient(). As a consequence, only one of these two can be   used.
+   * Usually, the contribution of a potential call to this function must   be
+   * added into the contribution for submit_gradient().
+   * @note   The derived class FEEvaluationAccess overloads this operation
    * with specializations for the scalar case (n_components == 1) and for the
    * vector-valued case (n_components == dim).
+   *
    */
   void
   submit_normal_derivative(const value_type   grad_in,
@@ -857,40 +898,40 @@ public:
 
   /**
    * Return the Hessian of a finite element function at quadrature point
-   * number @p q_point after a call to
-   * FEEvaluation::evaluate(EvaluationFlags::hessians). If only the diagonal
+   * number   @p q_point   after a call to
+   * FEEvaluation::evaluate(EvaluationFlags::hessians).   If only the diagonal
    * or even the trace of the Hessian, the Laplacian, is needed, use the other
-   * functions below.
+   * functions below.     Note that the derived class FEEvaluationAccess
+   * overloads this operation   with specializations for the scalar case
+   * (n_components == 1) and for the   vector-valued case (n_components ==
+   * dim).
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   Tensor<1, n_components_, Tensor<2, dim, VectorizedArrayType>>
   get_hessian(const unsigned int q_point) const;
 
   /**
    * Return the diagonal of the Hessian of a finite element function at
-   * quadrature point number @p q_point after a call to
-   * FEEvaluation::evaluate(EvaluationFlags::hessians).
-   *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
+   * quadrature point number   @p q_point   after a call to
+   * FEEvaluation::evaluate(EvaluationFlags::hessians).       Note that the
+   * derived class FEEvaluationAccess overloads this operation   with
+   * specializations for the scalar case (n_components == 1) and for the
    * vector-valued case (n_components == dim).
+   *
    */
   gradient_type
   get_hessian_diagonal(const unsigned int q_point) const;
 
   /**
    * Return the Laplacian (i.e., the trace of the Hessian) of a finite element
-   * function at quadrature point number @p q_point after a call to
-   * FEEvaluation::evaluate(EvaluationFlags::hessians). Compared to the case
+   * function at quadrature point number   @p q_point   after a call to
+   * FEEvaluation::evaluate(EvaluationFlags::hessians).   Compared to the case
    * when computing the full Hessian, some operations can be saved when only
-   * the Laplacian is requested.
+   * the Laplacian is requested.     Note that the derived class
+   * FEEvaluationAccess overloads this operation   with specializations for
+   * the scalar case (n_components == 1) and for the   vector-valued case
+   * (n_components == dim).
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   value_type
   get_laplacian(const unsigned int q_point) const;
@@ -902,67 +943,66 @@ public:
 
   /**
    * Return the divergence of a vector-valued finite element at quadrature
-   * point number @p q_point after a call to @p evaluate(...,true,...).
+   * point number   @p q_point   after a call to   @p evaluate(...,true,...).
+   * @note   Only available for n_components_==dim.
    *
-   * @note Only available for n_components_==dim.
    */
   VectorizedArrayType
   get_divergence(const unsigned int q_point) const;
 
   /**
    * Return the symmetric gradient of a vector-valued finite element at
-   * quadrature point number @p q_point after a call to @p
+   * quadrature point number   @p q_point   after a call to   @p
    * evaluate(...,true,...). It corresponds to <tt>0.5
    * (grad+grad<sup>T</sup>)</tt>.
+   * @note   Only available for n_components_==dim.
    *
-   * @note Only available for n_components_==dim.
    */
   SymmetricTensor<2, dim, VectorizedArrayType>
   get_symmetric_gradient(const unsigned int q_point) const;
 
   /**
-   * Return the curl of the vector field, $\nabla \times v$ after a call to @p
-   * evaluate(...,true,...).
+   * Return the curl of the vector field,   $\nabla \times v$   after a call
+   * to   @p     evaluate(...,true,...).
+   * @note   Only available for n_components_==dim.
    *
-   * @note Only available for n_components_==dim.
    */
   Tensor<1, (dim == 2 ? 1 : dim), VectorizedArrayType>
   get_curl(const unsigned int q_point) const;
 
   /**
    * Write a contribution that is tested by the divergence to the field
-   * containing the values on quadrature points with component @p q_point.
-   * Access to the same field as through @p get_gradient. If applied before
-   * the function @p integrate(...,true) is called, this specifies what is
-   * tested by all basis function gradients on the current cell and integrated
-   * over.
+   * containing the values on quadrature points with component   @p q_point.
+   * Access to the same field as through   @p get_gradient.   If applied
+   * before   the function   @p integrate(...,true)   is called, this
+   * specifies what is   tested by all basis function gradients on the current
+   * cell and integrated   over.
+   * @note   Only available for n_components_==dim.
+   * @note   This operation writes the data to the same field as
+   * submit_gradient(). As a consequence, only one of these two can be   used.
+   * Usually, the contribution of a potential call to this function must   be
+   * added into the diagonal of the contribution for submit_gradient().
    *
-   * @note Only available for n_components_==dim.
-   *
-   * @note This operation writes the data to the same field as
-   * submit_gradient(). As a consequence, only one of these two can be
-   * used. Usually, the contribution of a potential call to this function must
-   * be added into the diagonal of the contribution for submit_gradient().
    */
   void
   submit_divergence(const VectorizedArrayType div_in,
                     const unsigned int        q_point);
 
   /**
-   * Write a contribution that is tested by the symmetric gradient to the field
-   * containing the values on quadrature points with component @p q_point.
-   * Access to the same field as through @p get_symmetric_gradient. If applied before
-   * the function @p integrate(...,true) is called, this specifies the
-   * symmetric gradient which is tested by all basis function symmetric
-   * gradients on the current cell and integrated over.
-   *
-   * @note Only available for n_components_==dim.
-   *
-   * @note This operation writes the data to the same field as
-   * submit_gradient(). As a consequence, only one of these two can be
-   * used. Usually, the contribution of a potential call to this function must
-   * be added to the respective entries of the rank-2 tensor for
+   * Write a contribution that is tested by the symmetric gradient to the
+   * field   containing the values on quadrature points with component   @p
+   * q_point.     Access to the same field as through   @p
+   * get_symmetric_gradient.   If applied before   the function   @p
+   * integrate(...,true)   is called, this specifies the   symmetric gradient
+   * which is tested by all basis function symmetric   gradients on the
+   * current cell and integrated over.
+   * @note   Only available for n_components_==dim.
+   * @note   This operation writes the data to the same field as
+   * submit_gradient(). As a consequence, only one of these two can be   used.
+   * Usually, the contribution of a potential call to this function must   be
+   * added to the respective entries of the rank-2 tensor for
    * submit_gradient().
+   *
    */
   void
   submit_symmetric_gradient(
@@ -971,15 +1011,14 @@ public:
 
   /**
    * Write the components of a curl containing the values on quadrature point
-   * @p q_point. Access to the same data field as through @p get_gradient.
-   *
-   * @note Only available for n_components_==dim.
-   *
-   * @note This operation writes the data to the same field as
-   * submit_gradient(). As a consequence, only one of these two can be
-   * used. Usually, the contribution of a potential call to this function must
-   * be added to the respective entries of the rank-2 tensor for
+   * @p q_point.   Access to the same data field as through   @p get_gradient.
+   * @note   Only available for n_components_==dim.
+   * @note   This operation writes the data to the same field as
+   * submit_gradient(). As a consequence, only one of these two can be   used.
+   * Usually, the contribution of a potential call to this function must   be
+   * added to the respective entries of the rank-2 tensor for
    * submit_gradient().
+   *
    */
   void
   submit_curl(const Tensor<1, dim == 2 ? 1 : dim, VectorizedArrayType> curl_in,
@@ -995,13 +1034,13 @@ public:
    * resulting components are still separated. Moreover, if vectorization is
    * enabled, the integral values of several cells are contained in the slots
    * of the returned VectorizedArray field.
-   *
-   * @note In case the FEEvaluation object is initialized with a batch of
+   * @note   In case the FEEvaluation object is initialized with a batch of
    * cells where not all lanes in the SIMD vector VectorizedArray are
    * representing actual data, this method performs computations on dummy data
    * (that is copied from the last valid lane) that will not make sense. Thus,
    * the user needs to make sure that it is not used in any computation
    * explicitly, like when summing the results of several cells.
+   *
    */
   value_type
   integrate_value() const;
@@ -1009,7 +1048,8 @@ public:
   //@}
 
   /**
-   * @name 3: Access to internal data
+   * @name   3: Access to internal data
+   *
    */
   //@{
   /**
@@ -1019,6 +1059,7 @@ public:
    * component, and so on. This is related to the internal data structures
    * used in this class. In general, it is safer to use the get_dof_value()
    * function instead.
+   *
    */
   const VectorizedArrayType *
   begin_dof_values() const;
@@ -1030,6 +1071,7 @@ public:
    * second component, and so on. This is related to the internal data
    * structures used in this class. In general, it is safer to use the
    * get_dof_value() function instead.
+   *
    */
   VectorizedArrayType *
   begin_dof_values();
@@ -1039,10 +1081,12 @@ public:
    * quadrature points. First come the function values on all quadrature
    * points for the first component, then all values for the second component,
    * and so on. This is related to the internal data structures used in this
-   * class. The raw data after a call to @p evaluate only contains unit cell
-   * operations, so possible transformations, quadrature weights etc. must be
-   * applied manually. In general, it is safer to use the get_value() function
-   * instead, which does all the transformation internally.
+   * class. The raw data after a call to   @p evaluate   only contains unit
+   * cell   operations, so possible transformations, quadrature weights etc.
+   * must be   applied manually. In general, it is safer to use the
+   * get_value() function   instead, which does all the transformation
+   * internally.
+   *
    */
   const VectorizedArrayType *
   begin_values() const;
@@ -1052,10 +1096,12 @@ public:
    * quadrature points. First come the function values on all quadrature
    * points for the first component, then all values for the second component,
    * and so on. This is related to the internal data structures used in this
-   * class. The raw data after a call to @p evaluate only contains unit cell
-   * operations, so possible transformations, quadrature weights etc. must be
-   * applied manually. In general, it is safer to use the get_value() function
-   * instead, which does all the transformation internally.
+   * class. The raw data after a call to   @p evaluate   only contains unit
+   * cell   operations, so possible transformations, quadrature weights etc.
+   * must be   applied manually. In general, it is safer to use the
+   * get_value() function   instead, which does all the transformation
+   * internally.
+   *
    */
   VectorizedArrayType *
   begin_values();
@@ -1066,10 +1112,11 @@ public:
    * first component on all quadrature points, then the y-component, and so
    * on. Next comes the x-component of the second component, and so on. This
    * is related to the internal data structures used in this class. The raw
-   * data after a call to @p evaluate only contains unit cell operations, so
-   * possible transformations, quadrature weights etc. must be applied
+   * data after a call to   @p evaluate   only contains unit cell operations,
+   * so   possible transformations, quadrature weights etc. must be applied
    * manually. In general, it is safer to use the get_gradient() function
    * instead, which does all the transformation internally.
+   *
    */
   const VectorizedArrayType *
   begin_gradients() const;
@@ -1080,10 +1127,11 @@ public:
    * first component on all quadrature points, then the y-component, and so
    * on. Next comes the x-component of the second component, and so on. This
    * is related to the internal data structures used in this class. The raw
-   * data after a call to @p evaluate only contains unit cell operations, so
-   * possible transformations, quadrature weights etc. must be applied
+   * data after a call to   @p evaluate   only contains unit cell operations,
+   * so   possible transformations, quadrature weights etc. must be applied
    * manually. In general, it is safer to use the get_gradient() function
    * instead, which does all the transformation internally.
+   *
    */
   VectorizedArrayType *
   begin_gradients();
@@ -1095,10 +1143,11 @@ public:
    * component in (3D), then the xy-component, and so on. Next comes the xx-
    * component of the second component, and so on. This is related to the
    * internal data structures used in this class. The raw data after a call to
-   * @p evaluate only contains unit cell operations, so possible
+   * @p evaluate   only contains unit cell operations, so possible
    * transformations, quadrature weights etc. must be applied manually. In
    * general, it is safer to use the get_laplacian() or get_hessian()
    * functions instead, which does all the transformation internally.
+   *
    */
   const VectorizedArrayType *
   begin_hessians() const;
@@ -1110,10 +1159,11 @@ public:
    * component in (3D), then the xy-component, and so on. Next comes the xx-
    * component of the second component, and so on. This is related to the
    * internal data structures used in this class. The raw data after a call to
-   * @p evaluate only contains unit cell operations, so possible
+   * @p evaluate   only contains unit cell operations, so possible
    * transformations, quadrature weights etc. must be applied manually. In
    * general, it is safer to use the get_laplacian() or get_hessian()
    * functions instead, which does all the transformation internally.
+   *
    */
   VectorizedArrayType *
   begin_hessians();
@@ -1122,6 +1172,7 @@ public:
 
   /**
    * Return the first selected component.
+   *
    */
   unsigned int
   get_first_selected_component() const;
@@ -1131,9 +1182,10 @@ protected:
    * Constructor. Made protected to prevent users from directly using this
    * class. Takes all data stored in MatrixFree. If applied to problems with
    * more than one finite element or more than one quadrature formula selected
-   * during construction of @p matrix_free, @p dof_no, @p
-   * first_selected_component and @p quad_no allow to select the appropriate
-   * components.
+   * during construction of   @p matrix_free,     @p dof_no,     @p
+   * first_selected_component and   @p quad_no   allow to select the
+   * appropriate   components.
+   *
    */
   FEEvaluationBase(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -1151,36 +1203,35 @@ protected:
    * Constructor that comes with reduced functionality and works similar as
    * FEValues. The arguments are similar to the ones passed to the constructor
    * of FEValues, with the notable difference that FEEvaluation expects a one-
-   * dimensional quadrature formula, Quadrature<1>, instead of a @p dim
+   * dimensional quadrature formula, Quadrature<1>, instead of a   @p dim
    * dimensional one. The finite element can be both scalar or vector valued,
    * but this method always only selects a scalar base element at a time (with
-   * @p n_components copies as specified by the class template argument). For
-   * vector-valued elements, the optional argument @p first_selected_component
-   * allows to specify the index of the base element to be used for
-   * evaluation. Note that the internal data structures always assume that the
-   * base element is primitive, non-primitive are not supported currently.
+   * @p n_components   copies as specified by the class template argument).
+   * For   vector-valued elements, the optional argument   @p
+   * first_selected_component     allows to specify the index of the base
+   * element to be used for   evaluation. Note that the internal data
+   * structures always assume that the   base element is primitive,
+   * non-primitive are not supported currently.     As known from FEValues, a
+   * call to the reinit method with a     Triangulation::cell_iterator   is
+   * necessary to make the geometry and   degrees of freedom of the current
+   * class known. If the iterator includes   DoFHandler information (i.e., it
+   * is a   DoFHandler::cell_iterator   or   similar), the initialization
+   * allows to also read from or write to vectors   in the standard way for
+   * DoFHandler::active_cell_iterator   types for one   cell at a time.
+   * However, this approach is much slower than the path with   MatrixFree
+   * with MPI since index translation has to be done. As only one   cell at a
+   * time is used, this method does not vectorize over several   elements
+   * (which is most efficient for vector operations), but only   possibly
+   * within the element if the evaluate/integrate routines are   combined
+   * inside user code (e.g. for computing cell matrices).     The optional
+   * FEEvaluationBaseData object allows several   FEEvaluation objects to
+   * share the geometry evaluation, i.e., the   underlying mapping and
+   * quadrature points do only need to be evaluated   once. This only works if
+   * the quadrature formulas are the same. Otherwise,   a new evaluation
+   * object is created. Make sure to not pass an optional   object around when
+   * you intend to use the FEEvaluation object in %parallel   with another one
+   * because otherwise the intended sharing may create race   conditions.
    *
-   * As known from FEValues, a call to the reinit method with a
-   * Triangulation::cell_iterator is necessary to make the geometry and
-   * degrees of freedom of the current class known. If the iterator includes
-   * DoFHandler information (i.e., it is a DoFHandler::cell_iterator or
-   * similar), the initialization allows to also read from or write to vectors
-   * in the standard way for DoFHandler::active_cell_iterator types for one
-   * cell at a time. However, this approach is much slower than the path with
-   * MatrixFree with MPI since index translation has to be done. As only one
-   * cell at a time is used, this method does not vectorize over several
-   * elements (which is most efficient for vector operations), but only
-   * possibly within the element if the evaluate/integrate routines are
-   * combined inside user code (e.g. for computing cell matrices).
-   *
-   * The optional FEEvaluationBaseData object allows several
-   * FEEvaluation objects to share the geometry evaluation, i.e., the
-   * underlying mapping and quadrature points do only need to be evaluated
-   * once. This only works if the quadrature formulas are the same. Otherwise,
-   * a new evaluation object is created. Make sure to not pass an optional
-   * object around when you intend to use the FEEvaluation object in %parallel
-   * with another one because otherwise the intended sharing may create race
-   * conditions.
    */
   FEEvaluationBase(
     const Mapping<dim> &      mapping,
@@ -1196,6 +1247,7 @@ protected:
    * quadrature, and update flags, the underlying geometry evaluation based on
    * FEValues will be deep-copied in order to allow for using in parallel with
    * threads.
+   *
    */
   FEEvaluationBase(const FEEvaluationBase &other);
 
@@ -1204,15 +1256,18 @@ protected:
    * mapping, fe, quadrature, and update flags, the underlying geometry
    * evaluation based on FEValues will be deep-copied in order to allow for
    * using in parallel with threads.
+   *
    */
   FEEvaluationBase &
   operator=(const FEEvaluationBase &other);
 
   /**
    * A unified function to read from and write into vectors based on the given
-   * template operation. It can perform the operation for @p read_dof_values,
-   * @p distribute_local_to_global, and @p set_dof_values. It performs the
-   * operation for several vectors at a time.
+   * template operation. It can perform the operation for   @p
+   * read_dof_values,       @p distribute_local_to_global,   and   @p
+   * set_dof_values.   It performs the   operation for several vectors at a
+   * time.
+   *
    */
   template <typename VectorType, typename VectorOperation>
   void
@@ -1231,6 +1286,7 @@ protected:
    * cells are contiguous. It can perform the operation for read_dof_values(),
    * distribute_local_to_global(), and set_dof_values() for several vectors at
    * a time, depending on n_components.
+   *
    */
   template <typename VectorType, typename VectorOperation>
   void
@@ -1245,9 +1301,10 @@ protected:
   /**
    * A unified function to read from and write into vectors based on the given
    * template operation for the case when we do not have an underlying
-   * MatrixFree object. It can perform the operation for @p read_dof_values,
-   * @p distribute_local_to_global, and @p set_dof_values. It performs the
-   * operation for several vectors at a time, depending on n_components.
+   * MatrixFree object. It can perform the operation for   @p read_dof_values,
+   * @p distribute_local_to_global,   and   @p set_dof_values.   It performs
+   * the   operation for several vectors at a time, depending on n_components.
+   *
    */
   template <typename VectorType, typename VectorOperation>
   void
@@ -1260,25 +1317,25 @@ protected:
    * reading out from a vector but before applying unit cell transformations
    * or before distributing them into a result vector). The methods
    * get_dof_value() and submit_dof_value() read from or write to this field.
-   *
-   * The values of this array are stored in the start section of
-   * @p scratch_data_array. Due to its access as a thread local memory, the
+   * The values of this array are stored in the start section of     @p
+   * scratch_data_array.   Due to its access as a thread local memory, the
    * memory can get reused between different calls. As opposed to requesting
    * memory on the stack, this approach allows for very large polynomial
    * degrees.
+   *
    */
   VectorizedArrayType *values_dofs[n_components];
 
   /**
    * This field stores the values of the finite element function on quadrature
    * points after applying unit cell transformations or before integrating.
-   * The methods get_value() and submit_value() access this field.
-   *
-   * The values of this array are stored in the start section of
-   * @p scratch_data_array. Due to its access as a thread local memory, the
+   * The methods get_value() and submit_value() access this field.     The
+   * values of this array are stored in the start section of     @p
+   * scratch_data_array.   Due to its access as a thread local memory, the
    * memory can get reused between different calls. As opposed to requesting
    * memory on the stack, this approach allows for very large polynomial
    * degrees.
+   *
    */
   VectorizedArrayType *values_quad;
 
@@ -1287,13 +1344,12 @@ protected:
    * quadrature points after applying unit cell transformations or before
    * integrating. The methods get_gradient() and submit_gradient() (as well as
    * some specializations like get_symmetric_gradient() or get_divergence())
-   * access this field.
+   * access this field.     The values of this array are stored in the start
+   * section of     @p scratch_data_array.   Due to its access as a thread
+   * local memory, the   memory can get reused between different calls. As
+   * opposed to requesting   memory on the stack, this approach allows for
+   * very large polynomial   degrees.
    *
-   * The values of this array are stored in the start section of
-   * @p scratch_data_array. Due to its access as a thread local memory, the
-   * memory can get reused between different calls. As opposed to requesting
-   * memory on the stack, this approach allows for very large polynomial
-   * degrees.
    */
   VectorizedArrayType *gradients_quad;
 
@@ -1301,18 +1357,19 @@ protected:
    * This field stores the Hessians of the finite element function on
    * quadrature points after applying unit cell transformations. The methods
    * get_hessian(), get_laplacian(), get_hessian_diagonal() access this field.
-   *
-   * The values of this array are stored in the start section of
-   * @p scratch_data_array. Due to its access as a thread local memory, the
+   * The values of this array are stored in the start section of     @p
+   * scratch_data_array.   Due to its access as a thread local memory, the
    * memory can get reused between different calls. As opposed to requesting
    * memory on the stack, this approach allows for very large polynomial
    * degrees.
+   *
    */
   VectorizedArrayType *hessians_quad;
 
   /**
    * Stores the number of components in the finite element as detected in the
    * MatrixFree storage class for comparison with the template argument.
+   *
    */
   const unsigned int n_fe_components;
 
@@ -1320,6 +1377,7 @@ protected:
    * Debug information to track whether dof values have been initialized
    * before accessed. Used to control exceptions when uninitialized data is
    * used.
+   *
    */
   bool dof_values_initialized;
 
@@ -1327,6 +1385,7 @@ protected:
    * Debug information to track whether values on quadrature points have been
    * initialized before accessed. Used to control exceptions when
    * uninitialized data is used.
+   *
    */
   bool values_quad_initialized;
 
@@ -1334,6 +1393,7 @@ protected:
    * Debug information to track whether gradients on quadrature points have
    * been initialized before accessed. Used to control exceptions when
    * uninitialized data is used.
+   *
    */
   bool gradients_quad_initialized;
 
@@ -1341,6 +1401,7 @@ protected:
    * Debug information to track whether Hessians on quadrature points have
    * been initialized before accessed. Used to control exceptions when
    * uninitialized data is used.
+   *
    */
   bool hessians_quad_initialized;
 
@@ -1348,6 +1409,7 @@ protected:
    * Debug information to track whether values on quadrature points have been
    * submitted for integration before the integration is actually stared. Used
    * to control exceptions when uninitialized data is used.
+   *
    */
   bool values_quad_submitted;
 
@@ -1355,18 +1417,21 @@ protected:
    * Debug information to track whether gradients on quadrature points have
    * been submitted for integration before the integration is actually stared.
    * Used to control exceptions when uninitialized data is used.
+   *
    */
   bool gradients_quad_submitted;
 
   /**
    * For a FiniteElement with more than one base element, select at which
    * component this data structure should start.
+   *
    */
   const unsigned int first_selected_component;
 
   /**
    * A temporary data structure necessary to read degrees of freedom when no
    * MatrixFree object was given at initialization.
+   *
    */
   mutable std::vector<types::global_dof_index> local_dof_indices;
 
@@ -1374,6 +1439,7 @@ private:
   /**
    * Sets the pointers for values, gradients, hessians to the central
    * scratch_data_array of the base class.
+   *
    */
   void
   set_data_pointers();
@@ -1386,7 +1452,10 @@ private:
  * Generic access is achieved through the base class, and specializations for
  * scalar and vector-valued elements are defined separately.
  *
+ *
  * @ingroup matrixfree
+ *
+ *
  */
 template <int dim,
           int n_components_,
@@ -1418,8 +1487,9 @@ protected:
    * Constructor. Made protected to prevent initialization in user code. Takes
    * all data stored in MatrixFree. If applied to problems with more than one
    * finite element or more than one quadrature formula selected during
-   * construction of @p matrix_free, @p first_selected_component and @p
-   * quad_no allow to select the appropriate components.
+   * construction of   @p matrix_free,     @p first_selected_component   and
+   * @p     quad_no allow to select the appropriate components.
+   *
    */
   FEEvaluationAccess(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -1436,6 +1506,7 @@ protected:
   /**
    * Constructor with reduced functionality for similar usage of FEEvaluation
    * as FEValues, including matrix assembly.
+   *
    */
   FEEvaluationAccess(
     const Mapping<dim> &      mapping,
@@ -1448,11 +1519,13 @@ protected:
 
   /**
    * Copy constructor
+   *
    */
   FEEvaluationAccess(const FEEvaluationAccess &other);
 
   /**
    * Copy assignment operator
+   *
    */
   FEEvaluationAccess &
   operator=(const FEEvaluationAccess &other);
@@ -1466,7 +1539,10 @@ protected:
  * data fields, i.e., scalars for the values and Tensor<1,dim> for the
  * gradients.
  *
+ *
  * @ingroup matrixfree
+ *
+ *
  */
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
 class FEEvaluationAccess<dim, 1, Number, is_face, VectorizedArrayType>
@@ -1485,81 +1561,97 @@ public:
     FEEvaluationBase<dim, 1, Number, is_face, VectorizedArrayType>;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_dof_value()
+   * @copydoc     FEEvaluationBase<dim,1,Number,is_face>::get_dof_value()
+   *
    */
   value_type
   get_dof_value(const unsigned int dof) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::submit_dof_value()
+   * @copydoc     FEEvaluationBase<dim,1,Number,is_face>::submit_dof_value()
+   *
    */
   void
   submit_dof_value(const value_type val_in, const unsigned int dof);
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_value()
+   * @copydoc     FEEvaluationBase<dim,1,Number,is_face>::get_value()
+   *
    */
   value_type
   get_value(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::submit_value()
+   * @copydoc     FEEvaluationBase<dim,1,Number,is_face>::submit_value()
+   *
    */
   void
   submit_value(const value_type val_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::submit_value()
+   * @copydoc     FEEvaluationBase<dim,1,Number,is_face>::submit_value()
+   *
    */
   void
   submit_value(const Tensor<1, 1, VectorizedArrayType> val_in,
                const unsigned int                      q_point);
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_gradient()
+   * @copydoc     FEEvaluationBase<dim,1,Number,is_face>::get_gradient()
+   *
    */
   gradient_type
   get_gradient(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_normal_derivative()
+   * @copydoc
+   * FEEvaluationBase<dim,1,Number,is_face>::get_normal_derivative()
+   *
    */
   value_type
   get_normal_derivative(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::submit_gradient()
+   * @copydoc     FEEvaluationBase<dim,1,Number,is_face>::submit_gradient()
+   *
    */
   void
   submit_gradient(const gradient_type grad_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::submit_normal_derivative()
+   * @copydoc
+   * FEEvaluationBase<dim,1,Number,is_face>::submit_normal_derivative()
+   *
    */
   void
   submit_normal_derivative(const value_type   grad_in,
                            const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_hessian()
+   * @copydoc     FEEvaluationBase<dim,1,Number,is_face>::get_hessian()
+   *
    */
   Tensor<2, dim, VectorizedArrayType>
   get_hessian(unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_hessian_diagonal()
+   * @copydoc
+   * FEEvaluationBase<dim,1,Number,is_face>::get_hessian_diagonal()
+   *
    */
   gradient_type
   get_hessian_diagonal(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_laplacian()
+   * @copydoc     FEEvaluationBase<dim,1,Number,is_face>::get_laplacian()
+   *
    */
   value_type
   get_laplacian(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::integrate_value()
+   * @copydoc     FEEvaluationBase<dim,1,Number,is_face>::integrate_value()
+   *
    */
   value_type
   integrate_value() const;
@@ -1569,8 +1661,9 @@ protected:
    * Constructor. Made protected to avoid initialization in user code. Takes
    * all data stored in MatrixFree. If applied to problems with more than one
    * finite element or more than one quadrature formula selected during
-   * construction of @p matrix_free, @p first_selected_component and @p
-   * quad_no allow to select the appropriate components.
+   * construction of   @p matrix_free,     @p first_selected_component   and
+   * @p     quad_no allow to select the appropriate components.
+   *
    */
   FEEvaluationAccess(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -1587,6 +1680,7 @@ protected:
   /**
    * Constructor with reduced functionality for similar usage of FEEvaluation
    * as FEValues, including matrix assembly.
+   *
    */
   FEEvaluationAccess(
     const Mapping<dim> &      mapping,
@@ -1599,11 +1693,13 @@ protected:
 
   /**
    * Copy constructor
+   *
    */
   FEEvaluationAccess(const FEEvaluationAccess &other);
 
   /**
    * Copy assignment operator
+   *
    */
   FEEvaluationAccess &
   operator=(const FEEvaluationAccess &other);
@@ -1618,7 +1714,10 @@ protected:
  * type Tensor<2,dim>. Provides some additional functions for access, like the
  * symmetric gradient and divergence.
  *
+ *
  * @ingroup matrixfree
+ *
+ *
  */
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
 class FEEvaluationAccess<dim, dim, Number, is_face, VectorizedArrayType>
@@ -1638,59 +1737,68 @@ public:
     FEEvaluationBase<dim, dim, Number, is_face, VectorizedArrayType>;
 
   /**
-   * @copydoc FEEvaluationBase<dim,dim,Number,is_face>::get_gradient()
+   * @copydoc     FEEvaluationBase<dim,dim,Number,is_face>::get_gradient()
+   *
    */
   gradient_type
   get_gradient(const unsigned int q_point) const;
 
   /**
    * Return the divergence of a vector-valued finite element at quadrature
-   * point number @p q_point after a call to @p evaluate(...,true,...).
+   * point number   @p q_point   after a call to   @p evaluate(...,true,...).
+   *
    */
   VectorizedArrayType
   get_divergence(const unsigned int q_point) const;
 
   /**
    * Return the symmetric gradient of a vector-valued finite element at
-   * quadrature point number @p q_point after a call to @p
+   * quadrature point number   @p q_point   after a call to   @p
    * evaluate(...,true,...). It corresponds to <tt>0.5
    * (grad+grad<sup>T</sup>)</tt>.
+   *
    */
   SymmetricTensor<2, dim, VectorizedArrayType>
   get_symmetric_gradient(const unsigned int q_point) const;
 
   /**
-   * Return the curl of the vector field, $\nabla \times v$ after a call to @p
-   * evaluate(...,true,...).
+   * Return the curl of the vector field,   $\nabla \times v$   after a call
+   * to   @p     evaluate(...,true,...).
+   *
    */
   Tensor<1, (dim == 2 ? 1 : dim), VectorizedArrayType>
   get_curl(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,dim,Number,is_face>::get_hessian()
+   * @copydoc     FEEvaluationBase<dim,dim,Number,is_face>::get_hessian()
+   *
    */
   Tensor<3, dim, VectorizedArrayType>
   get_hessian(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,dim,Number,is_face>::get_hessian_diagonal()
+   * @copydoc
+   * FEEvaluationBase<dim,dim,Number,is_face>::get_hessian_diagonal()
+   *
    */
   gradient_type
   get_hessian_diagonal(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,dim,Number,is_face>::submit_gradient()
+   * @copydoc     FEEvaluationBase<dim,dim,Number,is_face>::submit_gradient()
+   *
    */
   void
   submit_gradient(const gradient_type grad_in, const unsigned int q_point);
 
   /**
    * Write a contribution that is tested by the gradient to the field
-   * containing the values on quadrature points with component @p q_point.
+   * containing the values on quadrature points with component   @p q_point.
    * This function is an alternative to the other submit_gradient function
    * when using a system of fixed number of equations which happens to
    * coincide with the dimension for some dimensions, but not all. To allow
    * for dimension-independent programming, this function can be used instead.
+   *
    */
   void
   submit_gradient(
@@ -1699,23 +1807,26 @@ public:
 
   /**
    * Write a contribution that is tested by the divergence to the field
-   * containing the values on quadrature points with component @p q_point.
-   * Access to the same field as through @p get_gradient. If applied before
-   * the function @p integrate(...,true) is called, this specifies what is
-   * tested by all basis function gradients on the current cell and integrated
-   * over.
+   * containing the values on quadrature points with component   @p q_point.
+   * Access to the same field as through   @p get_gradient.   If applied
+   * before   the function   @p integrate(...,true)   is called, this
+   * specifies what is   tested by all basis function gradients on the current
+   * cell and integrated   over.
+   *
    */
   void
   submit_divergence(const VectorizedArrayType div_in,
                     const unsigned int        q_point);
 
   /**
-   * Write a contribution that is tested by the symmetric gradient to the field
-   * containing the values on quadrature points with component @p q_point.
-   * Access to the same field as through @p get_symmetric_gradient. If applied before
-   * the function @p integrate(...,true) is called, this specifies the
-   * symmetric gradient which is tested by all basis function symmetric
-   * gradients on the current cell and integrated over.
+   * Write a contribution that is tested by the symmetric gradient to the
+   * field   containing the values on quadrature points with component   @p
+   * q_point.     Access to the same field as through   @p
+   * get_symmetric_gradient.   If applied before   the function   @p
+   * integrate(...,true)   is called, this specifies the   symmetric gradient
+   * which is tested by all basis function symmetric   gradients on the
+   * current cell and integrated over.
+   *
    */
   void
   submit_symmetric_gradient(
@@ -1724,7 +1835,8 @@ public:
 
   /**
    * Write the components of a curl containing the values on quadrature point
-   * @p q_point. Access to the same data field as through @p get_gradient.
+   * @p q_point.   Access to the same data field as through   @p get_gradient.
+   *
    */
   void
   submit_curl(const Tensor<1, dim == 2 ? 1 : dim, VectorizedArrayType> curl_in,
@@ -1735,8 +1847,9 @@ protected:
    * Constructor. Made protected to avoid initialization in user code. Takes
    * all data stored in MatrixFree. If applied to problems with more than one
    * finite element or more than one quadrature formula selected during
-   * construction of @p matrix_free, @p first_selected_component and @p
-   * quad_no allow to select the appropriate components.
+   * construction of   @p matrix_free,     @p first_selected_component   and
+   * @p     quad_no allow to select the appropriate components.
+   *
    */
   FEEvaluationAccess(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -1753,6 +1866,7 @@ protected:
   /**
    * Constructor with reduced functionality for similar usage of FEEvaluation
    * as FEValues, including matrix assembly.
+   *
    */
   FEEvaluationAccess(
     const Mapping<dim> &      mapping,
@@ -1765,11 +1879,13 @@ protected:
 
   /**
    * Copy constructor
+   *
    */
   FEEvaluationAccess(const FEEvaluationAccess &other);
 
   /**
    * Copy assignment operator
+   *
    */
   FEEvaluationAccess &
   operator=(const FEEvaluationAccess &other);
@@ -1782,7 +1898,10 @@ protected:
  * simple data fields, i.e., scalars for the values and Tensor<1,1> for the
  * gradients.
  *
+ *
  * @ingroup matrixfree
+ *
+ *
  */
 template <typename Number, bool is_face, typename VectorizedArrayType>
 class FEEvaluationAccess<1, 1, Number, is_face, VectorizedArrayType>
@@ -1801,106 +1920,126 @@ public:
     FEEvaluationBase<1, 1, Number, is_face, VectorizedArrayType>;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_dof_value()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::get_dof_value()
+   *
    */
   value_type
   get_dof_value(const unsigned int dof) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_dof_value()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::submit_dof_value()
+   *
    */
   void
   submit_dof_value(const value_type val_in, const unsigned int dof);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_value()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::get_value()
+   *
    */
   value_type
   get_value(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_value()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::submit_value()
+   *
    */
   void
   submit_value(const value_type val_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_value()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::submit_value()
+   *
    */
   void
   submit_value(const gradient_type val_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_gradient()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::get_gradient()
+   *
    */
   gradient_type
   get_gradient(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_divergence()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::get_divergence()
+   *
    */
   value_type
   get_divergence(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_normal_derivative()
+   * @copydoc
+   * FEEvaluationBase<dim,1,Number,is_face>::get_normal_derivative()
+   *
    */
   value_type
   get_normal_derivative(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   *
    */
   void
   submit_gradient(const gradient_type grad_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   *
    */
   void
   submit_gradient(const value_type grad_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   *
    */
   void
   submit_gradient(const Tensor<2, 1, VectorizedArrayType> grad_in,
                   const unsigned int                      q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_normal_derivative()
+   * @copydoc
+   * FEEvaluationBase<1,1,Number,is_face>::submit_normal_derivative()
+   *
    */
   void
   submit_normal_derivative(const value_type   grad_in,
                            const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_normal_derivative()
+   * @copydoc
+   * FEEvaluationBase<1,1,Number,is_face>::submit_normal_derivative()
+   *
    */
   void
   submit_normal_derivative(const gradient_type grad_in,
                            const unsigned int  q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_hessian()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::get_hessian()
+   *
    */
   Tensor<2, 1, VectorizedArrayType>
   get_hessian(unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_hessian_diagonal()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::get_hessian_diagonal()
+   *
    */
   gradient_type
   get_hessian_diagonal(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_laplacian()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::get_laplacian()
+   *
    */
   value_type
   get_laplacian(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::integrate_value()
+   * @copydoc     FEEvaluationBase<1,1,Number,is_face>::integrate_value()
+   *
    */
   value_type
   integrate_value() const;
@@ -1910,8 +2049,9 @@ protected:
    * Constructor. Made protected to avoid initialization in user code. Takes
    * all data stored in MatrixFree. If applied to problems with more than one
    * finite element or more than one quadrature formula selected during
-   * construction of @p matrix_free, @p first_selected_component and @p
-   * quad_no allow to select the appropriate components.
+   * construction of   @p matrix_free,     @p first_selected_component   and
+   * @p     quad_no allow to select the appropriate components.
+   *
    */
   FEEvaluationAccess(
     const MatrixFree<1, Number, VectorizedArrayType> &matrix_free,
@@ -1928,6 +2068,7 @@ protected:
   /**
    * Constructor with reduced functionality for similar usage of FEEvaluation
    * as FEValues, including matrix assembly.
+   *
    */
   FEEvaluationAccess(
     const Mapping<1> &      mapping,
@@ -1939,11 +2080,13 @@ protected:
 
   /**
    * Copy constructor
+   *
    */
   FEEvaluationAccess(const FEEvaluationAccess &other);
 
   /**
    * Copy assignment operator
+   *
    */
   FEEvaluationAccess &
   operator=(const FEEvaluationAccess &other);
@@ -1957,457 +2100,422 @@ protected:
  * similar to FEValues, however, it includes a lot of specialized functions
  * that make it much faster (between 5 and 500, depending on the polynomial
  * degree). For evaluation of face terms in DG, see the class
- * FEFaceEvaluation.
+ * FEFaceEvaluation. <h3>Usage and initialization</h3> <h4>Fast usage in
+ * combination with MatrixFree</h4> The first and foremost way of usage is to
+ * initialize this class from a MatrixFree object that caches everything
+ * related to the degrees of freedom and the mapping information. This way, it
+ * is possible to use vectorization for applying a differential operator for
+ * several cells at once. The capabilities of FEEvaluation span a large
+ * spectrum of integration tasks for weak forms. In general, there are two
+ * classes of tasks that get done. One is the   @p evaluate   path that
+ * interpolates from a solution vector to quadrature points:
  *
- * <h3>Usage and initialization</h3>
- *
- * <h4>Fast usage in combination with MatrixFree</h4>
- *
- * The first and foremost way of usage is to initialize this class from a
- * MatrixFree object that caches everything related to the degrees of freedom
- * and the mapping information. This way, it is possible to use vectorization
- * for applying a differential operator for several cells at once.
- *
- * The capabilities of FEEvaluation span a large spectrum of integration tasks
- * for weak forms. In general, there are two classes of tasks that get
- * done. One is the @p evaluate path that interpolates from a solution vector
- * to quadrature points:
  *
  * @code
  * FEEvaluation<dim,fe_degree> phi(matrix_free);
  * for (unsigned int cell_index = cell_range.first;
- *      cell_index < cell_range.second; ++cell_index)
- *   {
- *     phi.reinit(cell_index);
- *     phi.read_dof_values(vector);
- *     phi.evaluate(EvaluationFlags::values);   // interpolate values only
- *     for (unsigned int q=0; q<phi.n_q_points; ++q)
- *       {
- *         VectorizedArray<double> val = phi.get_value(q);
- *         // do something with val
- *       }
- *   }
+ *    cell_index < cell_range.second; ++cell_index)
+ * {
+ *   phi.reinit(cell_index);
+ *   phi.read_dof_values(vector);
+ *   phi.evaluate(EvaluationFlags::values);   // interpolate values only
+ *   for (unsigned int q=0; q<phi.n_q_points; ++q)
+ *     {
+ *       VectorizedArray<double> val = phi.get_value(q);
+ *       // do something with val
+ *     }
+ * }
  * @endcode
  *
- * Likewise, a gradient of the finite element solution represented by @p
- * vector can be interpolated to the quadrature points by @p
+ * Likewise, a gradient of the finite element solution represented by   @p
+ * vector can be interpolated to the quadrature points by   @p
  * phi.get_gradient(q). The combination of read_dof_values(), evaluate() and
- * get_value() is similar to what FEValues::get_function_values or
- * FEValues::get_function_gradients does, but it is in general much faster
+ * get_value() is similar to what   FEValues::get_function_values   or
+ * FEValues::get_function_gradients   does, but it is in general much faster
  * because it makes use of the tensor product, see the description of the
  * evaluation routines below, and can do this operation for several cells at
- * once through vectorization.
+ * once through vectorization. The second class of tasks done by FEEvaluation
+ * are integration tasks for right hand sides. In finite element computations,
+ * these typically consist of multiplying a quantity on quadrature points (a
+ * function value, or a field interpolated by the finite element space itself)
+ * by a set of test functions and integrating over the cell through summation
+ * of the values in each quadrature point, multiplied by the quadrature weight
+ * and the Jacobian determinant of the transformation. If a generic Function
+ * object is given and we want to compute   $v_i = \int_\Omega \varphi_i f dx$
+ * , this is done by the following cell-wise integration:
  *
- * The second class of tasks done by FEEvaluation are integration tasks for
- * right hand sides. In finite element computations, these typically consist
- * of multiplying a quantity on quadrature points (a function value, or a
- * field interpolated by the finite element space itself) by a set of test
- * functions and integrating over the cell through summation of the values in
- * each quadrature point, multiplied by the quadrature weight and the Jacobian
- * determinant of the transformation. If a generic Function object is given
- * and we want to compute $v_i = \int_\Omega \varphi_i f dx$, this is done by
- * the following cell-wise integration:
  *
  * @code
  * FEEvaluation<dim,fe_degree> phi(matrix_free);
  * Function<dim> &function = ...;
  * for (unsigned int cell_index = cell_range.first;
- *      cell_index < cell_range.second; ++cell_index)
- *   {
- *     phi.reinit(cell_index);
- *     for (unsigned int q=0; q<phi.n_q_points; ++q)
- *       {
- *         Point<dim,VectorizedArray<double> > p_vect =
- *           phi.quadrature_point(q);
- *         // Need to evaluate function for each component in VectorizedArray
- *         VectorizedArray<double> f_value;
- *         for (unsigned int v=0; v<VectorizedArray<double>::size(); ++v)
- *           {
- *             Point<dim> p;
- *             for (unsigned int d=0; d<dim; ++d)
- *               p[d] = p_vect[d][v];
- *             f_value[v] = function.value(p);
- *           }
- *         phi.submit_value(f_value, q);
- *       }
- *     phi.integrate(EvaluationFlags::values);
- *     phi.distribute_local_to_global(dst);
- *   }
+ *    cell_index < cell_range.second; ++cell_index)
+ * {
+ *   phi.reinit(cell_index);
+ *   for (unsigned int q=0; q<phi.n_q_points; ++q)
+ *     {
+ *       Point<dim,VectorizedArray<double> > p_vect =
+ *         phi.quadrature_point(q);
+ *       // Need to evaluate function for each component in VectorizedArray
+ *       VectorizedArray<double> f_value;
+ *       for (unsigned int v=0; v<VectorizedArray<double>::size(); ++v)
+ *         {
+ *           Point<dim> p;
+ *           for (unsigned int d=0; d<dim; ++d)
+ *             p[d] = p_vect[d][v];
+ *           f_value[v] = function.value(p);
+ *         }
+ *       phi.submit_value(f_value, q);
+ *     }
+ *   phi.integrate(EvaluationFlags::values);
+ *   phi.distribute_local_to_global(dst);
+ * }
  * @endcode
  *
- * In this code, the call to @p phi.submit_value() prepares for the
+ * In this code, the call to   @p phi.submit_value()   prepares for the
  * multiplication by the test function prior to the actual integration (inside
  * the submit call, the value to be tested is also multiplied by the
- * determinant of the Jacobian and the quadrature weight). In the
- * @p integrate() call, an integral contribution tested by each basis function
+ * determinant of the Jacobian and the quadrature weight). In the   @p
+ * integrate()   call, an integral contribution tested by each basis function
  * underlying the FEEvaluation object (e.g. the four linear shape functions of
- * FE_Q@<2@>(1) in 2D) is computed, which gives the vector entries to be
- * summed into the @p dst vector. Note that the above code needs to explicitly
- * loop over the components in the vectorized array for evaluating the
- * function, which is necessary for interfacing with a generic Function object
- * with double arguments. Simple functions can also be implemented in
+ * FE_Q  @<2@>(1)   in 2D) is computed, which gives the vector entries to be
+ * summed into the   @p dst   vector. Note that the above code needs to
+ * explicitly loop over the components in the vectorized array for evaluating
+ * the function, which is necessary for interfacing with a generic Function
+ * object with double arguments. Simple functions can also be implemented in
  * VectorizedArray form directly as VectorizedArray provides the basic math
- * operations.
- *
- * For evaluating a bilinear form, the evaluation on a source vector is
- * combined with the integration involving test functions that get written
- * into a result vector. This setting is the context of matrix-free operator
- * evaluation and explained in the step-37 and step-48 tutorial programs.
- *
- * Note that the two vector accesses through FEEvaluation::read_dof_values and
- * FEEvaluation::distribute_local_to_global resolve constraints on the fly,
- * based on the AffineConstraints object specified at the MatrixFree::reinit()
- * call. In case the values in the degrees of freedom are of interest (usually
- * only the values in quadrature points are necessary), these can be accessed
- * through FEEvaluation::get_dof_value(i), where i is the index of the basis
- * function. Note that the numbering of the degrees of freedom for continuous
- * elements in FEEvaluation is different from the ordering in FE_Q (or
- * FEValues) because FEEvaluation needs to access them in lexicographic order,
- * which is the ordering used in FE_DGQ, for instance. Re-indexing would be
- * too expensive because the access inside evaluate() and integrate() is on
- * the critical path in the tensorial evaluation parts. An alternative to
- * filling the DoF values by read_dof_values() before an evaluate() call is to
- * manually assign a value by a set_dof_value() call. Likewise, if the local
- * result of integration should be further processed rather than scattered
- * into a vector by distribute_local_to_global(), one can access it by
- * get_dof_value() after an integrate() call. An example for using the values
- * of an integral in a different context is fast assembly of matrices as shown
- * in the next subsection.
- *
- * For most operator evaluation tasks that repeatedly go through the mesh, the
- * realization by MatrixFree that combines pre-computed data for the mapping
- * (Jacobian transformations for the geometry description) with on-the-fly
- * evaluation of basis functions is the most efficient way of doing things. In
- * other words, the framework selects a trade-off between memory usage and
- * initialization of objects that is suitable for replacement of matrix-vector
- * products or explicit time integration in a matrix-free way.
- *
- * <h4>Usage without pre-initialized MatrixFree object</h4>
- *
- * The second form of usage is to initialize FEEvaluation from geometry
- * information generated by FEValues. This allows to apply the integration
- * loops on the fly without prior initialization of MatrixFree objects. This
- * can be useful when the memory and initialization cost of MatrixFree is not
- * acceptable, e.g. when a different number of quadrature points should be
- * used for one single evaluation in error computation. Also, when using the
- * routines of this class to assemble matrices the trade-off implied by the
- * MatrixFree class may not be desired. In such a case, the cost to initialize
- * the necessary geometry data on the fly is comparably low and thus avoiding
- * a global object MatrixFree can be useful. When used in this way, reinit
- * methods reminiscent from FEValues with a cell iterator are used. However,
- * note that this model results in working on a single cell at a time, with
- * geometry data duplicated in all components of the vectorized array. Thus,
+ * operations. For evaluating a bilinear form, the evaluation on a source
+ * vector is combined with the integration involving test functions that get
+ * written into a result vector. This setting is the context of matrix-free
+ * operator evaluation and explained in the   step-37   and   step-48
+ * tutorial programs. Note that the two vector accesses through
+ * FEEvaluation::read_dof_values   and
+ * FEEvaluation::distribute_local_to_global   resolve constraints on the fly,
+ * based on the AffineConstraints object specified at the
+ * MatrixFree::reinit()   call. In case the values in the degrees of freedom
+ * are of interest (usually only the values in quadrature points are
+ * necessary), these can be accessed through   FEEvaluation::get_dof_value(i),
+ * where i is the index of the basis function. Note that the numbering of the
+ * degrees of freedom for continuous elements in FEEvaluation is different
+ * from the ordering in FE_Q (or FEValues) because FEEvaluation needs to
+ * access them in lexicographic order, which is the ordering used in FE_DGQ,
+ * for instance. Re-indexing would be too expensive because the access inside
+ * evaluate() and integrate() is on the critical path in the tensorial
+ * evaluation parts. An alternative to filling the DoF values by
+ * read_dof_values() before an evaluate() call is to manually assign a value
+ * by a set_dof_value() call. Likewise, if the local result of integration
+ * should be further processed rather than scattered into a vector by
+ * distribute_local_to_global(), one can access it by get_dof_value() after an
+ * integrate() call. An example for using the values of an integral in a
+ * different context is fast assembly of matrices as shown in the next
+ * subsection. For most operator evaluation tasks that repeatedly go through
+ * the mesh, the realization by MatrixFree that combines pre-computed data for
+ * the mapping (Jacobian transformations for the geometry description) with
+ * on-the-fly evaluation of basis functions is the most efficient way of doing
+ * things. In other words, the framework selects a trade-off between memory
+ * usage and initialization of objects that is suitable for replacement of
+ * matrix-vector products or explicit time integration in a matrix-free way.
+ * <h4>Usage without pre-initialized MatrixFree object</h4> The second form of
+ * usage is to initialize FEEvaluation from geometry information generated by
+ * FEValues. This allows to apply the integration loops on the fly without
+ * prior initialization of MatrixFree objects. This can be useful when the
+ * memory and initialization cost of MatrixFree is not acceptable, e.g. when a
+ * different number of quadrature points should be used for one single
+ * evaluation in error computation. Also, when using the routines of this
+ * class to assemble matrices the trade-off implied by the MatrixFree class
+ * may not be desired. In such a case, the cost to initialize the necessary
+ * geometry data on the fly is comparably low and thus avoiding a global
+ * object MatrixFree can be useful. When used in this way, reinit methods
+ * reminiscent from FEValues with a cell iterator are used. However, note that
+ * this model results in working on a single cell at a time, with geometry
+ * data duplicated in all components of the vectorized array. Thus,
  * vectorization is only useful when it can apply the same operation on
- * different data, e.g. when performing matrix assembly.
+ * different data, e.g. when performing matrix assembly. As an example,
+ * consider the following code to assemble the contributions to the Laplace
+ * matrix:
  *
- * As an example, consider the following code to assemble the contributions to
- * the Laplace matrix:
  *
  * @code
  * FEEvaluation<dim,fe_degree> fe_eval (mapping, finite_element,
- *                                      QGauss<1>(fe_degree+1), flags);
+ *                                    QGauss<1>(fe_degree+1), flags);
  * for (const auto &cell : dof_handler.active_cell_iterators())
- *   {
- *     fe_eval.reinit(cell);
- *     for (unsigned int i=0; i<dofs_per_cell;
- *          i += VectorizedArray<double>::size())
- *       {
- *         const unsigned int n_items =
- *           i+VectorizedArray<double>::size() > dofs_per_cell ?
- *           (dofs_per_cell - i) :
- *           VectorizedArray<double>::size();
+ * {
+ *   fe_eval.reinit(cell);
+ *   for (unsigned int i=0; i<dofs_per_cell;
+ *        i += VectorizedArray<double>::size())
+ *     {
+ *       const unsigned int n_items =
+ *         i+VectorizedArray<double>::size() > dofs_per_cell ?
+ *         (dofs_per_cell
  *
- *         // Set n_items unit vectors
+ * - i) :
+ *         VectorizedArray<double>::size();
+ *
+ *       // Set n_items unit vectors
+ *       for (unsigned int j=0; j<dofs_per_cell; ++j)
+ *         fe_eval.set_dof_value(VectorizedArray<double>(), j);
+ *       for (unsigned int v=0; v<n_items; ++v)
+ *         {
+ *           VectorizedArray<double> one_value = VectorizedArray<double>();
+ *           one_value[v] = 1.;
+ *           fe_eval.set_dof_value(one_value, i+v);
+ *         }
+ *
+ *       // Apply operator on unit vector to generate the next few matrix
+ *       // columns
+ *       fe_eval.evaluate(EvaluationFlags::values|EvaluationFlags::gradients);
+ *       for (unsigned int q=0; q<n_q_points; ++q)
+ *         {
+ *           fe_eval.submit_value(10.*fe_eval.get_value(q), q);
+ *           fe_eval.submit_gradient(fe_eval.get_gradient(q), q);
+ *         }
+ *       fe_eval.integrate(EvaluationFlags::values|EvaluationFlags::gradients);
+ *
+ *       // Insert computed entries in matrix
+ *       for (unsigned int v=0; v<n_items; ++v)
  *         for (unsigned int j=0; j<dofs_per_cell; ++j)
- *           fe_eval.set_dof_value(VectorizedArray<double>(), j);
- *         for (unsigned int v=0; v<n_items; ++v)
- *           {
- *             VectorizedArray<double> one_value = VectorizedArray<double>();
- *             one_value[v] = 1.;
- *             fe_eval.set_dof_value(one_value, i+v);
- *           }
- *
- *         // Apply operator on unit vector to generate the next few matrix
- *         // columns
- *         fe_eval.evaluate(EvaluationFlags::values|EvaluationFlags::gradients);
- *         for (unsigned int q=0; q<n_q_points; ++q)
- *           {
- *             fe_eval.submit_value(10.*fe_eval.get_value(q), q);
- *             fe_eval.submit_gradient(fe_eval.get_gradient(q), q);
- *           }
- *         fe_eval.integrate(EvaluationFlags::values|EvaluationFlags::gradients);
- *
- *         // Insert computed entries in matrix
- *         for (unsigned int v=0; v<n_items; ++v)
- *           for (unsigned int j=0; j<dofs_per_cell; ++j)
- *             cell_matrix(fe_eval.get_internal_dof_numbering()[j],
- *                         fe_eval.get_internal_dof_numbering()[i+v])
- *               = fe_eval.get_dof_value(j)[v];
- *       }
- *     ...
- *   }
+ *           cell_matrix(fe_eval.get_internal_dof_numbering()[j],
+ *                       fe_eval.get_internal_dof_numbering()[i+v])
+ *             = fe_eval.get_dof_value(j)[v];
+ *     }
+ *   ...
+ * }
  * @endcode
  *
- * This code generates the columns of the cell matrix with the loop over @p i
- * above. The way this is done is the following: FEEvaluation's routines focus
- * on the evaluation of finite element operators, so for computing a cell
- * matrix out of an operator evaluation it is applied to all the unit vectors
- * on the cell. Applying the operator on a unit vector might seem inefficient
- * but the evaluation routines used here are so quick that they still work
- * much faster than what is possible with FEValues. In particular, the
- * complexity is <code>(fe_degree+1)<sup>2*dim+1</sup> </code> rather than
- * <code>(fe_degree+1)<sup>3*dim</sup> </code>.
- *
- * Due to vectorization, we can generate matrix columns for several unit
- * vectors at a time (e.g. 4). The variable @p n_items make sure that we do
- * the last iteration where the number of cell dofs is not divisible by the
- * vectorization length correctly. Also note that we need to get the internal
- * dof numbering applied by fe_eval because FEEvaluation internally uses a
- * lexicographic numbering of degrees of freedom as explained above.
- *
- * <h4>Internal data organization</h4>
- *
- * The temporary data for holding the solution values on the local degrees of
- * freedom as well as the interpolated values, gradients, and Hessians on
- * quadrature points is a scratch array provided by
- * MatrixFree::acquire_scratch_data() that is re-used between different calls
- * to FEEvaluation. Therefore, constructing an FEEvaluation object is
+ * This code generates the columns of the cell matrix with the loop over   @p
+ * i   above. The way this is done is the following: FEEvaluation's routines
+ * focus on the evaluation of finite element operators, so for computing a
+ * cell matrix out of an operator evaluation it is applied to all the unit
+ * vectors on the cell. Applying the operator on a unit vector might seem
+ * inefficient but the evaluation routines used here are so quick that they
+ * still work much faster than what is possible with FEValues. In particular,
+ * the complexity is   <code>(fe_degree+1)<sup>2*dim+1</sup> </code>   rather
+ * than   <code>(fe_degree+1)<sup>3*dim</sup> </code>  . Due to vectorization,
+ * we can generate matrix columns for several unit vectors at a time (e.g. 4).
+ * The variable   @p n_items   make sure that we do the last iteration where
+ * the number of cell dofs is not divisible by the vectorization length
+ * correctly. Also note that we need to get the internal dof numbering applied
+ * by fe_eval because FEEvaluation internally uses a lexicographic numbering
+ * of degrees of freedom as explained above. <h4>Internal data
+ * organization</h4> The temporary data for holding the solution values on the
+ * local degrees of freedom as well as the interpolated values, gradients, and
+ * Hessians on quadrature points is a scratch array provided by
+ * MatrixFree::acquire_scratch_data()   that is re-used between different
+ * calls to FEEvaluation. Therefore, constructing an FEEvaluation object is
  * typically cheap and does not involve any expensive operation. Only a few
- * dozen pointers to the actual data fields are set during
- * construction. Therefore, no negative performance impact arises when
- * creating an FEEvaluation several times per loop, such as at the top of a
- * `local_cell_operation` operation that is split in small chunks for a parallel
- * for loop, obviating a separate scratch data field for parallel loops as
- * necessary in the loop of @p WorkStream.
- *
- * When using the FEEvaluation class in multithreaded mode, the thread local
- * storage of the scratch data in MatrixFree automatically makes sure that
- * each thread gets it private data array. Note, however, that deal.II must be
- * compiled with thread support also when all the thread parallelization is
- * provided externally and not done via deal.II's routines, such as
- * OpenMP. This is because deal.II needs to know the notation of thread local
- * storage. The FEEvaluation kernels have been verified to work within OpenMP
- * loops.
- *
- * <h4>Vectorization scheme through VectorizedArray</h4>
- *
- * This class is designed to perform all arithmetics on single-instruction
- * multiple-data (SIMD) instructions present on modern CPUs by explicit
- * vectorization, which are made available in deal.II through the class
- * VectorizedArray, using the widest vector width available at
- * configure/compile time. In order to keep programs flexible, FEEvaluation
- * always applies vectorization over several elements. This is often the best
- * compromise because computations on different elements are usually
- * independent in the finite element method (except of course the process of
- * adding an integral contribution to a global residual vector), also in more
- * complicated scenarios: Stabilization parameter can e.g. be defined as the
- * maximum of some quantities on all quadrature points of a cell divided by
- * the cell's volume, but without locally mixing the results with
- * neighbors. Using the terminology from computer architecture, the design of
- * FEEvaluation relies on not doing any cross-lane data exchange when
- * operating on the cell in typical integration scenarios.
- *
- * When the number of cells in the problem is not a multiple of the number of
- * array elements in the SIMD vector, the implementation of FEEvaluation fills
- * in some dummy entries in the unused SIMD lanes and carries them around
- * nonetheless, a choice made necessary since the length of VectorizedArray is
- * fixed at compile time. Yet, this approach most often results in superior
- * code as compared to an auto-vectorization setup where an alternative
- * unvectorized code path would be necessary next to the vectorized version to
- * be used on fully populated lanes, together with a dispatch mechanism. In
- * @p read_dof_values, the empty lanes resulting from a reinit() call to an
- * incomplete batch of cells are set to zero, whereas
- * @p distribute_local_to_global or @p set_dof_values simply ignores the
- * content in the empty lanes. The number of actually filled SIMD lanes can by
- * queried by MatrixFree::n_components_filled().
- *
- * Obviously, the computations performed on the artificial lanes (without real
- * data) should never be mixed with valid results. The contract in using this
- * class is that the user makes sure that lanes are not crossed in user code,
- * in particular since it is not clear a priori which cells are going to be
- * put together in vectorization. For example, results on an element should
- * not be added to results on other elements except through the global vector
- * access methods or by access that is masked by
- * MatrixFree::n_components_filled(). No guarantee can be made that results on
- * artificial lanes will always be zero that can safely be added to other
- * results: The data on JxW or Jacobians is copied from the last valid lane in
- * order to avoid division by zero that could trigger floating point
- * exceptions or trouble in other situations.
- *
- * <h3>Description of evaluation routines</h3>
- *
- * This class contains specialized evaluation routines for elements based on
- * tensor-product quadrature formulas and tensor-product-like shape functions,
- * including standard FE_Q or FE_DGQ elements and quadrature points symmetric
- * around 0.5 (like Gauss quadrature), FE_DGP elements based on truncated
- * tensor products as well as the faster case of Gauss-Lobatto elements with
- * Gauss-Lobatto quadrature which give diagonal mass matrices and quicker
- * evaluation internally. The main benefit of this class is the evaluation of
- * all shape functions in all quadrature or integration over all shape
- * functions in <code>dim (fe_degree+1)<sup>dim+1</sup> </code> operations
- * instead of the slower <code> (fe_degree+1)<sup>2*dim</sup></code>
- * complexity in the evaluation routines of FEValues. This is done by an
- * algorithm called sum factorization which factors out constant factors
- * during the evaluation along a coordinate direction. This algorithm is the
- * basis of many spectral element algorithms.
- *
+ * dozen pointers to the actual data fields are set during construction.
+ * Therefore, no negative performance impact arises when creating an
+ * FEEvaluation several times per loop, such as at the top of a
+ * `local_cell_operation` operation that is split in small chunks for a
+ * parallel for loop, obviating a separate scratch data field for parallel
+ * loops as necessary in the loop of   @p WorkStream. When using the
+ * FEEvaluation class in multithreaded mode, the thread local storage of the
+ * scratch data in MatrixFree automatically makes sure that each thread gets
+ * it private data array. Note, however, that deal.II must be compiled with
+ * thread support also when all the thread parallelization is provided
+ * externally and not done via deal.II's routines, such as OpenMP. This is
+ * because deal.II needs to know the notation of thread local storage. The
+ * FEEvaluation kernels have been verified to work within OpenMP loops.
+ * <h4>Vectorization scheme through VectorizedArray</h4> This class is
+ * designed to perform all arithmetics on single-instruction multiple-data
+ * (SIMD) instructions present on modern CPUs by explicit vectorization, which
+ * are made available in deal.II through the class VectorizedArray, using the
+ * widest vector width available at configure/compile time. In order to keep
+ * programs flexible, FEEvaluation always applies vectorization over several
+ * elements. This is often the best compromise because computations on
+ * different elements are usually independent in the finite element method
+ * (except of course the process of adding an integral contribution to a
+ * global residual vector), also in more complicated scenarios: Stabilization
+ * parameter can e.g. be defined as the maximum of some quantities on all
+ * quadrature points of a cell divided by the cell's volume, but without
+ * locally mixing the results with neighbors. Using the terminology from
+ * computer architecture, the design of FEEvaluation relies on not doing any
+ * cross-lane data exchange when operating on the cell in typical integration
+ * scenarios. When the number of cells in the problem is not a multiple of the
+ * number of array elements in the SIMD vector, the implementation of
+ * FEEvaluation fills in some dummy entries in the unused SIMD lanes and
+ * carries them around nonetheless, a choice made necessary since the length
+ * of VectorizedArray is fixed at compile time. Yet, this approach most often
+ * results in superior code as compared to an auto-vectorization setup where
+ * an alternative unvectorized code path would be necessary next to the
+ * vectorized version to be used on fully populated lanes, together with a
+ * dispatch mechanism. In   @p read_dof_values,   the empty lanes resulting
+ * from a reinit() call to an incomplete batch of cells are set to zero,
+ * whereas   @p distribute_local_to_global   or   @p set_dof_values   simply
+ * ignores the content in the empty lanes. The number of actually filled SIMD
+ * lanes can by queried by   MatrixFree::n_components_filled(). Obviously, the
+ * computations performed on the artificial lanes (without real data) should
+ * never be mixed with valid results. The contract in using this class is that
+ * the user makes sure that lanes are not crossed in user code, in particular
+ * since it is not clear a priori which cells are going to be put together in
+ * vectorization. For example, results on an element should not be added to
+ * results on other elements except through the global vector access methods
+ * or by access that is masked by   MatrixFree::n_components_filled().   No
+ * guarantee can be made that results on artificial lanes will always be zero
+ * that can safely be added to other results: The data on JxW or Jacobians is
+ * copied from the last valid lane in order to avoid division by zero that
+ * could trigger floating point exceptions or trouble in other situations.
+ * <h3>Description of evaluation routines</h3> This class contains specialized
+ * evaluation routines for elements based on tensor-product quadrature
+ * formulas and tensor-product-like shape functions, including standard FE_Q
+ * or FE_DGQ elements and quadrature points symmetric around 0.5 (like Gauss
+ * quadrature), FE_DGP elements based on truncated tensor products as well as
+ * the faster case of Gauss-Lobatto elements with Gauss-Lobatto quadrature
+ * which give diagonal mass matrices and quicker evaluation internally. The
+ * main benefit of this class is the evaluation of all shape functions in all
+ * quadrature or integration over all shape functions in   <code>dim
+ * (fe_degree+1)<sup>dim+1</sup> </code>   operations instead of the slower
+ * <code> (fe_degree+1)<sup>2*dim</sup></code>   complexity in the evaluation
+ * routines of FEValues. This is done by an algorithm called sum factorization
+ * which factors out constant factors during the evaluation along a coordinate
+ * direction. This algorithm is the basis of many spectral element algorithms.
  * Note that many of the operations available through this class are inherited
  * from the base class FEEvaluationBase, in particular reading from and
  * writing to vectors. Also, the class inherits from FEEvaluationAccess that
  * implements access to values, gradients and Hessians of the finite element
- * function on quadrature points.
+ * function on quadrature points. This class assumes that the shape functions
+ * of the FiniteElement under consideration do   <em>  not  </em>   depend on
+ * the geometry of the cells in real space. Currently, other finite elements
+ * cannot be treated with the matrix-free concept. <h4>Degree of finite
+ * element as a compile-time parameter</h4> The class FEEvaluation as two
+ * usage models. The first usage model is to specify the polynomial degree as
+ * a template parameter. This guarantees maximum efficiency: The evaluation
+ * with sum factorization performs a number of nested short 1D loops of length
+ * equal to the polynomial degree plus one. If the loop bounds are known at
+ * compile time, the compiler can unroll loops as deemed most efficient by its
+ * heuristics. At least the innermost loop is almost always completely
+ * unrolled, avoiding the loop overhead. However, carrying the polynomial
+ * degree (and the number of quadrature points) as a template parameter makes
+ * things more complicated in codes where different polynomial degrees should
+ * be considered, e.g. in application codes where the polynomial degree is
+ * given through an input file. The second usage model is to rely on
+ * pre-compiled code for polynomial degrees. While a user code can use
+ * different functions for the cells (that get e.g. invoked by some dynamic
+ * dispatch mechanism for the various degree templates), deal.II also supports
+ * usage of this class based on the information in the element passed to the
+ * initialization. For this usage model, set the template parameter for the
+ * polynomial degree to
  *
- * This class assumes that the shape functions of the FiniteElement under
- * consideration do <em>not</em> depend on the geometry of the cells in real
- * space. Currently, other finite elements cannot be treated with the
- * matrix-free concept.
+ *  -  and choose an arbitrary number for the number of quadrature points. That code part contains pre-compiled templated code for polynomial degrees between 1 and 6 and common quadrature formulas, which runs almost as fast as the templated version. In case the chosen degree is not pre-compiled, an evaluator object with template specialization for
  *
- * <h4>Degree of finite element as a compile-time parameter</h4>
- *
- * The class FEEvaluation as two usage models. The first usage model is to
- * specify the polynomial degree as a template parameter. This guarantees
- * maximum
- * efficiency: The evaluation with sum factorization performs a number of nested
- * short 1D loops of length equal to the polynomial degree plus one. If the
- * loop bounds are known at compile time, the compiler can unroll loops as
- * deemed most efficient by its heuristics. At least the innermost loop is
- * almost always completely unrolled, avoiding the loop overhead.
- *
- * However, carrying the polynomial degree (and the number of quadrature
- * points) as a template parameter makes things more complicated in codes
- * where different polynomial degrees should be considered, e.g. in
- * application codes where the polynomial degree is given through an input
- * file. The second usage model is to rely on pre-compiled code for polynomial
- * degrees. While a user code can use different functions for the cells (that
- * get e.g. invoked by some dynamic dispatch mechanism for the various degree
- * templates), deal.II also supports usage of this class based on the
- * information in the element passed to the initialization. For this usage
- * model, set the template parameter for the polynomial degree to -1 and
- * choose an arbitrary number for the number of quadrature points. That code
- * part contains pre-compiled templated code for polynomial degrees between 1
- * and 6 and common quadrature formulas, which runs almost as fast as the
- * templated version. In case the chosen degree is not pre-compiled, an
- * evaluator object with template specialization for -1 is invoked that runs
- * according to run-time bounds.
- *
+ *  -  is invoked that runs according to run-time bounds.
  * An overview of the performance of FEEvaluation is given in the following
  * figure. It considers the time spent per degree of freedom for evaluating
  * the Laplacian with continuous finite elements using a code similar to the
- * step-37 tutorial program for single-precision arithmetics. The time is
+ * step-37   tutorial program for single-precision arithmetics. The time is
  * based on an experiment on a single core of an Intel Xeon E5-2687W v4,
  * running at 3.4 GHz and measured at problem sizes of around 10 million. The
  * plot lists the computational time (around 0.1 seconds) divided by the
  * number of degrees freedom.
- *
- * @image html fe_evaluation_laplacian_time_per_dof.png
- *
+*    @image html fe_evaluation_laplacian_time_per_dof.png
  * The figure shows that the templated computational kernels are between 2.5
  * and 3 times faster than the non-templated ones. The fastest turnaround on
  * this setup is for polynomial degree 5 at 7.4e-9 seconds per degree of
- * freedom or 134 million degrees of freedom per second - on a single
- * core. The non-templated version is also fastest at polynomial degree 5 with
- * 2.1e-9 seconds per degree of freedom or 48 million degrees of freedom per
- * second. Note that using FEEvaluation with template `degree=-1` selects the
- * fast path for degrees between one and six, and the slow path for other
- * degrees.
+ * freedom or 134 million degrees of freedom per second
  *
- * <h4>Pre-compiling code for more polynomial degrees</h4>
- *
- * It is also possible to pre-compile the code in FEEvaluation for a different
- * maximal polynomial degree. This is controlled by the class
- * internal::FEEvaluationFactory and the implementation in
+ *  - on a single core. The non-templated version is also fastest at polynomial degree 5 with 2.1e-9 seconds per degree of freedom or 48 million degrees of freedom per second. Note that using FEEvaluation with template `degree=-1` selects the fast path for degrees between one and six, and the slow path for other degrees.
+ * <h4>Pre-compiling code for more polynomial degrees</h4> It is also possible
+ * to pre-compile the code in FEEvaluation for a different maximal polynomial
+ * degree. This is controlled by the class   internal::FEEvaluationFactory
+ * and the implementation in
  * `include/deal.II/matrix_free/evaluation_template_factory.templates.h`. By
  * setting the macro `FE_EVAL_FACTORY_DEGREE_MAX` to the desired integer and
  * instantiating the classes FEEvaluationFactory and FEFaceEvaluationFactory
  * (the latter for FEFaceEvaluation) creates paths to templated functions for
  * a possibly larger set of degrees. You can check if fast
- * evaluation/integration for a given degree/n_quadrature_points pair by calling
- * FEEvaluation::fast_evaluation_supported() or
- * FEFaceEvaluation::fast_evaluation_supported().
+ * evaluation/integration for a given degree/n_quadrature_points pair by
+ * calling   FEEvaluation::fast_evaluation_supported()   or
+ * FEFaceEvaluation::fast_evaluation_supported(). <h3>Handling multi-component
+ * systems</h3> FEEvaluation also allows for treating vector-valued problems
+ * through a template parameter on the number of components:
  *
- * <h3>Handling multi-component systems</h3>
- *
- * FEEvaluation also allows for treating vector-valued problems through a
- * template parameter on the number of components:
  *
  * @code
  * FEEvaluation<dim,fe_degree,n_q_points_1d,n_components> phi(matrix_free);
  * @endcode
  *
  * If used this way, the components can be gathered from several components of
- * an @p std::vector<VectorType> through the call
+ * an   @p std::vector<VectorType>   through the call
+ *
  *
  * @code
  * phi.read_dof_values(src, 0);
  * @endcode
  *
  * where the 0 means that the vectors starting from the zeroth vector in the
- * @p std::vector should be used, <code>src[0], src[1], ...,
- * src[n_components-1]</code>.
+ * @p std::vector   should be used, <code>src[0], src[1], ...,
+ * src[n_components-1]</code>. An alternative way for reading multi-component
+ * systems is possible if the DoFHandler underlying the MatrixFree data is
+ * based on an FESystem of   @p   n_components entries. In that case, a single
+ * vector is provided for the read_dof_values() and
+ * distribute_local_to_global() calls. An important property of FEEvaluation
+ * in multi-component systems is the layout of multiple components in the
+ * get_value(), get_gradient(), or get_dof_value() calls. In this case,
+ * instead of a scalar return field VectorizedArray  @<double@>   a tensor is
+ * returned,
  *
- * An alternative way for reading multi-component systems is possible if the
- * DoFHandler underlying the MatrixFree data is based on an FESystem of @p
- * n_components entries. In that case, a single vector is provided for the
- * read_dof_values() and distribute_local_to_global() calls.
- *
- * An important property of FEEvaluation in multi-component systems is the
- * layout of multiple components in the get_value(), get_gradient(), or
- * get_dof_value() calls. In this case, instead of a scalar return field
- * VectorizedArray@<double@> a tensor is returned,
  *
  * @code
- * get_value -> Tensor<1,n_components,VectorizedArray<double>>
- * get_gradient -> Tensor<1,n_components,Tensor<1,dim,VectorizedArray<double>>
+ * get_value
+ *
+ * -> Tensor<1,n_components,VectorizedArray<double>>
+ * get_gradient
+ *
+ * -> Tensor<1,n_components,Tensor<1,dim,VectorizedArray<double>>
  * @endcode
  *
  * In a similar vein, the submit_value() and submit_gradient() calls take
- * tensors of values. Note that there exist specializations for @p
- * n_components=1 and @p n_components=dim, which are provided through the base
- * class FEEvaluationAccess. In the scalar case, these provide the scalar
+ * tensors of values. Note that there exist specializations for   @p
+ * n_components=1 and   @p n_components=dim,   which are provided through the
+ * base class FEEvaluationAccess. In the scalar case, these provide the scalar
  * return types described above. In the vector-valued case, the gradient is
- * converted from <code>Tensor@<1,dim,Tensor@<1,dim,VectorizedArray@<double@>
- * @> @></code> to <code>Tensor@<2,dim,VectorizedArray@<double@>
- * @></code>. Furthermore, additional operations such as the diveregence or
- * curl are available.
+ * converted from <code>Tensor
+ * @<1,dim,Tensor@<1,dim,VectorizedArray@<double@>     @>     @></code>   to
+ * <code>Tensor  @<2,dim,VectorizedArray@<double@>     @></code>.
+ * Furthermore, additional operations such as the diveregence or curl are
+ * available. In case different shape functions are combined, for example
+ * mixed finite element formulations in Stokes flow, two FEEvaluation objects
+ * are created, one for the velocity and one for the pressure. Those are then
+ * combined on quadrature points:
  *
- * In case different shape functions are combined, for example mixed finite
- * element formulations in Stokes flow, two FEEvaluation objects are created,
- * one for the velocity and one for the pressure. Those are then combined on
- * quadrature points:
  *
  * @code
  * FEEvaluation<dim,degree_p+1,degree_p+2,dim> velocity (data, 0);
  * FEEvaluation<dim,degree_p,  degree_p+2,1, > pressure (data, 1);
  *
  * for (unsigned int cell=cell_range.first; cell<cell_range.second; ++cell)
- *   {
- *     velocity.reinit (cell);
- *     velocity.read_dof_values (src.block(0));
- *     velocity.evaluate (EvaluationFlags::gradients);
- *     pressure.reinit (cell);
- *     pressure.read_dof_values (src.block(1));
- *     pressure.evaluate (EvaluationFlags::values);
+ * {
+ *   velocity.reinit (cell);
+ *   velocity.read_dof_values (src.block(0));
+ *   velocity.evaluate (EvaluationFlags::gradients);
+ *   pressure.reinit (cell);
+ *   pressure.read_dof_values (src.block(1));
+ *   pressure.evaluate (EvaluationFlags::values);
  *
- *     for (unsigned int q=0; q<velocity.n_q_points; ++q)
- *       {
- *         SymmetricTensor<2,dim,VectorizedArray<double> > sym_grad_u =
- *           velocity.get_symmetric_gradient (q);
- *         VectorizedArray<double> pres = pressure.get_value(q);
- *         VectorizedArray<double> div = -trace(sym_grad_u);
- *         pressure.submit_value (div, q);
+ *   for (unsigned int q=0; q<velocity.n_q_points; ++q)
+ *     {
+ *       SymmetricTensor<2,dim,VectorizedArray<double> > sym_grad_u =
+ *         velocity.get_symmetric_gradient (q);
+ *       VectorizedArray<double> pres = pressure.get_value(q);
+ *       VectorizedArray<double> div =
  *
- *         // subtract p * I
- *         for (unsigned int d=0; d<dim; ++d)
- *           sym_grad_u[d][d] -= pres;
+ * -trace(sym_grad_u);
+ *       pressure.submit_value (div, q);
  *
- *         velocity.submit_symmetric_gradient(sym_grad_u, q);
- *      }
+ *       // subtract p I
+ *       for (unsigned int d=0; d<dim; ++d)
+ *         sym_grad_u[d][d]
  *
- *     velocity.integrate (EvaluationFlags::gradients);
- *     velocity.distribute_local_to_global (dst.block(0));
- *     pressure.integrate (EvaluationFlags::values);
- *     pressure.distribute_local_to_global (dst.block(1));
- *   }
+ * -= pres;
+ *
+ *       velocity.submit_symmetric_gradient(sym_grad_u, q);
+ *    }
+ *
+ *   velocity.integrate (EvaluationFlags::gradients);
+ *   velocity.distribute_local_to_global (dst.block(0));
+ *   pressure.integrate (EvaluationFlags::values);
+ *   pressure.distribute_local_to_global (dst.block(1));
+ * }
  * @endcode
  *
  * This code assumes that a BlockVector of two components describes the
@@ -2418,61 +2526,55 @@ protected:
  * deal.II test suite includes a few additional examples as well, e.g. the
  * Stokes operator described above is found at
  * https://github.com/dealii/dealii/blob/master/tests/matrix_free/matrix_vector_stokes_noflux.cc
- *
  * <h3>Handling several integration tasks and data storage in quadrature
- * points</h3>
+ * points</h3> The design of FEEvaluation and MatrixFree separates the
+ * geometry from the basis functions. Therefore, several DoFHandler objects
+ * (or the same DoFHandler equipped with different constraint objects) can
+ * share the same geometry information like in the Stokes example above. All
+ * geometry is cached once in MatrixFree, so FEEvaluation does not need to do
+ * expensive initialization calls and rather sets a few pointers. This
+ * realization is based on the idea that the geometry information is needed
+ * only once also when several fields are evaluated, in a departure from
+ * FEValues which sets up the internal mapping data for each field. If for
+ * example a multi-component PDE involves the shape values on one component
+ * and the shape gradient on the other, no efficiency is lost if both are
+ * based on the same MatrixFree object where the update flags specify that
+ * both   @p   update_values ,   @p update_gradients   , and   @p
+ * update_jxw_values   are given. The selection of desired quantities of shape
+ * values is through the flags in the evaluate() or integrate calls and the
+ * access at quadrature points:
  *
- * The design of FEEvaluation and MatrixFree separates the geometry from the
- * basis functions. Therefore, several DoFHandler objects (or the same
- * DoFHandler equipped with different constraint objects) can share the same
- * geometry information like in the Stokes example above. All geometry is
- * cached once in MatrixFree, so FEEvaluation does not need to do expensive
- * initialization calls and rather sets a few pointers. This realization is
- * based on the idea that the geometry information is needed only once also
- * when several fields are evaluated, in a departure from FEValues which sets
- * up the internal mapping data for each field. If for example a
- * multi-component PDE involves the shape values on one component and the
- * shape gradient on the other, no efficiency is lost if both are based on the
- * same MatrixFree object where the update flags specify that both @p
- * update_values , @p update_gradients , and @p update_jxw_values are
- * given. The selection of desired quantities of shape values is through the
- * flags in the evaluate() or integrate calls and the access at quadrature
- * points:
  *
  * @code
  * phi1.evaluate(EvaluationFlags::values);
  * phi2.evaluate(EvaluationFlags::gradients);
  * for (unsigned int q=0; q<phi1.n_q_points; ++q)
- *   {
- *     VectorizedArray<double> val1 = phi1.get_value(q);
- *     Tensor<1,dim,VectorizedArray<double> > grad2 = phi2.get_gradient(q);
- *     Point<dim,VectorizedArray<double> > point = phi1.quadrature_point(q);
- *     // ... some complicated formula combining those three...
- *   }
+ * {
+ *   VectorizedArray<double> val1 = phi1.get_value(q);
+ *   Tensor<1,dim,VectorizedArray<double> > grad2 = phi2.get_gradient(q);
+ *   Point<dim,VectorizedArray<double> > point = phi1.quadrature_point(q);
+ *   // ... some complicated formula combining those three...
+ * }
  * @endcode
  *
  * In the loop over quadrature points, one can ask any of the two FEEvaluation
  * objects &mdash; it does not really matter which one because they only keep
  * pointers to the quadrature point data &mdash; to provide the quadrature
- * point location.
+ * point location. This observation also translates to the case when different
+ * differential operators are implemented in a program, for example the action
+ * of a mass matrix for one phase of the algorithm and the action of a
+ * stiffness matrix in another one. Only a single MatrixFree object is
+ * necessary, maintaining full efficiency by using different local functions
+ * with the respective implementation in separate FEEvaluation objects. In
+ * other words, a user does not need to bother about being conservative when
+ * providing update_flags to the initialization of MatrixFree for efficiency
+ * reasons
  *
- * This observation also translates to the case when different differential
- * operators are implemented in a program, for example the action of a mass
- * matrix for one phase of the algorithm and the action of a stiffness matrix
- * in another one. Only a single MatrixFree object is necessary, maintaining
- * full efficiency by using different local functions with the respective
- * implementation in separate FEEvaluation objects. In other words, a user
- * does not need to bother about being conservative when providing
- * update_flags to the initialization of MatrixFree for efficiency reasons -
- * no overhead incurs inside FEEvaluation, except for at most one or two more
- * @p if statements inside the FEEvaluation::reinit() call. Rather, the
- * largest set of flags necessary among all calls is perfectly fine from an
- * efficiency point of view.
- *
+ *  - no overhead incurs inside FEEvaluation, except for at most one or two more   @p if   statements inside the   FEEvaluation::reinit()   call. Rather, the largest set of flags necessary among all calls is perfectly fine from an efficiency point of view.
  * For the combination of different fields, including different solution
  * vectors that come from different time steps, it is mandatory that all
  * FEEvaluation objects share the same MatrixFree object. This is because the
- * way cells are looped by MatrixFree::cell_loop() can be different for
+ * way cells are looped by   MatrixFree::cell_loop()   can be different for
  * different DoFHandler or AffineConstraints arguments. More precisely, even
  * though the layout is going to be the same in serial, there is no guarantee
  * about the ordering for different DoFHandler/AffineConstraints in the MPI
@@ -2484,26 +2586,24 @@ protected:
  * DoFHandler, AffineConstraints, and options (such as the setting for thread
  * parallelism) are set, then the order is going to be the same because the
  * algorithm is deterministic.
+ * @tparam   dim Dimension in which this class is to be used
+ * @tparam   fe_degree Degree of the tensor product finite element with
+ * fe_degree+1 degrees of freedom per coordinate direction. Can be set to
  *
- * @tparam dim Dimension in which this class is to be used
- *
- * @tparam fe_degree Degree of the tensor product finite element with
- * fe_degree+1 degrees of freedom per coordinate direction. Can be set to -1
- * if the degree is not known at compile time, but performance will usually be
- * worse by a factor of 2-3.
- *
- * @tparam n_q_points_1d Number of points in the quadrature formula in 1D,
+ *  -  if the degree is not known at compile time, but performance will usually be worse by a factor of 2-3.
+ * @tparam   n_q_points_1d Number of points in the quadrature formula in 1D,
  * defaults to fe_degree+1
- *
- * @tparam n_components Number of vector components when solving a system of
+ * @tparam   n_components Number of vector components when solving a system of
  * PDEs. If the same operation is applied to several components of a PDE (e.g.
  * a vector Laplace equation), they can be applied simultaneously with one
  * call (and often more efficiently). Defaults to 1.
+ * @tparam   Number Number format, usually   @p double   or   @p float.
+ * Defaults to   @p   double
  *
- * @tparam Number Number format, usually @p double or @p float. Defaults to @p
- * double
  *
  * @ingroup matrixfree
+ *
+ *
  */
 template <int dim,
           int fe_degree,
@@ -2524,12 +2624,14 @@ class FEEvaluation : public FEEvaluationAccess<dim,
 public:
   /**
    * An alias to the base class.
+   *
    */
   using BaseClass =
     FEEvaluationAccess<dim, n_components_, Number, false, VectorizedArrayType>;
 
   /**
    * An underlying number type specified as template argument.
+   *
    */
   using number_type = Number;
 
@@ -2537,6 +2639,7 @@ public:
    * The type of function values, e.g. `VectorizedArrayType` for
    * `n_components=1` or `Tensor<1,dim,VectorizedArrayType >` for
    * `n_components=dim`.
+   *
    */
   using value_type = typename BaseClass::value_type;
 
@@ -2544,17 +2647,20 @@ public:
    * The type of gradients, e.g. `Tensor<1,dim,VectorizedArrayType>` for
    * `n_components=1` or `Tensor<2,dim,VectorizedArrayType >` for
    * `n_components=dim`.
+   *
    */
   using gradient_type = typename BaseClass::gradient_type;
 
   /**
    * The dimension given as template argument.
+   *
    */
   static constexpr unsigned int dimension = dim;
 
   /**
    * The number of solution components of the evaluator given as template
    * argument.
+   *
    */
   static constexpr unsigned int n_components = n_components_;
 
@@ -2563,6 +2669,7 @@ public:
    * argument `n_q_points_1d`. Note that the actual number of quadrature
    * points, `n_q_points`, can be different if `fe_degree=-1` is given and
    * run-time loop lengths are used rather than compile time ones.
+   *
    */
   static constexpr unsigned int static_n_q_points =
     Utilities::pow(n_q_points_1d, dim);
@@ -2573,6 +2680,7 @@ public:
    * of degrees of freedom `dofs_per_component` can be different if
    * `fe_degree=-1` is given or if the underlying is of more complicated type
    * than the usual FE_Q or FE_DGQ ones, such as FE_DGP.
+   *
    */
   static constexpr unsigned int static_dofs_per_component =
     Utilities::pow(fe_degree + 1, dim);
@@ -2583,6 +2691,7 @@ public:
    * degrees of freedom `dofs_per_cell` can be different if `fe_degree=-1` is
    * given or if the underlying is of more complicated type than the usual
    * FE_Q or FE_DGQ ones, such as FE_DGP.
+   *
    */
   static constexpr unsigned int tensor_dofs_per_cell =
     static_dofs_per_component * n_components;
@@ -2593,6 +2702,7 @@ public:
    * degrees of freedom `dofs_per_cell` can be different if `fe_degree=-1` is
    * given or if the underlying is of more complicated type than the usual
    * FE_Q or FE_DGQ ones, such as FE_DGP.
+   *
    */
   static constexpr unsigned int static_dofs_per_cell =
     static_dofs_per_component * n_components;
@@ -2600,36 +2710,29 @@ public:
   /**
    * Constructor. Takes all data stored in MatrixFree. If applied to problems
    * with more than one finite element or more than one quadrature formula
-   * selected during construction of @p matrix_free, the appropriate component
-   * can be selected by the optional arguments.
-   *
-   * @param matrix_free Data object that contains all data
-   *
-   * @param dof_no If matrix_free was set up with multiple DoFHandler
-   * objects, this parameter selects to which DoFHandler/AffineConstraints pair
-   * the given evaluator should be attached to.
-   *
-   * @param quad_no If matrix_free was set up with multiple Quadrature
-   * objects, this parameter selects the appropriate number of the quadrature
-   * formula.
-   *
-   * @param first_selected_component If the dof_handler selected by dof_no
-   * uses an FESystem consisting of more than one component, this parameter
-   * allows for selecting the component where the current evaluation routine
-   * should start. Note that one evaluator does not support combining
-   * different shape functions in different components. In other words, the
-   * same base element of a FESystem needs to be set for the components
-   * between @p first_selected_component and
-   * <code>first_selected_component+n_components_</code>.
-   *
-   * @param active_fe_index If matrix_free was set up with DoFHandler
-   * objects with hp::FECollections, this parameter selects to which
+   * selected during construction of   @p matrix_free,   the appropriate
+   * component   can be selected by the optional arguments.       @param
+   * matrix_free Data object that contains all data       @param   dof_no If
+   * matrix_free was set up with multiple DoFHandler   objects, this parameter
+   * selects to which DoFHandler/AffineConstraints pair   the given evaluator
+   * should be attached to.       @param   quad_no If matrix_free was set up
+   * with multiple Quadrature   objects, this parameter selects the
+   * appropriate number of the quadrature   formula.       @param
+   * first_selected_component If the dof_handler selected by dof_no   uses an
+   * FESystem consisting of more than one component, this parameter   allows
+   * for selecting the component where the current evaluation routine   should
+   * start. Note that one evaluator does not support combining   different
+   * shape functions in different components. In other words, the   same base
+   * element of a FESystem needs to be set for the components   between   @p
+   * first_selected_component   and
+   * <code>first_selected_component+n_components_</code>  .       @param
+   * active_fe_index If matrix_free was set up with DoFHandler   objects with
+   * hp::FECollections,   this parameter selects to which
    * DoFHandler/AffineConstraints pair the given evaluator should be attached
-   * to.
+   * to.       @param   active_quad_index If matrix_free was set up with
+   * hp::Collection     objects, this parameter selects the appropriate number
+   * of the quadrature   formula.
    *
-   * @param active_quad_index If matrix_free was set up with hp::Collection
-   * objects, this parameter selects the appropriate number of the quadrature
-   * formula.
    */
   FEEvaluation(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -2642,9 +2745,9 @@ public:
   /**
    * Constructor. Takes all data stored in MatrixFree for a given cell range,
    * which allows to automatically identify the active_fe_index and
-   * active_quad_index in case of a p-adaptive strategy.
+   * active_quad_index in case of a p-adaptive strategy.     The rest of the
+   * arguments are the same as in the constructor above.
    *
-   * The rest of the arguments are the same as in the constructor above.
    */
   FEEvaluation(const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
                const std::pair<unsigned int, unsigned int> &       range,
@@ -2656,27 +2759,28 @@ public:
    * Constructor that comes with reduced functionality and works similar as
    * FEValues. The arguments are similar to the ones passed to the constructor
    * of FEValues, with the notable difference that FEEvaluation expects a one-
-   * dimensional quadrature formula, Quadrature<1>, instead of a @p dim
+   * dimensional quadrature formula, Quadrature<1>, instead of a   @p dim
    * dimensional one. The finite element can be both scalar or vector valued,
    * but this method always only selects a scalar base element at a time (with
-   * @p n_components copies as specified by the class template). For vector-
-   * valued elements, the optional argument @p first_selected_component allows
-   * to specify the index of the base element to be used for evaluation. Note
-   * that the internal data structures always assume that the base element is
-   * primitive, non-primitive are not supported currently.
-   *
-   * As known from FEValues, a call to the reinit method with a
-   * Triangulation<dim>::cell_iterator is necessary to make the geometry and
+   * @p n_components   copies as specified by the class template). For vector-
+   * valued elements, the optional argument   @p first_selected_component
+   * allows   to specify the index of the base element to be used for
+   * evaluation. Note   that the internal data structures always assume that
+   * the base element is   primitive, non-primitive are not supported
+   * currently.     As known from FEValues, a call to the reinit method with a
+   * Triangulation<dim>::cell_iterator   is necessary to make the geometry and
    * degrees of freedom of the current class known. If the iterator includes
-   * DoFHandler information (i.e., it is a DoFHandler<dim>::cell_iterator or
-   * similar), the initialization allows to also read from or write to vectors
-   * in the standard way for DoFHandler<dim>::active_cell_iterator types for
-   * one cell at a time. However, this approach is much slower than the path
-   * with MatrixFree with MPI since index translation has to be done. As only
-   * one cell at a time is used, this method does not vectorize over several
-   * elements (which is most efficient for vector operations), but only
-   * possibly within the element if the evaluate/integrate routines are
-   * combined inside user code (e.g. for computing cell matrices).
+   * DoFHandler information (i.e., it is a   DoFHandler<dim>::cell_iterator
+   * or   similar), the initialization allows to also read from or write to
+   * vectors   in the standard way for   DoFHandler<dim>::active_cell_iterator
+   * types for   one cell at a time. However, this approach is much slower
+   * than the path   with MatrixFree with MPI since index translation has to
+   * be done. As only   one cell at a time is used, this method does not
+   * vectorize over several   elements (which is most efficient for vector
+   * operations), but only   possibly within the element if the
+   * evaluate/integrate routines are   combined inside user code (e.g. for
+   * computing cell matrices).
+   *
    */
   FEEvaluation(const Mapping<dim> &      mapping,
                const FiniteElement<dim> &fe,
@@ -2686,8 +2790,9 @@ public:
 
   /**
    * Constructor for the reduced functionality. This constructor is equivalent
-   * to the other one except that it makes the object use a $Q_1$ mapping
+   * to the other one except that it makes the object use a   $Q_1$   mapping
    * (i.e., an object of type MappingQGeneric(1)) implicitly.
+   *
    */
   FEEvaluation(const FiniteElement<dim> &fe,
                const Quadrature<1> &     quadrature,
@@ -2698,11 +2803,12 @@ public:
    * Constructor for the reduced functionality. Similar to the other
    * constructor with FiniteElement argument but using another
    * FEEvaluationBase object to provide information about the geometry. This
-   * allows several FEEvaluation objects to share the geometry evaluation, i.e.,
-   * the underlying mapping and quadrature points do only need to be evaluated
-   * once. Make sure to not pass an optional object around when you intend to
-   * use the FEEvaluation object in %parallel to the given one because
-   * otherwise the intended sharing may create race conditions.
+   * allows several FEEvaluation objects to share the geometry evaluation,
+   * i.e.,   the underlying mapping and quadrature points do only need to be
+   * evaluated   once. Make sure to not pass an optional object around when
+   * you intend to   use the FEEvaluation object in %parallel to the given one
+   * because   otherwise the intended sharing may create race conditions.
+   *
    */
   FEEvaluation(
     const FiniteElement<dim> &                                           fe,
@@ -2714,6 +2820,7 @@ public:
    * quadrature, and update flags, the underlying geometry evaluation based on
    * FEValues will be deep-copied in order to allow for using in parallel with
    * threads.
+   *
    */
   FEEvaluation(const FEEvaluation &other);
 
@@ -2722,6 +2829,7 @@ public:
    * mapping, fe, quadrature, and update flags, the underlying geometry
    * evaluation based on FEValues will be deep-copied in order to allow for
    * using in parallel with threads.
+   *
    */
   FEEvaluation &
   operator=(const FEEvaluation &other);
@@ -2729,10 +2837,11 @@ public:
   /**
    * Initialize the operation pointer to the current cell batch index. Unlike
    * the reinit functions taking a cell iterator as argument below and the
-   * FEValues::reinit() methods, where the information related to a particular
-   * cell is generated in the reinit call, this function is very cheap since
-   * all data is pre-computed in @p matrix_free, and only a few indices have
-   * to be set appropriately.
+   * FEValues::reinit()   methods, where the information related to a
+   * particular   cell is generated in the reinit call, this function is very
+   * cheap since   all data is pre-computed in   @p matrix_free,   and only a
+   * few indices have   to be set appropriately.
+   *
    */
   void
   reinit(const unsigned int cell_batch_index);
@@ -2740,14 +2849,15 @@ public:
   /**
    * Initialize the data to the current cell using a TriaIterator object as
    * usual in FEValues. The argument is either of type
-   * DoFHandler::active_cell_iterator or DoFHandler::level_cell_iterator. This
-   * option is only available if the FEEvaluation object was created with a
-   * finite element, quadrature formula and correct update flags and
+   * DoFHandler::active_cell_iterator   or   DoFHandler::level_cell_iterator.
+   * This   option is only available if the FEEvaluation object was created
+   * with a   finite element, quadrature formula and correct update flags and
    * <b>without</b> a MatrixFree object. This initialization method loses the
    * ability to use vectorization, see also the description of the
    * FEEvaluation class. When this reinit method is used, FEEvaluation can
    * also read from vectors (but less efficient than with data coming from
    * MatrixFree).
+   *
    */
   template <bool level_dof_access>
   void
@@ -2762,12 +2872,14 @@ public:
    * of the FEEvaluation class. When this reinit method is used, FEEvaluation
    * can <b>not</b> read from vectors because no DoFHandler information is
    * available.
+   *
    */
   void
   reinit(const typename Triangulation<dim>::cell_iterator &cell);
 
   /**
    * Check if face evaluation/integration is supported.
+   *
    */
   static bool
   fast_evaluation_supported(const unsigned int given_degree,
@@ -2778,16 +2890,18 @@ public:
    * polynomial interpolation from the DoF values in the input vector to the
    * quadrature points on the unit cell.  The function arguments specify which
    * parts shall actually be computed. This function has to be called first so
-   * that the access functions @p get_value(), @p get_gradient() or @p
-   * get_laplacian give useful information (unless these values have been set
-   * manually).
+   * that the access functions   @p get_value(),     @p get_gradient()   or
+   * @p     get_laplacian give useful information (unless these values have
+   * been set   manually).
+   *
    */
   void
   evaluate(const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * Like above but with separate bool flags.
-   * @deprecated use evaluate() with the EvaluationFlags argument.
+   * Like above but with separate bool flags.     @deprecated   use evaluate()
+   * with the EvaluationFlags argument.
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   evaluate(const bool evaluate_values,
@@ -2796,23 +2910,25 @@ public:
 
   /**
    * Evaluate the function values, the gradients, and the Hessians of the
-   * polynomial interpolation from the DoF values in the input array @p
+   * polynomial interpolation from the DoF values in the input array   @p
    * values_array to the quadrature points on the unit cell. If multiple
    * components are involved in the current FEEvaluation object, the sorting
-   * in @p values_array is such that all degrees of freedom for the first
+   * in   @p values_array   is such that all degrees of freedom for the first
    * component come first, then all degrees of freedom for the second, and so
    * on. The function arguments specify which parts shall actually be
    * computed. This function has to be called first so that the access
-   * functions @p get_value(), @p get_gradient() or @p get_laplacian give
-   * useful information (unless these values have been set manually).
+   * functions   @p get_value(),     @p get_gradient()   or   @p get_laplacian
+   * give   useful information (unless these values have been set manually).
+   *
    */
   void
   evaluate(const VectorizedArrayType *            values_array,
            const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * Like above but using separate bool flags.
-   * @deprecated use evaluate() with the EvaluationFlags argument.
+   * Like above but using separate bool flags.     @deprecated   use
+   * evaluate() with the EvaluationFlags argument.
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   evaluate(const VectorizedArrayType *values_array,
@@ -2823,15 +2939,15 @@ public:
   /**
    * Read from the input vector and evaluates the function values, the
    * gradients, and the Hessians of the polynomial interpolation of the vector
-   * entries from @p input_vector associated with the current cell to the
+   * entries from   @p input_vector   associated with the current cell to the
    * quadrature points on the unit cell. The function arguments specify which
    * parts shall actually be computed. This function has to be called first so
-   * that the access functions @p get_value(), @p get_gradient() or @p
-   * get_laplacian give useful information (unless these values have been set
-   * manually).
+   * that the access functions   @p get_value(),     @p get_gradient()   or
+   * @p     get_laplacian give useful information (unless these values have
+   * been set   manually).     This call is equivalent to calling
+   * read_dof_values() followed by   evaluate(), but might internally use some
+   * additional optimizations.
    *
-   * This call is equivalent to calling read_dof_values() followed by
-   * evaluate(), but might internally use some additional optimizations.
    */
   template <typename VectorType>
   void
@@ -2839,7 +2955,9 @@ public:
                   const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * @deprecated Please use the gather_evaluate() function with the EvaluationFlags argument.
+   * @deprecated   Please use the gather_evaluate() function with the
+   * EvaluationFlags argument.
+   *
    */
   template <typename VectorType>
   DEAL_II_DEPRECATED_EARLY void
@@ -2851,19 +2969,23 @@ public:
   /**
    * This function takes the values and/or gradients that are stored on
    * quadrature points, tests them by all the basis functions/gradients on the
-   * cell and performs the cell integration. The two function arguments
-   * @p integrate_values and @p integrate_gradients are used to enable/disable
-   * summation of the contributions submitted to the values or gradients slots,
-   * respectively. The result is written into the internal data field
-   * @p dof_values (that is usually written into the result vector by the
-   * distribute_local_to_global() or set_dof_values() methods).
+   * cell and performs the cell integration. The two function arguments     @p
+   * integrate_values   and   @p integrate_gradients   are used to
+   * enable/disable   summation of the contributions submitted to the values
+   * or gradients slots,   respectively. The result is written into the
+   * internal data field     @p dof_values   (that is usually written into the
+   * result vector by the   distribute_local_to_global() or set_dof_values()
+   * methods).
+   *
    */
   void
   integrate(const EvaluationFlags::EvaluationFlags integration_flag);
 
 
   /**
-   * @deprecated Please use the integrate() function with the EvaluationFlags argument.
+   * @deprecated   Please use the integrate() function with the
+   * EvaluationFlags argument.
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   integrate(const bool integrate_values, const bool integrate_gradients);
@@ -2871,20 +2993,23 @@ public:
   /**
    * This function takes the values and/or gradients that are stored on
    * quadrature points, tests them by all the basis functions/gradients on the
-   * cell and performs the cell integration. The two function arguments @p
-   * integrate_values and @p integrate_gradients are used to enable/disable
-   * summation of the contributions submitted to the values or gradients
-   * slots, respectively. As opposed to the other integrate() method, this
-   * call stores the result of the testing in the given array @p values_array,
-   * whose previous results is overwritten, rather than writing it on the
-   * internal data structures behind begin_dof_values().
+   * cell and performs the cell integration. The two function arguments   @p
+   * integrate_values and   @p integrate_gradients   are used to
+   * enable/disable   summation of the contributions submitted to the values
+   * or gradients   slots, respectively. As opposed to the other integrate()
+   * method, this   call stores the result of the testing in the given array
+   * @p values_array,     whose previous results is overwritten, rather than
+   * writing it on the   internal data structures behind begin_dof_values().
+   *
    */
   void
   integrate(const EvaluationFlags::EvaluationFlags integration_flag,
             VectorizedArrayType *                  values_array);
 
   /**
-   * @deprecated Please use the integrate() function with the EvaluationFlags argument.
+   * @deprecated   Please use the integrate() function with the
+   * EvaluationFlags argument.
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   integrate(const bool           integrate_values,
@@ -2895,14 +3020,14 @@ public:
    * This function takes the values and/or gradients that are stored on
    * quadrature points, tests them by all the basis functions/gradients on the
    * cell, performs the cell integration, and adds the result into the global
-   * vector @p output_vector on the degrees of freedom associated with the
-   * present cell index. The two function arguments @p integrate_values and
-   * @p integrate_gradients are used to enable/disable summation of the
-   * contributions submitted to the values or gradients slots, respectively.
+   * vector   @p output_vector   on the degrees of freedom associated with the
+   * present cell index. The two function arguments   @p integrate_values
+   * and     @p integrate_gradients   are used to enable/disable summation of
+   * the   contributions submitted to the values or gradients slots,
+   * respectively.     This call is equivalent to calling integrate() followed
+   * by   distribute_local_to_global(), but might internally use   some
+   * additional optimizations.
    *
-   * This call is equivalent to calling integrate() followed by
-   * distribute_local_to_global(), but might internally use
-   * some additional optimizations.
    */
   template <typename VectorType>
   void
@@ -2910,7 +3035,9 @@ public:
                     VectorType &                           output_vector);
 
   /**
-   * @deprecated Please use the integrate_scatter() function with the EvaluationFlags argument.
+   * @deprecated   Please use the integrate_scatter() function with the
+   * EvaluationFlags argument.
+   *
    */
   template <typename VectorType>
   DEAL_II_DEPRECATED_EARLY void
@@ -2921,6 +3048,7 @@ public:
   /**
    * Return the q-th quadrature point in real coordinates stored in
    * MappingInfo.
+   *
    */
   Point<dim, VectorizedArrayType>
   quadrature_point(const unsigned int q_point) const;
@@ -2930,6 +3058,7 @@ public:
    * the underlying evaluation object. Usually close to
    * static_dofs_per_component, but the number depends on the actual element
    * selected and is thus not static.
+   *
    */
   const unsigned int dofs_per_component;
 
@@ -2938,15 +3067,17 @@ public:
    * components in the current evaluation object. Usually close to
    * static_dofs_per_cell = static_dofs_per_component*n_components, but the
    * number depends on the actual element selected and is thus not static.
+   *
    */
   const unsigned int dofs_per_cell;
 
   /**
    * The number of quadrature points in use. If the number of quadrature
    * points in 1d is given as a template, this number is simply the
-   * <tt>dim</tt>-th power of that value. If the element degree is set to -1
-   * (dynamic selection of element degree), the static value of quadrature
-   * points is inaccurate and this value must be used instead.
+   * <tt>dim</tt>-th power of that value. If the element degree is set to
+   *
+   *  -    (dynamic selection of element degree), the static value of quadrature   points is inaccurate and this value must be used instead.
+   *
    */
   const unsigned int n_q_points;
 
@@ -2954,6 +3085,7 @@ private:
   /**
    * Checks if the template arguments regarding degree of the element
    * corresponds to the actual element used at initialization.
+   *
    */
   void
   check_template_arguments(const unsigned int fe_no,
@@ -2970,32 +3102,28 @@ private:
  * FEEvaluationAccess and FEEvaluationBase. Furthermore, the relation of this
  * class to FEEvaluation is similar to the relation between FEValues and
  * FEFaceValues.
+ * @tparam   dim Dimension in which this class is to be used
+ * @tparam   fe_degree Degree of the tensor product finite element with
+ * fe_degree+1 degrees of freedom per coordinate                  direction.
+ * If set to
  *
- * @tparam dim Dimension in which this class is to be used
+ *  - , the degree of the underlying                  element will be used, which acts as a run time constant                  rather than a compile time constant that slows down the                  execution.
+ * @tparam   n_q_points_1d Number of points in the quadrature formula in 1D,
+ * usually chosen as fe_degree+1
+ * @tparam   n_components Number of vector components when solving a system of
+ * PDEs. If the same operation is applied to several
+ * components of a PDE (e.g. a vector Laplace equation), they
+ * can be applied simultaneously with one call (and often
+ * more efficiently)
+ * @tparam   Number Number format, usually   @p double   or   @p float
+ * @tparam   VectorizedArrayType Type of array to be woked on in a vectorized
+ * fashion, defaults to VectorizedArray<Number>
  *
- * @tparam fe_degree Degree of the tensor product finite element with
- *                  fe_degree+1 degrees of freedom per coordinate
- *                  direction. If set to -1, the degree of the underlying
- *                  element will be used, which acts as a run time constant
- *                  rather than a compile time constant that slows down the
- *                  execution.
  *
- * @tparam n_q_points_1d Number of points in the quadrature formula in 1D,
- *                  usually chosen as fe_degree+1
+ * @note   Currently only VectorizedArray<Number, width> is supported as
+ * VectorizedArrayType.
  *
- * @tparam n_components Number of vector components when solving a system of
- *                  PDEs. If the same operation is applied to several
- *                  components of a PDE (e.g. a vector Laplace equation), they
- *                  can be applied simultaneously with one call (and often
- *                  more efficiently)
  *
- * @tparam Number Number format, usually @p double or @p float
- *
- * @tparam VectorizedArrayType Type of array to be woked on in a vectorized
- *                             fashion, defaults to VectorizedArray<Number>
- *
- * @note Currently only VectorizedArray<Number, width> is supported as
- *       VectorizedArrayType.
  */
 template <int dim,
           int fe_degree,
@@ -3016,12 +3144,14 @@ class FEFaceEvaluation : public FEEvaluationAccess<dim,
 public:
   /**
    * An alias to the base class.
+   *
    */
   using BaseClass =
     FEEvaluationAccess<dim, n_components_, Number, true, VectorizedArrayType>;
 
   /**
    * A underlying number type specified as template argument.
+   *
    */
   using number_type = Number;
 
@@ -3029,6 +3159,7 @@ public:
    * The type of function values, e.g. `VectorizedArrayType` for
    * `n_components=1` or `Tensor<1,dim,VectorizedArrayType >` for
    * `n_components=dim`.
+   *
    */
   using value_type = typename BaseClass::value_type;
 
@@ -3036,26 +3167,30 @@ public:
    * The type of gradients, e.g. `Tensor<1,dim,VectorizedArrayType>` for
    * `n_components=1` or `Tensor<2,dim,VectorizedArrayType >` for
    * `n_components=dim`.
+   *
    */
   using gradient_type = typename BaseClass::gradient_type;
 
   /**
    * The dimension given as template argument.
+   *
    */
   static constexpr unsigned int dimension = dim;
 
   /**
    * The number of solution components of the evaluator given as template
    * argument.
+   *
    */
   static constexpr unsigned int n_components = n_components_;
 
   /**
    * The static number of quadrature points determined from the given template
-   * argument `n_q_points_1d` taken to the power of dim-1. Note that the actual
-   * number of quadrature points, `n_q_points`, can be different if
+   * argument `n_q_points_1d` taken to the power of dim-1. Note that the
+   * actual   number of quadrature points, `n_q_points`, can be different if
    * `fe_degree=-1` is given and run-time loop lengths are used rather than
    * compile time ones.
+   *
    */
   static constexpr unsigned int static_n_q_points =
     Utilities::pow(n_q_points_1d, dim - 1);
@@ -3065,6 +3200,7 @@ public:
    * formula. Note that this value is only present for simpler comparison with
    * the cell quadrature, as the actual number of points is given to a face by
    * the `static_n_q_points` variable.
+   *
    */
   static constexpr unsigned int static_n_q_points_cell =
     Utilities::pow(n_q_points_1d, dim);
@@ -3074,6 +3210,7 @@ public:
    * from the given template argument `fe_degree`. Note that the actual number
    * of degrees of freedom `dofs_per_component` can be different if
    * `fe_degree=-1` is given.
+   *
    */
   static constexpr unsigned int static_dofs_per_component =
     Utilities::pow(fe_degree + 1, dim);
@@ -3083,6 +3220,7 @@ public:
    * the given template argument `fe_degree`. Note that the actual number of
    * degrees of freedom `dofs_per_cell` can be different if `fe_degree=-1` is
    * given.
+   *
    */
   static constexpr unsigned int tensor_dofs_per_cell =
     static_dofs_per_component * n_components;
@@ -3092,6 +3230,7 @@ public:
    * the given template argument `fe_degree`. Note that the actual number of
    * degrees of freedom `dofs_per_cell` can be different if `fe_degree=-1` is
    * given.
+   *
    */
   static constexpr unsigned int static_dofs_per_cell =
     static_dofs_per_component * n_components;
@@ -3099,43 +3238,18 @@ public:
   /**
    * Constructor. Takes all data stored in MatrixFree. If applied to problems
    * with more than one finite element or more than one quadrature formula
-   * selected during construction of @p matrix_free, the appropriate component
-   * can be selected by the optional arguments.
+   * selected during construction of   @p matrix_free,   the appropriate
+   * component   can be selected by the optional arguments.       @param
+   * matrix_free Data object that contains all data       @param
+   * is_interior_face This selects which of the two cells of an   internal
+   * face the current evaluator will be based upon. The interior face   is the
+   * main face along which the normal vectors are oriented. The   exterior
+   * face coming from the other side provides the same normal vector   as the
+   * interior side, so if the outer normal vector to that side is   desired,
+   * it must be multiplied by
    *
-   * @param matrix_free Data object that contains all data
+   *  - .       @param   dof_no If matrix_free was set up with multiple DoFHandler   objects, this parameter selects to which DoFHandler/AffineConstraints pair   the given evaluator should be attached to.       @param   quad_no If matrix_free was set up with multiple Quadrature   objects, this parameter selects the appropriate number of the quadrature   formula.       @param   first_selected_component If the dof_handler selected by dof_no   uses an FESystem consisting of more than one base element, this parameter   selects the number of the base element in FESystem. Note that this does   not directly relate to the component of the respective element due to the   possibility for a multiplicity in the element.       @param   active_fe_index If matrix_free was set up with DoFHandler   objects with   hp::FECollections,   this parameter selects to which   DoFHandler/AffineConstraints pair the given evaluator should be attached   to.       @param   face_type In the case of a face, indicate its reference-cell type   (0 for line or quadrilateral 1 for triangle).       @param   active_quad_index If matrix_free was set up with   hp::Collection     objects, this parameter selects the appropriate number of the quadrature   formula.
    *
-   * @param is_interior_face This selects which of the two cells of an
-   * internal face the current evaluator will be based upon. The interior face
-   * is the main face along which the normal vectors are oriented. The
-   * exterior face coming from the other side provides the same normal vector
-   * as the interior side, so if the outer normal vector to that side is
-   * desired, it must be multiplied by -1.
-   *
-   * @param dof_no If matrix_free was set up with multiple DoFHandler
-   * objects, this parameter selects to which DoFHandler/AffineConstraints pair
-   * the given evaluator should be attached to.
-   *
-   * @param quad_no If matrix_free was set up with multiple Quadrature
-   * objects, this parameter selects the appropriate number of the quadrature
-   * formula.
-   *
-   * @param first_selected_component If the dof_handler selected by dof_no
-   * uses an FESystem consisting of more than one base element, this parameter
-   * selects the number of the base element in FESystem. Note that this does
-   * not directly relate to the component of the respective element due to the
-   * possibility for a multiplicity in the element.
-   *
-   * @param active_fe_index If matrix_free was set up with DoFHandler
-   * objects with hp::FECollections, this parameter selects to which
-   * DoFHandler/AffineConstraints pair the given evaluator should be attached
-   * to.
-   *
-   * @param face_type In the case of a face, indicate its reference-cell type
-   * (0 for line or quadrilateral 1 for triangle).
-   *
-   * @param active_quad_index If matrix_free was set up with hp::Collection
-   * objects, this parameter selects the appropriate number of the quadrature
-   * formula.
    */
   FEFaceEvaluation(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -3150,9 +3264,9 @@ public:
   /**
    * Constructor. Takes all data stored in MatrixFree for a given face range,
    * which allows to automatically identify the active_fe_index and
-   * active_quad_index in case of a p-adaptive strategy.
+   * active_quad_index in case of a p-adaptive strategy.     The rest of the
+   * arguments are the same as in the constructor above.
    *
-   * The rest of the arguments are the same as in the constructor above.
    */
   FEFaceEvaluation(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -3166,11 +3280,12 @@ public:
    * Initializes the operation pointer to the current face. This method is the
    * default choice for face integration as the data stored in MappingInfo is
    * stored according to this numbering. Unlike the reinit functions taking a
-   * cell iterator as argument below and the FEValues::reinit() methods, where
-   * the information related to a particular cell is generated in the reinit
-   * call, this function is very cheap since all data is pre-computed in
-   * @p matrix_free, and only a few indices and pointers have to be set
-   * appropriately.
+   * cell iterator as argument below and the   FEValues::reinit()   methods,
+   * where   the information related to a particular cell is generated in the
+   * reinit   call, this function is very cheap since all data is pre-computed
+   * in     @p matrix_free,   and only a few indices and pointers have to be
+   * set   appropriately.
+   *
    */
   void
   reinit(const unsigned int face_batch_number);
@@ -3181,12 +3296,14 @@ public:
    * method is less efficient than the other reinit() method taking a
    * numbering of the faces because it needs to copy the data associated with
    * the faces to the cells in this call.
+   *
    */
   void
   reinit(const unsigned int cell_batch_number, const unsigned int face_number);
 
   /**
    * Check if face evaluation/integration is supported.
+   *
    */
   static bool
   fast_evaluation_supported(const unsigned int given_degree,
@@ -3201,12 +3318,15 @@ public:
    * functions get_value(), get_gradient() or get_normal_derivative() give
    * useful information (unless these values have been set manually by
    * accessing the internal data pointers).
+   *
    */
   void
   evaluate(const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * @deprecated Please use the evaluate() function with the EvaluationFlags argument.
+   * @deprecated   Please use the evaluate() function with the EvaluationFlags
+   * argument.
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   evaluate(const bool evaluate_values, const bool evaluate_gradients);
@@ -3222,13 +3342,16 @@ public:
    * called before the functions get_value(), get_gradient(), or
    * get_normal_derivative() give useful information (unless these values have
    * been set manually).
+   *
    */
   void
   evaluate(const VectorizedArrayType *            values_array,
            const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * @deprecated Please use the evaluate() function with the EvaluationFlags argument.
+   * @deprecated   Please use the evaluate() function with the EvaluationFlags
+   * argument.
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   evaluate(const VectorizedArrayType *values_array,
@@ -3241,10 +3364,10 @@ public:
    * on the unit cell. The function arguments specify which parts shall
    * actually be computed. Needs to be called before the functions
    * get_value(), get_gradient(), or get_normal_derivative() give useful
-   * information.
+   * information.     This call is equivalent to calling read_dof_values()
+   * followed by   evaluate(), but might internally use some additional
+   * optimizations.
    *
-   * This call is equivalent to calling read_dof_values() followed by
-   * evaluate(), but might internally use some additional optimizations.
    */
   template <typename VectorType>
   void
@@ -3252,7 +3375,9 @@ public:
                   const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * @deprecated Please use the gather_evaluate() function with the EvaluationFlags argument.
+   * @deprecated   Please use the gather_evaluate() function with the
+   * EvaluationFlags argument.
+   *
    */
   template <typename VectorType>
   DEAL_II_DEPRECATED_EARLY void
@@ -3268,12 +3393,15 @@ public:
    * values or gradients. The result is written into the internal data field
    * `dof_values` (that is usually written into the result vector by the
    * distribute_local_to_global() or set_dof_values() methods).
+   *
    */
   void
   integrate(const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * @deprecated Please use the integrate() function with the EvaluationFlags argument.
+   * @deprecated   Please use the integrate() function with the
+   * EvaluationFlags argument.
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   integrate(const bool integrate_values, const bool integrate_gradients);
@@ -3285,13 +3413,16 @@ public:
    * `integrate_val` and `integrate_grad` are used to enable/disable some of
    * values or gradients. As opposed to the other integrate() method, this
    * call stores the result of the testing in the given array `values_array`.
+   *
    */
   void
   integrate(const EvaluationFlags::EvaluationFlags evaluation_flag,
             VectorizedArrayType *                  values_array);
 
   /**
-   * @deprecated Please use the integrate() function with the EvaluationFlags argument.
+   * @deprecated   Please use the integrate() function with the
+   * EvaluationFlags argument.
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   integrate(const bool           integrate_values,
@@ -3303,11 +3434,10 @@ public:
    * quadrature points, tests them by all the basis functions/gradients on the
    * cell and performs the cell integration. The two function arguments
    * `integrate_val` and `integrate_grad` are used to enable/disable some of
-   * values or gradients.
+   * values or gradients.     This call is equivalent to calling integrate()
+   * followed by   distribute_local_to_global(), but might internally use some
+   * additional   optimizations.
    *
-   * This call is equivalent to calling integrate() followed by
-   * distribute_local_to_global(), but might internally use some additional
-   * optimizations.
    */
   template <typename VectorType>
   void
@@ -3315,7 +3445,9 @@ public:
                     VectorType &                           output_vector);
 
   /**
-   * @deprecated Please use the integrate_scatter() function with the EvaluationFlags argument.
+   * @deprecated   Please use the integrate_scatter() function with the
+   * EvaluationFlags argument.
+   *
    */
   template <typename VectorType>
   void
@@ -3326,6 +3458,7 @@ public:
   /**
    * Returns the q-th quadrature point on the face in real coordinates stored
    * in MappingInfo.
+   *
    */
   Point<dim, VectorizedArrayType>
   quadrature_point(const unsigned int q_point) const;
@@ -3335,6 +3468,7 @@ public:
    * the underlying evaluation object. Usually close to
    * static_dofs_per_component, but the number depends on the actual element
    * selected and is thus not static.
+   *
    */
   const unsigned int dofs_per_component;
 
@@ -3343,15 +3477,17 @@ public:
    * components in the current evaluation object. Usually close to
    * static_dofs_per_cell = static_dofs_per_component*n_components, but the
    * number depends on the actual element selected and is thus not static.
+   *
    */
   const unsigned int dofs_per_cell;
 
   /**
    * The number of quadrature points in use. If the number of quadrature
    * points in 1d is given as a template, this number is simply the
-   * <tt>dim-1</tt>-th power of that value. If the element degree is set to -1
-   * (dynamic selection of element degree), the static value of quadrature
-   * points is inaccurate and this value must be used instead.
+   * <tt>dim-1</tt>-th power of that value. If the element degree is set to
+   *
+   *  -    (dynamic selection of element degree), the static value of quadrature   points is inaccurate and this value must be used instead.
+   *
    */
   const unsigned int n_q_points;
 
@@ -3359,12 +3495,14 @@ public:
 private:
   /**
    * Return face number of each face of the current face batch.
+   *
    */
   std::array<unsigned int, VectorizedArrayType::size()>
   compute_face_no_data();
 
   /**
    * Determine the orientation of each face of the current face batch.
+   *
    */
   std::array<unsigned int, VectorizedArrayType::size()>
   compute_face_orientations();
@@ -3396,12 +3534,12 @@ namespace internal
 } // namespace internal
 
 
-/*----------------------- Inline functions ----------------------------------*/
+ /*----------------------- Inline functions ----------------------------------*/ 
 
 #ifndef DOXYGEN
 
 
-/*----------------------- FEEvaluationBaseData ------------------------*/
+ /*----------------------- FEEvaluationBaseData ------------------------*/ 
 
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
 inline FEEvaluationBaseData<dim, Number, is_face, VectorizedArrayType>::
@@ -4077,7 +4215,7 @@ FEEvaluationBaseData<dim, Number, is_face, VectorizedArrayType>::
 }
 
 
-/*----------------------- FEEvaluationBase ----------------------------------*/
+ /*----------------------- FEEvaluationBase ----------------------------------*/ 
 
 template <int dim,
           int n_components_,
@@ -5181,7 +5319,7 @@ namespace internal
   {
     // note: no hp is supported
     if (is_valid_mode_for_sm &&
-        dof_info->dof_indices_contiguous_sm[0 /*any index (<3) should work*/]
+        dof_info->dof_indices_contiguous_sm[0  /*any index (<3) should work*/ ]
             .size() > 0 &&
         active_fe_index == 0)
       return &vec.shared_vector_data();
@@ -5417,7 +5555,7 @@ FEEvaluationBase<dim, n_components_, Number, is_face, VectorizedArrayType>::
 
 
 
-/*------------------------------ access to data fields ----------------------*/
+ /*------------------------------ access to data fields ----------------------*/ 
 
 
 
@@ -6217,7 +6355,7 @@ FEEvaluationBase<dim, n_components_, Number, is_face, VectorizedArrayType>::
 
 
 
-/*----------------------- FEEvaluationAccess --------------------------------*/
+ /*----------------------- FEEvaluationAccess --------------------------------*/ 
 
 
 template <int dim,
@@ -6333,7 +6471,7 @@ operator=(const FEEvaluationAccess<dim,
 
 
 
-/*-------------------- FEEvaluationAccess scalar ----------------------------*/
+ /*-------------------- FEEvaluationAccess scalar ----------------------------*/ 
 
 
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
@@ -6646,7 +6784,7 @@ FEEvaluationAccess<dim, 1, Number, is_face, VectorizedArrayType>::
 
 
 
-/*----------------- FEEvaluationAccess vector-valued ------------------------*/
+ /*----------------- FEEvaluationAccess vector-valued ------------------------*/ 
 
 
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
@@ -7058,7 +7196,7 @@ FEEvaluationAccess<dim, dim, Number, is_face, VectorizedArrayType>::submit_curl(
 }
 
 
-/*-------------------- FEEvaluationAccess scalar for 1d ---------------------*/
+ /*-------------------- FEEvaluationAccess scalar for 1d ---------------------*/ 
 
 
 template <typename Number, bool is_face, typename VectorizedArrayType>
@@ -7366,7 +7504,7 @@ FEEvaluationAccess<1, 1, Number, is_face, VectorizedArrayType>::
 
 
 
-/*-------------------------- FEEvaluation -----------------------------------*/
+ /*-------------------------- FEEvaluation -----------------------------------*/ 
 
 
 template <int dim,
@@ -7393,7 +7531,7 @@ inline FEEvaluation<dim,
               quad_no,
               fe_degree,
               static_n_q_points,
-              true /*note: this is not a face*/,
+              true  /*note: this is not a face*/ ,
               active_fe_index,
               active_quad_index)
   , dofs_per_component(this->data->dofs_per_component_on_cell)
@@ -8066,6 +8204,7 @@ namespace internal
 {
   /**
    * Implementation for standard vectors (that have the begin() methods).
+   *
    */
   template <typename Number,
             typename VectorizedArrayType,
@@ -8123,6 +8262,7 @@ namespace internal
 
   /**
    * Implementation for block vectors.
+   *
    */
   template <typename Number,
             typename VectorizedArrayType,
@@ -8147,6 +8287,7 @@ namespace internal
 
   /**
    * Implementation for vectors that have the begin() methods.
+   *
    */
   template <int dim,
             int fe_degree,
@@ -8229,6 +8370,7 @@ namespace internal
 
   /**
    * Implementation for all other vectors like block vectors.
+   *
    */
   template <int dim,
             int fe_degree,
@@ -8498,7 +8640,7 @@ FEEvaluation<dim,
 
 
 
-/*-------------------------- FEFaceEvaluation ---------------------------*/
+ /*-------------------------- FEFaceEvaluation ---------------------------*/ 
 
 
 
@@ -9603,7 +9745,7 @@ FEFaceEvaluation<dim,
 
 
 
-/*------------------------- end FEFaceEvaluation ------------------------- */
+ /*------------------------- end FEFaceEvaluation ------------------------- */ 
 
 
 #endif // ifndef DOXYGEN

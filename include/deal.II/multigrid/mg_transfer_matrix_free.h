@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
 //
@@ -35,20 +35,20 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup mg */
-/*@{*/
+ /*!@addtogroup mg */ 
+ /*@{*/ 
 
 /**
  * Implementation of the MGTransferBase interface for which the transfer
  * operations is implemented in a matrix-free way based on the interpolation
  * matrices of the underlying finite element. This requires considerably less
  * memory than MGTransferPrebuilt and can also be considerably faster than
- * that variant.
+ * that variant. This class currently only works for tensor-product finite
+ * elements based on FE_Q and FE_DGQ elements, including systems involving
+ * multiple components of one of these elements. Systems with different
+ * elements or other elements are currently not implemented.
  *
- * This class currently only works for tensor-product finite elements based on
- * FE_Q and FE_DGQ elements, including systems involving multiple components
- * of one of these elements. Systems with different elements or other elements
- * are currently not implemented.
+ *
  */
 template <int dim, typename Number>
 class MGTransferMatrixFree
@@ -58,46 +58,51 @@ public:
   /**
    * Constructor without constraint matrices. Use this constructor only with
    * discontinuous finite elements or with no local refinement.
+   *
    */
   MGTransferMatrixFree();
 
   /**
    * Constructor with constraints. Equivalent to the default constructor
    * followed by initialize_constraints().
+   *
    */
   MGTransferMatrixFree(const MGConstrainedDoFs &mg_constrained_dofs);
 
   /**
    * Destructor.
+   *
    */
   virtual ~MGTransferMatrixFree() override = default;
 
   /**
    * Initialize the constraints to be used in build().
+   *
    */
   void
   initialize_constraints(const MGConstrainedDoFs &mg_constrained_dofs);
 
   /**
    * Reset the object to the state it had right after the default constructor.
+   *
    */
   void
   clear();
 
   /**
    * Actually build the information for the prolongation for each level.
-   *
    * The optional second argument of external partitioners allows the user to
-   * suggest vector partitioning on the levels. In case the partitioners
-   * are found to contain all ghost unknowns that are visited through the
+   * suggest vector partitioning on the levels. In case the partitioners   are
+   * found to contain all ghost unknowns that are visited through the
    * transfer, the given partitioners are chosen. This ensures compatibility
    * of vectors during prolongate and restrict with external partitioners as
    * given by the user, which in turn saves some copy operations. However, in
-   * case there are unknowns missing -- and this is typically the case at some
-   * point during h-coarsening since processors will need to drop out and
-   * thus children's unknowns on some processor will be needed as ghosts to a
-   * parent cell on another processor -- the provided external partitioners are
-   * ignored and internal variants are used instead.
+   * case there are unknowns missing
+   *
+   *  -  and this is typically the case at some   point during h-coarsening since processors will need to drop out and   thus children's unknowns on some processor will be needed as ghosts to a   parent cell on another processor
+   *
+   *  -  the provided external partitioners are   ignored and internal variants are used instead.
+   *
    */
   void
   build(const DoFHandler<dim, dim> &dof_handler,
@@ -109,15 +114,12 @@ public:
    * Prolongate a vector from level <tt>to_level-1</tt> to level
    * <tt>to_level</tt> using the embedding matrices of the underlying finite
    * element. The previous content of <tt>dst</tt> is overwritten.
-   *
-   * @param to_level The index of the level to prolongate to, which is the
-   * level of @p dst.
-   *
-   * @param src is a vector with as many elements as there are degrees of
-   * freedom on the coarser level involved.
-   *
-   * @param dst has as many elements as there are degrees of freedom on the
+   * @param   to_level The index of the level to prolongate to, which is the
+   * level of   @p dst.         @param   src is a vector with as many elements
+   * as there are degrees of   freedom on the coarser level involved.
+   * @param   dst has as many elements as there are degrees of freedom on the
    * finer level.
+   *
    */
   virtual void
   prolongate(
@@ -138,16 +140,12 @@ public:
    * smaller than that of level <tt>from_level-1</tt> (local refinement), then
    * some degrees of freedom in <tt>dst</tt> are active and will not be
    * altered. For the other degrees of freedom, the result of the restriction
-   * is added.
+   * is added.       @param   from_level The index of the level to restrict
+   * from, which is the   level of   @p src.         @param   src is a vector
+   * with as many elements as there are degrees of   freedom on the finer
+   * level involved.       @param   dst has as many elements as there are
+   * degrees of freedom on the   coarser level.
    *
-   * @param from_level The index of the level to restrict from, which is the
-   * level of @p src.
-   *
-   * @param src is a vector with as many elements as there are degrees of
-   * freedom on the finer level involved.
-   *
-   * @param dst has as many elements as there are degrees of freedom on the
-   * coarser level.
    */
   virtual void
   restrict_and_add(
@@ -156,18 +154,16 @@ public:
     const LinearAlgebra::distributed::Vector<Number> &src) const override;
 
   /**
-   * Interpolate fine-mesh field @p src to each multigrid level in
-   * @p dof_handler and store the result in @p dst. This function is different
-   * from restriction, where a weighted residual is
-   * transferred to a coarser level (transposition of prolongation matrix).
+   * Interpolate fine-mesh field   @p src   to each multigrid level in     @p
+   * dof_handler   and store the result in   @p dst.   This function is
+   * different   from restriction, where a weighted residual is   transferred
+   * to a coarser level (transposition of prolongation matrix).     The
+   * argument   @p dst   has to be initialized with the correct size according
+   * to the number of levels of the triangulation.     If an inner vector of
+   * @p dst   is empty or has incorrect locally owned size,   it will be
+   * resized to locally relevant degrees of freedom on each level.     The use
+   * of this function is demonstrated in   step-66  .
    *
-   * The argument @p dst has to be initialized with the correct size according
-   * to the number of levels of the triangulation.
-   *
-   * If an inner vector of @p dst is empty or has incorrect locally owned size,
-   * it will be resized to locally relevant degrees of freedom on each level.
-   *
-   * The use of this function is demonstrated in step-66.
    */
   template <typename Number2, int spacedim>
   void
@@ -178,11 +174,13 @@ public:
 
   /**
    * Finite element does not provide prolongation matrices.
+   *
    */
   DeclException0(ExcNoProlongation);
 
   /**
    * Memory used by this object.
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -190,45 +188,51 @@ public:
 private:
   /**
    * A variable storing the degree of the finite element contained in the
-   * DoFHandler passed to build(). The selection of the computational kernel is
-   * based on this number.
+   * DoFHandler passed to build(). The selection of the computational kernel
+   * is   based on this number.
+   *
    */
   unsigned int fe_degree;
 
   /**
    * A variable storing whether the element is continuous and there is a joint
    * degree of freedom in the center of the 1D line.
+   *
    */
   bool element_is_continuous;
 
   /**
-   * A variable storing the number of components in the finite element contained
-   * in the DoFHandler passed to build().
+   * A variable storing the number of components in the finite element
+   * contained   in the DoFHandler passed to build().
+   *
    */
   unsigned int n_components;
 
   /**
-   * A variable storing the number of degrees of freedom on all child cells. It
-   * is <tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt> for DG elements and
+   * A variable storing the number of degrees of freedom on all child cells.
+   * It   is <tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt> for DG elements and
    * somewhat less for continuous elements.
+   *
    */
   unsigned int n_child_cell_dofs;
 
   /**
-   * This variable holds the indices for cells on a given level, extracted from
-   * DoFHandler for fast access. All DoF indices on a given level are stored as
-   * a plain array (since this class assumes constant DoFs per cell). To index
-   * into this array, use the cell number times dofs_per_cell.
+   * This variable holds the indices for cells on a given level, extracted
+   * from   DoFHandler for fast access. All DoF indices on a given level are
+   * stored as   a plain array (since this class assumes constant DoFs per
+   * cell). To index   into this array, use the cell number times
+   * dofs_per_cell.     This array first is arranged such that all locally
+   * owned level cells come   first (found in the variable
+   * n_owned_level_cells) and then other cells   necessary for the transfer to
+   * the next level.
    *
-   * This array first is arranged such that all locally owned level cells come
-   * first (found in the variable n_owned_level_cells) and then other cells
-   * necessary for the transfer to the next level.
    */
   std::vector<std::vector<unsigned int>> level_dof_indices;
 
   /**
    * A variable storing the connectivity from parent to child cell numbers for
    * each level.
+   *
    */
   std::vector<std::vector<std::pair<unsigned int, unsigned int>>>
     parent_child_connect;
@@ -236,17 +240,20 @@ private:
   /**
    * A variable storing the number of cells owned on a given process (sets the
    * bounds for the worker loops) for each level.
+   *
    */
   std::vector<unsigned int> n_owned_level_cells;
 
   /**
    * This variable holds the one-dimensional embedding (prolongation) matrix
    * from mother element to all the children.
+   *
    */
   AlignedVector<VectorizedArray<Number>> prolongation_matrix_1d;
 
   /**
    * This variable holds the temporary values for the tensor evaluation
+   *
    */
   mutable AlignedVector<VectorizedArray<Number>> evaluation_data;
 
@@ -256,10 +263,9 @@ private:
    * restriction) by the valence of the degrees of freedom, i.e., on how many
    * elements they appear. We store the data in vectorized form to allow for
    * cheap access. Moreover, we utilize the fact that we only need to store
-   * <tt>3<sup>dim</sup></tt> indices.
+   * <tt>3<sup>dim</sup></tt> indices.     Data is organized in terms of each
+   * level (outer vector) and the cells on   each level (inner vector).
    *
-   * Data is organized in terms of each level (outer vector) and the cells on
-   * each level (inner vector).
    */
   std::vector<AlignedVector<VectorizedArray<Number>>> weights_on_refined;
 
@@ -267,6 +273,7 @@ private:
    * A variable storing the local indices of Dirichlet boundary conditions on
    * cells for all levels (outer index), the cells within the levels (second
    * index), and the indices on the cell (inner index).
+   *
    */
   std::vector<std::vector<std::vector<unsigned short>>> dirichlet_indices;
 
@@ -275,12 +282,14 @@ private:
    * transfer. These partitioners might be shared with what was passed in from
    * the outside through build() or be shared with the level vectors inherited
    * from MGLevelGlobalTransfer.
+   *
    */
   MGLevelObject<std::shared_ptr<const Utilities::MPI::Partitioner>>
     vector_partitioners;
 
   /**
    * Perform the prolongation operation.
+   *
    */
   template <int degree>
   void
@@ -291,6 +300,7 @@ private:
 
   /**
    * Performs the restriction operation.
+   *
    */
   template <int degree>
   void
@@ -305,13 +315,13 @@ private:
  * operations is implemented in a matrix-free way based on the interpolation
  * matrices of the underlying finite element. This requires considerably less
  * memory than MGTransferPrebuilt and can also be considerably faster than
- * that variant.
+ * that variant. This class works with
+ * LinearAlgebra::distributed::BlockVector   and performs exactly the same
+ * transfer operations for each block as MGTransferMatrixFree. Both the cases
+ * that the same DoFHandler is used for all the blocks and that each block
+ * uses its own DoFHandler are supported.
  *
- * This class works with LinearAlgebra::distributed::BlockVector and
- * performs exactly the same transfer operations for each block as
- * MGTransferMatrixFree.
- * Both the cases that the same DoFHandler is used for all the blocks
- * and that each block uses its own DoFHandler are supported.
+ *
  */
 template <int dim, typename Number>
 class MGTransferBlockMatrixFree
@@ -321,34 +331,40 @@ public:
   /**
    * Constructor without constraint matrices. Use this constructor only with
    * discontinuous finite elements or with no local refinement.
+   *
    */
   MGTransferBlockMatrixFree() = default;
 
   /**
    * Constructor with constraints. Equivalent to the default constructor
    * followed by initialize_constraints().
+   *
    */
   MGTransferBlockMatrixFree(const MGConstrainedDoFs &mg_constrained_dofs);
 
   /**
    * Same as above for the case that each block has its own DoFHandler.
+   *
    */
   MGTransferBlockMatrixFree(
     const std::vector<MGConstrainedDoFs> &mg_constrained_dofs);
 
   /**
    * Destructor.
+   *
    */
   virtual ~MGTransferBlockMatrixFree() override = default;
 
   /**
    * Initialize the constraints to be used in build().
+   *
    */
   void
   initialize_constraints(const MGConstrainedDoFs &mg_constrained_dofs);
 
   /**
    * Same as above for the case that each block has its own DoFHandler.
+   *
    */
   void
   initialize_constraints(
@@ -356,18 +372,21 @@ public:
 
   /**
    * Reset the object to the state it had right after the default constructor.
+   *
    */
   void
   clear();
 
   /**
    * Actually build the information for the prolongation for each level.
+   *
    */
   void
   build(const DoFHandler<dim, dim> &dof_handler);
 
   /**
    * Same as above for the case that each block has its own DoFHandler.
+   *
    */
   void
   build(const std::vector<const DoFHandler<dim, dim> *> &dof_handler);
@@ -376,15 +395,12 @@ public:
    * Prolongate a vector from level <tt>to_level-1</tt> to level
    * <tt>to_level</tt> using the embedding matrices of the underlying finite
    * element. The previous content of <tt>dst</tt> is overwritten.
-   *
-   * @param to_level The index of the level to prolongate to, which is the
-   * level of @p dst.
-   *
-   * @param src is a vector with as many elements as there are degrees of
-   * freedom on the coarser level involved.
-   *
-   * @param dst has as many elements as there are degrees of freedom on the
+   * @param   to_level The index of the level to prolongate to, which is the
+   * level of   @p dst.         @param   src is a vector with as many elements
+   * as there are degrees of   freedom on the coarser level involved.
+   * @param   dst has as many elements as there are degrees of freedom on the
    * finer level.
+   *
    */
   virtual void
   prolongate(
@@ -405,16 +421,12 @@ public:
    * smaller than that of level <tt>from_level-1</tt> (local refinement), then
    * some degrees of freedom in <tt>dst</tt> are active and will not be
    * altered. For the other degrees of freedom, the result of the restriction
-   * is added.
+   * is added.       @param   from_level The index of the level to restrict
+   * from, which is the   level of   @p src.         @param   src is a vector
+   * with as many elements as there are degrees of   freedom on the finer
+   * level involved.       @param   dst has as many elements as there are
+   * degrees of freedom on the   coarser level.
    *
-   * @param from_level The index of the level to restrict from, which is the
-   * level of @p src.
-   *
-   * @param src is a vector with as many elements as there are degrees of
-   * freedom on the finer level involved.
-   *
-   * @param dst has as many elements as there are degrees of freedom on the
-   * coarser level.
    */
   virtual void
   restrict_and_add(
@@ -424,13 +436,12 @@ public:
 
   /**
    * Transfer from a block-vector on the global grid to block-vectors defined
-   * on each of the levels separately for active degrees of freedom.
-   * In particular, for a globally refined mesh only the finest level in @p dst
-   * is filled as a plain copy of @p src. All the other level objects are left
-   * untouched.
+   * on each of the levels separately for active degrees of freedom.   In
+   * particular, for a globally refined mesh only the finest level in   @p dst
+   * is filled as a plain copy of   @p src.   All the other level objects are
+   * left   untouched.     This function will initialize   @p dst
+   * accordingly if needed as required by   the Multigrid class.
    *
-   * This function will initialize @p dst accordingly if needed as required by
-   * the Multigrid class.
    */
   template <typename Number2, int spacedim>
   void
@@ -441,6 +452,7 @@ public:
 
   /**
    * Same as above for the case that each block has its own DoFHandler.
+   *
    */
   template <typename Number2, int spacedim>
   void
@@ -451,6 +463,7 @@ public:
 
   /**
    * Transfer from multi-level block-vector to normal vector.
+   *
    */
   template <typename Number2, int spacedim>
   void
@@ -462,6 +475,7 @@ public:
 
   /**
    * Same as above for the case that each block has its own DoFHandler.
+   *
    */
   template <typename Number2, int spacedim>
   void
@@ -473,31 +487,35 @@ public:
 
   /**
    * Memory used by this object.
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * This class can both be used with a single DoFHandler
-   * or a separate DoFHandler for each block.
+   * This class can both be used with a single DoFHandler   or a separate
+   * DoFHandler for each block.
+   *
    */
   static const bool supports_dof_handler_vector = true;
 
 private:
   /**
    * Non-block matrix-free versions of transfer operation.
+   *
    */
   std::vector<MGTransferMatrixFree<dim, Number>> matrix_free_transfer_vector;
 
   /**
-   * A flag to indicate whether the same DoFHandler is used for all
-   * the components or if each block has its own DoFHandler.
+   * A flag to indicate whether the same DoFHandler is used for all   the
+   * components or if each block has its own DoFHandler.
+   *
    */
   const bool same_for_all;
 };
 
 
-/*@}*/
+ /*@}*/ 
 
 
 //------------------------ templated functions -------------------------

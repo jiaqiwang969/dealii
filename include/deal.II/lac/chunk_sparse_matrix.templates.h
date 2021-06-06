@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2020 by the deal.II authors
 //
@@ -47,6 +47,7 @@ namespace internal
   {
     /**
      * Declare type for container size.
+     *
      */
     using size_type = types::global_dof_index;
 
@@ -54,6 +55,7 @@ namespace internal
      * Add the result of multiplying a chunk of size chunk_size times
      * chunk_size by a source vector fragment of size chunk_size to the
      * destination vector fragment.
+     *
      */
     template <typename MatrixIterator,
               typename SrcIterator,
@@ -82,6 +84,7 @@ namespace internal
     /**
      * Like the previous function, but subtract. We need this for computing
      * the residual.
+     *
      */
     template <typename MatrixIterator,
               typename SrcIterator,
@@ -110,6 +113,7 @@ namespace internal
      * Add the result of multiplying the transpose of a chunk of size
      * chunk_size times chunk_size by a source vector fragment of size
      * chunk_size to the destination vector fragment.
+     *
      */
     template <typename MatrixIterator,
               typename SrcIterator,
@@ -133,8 +137,9 @@ namespace internal
 
 
     /**
-     * Produce the result of the matrix scalar product $u^TMv$ for an
+     * Produce the result of the matrix scalar product   $u^TMv$   for an
      * individual chunk.
+     *
      */
     template <typename result_type,
               typename MatrixIterator,
@@ -167,11 +172,11 @@ namespace internal
 
     /**
      * Perform a vmult_add using the ChunkSparseMatrix data structures, but
-     * only using a subinterval of the matrix rows.
+     * only using a subinterval of the matrix rows.         In the sequential
+     * case, this function is called on all rows, in the     parallel case it
+     * may be called on a subrange, at the discretion of the     task
+     * scheduler.
      *
-     * In the sequential case, this function is called on all rows, in the
-     * parallel case it may be called on a subrange, at the discretion of the
-     * task scheduler.
      */
     template <typename number, typename InVector, typename OutVector>
     void
@@ -1210,7 +1215,7 @@ template <typename somenumber>
 void
 ChunkSparseMatrix<number>::precondition_Jacobi(Vector<somenumber> &      dst,
                                                const Vector<somenumber> &src,
-                                               const number /*om*/) const
+                                               const number  /*om*/ ) const
 {
   (void)dst;
   (void)src;
@@ -1232,7 +1237,7 @@ template <typename somenumber>
 void
 ChunkSparseMatrix<number>::precondition_SSOR(Vector<somenumber> &      dst,
                                              const Vector<somenumber> &src,
-                                             const number /*om*/) const
+                                             const number  /*om*/ ) const
 {
   // to understand how this function works you may want to take a look at the
   // CVS archives to see the original version which is much clearer...
@@ -1290,7 +1295,7 @@ template <typename number>
 template <typename somenumber>
 void
 ChunkSparseMatrix<number>::SOR(Vector<somenumber> &dst,
-                               const number /*om*/) const
+                               const number  /*om*/ ) const
 {
   (void)dst;
   Assert(cols != nullptr, ExcNeedsSparsityPattern());
@@ -1307,7 +1312,7 @@ template <typename number>
 template <typename somenumber>
 void
 ChunkSparseMatrix<number>::TSOR(Vector<somenumber> &dst,
-                                const number /*om*/) const
+                                const number  /*om*/ ) const
 {
   (void)dst;
   Assert(cols != nullptr, ExcNeedsSparsityPattern());
@@ -1327,7 +1332,7 @@ ChunkSparseMatrix<number>::PSOR(
   Vector<somenumber> &          dst,
   const std::vector<size_type> &permutation,
   const std::vector<size_type> &inverse_permutation,
-  const number /*om*/) const
+  const number  /*om*/ ) const
 {
   (void)dst;
   (void)permutation;
@@ -1354,7 +1359,7 @@ ChunkSparseMatrix<number>::TPSOR(
   Vector<somenumber> &          dst,
   const std::vector<size_type> &permutation,
   const std::vector<size_type> &inverse_permutation,
-  const number /*om*/) const
+  const number  /*om*/ ) const
 {
   (void)dst;
   (void)permutation;
@@ -1380,7 +1385,7 @@ template <typename somenumber>
 void
 ChunkSparseMatrix<number>::SOR_step(Vector<somenumber> &      v,
                                     const Vector<somenumber> &b,
-                                    const number /*om*/) const
+                                    const number  /*om*/ ) const
 {
   (void)v;
   (void)b;
@@ -1402,7 +1407,7 @@ template <typename somenumber>
 void
 ChunkSparseMatrix<number>::TSOR_step(Vector<somenumber> &      v,
                                      const Vector<somenumber> &b,
-                                     const number /*om*/) const
+                                     const number  /*om*/ ) const
 {
   (void)v;
   (void)b;
@@ -1436,7 +1441,7 @@ template <typename number>
 template <typename somenumber>
 void
 ChunkSparseMatrix<number>::SSOR(Vector<somenumber> &dst,
-                                const number /*om*/) const
+                                const number  /*om*/ ) const
 {
   (void)dst;
   Assert(cols != nullptr, ExcNeedsSparsityPattern());

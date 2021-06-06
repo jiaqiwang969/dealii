@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
 //
@@ -40,21 +40,20 @@ template <typename Number>
 class BlockVector;
 #endif
 
-/*! @addtogroup Matrix1
- *@{
- */
+/*!   @addtogroup   Matrix1  @{  
+
+* 
+* */
 
 
 /**
- * A block matrix consisting of blocks of type SparseMatrixEZ.
+ * A block matrix consisting of blocks of type SparseMatrixEZ. Like the other
+ * Block-objects, this matrix can be used like a SparseMatrixEZ, when it comes
+ * to access to entries. Then, there are functions for the multiplication with
+ * BlockVector and access to the individual blocks.
+ * @see     @ref GlossBlockLA   "Block (linear algebra)"
  *
- * Like the other Block-objects, this matrix can be used like a
- * SparseMatrixEZ, when it comes to access to entries. Then, there are
- * functions for the multiplication with BlockVector and access to the
- * individual blocks.
  *
- * @see
- * @ref GlossBlockLA "Block (linear algebra)"
  */
 template <typename Number>
 class BlockSparseMatrixEZ : public Subscriptor
@@ -62,17 +61,20 @@ class BlockSparseMatrixEZ : public Subscriptor
 public:
   /**
    * Declare type for container size.
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
    * Default constructor. The result is an empty object with zero dimensions.
+   *
    */
   BlockSparseMatrixEZ() = default;
 
   /**
    * Constructor setting up an object with given number of block rows and
    * columns. The blocks themselves still have zero dimension.
+   *
    */
   BlockSparseMatrixEZ(const unsigned int block_rows,
                       const unsigned int block_cols);
@@ -81,12 +83,14 @@ public:
    * Copy constructor. This is needed for some container classes. It creates
    * an object of the same number of block rows and columns. Since it calls
    * the copy constructor of SparseMatrixEZ, the block s must be empty.
+   *
    */
   BlockSparseMatrixEZ(const BlockSparseMatrixEZ<Number> &);
 
   /**
    * Copy operator. Like the copy constructor, this may be called for objects
    * with empty blocks only.
+   *
    */
   BlockSparseMatrixEZ &
   operator=(const BlockSparseMatrixEZ<Number> &);
@@ -98,6 +102,7 @@ public:
    * if the actual value to be assigned is zero. This operator only exists to
    * allow for the obvious notation <tt>matrix=0</tt>, which sets all elements
    * of the matrix to zero, but keep the sparsity pattern previously used.
+   *
    */
   BlockSparseMatrixEZ &
   operator=(const double d);
@@ -105,6 +110,7 @@ public:
 
   /**
    * Set matrix to zero dimensions and release memory.
+   *
    */
   void
   clear();
@@ -115,20 +121,23 @@ public:
    * and must be initialized subsequently. After setting the sizes of the
    * blocks, collect_sizes() must be called to update internal data
    * structures.
+   *
    */
   void
   reinit(const unsigned int n_block_rows, const unsigned int n_block_cols);
   /**
    * This function collects the sizes of the sub-objects and stores them in
    * internal arrays, in order to be able to relay global indices into the
-   * matrix to indices into the subobjects. You *must* call this function each
+   * matrix to indices into the subobjects. Youmust* call this function each
    * time after you have changed the size of the sub-objects.
+   *
    */
   void
   collect_sizes();
 
   /**
    * Access the block with the given coordinates.
+   *
    */
   SparseMatrixEZ<Number> &
   block(const unsigned int row, const unsigned int column);
@@ -137,18 +146,21 @@ public:
   /**
    * Access the block with the given coordinates. Version for constant
    * objects.
+   *
    */
   const SparseMatrixEZ<Number> &
   block(const unsigned int row, const unsigned int column) const;
 
   /**
    * Return the number of blocks in a column.
+   *
    */
   unsigned int
   n_block_rows() const;
 
   /**
    * Return the number of blocks in a row.
+   *
    */
   unsigned int
   n_block_cols() const;
@@ -158,6 +170,7 @@ public:
    * allocated, which is the same as that both dimensions are zero. This
    * function is just the concatenation of the respective call to all sub-
    * matrices.
+   *
    */
   bool
   empty() const;
@@ -167,6 +180,7 @@ public:
    * codomain (or range) space. It is the sum of the number of rows over the
    * sub-matrix blocks of this matrix. Recall that the matrix is of size m()
    * times n().
+   *
    */
   size_type
   m() const;
@@ -176,39 +190,44 @@ public:
    * the domain space. It is the sum of the number of columns over the sub-
    * matrix blocks of this matrix. Recall that the matrix is of size m() times
    * n().
+   *
    */
   size_type
   n() const;
 
   /**
-   * Set the element <tt>(i,j)</tt> to @p value.  Throws an error if the entry
-   * does not exist or if <tt>value</tt> is not a finite number. Still, it is
-   * allowed to store zero values in non-existent fields.
+   * Set the element <tt>(i,j)</tt> to   @p value.    Throws an error if the
+   * entry   does not exist or if <tt>value</tt> is not a finite number.
+   * Still, it is   allowed to store zero values in non-existent fields.
+   *
    */
   void
   set(const size_type i, const size_type j, const Number value);
 
   /**
-   * Add @p value to the element <tt>(i,j)</tt>.  Throws an error if the entry
-   * does not exist or if <tt>value</tt> is not a finite number. Still, it is
-   * allowed to store zero values in non-existent fields.
+   * Add   @p value   to the element <tt>(i,j)</tt>.  Throws an error if the
+   * entry   does not exist or if <tt>value</tt> is not a finite number.
+   * Still, it is   allowed to store zero values in non-existent fields.
+   *
    */
   void
   add(const size_type i, const size_type j, const Number value);
 
 
   /**
-   * Matrix-vector multiplication: let $dst = M*src$ with $M$ being this
-   * matrix.
+   * Matrix-vector multiplication: let   $dst = M*src$   with   $M$   being
+   * this   matrix.
+   *
    */
   template <typename somenumber>
   void
   vmult(BlockVector<somenumber> &dst, const BlockVector<somenumber> &src) const;
 
   /**
-   * Matrix-vector multiplication: let $dst = M^T*src$ with $M$ being this
-   * matrix. This function does the same as vmult() but takes the transposed
-   * matrix.
+   * Matrix-vector multiplication: let   $dst = M^T*src$   with   $M$   being
+   * this   matrix. This function does the same as vmult() but takes the
+   * transposed   matrix.
+   *
    */
   template <typename somenumber>
   void
@@ -216,8 +235,9 @@ public:
          const BlockVector<somenumber> &src) const;
 
   /**
-   * Adding Matrix-vector multiplication. Add $M*src$ on $dst$ with $M$ being
-   * this matrix.
+   * Adding Matrix-vector multiplication. Add   $M*src$   on   $dst$   with
+   * $M$   being   this matrix.
+   *
    */
   template <typename somenumber>
   void
@@ -225,9 +245,10 @@ public:
             const BlockVector<somenumber> &src) const;
 
   /**
-   * Adding Matrix-vector multiplication. Add $M^T*src$ to $dst$ with $M$
-   * being this matrix. This function does the same as vmult_add() but takes
-   * the transposed matrix.
+   * Adding Matrix-vector multiplication. Add   $M^T*src$   to   $dst$   with
+   * $M$     being this matrix. This function does the same as vmult_add() but
+   * takes   the transposed matrix.
+   *
    */
   template <typename somenumber>
   void
@@ -236,9 +257,10 @@ public:
 
 
   /**
-   * Print statistics. If @p full is @p true, prints a histogram of all
-   * existing row lengths and allocated row lengths. Otherwise, just the
+   * Print statistics. If   @p full   is   @p true,   prints a histogram of
+   * all   existing row lengths and allocated row lengths. Otherwise, just the
    * relation of allocated and used entries is shown.
+   *
    */
   template <class StreamType>
   void
@@ -248,23 +270,26 @@ private:
   /**
    * Object storing and managing the transformation of row indices to indices
    * of the sub-objects.
+   *
    */
   BlockIndices row_indices;
 
   /**
    * Object storing and managing the transformation of column indices to
    * indices of the sub-objects.
+   *
    */
   BlockIndices column_indices;
 
   /**
    * The actual matrices
+   *
    */
   Table<2, SparseMatrixEZ<Number>> blocks;
 };
 
-/*@}*/
-/*----------------------------------------------------------------------*/
+ /*@}*/ 
+ /*----------------------------------------------------------------------*/ 
 
 
 template <typename Number>

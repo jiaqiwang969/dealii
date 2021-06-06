@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2020 by the deal.II authors
 //
@@ -205,4 +205,4 @@ CellDataTransfer<dim, spacedim, VectorType>::unpack(const VectorType &in,
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* dealii_cell_data_transfer_templates_h */
+#endif  /* dealii_cell_data_transfer_templates_h */ 

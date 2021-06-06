@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
 //
@@ -25,13 +25,11 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/* Note: This file only contains template definitions and will thus
-   not produce an object file. It is rather thought to be included
-   into the *_accessor.cc files.
-*/
+/* Note: This file only contains template definitions and will thus   not produce an object file. It is rather thought to be included   into the_accessor.cc files.
+* */
 
 
-/*------------------------ Functions: TriaRawIterator ------------------*/
+ /*------------------------ Functions: TriaRawIterator ------------------*/ 
 
 
 template <typename Accessor>
@@ -124,7 +122,7 @@ TriaRawIterator<Accessor>::operator--(int)
 }
 
 
-/*-----------------------  functions: TriaIterator ---------------*/
+ /*-----------------------  functions: TriaIterator ---------------*/ 
 
 
 template <typename Accessor>
@@ -302,7 +300,7 @@ TriaIterator<Accessor>::operator--(int)
 }
 
 
-/*-----------------------  functions: TriaActiveIterator ---------------*/
+ /*-----------------------  functions: TriaActiveIterator ---------------*/ 
 
 
 template <typename Accessor>

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
 //
@@ -155,7 +155,7 @@ namespace VectorTools
             // deal with a Lagrange element and do nothing.
             break;
 
-        } /*switch*/
+        }  /*switch*/ 
     }
 
 
@@ -377,7 +377,7 @@ namespace VectorTools
 
             const unsigned int offset =
               apply_transform(fe[fe_index],
-                              /* starting_offset = */ 0,
+                               /* starting_offset = */  0,
                               fe_values,
                               function_values);
             (void)offset;
@@ -446,7 +446,7 @@ namespace VectorTools
                     }
                 }
             }
-        } /* loop over dof_handler.active_cell_iterators() */
+        }  /* loop over dof_handler.active_cell_iterators() */ 
 
       interpolation.compress(VectorOperation::add);
       weights.compress(VectorOperation::add);
@@ -846,6 +846,7 @@ namespace VectorTools
   {
     /**
      * Return whether the cell and all of its descendants are locally owned.
+     *
      */
     template <typename cell_iterator>
     bool

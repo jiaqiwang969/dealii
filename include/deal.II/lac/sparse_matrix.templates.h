@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
 //
@@ -484,11 +484,10 @@ namespace internal
   {
     /**
      * Perform a vmult using the SparseMatrix data structures, but only using
-     * a subinterval for the row indices.
+     * a subinterval for the row indices.         In the sequential case, this
+     * function is called on all rows, in the     parallel case it may be
+     * called on a subrange, at the discretion of the     task scheduler.
      *
-     * In the sequential case, this function is called on all rows, in the
-     * parallel case it may be called on a subrange, at the discretion of the
-     * task scheduler.
      */
     template <typename number, typename InVector, typename OutVector>
     void
@@ -880,11 +879,10 @@ namespace internal
   {
     /**
      * Perform a vmult using the SparseMatrix data structures, but only using
-     * a subinterval for the row indices.
+     * a subinterval for the row indices.         In the sequential case, this
+     * function is called on all rows, in the     parallel case it may be
+     * called on a subrange, at the discretion of the     task scheduler.
      *
-     * In the sequential case, this function is called on all rows, in the
-     * parallel case it may be called on a subrange, at the discretion of the
-     * task scheduler.
      */
     template <typename number, typename InVector>
     typename InVector::value_type
@@ -946,11 +944,10 @@ namespace internal
   {
     /**
      * Perform a vmult using the SparseMatrix data structures, but only using
-     * a subinterval for the row indices.
+     * a subinterval for the row indices.         In the sequential case, this
+     * function is called on all rows, in the     parallel case it may be
+     * called on a subrange, at the discretion of the     task scheduler.
      *
-     * In the sequential case, this function is called on all rows, in the
-     * parallel case it may be called on a subrange, at the discretion of the
-     * task scheduler.
      */
     template <typename number, typename InVector>
     typename InVector::value_type
@@ -1290,11 +1287,10 @@ namespace internal
   {
     /**
      * Perform a vmult using the SparseMatrix data structures, but only using
-     * a subinterval for the row indices.
+     * a subinterval for the row indices.         In the sequential case, this
+     * function is called on all rows, in the     parallel case it may be
+     * called on a subrange, at the discretion of the     task scheduler.
      *
-     * In the sequential case, this function is called on all rows, in the
-     * parallel case it may be called on a subrange, at the discretion of the
-     * task scheduler.
      */
     template <typename number, typename InVector, typename OutVector>
     typename OutVector::value_type

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2018 by the deal.II authors
 //
@@ -20,20 +20,20 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*! @addtogroup Vectors
- *@{
- */
+/*!   @addtogroup   Vectors  @{  
+
+* 
+* */
 
 /**
  * This enum keeps track of the current operation in parallel linear algebra
- * objects like Vectors and Matrices.
- *
- * It is used in the various compress() functions. They also exist in serial
- * codes for compatibility and are empty there.
- *
- * See
- * @ref GlossCompress "Compressing distributed objects"
+ * objects like Vectors and Matrices. It is used in the various compress()
+ * functions. They also exist in serial codes for compatibility and are empty
+ * there.
+ * See   @ref GlossCompress   "Compressing distributed objects"
  * for more information.
+ *
+ *
  */
 struct VectorOperation
 {
@@ -41,28 +41,33 @@ struct VectorOperation
   {
     /**
      * The current operation is unknown.
+     *
      */
     unknown,
     /**
      * The current operation is an insertion.
+     *
      */
     insert,
     /**
      * The current operation is an addition.
+     *
      */
     add,
     /**
      * The current operation is a minimization.
+     *
      */
     min,
     /**
      * The current operation is a maximization.
+     *
      */
     max
   };
 };
 
-/*@}*/
+ /*@}*/ 
 
 DEAL_II_NAMESPACE_CLOSE
 

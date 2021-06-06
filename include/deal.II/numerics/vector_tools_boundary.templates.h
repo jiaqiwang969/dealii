@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
 //
@@ -674,7 +674,7 @@ namespace VectorTools
     // rhs.norm_sqr()  is too small for a given type.
     template <typename number>
     number
-    min_number(const number & /*dummy*/)
+    min_number(const number &  /*dummy*/ )
     {
       return std::numeric_limits<number>::min();
     }
@@ -683,7 +683,7 @@ namespace VectorTools
     // take the numeric limits of the underlying type used in std::complex<>.
     template <typename number>
     number
-    min_number(const std::complex<number> & /*dummy*/)
+    min_number(const std::complex<number> &  /*dummy*/ )
     {
       return std::numeric_limits<number>::min();
     }

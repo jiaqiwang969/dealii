@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
 //
@@ -107,45 +107,38 @@ namespace MatrixFreeOperators
 
   /**
    * Abstract base class for matrix-free operators which can be used both at
-   * the finest mesh or at a certain level in geometric multigrid.
-   *
-   * A derived class has to implement apply_add() method as well as
+   * the finest mesh or at a certain level in geometric multigrid.     A
+   * derived class has to implement apply_add() method as well as
    * compute_diagonal() to initialize the protected member
    * inverse_diagonal_entries and/or diagonal_entries. In case of a
    * non-symmetric operator, Tapply_add() should be additionally implemented.
-   *
    * Currently, the only supported vectors are
-   * LinearAlgebra::distributed::Vector and
-   * LinearAlgebra::distributed::BlockVector.
-   *
-   * <h4>Selective use of blocks in MatrixFree</h4>
-   *
-   * MatrixFree allows to use several DoFHandler/AffineConstraints combinations
-   * by passing a std::vector with pointers to the respective objects into
-   * the MatrixFree::reinit function. This class supports to select only some
-   * of the blocks in the underlying MatrixFree object by optional integer
-   * lists that specify the chosen blocks.
-   *
-   * One application of constructing a matrix-free operator only on selected
-   * blocks would be the setting of the step-32 tutorial program: This
-   * problem has three <i>blocks</i>, one for the velocity, one for the
-   * pressure, and one for temperature. The time lag scheme used for temporal
-   * evolution splits the temperature equation away from the Stokes system in
-   * velocity and pressure. However, there are cross terms like the velocity
-   * that enters the temperature advection-diffusion equation or the
-   * temperature that enters the right hand side of the velocity. In order to
-   * be sure that MatrixFree uses the same integer indexing to the different
-   * blocks, one needs to put all the three blocks into the same MatrixFree
-   * object. However, when solving a linear system the operators involved
-   * either address the first two in the Stokes solver, or the last one for
-   * the temperature solver. In the former case, a BlockVector of two
-   * components would be selected with a vector selecting the blocks {0, 1} in
-   * MatrixFree, whereas in the latter, a non-block vector selecting the block
-   * {2} would be used.
-   *
-   * A second application of selection is in problems with a Newton-type
-   * iteration or problems with inhomogeneous boundary conditions. In such a
-   * case, one has to deal with two different sets of constraints: One set of
+   * LinearAlgebra::distributed::Vector   and
+   * LinearAlgebra::distributed::BlockVector.       <h4>Selective use of
+   * blocks in MatrixFree</h4>     MatrixFree allows to use several
+   * DoFHandler/AffineConstraints combinations   by passing a   std::vector
+   * with pointers to the respective objects into   the   MatrixFree::reinit
+   * function. This class supports to select only some   of the blocks in the
+   * underlying MatrixFree object by optional integer   lists that specify the
+   * chosen blocks.     One application of constructing a matrix-free operator
+   * only on selected   blocks would be the setting of the   step-32
+   * tutorial program: This   problem has three <i>blocks</i>, one for the
+   * velocity, one for the   pressure, and one for temperature. The time lag
+   * scheme used for temporal   evolution splits the temperature equation away
+   * from the Stokes system in   velocity and pressure. However, there are
+   * cross terms like the velocity   that enters the temperature
+   * advection-diffusion equation or the   temperature that enters the right
+   * hand side of the velocity. In order to   be sure that MatrixFree uses the
+   * same integer indexing to the different   blocks, one needs to put all the
+   * three blocks into the same MatrixFree   object. However, when solving a
+   * linear system the operators involved   either address the first two in
+   * the Stokes solver, or the last one for   the temperature solver. In the
+   * former case, a BlockVector of two   components would be selected with a
+   * vector selecting the blocks{0, 1} in   MatrixFree, whereas in the latter,
+   * a non-block vector selecting the block  {2} would be used.     A second
+   * application of selection is in problems with a Newton-type   iteration or
+   * problems with inhomogeneous boundary conditions. In such a   case, one
+   * has to deal with two different sets of constraints: One set of
    * constraints applies to the solution vector which might include hanging
    * node constraints or periodicity constraints but no constraints on
    * inhomogeneous Dirichlet boundaries. Before the nonlinear iteration, the
@@ -156,31 +149,33 @@ namespace MatrixFreeOperators
    * vector of two pointers pointing to the same DoFHandler object and a
    * vector of two pointers to the two AffineConstraints objects. If the first
    * AffineConstraints object is the one including the zero Dirichlet
-   * constraints, one would give a std::vector<unsigned int>(1, 0) to the
-   * initialize() function, i.e., a vector of length 1 that selects exactly the
-   * first AffineConstraints object with index 0.
-   *
-   * For systems of PDEs where the different blocks of MatrixFree are
-   * associated with different physical components of the equations, adding
-   * another block with a different AffineConstraints argument solely for the
-   * purpose of boundary conditions might lead to cumbersome index
-   * handling. Instead, one could set up a second MatrixFree instance with the
-   * different AffineConstraints object but the same interpretation of blocks,
-   * and use that for interpolating inhomogeneous boundary conditions (see also
-   * the discussion in the results section of the step-37 tutorial program):
-   *
+   * constraints, one would give a   std::vector<unsigned   int>(1, 0) to the
+   * initialize() function, i.e., a vector of length 1 that selects exactly
+   * the   first AffineConstraints object with index 0.     For systems of
+   * PDEs where the different blocks of MatrixFree are   associated with
+   * different physical components of the equations, adding   another block
+   * with a different AffineConstraints argument solely for the   purpose of
+   * boundary conditions might lead to cumbersome index   handling. Instead,
+   * one could set up a second MatrixFree instance with the   different
+   * AffineConstraints object but the same interpretation of blocks,   and use
+   * that for interpolating inhomogeneous boundary conditions (see also   the
+   * discussion in the results section of the   step-37   tutorial program):
    * @code
    * matrix_free_inhomogeneous.reinit(dof_handler, constraints_no_dirichlet,
-   *                                  quadrature, additional_data);
+   *                                quadrature, additional_data);
    * operator_inhomogeneous.initialize(matrix_free_inhomogeneous,
-   *                                   selected_blocks);
+   *                                 selected_blocks);
    * LinearAlgebra::distributed::Vector<double> inhomogeneity;
    * matrix_free_inhomogeneous.initialize_dof_vector(inhomogeneity);
    * constraints_with_dirichlet.distribute(inhomogeneity);
    * operator_inhomogeneous.vmult(system_rhs, inhomogeneity);
-   * system_rhs *= -1.;
+   * system_rhs=
+   *
+   * -1.;
    * // proceed with other terms from right hand side...
    * @endcode
+   *
+   *
    */
   template <int dim,
             typename VectorType = LinearAlgebra::distributed::Vector<double>,
@@ -191,46 +186,52 @@ namespace MatrixFreeOperators
   public:
     /**
      * Number alias.
+     *
      */
     using value_type = typename VectorType::value_type;
 
     /**
      * size_type needed for preconditioner classes.
+     *
      */
     using size_type = typename VectorType::size_type;
 
     /**
      * Default constructor.
+     *
      */
     Base();
 
     /**
      * Virtual destructor.
+     *
      */
     virtual ~Base() override = default;
 
     /**
      * Release all memory and return to a state just like after having called
      * the default constructor.
+     *
      */
     virtual void
     clear();
 
     /**
-     * Initialize operator on fine scale.
+     * Initialize operator on fine scale.         The optional selection
+     * vector allows to choose only some components     from the underlying
+     * MatrixFree object, e.g. just a single one. The     entry   @p
+     * selected_row_blocks[i]   in the vector chooses the DoFHandler     and
+     * AffineConstraints object that was given as the       @p
+     * selected_row_blocks[i]-th   argument to the   MatrixFree::reinit()
+     * call.     Different arguments for rows and columns also make it
+     * possible to     select non-diagonal blocks or rectangular blocks. If
+     * the row vector is     empty, all components are selected, otherwise its
+     * size must be smaller     or equal to   MatrixFree::n_components()   and
+     * all indices need to be     unique and within the range of 0 and
+     * MatrixFree::n_components().   If the     column selection vector is
+     * empty, it is taken the same as the row     selection, defining a
+     * diagonal block.
      *
-     * The optional selection vector allows to choose only some components
-     * from the underlying MatrixFree object, e.g. just a single one. The
-     * entry @p selected_row_blocks[i] in the vector chooses the DoFHandler
-     * and AffineConstraints object that was given as the
-     * @p selected_row_blocks[i]-th argument to the MatrixFree::reinit() call.
-     * Different arguments for rows and columns also make it possible to
-     * select non-diagonal blocks or rectangular blocks. If the row vector is
-     * empty, all components are selected, otherwise its size must be smaller
-     * or equal to MatrixFree::n_components() and all indices need to be
-     * unique and within the range of 0 and MatrixFree::n_components(). If the
-     * column selection vector is empty, it is taken the same as the row
-     * selection, defining a diagonal block.
      */
     void
     initialize(std::shared_ptr<
@@ -241,17 +242,17 @@ namespace MatrixFreeOperators
                  std::vector<unsigned int>());
 
     /**
-     * Initialize operator on a level @p level for a single FiniteElement.
-     *
+     * Initialize operator on a level   @p level   for a single FiniteElement.
      * The optional selection vector allows to choose only some components
      * from the underlying MatrixFree object, e.g. just a single one. The
-     * entry @p selected_row_blocks[i] in the vector chooses the DoFHandler
-     * and AffineConstraints object that was given as the
-     * @p selected_row_blocks[i]-th argument to the MatrixFree::reinit() call.
-     * Since a multigrid operator is always associated to inverting a matrix
-     * and thus represents a diagonal block, the same vector for rows and
-     * columns is used as opposed to the non-level initialization function. If
-     * empty, all components are selected.
+     * entry   @p selected_row_blocks[i]   in the vector chooses the
+     * DoFHandler     and AffineConstraints object that was given as the
+     * @p selected_row_blocks[i]-th   argument to the   MatrixFree::reinit()
+     * call.     Since a multigrid operator is always associated to inverting
+     * a matrix     and thus represents a diagonal block, the same vector for
+     * rows and     columns is used as opposed to the non-level initialization
+     * function. If     empty, all components are selected.
+     *
      */
     void
     initialize(std::shared_ptr<
@@ -262,18 +263,18 @@ namespace MatrixFreeOperators
                  std::vector<unsigned int>());
 
     /**
-     * Initialize operator on a level @p level for multiple FiniteElement
-     * objects.
+     * Initialize operator on a level   @p level   for multiple FiniteElement
+     * objects.         The optional selection vector allows to choose only
+     * some components     from the underlying MatrixFree object, e.g. just a
+     * single one. The     entry   @p selected_row_blocks[i]   in the vector
+     * chooses the DoFHandler     and AffineConstraints object that was given
+     * as the       @p selected_row_blocks[i]-th   argument to the
+     * MatrixFree::reinit()   call.     Since a multigrid operator is always
+     * associated to inverting a matrix     and thus represents a diagonal
+     * block, the same vector for rows and     columns is used as opposed to
+     * the non-level initialization function. If     empty, all components are
+     * selected.
      *
-     * The optional selection vector allows to choose only some components
-     * from the underlying MatrixFree object, e.g. just a single one. The
-     * entry @p selected_row_blocks[i] in the vector chooses the DoFHandler
-     * and AffineConstraints object that was given as the
-     * @p selected_row_blocks[i]-th argument to the MatrixFree::reinit() call.
-     * Since a multigrid operator is always associated to inverting a matrix
-     * and thus represents a diagonal block, the same vector for rows and
-     * columns is used as opposed to the non-level initialization function. If
-     * empty, all components are selected.
      */
     void
     initialize(std::shared_ptr<
@@ -285,48 +286,56 @@ namespace MatrixFreeOperators
 
     /**
      * Return the dimension of the codomain (or range) space.
+     *
      */
     size_type
     m() const;
 
     /**
      * Return the dimension of the domain space.
+     *
      */
     size_type
     n() const;
 
     /**
      * vmult operator for interface.
+     *
      */
     void
     vmult_interface_down(VectorType &dst, const VectorType &src) const;
 
     /**
      * vmult operator for interface.
+     *
      */
     void
     vmult_interface_up(VectorType &dst, const VectorType &src) const;
 
     /**
      * Matrix-vector multiplication.
+     *
      */
     void
     vmult(VectorType &dst, const VectorType &src) const;
 
     /**
      * Transpose matrix-vector multiplication.
+     *
      */
     void
     Tvmult(VectorType &dst, const VectorType &src) const;
 
     /**
      * Adding Matrix-vector multiplication.
+     *
      */
     void
     vmult_add(VectorType &dst, const VectorType &src) const;
 
     /**
      * Adding transpose matrix-vector multiplication.
+     *
      */
     void
     Tvmult_add(VectorType &dst, const VectorType &src) const;
@@ -334,6 +343,7 @@ namespace MatrixFreeOperators
     /**
      * Return the value of the matrix entry (row,col). In matrix-free context
      * this function is valid only for row==col when diagonal is initialized.
+     *
      */
     value_type
     el(const unsigned int row, const unsigned int col) const;
@@ -341,40 +351,44 @@ namespace MatrixFreeOperators
     /**
      * Determine an estimate for the memory consumption (in bytes) of this
      * object.
+     *
      */
     virtual std::size_t
     memory_consumption() const;
 
     /**
      * A wrapper for initialize_dof_vector() of MatrixFree object.
+     *
      */
     void
     initialize_dof_vector(VectorType &vec) const;
 
     /**
-     * Compute diagonal of this operator.
+     * Compute diagonal of this operator.         A derived class needs to
+     * implement this function and resize and fill     the protected member
+     * inverse_diagonal_entries and/or diagonal_entries     accordingly.
      *
-     * A derived class needs to implement this function and resize and fill
-     * the protected member inverse_diagonal_entries and/or diagonal_entries
-     * accordingly.
      */
     virtual void
     compute_diagonal() = 0;
 
     /**
      * Get read access to the MatrixFree object stored with this operator.
+     *
      */
     std::shared_ptr<const MatrixFree<dim, value_type, VectorizedArrayType>>
     get_matrix_free() const;
 
     /**
      * Get read access to the inverse diagonal of this operator.
+     *
      */
     const std::shared_ptr<DiagonalMatrix<VectorType>> &
     get_matrix_diagonal_inverse() const;
 
     /**
      * Get read access to the diagonal of this operator.
+     *
      */
     const std::shared_ptr<DiagonalMatrix<VectorType>> &
     get_matrix_diagonal() const;
@@ -382,8 +396,10 @@ namespace MatrixFreeOperators
 
     /**
      * Apply the Jacobi preconditioner, which multiplies every element of the
-     * <tt>src</tt> vector by the inverse of the respective diagonal element and
-     * multiplies the result with the relaxation factor <tt>omega</tt>.
+     * <tt>src</tt> vector by the inverse of the respective diagonal element
+     * and     multiplies the result with the relaxation factor
+     * <tt>omega</tt>.
+     *
      */
     void
     precondition_Jacobi(VectorType &      dst,
@@ -394,6 +410,7 @@ namespace MatrixFreeOperators
     /**
      * Perform necessary operations related to constraints before calling
      * apply_add() or Tapply_add() inside mult_add().
+     *
      */
     void
     preprocess_constraints(VectorType &dst, const VectorType &src) const;
@@ -401,69 +418,79 @@ namespace MatrixFreeOperators
     /**
      * Perform necessary operations related to constraints after calling
      * apply_add() or Tapply_add() inside mult_add().
+     *
      */
     void
     postprocess_constraints(VectorType &dst, const VectorType &src) const;
 
     /**
      * Set constrained entries (both from hanging nodes and edge constraints)
-     * of @p dst to one.
+     * of   @p dst   to one.
+     *
      */
     void
     set_constrained_entries_to_one(VectorType &dst) const;
 
     /**
-     * Apply operator to @p src and add result in @p dst.
+     * Apply operator to   @p src   and add result in   @p dst.
+     *
      */
     virtual void
     apply_add(VectorType &dst, const VectorType &src) const = 0;
 
     /**
-     * Apply transpose operator to @p src and add result in @p dst.
-     *
+     * Apply transpose operator to   @p src   and add result in   @p dst.
      * Default implementation is to call apply_add().
+     *
      */
     virtual void
     Tapply_add(VectorType &dst, const VectorType &src) const;
 
     /**
      * MatrixFree object to be used with this operator.
+     *
      */
     std::shared_ptr<const MatrixFree<dim, value_type, VectorizedArrayType>>
       data;
 
     /**
-     * A shared pointer to a diagonal matrix that stores the
-     * diagonal elements as a vector.
+     * A shared pointer to a diagonal matrix that stores the     diagonal
+     * elements as a vector.
+     *
      */
     std::shared_ptr<DiagonalMatrix<VectorType>> diagonal_entries;
 
     /**
      * A shared pointer to a diagonal matrix that stores the inverse of
      * diagonal elements as a vector.
+     *
      */
     std::shared_ptr<DiagonalMatrix<VectorType>> inverse_diagonal_entries;
 
     /**
      * A vector which defines the selection of sub-components of MatrixFree
      * for the rows of the matrix representation.
+     *
      */
     std::vector<unsigned int> selected_rows;
 
     /**
      * A vector which defines the selection of sub-components of MatrixFree
      * for the columns of the matrix representation.
+     *
      */
     std::vector<unsigned int> selected_columns;
 
   private:
     /**
      * Indices of DoFs on edge in case the operator is used in GMG context.
+     *
      */
     std::vector<std::vector<unsigned int>> edge_constrained_indices;
 
     /**
      * Auxiliary vector.
+     *
      */
     mutable std::vector<std::vector<std::pair<value_type, value_type>>>
       edge_constrained_values;
@@ -471,12 +498,14 @@ namespace MatrixFreeOperators
     /**
      * A flag which determines whether or not this operator has interface
      * matrices in GMG context.
+     *
      */
     bool have_interface_matrices;
 
     /**
-     * %Function which implements vmult_add (@p transpose = false) and
-     * Tvmult_add (@p transpose = true).
+     * %Function which implements vmult_add (  @p transpose   = false) and
+     * Tvmult_add (  @p transpose   = true).
+     *
      */
     void
     mult_add(VectorType &      dst,
@@ -489,6 +518,7 @@ namespace MatrixFreeOperators
      * well as vmult_interface_up() and vmult_interface_down() methods in
      * order to ensure that the cell loops will be able to access the ghost
      * indices with the correct local indices.
+     *
      */
     void
     adjust_ghost_range_if_necessary(const VectorType &vec,
@@ -498,38 +528,18 @@ namespace MatrixFreeOperators
 
 
   /**
-   * Auxiliary class to provide interface vmult/Tvmult methods required in
-   * adaptive geometric multgrids. @p OperatorType class should be derived
-   * from MatrixFreeOperators::Base class.
+   * Auxiliary class to provide interface vmult/Tvmult methods required in   adaptive geometric multgrids.   @p OperatorType   class should be derived   from   MatrixFreeOperators::Base   class.     The adaptive multigrid realization in deal.II implements an approach   called local smoothing. This means that the smoothing on the finest level   only covers the local part of the mesh defined by the fixed (finest) grid   level and ignores parts of the computational domain where the terminal   cells are coarser than this level. As the method progresses to coarser   levels, more and more of the global mesh will be covered. At some coarser   level, the whole mesh will be covered. Since all level matrices in the   multigrid method cover a single level in the mesh, no hanging nodes   appear on the level matrices. At the interface between multigrid levels,   homogeneous Dirichlet boundary conditions are set while smoothing. When   the residual is transferred to the next coarser level, however, the   coupling over the multigrid interface needs to be taken into account.   This is done by the so-called interface (or edge) matrices that compute   the part of the residual that is missed by the level matrix with   homogeneous Dirichlet conditions. We refer to the     @ref mg_paper   "Multigrid paper by Janssen and Kanschat"
+   * for more details.     For the implementation of those interface matrices,
+   * most infrastructure   is already in place and provided by
+   * MatrixFreeOperators::Base   through the   two multiplication routines
+   * vmult_interface_down() and   vmult_interface_up(). The only thing
+   * MGInterfaceOperator does is   wrapping those operations and make them
+   * accessible via     @p vmult()   and   @p Tvmult   interface as expected
+   * by the multigrid routines   (that were originally written for matrices,
+   * hence expecting those names).   Note that the vmult_interface_down is
+   * used during the restriction phase of   the multigrid V-cycle, whereas
+   * vmult_interface_up is used during the   prolongation phase.
    *
-   * The adaptive multigrid realization in deal.II implements an approach
-   * called local smoothing. This means that the smoothing on the finest level
-   * only covers the local part of the mesh defined by the fixed (finest) grid
-   * level and ignores parts of the computational domain where the terminal
-   * cells are coarser than this level. As the method progresses to coarser
-   * levels, more and more of the global mesh will be covered. At some coarser
-   * level, the whole mesh will be covered. Since all level matrices in the
-   * multigrid method cover a single level in the mesh, no hanging nodes
-   * appear on the level matrices. At the interface between multigrid levels,
-   * homogeneous Dirichlet boundary conditions are set while smoothing. When
-   * the residual is transferred to the next coarser level, however, the
-   * coupling over the multigrid interface needs to be taken into account.
-   * This is done by the so-called interface (or edge) matrices that compute
-   * the part of the residual that is missed by the level matrix with
-   * homogeneous Dirichlet conditions. We refer to the
-   * @ref mg_paper "Multigrid paper by Janssen and Kanschat"
-   * for more details.
-   *
-   * For the implementation of those interface matrices, most infrastructure
-   * is already in place and provided by MatrixFreeOperators::Base through the
-   * two multiplication routines vmult_interface_down() and
-   * vmult_interface_up(). The only thing MGInterfaceOperator does is
-   * wrapping those operations and make them accessible via
-   * @p vmult() and @p Tvmult interface as expected by the multigrid routines
-   * (that were originally written for matrices, hence expecting those names).
-   * Note that the vmult_interface_down is used during the restriction phase of
-   * the multigrid V-cycle, whereas vmult_interface_up is used during the
-   * prolongation phase.
    */
   template <typename OperatorType>
   class MGInterfaceOperator : public Subscriptor
@@ -537,33 +547,39 @@ namespace MatrixFreeOperators
   public:
     /**
      * Number alias.
+     *
      */
     using value_type = typename OperatorType::value_type;
 
     /**
      * Size type.
+     *
      */
     using size_type = typename OperatorType::size_type;
 
     /**
      * Default constructor.
+     *
      */
     MGInterfaceOperator();
 
     /**
      * Clear the pointer to the OperatorType object.
+     *
      */
     void
     clear();
 
     /**
-     * Initialize this class with an operator @p operator_in.
+     * Initialize this class with an operator   @p operator_in.
+     *
      */
     void
     initialize(const OperatorType &operator_in);
 
     /**
      * vmult operator, see class description for more info.
+     *
      */
     template <typename VectorType>
     void
@@ -571,6 +587,7 @@ namespace MatrixFreeOperators
 
     /**
      * Tvmult operator, see class description for more info.
+     *
      */
     template <typename VectorType>
     void
@@ -578,6 +595,7 @@ namespace MatrixFreeOperators
 
     /**
      * A wrapper for initialize_dof_vector() of OperatorType object.
+     *
      */
     template <typename VectorType>
     void
@@ -587,6 +605,7 @@ namespace MatrixFreeOperators
   private:
     /**
      * Const pointer to the operator class.
+     *
      */
     SmartPointer<const OperatorType> mf_base_operator;
   };
@@ -603,12 +622,12 @@ namespace MatrixFreeOperators
    * expensive as applying the forward operator on each cell. Of course, for
    * continuous finite elements this operation does not produce the inverse of
    * a mass operation as the coupling between the elements cannot be
-   * considered by this operation.
+   * considered by this operation.     The equation may contain variable
+   * coefficients, so the user is required   to provide an array for the
+   * inverse of the local coefficient (this class   provide a helper method
+   * 'fill_inverse_JxW_values' to get the inverse of a   constant-coefficient
+   * operator).
    *
-   * The equation may contain variable coefficients, so the user is required
-   * to provide an array for the inverse of the local coefficient (this class
-   * provide a helper method 'fill_inverse_JxW_values' to get the inverse of a
-   * constant-coefficient operator).
    */
   template <int dim,
             int fe_degree,
@@ -625,6 +644,7 @@ namespace MatrixFreeOperators
     /**
      * Constructor. Initializes the shape information from the ShapeInfo field
      * in the class FEEval.
+     *
      */
     CellwiseInverseMassMatrix(
       const FEEvaluationBase<dim,
@@ -636,10 +656,11 @@ namespace MatrixFreeOperators
     /**
      * Applies the inverse mass matrix operation on an input array. It is
      * assumed that the passed input and output arrays are of correct size,
-     * namely FEEvaluation::dofs_per_cell long. The inverse of the
+     * namely   FEEvaluation::dofs_per_cell   long. The inverse of the
      * local coefficient (also containing the inverse JxW values) must be
      * passed as first argument. Passing more than one component in the
      * coefficient is allowed.
+     *
      */
     void
     apply(const AlignedVector<VectorizedArrayType> &inverse_coefficient,
@@ -651,12 +672,13 @@ namespace MatrixFreeOperators
      * Applies the inverse mass matrix operation on an input array, using the
      * inverse of the JxW values provided by the `fe_eval` argument passed to
      * the constructor of this class. Note that the user code must call
-     * FEEvaluation::reinit() on the underlying evaluator to make the
-     * FEEvaluationBase::JxW() method return the information of the correct
+     * FEEvaluation::reinit()   on the underlying evaluator to make the
+     * FEEvaluationBase::JxW()   method return the information of the correct
      * cell. It is assumed that the pointers of the input and output arrays
-     * are valid over the length FEEvaluation::dofs_per_cell, which is the
+     * are valid over the length   FEEvaluation::dofs_per_cell,   which is the
      * number of entries processed by this function. The `in_array` and
      * `out_array` arguments may point to the same memory position.
+     *
      */
     void
     apply(const VectorizedArrayType *in_array,
@@ -666,34 +688,32 @@ namespace MatrixFreeOperators
      * This operation performs a projection from the data given in quadrature
      * points to the actual basis underlying this object. This projection can
      * also be interpreted as a change of the basis from the Lagrange
-     * interpolation polynomials in the quadrature points to the
-     * basis underlying the current `fe_eval` object.
-     *
-     * Calling this function on an array as
+     * interpolation polynomials in the quadrature points to the     basis
+     * underlying the current `fe_eval` object.         Calling this function
+     * on an array as
      * @code
      * inverse_mass.transform_from_q_points_to_basis(1, array,
-     *                                               phi.begin_dof_values());
+     *                                             phi.begin_dof_values());
      * @endcode
      * is equivalent to
      * @code
      * for (unsigned int q=0; q<phi.n_q_points; ++q)
-     *   phi.submit_value(array[q], q);
+     * phi.submit_value(array[q], q);
      * phi.integrate(EvaluationFlags::values);
      * inverse_mass.apply(coefficients, 1, phi.begin_dof_values(),
-     *                    phi.begin_dof_values());
+     *                  phi.begin_dof_values());
      * @endcode
-     * provided that @p coefficients holds the inverse of the quadrature
+     * provided that   @p coefficients   holds the inverse of the quadrature
      * weights and no additional coefficients. This setup highlights the
      * underlying projection, testing a right hand side and applying an
      * inverse mass matrix. This function works both for the scalar case as
      * described in the example or for multiple components that are laid out
-     * component by component.
+     * component by component.         Compared to the more verbose
+     * alternative, the given procedure is     considerably faster because it
+     * can bypass the   @p integrate()   step     and the first half of the
+     * transformation to the quadrature points,     reducing the number of
+     * tensor product calls from 3*dim*n_components to     dim*n_components.
      *
-     * Compared to the more verbose alternative, the given procedure is
-     * considerably faster because it can bypass the @p integrate() step
-     * and the first half of the transformation to the quadrature points,
-     * reducing the number of tensor product calls from 3*dim*n_components to
-     * dim*n_components.
      */
     void
     transform_from_q_points_to_basis(const unsigned int n_actual_components,
@@ -704,6 +724,7 @@ namespace MatrixFreeOperators
      * Fills the given array with the inverse of the JxW values, i.e., a mass
      * matrix with coefficient 1. Non-unit coefficients must be multiplied (in
      * inverse form) to this array.
+     *
      */
     void
     fill_inverse_JxW_values(
@@ -712,6 +733,7 @@ namespace MatrixFreeOperators
   private:
     /**
      * A reference to the FEEvaluation object for getting the JxW_values.
+     *
      */
     const FEEvaluationBase<dim,
                            n_components,
@@ -724,10 +746,10 @@ namespace MatrixFreeOperators
 
   /**
    * This class implements the operation of the action of a mass matrix.
-   *
    * Note that this class only supports the non-blocked vector variant of the
    * Base operator because only a single FEEvaluation object is used in the
    * apply function.
+   *
    */
   template <int dim,
             int fe_degree,
@@ -741,39 +763,45 @@ namespace MatrixFreeOperators
   public:
     /**
      * Number alias.
+     *
      */
     using value_type =
       typename Base<dim, VectorType, VectorizedArrayType>::value_type;
 
     /**
      * size_type needed for preconditioner classes.
+     *
      */
     using size_type =
       typename Base<dim, VectorType, VectorizedArrayType>::size_type;
 
     /**
      * Constructor.
+     *
      */
     MassOperator();
 
     /**
      * For preconditioning, we store a lumped mass matrix at the diagonal
      * entries.
+     *
      */
     virtual void
     compute_diagonal() override;
 
   private:
     /**
-     * Applies the mass matrix operation on an input vector. It is
-     * assumed that the passed input and output vector are correctly initialized
+     * Applies the mass matrix operation on an input vector. It is     assumed
+     * that the passed input and output vector are correctly initialized
      * using initialize_dof_vector().
+     *
      */
     virtual void
     apply_add(VectorType &dst, const VectorType &src) const override;
 
     /**
      * For this operator, there is just a cell contribution.
+     *
      */
     void
     local_apply_cell(
@@ -787,13 +815,13 @@ namespace MatrixFreeOperators
 
   /**
    * This class implements the operation of the action of a Laplace matrix,
-   * namely $ L_{ij} = \int_\Omega c(\mathbf x) \mathbf \nabla N_i(\mathbf x)
-   * \cdot \mathbf \nabla N_j(\mathbf x)\,d \mathbf x$, where $c(\mathbf x)$ is
-   * the scalar heterogeneity coefficient.
+   * namely   $ L_{ij} = \int_\Omega c(\mathbf x) \mathbf \nabla N_i(\mathbf
+   * x) \cdot \mathbf \nabla N_j(\mathbf x)\,d \mathbf x$  , where
+   * $c(\mathbf x)$   is   the scalar heterogeneity coefficient.     Note that
+   * this class only supports the non-blocked vector variant of the   Base
+   * operator because only a single FEEvaluation object is used in the   apply
+   * function.
    *
-   * Note that this class only supports the non-blocked vector variant of the
-   * Base operator because only a single FEEvaluation object is used in the
-   * apply function.
    */
   template <int dim,
             int fe_degree,
@@ -807,18 +835,21 @@ namespace MatrixFreeOperators
   public:
     /**
      * Number alias.
+     *
      */
     using value_type =
       typename Base<dim, VectorType, VectorizedArrayType>::value_type;
 
     /**
      * size_type needed for preconditioner classes.
+     *
      */
     using size_type =
       typename Base<dim, VectorType, VectorizedArrayType>::size_type;
 
     /**
      * Constructor.
+     *
      */
     LaplaceOperator();
 
@@ -827,15 +858,16 @@ namespace MatrixFreeOperators
      * element and distributing it to the global diagonal. This will lead to
      * wrong results on element with hanging nodes but is still an acceptable
      * approximation to be used in preconditioners.
+     *
      */
     virtual void
     compute_diagonal() override;
 
     /**
-     * Set the heterogeneous scalar coefficient @p scalar_coefficient to be
-     * used at the quadrature points. The Table needs to have as many rows as
-     * there are cell batches in the underlying MatrixFree object,
-     * MatrixFree::n_cell_batches(). The number of batches is related to the
+     * Set the heterogeneous scalar coefficient   @p scalar_coefficient   to
+     * be     used at the quadrature points. The Table needs to have as many
+     * rows as     there are cell batches in the underlying MatrixFree object,
+     * MatrixFree::n_cell_batches().   The number of batches is related to the
      * fact that the matrix-free operators do not work on individual cells,
      * but instead of batches of cells at once due to vectorization. The Table
      * can take two different numbers of columns.  One case is to select it
@@ -845,41 +877,39 @@ namespace MatrixFreeOperators
      * value of the coefficient on cell batch `cell` and quadrature point
      * index `q`. The second supported variant is a Table with a single
      * column, in which case the same variable coefficient value is used at
-     * all quadrature points of a cell.
-     *
-     * Such tables can be initialized by
+     * all quadrature points of a cell.         Such tables can be initialized
+     * by
      * @code
      * std::shared_ptr<Table<2, VectorizedArray<double> > > coefficient;
      * coefficient = std::make_shared<Table<2, VectorizedArray<double> > >();
      * {
-     *   FEEvaluation<dim,fe_degree,n_q_points_1d,1,double> fe_eval(mf_data);
-     *   const unsigned int n_cells = mf_data.n_cell_batches();
-     *   const unsigned int n_q_points = fe_eval.n_q_points;
-     *   coefficient->reinit(n_cells, n_q_points);
-     *   for (unsigned int cell=0; cell<n_cells; ++cell)
-     *     {
-     *       fe_eval.reinit(cell);
-     *       for (unsigned int q=0; q<n_q_points; ++q)
-     *         (*coefficient)(cell,q) =
-     *           function.value(fe_eval.quadrature_point(q));
-     *     }
+     * FEEvaluation<dim,fe_degree,n_q_points_1d,1,double> fe_eval(mf_data);
+     * const unsigned int n_cells = mf_data.n_cell_batches();
+     * const unsigned int n_q_points = fe_eval.n_q_points;
+     * coefficient->reinit(n_cells, n_q_points);
+     * for (unsigned int cell=0; cell<n_cells; ++cell)
+     *   {
+     *     fe_eval.reinit(cell);
+     *     for (unsigned int q=0; q<n_q_points; ++q)
+     *       (*coefficient)(cell,q) =
+     *         function.value(fe_eval.quadrature_point(q));
+     *   }
      * }
      * @endcode
-     * where <code>mf_data</code> is a MatrixFree object and
-     * <code>function</code> is a function which provides the following method
-     * <code>VectorizedArray<double> value(const Point<dim,
-     * VectorizedArray<double> > &p_vec)</code>.
-     *
-     * If this function is not called, the coefficient is assumed to be unity.
-     *
-     * The argument to this function is a shared pointer to such a table. The
-     * class stores the shared pointer to this table, not a deep copy
-     * and uses it to form the Laplace matrix. Consequently, you can update the
+     * where   <code>mf_data</code>   is a MatrixFree object and
+     * <code>function</code>   is a function which provides the following
+     * method     <code>VectorizedArray<double> value(const Point<dim,
+     * VectorizedArray<double> > &p_vec)</code>.         If this function is
+     * not called, the coefficient is assumed to be unity.         The
+     * argument to this function is a shared pointer to such a table. The
+     * class stores the shared pointer to this table, not a deep copy     and
+     * uses it to form the Laplace matrix. Consequently, you can update the
      * table and re-use the current object to obtain the action of a Laplace
-     * matrix with this updated coefficient. Alternatively, if the table values
-     * are only to be filled once, the original shared pointer can also go out
-     * of scope in user code and the clear() command or destructor of this class
-     * will delete the table.
+     * matrix with this updated coefficient. Alternatively, if the table
+     * values     are only to be filled once, the original shared pointer can
+     * also go out     of scope in user code and the clear() command or
+     * destructor of this class     will delete the table.
+     *
      */
     void
     set_coefficient(
@@ -888,15 +918,16 @@ namespace MatrixFreeOperators
     /**
      * Resets all data structures back to the same state as for a newly
      * constructed object.
+     *
      */
     virtual void
     clear() override;
 
     /**
      * Read/Write access to coefficients to be used in Laplace operator.
-     *
      * The function will throw an error if coefficients are not previously set
      * by set_coefficient() function.
+     *
      */
     std::shared_ptr<Table<2, VectorizedArrayType>>
     get_coefficient();
@@ -904,14 +935,16 @@ namespace MatrixFreeOperators
   private:
     /**
      * Applies the laplace matrix operation on an input vector. It is
-     * assumed that the passed input and output vector are correctly initialized
-     * using initialize_dof_vector().
+     * assumed that the passed input and output vector are correctly
+     * initialized     using initialize_dof_vector().
+     *
      */
     virtual void
     apply_add(VectorType &dst, const VectorType &src) const override;
 
     /**
      * Applies the Laplace operator on a cell.
+     *
      */
     void
     local_apply_cell(
@@ -922,6 +955,7 @@ namespace MatrixFreeOperators
 
     /**
      * Apply diagonal part of the Laplace operator on a cell.
+     *
      */
     void
     local_diagonal_cell(
@@ -931,7 +965,8 @@ namespace MatrixFreeOperators
       const std::pair<unsigned int, unsigned int> &cell_range) const;
 
     /**
-     * Apply Laplace operator on a cell @p cell.
+     * Apply Laplace operator on a cell   @p cell.
+     *
      */
     void
     do_operation_on_cell(
@@ -941,6 +976,7 @@ namespace MatrixFreeOperators
 
     /**
      * User-provided heterogeneity coefficient.
+     *
      */
     std::shared_ptr<Table<2, VectorizedArrayType>> scalar_coefficient;
   };
@@ -1984,7 +2020,7 @@ namespace MatrixFreeOperators
     this->data->cell_loop(&LaplaceOperator::local_diagonal_cell,
                           this,
                           diagonal_vector,
-                          /*unused*/ diagonal_vector);
+                           /*unused*/  diagonal_vector);
     this->set_constrained_entries_to_one(diagonal_vector);
 
     inverse_diagonal_vector = diagonal_vector;

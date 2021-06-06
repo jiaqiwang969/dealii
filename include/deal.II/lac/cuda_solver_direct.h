@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -31,11 +31,10 @@ namespace CUDAWrappers
 {
   /**
    * Direct solvers. These solvers call cuSOLVER underneath.
-   *
-   * @note Instantiations for this template are provided for <tt>@<float@></tt>
-   * and <tt>@<double@></tt>.
-   *
+   * @note   Instantiations for this template are provided for <tt>
+   * @<float@></tt>     and <tt>  @<double@></tt>.
    * @ingroup CUDAWrappers
+   *
    */
   template <typename Number>
   class SolverDirect
@@ -43,29 +42,26 @@ namespace CUDAWrappers
   public:
     /**
      * Struct for additional settings for SolverDirect.
+     *
      */
     struct AdditionalData
     {
       /**
        * Set the additional data field to the desired solver.
+       *
        */
       explicit AdditionalData(const std::string &solver_type = "LU_dense");
 
       /**
-       * Set the solver type. Possibilities are:
-       * <ul>
-       * <li> "Cholesky" which performs a Cholesky decomposition on the device
-       * </li>
-       * <li> "LU_dense" which converts the sparse matrix to a dense
-       * matrix and uses LU factorization </li>
-       * <li> "LU_host" which uses LU factorization on the host </li>
-       * </ul>
+       * Set the solver type. Possibilities are:         <ul>           <li>   "Cholesky" which performs a Cholesky decomposition on the device         </li>           <li>   "LU_dense" which converts the sparse matrix to a dense       matrix and uses LU factorization   </li>           <li>   "LU_host" which uses LU factorization on the host   </li>           </ul>
+       *
        */
       std::string solver_type;
     };
 
     /**
      * Constructor. Takes the solver control object and creates the solver.
+     *
      */
     SolverDirect(const Utilities::CUDA::Handle &handle,
                  SolverControl &                cn,
@@ -73,11 +69,13 @@ namespace CUDAWrappers
 
     /**
      * Destructor.
+     *
      */
     virtual ~SolverDirect() = default;
 
     /**
      * Solve the linear system <tt>Ax=b</tt>.
+     *
      */
     void
     solve(const SparseMatrix<Number> &                       A,
@@ -86,6 +84,7 @@ namespace CUDAWrappers
 
     /**
      * Access to object that controls convergence.
+     *
      */
     SolverControl &
     control() const;
@@ -93,6 +92,7 @@ namespace CUDAWrappers
   private:
     /**
      * Handle
+     *
      */
     const Utilities::CUDA::Handle &cuda_handle;
 
@@ -101,11 +101,13 @@ namespace CUDAWrappers
      * solver. In fact, for these CUDA wrappers, cuSOLVER and cuSPARSE do so
      * themselves, but we copy the data from this object before starting the
      * solution process, and copy the data back into it afterwards.
+     *
      */
     SolverControl &solver_control;
 
     /**
      * Store a copy of the flags for this particular solver.
+     *
      */
     const AdditionalData additional_data;
   };

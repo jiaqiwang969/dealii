@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
 //
@@ -34,17 +34,19 @@ namespace numbers
   {
     /**
      * A namespace for the implementation of functions that create signaling
-     * NaN objects. This is where the numbers::signaling_nan() function
+     * NaN objects. This is where the   numbers::signaling_nan()   function
      * calls into.
+     *
      */
     namespace SignalingNaN
     {
       /**
        * A general template for classes that know how to initialize objects of
-       * type @p T with signaling NaNs to denote invalid values.
-       *
+       * type   @p T   with signaling NaNs to denote invalid values.
        * The real implementation of this class happens in (partial)
-       * specializations for particular values of the template argument @p T.
+       * specializations for particular values of the template argument   @p
+       * T.
+       *
        */
       template <typename T>
       struct NaNInitializer;
@@ -52,8 +54,9 @@ namespace numbers
 
       /**
        * A specialization of the general NaNInitializer class that provides a
-       * function that returns a @p float value equal to the invalid signaling
-       * NaN.
+       * function that returns a   @p float   value equal to the invalid
+       * signaling       NaN.
+       *
        */
       template <>
       struct NaNInitializer<float>
@@ -68,8 +71,9 @@ namespace numbers
 
       /**
        * A specialization of the general NaNInitializer class that provides a
-       * function that returns a @p double value equal to the invalid
+       * function that returns a   @p double   value equal to the invalid
        * signaling NaN.
+       *
        */
       template <>
       struct NaNInitializer<double>
@@ -86,6 +90,7 @@ namespace numbers
        * A specialization of the general NaNInitializer class that provides a
        * function that returns a Tensor<1,dim> value whose components are
        * invalid signaling NaN values.
+       *
        */
       template <int dim, typename T>
       struct NaNInitializer<Tensor<1, dim, T>>
@@ -108,6 +113,7 @@ namespace numbers
        * A specialization of the general NaNInitializer class that provides a
        * function that returns a Tensor<rank,dim> value whose components are
        * invalid signaling NaN values.
+       *
        */
       template <int rank, int dim, typename T>
       struct NaNInitializer<Tensor<rank, dim, T>>
@@ -132,6 +138,7 @@ namespace numbers
        * A specialization of the general NaNInitializer class that provides a
        * function that returns a Tensor<rank,dim> value whose components are
        * invalid signaling NaN values.
+       *
        */
       template <int dim, typename T>
       struct NaNInitializer<Point<dim, T>>
@@ -154,6 +161,7 @@ namespace numbers
        * A specialization of the general NaNInitializer class that provides a
        * function that returns a SymmetricTensor<rank,dim> value whose
        * components are invalid signaling NaN values.
+       *
        */
       template <int rank, int dim, typename T>
       struct NaNInitializer<SymmetricTensor<rank, dim, T>>
@@ -179,6 +187,7 @@ namespace numbers
        * A specialization of the general NaNInitializer class that provides a
        * function that returns a DerivativeForm<order,dim,spacedim> value
        * whose components are invalid signaling NaN values.
+       *
        */
       template <int order, int dim, int spacedim, typename T>
       struct NaNInitializer<DerivativeForm<order, dim, spacedim, T>>
@@ -201,7 +210,7 @@ namespace numbers
 
 
   /**
-   * Provide an object of type @p T filled with a signaling NaN that will
+   * Provide an object of type   @p T   filled with a signaling NaN that will
    * cause an exception when used in a computation. The content of these
    * objects is a "signaling NaN" ("NaN" stands for "not a number", and
    * "signaling" implies that at least on platforms where this is supported,
@@ -211,48 +220,47 @@ namespace numbers
    * and to trigger an error when this later initialization does not happen
    * before the first use. An example is code such as this:
    * @code
-   *   double x = numbers::signaling_nan<double>();
-   *   if (some condition)
-   *   {
-   *     ...much code computing a,b,c...
-   *     x = f(a,b,c);
-   *   }
-   *   else
-   *   {
-   *     ...more code...
-   *     // bug: we forgot to assign a value to 'x'.
-   *   }
+   * double x = numbers::signaling_nan<double>();
+   * if (some condition)
+   * {
+   *   ...much code computing a,b,c...
+   *   x = f(a,b,c);
+   * }
+   * else
+   * {
+   *   ...more code...
+   *   // bug: we forgot to assign a value to 'x'.
+   * }
    *
-   *   return std::sin(x);
+   * return std::sin(x);
    * @endcode
    * The bug is that the `else` branch forgot to write a value into the `x`
    * variable. If your platform supports signaling NaNs, then this mistake
    * will become apparent in the last line above because the program is
    * going to be terminated by a floating point exception: The processor
    * realizes that the code is attempting to do an operation on the signaling
-   * NaN still stored in `x` and aborts the program, thereby facilitating
-   * an easy way to find what the problem is. This would not have been an easy
+   * NaN still stored in `x` and aborts the program, thereby facilitating   an
+   * easy way to find what the problem is. This would not have been an easy
    * bug to find if one had just initialized `x` to zero in the first line
    * (or just left it uninitialized altogether): In that case, the call to
-   * `std::sin` in the last line would have simply computed the sine of
+   * `std::sin`   in the last line would have simply computed the sine of
    * "something" if `some condition == false`, but this invalid results may
-   * not have been obvious to the calling site and would have required
-   * a substantial amount of debugging to uncover because downstream
+   * not have been obvious to the calling site and would have required   a
+   * substantial amount of debugging to uncover because downstream
    * computations would simply have been wrong, without any indication of
-   * *why* they are wrong.
-   *
-   * @tparam T The type of the returned invalid object. This type can either
-   * be a scalar, or of type Tensor, SymmetricTensor, or DerivativeForm. Other
-   * types may be supported if there is a corresponding specialization of the
-   * internal::SignalingNaN::NaNInitializer class for this type.
-   *
-   * @note Because the type @p T is not used as a function argument, the
+   * why* they are wrong.       @tparam   T The type of the returned invalid
+   * object. This type can either   be a scalar, or of type Tensor,
+   * SymmetricTensor, or DerivativeForm. Other   types may be supported if
+   * there is a corresponding specialization of the
+   * internal::SignalingNaN::NaNInitializer   class for this type.
+   * @note   Because the type   @p T   is not used as a function argument, the
    * compiler cannot deduce it from the type of arguments. Consequently, you
    * have to provide it explicitly. For example, the line
-   *   @code
-   *     Tensor<1,dim> tensor = Utilities::signaling_nan<Tensor<1,dim> >();
-   *   @endcode
+   * @code
+   *   Tensor<1,dim> tensor = Utilities::signaling_nan<Tensor<1,dim> >();
+   * @endcode
    * initializes a tensor with invalid values.
+   *
    */
   template <class T>
   T

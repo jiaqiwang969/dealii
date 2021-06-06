@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2021 by the deal.II authors
 //
@@ -326,10 +326,10 @@ namespace FETools
 
 
     /**
-     * Take a @p FiniteElement object
-     * and return an boolean vector including the @p
-     * restriction_is_additive_flags of the mixed element consisting of @p N
-     * elements of the sub-element @p fe.
+     * Take a   @p FiniteElement   object     and return an boolean vector
+     * including the   @p       restriction_is_additive_flags of the mixed
+     * element consisting of   @p N       elements of the sub-element   @p fe.
+     *
      */
     template <int dim, int spacedim>
     std::vector<bool>
@@ -572,6 +572,7 @@ namespace FETools
 
     /**
      * Compute the non-zero vector components of a composed finite element.
+     *
      */
     template <int dim, int spacedim>
     std::vector<ComponentMask>
@@ -3164,4 +3165,4 @@ namespace FETools
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* dealii_fe_tools_templates_H */
+#endif  /* dealii_fe_tools_templates_H */ 

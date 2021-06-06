@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
 //
@@ -31,64 +31,68 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * BlockIndices represents a range of indices (such as the range $[0,N)$
- * of valid indices for elements of a vector) and how this one range
- * is broken down into smaller but contiguous "blocks" (such as the velocity
- * and pressure parts of a solution vector). In particular, it provides the
- * ability to translate between global indices and the indices <i>within</i>
- * a block. This class is used, for example, in the BlockVector,
- * BlockSparsityPattern, and BlockMatrixBase classes.
+ * BlockIndices represents a range of indices (such as the range   $[0,N)$
+ * of valid indices for elements of a vector) and how this one range is broken
+ * down into smaller but contiguous "blocks" (such as the velocity and
+ * pressure parts of a solution vector). In particular, it provides the
+ * ability to translate between global indices and the indices <i>within</i> a
+ * block. This class is used, for example, in the BlockVector,
+ * BlockSparsityPattern, and BlockMatrixBase classes. The information that can
+ * be obtained from this class falls into two groups. First, it is possible to
+ * query the global size of the index space (through the total_size() member
+ * function), and the number of blocks and their sizes (via size() and the
+ * block_size() functions). Secondly, this class manages the conversion of
+ * global indices to the local indices within this block, and the other way
+ * around. This is required, for example, when you address a global element in
+ * a block vector and want to know within which block this is, and which index
+ * within this block it corresponds to. It is also useful if a matrix is
+ * composed of several blocks, where you have to translate global row and
+ * column indices to local ones.
  *
- * The information that can be obtained from this class falls into two groups.
- * First, it is possible to query the global size of the index space (through
- * the total_size() member function), and the number of blocks and their sizes
- * (via size() and the block_size() functions).
  *
- * Secondly, this class manages the conversion of global indices to the
- * local indices within this block, and the other way around. This is required,
- * for example, when you address a global element in a block vector and want to
- * know within which block this is, and which index within this block it
- * corresponds to. It is also useful if a matrix is composed of several
- * blocks, where you have to translate global row and column indices to local
- * ones.
+ * @ingroup data     @see     @ref GlossBlockLA   "Block (linear algebra)"
  *
- * @ingroup data
- * @see
- * @ref GlossBlockLA "Block (linear algebra)"
+ *
  */
 class BlockIndices : public Subscriptor
 {
 public:
   /**
    * Declare the type for container size.
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
    * Default constructor. Initialize for zero blocks.
+   *
    */
   BlockIndices();
 
   /**
-   * Constructor. Initialize the number of entries in each block @p i as
-   * <tt>block_sizes[i]</tt>. The number of blocks will be the size of @p
+   * Constructor. Initialize the number of entries in each block   @p i   as
+   * <tt>block_sizes[i]</tt>. The number of blocks will be the size of   @p
    * block_sizes.
+   *
    */
   BlockIndices(const std::vector<size_type> &block_sizes);
 
   /**
-   * Move constructor. Initialize a new object by stealing the internal data of
-   * another BlockIndices object.
+   * Move constructor. Initialize a new object by stealing the internal data
+   * of   another BlockIndices object.
+   *
    */
   BlockIndices(BlockIndices &&b) noexcept;
 
   /**
    * Copy constructor.
+   *
    */
   BlockIndices(const BlockIndices &) = default;
 
   /**
    * Specialized constructor for a structure with blocks of equal size.
+   *
    */
   explicit BlockIndices(const unsigned int n_blocks,
                         const size_type    block_size = 0);
@@ -96,6 +100,7 @@ public:
   /**
    * Reinitialize the number of blocks and assign each block the same number
    * of elements.
+   *
    */
   void
   reinit(const unsigned int n_blocks, const size_type n_elements_per_block);
@@ -103,25 +108,29 @@ public:
   /**
    * Reinitialize the number of indices within each block from the given
    * argument. The number of blocks will be adjusted to the size of
-   * <tt>block_sizes</tt> and the size of block @p i is set to
+   * <tt>block_sizes</tt> and the size of block   @p i   is set to
    * <tt>block_sizes[i]</tt>.
+   *
    */
   void
   reinit(const std::vector<size_type> &block_sizes);
 
   /**
    * Add another block of given size to the end of the block structure.
+   *
    */
   void
   push_back(const size_type size);
 
   /**
-   * @name Size information
+   * @name   Size information
+   *
    */
   //@{
 
   /**
    * Number of blocks in index field.
+   *
    */
   unsigned int
   size() const;
@@ -129,12 +138,14 @@ public:
   /**
    * Return the total number of indices accumulated over all blocks, that is,
    * the dimension of the vector space of the block vector.
+   *
    */
   size_type
   total_size() const;
 
   /**
-   * The size of the @p ith block.
+   * The size of the   @p ith   block.
+   *
    */
   size_type
   block_size(const unsigned int i) const;
@@ -143,6 +154,7 @@ public:
    * String representation of the block sizes. The output is of the form
    * `[nb->b1,b2,b3|s]`, where `nb` is n_blocks(), `s` is total_size() and
    * `b1` etc. are the values returned by block_size() for each of the blocks.
+   *
    */
   std::string
   to_string() const;
@@ -150,31 +162,30 @@ public:
   //@}
 
   /**
-   * @name Index conversion
+   * @name   Index conversion     Functions in this group assume an object, which was created after sorting   by block, such that each block forms a set of consecutive indices in the   object. If applied to other objects, the numbers obtained from these   functions are meaningless.
    *
-   * Functions in this group assume an object, which was created after sorting
-   * by block, such that each block forms a set of consecutive indices in the
-   * object. If applied to other objects, the numbers obtained from these
-   * functions are meaningless.
    */
   //@{
 
   /**
-   * Return the block and the index within that block for the global index @p
-   * i. The first element of the pair is the block, the second the index
-   * within it.
+   * Return the block and the index within that block for the global index
+   * @p     i. The first element of the pair is the block, the second the
+   * index   within it.
+   *
    */
   std::pair<unsigned int, size_type>
   global_to_local(const size_type i) const;
 
   /**
-   * Return the global index of @p index in block @p block.
+   * Return the global index of   @p index   in block   @p block.
+   *
    */
   size_type
   local_to_global(const unsigned int block, const size_type index) const;
 
   /**
    * The start index of the ith block.
+   *
    */
   size_type
   block_start(const unsigned int i) const;
@@ -182,6 +193,7 @@ public:
 
   /**
    * Copy operator.
+   *
    */
   BlockIndices &
   operator=(const BlockIndices &b);
@@ -189,6 +201,7 @@ public:
   /**
    * Move assignment operator. Move another BlockIndices object onto the
    * current one by transferring its contents.
+   *
    */
   BlockIndices &
   operator=(BlockIndices &&) noexcept;
@@ -196,12 +209,14 @@ public:
   /**
    * Compare whether two objects are the same, i.e. whether the number of
    * blocks and the sizes of all blocks are equal.
+   *
    */
   bool
   operator==(const BlockIndices &b) const;
 
   /**
    * Swap the contents of these two objects.
+   *
    */
   void
   swap(BlockIndices &b);
@@ -209,6 +224,7 @@ public:
   /**
    * Determine an estimate for the memory consumption (in bytes) of this
    * object.
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -217,12 +233,14 @@ private:
   /**
    * Number of blocks. While this value could be obtained through
    * <tt>start_indices.size()-1</tt>, we cache this value for faster access.
+   *
    */
   unsigned int n_blocks;
 
   /**
    * Global starting index of each vector. The last and redundant value is the
    * total number of entries.
+   *
    */
   std::vector<size_type> start_indices;
 };
@@ -231,8 +249,9 @@ private:
 /**
  * Operator for logging BlockIndices. Writes the number of blocks, the size of
  * each block and the total size of the index field.
- *
  * @ref BlockIndices
+ *
+ *
  */
 inline LogStream &
 operator<<(LogStream &s, const BlockIndices &bi)
@@ -251,7 +270,7 @@ operator<<(LogStream &s, const BlockIndices &bi)
 
 
 
-/* ---------------------- template and inline functions ------------------- */
+ /* ---------------------- template and inline functions ------------------- */ 
 
 inline void
 BlockIndices::reinit(const unsigned int nb, const size_type block_size)
@@ -457,15 +476,16 @@ BlockIndices::memory_consumption() const
 
 
 
-/* ----------------- global functions ---------------------------- */
+ /* ----------------- global functions ---------------------------- */ 
 
 
 /**
- * Global function @p swap which overloads the default implementation of the
- * C++ standard library which uses a temporary object. The function simply
+ * Global function   @p swap   which overloads the default implementation of
+ * the C++ standard library which uses a temporary object. The function simply
  * exchanges the data of the two objects.
+ * @relatesalso   BlockIndices
  *
- * @relatesalso BlockIndices
+ *
  */
 inline void
 swap(BlockIndices &u, BlockIndices &v)

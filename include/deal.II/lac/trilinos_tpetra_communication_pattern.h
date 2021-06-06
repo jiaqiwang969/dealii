@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
 //
@@ -35,17 +35,20 @@ namespace LinearAlgebra
   namespace TpetraWrappers
   {
     /**
-     * This class implements a wrapper to Tpetra::Import and Tpetra::Export.
+     * This class implements a wrapper to   Tpetra::Import   and
+     * Tpetra::Export.
+     *
      */
     class CommunicationPattern : public Utilities::MPI::CommunicationPatternBase
     {
     public:
       /**
-       * Reinitialize the communication pattern. The first argument @p
+       * Reinitialize the communication pattern. The first argument   @p
        * vector_space_vector_index_set is the index set associated to a
-       * VectorSpaceVector object. The second argument @p
+       * VectorSpaceVector object. The second argument   @p
        * read_write_vector_index_set is the index set associated to a
        * ReadWriteVector object.
+       *
        */
       CommunicationPattern(const IndexSet &vector_space_vector_index_set,
                            const IndexSet &read_write_vector_index_set,
@@ -53,6 +56,7 @@ namespace LinearAlgebra
 
       /**
        * Reinitialize the object.
+       *
        */
       virtual void
       reinit(const IndexSet &vector_space_vector_index_set,
@@ -61,18 +65,21 @@ namespace LinearAlgebra
 
       /**
        * Return the underlying MPI communicator.
+       *
        */
       virtual const MPI_Comm &
       get_mpi_communicator() const override;
 
       /**
-       * Return the underlying Tpetra::Import object.
+       * Return the underlying   Tpetra::Import   object.
+       *
        */
       const Tpetra::Import<int, types::global_dof_index> &
       get_tpetra_import() const;
 
       /**
-       * Return the underlying Tpetra::Export object.
+       * Return the underlying   Tpetra::Export   object.
+       *
        */
       const Tpetra::Export<int, types::global_dof_index> &
       get_tpetra_export() const;
@@ -80,17 +87,20 @@ namespace LinearAlgebra
     private:
       /**
        * Shared pointer to the MPI communicator used.
+       *
        */
       std::shared_ptr<const MPI_Comm> comm;
 
       /**
-       * Shared pointer to the Tpetra::Import object used.
+       * Shared pointer to the   Tpetra::Import   object used.
+       *
        */
       std::unique_ptr<Tpetra::Import<int, types::global_dof_index>>
         tpetra_import;
 
       /**
-       * Shared pointer to the Tpetra::Export object used.
+       * Shared pointer to the   Tpetra::Export   object used.
+       *
        */
       std::unique_ptr<Tpetra::Export<int, types::global_dof_index>>
         tpetra_export;

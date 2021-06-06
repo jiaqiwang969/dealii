@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
 //
@@ -30,9 +30,8 @@ DEAL_II_NAMESPACE_OPEN
 
 namespace PETScWrappers
 {
-  /*! @addtogroup PETScWrappers
-   *@{
-   */
+  /*!   @addtogroup   PETScWrappers    @{    
+* */
 
   /**
    * Implementation of a sequential dense matrix class based on PETSc. All the
@@ -42,26 +41,29 @@ namespace PETScWrappers
    * that do the actual work depending on the actual matrix type (much like
    * using virtual functions). Only the functions creating a matrix of
    * specific type differ, and are implemented in this particular class.
-   *
    * @ingroup Matrix1
+   *
    */
   class FullMatrix : public MatrixBase
   {
   public:
     /**
      * Declare type for container size.
+     *
      */
     using size_type = types::global_dof_index;
 
 
     /**
      * Default constructor. Create an empty matrix.
+     *
      */
     FullMatrix();
 
 
     /**
-     * Create a full matrix of dimensions @p m times @p n.
+     * Create a full matrix of dimensions   @p m   times   @p n.
+     *
      */
     FullMatrix(const size_type m, const size_type n);
 
@@ -70,6 +72,7 @@ namespace PETScWrappers
      * Throw away the present matrix and generate one that has the same
      * properties as if it were created by the constructor of this class with
      * the same argument list as the present function.
+     *
      */
     void
     reinit(const size_type m, const size_type n);
@@ -79,6 +82,7 @@ namespace PETScWrappers
      * Return a reference to the MPI communicator object in use with this
      * matrix. Since this is a sequential matrix, it returns the MPI_COMM_SELF
      * communicator.
+     *
      */
     virtual const MPI_Comm &
     get_mpi_communicator() const override;
@@ -88,12 +92,13 @@ namespace PETScWrappers
      * Do the actual work for the respective reinit() function and the
      * matching constructor, i.e. create a matrix. Getting rid of the previous
      * matrix is left to the caller.
+     *
      */
     void
     do_reinit(const size_type m, const size_type n);
   };
 
-  /*@}*/
+   /*@}*/ 
 } // namespace PETScWrappers
 
 
@@ -102,4 +107,4 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_PETSC
 
 #endif
-/*---------------------------- petsc_full_matrix.h --------------------------*/
+ /*---------------------------- petsc_full_matrix.h --------------------------*/ 

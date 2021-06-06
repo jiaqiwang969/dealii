@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
 //
@@ -34,6 +34,7 @@ namespace Particles
    * A class that is used to iterate over particles. Together with the
    * ParticleAccessor class this is used to hide the internal implementation
    * of the particle class and the particle container.
+   *
    */
   template <int dim, int spacedim = dim>
   class ParticleIterator
@@ -41,12 +42,14 @@ namespace Particles
   public:
     /**
      * Empty constructor. Such an object is not usable!
+     *
      */
     ParticleIterator() = default;
 
     /**
      * Constructor of the iterator. Takes a reference to the particle
      * container, and an iterator to the cell-particle pair.
+     *
      */
     ParticleIterator(
       const std::multimap<internal::LevelInd, Particle<dim, spacedim>> &map,
@@ -55,53 +58,60 @@ namespace Particles
         &particle);
 
     /**
-     * Dereferencing operator, returns a reference to an accessor. Usage is thus
-     * like <tt>(*i).get_id ();</tt>
+     * Dereferencing operator, returns a reference to an accessor. Usage is
+     * thus     like <tt>(*i).get_id ();</tt>
+     *
      */
     const ParticleAccessor<dim, spacedim> &operator*() const;
 
     /**
-     * Dereferencing operator, non-@p const version.
+     * Dereferencing operator, non-  @p const   version.
+     *
      */
     ParticleAccessor<dim, spacedim> &operator*();
 
     /**
      * Dereferencing operator, returns a pointer of the particle pointed to.
-     * Usage is thus like <tt>i->get_id ();</tt>
+     * Usage is thus like <tt>i->get_id ();</tt>         There is a   @p const
+     * and a non-  @p const   version.
      *
-     * There is a @p const and a non-@p const version.
      */
     const ParticleAccessor<dim, spacedim> *operator->() const;
 
     /**
-     * Dereferencing operator, non-@p const version.
+     * Dereferencing operator, non-  @p const   version.
+     *
      */
     ParticleAccessor<dim, spacedim> *operator->();
 
     /**
      * Compare for equality.
+     *
      */
     bool
     operator==(const ParticleIterator<dim, spacedim> &) const;
 
     /**
      * Compare for inequality.
+     *
      */
     bool
     operator!=(const ParticleIterator<dim, spacedim> &) const;
 
     /**
-     * Prefix <tt>++</tt> operator: <tt>++iterator</tt>. This operator advances
-     * the iterator to the next element and returns a reference to
-     * <tt>*this</tt>.
+     * Prefix <tt>++</tt> operator: <tt>++iterator</tt>. This operator
+     * advances     the iterator to the next element and returns a reference
+     * to     <tt>*this</tt>.
+     *
      */
     ParticleIterator &
     operator++();
 
     /**
-     * Postfix <tt>++</tt> operator: <tt>iterator++</tt>. This operator advances
-     * the iterator to the next element, but returns an iterator to the element
-     * previously pointed to.
+     * Postfix <tt>++</tt> operator: <tt>iterator++</tt>. This operator
+     * advances     the iterator to the next element, but returns an iterator
+     * to the element     previously pointed to.
+     *
      */
     ParticleIterator
     operator++(int);
@@ -110,14 +120,16 @@ namespace Particles
      * Prefix <tt>\--</tt> operator: <tt>\--iterator</tt>. This operator moves
      * the iterator to the previous element and returns a reference to
      * <tt>*this</tt>.
+     *
      */
     ParticleIterator &
     operator--();
 
     /**
-     * Postfix <tt>\--</tt> operator: <tt>iterator\--</tt>. This operator moves
-     * the iterator to the previous element, but returns an iterator to the
-     * element previously pointed to.
+     * Postfix <tt>\--</tt> operator: <tt>iterator\--</tt>. This operator
+     * moves     the iterator to the previous element, but returns an iterator
+     * to the     element previously pointed to.
+     *
      */
     ParticleIterator
     operator--(int);
@@ -126,6 +138,7 @@ namespace Particles
      * Mark the class as bidirectional iterator and declare some alias which
      * are standard for iterators and are used by algorithms to enquire about
      * the specifics of the iterators they work on.
+     *
      */
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type        = ParticleAccessor<dim, spacedim>;
@@ -136,6 +149,7 @@ namespace Particles
   private:
     /**
      * The accessor to the actual particle.
+     *
      */
     ParticleAccessor<dim, spacedim> accessor;
   };

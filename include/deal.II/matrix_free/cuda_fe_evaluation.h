@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
 //
@@ -35,6 +35,8 @@ DEAL_II_NAMESPACE_OPEN
 
 /**
  * Namespace for the CUDA wrappers
+ *
+ *
  */
 namespace CUDAWrappers
 {
@@ -43,6 +45,7 @@ namespace CUDAWrappers
     /**
      * Compute the dof/quad index for a given thread id, dimension, and
      * number of points in each space dimensions.
+     *
      */
     template <int dim, int n_points_1d>
     __device__ inline unsigned int
@@ -60,27 +63,19 @@ namespace CUDAWrappers
   /**
    * This class provides all the functions necessary to evaluate functions at
    * quadrature points and cell integrations. In functionality, this class is
-   * similar to FEValues<dim>.
-   *
-   * This class has five template arguments:
-   *
-   * @tparam dim Dimension in which this class is to be used
-   *
-   * @tparam fe_degree Degree of the tensor prodict finite element with fe_degree+1
-   * degrees of freedom per coordinate direction
-   *
-   * @tparam n_q_points_1d Number of points in the quadrature formular in 1D,
-   * defaults to fe_degree+1
-   *
-   * @tparam n_components Number of vector components when solving a system of
-   * PDEs. If the same operation is applied to several components of a PDE (e.g.
-   * a vector Laplace equation), they can be applied simultaneously with one
-   * call (and often more efficiently). Defaults to 1
-   *
-   * @tparam Number Number format, @p double or @p float. Defaults to @p
-   * double.
-   *
+   * similar to FEValues<dim>.     This class has five template arguments:
+   * @tparam   dim Dimension in which this class is to be used       @tparam
+   * fe_degree Degree of the tensor prodict finite element with fe_degree+1
+   * degrees of freedom per coordinate direction       @tparam   n_q_points_1d
+   * Number of points in the quadrature formular in 1D,   defaults to
+   * fe_degree+1       @tparam   n_components Number of vector components when
+   * solving a system of   PDEs. If the same operation is applied to several
+   * components of a PDE (e.g.   a vector Laplace equation), they can be
+   * applied simultaneously with one   call (and often more efficiently).
+   * Defaults to 1       @tparam   Number Number format,   @p double   or   @p
+   * float.   Defaults to   @p     double.
    * @ingroup CUDAWrappers
+   *
    */
   template <int dim,
             int fe_degree,
@@ -92,43 +87,51 @@ namespace CUDAWrappers
   public:
     /**
      * An alias for scalar quantities.
+     *
      */
     using value_type = Number;
 
     /**
      * An alias for vectorial quantities.
+     *
      */
     using gradient_type = Tensor<1, dim, Number>;
 
     /**
      * An alias to kernel specific information.
+     *
      */
     using data_type = typename MatrixFree<dim, Number>::Data;
 
     /**
      * Dimension.
+     *
      */
     static constexpr unsigned int dimension = dim;
 
     /**
      * Number of components.
+     *
      */
     static constexpr unsigned int n_components = n_components_;
 
     /**
      * Number of quadrature points per cell.
+     *
      */
     static constexpr unsigned int n_q_points =
       Utilities::pow(n_q_points_1d, dim);
 
     /**
      * Number of tensor degrees of freedoms per cell.
+     *
      */
     static constexpr unsigned int tensor_dofs_per_cell =
       Utilities::pow(fe_degree + 1, dim);
 
     /**
      * Constructor.
+     *
      */
     __device__
     FEEvaluation(const unsigned int       cell_id,
@@ -136,21 +139,25 @@ namespace CUDAWrappers
                  SharedData<dim, Number> *shdata);
 
     /**
-     * For the vector @p src, read out the values on the degrees of freedom of
-     * the current cell, and store them internally. Similar functionality as
-     * the function DoFAccessor::get_interpolated_dof_values when no
-     * constraints are present, but it also includes constraints from hanging
-     * nodes, so once can see it as a similar function to
-     * AffineConstraints::read_dof_valuess as well.
+     * For the vector   @p src,   read out the values on the degrees of
+     * freedom of     the current cell, and store them internally. Similar
+     * functionality as     the function
+     * DoFAccessor::get_interpolated_dof_values   when no     constraints are
+     * present, but it also includes constraints from hanging     nodes, so
+     * once can see it as a similar function to
+     * AffineConstraints::read_dof_valuess   as well.
+     *
      */
     __device__ void
     read_dof_values(const Number *src);
 
     /**
      * Take the value stored internally on dof values of the current cell and
-     * sum them into the vector @p dst. The function also applies constraints
-     * during the write operation. The functionality is hence similar to the
-     * function AffineConstraints::distribute_local_to_global.
+     * sum them into the vector   @p dst.   The function also applies
+     * constraints     during the write operation. The functionality is hence
+     * similar to the     function
+     * AffineConstraints::distribute_local_to_global.
+     *
      */
     __device__ void
     distribute_local_to_global(Number *dst) const;
@@ -160,7 +167,8 @@ namespace CUDAWrappers
      * at the DoF values in the input vector at the quadrature points on the
      * unit cell. The function arguments specify which parts shall actually be
      * computed. This function needs to be called before the functions
-     * @p get_value() or @p get_gradient() give useful information.
+     * @p get_value()   or   @p get_gradient()   give useful information.
+     *
      */
     __device__ void
     evaluate(const bool evaluate_val, const bool evaluate_grad);
@@ -169,8 +177,9 @@ namespace CUDAWrappers
      * This function takes the values and/or gradients that are stored on
      * quadrature points, tests them by all the basis functions/gradients on
      * the cell and performs the cell integration. The two function arguments
-     * @p integrate_val and @p integrate_grad are used to enable/disable some
-     * of the values or the gradients.
+     * @p integrate_val   and   @p integrate_grad   are used to enable/disable
+     * some     of the values or the gradients.
+     *
      */
     __device__ void
     integrate(const bool integrate_val, const bool integrate_grad);
@@ -178,6 +187,7 @@ namespace CUDAWrappers
     /**
      * Same as above, except that the quadrature point is computed from thread
      * id.
+     *
      */
     __device__ value_type
                get_value() const;
@@ -185,6 +195,7 @@ namespace CUDAWrappers
     /**
      * Same as above, except that the local dof index is computed from the
      * thread id.
+     *
      */
     __device__ value_type
                get_dof_value() const;
@@ -192,6 +203,7 @@ namespace CUDAWrappers
     /**
      * Same as above, except that the quadrature point is computed from the
      * thread id.
+     *
      */
     __device__ void
     submit_value(const value_type &val_in);
@@ -199,6 +211,7 @@ namespace CUDAWrappers
     /**
      * Same as above, except that the local dof index is computed from the
      * thread id.
+     *
      */
     __device__ void
     submit_dof_value(const value_type &val_in);
@@ -206,6 +219,7 @@ namespace CUDAWrappers
     /**
      * Same as above, except that the quadrature point is computed from the
      * thread id.
+     *
      */
     __device__ gradient_type
                get_gradient() const;
@@ -213,20 +227,19 @@ namespace CUDAWrappers
     /**
      * Same as above, except that the quadrature point is computed from the
      * thread id.
+     *
      */
     __device__ void
     submit_gradient(const gradient_type &grad_in);
 
     // clang-format off
     /**
-     * Same as above, except that the functor @p func only takes a single input
-     * argument (fe_eval) and computes the quadrature point from the thread id.
+     * Same as above, except that the functor   @p func   only takes a single
+     * input     argument (fe_eval) and computes the quadrature point from the
+     * thread id.           @p func   needs to define     \code     __device__
+     * void operator()(         CUDAWrappers::FEEvaluation<dim,   fe_degree,
+     * n_q_points_1d, n_components, Number>fe_eval) const;     \endcode
      *
-     * @p func needs to define
-     * \code
-     * __device__ void operator()(
-     *   CUDAWrappers::FEEvaluation<dim, fe_degree, n_q_points_1d, n_components, Number> *fe_eval) const;
-     * \endcode
      */
     // clang-format on
     template <typename Functor>

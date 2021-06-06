@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2021 by the deal.II authors
 //
@@ -27,31 +27,29 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup febase */
-/*@{*/
+ /*!@addtogroup febase */ 
+ /*@{*/ 
 
 /**
- * @warning This class is not sufficiently tested yet!
+ * @warning   This class is not sufficiently tested yet! This class gives a
+ * unified framework for the implementation of FiniteElement classes only
+ * located on faces of the mesh. They are based on polynomial spaces like the
+ * TensorProductPolynomials or a PolynomialSpace classes. Every class that
+ * implements the following functions can be used as template parameter
+ * PolynomialType.
  *
- * This class gives a unified framework for the implementation of
- * FiniteElement classes only located on faces of the mesh. They are based on
- * polynomial spaces like the TensorProductPolynomials or a PolynomialSpace
- * classes.
- *
- * Every class that implements the following functions can be used as template
- * parameter PolynomialType.
  *
  * @code
  * double compute_value (const unsigned int i,
- *                       const Point<dim> &p) const;
+ *                     const Point<dim> &p) const;
  * @endcode
  * Example classes are TensorProductPolynomials, PolynomialSpace or
- * PolynomialsP.
+ * PolynomialsP. This class is not a fully implemented FiniteElement class.
+ * Instead there are several pure virtual functions declared in the
+ * FiniteElement class which cannot be implemented by this class but are left
+ * for implementation in derived classes.
  *
- * This class is not a fully implemented FiniteElement class. Instead there
- * are several pure virtual functions declared in the FiniteElement class
- * which cannot be implemented by this class but are left for implementation
- * in derived classes.
+ *
  */
 template <class PolynomialType,
           int dim      = PolynomialType::dimension + 1,
@@ -61,6 +59,7 @@ class FE_PolyFace : public FiniteElement<dim, spacedim>
 public:
   /**
    * Constructor.
+   *
    */
   FE_PolyFace(const PolynomialType &        poly_space,
               const FiniteElementData<dim> &fe_data,
@@ -69,6 +68,7 @@ public:
   /**
    * Return the polynomial degree of this finite element, i.e. the value
    * passed to the constructor.
+   *
    */
   unsigned int
   get_degree() const;
@@ -78,11 +78,8 @@ public:
   requires_update_flags(const UpdateFlags update_flags) const override;
 
 protected:
-  /*
-   * NOTE: The following functions have their definitions inlined into the class
-   * declaration because we otherwise run into a compiler error with MS Visual
-   * Studio.
-   */
+  /*   NOTE: The following functions have their definitions inlined into the class   declaration because we otherwise run into a compiler error with MS Visual   Studio.  
+* */
 
 
   virtual std::unique_ptr<
@@ -231,10 +228,9 @@ protected:
       &output_data) const override;
 
   /**
-   * Fields of cell-independent data.
+   * Fields of cell-independent data.     For information about the general
+   * purpose of this class, see the   documentation of the base class.
    *
-   * For information about the general purpose of this class, see the
-   * documentation of the base class.
    */
   class InternalData : public FiniteElement<dim, spacedim>::InternalDataBase
   {
@@ -242,15 +238,13 @@ protected:
     /**
      * Array with shape function values in quadrature points on one face.
      * There is one row for each shape function, containing values for each
-     * quadrature point.
+     * quadrature point.         In this array, we store the values of the
+     * shape function in the     quadrature points on one face of the unit
+     * cell. Since these values do     not change under transformation to the
+     * real cell, we only need to copy     them over when visiting a concrete
+     * cell.         In particular, we can simply copy the same set of values
+     * to each of the     faces.
      *
-     * In this array, we store the values of the shape function in the
-     * quadrature points on one face of the unit cell. Since these values do
-     * not change under transformation to the real cell, we only need to copy
-     * them over when visiting a concrete cell.
-     *
-     * In particular, we can simply copy the same set of values to each of the
-     * faces.
      */
     std::vector<std::vector<double>> shape_values;
   };
@@ -258,11 +252,12 @@ protected:
   /**
    * The polynomial space. Its type is given by the template parameter
    * PolynomialType.
+   *
    */
   PolynomialType poly_space;
 };
 
-/*@}*/
+ /*@}*/ 
 
 DEAL_II_NAMESPACE_CLOSE
 

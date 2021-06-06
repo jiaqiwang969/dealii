@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
 //
@@ -17,7 +17,7 @@
 #define dealii_composition_manifold_h
 
 
-/*----------------------------   composition_manifold.h     ------------*/
+ /*----------------------------   composition_manifold.h     ------------*/ 
 
 #include <deal.II/base/config.h>
 
@@ -36,34 +36,30 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * CompositionManifold.  Take two ChartManifold objects, and make
- * their composition. The CompositionManifold object is a
- * ChartManifold going from the chart of the first ChartManifold to
- * the embedding space of the second ChartManifold. If the first
- * ChartManifold is periodic, so is the resulting ChartManifold, with
- * the same periodicity. Periodicity on the second ChartManifold is not
- * allowed, and the constructor will throw an exception if the second
- * Manifold is periodic.
+ * CompositionManifold.  Take two ChartManifold objects, and make their
+ * composition. The CompositionManifold object is a ChartManifold going from
+ * the chart of the first ChartManifold to the embedding space of the second
+ * ChartManifold. If the first ChartManifold is periodic, so is the resulting
+ * ChartManifold, with the same periodicity. Periodicity on the second
+ * ChartManifold is not allowed, and the constructor will throw an exception
+ * if the second Manifold is periodic. This class only works for dim <=
+ * chartdim <= intermediate_spacedim <= spacedim. If you try to instantiate
+ * anything different, an Exception will be thrown in one of the ChartManifold
+ * classes that violates this condition. Given the ChartManifold F and the
+ * ChartManifold G, this class represents the composition of G after F. The
+ * template parameters have the following meaning:
+ * @tparam   dim The dimension of the resulting ChartManifold   @tparam
+ * spacedim The space dimension of the resulting ChartManifold   @tparam
+ * chartdim The chart dimension of the resulting ChartManifold   @tparam
+ * intermediate_dim The space dimension of the first ChartManifold   @tparam
+ * dim1 The dimension of the first ChartManifold, which coincides also with
+ * the chart dimension of the second ChartManifold   @tparam   dim2 The
+ * dimension of the second ChartManifold
  *
- * This class only works for dim <= chartdim <= intermediate_spacedim
- * <= spacedim. If you try to instantiate anything different, an
- * Exception will be thrown in one of the ChartManifold classes that
- * violates this condition.
- *
- * Given the ChartManifold F and the ChartManifold G, this class
- * represents the composition of G after F.
- *
- * The template parameters have the following meaning:
- *
- * @tparam dim The dimension of the resulting ChartManifold
- * @tparam spacedim The space dimension of the resulting ChartManifold
- * @tparam chartdim The chart dimension of the resulting ChartManifold
- * @tparam intermediate_dim The space dimension of the first ChartManifold
- * @tparam dim1 The dimension of the first ChartManifold, which coincides also
- * with the chart dimension of the second ChartManifold
- * @tparam dim2 The dimension of the second ChartManifold
  *
  * @ingroup manifold
+ *
+ *
  */
 template <int dim,
           int spacedim         = dim,
@@ -76,35 +72,40 @@ class CompositionManifold : public ChartManifold<dim, spacedim, chartdim>
 public:
   /**
    * Construct the composition of the two given manifolds.
+   *
    */
   CompositionManifold(const ChartManifold<dim1, intermediate_dim, chartdim> &F,
                       const ChartManifold<dim2, spacedim, intermediate_dim> &G);
 
   /**
    * Make a clone of this Manifold.
+   *
    */
   virtual std::unique_ptr<Manifold<dim, spacedim>>
   clone() const override;
 
   /**
    * Pull back the given point in spacedim to the Euclidean chartdim
-   * dimensional space. This function calls the pull_back() function
-   * of G, and then the pull_back() function of F.
+   * dimensional space. This function calls the pull_back() function   of G,
+   * and then the pull_back() function of F.
+   *
    */
   virtual Point<chartdim>
   pull_back(const Point<spacedim> &space_point) const;
 
 
   /**
-   * Push forward the chartdim dimensional point to a spacedim
-   * Euclidean point. The function calls first the push_forward() of
-   * F, and then the push_forward() of G.
+   * Push forward the chartdim dimensional point to a spacedim   Euclidean
+   * point. The function calls first the push_forward() of   F, and then the
+   * push_forward() of G.
+   *
    */
   virtual Point<spacedim>
   push_forward(const Point<chartdim> &chart_point) const;
 
   /**
    * Return the derivative of the composition of G after F.
+   *
    */
   virtual DerivativeForm<1, chartdim, spacedim>
   push_forward_gradient(const Point<chartdim> &chart_point) const;
@@ -112,6 +113,7 @@ public:
 private:
   /**
    * The first ChartManifold.
+   *
    */
   SmartPointer<
     const ChartManifold<dim1, intermediate_dim, chartdim>,
@@ -121,6 +123,7 @@ private:
 
   /**
    * The second ChartManifold.
+   *
    */
   SmartPointer<
     const ChartManifold<dim2, spacedim, intermediate_dim>,
@@ -129,7 +132,7 @@ private:
 };
 
 
-/*------------------Template Implementations------------------------*/
+ /*------------------Template Implementations------------------------*/ 
 
 template <int dim,
           int spacedim,

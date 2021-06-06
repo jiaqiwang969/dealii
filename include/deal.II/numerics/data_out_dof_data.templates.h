@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
 //
@@ -87,6 +87,7 @@ namespace internal
     /**
      * Generate evaluation points on a simplex with arbitrary number of
      * subdivisions.
+     *
      */
     template <int dim>
     inline std::vector<Point<dim>>
@@ -104,22 +105,17 @@ namespace internal
     /**
      * Helper function to create evaluation points recursively with
      * subdivisions=0,1,2 being the base case:
-     *                                        +
-     *                                        |\
-     *                            +           +-+
-     *                            |\          |\|\
-     *                  +         +-+         +-+-+
-     *                  |\        |\|\        |\|\|\
-     *          +       +-+       +-+-+       +-+-+-+
-     *          |\      |\|\      |\|\|\      |\|\|\|\
-     *    +     +-+     +-+-+     +-+-+-+     +-+-+-+-+
+     * +                                            |\
+     * +           +-+                                |\         |\|\
+     * +         +-+         +-+-+                      |\       |\|\
+     * |\|\|\             +       +-+       +-+-+       +-+-+-+
+     * |\     |\|\     |\|\|\     |\|\|\|\       +     +-+     +-+-+
+     * +-+-+-+     +-+-+-+-+            0      1        2          3
+     * 4        ^      ^                   |            |        |      |
+     * |            |        +--------------------------+            |
+     * |                                |
+     * +--------------------------------+
      *
-     *    0      1        2          3            4
-     *    ^      ^                   |            |
-     *    |      |                   |            |
-     *    +--------------------------+            |
-     *           |                                |
-     *           +--------------------------------+
      */
     inline void
     generate_simplex_evaluation_points_recursively(
@@ -182,6 +178,7 @@ namespace internal
 
     /**
      * Specialization for triangles.
+     *
      */
     template <>
     inline std::vector<Point<2>>
@@ -203,6 +200,7 @@ namespace internal
      * Set up vectors of FEValues and FEFaceValues needed inside of
      * ParallelDataBase and return the maximum number of quadrature points
      * needed to allocate enough memory for the scratch data.
+     *
      */
     template <int dim, int spacedim>
     unsigned int
@@ -272,7 +270,7 @@ namespace internal
             {
               quadrature_wedge = std::make_unique<Quadrature<dim>>(
                 FE_WedgeP<dim, spacedim>(
-                  1 /*note: vtk only supports linear wedges*/)
+                  1  /*note: vtk only supports linear wedges*/ )
                   .get_unit_support_points());
             }
 
@@ -534,6 +532,7 @@ namespace internal
     /**
      * In a WorkStream context, use this function to append the patch computed
      * by the parallel stage to the array of patches.
+     *
      */
     template <int dim, int spacedim>
     void
@@ -555,6 +554,7 @@ namespace internal
      * Extract the specified component of a number. This template is used when
      * the given value is assumed to be a real scalar, so asking for the real
      * part is the only valid choice for the second argument.
+     *
      */
     template <typename NumberType>
     double
@@ -576,6 +576,7 @@ namespace internal
     /**
      * Extract the specified component of a number. This template is used when
      * the given value is a complex number
+     *
      */
     template <typename NumberType>
     double
@@ -617,14 +618,17 @@ namespace internal
 
 
     /**
-     * Helper class templated on vector type to allow different implementations
-     * to extract information from a vector.
+     * Helper class templated on vector type to allow different
+     * implementations     to extract information from a vector.
+     *
      */
     template <typename VectorType>
     struct VectorHelper
     {
       /**
-       * extract the @p indices from @p vector and put them into @p values.
+       * extract the   @p indices   from   @p vector   and put them into   @p
+       * values.
+       *
        */
       static void
       extract(const VectorType &                          vector,
@@ -653,10 +657,10 @@ namespace internal
     template <>
     inline void
     VectorHelper<LinearAlgebra::EpetraWrappers::Vector>::extract(
-      const LinearAlgebra::EpetraWrappers::Vector & /*vector*/,
-      const std::vector<types::global_dof_index> & /*indices*/,
-      const ComponentExtractor /*extract_component*/,
-      std::vector<double> & /*values*/)
+      const LinearAlgebra::EpetraWrappers::Vector &  /*vector*/ ,
+      const std::vector<types::global_dof_index> &  /*indices*/ ,
+      const ComponentExtractor  /*extract_component*/ ,
+      std::vector<double> &  /*values*/ )
     {
       // TODO: we don't have element access
       Assert(false, ExcNotImplemented());
@@ -669,10 +673,10 @@ namespace internal
     template <>
     inline void
     VectorHelper<LinearAlgebra::TpetraWrappers::Vector<double>>::extract(
-      const LinearAlgebra::TpetraWrappers::Vector<double> & /*vector*/,
-      const std::vector<types::global_dof_index> & /*indices*/,
-      const ComponentExtractor /*extract_component*/,
-      std::vector<double> & /*values*/)
+      const LinearAlgebra::TpetraWrappers::Vector<double> &  /*vector*/ ,
+      const std::vector<types::global_dof_index> &  /*indices*/ ,
+      const ComponentExtractor  /*extract_component*/ ,
+      std::vector<double> &  /*values*/ )
     {
       // TODO: we don't have element access
       Assert(false, ExcNotImplemented());
@@ -681,10 +685,10 @@ namespace internal
     template <>
     inline void
     VectorHelper<LinearAlgebra::TpetraWrappers::Vector<float>>::extract(
-      const LinearAlgebra::TpetraWrappers::Vector<float> & /*vector*/,
-      const std::vector<types::global_dof_index> & /*indices*/,
-      const ComponentExtractor /*extract_component*/,
-      std::vector<double> & /*values*/)
+      const LinearAlgebra::TpetraWrappers::Vector<float> &  /*vector*/ ,
+      const std::vector<types::global_dof_index> &  /*indices*/ ,
+      const ComponentExtractor  /*extract_component*/ ,
+      std::vector<double> &  /*values*/ )
     {
       // TODO: we don't have element access
       Assert(false, ExcNotImplemented());
@@ -768,6 +772,7 @@ namespace internal
     /**
      * Class that stores a pointer to a vector of type equal to the template
      * argument, and provides the functions to extract data from it.
+     *
      */
     template <int dim, int spacedim, typename VectorType>
     class DataEntry : public DataEntryBase<dim, spacedim>
@@ -777,6 +782,7 @@ namespace internal
        * Constructor. Give a list of names for the individual components of
        * the vector and their interpretation as scalar or vector data. This
        * constructor assumes that no postprocessor is going to be used.
+       *
        */
       DataEntry(const DoFHandler<dim, spacedim> *dofs,
                 const VectorType *               data,
@@ -789,6 +795,7 @@ namespace internal
        * Constructor when a data postprocessor is going to be used. In that
        * case, the names and vector declarations are going to be acquired from
        * the postprocessor.
+       *
        */
       DataEntry(const DoFHandler<dim, spacedim> *  dofs,
                 const VectorType *                 data,
@@ -797,6 +804,7 @@ namespace internal
       /**
        * Assuming that the stored vector is a cell vector, extract the given
        * element from it.
+       *
        */
       virtual double
       get_cell_data_value(
@@ -806,6 +814,7 @@ namespace internal
       /**
        * Given a FEValuesBase object, extract the values on the present cell
        * from the vector we actually store.
+       *
        */
       virtual void
       get_function_values(const FEValuesBase<dim, spacedim> &fe_patch_values,
@@ -816,6 +825,7 @@ namespace internal
        * Given a FEValuesBase object, extract the values on the present cell
        * from the vector we actually store. This function does the same as the
        * one above but for vector-valued finite elements.
+       *
        */
       virtual void
       get_function_values(const FEValuesBase<dim, spacedim> &fe_patch_values,
@@ -826,6 +836,7 @@ namespace internal
       /**
        * Given a FEValuesBase object, extract the gradients on the present
        * cell from the vector we actually store.
+       *
        */
       virtual void
       get_function_gradients(
@@ -837,6 +848,7 @@ namespace internal
        * Given a FEValuesBase object, extract the gradients on the present
        * cell from the vector we actually store. This function does the same
        * as the one above but for vector-valued finite elements.
+       *
        */
       virtual void
       get_function_gradients(const FEValuesBase<dim, spacedim> &fe_patch_values,
@@ -847,6 +859,7 @@ namespace internal
       /**
        * Given a FEValuesBase object, extract the second derivatives on the
        * present cell from the vector we actually store.
+       *
        */
       virtual void
       get_function_hessians(
@@ -858,6 +871,7 @@ namespace internal
        * Given a FEValuesBase object, extract the second derivatives on the
        * present cell from the vector we actually store. This function does
        * the same as the one above but for vector-valued finite elements.
+       *
        */
       virtual void
       get_function_hessians(const FEValuesBase<dim, spacedim> &fe_patch_values,
@@ -866,14 +880,17 @@ namespace internal
                               &patch_hessians_system) const override;
 
       /**
-       * Return whether the data represented by (a derived class of) this object
-       * represents a complex-valued (as opposed to real-valued) information.
+       * Return whether the data represented by (a derived class of) this
+       * object       represents a complex-valued (as opposed to real-valued)
+       * information.
+       *
        */
       virtual bool
       is_complex_valued() const override;
 
       /**
        * Clear all references to the vectors.
+       *
        */
       virtual void
       clear() override;
@@ -881,6 +898,7 @@ namespace internal
       /**
        * Determine an estimate for the memory consumption (in bytes) of this
        * object.
+       *
        */
       virtual std::size_t
       memory_consumption() const override;
@@ -889,6 +907,7 @@ namespace internal
       /**
        * Pointer to the data vector. Note that ownership of the vector pointed
        * to remains with the caller of this class.
+       *
        */
       const VectorType *vector;
     };
@@ -1248,6 +1267,7 @@ namespace internal
      * Data will use level-DoF indices to look up in a
      * MGLevelObject<VectorType> given on the specific level instead of
      * interpolating data to coarser cells.
+     *
      */
     template <int dim, int spacedim, typename VectorType>
     class MGDataEntry : public DataEntryBase<dim, spacedim>
@@ -1279,6 +1299,7 @@ namespace internal
        * Given a FEValuesBase object, extract the values on the present cell
        * from the vector we actually store. This function does the same as the
        * one above but for vector-valued finite elements.
+       *
        */
       virtual void
       get_function_values(const FEValuesBase<dim, spacedim> &fe_patch_values,
@@ -1289,12 +1310,13 @@ namespace internal
       /**
        * Given a FEValuesBase object, extract the gradients on the present
        * cell from the vector we actually store.
+       *
        */
       virtual void
       get_function_gradients(
-        const FEValuesBase<dim, spacedim> & /*fe_patch_values*/,
-        const ComponentExtractor /*extract_component*/,
-        std::vector<Tensor<1, spacedim>> & /*patch_gradients*/) const override
+        const FEValuesBase<dim, spacedim> &  /*fe_patch_values*/ ,
+        const ComponentExtractor  /*extract_component*/ ,
+        std::vector<Tensor<1, spacedim>> &  /*patch_gradients*/ ) const override
       {
         Assert(false, ExcNotImplemented());
       }
@@ -1303,13 +1325,14 @@ namespace internal
        * Given a FEValuesBase object, extract the gradients on the present
        * cell from the vector we actually store. This function does the same
        * as the one above but for vector-valued finite elements.
+       *
        */
       virtual void
       get_function_gradients(
-        const FEValuesBase<dim, spacedim> & /*fe_patch_values*/,
-        const ComponentExtractor /*extract_component*/,
+        const FEValuesBase<dim, spacedim> &  /*fe_patch_values*/ ,
+        const ComponentExtractor  /*extract_component*/ ,
         std::vector<std::vector<Tensor<1, spacedim>>>
-          & /*patch_gradients_system*/) const override
+          &  /*patch_gradients_system*/ ) const override
       {
         Assert(false, ExcNotImplemented());
       }
@@ -1318,12 +1341,13 @@ namespace internal
       /**
        * Given a FEValuesBase object, extract the second derivatives on the
        * present cell from the vector we actually store.
+       *
        */
       virtual void
       get_function_hessians(
-        const FEValuesBase<dim, spacedim> & /*fe_patch_values*/,
-        const ComponentExtractor /*extract_component*/,
-        std::vector<Tensor<2, spacedim>> & /*patch_hessians*/) const override
+        const FEValuesBase<dim, spacedim> &  /*fe_patch_values*/ ,
+        const ComponentExtractor  /*extract_component*/ ,
+        std::vector<Tensor<2, spacedim>> &  /*patch_hessians*/ ) const override
       {
         Assert(false, ExcNotImplemented());
       }
@@ -1332,20 +1356,23 @@ namespace internal
        * Given a FEValuesBase object, extract the second derivatives on the
        * present cell from the vector we actually store. This function does
        * the same as the one above but for vector-valued finite elements.
+       *
        */
       virtual void
       get_function_hessians(
-        const FEValuesBase<dim, spacedim> & /*fe_patch_values*/,
-        const ComponentExtractor /*extract_component*/,
+        const FEValuesBase<dim, spacedim> &  /*fe_patch_values*/ ,
+        const ComponentExtractor  /*extract_component*/ ,
         std::vector<std::vector<Tensor<2, spacedim>>>
-          & /*patch_hessians_system*/) const override
+          &  /*patch_hessians_system*/ ) const override
       {
         Assert(false, ExcNotImplemented());
       }
 
       /**
-       * Return whether the data represented by (a derived class of) this object
-       * represents a complex-valued (as opposed to real-valued) information.
+       * Return whether the data represented by (a derived class of) this
+       * object       represents a complex-valued (as opposed to real-valued)
+       * information.
+       *
        */
       virtual bool
       is_complex_valued() const override
@@ -1360,6 +1387,7 @@ namespace internal
 
       /**
        * Clear all references to the vectors.
+       *
        */
       virtual void
       clear() override
@@ -1370,6 +1398,7 @@ namespace internal
       /**
        * Determine an estimate for the memory consumption (in bytes) of this
        * object.
+       *
        */
       virtual std::size_t
       memory_consumption() const override
@@ -1858,7 +1887,7 @@ DataOut_DoFData<dim, patch_dim, spacedim, patch_spacedim>::get_dataset_names()
         // OK, so we have a complex-valued vector. We then need to go through
         // all components and order them appropriately
         for (unsigned int i = 0; i < input_data->names.size();
-             /* increment of i happens below */)
+              /* increment of i happens below */ )
           {
             switch (input_data->data_component_interpretation[i])
               {
@@ -1958,7 +1987,7 @@ DataOut_DoFData<dim, patch_dim, spacedim, patch_spacedim>::
   unsigned int output_component = 0;
   for (const auto &input_data : dof_data)
     for (unsigned int i = 0; i < input_data->n_output_variables;
-         /* i is updated below */)
+          /* i is updated below */ )
       // see what kind of data we have here. note that for the purpose of the
       // current function all we care about is vector data
       switch (input_data->data_component_interpretation[i])

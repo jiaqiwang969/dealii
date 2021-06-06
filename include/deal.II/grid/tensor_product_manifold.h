@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
 //
@@ -31,34 +31,32 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * @brief Tensor product manifold of two ChartManifolds.
  *
- * This manifold will combine the ChartManifolds @p A and @p B given in the
- * constructor to form a new ChartManifold by building the tensor product
- * $A\otimes B$. The first @p spacedim_A dimensions in the real space and the
- * first @p chartdim_A dimensions of the chart will be given by manifold @p A,
- * while the remaining coordinates are given by @p B. The manifold is to be
- * used by a <tt>Triangulation@<dim, space_dim_A+space_dim_B@></tt>.
- *
+ * @brief Tensor product manifold of two ChartManifolds. This manifold will
+ * combine the ChartManifolds   @p A   and   @p B   given in the constructor
+ * to form a new ChartManifold by building the tensor product   $A\otimes B$
+ * . The first   @p spacedim_A   dimensions in the real space and the first
+ * @p chartdim_A   dimensions of the chart will be given by manifold   @p A,
+ * while the remaining coordinates are given by   @p B.   The manifold is to
+ * be used by a <tt>Triangulation  @<dim,   space_dim_A+space_dim_B  @></tt>.
  * An example usage would be the combination of a SphericalManifold with space
  * dimension 2 and a FlatManifold with space dimension 1 to form a cylindrical
- * manifold.
+ * manifold. pull_back(), push_forward(), and push_forward_gradient() are
+ * implemented by splitting the input argument into inputs for   @p A   and
+ * @p B   according to the given dimensions and applying the corresponding
+ * operations before concatenating the result.
  *
- * pull_back(), push_forward(), and push_forward_gradient() are implemented by
- * splitting the input argument into inputs for @p A and @p B according to the
- * given dimensions and applying the corresponding operations before
- * concatenating the result.
  *
- * @note The dimension arguments @p dim_A and @p dim_B are not used.
+ * @note   The dimension arguments   @p dim_A   and   @p dim_B   are not used.
+ * @tparam   dim Dimension of cells (needs to match first template argument of
+ * the Triangulation to be attached to.   @tparam   dim_A Dimension of
+ * ChartManifold A.   @tparam   spacedim_A Spacial dimension of ChartManifold
+ * A.   @tparam   chartdim_A Chart dimension of ChartManifold A.   @tparam
+ * dim_B Dimension of ChartManifold B.   @tparam   spacedim_B Spacial
+ * dimension of ChartManifold B.   @tparam   chartdim_B Chart dimension of
+ * ChartManifold B.
  *
- * @tparam dim Dimension of cells (needs to match first template argument of
- * the Triangulation to be attached to.
- * @tparam dim_A Dimension of ChartManifold A.
- * @tparam spacedim_A Spacial dimension of ChartManifold A.
- * @tparam chartdim_A Chart dimension of ChartManifold A.
- * @tparam dim_B Dimension of ChartManifold B.
- * @tparam spacedim_B Spacial dimension of ChartManifold B.
- * @tparam chartdim_B Chart dimension of ChartManifold B.
+ *
  */
 template <int dim,
           int dim_A,
@@ -73,17 +71,20 @@ class TensorProductManifold
 public:
   /**
    * The chart dimension is the sum of the chart dimensions of the manifolds
-   * @p A and @p B.
+   * @p A   and   @p B.
+   *
    */
   static const unsigned int chartdim = chartdim_A + chartdim_B;
   /**
    * The space dimension is the sum of the space dimensions of the manifolds
-   * @p A and @p B.
+   * @p A   and   @p B.
+   *
    */
   static const unsigned int spacedim = spacedim_A + spacedim_B;
 
   /**
    * Constructor.
+   *
    */
   TensorProductManifold(
     const ChartManifold<dim_A, spacedim_A, chartdim_A> &manifold_A,
@@ -91,24 +92,28 @@ public:
 
   /**
    * Clone this manifold.
+   *
    */
   virtual std::unique_ptr<Manifold<dim, spacedim_A + spacedim_B>>
   clone() const override;
 
   /**
    * Pull back operation.
+   *
    */
   virtual Point<chartdim>
   pull_back(const Point<spacedim> &space_point) const override;
 
   /**
    * Push forward operation.
+   *
    */
   virtual Point<spacedim>
   push_forward(const Point<chartdim> &chart_point) const override;
 
   /**
    * Gradient.
+   *
    */
   virtual DerivativeForm<1, chartdim, spacedim>
   push_forward_gradient(const Point<chartdim> &chart_point) const override;
@@ -123,7 +128,7 @@ private:
 
 
 
-/*------------------Template Implementations------------------------*/
+ /*------------------Template Implementations------------------------*/ 
 
 
 

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
 //
@@ -44,15 +44,16 @@ namespace hp
 namespace VectorTools
 {
   /**
-   * @name Assembling of right hand sides
+   * @name   Assembling of right hand sides
+   *
    */
   //@{
 
   /**
-   * Create a right hand side vector. Prior content of the given @p rhs_vector
-   * vector is deleted.
+   * Create a right hand side vector. Prior content of the given   @p
+   * rhs_vector     vector is deleted.     See the general documentation of
+   * this namespace for further information.
    *
-   * See the general documentation of this namespace for further information.
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -67,7 +68,8 @@ namespace VectorTools
 
   /**
    * Call the create_right_hand_side() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * <tt>mapping=MappingQGeneric  @<dim@>(1)</tt>.
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -81,6 +83,7 @@ namespace VectorTools
 
   /**
    * Like the previous set of functions, but for hp-objects.
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -95,6 +98,7 @@ namespace VectorTools
 
   /**
    * Like the previous set of functions, but for hp-objects.
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -107,13 +111,8 @@ namespace VectorTools
       AffineConstraints<typename VectorType::value_type>());
 
   /**
-   * Create a right hand side vector from boundary forces. Prior content of
-   * the given @p rhs_vector vector is deleted.
+   * Create a right hand side vector from boundary forces. Prior content of   the given   @p rhs_vector   vector is deleted.     See the general documentation of this namespace for further information.       @see       @ref GlossBoundaryIndicator   "Glossary entry on boundary indicators"
    *
-   * See the general documentation of this namespace for further information.
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -127,11 +126,8 @@ namespace VectorTools
       std::set<types::boundary_id>());
 
   /**
-   * Call the create_boundary_right_hand_side() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * Call the create_boundary_right_hand_side() function, see above, with   <tt>mapping=MappingQGeneric  @<dim@>(1)</tt>.         @see       @ref GlossBoundaryIndicator   "Glossary entry on boundary indicators"
    *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -144,10 +140,8 @@ namespace VectorTools
       std::set<types::boundary_id>());
 
   /**
-   * Same as the set of functions above, but for hp-objects.
+   * Same as the set of functions above, but for hp-objects.       @see       @ref GlossBoundaryIndicator   "Glossary entry on boundary indicators"
    *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -161,12 +155,8 @@ namespace VectorTools
       std::set<types::boundary_id>());
 
   /**
-   * Call the create_boundary_right_hand_side() function, see above, with a
-   * single Q1 mapping as collection. This function therefore will only work
-   * if the only active FE index in use is zero.
+   * Call the create_boundary_right_hand_side() function, see above, with a   single Q1 mapping as collection. This function therefore will only work   if the only active FE index in use is zero.       @see       @ref GlossBoundaryIndicator   "Glossary entry on boundary indicators"
    *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename VectorType>
   void

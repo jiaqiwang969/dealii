@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
 //
@@ -199,8 +199,8 @@ SparseMIC<number>::vmult(Vector<somenumber> &      dst,
 template <typename number>
 template <typename somenumber>
 void
-SparseMIC<number>::Tvmult(Vector<somenumber> & /*dst*/,
-                          const Vector<somenumber> & /*src*/) const
+SparseMIC<number>::Tvmult(Vector<somenumber> &  /*dst*/ ,
+                          const Vector<somenumber> &  /*src*/ ) const
 {
   AssertThrow(false, ExcNotImplemented());
 }

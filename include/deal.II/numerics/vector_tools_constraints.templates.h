@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
 //
@@ -32,6 +32,7 @@ namespace VectorTools
     /**
      * A structure that stores the dim DoF indices that correspond to a
      * vector-valued quantity at a single support point.
+     *
      */
     template <int dim>
     struct VectorDoFTuple
@@ -86,14 +87,12 @@ namespace VectorTools
 
 
     /**
-     * Add the constraint $\vec n \cdot \vec u = inhom$ to the list of
-     * constraints.
+     * Add the constraint   $\vec n \cdot \vec u = inhom$   to the list of
+     * constraints.         Here,   $\vec u$   is represented by the set of
+     * given DoF indices, and       $\vec n$   by the vector specified as the
+     * second argument.         The function does not add constraints if a
+     * degree of freedom is already     constrained in the constraints object.
      *
-     * Here, $\vec u$ is represented by the set of given DoF indices, and
-     * $\vec n$ by the vector specified as the second argument.
-     *
-     * The function does not add constraints if a degree of freedom is already
-     * constrained in the constraints object.
      */
     template <int dim>
     void
@@ -297,15 +296,14 @@ namespace VectorTools
 
 
     /**
-     * Add the constraint $(\vec u-\vec u_\Gamma) \| \vec t$ to the list of
-     * constraints. In 2d, this is a single constraint, in 3d these are two
-     * constraints.
+     * Add the constraint   $(\vec u-\vec u_\Gamma) \| \vec t$   to the list
+     * of     constraints. In 2d, this is a single constraint, in 3d these are
+     * two     constraints.         Here,   $\vec u$   is represented by the
+     * set of given DoF indices, and       $\vec t$   by the vector specified
+     * as the second argument.         The function does not add constraints
+     * if a degree of freedom is already     constrained in the constraints
+     * object.
      *
-     * Here, $\vec u$ is represented by the set of given DoF indices, and
-     * $\vec t$ by the vector specified as the second argument.
-     *
-     * The function does not add constraints if a degree of freedom is already
-     * constrained in the constraints object.
      */
     template <int dim>
     void
@@ -366,6 +364,7 @@ namespace VectorTools
     /**
      * Given a vector, compute a set of dim-1 vectors that are orthogonal to
      * the first one and mutually orthonormal as well.
+     *
      */
     template <int dim>
     void

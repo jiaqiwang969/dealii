@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -42,54 +42,46 @@ DEAL_II_NAMESPACE_OPEN
 namespace Particles
 {
   /**
-   * A namespace for functions offering tools to handle ParticleHandler objects
-   * and their coupling with DoFHandler objects.
+   * A namespace for functions offering tools to handle ParticleHandler
+   * objects   and their coupling with DoFHandler objects.
+   *
    */
   namespace Utilities
   {
     /**
-     * Create an interpolation sparsity pattern for particles.
-     *
-     * Given a triangulation representing the domain $\Omega$, a particle
-     * handler of particles in $\Omega$, and a scalar finite element space
-     * $V(\Omega) = \text{span}\{v_j\}_{j=0}^n$, compute the sparsity pattern
-     * that would be necessary to assemble the matrix
-     * \f[
-     * M_{i,j} \dealcoloneq v_j(x_i) ,
-     * \f]
-     * where $V(\Omega)$ is the finite element space associated with the
-     * `space_dh`, and the index `i` is given by the particle id whose position
-     * is `x_i`.
-     *
-     * In the case of vector valued finite element spaces, the components on
+     * Create an interpolation sparsity pattern for particles.         Given a
+     * triangulation representing the domain   $\Omega$  , a particle
+     * handler of particles in   $\Omega$  , and a scalar finite element space
+     * $V(\Omega) = \text{span}\{v_j\}_{j=0}^n$  , compute the sparsity
+     * pattern     that would be necessary to assemble the matrix     \f[
+     * M_{i,j} \dealcoloneq v_j(x_i) , \f]     where   $V(\Omega)$   is the
+     * finite element space associated with the     `space_dh`, and the index
+     * `i` is given by the particle id whose position     is `x_i`.         In
+     * the case of vector valued finite element spaces, the components on
      * which interpolation must be performed can be selected using a component
-     * mask. Only primitive finite element spaces are supported.
-     *
-     * When selecting more than one component, the resulting sparsity will have
-     * dimension equal to `particle_handler.n_global_particles() *
+     * mask. Only primitive finite element spaces are supported.         When
+     * selecting more than one component, the resulting sparsity will have
+     * dimension equal to `particle_handler.n_global_particles()
      * mask.n_selected_components()` times `space_dh.n_dofs()`, and the
-     * corresponding matrix entries are given by
-     * \f[
-     *  M_{(i*n_comps+k),j} \dealcoloneq v_j(x_i) \cdot e_{comp_j},
-     * \f]
-     * where `comp_j` is the only non zero component of the vector valued basis
-     * function `v_j` (equal to `fe.system_to_component_index(j).first`),
-     * `k` corresponds to its index within the selected components of the mask,
-     * and $e_{comp_j}$ is the unit vector in the direction `comp_j`.
-     *
+     * corresponding matrix entries are given by     \f[ M_{(i*n_comps+k),j}
+     * \dealcoloneq v_j(x_i) \cdot e_{comp_j}, \f]     where `comp_j` is the
+     * only non zero component of the vector valued basis     function `v_j`
+     * (equal to `fe.system_to_component_index(j).first`),     `k` corresponds
+     * to its index within the selected components of the mask,     and
+     * $e_{comp_j}$   is the unit vector in the direction `comp_j`.
      * The `sparsity` is filled by locating the position of the particle with
      * index `i` within the particle handler with respect to the embedding
-     * triangulation $\Omega$, and coupling it with all the local degrees of
-     * freedom specified in the component mask @p space_comps, following the
-     * ordering in which they are selected in the mask @p space_comps.
-     *
-     * If a particle does not fall within $\Omega$, it is ignored, and the
-     * corresponding rows of the sparsity will be empty.
-     *
-     * Constraints of the form supported by the AffineConstraints class may be
-     * supplied with the @p constraints argument. The method
-     * AffineConstraints::add_entries_local_to_global() is used to fill the
+     * triangulation   $\Omega$  , and coupling it with all the local degrees
+     * of     freedom specified in the component mask   @p space_comps,
+     * following the     ordering in which they are selected in the mask   @p
+     * space_comps.           If a particle does not fall within   $\Omega$  ,
+     * it is ignored, and the     corresponding rows of the sparsity will be
+     * empty.         Constraints of the form supported by the
+     * AffineConstraints class may be     supplied with the   @p constraints
+     * argument. The method
+     * AffineConstraints::add_entries_local_to_global()   is used to fill the
      * final sparsity pattern.
+     *
      */
     template <int dim,
               int spacedim,
@@ -105,47 +97,38 @@ namespace Particles
       const ComponentMask &space_comps = ComponentMask());
 
     /**
-     * Create an interpolation matrix for particles.
-     *
-     * Given a triangulation representing the domains $\Omega$, a particle
-     * handler of particles in $\Omega$, and a scalar finite element space
-     * $V(\Omega) = \text{span}\{v_j\}_{j=0}^n$, compute the matrix
-     * \f[
-     * M_{ij} \dealcoloneq v_j(x_i) ,
-     * \f]
-     * where $V(\Omega)$ is the finite element space associated with the
-     * `space_dh`, and the index `i` is given by the particle id whose position
-     * is `x_i`.
-     *
-     * In the case of vector valued finite element spaces, the components on
+     * Create an interpolation matrix for particles.         Given a
+     * triangulation representing the domains   $\Omega$  , a particle
+     * handler of particles in   $\Omega$  , and a scalar finite element space
+     * $V(\Omega) = \text{span}\{v_j\}_{j=0}^n$  , compute the matrix     \f[
+     * M_{ij} \dealcoloneq v_j(x_i) , \f]     where   $V(\Omega)$   is the
+     * finite element space associated with the     `space_dh`, and the index
+     * `i` is given by the particle id whose position     is `x_i`.         In
+     * the case of vector valued finite element spaces, the components on
      * which interpolation must be performed can be selected using a component
-     * mask. Only primitive finite element spaces are supported.
-     *
-     * When selecting more than one component, the resulting sparsity will have
-     * dimension equal to `particle_handler.n_global_particles() *
+     * mask. Only primitive finite element spaces are supported.         When
+     * selecting more than one component, the resulting sparsity will have
+     * dimension equal to `particle_handler.n_global_particles()
      * mask.n_selected_components()` times `space_dh.n_dofs()`, and the
-     * corresponding matrix entries are given by
-     * \f[
-     *  M_{(i*n_comps+k),j} \dealcoloneq v_j(x_i) \cdot e_{comp_j},
-     * \f]
-     * where `comp_j` is the only non zero component of the vector valued basis
-     * function `v_j` (equal to `fe.system_to_component_index(j).first`),
-     * `k` corresponds to its index within the selected components of the mask,
-     * and $e_{comp_j}$ is the unit vector in the direction `comp_j`.
-     *
+     * corresponding matrix entries are given by     \f[ M_{(i*n_comps+k),j}
+     * \dealcoloneq v_j(x_i) \cdot e_{comp_j}, \f]     where `comp_j` is the
+     * only non zero component of the vector valued basis     function `v_j`
+     * (equal to `fe.system_to_component_index(j).first`),     `k` corresponds
+     * to its index within the selected components of the mask,     and
+     * $e_{comp_j}$   is the unit vector in the direction `comp_j`.
      * The matrix is filled by locating the position of the particle with
      * index `i` within the particle handler with respect to the embedding
-     * triangulation $\Omega$, and coupling it with all the local degrees of
-     * freedom specified in the component mask @p space_comps, following the
-     * ordering in which they are selected in the mask @p space_comps.
-     *
-     * If a particle does not fall within $\Omega$, it is ignored, and the
-     * corresponding rows of the matrix will be zero.
-     *
-     * Constraints of the form supported by the AffineConstraints class may be
-     * supplied with the @p constraints argument. The method
-     * AffineConstraints::distribute_local_to_global() is used to distribute
+     * triangulation   $\Omega$  , and coupling it with all the local degrees
+     * of     freedom specified in the component mask   @p space_comps,
+     * following the     ordering in which they are selected in the mask   @p
+     * space_comps.           If a particle does not fall within   $\Omega$  ,
+     * it is ignored, and the     corresponding rows of the matrix will be
+     * zero.         Constraints of the form supported by the
+     * AffineConstraints class may be     supplied with the   @p constraints
+     * argument. The method
+     * AffineConstraints::distribute_local_to_global()   is used to distribute
      * the entries of the matrix to respect the given constraints.
+     *
      */
     template <int dim, int spacedim, typename MatrixType>
     void
@@ -160,24 +143,19 @@ namespace Particles
     /**
      * Given a DoFHandler and a ParticleHandler, interpolate a vector field
      * at the position of the particles. The result is stored in an output
-     * vector whose size corresponds to the number of locally owned particles *
-     * number of active components
+     * vector whose size corresponds to the number of locally owned particles
+     * number of active components           @param[in]   field_dh The DOF
+     * Handler which was used to generate the     field vector that is to be
+     * interpolated.           @param[in]   particle_handler The particle
+     * handler whose particle serve as     the interpolation points.
+     * @param[in]   field_vector The vector of the field to be interpolated.
+     * This     vector must be coherent with the dof_handler provided
+     * @param[in,out]   interpolated_field The interpolated value of the field
+     * at     the position of the particles. The size of the vector must be
+     * n_locally_owned_particles times the n_components           @param[in]
+     * field_comps An optional component mask that decides which     subset of
+     * the vector fields are interpolated
      *
-     * @param[in] field_dh The DOF Handler which was used to generate the
-     * field vector that is to be interpolated.
-     *
-     * @param[in] particle_handler The particle handler whose particle serve as
-     * the interpolation points.
-     *
-     * @param[in] field_vector The vector of the field to be interpolated. This
-     * vector must be coherent with the dof_handler provided
-     *
-     * @param[in,out] interpolated_field The interpolated value of the field at
-     * the position of the particles. The size of the vector must be
-     * n_locally_owned_particles times the n_components
-     *
-     * @param[in] field_comps An optional component mask that decides which
-     * subset of the vector fields are interpolated
      */
     template <int dim,
               int spacedim,

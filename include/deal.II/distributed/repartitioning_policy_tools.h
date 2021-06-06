@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
 //
@@ -27,19 +27,21 @@ DEAL_II_NAMESPACE_OPEN
  * of the new owners of the active locally owned and ghost cells of a
  * Triangulation object. The returned vectors can be used, e.g., in
  * TriangulationDescription::Utilities::create_description_from_triangulation()
- * to create a TriangulationDescription::Description based on a given
- * Triangulation and the predescribed partition, which can be used to
- * set up a parallel::fullydistributed::Triangulation objects.
- *
- * These policies can be also used in context of
- * MGTransferGlobalCoarseningTools::create_geometric_coarsening_sequence() to
- * prescribe arbitrary partitioning in multgrid levels of global coarsening
+ * to create a   TriangulationDescription::Description   based on a given
+ * Triangulation and the predescribed partition, which can be used to set up a
+ * parallel::fullydistributed::Triangulation   objects. These policies can be
+ * also used in context of
+ * MGTransferGlobalCoarseningTools::create_geometric_coarsening_sequence()
+ * to prescribe arbitrary partitioning in multgrid levels of global coarsening
  * multigrid schmeme.
+ *
+ *
  */
 namespace RepartitioningPolicyTools
 {
   /**
    * A base class of a repartitioning policy.
+   *
    */
   template <int dim, int spacedim = dim>
   class Base
@@ -48,6 +50,7 @@ namespace RepartitioningPolicyTools
     /**
      * Return a vector of the new owners of the active locally owned and ghost
      * cells.
+     *
      */
     virtual LinearAlgebra::distributed::Vector<double>
     partition(const Triangulation<dim, spacedim> &tria_coarse_in) const = 0;
@@ -55,8 +58,10 @@ namespace RepartitioningPolicyTools
 
   /**
    * A dummy policy that simply returns an empty vector, which is interpreted
-   * in MGTransferGlobalCoarseningTools::create_geometric_coarsening_sequence()
+   * in
+   * MGTransferGlobalCoarseningTools::create_geometric_coarsening_sequence()
    * in a way that the triangulation is not repartitioned.
+   *
    */
   template <int dim, int spacedim = dim>
   class DefaultPolicy : public Base<dim, spacedim>
@@ -71,6 +76,7 @@ namespace RepartitioningPolicyTools
    * A policy that partitions coarse grids based on a base triangulation
    * according to a first-child policy. The triangulation to be partitioned
    * should be able to be obtained by a sequence of (global) coarsening steps.
+   *
    */
   template <int dim, int spacedim = dim>
   class FirstChildPolicy : public Base<dim, spacedim>
@@ -78,6 +84,7 @@ namespace RepartitioningPolicyTools
   public:
     /**
      * Constructor taking the base (fine) triangulation.
+     *
      */
     FirstChildPolicy(const Triangulation<dim, spacedim> &tria_fine);
 
@@ -88,11 +95,13 @@ namespace RepartitioningPolicyTools
   private:
     /**
      * Number of coarse cells.
+     *
      */
     const unsigned int n_coarse_cells;
 
     /**
      * Number of global levels.
+     *
      */
     const unsigned int n_global_levels;
 
@@ -100,6 +109,7 @@ namespace RepartitioningPolicyTools
      * Index set constructed from the triangulation passed to the constructor.
      * It contains all the cells that would be owned by the current process
      * if the levels would be partitioned according to a first-child policy.
+     *
      */
     IndexSet is_level_partitions;
   };
@@ -107,6 +117,7 @@ namespace RepartitioningPolicyTools
   /**
    * A policy that allows to specify a minimal number of cells per process. If
    * a threshold is reached, processes might be left without cells.
+   *
    */
   template <int dim, int spacedim = dim>
   class MinimalGranularityPolicy : public Base<dim, spacedim>
@@ -114,6 +125,7 @@ namespace RepartitioningPolicyTools
   public:
     /**
      * Constructor taking the minimum number of cells per process.
+     *
      */
     MinimalGranularityPolicy(const unsigned int n_min_cells);
 
@@ -123,6 +135,7 @@ namespace RepartitioningPolicyTools
   private:
     /**
      * Minimum number of cells per process.
+     *
      */
     const unsigned int n_min_cells;
   };

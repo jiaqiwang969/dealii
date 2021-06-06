@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2007 - 2020 by the deal.II authors
 //
@@ -29,20 +29,17 @@ namespace Functions
 {
   /**
    * Base class for analytic solutions to incompressible flow problems.
-   *
    * Additional to the Function interface, this function provides for an
    * offset of the pressure: if the pressure of the computed solution has an
    * integral mean value different from zero, this value can be given to
    * pressure_adjustment() in order to compute correct pressure errors.
-   *
-   * @note Derived classes should implement pressures with integral mean value
-   * zero always.
-   *
-   * @note Thread safety: Some of the functions make use of internal data to
+   * @note   Derived classes should implement pressures with integral mean
+   * value   zero always.
+   * @note   Thread safety: Some of the functions make use of internal data to
    * compute values. Therefore, every thread should obtain its own object of
    * derived classes.
-   *
    * @ingroup functions
+   *
    */
   template <int dim>
   class FlowFunction : public Function<dim>
@@ -50,17 +47,20 @@ namespace Functions
   public:
     /**
      * Constructor, setting up some internal data structures.
+     *
      */
     FlowFunction();
 
     /**
      * Virtual destructor.
+     *
      */
     virtual ~FlowFunction() override = default;
 
     /**
      * Store an adjustment for the pressure function, such that its mean value
      * is <tt>p</tt>.
+     *
      */
     void
     pressure_adjustment(double p);
@@ -69,6 +69,7 @@ namespace Functions
      * Values in a structure more suitable for vector valued functions. The
      * outer vector is indexed by solution component, the inner by quadrature
      * point.
+     *
      */
     virtual void
     vector_values(const std::vector<Point<dim>> &   points,
@@ -77,6 +78,7 @@ namespace Functions
      * Gradients in a structure more suitable for vector valued functions. The
      * outer vector is indexed by solution component, the inner by quadrature
      * point.
+     *
      */
     virtual void
     vector_gradients(
@@ -85,10 +87,10 @@ namespace Functions
     /**
      * Force terms in a structure more suitable for vector valued functions.
      * The outer vector is indexed by solution component, the inner by
-     * quadrature point.
+     * quadrature point.           @warning   This is not the true Laplacian,
+     * but the force term to be used     as right hand side in Stokes'
+     * equations
      *
-     * @warning This is not the true Laplacian, but the force term to be used
-     * as right hand side in Stokes' equations
      */
     virtual void
     vector_laplacians(const std::vector<Point<dim>> &   points,
@@ -109,13 +111,16 @@ namespace Functions
       std::vector<std::vector<Tensor<1, dim>>> &gradients) const override;
     /**
      * The force term in the momentum equation.
+     *
      */
     virtual void
     vector_laplacian_list(const std::vector<Point<dim>> &points,
                           std::vector<Vector<double>> &  values) const override;
 
     /**
-     * Return an estimate for the memory consumption, in bytes, of this object.
+     * Return an estimate for the memory consumption, in bytes, of this
+     * object.
+     *
      */
     virtual std::size_t
     memory_consumption() const override;
@@ -123,32 +128,37 @@ namespace Functions
   protected:
     /**
      * Mean value of the pressure to be added by derived classes.
+     *
      */
     double mean_pressure;
 
   private:
     /**
      * A mutex that guards the following scratch arrays.
+     *
      */
     mutable Threads::Mutex mutex;
 
     /**
      * Auxiliary values for the usual Function interface.
+     *
      */
     mutable std::vector<std::vector<double>> aux_values;
 
     /**
      * Auxiliary values for the usual Function interface.
+     *
      */
     mutable std::vector<std::vector<Tensor<1, dim>>> aux_gradients;
   };
 
   /**
    * Laminar pipe flow in two and three dimensions. The channel stretches
-   * along the <i>x</i>-axis and has radius @p radius. The @p Reynolds number
-   * is used to scale the pressure properly for a Navier-Stokes problem.
-   *
+   * along the <i>x</i>-axis and has radius   @p radius.   The   @p Reynolds
+   * number   is used to scale the pressure properly for a Navier-Stokes
+   * problem.
    * @ingroup functions
+   *
    */
   template <int dim>
   class PoisseuilleFlow : public FlowFunction<dim>
@@ -157,6 +167,7 @@ namespace Functions
     /**
      * Construct an object for the given channel radius <tt>r</tt> and the
      * Reynolds number <tt>Re</tt>.
+     *
      */
     PoisseuilleFlow<dim>(const double r, const double Re);
 
@@ -180,16 +191,13 @@ namespace Functions
 
 
   /**
-   * Artificial divergence free function with homogeneous boundary conditions
-   * on the cube [-1,1]<sup>dim</sup>.
-   *
-   * The function in 2D is
-   * @f[
+   * Artificial divergence free function with homogeneous boundary conditions   on the cube [-1,1]<sup>dim</sup>.     The function in 2D is   @f[
    * \left(\begin{array}{c}u\\v\\p\end{array}\right)
    * \left(\begin{array}{c}\cos^2x \sin y\cos y\\-\sin x\cos x\cos^2y\\
    * \sin x\cos x\sin y\cos y\end{array}\right)
    * @f]
    * @ingroup functions
+   *
    */
   template <int dim>
   class StokesCosine : public FlowFunction<dim>
@@ -198,10 +206,12 @@ namespace Functions
     /**
      * Constructor setting the Reynolds number required for pressure
      * computation and scaling of the right hand side.
+     *
      */
     StokesCosine(const double viscosity = 1., const double reaction = 0.);
     /**
      * Change the viscosity and the reaction parameter.
+     *
      */
     void
     set_parameters(const double viscosity, const double reaction);
@@ -229,19 +239,18 @@ namespace Functions
 
   /**
    * A singular solution to Stokes' equations on a 2d L-shaped domain.
-   *
-   * This function satisfies $-\triangle \mathbf{u} + \nabla p = 0$ and
+   * This function satisfies   $-\triangle \mathbf{u} + \nabla p = 0$   and
    * represents a typical singular solution around a reentrant corner of an
-   * L-shaped domain that can be created using GridGenerator::hyper_L(). The
-   * velocity vanishes on the two faces of the re-entrant corner and
-   * $\nabla\mathbf{u}$ and $p$ are singular at the origin while they are
-   * smooth in the rest of the domain because they can be written as a product
-   * of a smooth function and the term $r^{\lambda-1}$ where $r$ is the radius
-   * and $\lambda \approx 0.54448$ is a fixed parameter.
-   *
-   * Taken from Houston, Sch&ouml;tzau, Wihler, proceeding ENUMATH 2003.
-   *
+   * L-shaped domain that can be created using   GridGenerator::hyper_L().
+   * The   velocity vanishes on the two faces of the re-entrant corner and
+   * $\nabla\mathbf{u}$   and   $p$   are singular at the origin while they
+   * are   smooth in the rest of the domain because they can be written as a
+   * product   of a smooth function and the term   $r^{\lambda-1}$   where
+   * $r$   is the radius   and   $\lambda \approx 0.54448$   is a fixed
+   * parameter.     Taken from Houston, Sch&ouml;tzau, Wihler, proceeding
+   * ENUMATH 2003.
    * @ingroup functions
+   *
    */
   class StokesLSingularity : public FlowFunction<2>
   {
@@ -290,11 +299,10 @@ namespace Functions
   };
 
   /**
-   * Flow solution in 2D by Kovasznay (1947).
-   *
-   * This function is valid on the half plane right of the line <i>x=1/2</i>.
-   *
+   * Flow solution in 2D by Kovasznay (1947).     This function is valid on
+   * the half plane right of the line <i>x=1/2</i>.
    * @ingroup functions
+   *
    */
   class Kovasznay : public FlowFunction<2>
   {
@@ -305,6 +313,7 @@ namespace Functions
      * equation returned by vector_laplacians() contains the nonlinearity,
      * such that the Kovasznay solution can be obtained as the solution to a
      * Stokes problem.
+     *
      */
     Kovasznay(const double Re, bool Stokes = false);
 

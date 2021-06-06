@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
 //
@@ -55,32 +55,33 @@ namespace PETScWrappers
      * This class acts as an iterator walking over the elements of PETSc
      * matrices. Since PETSc offers a uniform interface for all types of
      * matrices, this iterator can be used to access both sparse and full
-     * matrices.
-     *
-     * Note that PETSc does not give any guarantees as to the order of
-     * elements within each row. Note also that accessing the elements of a
-     * full matrix surprisingly only shows the nonzero elements of the matrix,
-     * not all elements.
-     *
+     * matrices.         Note that PETSc does not give any guarantees as to
+     * the order of     elements within each row. Note also that accessing the
+     * elements of a     full matrix surprisingly only shows the nonzero
+     * elements of the matrix,     not all elements.
      * @ingroup PETScWrappers
+     *
      */
     class const_iterator
     {
     private:
       /**
        * Accessor class for iterators
+       *
        */
       class Accessor
       {
       public:
         /**
          * Declare type for container size.
+         *
          */
         using size_type = types::global_dof_index;
 
         /**
          * Constructor. Since we use accessors only for read access, a const
          * matrix pointer is sufficient.
+         *
          */
         Accessor(const MatrixBase *matrix,
                  const size_type   row,
@@ -88,34 +89,40 @@ namespace PETScWrappers
 
         /**
          * Row number of the element represented by this object.
+         *
          */
         size_type
         row() const;
 
         /**
          * Index in row of the element represented by this object.
+         *
          */
         size_type
         index() const;
 
         /**
          * Column number of the element represented by this object.
+         *
          */
         size_type
         column() const;
 
         /**
          * Value of this matrix entry.
+         *
          */
         PetscScalar
         value() const;
 
         /**
          * Exception
+         *
          */
         DeclException0(ExcBeyondEndOfMatrix);
         /**
          * Exception
+         *
          */
         DeclException3(ExcAccessToNonlocalRow,
                        int,
@@ -129,16 +136,19 @@ namespace PETScWrappers
       private:
         /**
          * The matrix accessed.
+         *
          */
         mutable MatrixBase *matrix;
 
         /**
          * Current row number.
+         *
          */
         size_type a_row;
 
         /**
          * Current index in row.
+         *
          */
         size_type a_index;
 
@@ -148,16 +158,17 @@ namespace PETScWrappers
          * rather hard, and it is much more efficient to copy all column
          * entries of a row once when we enter it than repeatedly asking PETSc
          * for individual ones. This also makes some sense since it is likely
-         * that we will access them sequentially anyway.
-         *
-         * In order to make copying of iterators/accessor of acceptable
+         * that we will access them sequentially anyway.                 In
+         * order to make copying of iterators/accessor of acceptable
          * performance, we keep a shared pointer to these entries so that more
          * than one accessor can access this data if necessary.
+         *
          */
         std::shared_ptr<const std::vector<size_type>> colnum_cache;
 
         /**
          * Similar cache for the values of this row.
+         *
          */
         std::shared_ptr<const std::vector<PetscScalar>> value_cache;
 
@@ -165,6 +176,7 @@ namespace PETScWrappers
          * Discard the old row caches (they may still be used by other
          * accessors) and generate new ones for the row pointed to presently
          * by this accessor.
+         *
          */
         void
         visit_present_row();
@@ -176,12 +188,14 @@ namespace PETScWrappers
     public:
       /**
        * Declare type for container size.
+       *
        */
       using size_type = types::global_dof_index;
 
       /**
-       * Constructor. Create an iterator into the matrix @p matrix for the
+       * Constructor. Create an iterator into the matrix   @p matrix   for the
        * given row and the index within it.
+       *
        */
       const_iterator(const MatrixBase *matrix,
                      const size_type   row,
@@ -189,34 +203,40 @@ namespace PETScWrappers
 
       /**
        * Prefix increment.
+       *
        */
       const_iterator &
       operator++();
 
       /**
        * Postfix increment.
+       *
        */
       const_iterator
       operator++(int);
 
       /**
        * Dereferencing operator.
+       *
        */
       const Accessor &operator*() const;
 
       /**
        * Dereferencing operator.
+       *
        */
       const Accessor *operator->() const;
 
       /**
        * Comparison. True, if both iterators point to the same matrix
        * position.
+       *
        */
       bool
       operator==(const const_iterator &) const;
       /**
        * Inverse of <tt>==</tt>.
+       *
        */
       bool
       operator!=(const const_iterator &) const;
@@ -225,12 +245,14 @@ namespace PETScWrappers
        * Comparison operator. Result is true if either the first row number is
        * smaller or if the row numbers are equal and the first index is
        * smaller.
+       *
        */
       bool
       operator<(const const_iterator &) const;
 
       /**
        * Exception
+       *
        */
       DeclException2(ExcInvalidIndexWithinRow,
                      int,
@@ -241,6 +263,7 @@ namespace PETScWrappers
     private:
       /**
        * Store an object of the accessor class.
+       *
        */
       Accessor accessor;
     };
@@ -256,69 +279,73 @@ namespace PETScWrappers
    * is independent of the actual matrix type, we can implement almost all
    * functionality of matrices in this base class. Derived classes will then
    * only have to provide the functionality to create one or the other kind of
-   * matrix.
-   *
-   * The interface of this class is modeled after the existing SparseMatrix
-   * class in deal.II. It has almost the same member functions, and is often
-   * exchangeable. However, since PETSc only supports a single scalar type
-   * (either double, float, or a complex data type), it is not templated, and
-   * only works with whatever your PETSc installation has defined the data
-   * type PetscScalar to.
-   *
-   * Note that PETSc only guarantees that operations do what you expect if the
-   * functions @p MatAssemblyBegin and @p MatAssemblyEnd have been called
-   * after matrix assembly. Therefore, you need to call
-   * SparseMatrix::compress() before you actually use the matrix. This also
-   * calls @p MatCompress that compresses the storage format for sparse
-   * matrices by discarding unused elements. PETSc allows to continue with
-   * assembling the matrix after calls to these functions, but since there are
-   * no more free entries available after that any more, it is better to only
-   * call SparseMatrix::compress() once at the end of the assembly stage and
+   * matrix.     The interface of this class is modeled after the existing
+   * SparseMatrix   class in deal.II. It has almost the same member functions,
+   * and is often   exchangeable. However, since PETSc only supports a single
+   * scalar type   (either double, float, or a complex data type), it is not
+   * templated, and   only works with whatever your PETSc installation has
+   * defined the data   type PetscScalar to.     Note that PETSc only
+   * guarantees that operations do what you expect if the   functions   @p
+   * MatAssemblyBegin   and   @p MatAssemblyEnd   have been called   after
+   * matrix assembly. Therefore, you need to call     SparseMatrix::compress()
+   * before you actually use the matrix. This also   calls   @p MatCompress
+   * that compresses the storage format for sparse   matrices by discarding
+   * unused elements. PETSc allows to continue with   assembling the matrix
+   * after calls to these functions, but since there are   no more free
+   * entries available after that any more, it is better to only   call
+   * SparseMatrix::compress()   once at the end of the assembly stage and
    * before the matrix is actively used.
-   *
    * @ingroup PETScWrappers
    * @ingroup Matrix1
+   *
    */
   class MatrixBase : public Subscriptor
   {
   public:
     /**
      * Declare an alias for the iterator class.
+     *
      */
     using const_iterator = MatrixIterators::const_iterator;
 
     /**
      * Declare type for container size.
+     *
      */
     using size_type = types::global_dof_index;
 
     /**
      * Declare an alias in analogy to all the other container classes.
+     *
      */
     using value_type = PetscScalar;
 
     /**
      * Default constructor.
+     *
      */
     MatrixBase();
 
     /**
-     * Copy constructor. It is deleted as copying this base class
-     * without knowing the concrete kind of matrix stored may both
-     * miss important details and be expensive if the matrix is large.
+     * Copy constructor. It is deleted as copying this base class     without
+     * knowing the concrete kind of matrix stored may both     miss important
+     * details and be expensive if the matrix is large.
+     *
      */
     MatrixBase(const MatrixBase &) = delete;
 
     /**
-     * Copy operator. It is deleted as copying this base class
-     * without knowing the concrete kind of matrix stored may both
-     * miss important details and be expensive if the matrix is large.
+     * Copy operator. It is deleted as copying this base class     without
+     * knowing the concrete kind of matrix stored may both     miss important
+     * details and be expensive if the matrix is large.
+     *
      */
     MatrixBase &
     operator=(const MatrixBase &) = delete;
 
     /**
      * Destructor. Made virtual so that one can use pointers to this class.
+     *
      */
     virtual ~MatrixBase() override;
 
@@ -330,24 +357,26 @@ namespace PETScWrappers
      * exists to allow for the obvious notation <tt>matrix=0</tt>, which sets
      * all elements of the matrix to zero, but keeps the sparsity pattern
      * previously used.
+     *
      */
     MatrixBase &
     operator=(const value_type d);
     /**
      * Release all memory and return to a state just like after having called
      * the default constructor.
+     *
      */
     void
     clear();
 
     /**
-     * Set the element (<i>i,j</i>) to @p value.
-     *
-     * If the present object (from a derived class of this one) happens to be
-     * a sparse matrix, then this function adds a new entry to the matrix if
-     * it didn't exist before, very much in contrast to the SparseMatrix class
+     * Set the element (<i>i,j</i>) to   @p value.           If the present
+     * object (from a derived class of this one) happens to be     a sparse
+     * matrix, then this function adds a new entry to the matrix if     it
+     * didn't exist before, very much in contrast to the SparseMatrix class
      * which throws an error if the entry does not exist. If <tt>value</tt> is
      * not a finite number an exception is thrown.
+     *
      */
     void
     set(const size_type i, const size_type j, const PetscScalar value);
@@ -359,17 +388,16 @@ namespace PETScWrappers
      * using the local-to-global indexing specified by <tt>indices</tt> for
      * both the rows and the columns of the matrix. This function assumes a
      * quadratic sparse matrix and a quadratic full_matrix, the usual
-     * situation in FE calculations.
+     * situation in FE calculations.         If the present object (from a
+     * derived class of this one) happens to be     a sparse matrix, then this
+     * function adds some new entries to the matrix     if they didn't exist
+     * before, very much in contrast to the SparseMatrix     class which
+     * throws an error if the entry does not exist.         The optional
+     * parameter <tt>elide_zero_values</tt> can be used to     specify whether
+     * zero values should be inserted anyway or they should be     filtered
+     * away. The default value is <tt>false</tt>, i.e., even zero     values
+     * are inserted/replaced.
      *
-     * If the present object (from a derived class of this one) happens to be
-     * a sparse matrix, then this function adds some new entries to the matrix
-     * if they didn't exist before, very much in contrast to the SparseMatrix
-     * class which throws an error if the entry does not exist.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
-     * specify whether zero values should be inserted anyway or they should be
-     * filtered away. The default value is <tt>false</tt>, i.e., even zero
-     * values are inserted/replaced.
      */
     void
     set(const std::vector<size_type> & indices,
@@ -380,6 +408,7 @@ namespace PETScWrappers
      * Same function as before, but now including the possibility to use
      * rectangular full_matrices and different local-to-global indexing on
      * rows and columns, respectively.
+     *
      */
     void
     set(const std::vector<size_type> & row_indices,
@@ -390,16 +419,15 @@ namespace PETScWrappers
     /**
      * Set several elements in the specified row of the matrix with column
      * indices as given by <tt>col_indices</tt> to the respective value.
-     *
      * If the present object (from a derived class of this one) happens to be
      * a sparse matrix, then this function adds some new entries to the matrix
      * if they didn't exist before, very much in contrast to the SparseMatrix
-     * class which throws an error if the entry does not exist.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * class which throws an error if the entry does not exist.         The
+     * optional parameter <tt>elide_zero_values</tt> can be used to
      * specify whether zero values should be inserted anyway or they should be
      * filtered away. The default value is <tt>false</tt>, i.e., even zero
      * values are inserted/replaced.
+     *
      */
     void
     set(const size_type                 row,
@@ -409,17 +437,16 @@ namespace PETScWrappers
 
     /**
      * Set several elements to values given by <tt>values</tt> in a given row
-     * in columns given by col_indices into the sparse matrix.
-     *
-     * If the present object (from a derived class of this one) happens to be
-     * a sparse matrix, then this function adds some new entries to the matrix
+     * in columns given by col_indices into the sparse matrix.         If the
+     * present object (from a derived class of this one) happens to be     a
+     * sparse matrix, then this function adds some new entries to the matrix
      * if they didn't exist before, very much in contrast to the SparseMatrix
-     * class which throws an error if the entry does not exist.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * class which throws an error if the entry does not exist.         The
+     * optional parameter <tt>elide_zero_values</tt> can be used to
      * specify whether zero values should be inserted anyway or they should be
      * filtered away. The default value is <tt>false</tt>, i.e., even zero
      * values are inserted/replaced.
+     *
      */
     void
     set(const size_type    row,
@@ -429,13 +456,13 @@ namespace PETScWrappers
         const bool         elide_zero_values = false);
 
     /**
-     * Add @p value to the element (<i>i,j</i>).
-     *
-     * If the present object (from a derived class of this one) happens to be
-     * a sparse matrix, then this function adds a new entry to the matrix if
-     * it didn't exist before, very much in contrast to the SparseMatrix class
+     * Add   @p value   to the element (<i>i,j</i>).         If the present
+     * object (from a derived class of this one) happens to be     a sparse
+     * matrix, then this function adds a new entry to the matrix if     it
+     * didn't exist before, very much in contrast to the SparseMatrix class
      * which throws an error if the entry does not exist. If <tt>value</tt> is
      * not a finite number an exception is thrown.
+     *
      */
     void
     add(const size_type i, const size_type j, const PetscScalar value);
@@ -447,17 +474,16 @@ namespace PETScWrappers
      * calling matrix, using the local-to-global indexing specified by
      * <tt>indices</tt> for both the rows and the columns of the matrix. This
      * function assumes a quadratic sparse matrix and a quadratic full_matrix,
-     * the usual situation in FE calculations.
-     *
-     * If the present object (from a derived class of this one) happens to be
-     * a sparse matrix, then this function adds some new entries to the matrix
-     * if they didn't exist before, very much in contrast to the SparseMatrix
-     * class which throws an error if the entry does not exist.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * the usual situation in FE calculations.         If the present object
+     * (from a derived class of this one) happens to be     a sparse matrix,
+     * then this function adds some new entries to the matrix     if they
+     * didn't exist before, very much in contrast to the SparseMatrix
+     * class which throws an error if the entry does not exist.         The
+     * optional parameter <tt>elide_zero_values</tt> can be used to
      * specify whether zero values should be added anyway or these should be
      * filtered away and only non-zero data is added. The default value is
      * <tt>true</tt>, i.e., zero values won't be added into the matrix.
+     *
      */
     void
     add(const std::vector<size_type> & indices,
@@ -468,6 +494,7 @@ namespace PETScWrappers
      * Same function as before, but now including the possibility to use
      * rectangular full_matrices and different local-to-global indexing on
      * rows and columns, respectively.
+     *
      */
     void
     add(const std::vector<size_type> & row_indices,
@@ -478,16 +505,15 @@ namespace PETScWrappers
     /**
      * Set several elements in the specified row of the matrix with column
      * indices as given by <tt>col_indices</tt> to the respective value.
-     *
      * If the present object (from a derived class of this one) happens to be
      * a sparse matrix, then this function adds some new entries to the matrix
      * if they didn't exist before, very much in contrast to the SparseMatrix
-     * class which throws an error if the entry does not exist.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * class which throws an error if the entry does not exist.         The
+     * optional parameter <tt>elide_zero_values</tt> can be used to
      * specify whether zero values should be added anyway or these should be
      * filtered away and only non-zero data is added. The default value is
      * <tt>true</tt>, i.e., zero values won't be added into the matrix.
+     *
      */
     void
     add(const size_type                 row,
@@ -498,16 +524,15 @@ namespace PETScWrappers
     /**
      * Add an array of values given by <tt>values</tt> in the given global
      * matrix row at columns specified by col_indices in the sparse matrix.
-     *
      * If the present object (from a derived class of this one) happens to be
      * a sparse matrix, then this function adds some new entries to the matrix
      * if they didn't exist before, very much in contrast to the SparseMatrix
-     * class which throws an error if the entry does not exist.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * class which throws an error if the entry does not exist.         The
+     * optional parameter <tt>elide_zero_values</tt> can be used to
      * specify whether zero values should be added anyway or these should be
      * filtered away and only non-zero data is added. The default value is
      * <tt>true</tt>, i.e., zero values won't be added into the matrix.
+     *
      */
     void
     add(const size_type    row,
@@ -522,42 +547,34 @@ namespace PETScWrappers
      * function does not modify the number of allocated nonzero entries, it
      * only sets some entries to zero. It may drop them from the sparsity
      * pattern, though (but retains the allocated memory in case new entries
-     * are again added later).
+     * are again added later).         This operation is used in eliminating
+     * constraints (e.g. due to hanging     nodes) and makes sure that we can
+     * write this modification to the matrix     without having to read
+     * entries (such as the locations of non-zero     elements) from it
      *
-     * This operation is used in eliminating constraints (e.g. due to hanging
-     * nodes) and makes sure that we can write this modification to the matrix
-     * without having to read entries (such as the locations of non-zero
-     * elements) from it -- without this operation, removing constraints on
-     * parallel matrices is a rather complicated procedure.
+     *  -  without this operation, removing constraints on     parallel matrices is a rather complicated procedure.         The second parameter can be used to set the diagonal entry of this row     to a value different from zero. The default is to set it to zero.
      *
-     * The second parameter can be used to set the diagonal entry of this row
-     * to a value different from zero. The default is to set it to zero.
      */
     void
     clear_row(const size_type row, const PetscScalar new_diag_value = 0);
 
     /**
      * Same as clear_row(), except that it works on a number of rows at once.
-     *
      * The second parameter can be used to set the diagonal entries of all
      * cleared rows to something different from zero. Note that all of these
-     * diagonal entries get the same value -- if you want different values for
-     * the diagonal entries, you have to set them by hand.
+     * diagonal entries get the same value
+     *
+     *  -  if you want different values for     the diagonal entries, you have to set them by hand.
+     *
      */
     void
     clear_rows(const std::vector<size_type> &rows,
                const PetscScalar             new_diag_value = 0);
 
     /**
-     * PETSc matrices store their own sparsity patterns. So, in analogy to our
-     * own SparsityPattern class, this function compresses the sparsity
-     * pattern and allows the resulting matrix to be used in all other
-     * operations where before only assembly functions were allowed. This
-     * function must therefore be called once you have assembled the matrix.
-     *
-     * See
-     * @ref GlossCompress "Compressing distributed objects"
+     * PETSc matrices store their own sparsity patterns. So, in analogy to our     own SparsityPattern class, this function compresses the sparsity     pattern and allows the resulting matrix to be used in all other     operations where before only assembly functions were allowed. This     function must therefore be called once you have assembled the matrix.         See       @ref GlossCompress   "Compressing distributed objects"
      * for more information.
+     *
      */
     void
     compress(const VectorOperation::values operation);
@@ -565,13 +582,12 @@ namespace PETScWrappers
     /**
      * Return the value of the entry (<i>i,j</i>).  This may be an expensive
      * operation and you should always take care where to call this function.
-     * In contrast to the respective function in the @p MatrixBase class, we
-     * don't throw an exception if the respective entry doesn't exist in the
-     * sparsity pattern of this class, since PETSc does not transmit this
-     * information.
+     * In contrast to the respective function in the   @p MatrixBase   class,
+     * we     don't throw an exception if the respective entry doesn't exist
+     * in the     sparsity pattern of this class, since PETSc does not
+     * transmit this     information.         This function is therefore
+     * exactly equivalent to the <tt>el()</tt>     function.
      *
-     * This function is therefore exactly equivalent to the <tt>el()</tt>
-     * function.
      */
     PetscScalar
     operator()(const size_type i, const size_type j) const;
@@ -582,30 +598,33 @@ namespace PETScWrappers
      * may be convenient in some cases, note that it is simple to write
      * algorithms that are slow compared to an optimal solution, since the
      * sparsity of the matrix is not used.
+     *
      */
     PetscScalar
     el(const size_type i, const size_type j) const;
 
     /**
      * Return the main diagonal element in the <i>i</i>th row. This function
-     * throws an error if the matrix is not quadratic.
-     *
-     * Since we do not have direct access to the underlying data structure,
-     * this function is no faster than the elementwise access using the el()
-     * function. However, we provide this function for compatibility with the
+     * throws an error if the matrix is not quadratic.         Since we do not
+     * have direct access to the underlying data structure,     this function
+     * is no faster than the elementwise access using the el()     function.
+     * However, we provide this function for compatibility with the
      * SparseMatrix class.
+     *
      */
     PetscScalar
     diag_element(const size_type i) const;
 
     /**
      * Return the number of rows in this matrix.
+     *
      */
     size_type
     m() const;
 
     /**
      * Return the number of columns in this matrix.
+     *
      */
     size_type
     n() const;
@@ -614,9 +633,9 @@ namespace PETScWrappers
      * Return the local dimension of the matrix, i.e. the number of rows
      * stored on the present MPI process. For sequential matrices, this number
      * is the same as m(), but for parallel matrices it may be smaller.
-     *
      * To figure out which elements exactly are stored locally, use
      * local_range().
+     *
      */
     size_type
     local_size() const;
@@ -628,13 +647,15 @@ namespace PETScWrappers
      * locally. If this is a sequential matrix, then the result will be the
      * pair (0,m()), otherwise it will be a pair (i,i+n), where
      * <tt>n=local_size()</tt>.
+     *
      */
     std::pair<size_type, size_type>
     local_range() const;
 
     /**
-     * Return whether @p index is in the local range or not, see also
+     * Return whether   @p index   is in the local range or not, see also
      * local_range().
+     *
      */
     bool
     in_local_range(const size_type index) const;
@@ -642,6 +663,7 @@ namespace PETScWrappers
     /**
      * Return a reference to the MPI communicator object in use with this
      * matrix. This function has to be implemented in derived classes.
+     *
      */
     virtual const MPI_Comm &
     get_mpi_communicator() const = 0;
@@ -650,32 +672,36 @@ namespace PETScWrappers
      * Return the number of nonzero elements of this matrix. Actually, it
      * returns the number of entries in the sparsity pattern; if any of the
      * entries should happen to be zero, it is counted anyway.
+     *
      */
     size_type
     n_nonzero_elements() const;
 
     /**
      * Number of entries in a specific row.
+     *
      */
     size_type
     row_length(const size_type row) const;
 
     /**
-     * Return the l1-norm of the matrix, that is $|M|_1=max_{all columns
-     * j}\sum_{all rows i} |M_ij|$, (max. sum of columns). This is the natural
-     * matrix norm that is compatible to the l1-norm for vectors, i.e.
-     * $|Mv|_1\leq |M|_1 |v|_1$. (cf. Haemmerlin-Hoffmann: Numerische
-     * Mathematik)
+     * Return the l1-norm of the matrix, that is   $|M|_1=max_{all columns
+     * j}\sum_{all rows i} |M_ij|$  , (max. sum of columns). This is the
+     * natural     matrix norm that is compatible to the l1-norm for vectors,
+     * i.e.       $|Mv|_1\leq |M|_1 |v|_1$  . (cf. Haemmerlin-Hoffmann:
+     * Numerische     Mathematik)
+     *
      */
     PetscReal
     l1_norm() const;
 
     /**
-     * Return the linfty-norm of the matrix, that is $|M|_infty=max_{all rows
-     * i}\sum_{all columns j} |M_ij|$, (max. sum of rows). This is the natural
-     * matrix norm that is compatible to the linfty-norm of vectors, i.e.
-     * $|Mv|_infty \leq |M|_infty |v|_infty$. (cf. Haemmerlin-Hoffmann:
-     * Numerische Mathematik)
+     * Return the linfty-norm of the matrix, that is   $|M|_infty=max_{all
+     * rows i}\sum_{all columns j} |M_ij|$  , (max. sum of rows). This is the
+     * natural     matrix norm that is compatible to the linfty-norm of
+     * vectors, i.e.       $|Mv|_infty \leq |M|_infty |v|_infty$  . (cf.
+     * Haemmerlin-Hoffmann:     Numerische Mathematik)
+     *
      */
     PetscReal
     linfty_norm() const;
@@ -683,46 +709,44 @@ namespace PETScWrappers
     /**
      * Return the frobenius norm of the matrix, i.e. the square root of the
      * sum of squares of all entries in the matrix.
+     *
      */
     PetscReal
     frobenius_norm() const;
 
 
     /**
-     * Return the square of the norm of the vector $v$ with respect to the
-     * norm induced by this matrix, i.e. $\left(v,Mv\right)$. This is useful,
-     * e.g. in the finite element context, where the $L_2$ norm of a function
-     * equals the matrix norm with respect to the mass matrix of the vector
-     * representing the nodal values of the finite element function.
-     *
-     * Obviously, the matrix needs to be quadratic for this operation.
-     *
-     * The implementation of this function is not as efficient as the one in
-     * the @p MatrixBase class used in deal.II (i.e. the original one, not the
-     * PETSc wrapper class) since PETSc doesn't support this operation and
-     * needs a temporary vector.
-     *
+     * Return the square of the norm of the vector   $v$   with respect to the
+     * norm induced by this matrix, i.e.   $\left(v,Mv\right)$  . This is
+     * useful,     e.g. in the finite element context, where the   $L_2$
+     * norm of a function     equals the matrix norm with respect to the mass
+     * matrix of the vector     representing the nodal values of the finite
+     * element function.         Obviously, the matrix needs to be quadratic
+     * for this operation.         The implementation of this function is not
+     * as efficient as the one in     the   @p MatrixBase   class used in
+     * deal.II (i.e. the original one, not the     PETSc wrapper class) since
+     * PETSc doesn't support this operation and     needs a temporary vector.
      * Note that if the current object represents a parallel distributed
-     * matrix (of type PETScWrappers::MPI::SparseMatrix), then the given
+     * matrix (of type   PETScWrappers::MPI::SparseMatrix),   then the given
      * vector has to be a distributed vector as well. Conversely, if the
      * matrix is not distributed, then neither may the vector be.
+     *
      */
     PetscScalar
     matrix_norm_square(const VectorBase &v) const;
 
 
     /**
-     * Compute the matrix scalar product $\left(u,Mv\right)$.
+     * Compute the matrix scalar product   $\left(u,Mv\right)$  .         The
+     * implementation of this function is not as efficient as the one in
+     * the   @p MatrixBase   class used in deal.II (i.e. the original one, not
+     * the     PETSc wrapper class) since PETSc doesn't support this operation
+     * and     needs a temporary vector.         Note that if the current
+     * object represents a parallel distributed     matrix (of type
+     * PETScWrappers::MPI::SparseMatrix),   then both vectors     have to be
+     * distributed vectors as well. Conversely, if the matrix is     not
+     * distributed, then neither of the vectors may be.
      *
-     * The implementation of this function is not as efficient as the one in
-     * the @p MatrixBase class used in deal.II (i.e. the original one, not the
-     * PETSc wrapper class) since PETSc doesn't support this operation and
-     * needs a temporary vector.
-     *
-     * Note that if the current object represents a parallel distributed
-     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
-     * have to be distributed vectors as well. Conversely, if the matrix is
-     * not distributed, then neither of the vectors may be.
      */
     PetscScalar
     matrix_scalar_product(const VectorBase &u, const VectorBase &v) const;
@@ -730,40 +754,43 @@ namespace PETScWrappers
     /**
      * Return the trace of the matrix, i.e. the sum of all diagonal entries in
      * the matrix.
+     *
      */
     PetscScalar
     trace() const;
 
     /**
      * Multiply the entire matrix by a fixed factor.
+     *
      */
     MatrixBase &
     operator*=(const PetscScalar factor);
 
     /**
      * Divide the entire matrix by a fixed factor.
+     *
      */
     MatrixBase &
     operator/=(const PetscScalar factor);
 
 
     /**
-     * Add the matrix @p other scaled by the factor @p factor to the current
-     * matrix.
+     * Add the matrix   @p other   scaled by the factor   @p factor   to the
+     * current     matrix.
+     *
      */
     MatrixBase &
     add(const PetscScalar factor, const MatrixBase &other);
 
     /**
      * Matrix-vector multiplication: let <i>dst = M*src</i> with <i>M</i>
-     * being this matrix.
+     * being this matrix.         Source and destination must not be the same
+     * vector.         Note that if the current object represents a parallel
+     * distributed     matrix (of type   PETScWrappers::MPI::SparseMatrix),
+     * then both vectors     have to be distributed vectors as well.
+     * Conversely, if the matrix is     not distributed, then neither of the
+     * vectors may be.
      *
-     * Source and destination must not be the same vector.
-     *
-     * Note that if the current object represents a parallel distributed
-     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
-     * have to be distributed vectors as well. Conversely, if the matrix is
-     * not distributed, then neither of the vectors may be.
      */
     void
     vmult(VectorBase &dst, const VectorBase &src) const;
@@ -771,28 +798,26 @@ namespace PETScWrappers
     /**
      * Matrix-vector multiplication: let <i>dst = M<sup>T</sup>*src</i> with
      * <i>M</i> being this matrix. This function does the same as vmult() but
-     * takes the transposed matrix.
+     * takes the transposed matrix.         Source and destination must not be
+     * the same vector.         Note that if the current object represents a
+     * parallel distributed     matrix (of type
+     * PETScWrappers::MPI::SparseMatrix),   then both vectors     have to be
+     * distributed vectors as well. Conversely, if the matrix is     not
+     * distributed, then neither of the vectors may be.
      *
-     * Source and destination must not be the same vector.
-     *
-     * Note that if the current object represents a parallel distributed
-     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
-     * have to be distributed vectors as well. Conversely, if the matrix is
-     * not distributed, then neither of the vectors may be.
      */
     void
     Tvmult(VectorBase &dst, const VectorBase &src) const;
 
     /**
      * Adding Matrix-vector multiplication. Add <i>M*src</i> on <i>dst</i>
-     * with <i>M</i> being this matrix.
+     * with <i>M</i> being this matrix.         Source and destination must
+     * not be the same vector.         Note that if the current object
+     * represents a parallel distributed     matrix (of type
+     * PETScWrappers::MPI::SparseMatrix),   then both vectors     have to be
+     * distributed vectors as well. Conversely, if the matrix is     not
+     * distributed, then neither of the vectors may be.
      *
-     * Source and destination must not be the same vector.
-     *
-     * Note that if the current object represents a parallel distributed
-     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
-     * have to be distributed vectors as well. Conversely, if the matrix is
-     * not distributed, then neither of the vectors may be.
      */
     void
     vmult_add(VectorBase &dst, const VectorBase &src) const;
@@ -800,29 +825,27 @@ namespace PETScWrappers
     /**
      * Adding Matrix-vector multiplication. Add <i>M<sup>T</sup>*src</i> to
      * <i>dst</i> with <i>M</i> being this matrix. This function does the same
-     * as vmult_add() but takes the transposed matrix.
+     * as vmult_add() but takes the transposed matrix.         Source and
+     * destination must not be the same vector.         Note that if the
+     * current object represents a parallel distributed     matrix (of type
+     * PETScWrappers::MPI::SparseMatrix),   then both vectors     have to be
+     * distributed vectors as well. Conversely, if the matrix is     not
+     * distributed, then neither of the vectors may be.
      *
-     * Source and destination must not be the same vector.
-     *
-     * Note that if the current object represents a parallel distributed
-     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
-     * have to be distributed vectors as well. Conversely, if the matrix is
-     * not distributed, then neither of the vectors may be.
      */
     void
     Tvmult_add(VectorBase &dst, const VectorBase &src) const;
 
     /**
      * Compute the residual of an equation <i>Mx=b</i>, where the residual is
-     * defined to be <i>r=b-Mx</i>. Write the residual into @p dst. The
+     * defined to be <i>r=b-Mx</i>. Write the residual into   @p dst.   The
      * <i>l<sub>2</sub></i> norm of the residual vector is returned.
-     *
      * Source <i>x</i> and destination <i>dst</i> must not be the same vector.
-     *
      * Note that if the current object represents a parallel distributed
-     * matrix (of type PETScWrappers::MPI::SparseMatrix), then all vectors
+     * matrix (of type   PETScWrappers::MPI::SparseMatrix),   then all vectors
      * have to be distributed vectors as well. Conversely, if the matrix is
      * not distributed, then neither of the vectors may be.
+     *
      */
     PetscScalar
     residual(VectorBase &dst, const VectorBase &x, const VectorBase &b) const;
@@ -831,36 +854,38 @@ namespace PETScWrappers
      * Iterator starting at the first entry. This can only be called on a
      * processor owning the entire matrix. In all other cases refer to the
      * version of begin() taking a row number as an argument.
+     *
      */
     const_iterator
     begin() const;
 
     /**
-     * Final iterator. This can only be called on a processor owning the entire
-     * matrix. In all other cases refer to the version of end() taking a row
-     * number as an argument.
+     * Final iterator. This can only be called on a processor owning the
+     * entire     matrix. In all other cases refer to the version of end()
+     * taking a row     number as an argument.
+     *
      */
     const_iterator
     end() const;
 
     /**
-     * Iterator starting at the first entry of row @p r.
-     *
-     * Note that if the given row is empty, i.e. does not contain any nonzero
+     * Iterator starting at the first entry of row   @p r.           Note that
+     * if the given row is empty, i.e. does not contain any nonzero
      * entries, then the iterator returned by this function equals
      * <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable
      * in that case.
+     *
      */
     const_iterator
     begin(const size_type r) const;
 
     /**
      * Final iterator of row <tt>r</tt>. It points to the first element past
-     * the end of line @p r, or past the end of the entire sparsity pattern.
+     * the end of line   @p r,   or past the end of the entire sparsity
+     * pattern.         Note that the end iterator is not necessarily
+     * dereferenceable. This is     in particular the case if it is the end
+     * iterator for the last row of a     matrix.
      *
-     * Note that the end iterator is not necessarily dereferenceable. This is
-     * in particular the case if it is the end iterator for the last row of a
-     * matrix.
      */
     const_iterator
     end(const size_type r) const;
@@ -871,6 +896,7 @@ namespace PETScWrappers
      * conversion operator should only be used if you know what you do. In
      * particular, it should only be used for read-only operations into the
      * matrix.
+     *
      */
     operator Mat() const;
 
@@ -878,27 +904,31 @@ namespace PETScWrappers
      * Return a reference to the underlying PETSc type. It can be used to
      * modify the underlying data, so use it only when you know what you
      * are doing.
+     *
      */
     Mat &
     petsc_matrix();
 
     /**
      * Make an in-place transpose of a matrix.
+     *
      */
     void
     transpose();
 
     /**
      * Test whether a matrix is symmetric.  Default tolerance is
-     * $1000\times32$-bit machine precision.
+     * $1000\times32$  -bit machine precision.
+     *
      */
     PetscBool
     is_symmetric(const double tolerance = 1.e-12);
 
     /**
      * Test whether a matrix is Hermitian, i.e. it is the complex conjugate of
-     * its transpose. Default tolerance is $1000\times32$-bit machine
+     * its transpose. Default tolerance is   $1000\times32$  -bit machine
      * precision.
+     *
      */
     PetscBool
     is_hermitian(const double tolerance = 1.e-12);
@@ -908,28 +938,31 @@ namespace PETScWrappers
      * function <tt>MatView</tt>. The default format prints the non- zero
      * matrix elements. For other valid view formats, consult
      * http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MatView.html
+     *
      */
     void
     write_ascii(const PetscViewerFormat format = PETSC_VIEWER_DEFAULT);
 
     /**
      * Print the elements of a matrix to the given output stream.
-     *
-     * @param[in,out] out The output stream to which to write.
-     * @param[in] alternative_output This argument is ignored. It exists for
+     * @param[in,out]   out The output stream to which to write.
+     * @param[in]   alternative_output This argument is ignored. It exists for
      * compatibility with similar functions in other matrix classes.
+     *
      */
     void
     print(std::ostream &out, const bool alternative_output = false) const;
 
     /**
      * Return the number bytes consumed by this matrix on this CPU.
+     *
      */
     std::size_t
     memory_consumption() const;
 
     /**
      * Exception
+     *
      */
     DeclExceptionMsg(ExcSourceEqualsDestination,
                      "You are attempting an operation on two matrices that "
@@ -938,6 +971,7 @@ namespace PETScWrappers
 
     /**
      * Exception.
+     *
      */
     DeclException2(ExcWrongMode,
                    int,
@@ -952,11 +986,13 @@ namespace PETScWrappers
     /**
      * A generic matrix object in PETSc. The actual type, a sparse matrix, is
      * set in the constructor.
+     *
      */
     Mat matrix;
 
     /**
      * Store whether the last action was a write or add operation.
+     *
      */
     VectorOperation::values last_action;
 
@@ -964,6 +1000,7 @@ namespace PETScWrappers
      * Ensure that the add/set mode that is required for actions following
      * this call is compatible with the current mode. Should be called from
      * all internal functions accessing matrix elements.
+     *
      */
     void
     prepare_action(const VectorOperation::values new_action);
@@ -972,6 +1009,7 @@ namespace PETScWrappers
      * Internal function that checks that there are no pending insert/add
      * operations. Throws an exception otherwise. Useful before calling any
      * PETSc internal functions modifying the matrix.
+     *
      */
     void
     assert_is_compressed();
@@ -985,6 +1023,7 @@ namespace PETScWrappers
      * calling this helper function for each block. This function ensures that
      * the matrix is in a state that allows adding elements; if it previously
      * already was in this state, the function does nothing.
+     *
      */
     void
     prepare_add();
@@ -992,43 +1031,40 @@ namespace PETScWrappers
      * Same as prepare_add() but prepare the matrix for setting elements if
      * the representation of elements in this class requires such an
      * operation.
+     *
      */
     void
     prepare_set();
 
     /**
-     * Base function to perform the matrix-matrix multiplication $C = AB$,
-     * or, if a vector $V$ whose size is compatible with B is given,
-     * $C = A \text{diag}(V) B$, where $\text{diag}(V)$ defines a
-     * diagonal matrix with the vector entries.
-     *
-     * This function assumes that the calling matrix $A$ and $B$
-     * have compatible sizes. The size of $C$ will be set within this
-     * function.
-     *
-     * The content as well as the sparsity pattern of the matrix $C$ will be
+     * Base function to perform the matrix-matrix multiplication   $C = AB$  ,
+     * or, if a vector   $V$   whose size is compatible with B is given,
+     * $C = A \text{diag}(V) B$  , where   $\text{diag}(V)$   defines a
+     * diagonal matrix with the vector entries.         This function assumes
+     * that the calling matrix   $A$   and   $B$       have compatible sizes.
+     * The size of   $C$   will be set within this     function.         The
+     * content as well as the sparsity pattern of the matrix   $C$   will be
      * reset by this function, so make sure that the sparsity pattern is not
      * used somewhere else in your program. This is an expensive operation, so
      * think twice before you use this function.
+     *
      */
     void
     mmult(MatrixBase &C, const MatrixBase &B, const VectorBase &V) const;
 
     /**
-     * Base function to perform the matrix-matrix multiplication with
-     * the transpose of <tt>this</tt>, i.e., $C = A^T B$, or,
-     * if an optional vector $V$ whose size is compatible with $B$ is given,
-     * $C = A^T \text{diag}(V) B$, where $\text{diag}(V)$ defines a
-     * diagonal matrix with the vector entries.
-     *
-     * This function assumes that the calling matrix $A$ and $B$
-     * have compatible sizes. The size of $C$ will be set within this
-     * function.
-     *
-     * The content as well as the sparsity pattern of the matrix $C$ will be
+     * Base function to perform the matrix-matrix multiplication with     the
+     * transpose of <tt>this</tt>, i.e.,   $C = A^T B$  , or,     if an
+     * optional vector   $V$   whose size is compatible with   $B$   is given,
+     * $C = A^T \text{diag}(V) B$  , where   $\text{diag}(V)$   defines a
+     * diagonal matrix with the vector entries.         This function assumes
+     * that the calling matrix   $A$   and   $B$       have compatible sizes.
+     * The size of   $C$   will be set within this     function.         The
+     * content as well as the sparsity pattern of the matrix   $C$   will be
      * changed by this function, so make sure that the sparsity pattern is not
      * used somewhere else in your program. This is an expensive operation, so
      * think twice before you use this function.
+     *
      */
     void
     Tmmult(MatrixBase &C, const MatrixBase &B, const VectorBase &V) const;
@@ -1037,26 +1073,24 @@ namespace PETScWrappers
     /**
      * An internal array of integer values that is used to store the column
      * indices when adding/inserting local data into the (large) sparse
-     * matrix.
-     *
-     * This variable does not store any "state" of the matrix
-     * object. Rather, it is only used as a temporary buffer by some
-     * of the member functions of this class. As with all @p mutable
+     * matrix.         This variable does not store any "state" of the matrix
+     * object. Rather, it is only used as a temporary buffer by some     of
+     * the member functions of this class. As with all   @p mutable
      * member variables, the use of this variable is not thread-safe
-     * unless guarded by a mutex. However, since PETSc matrix
-     * operations are not thread-safe anyway, there is no need to
-     * attempt to make things thread-safe, and so there is no mutex
-     * associated with this variable.
+     * unless guarded by a mutex. However, since PETSc matrix     operations
+     * are not thread-safe anyway, there is no need to     attempt to make
+     * things thread-safe, and so there is no mutex     associated with this
+     * variable.
+     *
      */
     mutable std::vector<PetscInt> column_indices;
 
     /**
      * An internal array of double values that is used to store the column
      * indices when adding/inserting local data into the (large) sparse
-     * matrix.
+     * matrix.         The same comment as for the   @p column_indices
+     * variable above     applies.
      *
-     * The same comment as for the @p column_indices variable above
-     * applies.
      */
     mutable std::vector<PetscScalar> column_values;
 
@@ -1421,7 +1455,7 @@ namespace PETScWrappers
                   const size_type *  col_indices,
                   const PetscScalar *values,
                   const bool         elide_zero_values,
-                  const bool /*col_indices_are_sorted*/)
+                  const bool  /*col_indices_are_sorted*/ )
   {
     (void)elide_zero_values;
 
@@ -1616,4 +1650,4 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_PETSC
 
 #endif
-/*---------------------------- petsc_matrix_base.h --------------------------*/
+ /*---------------------------- petsc_matrix_base.h --------------------------*/ 

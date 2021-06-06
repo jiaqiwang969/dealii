@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
 //
@@ -33,26 +33,25 @@ template <int, int>
 class MappingQ;
 
 
-/*!@addtogroup mapping */
-/*@{*/
+ /*!@addtogroup mapping */ 
+ /*@{*/ 
 
 
 /**
- * This class implements the functionality for Manifold conforming
- * mappings. This Mapping computes the transformation between the
- * reference and real cell by exploiting the geometrical information
- * coming from the underlying Manifold object.
+ * This class implements the functionality for Manifold conforming mappings.
+ * This Mapping computes the transformation between the reference and real
+ * cell by exploiting the geometrical information coming from the underlying
+ * Manifold object. Quadrature points computed using this mapping lie on the
+ * exact geometrical objects, and tangent and normal vectors computed using
+ * this class are tangent and normal to the underlying geometry. This is in
+ * contrast with the MappingQ class, which approximates the geometry using a
+ * polynomial of some order, and then computes the normals and tangents using
+ * the approximated surface.
+ * @warning   It is not possible, for mathematical reasons, for one to use
+ * this class with a geometry described by a SphericalManifold: see the note
+ * in that class for more information.
  *
- * Quadrature points computed using this mapping lie on the exact
- * geometrical objects, and tangent and normal vectors computed using
- * this class are tangent and normal to the underlying geometry. This
- * is in contrast with the MappingQ class, which approximates the
- * geometry using a polynomial of some order, and then computes the
- * normals and tangents using the approximated surface.
  *
- * @warning It is not possible, for mathematical reasons, for one to use this
- * class with a geometry described by a SphericalManifold: see the note in
- * that class for more information.
  */
 template <int dim, int spacedim = dim>
 class MappingManifold : public Mapping<dim, spacedim>
@@ -60,11 +59,13 @@ class MappingManifold : public Mapping<dim, spacedim>
 public:
   /**
    * Constructor.
+   *
    */
   MappingManifold() = default;
 
   /**
    * Copy constructor.
+   *
    */
   MappingManifold(const MappingManifold<dim, spacedim> &mapping);
 
@@ -73,8 +74,9 @@ public:
   clone() const override;
 
   /**
-   * Always returns @p true because this class assumes that the
-   * vertices always lies on the underlying Manifold.
+   * Always returns   @p true   because this class assumes that the   vertices
+   * always lies on the underlying Manifold.
+   *
    */
   virtual bool
   preserves_vertex_locations() const override;
@@ -83,8 +85,8 @@ public:
   is_compatible_with(const ReferenceCell &cell_type) const override;
 
   /**
-   * @name Mapping points between reference and real cells
-   * @{
+   * @name   Mapping points between reference and real cells     @{
+   *
    */
 
   // for documentation, see the Mapping base class
@@ -101,11 +103,12 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Functions to transform tensors from reference to real coordinates
-   * @{
+   * @name   Functions to transform tensors from reference to real coordinates     @{
+   *
    */
 
   // for documentation, see the Mapping base class
@@ -145,40 +148,42 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Interface with FEValues
-   * @{
+   * @name   Interface with FEValues     @{
+   *
    */
 
 public:
   /**
    * Storage for internal data of polynomial mappings. See
-   * Mapping::InternalDataBase for an extensive description.
-   *
-   * For the current class, the InternalData class stores data that is
-   * computed once when the object is created (in get_data()) as well as data
-   * the class wants to store from between the call to fill_fe_values(),
+   * Mapping::InternalDataBase   for an extensive description.     For the
+   * current class, the InternalData class stores data that is   computed once
+   * when the object is created (in get_data()) as well as data   the class
+   * wants to store from between the call to fill_fe_values(),
    * fill_fe_face_values(), or fill_fe_subface_values() until possible later
    * calls from the finite element to functions such as transform(). The
    * latter class of member variables are marked as 'mutable'.
+   *
    */
   class InternalData : public Mapping<dim, spacedim>::InternalDataBase
   {
   public:
     /**
      * Constructor.
+     *
      */
     InternalData() = default;
 
     /**
      * Initialize the object's member variables related to cell data based on
-     * the given arguments.
+     * the given arguments.         The function also calls
+     * compute_shape_function_values() to actually set     the member
+     * variables related to the values and derivatives of the     mapping
+     * shape functions.
      *
-     * The function also calls compute_shape_function_values() to actually set
-     * the member variables related to the values and derivatives of the
-     * mapping shape functions.
      */
     void
     initialize(const UpdateFlags      update_flags,
@@ -189,6 +194,7 @@ public:
      * Initialize the object's member variables related to cell and face data
      * based on the given arguments. In order to initialize cell data, this
      * function calls initialize().
+     *
      */
     void
     initialize_face(const UpdateFlags      update_flags,
@@ -197,97 +203,92 @@ public:
 
 
     /**
-     * Compute the weights associated to the Manifold object, that
-     * need to be passed when computing the location of the quadrature
-     * points.
+     * Compute the weights associated to the Manifold object, that     need to
+     * be passed when computing the location of the quadrature     points.
+     *
      */
     void
     compute_manifold_quadrature_weights(const Quadrature<dim> &quadrature);
 
     /**
      * Store vertices internally.
+     *
      */
     void
     store_vertices(
       const typename Triangulation<dim, spacedim>::cell_iterator &cell) const;
 
     /**
-     * Return an estimate (in bytes) for the memory consumption of this object.
+     * Return an estimate (in bytes) for the memory consumption of this
+     * object.
+     *
      */
     virtual std::size_t
     memory_consumption() const override;
 
     /**
-     * The current cell vertices.
+     * The current cell vertices.         Computed each.
      *
-     * Computed each.
      */
     mutable std::vector<Point<spacedim>> vertices;
 
     /**
-     * The current cell.
+     * The current cell.         Computed each.
      *
-     * Computed each.
      */
     mutable typename Triangulation<dim, spacedim>::cell_iterator cell;
 
     /**
-     * The actual quadrature on the reference cell.
+     * The actual quadrature on the reference cell.         Computed once.
      *
-     * Computed once.
      */
     Quadrature<dim> quad;
 
 
     /**
-     * Values of quadrature weights for manifold quadrature
-     * formulas.
-     *
-     * The Manifold class has a function (Manifold::get_new_point())
+     * Values of quadrature weights for manifold quadrature     formulas.
+     * The Manifold class has a function   (Manifold::get_new_point())
      * that returns new points according to a weighted average of some
-     * surrounding points on the Manifold. For each quadrature point,
-     * we call this function with a Quadrature formula constructed
-     * using the vertices of the current cell, and the values of the
-     * basis functions of an FE_Q(1) finite element evaluated at the
-     * quadrature point itself. While the vertices of the cell change
-     * for every cell, the weights can be computed once for each
-     * quadrature point. We store this information in the following
-     * variable, where the first index runs through the quadrature
-     * points, and the second index runs through the vertex indices.
+     * surrounding points on the Manifold. For each quadrature point,     we
+     * call this function with a Quadrature formula constructed     using the
+     * vertices of the current cell, and the values of the     basis functions
+     * of an FE_Q(1) finite element evaluated at the     quadrature point
+     * itself. While the vertices of the cell change     for every cell, the
+     * weights can be computed once for each     quadrature point. We store
+     * this information in the following     variable, where the first index
+     * runs through the quadrature     points, and the second index runs
+     * through the vertex indices.         Computed once.
      *
-     * Computed once.
      */
     std::vector<std::vector<double>> cell_manifold_quadrature_weights;
 
 
     /**
-     * A vector of weights for use in Manifold::get_new_point(). For
-     * each point (interior to a cell), we compute the weight each
-     * vertex has for this point. If the point lies at a vertex, then
-     * this vertex has weight one and all others have weight zero. If
-     * the point lies interior to a cell, then the weight every vertex
-     * has is just the $d$-linear shape functions associated with each
-     * vertex evaluated at that point.
+     * A vector of weights for use in   Manifold::get_new_point().   For
+     * each point (interior to a cell), we compute the weight each     vertex
+     * has for this point. If the point lies at a vertex, then     this vertex
+     * has weight one and all others have weight zero. If     the point lies
+     * interior to a cell, then the weight every vertex     has is just the
+     * $d$  -linear shape functions associated with each     vertex evaluated
+     * at that point.         This array has size
+     * GeometryInfo<dim>::vertices_per_cell,   but it     can't be converted
+     * into a fixed size array because it is used     as input for
+     * Manifold::get_new_point()   which wants to see a
+     * std::vector<double>   for the weights.
      *
-     * This array has size GeometryInfo<dim>::vertices_per_cell, but it
-     * can't be converted into a fixed size array because it is used
-     * as input for Manifold::get_new_point() which wants to see a
-     * std::vector<double> for the weights.
      */
     mutable std::vector<double> vertex_weights;
 
     /**
      * Unit tangential vectors. Used for the computation of boundary forms and
-     * normal vectors.
-     *
-     * This array has `(dim-1) * GeometryInfo::faces_per_cell` entries. The
-     * first GeometryInfo::faces_per_cell contain the vectors in the first
+     * normal vectors.         This array has `(dim-1)
+     * GeometryInfo::faces_per_cell`   entries. The     first
+     * GeometryInfo::faces_per_cell   contain the vectors in the first
      * tangential direction for each face; the second set of
-     * GeometryInfo<dim>::faces_per_cell entries contain the vectors in the
-     * second tangential direction (only in 3d, since there we have 2 tangential
-     * directions per face), etc.
+     * GeometryInfo<dim>::faces_per_cell   entries contain the vectors in the
+     * second tangential direction (only in 3d, since there we have 2
+     * tangential     directions per face), etc.         Filled once.
      *
-     * Filled once.
      */
     std::array<std::vector<Tensor<1, dim>>,
                GeometryInfo<dim>::faces_per_cell *(dim - 1)>
@@ -295,39 +296,39 @@ public:
 
     /**
      * Tensors of covariant transformation at each of the quadrature points.
-     * The matrix stored is the Jacobian * G^{-1}, where G = Jacobian^{t} *
+     * The matrix stored is the Jacobian G^{-1}, where G = Jacobian^{t}
      * Jacobian, is the first fundamental form of the map; if dim=spacedim
      * then it reduces to the transpose of the inverse of the Jacobian matrix,
-     * which itself is stored in the @p contravariant field of this structure.
+     * which itself is stored in the   @p contravariant   field of this
+     * structure.         Computed on each cell.
      *
-     * Computed on each cell.
      */
     mutable std::vector<DerivativeForm<1, dim, spacedim>> covariant;
 
     /**
      * Tensors of contravariant transformation at each of the quadrature
      * points. The contravariant matrix is the Jacobian of the transformation,
-     * i.e. $J_{ij}=dx_i/d\hat x_j$.
+     * i.e.   $J_{ij}=dx_i/d\hat x_j$  .         Computed on each cell.
      *
-     * Computed on each cell.
      */
     mutable std::vector<DerivativeForm<1, dim, spacedim>> contravariant;
 
     /**
      * Auxiliary vectors for internal use.
+     *
      */
     mutable std::vector<std::vector<Tensor<1, spacedim>>> aux;
 
     /**
      * The determinant of the Jacobian in each quadrature point. Filled if
      * #update_volume_elements.
+     *
      */
     mutable std::vector<double> volume_elements;
 
     /**
-     * A pointer to the Manifold in use.
+     * A pointer to the Manifold in use.         Updated each.
      *
-     * Updated each.
      */
     mutable SmartPointer<const Manifold<dim, spacedim>> manifold;
   };
@@ -388,14 +389,15 @@ public:
 
   /**
    * @}
+   *
    */
 };
 
 
 
-/*@}*/
+ /*@}*/ 
 
-/*----------------------------------------------------------------------*/
+ /*----------------------------------------------------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -456,7 +458,7 @@ MappingManifold<dim, spacedim>::is_compatible_with(
 
 #endif // DOXYGEN
 
-/* -------------- declaration of explicit specializations ------------- */
+ /* -------------- declaration of explicit specializations ------------- */ 
 
 
 DEAL_II_NAMESPACE_CLOSE

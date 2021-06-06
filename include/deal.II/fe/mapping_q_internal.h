@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -49,6 +49,7 @@ namespace internal
    * Internal namespace to implement methods specific to MappingQ1, in
    * particular an explicit formula for the transformation from the real to
    * the unit cell in 2D.
+   *
    */
   namespace MappingQ1
   {
@@ -138,10 +139,8 @@ namespace internal
       const long double eta =
         (std::abs(eta1 - 0.5) < std::abs(eta2 - 0.5)) ? eta1 : eta2;
 
-      /*
-       * There are two ways to compute xi from eta, but either one may have a
-       * zero denominator.
-       */
+      /*       There are two ways to compute xi from eta, but either one may have a       zero denominator.      
+* */
       const long double subexpr0        = -eta * x2 + x0 * (eta - 1);
       const long double xi_denominator0 = eta * x3 - x1 * (eta - 1) + subexpr0;
       const long double max_x = std::max(std::max(std::abs(x0), std::abs(x1)),
@@ -186,8 +185,8 @@ namespace internal
     inline Point<3>
     transform_real_to_unit_cell(
       const std::array<Point<spacedim>, GeometryInfo<3>::vertices_per_cell>
-        & /*vertices*/,
-      const Point<spacedim> & /*p*/)
+        &  /*vertices*/ ,
+      const Point<spacedim> &  /*p*/ )
     {
       // It should not be possible to get here
       Assert(false, ExcInternalError());
@@ -203,12 +202,14 @@ namespace internal
    * Internal namespace to implement methods of MappingQGeneric, such as the
    * evaluation of the mapping and the transformation between real and unit
    * cell.
+   *
    */
   namespace MappingQGenericImplementation
   {
     /**
      * This function generates the reference cell support points from the 1d
      * support points by expanding the tensor product.
+     *
      */
     template <int dim>
     std::vector<Point<dim>>
@@ -236,10 +237,10 @@ namespace internal
 
     /**
      * This function is needed by the constructor of
-     * <tt>MappingQ<dim,spacedim></tt> for <tt>dim=</tt> 2 and 3.
-     *
-     * For the definition of the @p support_point_weights_on_quad please
+     * <tt>MappingQ<dim,spacedim></tt> for <tt>dim=</tt> 2 and 3.         For
+     * the definition of the   @p support_point_weights_on_quad   please
      * refer to the description of TransfiniteInterpolationManifold.
+     *
      */
     inline dealii::Table<2, double>
     compute_support_point_weights_on_quad(const unsigned int polynomial_degree)
@@ -289,9 +290,9 @@ namespace internal
 
     /**
      * This function is needed by the constructor of <tt>MappingQ<3></tt>.
-     *
-     * For the definition of the @p support_point_weights_on_quad please
+     * For the definition of the   @p support_point_weights_on_quad   please
      * refer to the description of TransfiniteInterpolationManifold.
+     *
      */
     inline dealii::Table<2, double>
     compute_support_point_weights_on_hex(const unsigned int polynomial_degree)
@@ -381,6 +382,7 @@ namespace internal
     /**
      * This function collects the output of
      * compute_support_point_weights_on_{quad,hex} in a single data structure.
+     *
      */
     inline std::vector<dealii::Table<2, double>>
     compute_support_point_weights_perimeter_to_interior(
@@ -415,6 +417,7 @@ namespace internal
 
     /**
      * Collects all interior points for the various dimensions.
+     *
      */
     template <int dim>
     inline dealii::Table<2, double>
@@ -442,11 +445,12 @@ namespace internal
 
 
     /**
-     * Using the relative weights of the shape functions evaluated at
-     * one point on the reference cell (and stored in data.shape_values
-     * and accessed via data.shape(0,i)) and the locations of mapping
-     * support points (stored in data.mapping_support_points), compute
-     * the mapped location of that point in real space.
+     * Using the relative weights of the shape functions evaluated at     one
+     * point on the reference cell (and stored in data.shape_values     and
+     * accessed via data.shape(0,i)) and the locations of mapping     support
+     * points (stored in data.mapping_support_points), compute     the mapped
+     * location of that point in real space.
+     *
      */
     template <int dim, int spacedim>
     inline Point<spacedim>
@@ -469,6 +473,7 @@ namespace internal
     /**
      * Implementation of transform_real_to_unit_cell for either type double
      * or VectorizedArray<double>
+     *
      */
     template <int dim, int spacedim, typename Number>
     inline Point<dim, Number>
@@ -719,6 +724,7 @@ namespace internal
 
     /**
      * Implementation of transform_real_to_unit_cell for dim==spacedim-1
+     *
      */
     template <int dim>
     inline Point<dim>
@@ -852,13 +858,13 @@ namespace internal
      * for a very cheap evaluation of the inverse map by a simple polynomial
      * interpolation, which can be used as a better initial guess for
      * transforming points from real to unit coordinates than an affine
-     * approximation.
+     * approximation.         Far away outside the unit cell, this
+     * approximation can become     inaccurate for non-affine cell shapes.
+     * This must be expected from a     fit of a polynomial to a rational
+     * function, and due to the fact that     the region of the least squares
+     * fit, the unit cell, is left. Hence,     use this function with care in
+     * those situations.
      *
-     * Far away outside the unit cell, this approximation can become
-     * inaccurate for non-affine cell shapes. This must be expected from a
-     * fit of a polynomial to a rational function, and due to the fact that
-     * the region of the least squares fit, the unit cell, is left. Hence,
-     * use this function with care in those situations.
      */
     template <int dim, int spacedim>
     class InverseQuadraticApproximation
@@ -866,20 +872,19 @@ namespace internal
     public:
       /**
        * Number of basis functions in the quadratic approximation.
+       *
        */
       static constexpr unsigned int n_functions =
         (spacedim == 1 ? 3 : (spacedim == 2 ? 6 : 10));
 
       /**
-       * Constructor.
-       *
-       * @param real_support_points The position of the mapping support points
-       * in real space, queried by
+       * Constructor.               @param   real_support_points The position
+       * of the mapping support points       in real space, queried by
        * MappingQGeneric::compute_mapping_support_points().
-       *
-       * @param unit_support_points The location of the support points in
-       * reference coordinates $[0, 1]^d$ that map to the mapping support
+       * @param   unit_support_points The location of the support points in
+       * reference coordinates   $[0, 1]^d$   that map to the mapping support
        * points in real space by a polynomial map.
+       *
        */
       InverseQuadraticApproximation(
         const std::vector<Point<spacedim>> &real_support_points,
@@ -998,12 +1003,14 @@ namespace internal
 
       /**
        * Copy constructor.
+       *
        */
       InverseQuadraticApproximation(const InverseQuadraticApproximation &) =
         default;
 
       /**
        * Evaluate the quadratic approximation.
+       *
        */
       template <typename Number>
       Point<dim, Number>
@@ -1041,16 +1048,19 @@ namespace internal
        * shift vector normalization_shift (first point of the mapping support
        * points in real space) and an inverse length scale called
        * `length_normalization` as the distance between the first two points.
+       *
        */
       const Point<spacedim> normalization_shift;
 
       /**
        * See the documentation of `normalization_shift` above.
+       *
        */
       const double normalization_length;
 
       /**
        * The vector of coefficients in the quadratic approximation.
+       *
        */
       std::array<Point<dim>, n_functions> coefficients;
 
@@ -1058,6 +1068,7 @@ namespace internal
        * In case the quadratic approximation is not possible due to an
        * insufficient number of support points, we switch to an affine
        * approximation that always works but is less accurate.
+       *
        */
       bool is_affine;
     };
@@ -1068,6 +1079,7 @@ namespace internal
      * In case the quadrature formula is a tensor product, this is a
      * replacement for maybe_compute_q_points(), maybe_update_Jacobians() and
      * maybe_update_jacobian_grads()
+     *
      */
     template <int dim, int spacedim>
     inline void
@@ -1250,8 +1262,9 @@ namespace internal
     /**
      * Compute the locations of quadrature points on the object described by
      * the first argument (and the cell for which the mapping support points
-     * have already been set), but only if the update_flags of the @p data
+     * have already been set), but only if the update_flags of the   @p data
      * argument indicate so.
+     *
      */
     template <int dim, int spacedim>
     inline void
@@ -1279,11 +1292,10 @@ namespace internal
 
     /**
      * Update the co- and contravariant matrices as well as their determinant,
-     * for the cell
-     * described stored in the data object, but only if the update_flags of the @p data
-     * argument indicate so.
+     * for the cell     described stored in the data object, but only if the
+     * update_flags of the   @p data       argument indicate so.         Skip
+     * the computation if possible as indicated by the first argument.
      *
-     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1364,9 +1376,9 @@ namespace internal
 
     /**
      * Update the Hessian of the transformation from unit to real cell, the
-     * Jacobian gradients.
+     * Jacobian gradients.         Skip the computation if possible as
+     * indicated by the first argument.
      *
-     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1412,8 +1424,8 @@ namespace internal
     /**
      * Update the Hessian of the transformation from unit to real cell, the
      * Jacobian gradients, pushed forward to the real cell coordinates.
-     *
      * Skip the computation if possible as indicated by the first argument.
+     *
      */
     template <int dim, int spacedim>
     inline void
@@ -1485,9 +1497,9 @@ namespace internal
 
     /**
      * Update the third derivatives of the transformation from unit to real
-     * cell, the Jacobian hessians.
+     * cell, the Jacobian hessians.         Skip the computation if possible
+     * as indicated by the first argument.
      *
-     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1541,9 +1553,9 @@ namespace internal
     /**
      * Update the Hessian of the Hessian of the transformation from unit
      * to real cell, the Jacobian Hessian gradients, pushed forward to the
-     * real cell coordinates.
+     * real cell coordinates.         Skip the computation if possible as
+     * indicated by the first argument.
      *
-     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1642,9 +1654,9 @@ namespace internal
 
     /**
      * Update the fourth derivatives of the transformation from unit to real
-     * cell, the Jacobian hessian gradients.
+     * cell, the Jacobian hessian gradients.         Skip the computation if
+     * possible as indicated by the first argument.
      *
-     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1701,9 +1713,9 @@ namespace internal
     /**
      * Update the Hessian gradient of the transformation from unit to real
      * cell, the Jacobian Hessians, pushed forward to the real cell
-     * coordinates.
+     * coordinates.         Skip the computation if possible as indicated by
+     * the first argument.
      *
-     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1825,12 +1837,12 @@ namespace internal
 
     /**
      * Depending on what information is called for in the update flags of the
-     * @p data object, compute the various pieces of information that is
+     * @p data   object, compute the various pieces of information that is
      * required by the fill_fe_face_values() and fill_fe_subface_values()
      * functions. This function simply unifies the work that would be done by
-     * those two functions.
+     * those two functions.         The resulting data is put into the   @p
+     * output_data   argument.
      *
-     * The resulting data is put into the @p output_data argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1991,10 +2003,11 @@ namespace internal
 
 
     /**
-     * Do the work of MappingQGeneric::fill_fe_face_values() and
-     * MappingQGeneric::fill_fe_subface_values() in a generic way,
-     * using the 'data_set' to differentiate whether we will
-     * work on a face (and if so, which one) or subface.
+     * Do the work of   MappingQGeneric::fill_fe_face_values()   and
+     * MappingQGeneric::fill_fe_subface_values()   in a generic way,     using
+     * the 'data_set' to differentiate whether we will     work on a face (and
+     * if so, which one) or subface.
+     *
      */
     template <int dim, int spacedim>
     inline void
@@ -2067,7 +2080,8 @@ namespace internal
 
 
     /**
-     * Implementation of MappingQGeneric::transform() for generic tensors.
+     * Implementation of   MappingQGeneric::transform()   for generic tensors.
+     *
      */
     template <int dim, int spacedim, int rank>
     inline void
@@ -2145,7 +2159,8 @@ namespace internal
 
 
     /**
-     * Implementation of MappingQGeneric::transform() for gradients.
+     * Implementation of   MappingQGeneric::transform()   for gradients.
+     *
      */
     template <int dim, int spacedim, int rank>
     inline void
@@ -2243,7 +2258,8 @@ namespace internal
 
 
     /**
-     * Implementation of MappingQGeneric::transform() for hessians.
+     * Implementation of   MappingQGeneric::transform()   for hessians.
+     *
      */
     template <int dim, int spacedim>
     inline void
@@ -2409,8 +2425,9 @@ namespace internal
 
 
     /**
-     * Implementation of MappingQGeneric::transform() for DerivativeForm
+     * Implementation of   MappingQGeneric::transform()   for DerivativeForm
      * arguments.
+     *
      */
     template <int dim, int spacedim, int rank>
     inline void

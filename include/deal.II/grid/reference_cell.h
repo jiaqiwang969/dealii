@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
 //
@@ -44,17 +44,11 @@ namespace internal
   namespace ReferenceCell
   {
     /**
-     * A helper function to create a ReferenceCell object from an
-     * integer. ReferenceCell objects are "singletons" (actually,
-     * "multitons" -- there are multiple, but they are only a handful and
-     * these are all that can be used). What is then necessary is to
-     * have a way to create these with their internal id to distinguish
-     * the few possible ones in existence. We could do this via a public
-     * constructor of ReferenceCell, but that would allow users
-     * to create ones outside the range we envision, and we don't want to do
-     * that. Rather, the constructor that takes an integer is made `private`
-     * but we have this one function in an internal namespace that is a friend
-     * of the class and can be used to create the objects.
+     * A helper function to create a ReferenceCell object from an     integer.
+     * ReferenceCell objects are "singletons" (actually,     "multitons"
+     *
+     *  -  there are multiple, but they are only a handful and     these are all that can be used). What is then necessary is to     have a way to create these with their internal id to distinguish     the few possible ones in existence. We could do this via a public     constructor of ReferenceCell, but that would allow users     to create ones outside the range we envision, and we don't want to do     that. Rather, the constructor that takes an integer is made `private`     but we have this one function in an internal namespace that is a friend     of the class and can be used to create the objects.
+     *
      */
     DEAL_II_CONSTEXPR dealii::ReferenceCell
                       make_reference_cell_from_int(const std::uint8_t kind);
@@ -65,64 +59,66 @@ namespace internal
 
 
 /**
- * A type that describes the kinds of reference cells that can be used.
- * This includes quadrilaterals and hexahedra (i.e., "hypercubes"),
- * triangles and tetrahedra (simplices), and the pyramids and wedges
- * necessary when using mixed 3d meshes.
- *
- * Objects of this type should not be created in user code, and as a
- * consequence the class does not have a user-accessible constructor
+ * A type that describes the kinds of reference cells that can be used. This
+ * includes quadrilaterals and hexahedra (i.e., "hypercubes"), triangles and
+ * tetrahedra (simplices), and the pyramids and wedges necessary when using
+ * mixed 3d meshes. Objects of this type should not be created in user code,
+ * and as a consequence the class does not have a user-accessible constructor
  * other than the default constructor (which creates an invalid object).
- * Rather, there is a finite number of specific reference cell objects
- * defined in the ReferenceCells namespace that completely enumerate
- * all of the possible values. User codes should therefore rely
- * exclusively on assigning ReferenceCell objects from these special
- * objects, and comparing against those special objects.
+ * Rather, there is a finite number of specific reference cell objects defined
+ * in the ReferenceCells namespace that completely enumerate all of the
+ * possible values. User codes should therefore rely exclusively on assigning
+ * ReferenceCell objects from these special objects, and comparing against
+ * those special objects.
+ * The purposes and intents of this class are described in the   @ref GlossReferenceCell   "reference cell"
+ * glossary entry.
  *
- * The purposes and intents of this class are described in the
- * @ref GlossReferenceCell "reference cell" glossary entry.
  *
  * @ingroup grid geomprimitives aniso
+ *
+ *
  */
 class ReferenceCell
 {
 public:
   /**
-   * Return the correct ReferenceCell for a given structural
-   * dimension and number of vertices. For example, if `dim==2` and
-   * `n_vertices==4`, this function will return ReferenceCells::Quadrilateral.
-   * But if `dim==3` and `n_vertices==4`, it will return
-   * ReferenceCells::Tetrahedron.
+   * Return the correct ReferenceCell for a given structural   dimension and
+   * number of vertices. For example, if `dim==2` and   `n_vertices==4`, this
+   * function will return   ReferenceCells::Quadrilateral.     But if `dim==3`
+   * and `n_vertices==4`, it will return     ReferenceCells::Tetrahedron.
+   *
    */
   static ReferenceCell
   n_vertices_to_type(const int dim, const unsigned int n_vertices);
 
   /**
    * Default constructor. Initialize this object as an invalid object. The
-   * end result is that the current object equals ReferenceCells::Invalid.
+   * end result is that the current object equals   ReferenceCells::Invalid.
+   * Generally, ReferenceCell objects are created by assignment from   the
+   * special objects in namespace ReferenceCells, which is the only   way to
+   * obtain a valid object.
    *
-   * Generally, ReferenceCell objects are created by assignment from
-   * the special objects in namespace ReferenceCells, which is the only
-   * way to obtain a valid object.
    */
   DEAL_II_CONSTEXPR
   ReferenceCell();
 
   /**
-   * @name Querying information about the kind of reference cells
-   * @{
+   * @name   Querying information about the kind of reference cells     @{
+   *
    */
 
   /**
-   * Return `true` if the object is a ReferenceCells::Vertex,
-   * ReferenceCells::Line, ReferenceCells::Quadrilateral, or
+   * Return `true` if the object is a   ReferenceCells::Vertex,
+   * ReferenceCells::Line,     ReferenceCells::Quadrilateral,   or
    * ReferenceCells::Hexahedron.
+   *
    */
   bool
   is_hyper_cube() const;
 
   /**
    * Return true if the object is a Vertex, Line, Triangle, or Tetrahedron.
+   *
    */
   bool
   is_simplex() const;
@@ -130,30 +126,34 @@ public:
   /**
    * Return the dimension of the reference cell represented by the current
    * object.
+   *
    */
   unsigned int
   get_dimension() const;
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Shape functions, mappings, quadratures defined on a reference cell
-   * @{
+   * @name   Shape functions, mappings, quadratures defined on a reference cell     @{
+   *
    */
 
   /**
-   * Compute the value of the $i$-th linear shape function at location $\xi$
-   * for the current reference-cell type.
+   * Compute the value of the   $i$  -th linear shape function at location
+   * $\xi$     for the current reference-cell type.
+   *
    */
   template <int dim>
   double
   d_linear_shape_function(const Point<dim> &xi, const unsigned int i) const;
 
   /**
-   * Compute the gradient of the $i$-th linear shape function at location
-   * $\xi$ for the current reference-cell type.
+   * Compute the gradient of the   $i$  -th linear shape function at location
+   * $\xi$   for the current reference-cell type.
+   *
    */
   template <int dim>
   Tensor<1, dim>
@@ -161,28 +161,29 @@ public:
                                    const unsigned int i) const;
 
   /**
-   * Return a default mapping of degree @p degree matching the current
+   * Return a default mapping of degree   @p degree   matching the current
    * reference cell. If this reference cell is a hypercube, then the returned
    * mapping is a MappingQGeneric; otherwise, it is an object of type
    * MappingFE initialized with FE_SimplexP (if the reference cell is a
-   * triangle or tetrahedron), with FE_PyramidP (if the reference
-   * cell is a pyramid), or with FE_WedgeP (if the reference cell is
-   * a wedge).
+   * triangle or tetrahedron), with FE_PyramidP (if the reference   cell is a
+   * pyramid), or with FE_WedgeP (if the reference cell is   a wedge).
+   *
    */
   template <int dim, int spacedim = dim>
   std::unique_ptr<Mapping<dim, spacedim>>
   get_default_mapping(const unsigned int degree) const;
 
   /**
-   * Return a default linear mapping matching the current reference cell.
-   * If this reference cell is a hypercube, then the returned mapping
-   * is a MappingQ1; otherwise, it is an object of type MappingFE
-   * initialized with FE_SimplexP (if the reference cell is a triangle or
-   * tetrahedron), with FE_PyramidP (if the reference cell is a
-   * pyramid), or with FE_WedgeP (if the reference cell is a wedge).
-   * In other words, the term "linear" in the name of the function has to be
-   * understood as $d$-linear (i.e., bilinear or trilinear) for some of the
-   * coordinate directions.
+   * Return a default linear mapping matching the current reference cell.   If
+   * this reference cell is a hypercube, then the returned mapping   is a
+   * MappingQ1; otherwise, it is an object of type MappingFE   initialized
+   * with FE_SimplexP (if the reference cell is a triangle or   tetrahedron),
+   * with FE_PyramidP (if the reference cell is a   pyramid), or with
+   * FE_WedgeP (if the reference cell is a wedge).   In other words, the term
+   * "linear" in the name of the function has to be   understood as   $d$
+   * -linear (i.e., bilinear or trilinear) for some of the   coordinate
+   * directions.
+   *
    */
   template <int dim, int spacedim = dim>
   const Mapping<dim, spacedim> &
@@ -190,11 +191,11 @@ public:
 
   /**
    * Return a Gauss-type quadrature matching the given reference cell (QGauss,
-   * QGaussSimplex, QGaussPyramid, QGaussWedge).
+   * QGaussSimplex, QGaussPyramid, QGaussWedge).       @param[in]
+   * n_points_1D The number of quadrature points in each direction   (QGauss)
+   * or an indication of what polynomial degree needs to be   integrated
+   * exactly for the other types.
    *
-   * @param[in] n_points_1D The number of quadrature points in each direction
-   * (QGauss) or an indication of what polynomial degree needs to be
-   * integrated exactly for the other types.
    */
   template <int dim>
   Quadrature<dim>
@@ -203,8 +204,8 @@ public:
   /**
    * Return a quadrature rule with the support points of the given reference
    * cell.
+   * @note   The weights of the quadrature object are left unfilled.
    *
-   * @note The weights of the quadrature object are left unfilled.
    */
   template <int dim>
   const Quadrature<dim> &
@@ -212,17 +213,19 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Querying the number of building blocks of a reference cell
-   * @{
+   * @name   Querying the number of building blocks of a reference cell     @{
+   *
    */
 
   /**
-   * Return the number of vertices that make up the reference
-   * cell in question. A vertex is a "corner" (a zero-dimensional
-   * object) of the reference cell.
+   * Return the number of vertices that make up the reference   cell in
+   * question. A vertex is a "corner" (a zero-dimensional   object) of the
+   * reference cell.
+   *
    */
   unsigned int
   n_vertices() const;
@@ -230,14 +233,15 @@ public:
   /**
    * Return an object that can be thought of as an array containing all
    * indices from zero to n_vertices().
+   *
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   vertex_indices() const;
 
   /**
-   * Return the number of lines that make up the reference
-   * cell in question. A line is an "edge" (a one-dimensional
-   * object) of the reference cell.
+   * Return the number of lines that make up the reference   cell in question.
+   * A line is an "edge" (a one-dimensional   object) of the reference cell.
+   *
    */
   unsigned int
   n_lines() const;
@@ -245,14 +249,15 @@ public:
   /**
    * Return an object that can be thought of as an array containing all
    * indices from zero to n_lines().
+   *
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   line_indices() const;
 
   /**
-   * Return the number of faces that make up the reference
-   * cell in question. A face is a `(dim-1)`-dimensional
-   * object bounding the reference cell.
+   * Return the number of faces that make up the reference   cell in question.
+   * A face is a `(dim-1)`-dimensional   object bounding the reference cell.
+   *
    */
   unsigned int
   n_faces() const;
@@ -260,74 +265,89 @@ public:
   /**
    * Return an object that can be thought of as an array containing all
    * indices from zero to n_faces().
+   *
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   face_indices() const;
 
   /**
-   * Return the reference-cell type of face @p face_no of the current
+   * Return the reference-cell type of face   @p face_no   of the current
    * object. For example, if the current object is
-   * ReferenceCells::Tetrahedron, then `face_no` must be between
-   * in the interval $[0,4)$ and the function will always return
-   * ReferenceCells::Triangle. If the current object is
-   * ReferenceCells::Hexahedron, then `face_no` must be between
-   * in the interval $[0,6)$ and the function will always return
-   * ReferenceCells::Quadrilateral. For wedges and pyramids, the
-   * returned object may be either ReferenceCells::Triangle or
-   * ReferenceCells::Quadrilateral, depending on the given index.
+   * ReferenceCells::Tetrahedron,   then `face_no` must be between   in the
+   * interval   $[0,4)$   and the function will always return
+   * ReferenceCells::Triangle.   If the current object is
+   * ReferenceCells::Hexahedron,   then `face_no` must be between   in the
+   * interval   $[0,6)$   and the function will always return
+   * ReferenceCells::Quadrilateral.   For wedges and pyramids, the   returned
+   * object may be either   ReferenceCells::Triangle   or
+   * ReferenceCells::Quadrilateral,   depending on the given index.
+   *
    */
   ReferenceCell
   face_reference_cell(const unsigned int face_no) const;
 
   /**
    * @}
-   */
-
-  /**
-   * @name Relationships between objects in the cell and on faces
-   * @{
-   */
-
-  /**
-   * Return which child cells are adjacent to a certain face of the
-   * mother cell.
    *
-   * For example, in 2D the layout of a quadrilateral cell is as follows:
+   */
+
+  /**
+   * @name   Relationships between objects in the cell and on faces     @{
+   *
+   */
+
+  /**
+   * Return which child cells are adjacent to a certain face of the   mother
+   * cell.     For example, in 2D the layout of a quadrilateral cell is as
+   * follows:
    * @verbatim
-   *      3
-   *   2-->--3
-   *   |     |
+   *    3
+   * 2-->--3
+   * |     |
    * 0 ^     ^ 1
-   *   |     |
-   *   0-->--1
-   *      2
+   * |     |
+   * 0-->--1
+   *    2
    * @endverbatim
    * Vertices and faces are indicated with their numbers, faces also with
-   * their directions.
-   *
-   * Now, when refined, the layout is like this:
+   * their directions.     Now, when refined, the layout is like this:
    * @verbatim
-   * *---*---*
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * ---*---*
    * | 2 | 3 |
-   * *---*---*
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * ---*---*
    * | 0 | 1 |
-   * *---*---*
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * ---*---*
    * @endverbatim
-   *
-   * Thus, the child cells on face 0 are (ordered in the direction of the
-   * face) 0 and 2, on face 3 they are 2 and 3, etc.
-   *
-   * For three spatial dimensions, the exact order of the children is laid
-   * down in the general documentation of this class.
-   *
-   * The <tt>face_orientation</tt> argument is meant exclusively for
-   * quadrilaterals and hexahedra at the moment. It determines how this function
-   * handles faces oriented in the standard and non-standard orientation. It
-   * represents a bit-code for the overall <tt>face_orientation</tt>,
-   * <tt>face_flip</tt> and <tt>face_rotation</tt> and defaults to the standard
-   * orientation. The concept of face orientations is explained in this
-   * @ref GlossFaceOrientation "glossary"
+   * Thus, the child cells on face 0 are (ordered in the direction of the   face) 0 and 2, on face 3 they are 2 and 3, etc.     For three spatial dimensions, the exact order of the children is laid   down in the general documentation of this class.     The <tt>face_orientation</tt> argument is meant exclusively for   quadrilaterals and hexahedra at the moment. It determines how this function   handles faces oriented in the standard and non-standard orientation. It   represents a bit-code for the overall <tt>face_orientation</tt>,   <tt>face_flip</tt> and <tt>face_rotation</tt> and defaults to the standard   orientation. The concept of face orientations is explained in this     @ref GlossFaceOrientation   "glossary"
    * entry.
+   *
    */
   unsigned int
   child_cell_on_face(const unsigned int  face_n,
@@ -337,29 +357,30 @@ public:
   /**
    * For a given vertex in a cell, return a pair of a face index and a
    * vertex index within this face.
+   * @note   In practice, a vertex is of course generally part of more than
+   * one     face, and one could return different faces and the corresponding
+   * index within. Which face this function chooses is often not of
+   * importance (and not exposed by this function on purpose).
    *
-   * @note In practice, a vertex is of course generally part of more than one
-   *   face, and one could return different faces and the corresponding
-   *   index within. Which face this function chooses is often not of
-   *   importance (and not exposed by this function on purpose).
    */
   std::array<unsigned int, 2>
   standard_vertex_to_face_and_vertex_index(const unsigned int vertex) const;
 
   /**
-   * For a given line in a cell, return a pair of a face index and a
-   * line index within this face.
+   * For a given line in a cell, return a pair of a face index and a   line
+   * index within this face.
+   * @note   In practice, a line is of course generally part of more than one
+   * face, and one could return different faces and the corresponding
+   * index within. Which face this function chooses is often not of
+   * importance (and not exposed by this function on purpose).
    *
-   * @note In practice, a line is of course generally part of more than one
-   *   face, and one could return different faces and the corresponding
-   *   index within. Which face this function chooses is often not of
-   *   importance (and not exposed by this function on purpose).
    */
   std::array<unsigned int, 2>
   standard_line_to_face_and_line_index(const unsigned int line) const;
 
   /**
    * Map face line number to cell line number.
+   *
    */
   unsigned int
   face_to_cell_lines(const unsigned int  face,
@@ -368,6 +389,7 @@ public:
 
   /**
    * Map face vertex number to cell vertex number.
+   *
    */
   unsigned int
   face_to_cell_vertices(const unsigned int  face,
@@ -376,6 +398,7 @@ public:
 
   /**
    * Correct vertex index depending on face orientation.
+   *
    */
   unsigned int
   standard_to_real_face_vertex(const unsigned int  vertex,
@@ -384,6 +407,7 @@ public:
 
   /**
    * Correct line index depending on face orientation.
+   *
    */
   unsigned int
   standard_to_real_face_line(const unsigned int  line,
@@ -391,14 +415,15 @@ public:
                              const unsigned char face_orientation) const;
 
   /**
-   * Return whether the line with index @p line is oriented in
-   * standard direction within a cell, given the @p face_orientation of
-   * the face within the current cell, and @p line_orientation flag
-   * for the line within that face. @p true indicates that the line is
-   * oriented from vertex 0 to vertex 1, whereas it is the other way
-   * around otherwise. In 1d and 2d, this is always @p true, but in 3d
-   * it may be different, see the respective discussion in the
-   * documentation of the GeometryInfo class.
+   * Return whether the line with index   @p line   is oriented in   standard
+   * direction within a cell, given the   @p face_orientation   of   the face
+   * within the current cell, and   @p line_orientation   flag   for the line
+   * within that face.   @p true   indicates that the line is   oriented from
+   * vertex 0 to vertex 1, whereas it is the other way   around otherwise. In
+   * 1d and 2d, this is always   @p true,   but in 3d   it may be different,
+   * see the respective discussion in the   documentation of the GeometryInfo
+   * class.
+   *
    */
   bool
   standard_vs_true_line_orientation(const unsigned int  line,
@@ -407,21 +432,16 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Geometric properties of reference cells
-   * @name Querying the number of building blocks of a reference cell
-   * @{
+   * @name   Geometric properties of reference cells     @name   Querying the number of building blocks of a reference cell     @{
+   *
    */
 
-  /*
-   * Return $i$-th unit tangential vector of a face of the reference cell.
-   * The vectors are arranged such that the
-   * cross product between the two vectors returns the unit normal vector.
-   *
-   * @pre $i$ must be between zero and `dim-1`.
-   */
+  /*   Return   $i$  -th unit tangential vector of a face of the reference cell.   The vectors are arranged such that the   cross product between the two vectors returns the unit normal vector.       @pre     $i$   must be between zero and `dim-1`.  
+* */
   template <int dim>
   Tensor<1, dim>
   unit_tangential_vectors(const unsigned int face_no,
@@ -429,6 +449,7 @@ public:
 
   /**
    * Return the unit normal vector of a face of the reference cell.
+   *
    */
   template <int dim>
   Tensor<1, dim>
@@ -436,7 +457,8 @@ public:
 
   /**
    * Determine the orientation of the current entity described by its
-   * vertices @p var_1 relative to an entity described by @p var_0.
+   * vertices   @p var_1   relative to an entity described by   @p var_0.
+   *
    */
   template <typename T, std::size_t N>
   unsigned char
@@ -445,6 +467,7 @@ public:
 
   /**
    * Inverse function of compute_orientation().
+   *
    */
   template <typename T, std::size_t N>
   std::array<T, N>
@@ -452,40 +475,47 @@ public:
                                 const unsigned int      orientation) const;
 
   /**
-   * Return a vector of faces a given @p vertex_index belongs to.
+   * Return a vector of faces a given   @p vertex_index   belongs to.
+   *
    */
   ArrayView<const unsigned int>
   faces_for_given_vertex(const unsigned int vertex_index) const;
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Translating between deal.II indexing and formats used by other programs
-   * @{
+   * @name   Translating between deal.II indexing and formats used by other programs     @{
+   *
    */
 
   /**
    * Map an ExodusII vertex number to a deal.II vertex number.
+   *
    */
   unsigned int
   exodusii_vertex_to_deal_vertex(const unsigned int vertex_n) const;
 
   /**
    * Map an ExodusII face number to a deal.II face number.
+   *
    */
   unsigned int
   exodusii_face_to_deal_face(const unsigned int face_n) const;
 
   /**
    * Map a UNV vertex number to a deal.II vertex number.
+   *
    */
   unsigned int
   unv_vertex_to_deal_vertex(const unsigned int vertex_n) const;
 
   /**
-   * Return a VTK linear shape constant that corresponds to the reference cell.
+   * Return a VTK linear shape constant that corresponds to the reference
+   * cell.
+   *
    */
   unsigned int
   vtk_linear_type() const;
@@ -493,6 +523,7 @@ public:
   /**
    * Return a VTK quadratic shape constant that corresponds to the reference
    * cell.
+   *
    */
   unsigned int
   vtk_quadratic_type() const;
@@ -500,73 +531,85 @@ public:
   /**
    * Return a VTK Lagrange shape constant that corresponds to the reference
    * cell.
+   *
    */
   unsigned int
   vtk_lagrange_type() const;
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Other functions
-   * @{
+   * @name   Other functions     @{
+   *
    */
 
   /**
    * Return a text representation of the reference cell represented by the
    * current object.
+   *
    */
   std::string
   to_string() const;
 
   /**
    * Conversion operator to an integer.
+   *
    */
   constexpr operator std::uint8_t() const;
 
   /**
    * Operator for equality comparison.
+   *
    */
   constexpr bool
   operator==(const ReferenceCell &type) const;
 
   /**
    * Operator for inequality comparison.
+   *
    */
   constexpr bool
   operator!=(const ReferenceCell &type) const;
 
   /**
-   * Write and read the data of this object from a stream for the purpose
-   * of serialization using the [BOOST serialization
+   * Write and read the data of this object from a stream for the purpose   of
+   * serialization using the [BOOST serialization
    * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   *
    */
   template <class Archive>
   void
-  serialize(Archive &archive, const unsigned int /*version*/);
+  serialize(Archive &archive, const unsigned int  /*version*/ );
 
   /**
    * @}
+   *
    */
 
 private:
   /**
    * The variable that stores what this object actually corresponds to.
+   *
    */
   std::uint8_t kind;
 
   /**
    * Constructor. This is the constructor used to create the different
-   * `static` member variables of this class. It is `private` but can
-   * be called by a function in an internal namespace that is a `friend`
-   * of this class.
+   * `static` member variables of this class. It is `private` but can   be
+   * called by a function in an internal namespace that is a `friend`   of
+   * this class.
+   *
    */
   constexpr ReferenceCell(const std::uint8_t kind);
 
   /**
-   * A kind of constructor -- not quite private because it can be
-   * called by anyone, but at least hidden in an internal namespace.
+   * A kind of constructor
+   *
+   *  -  not quite private because it can be   called by anyone, but at least hidden in an internal namespace.
+   *
    */
   friend DEAL_II_CONSTEXPR ReferenceCell
                            internal::ReferenceCell::make_reference_cell_from_int(const std::uint8_t);
@@ -626,10 +669,11 @@ namespace internal
 
 /**
  * A namespace in which we define objects that correspond to specific
- * reference cells. The objects defined here are a complete enumeration
- * of all possible reference cells that can be used in deal.II.
+ * reference cells. The objects defined here are a complete enumeration of all
+ * possible reference cells that can be used in deal.II.
+ * @relates   ReferenceCell
  *
- * @relates ReferenceCell
+ *
  */
 namespace ReferenceCells
 {
@@ -657,6 +701,7 @@ namespace ReferenceCells
    * Return the correct simplex reference cell type for the given dimension
    * `dim`. Depending on the template argument `dim`, this function returns a
    * reference to either Vertex, Triangle, or Tetrahedron.
+   *
    */
   template <int dim>
   constexpr const ReferenceCell &
@@ -666,6 +711,7 @@ namespace ReferenceCells
    * Return the correct hypercube reference cell type for the given dimension
    * `dim`. Depending on the template argument `dim`, this function returns a
    * reference to either Vertex, Quadrilateral, or Hexahedron.
+   *
    */
   template <int dim>
   constexpr const ReferenceCell &
@@ -683,7 +729,7 @@ ReferenceCell::ReferenceCell()
 
 template <class Archive>
 inline void
-ReferenceCell::serialize(Archive &archive, const unsigned int /*version*/)
+ReferenceCell::serialize(Archive &archive, const unsigned int  /*version*/ )
 {
   archive &kind;
 }
@@ -1839,6 +1885,7 @@ namespace internal
   public:
     /**
      * Constructor.
+     *
      */
     NoPermutation(const dealii::ReferenceCell &entity_type,
                   const std::array<T, N> &     vertices_0,
@@ -1850,11 +1897,13 @@ namespace internal
 
     /**
      * Destructor.
+     *
      */
     virtual ~NoPermutation() noexcept override = default;
 
     /**
-     * Print error message to @p out.
+     * Print error message to   @p out.
+     *
      */
     virtual void
     print_info(std::ostream &out) const override
@@ -1884,16 +1933,19 @@ namespace internal
 
     /**
      * Entity type.
+     *
      */
     const dealii::ReferenceCell entity_type;
 
     /**
      * First set of values.
+     *
      */
     const std::array<T, N> vertices_0;
 
     /**
      * Second set of values.
+     *
      */
     const std::array<T, N> vertices_1;
   };

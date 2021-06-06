@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
 //
@@ -26,9 +26,10 @@ DEAL_II_WARNING(
 namespace LinearAlgebra
 {
   /**
-   * Alias for Utilities::MPI::CommunicationPatternBase. This class was
-   * originally defined in the LinearAlgebra namespace but is now used for more
-   * general purposes.
+   * Alias for   Utilities::MPI::CommunicationPatternBase.   This class was
+   * originally defined in the LinearAlgebra namespace but is now used for
+   * more   general purposes.
+   *
    */
   using CommunicationPatternBase DEAL_II_DEPRECATED =
     Utilities::MPI::CommunicationPatternBase;

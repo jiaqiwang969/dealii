@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
 //
@@ -31,15 +31,17 @@ DEAL_II_NAMESPACE_OPEN
  * product of polynomials on the faces, undefined in the interior of the cells
  * and continuous. The basis functions on the faces are formed by a tensor
  * product of 1D Lagrange polynomials with equidistant points up to degree 2
- * and Gauss-Lobatto points starting from degree 3.
+ * and Gauss-Lobatto points starting from degree 3. This finite element is the
+ * trace space of FE_Q on the faces.
  *
- * This finite element is the trace space of FE_Q on the faces.
  *
- * @note Since these are only finite elements on faces, only FEFaceValues and
- * FESubfaceValues will be able to extract reasonable values from any face
+ * @note   Since these are only finite elements on faces, only FEFaceValues
+ * and FESubfaceValues will be able to extract reasonable values from any face
  * polynomial. In order to make the use of FESystem simpler, FEValues objects
  * will not fail using this finite element space, but all shape function
  * values extracted will equal to zero.
+ *
+ *
  */
 
 template <int dim, int spacedim = dim>
@@ -51,6 +53,7 @@ public:
    * Constructor for tensor product polynomials of degree <tt>p</tt>. The
    * shape functions created using this constructor correspond to Legendre
    * polynomials in each coordinate direction.
+   *
    */
   FE_TraceQ(unsigned int p);
 
@@ -58,6 +61,7 @@ public:
    * Return a string that uniquely identifies a finite element. This class
    * returns <tt>FE_DGQ<dim>(degree)</tt>, with <tt>dim</tt> and
    * <tt>degree</tt> replaced by appropriate values.
+   *
    */
   virtual std::string
   get_name() const override;
@@ -67,10 +71,11 @@ public:
 
   /**
    * Implementation of the corresponding function in the FiniteElement
-   * class.  Since the current element is interpolatory, the nodal
-   * values are exactly the support point values. Furthermore, since
-   * the current element is scalar, the support point values need to
-   * be vectors of length 1.
+   * class.  Since the current element is interpolatory, the nodal   values
+   * are exactly the support point values. Furthermore, since   the current
+   * element is scalar, the support point values need to   be vectors of
+   * length 1.
+   *
    */
   virtual void
   convert_generalized_support_point_values_to_dof_values(
@@ -78,8 +83,9 @@ public:
     std::vector<double> &              nodal_values) const override;
 
   /**
-   * This function returns @p true, if the shape function @p shape_index has
-   * non-zero function values somewhere on the face @p face_index.
+   * This function returns   @p true,   if the shape function   @p shape_index
+   * has   non-zero function values somewhere on the face   @p face_index.
+   *
    */
   virtual bool
   has_support_on_face(const unsigned int shape_index,
@@ -88,6 +94,7 @@ public:
   /**
    * Return a list of constant modes of the element. For this element, it
    * simply returns one row with all entries set to true.
+   *
    */
   virtual std::pair<Table<2, bool>, std::vector<unsigned int>>
   get_constant_modes() const override;
@@ -95,6 +102,7 @@ public:
   /**
    * Return whether this element implements its hanging node constraints in
    * the new way, which has to be used to make elements "hp-compatible".
+   *
    */
   virtual bool
   hp_constraints_are_implemented() const override;
@@ -105,7 +113,8 @@ public:
    * <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. This
    * element only provides interpolation matrices for elements of the same
    * type and FE_Nothing. For all other elements, an exception of type
-   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented is thrown.
+   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented   is thrown.
+   *
    */
   virtual void
   get_face_interpolation_matrix(const FiniteElement<dim, spacedim> &source,
@@ -118,7 +127,8 @@ public:
    * <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. This
    * element only provides interpolation matrices for elements of the same
    * type and FE_Nothing. For all other elements, an exception of type
-   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented is thrown.
+   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented   is thrown.
+   *
    */
   virtual void
   get_subface_interpolation_matrix(
@@ -128,7 +138,8 @@ public:
     const unsigned int                  face_no = 0) const override;
 
   /**
-   * @copydoc FiniteElement::compare_for_domination()
+   * @copydoc     FiniteElement::compare_for_domination()
+   *
    */
   virtual FiniteElementDomination::Domination
   compare_for_domination(const FiniteElement<dim, spacedim> &fe_other,
@@ -137,11 +148,13 @@ public:
 private:
   /**
    * Store a copy of FE_Q for delegating the hp-constraints functionality.
+   *
    */
   FE_Q<dim, spacedim> fe_q;
 
   /**
    * Return vector with dofs per vertex, line, quad, hex.
+   *
    */
   static std::vector<unsigned int>
   get_dpo_vector(const unsigned int deg);
@@ -151,6 +164,8 @@ private:
 
 /**
  * FE_TraceQ in 1D, i.e., with degrees of freedom on the element vertices.
+ *
+ *
  */
 template <int spacedim>
 class FE_TraceQ<1, spacedim> : public FE_FaceQ<1, spacedim>
@@ -158,11 +173,13 @@ class FE_TraceQ<1, spacedim> : public FE_FaceQ<1, spacedim>
 public:
   /**
    * Constructor.
+   *
    */
   FE_TraceQ(const unsigned int p);
 
   /**
    * Return the name of the element
+   *
    */
   std::string
   get_name() const override;

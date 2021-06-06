@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------
+//// ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2020 by the deal.II authors
 //
@@ -36,6 +36,7 @@ namespace mg
   /**
    * Handler and storage for all five SparseMatrix object involved in using
    * multigrid with local refinement.
+   *
    */
   template <typename number>
   class SparseMatrixCollection : public Subscriptor
