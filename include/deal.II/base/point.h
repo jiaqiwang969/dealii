@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
 //
@@ -32,71 +32,79 @@ DEAL_II_ENABLE_EXTRA_DIAGNOSTICS
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A class that represents a point in a Cartesian space of dimension   @p dim
- * . Objects of this class are used to represent points (i.e., vectors
+ * A class that represents a point in a Cartesian space of dimension
+ * @p dim .
+ *
+ * Objects of this class are used to represent points (i.e., vectors
  * anchored at the origin) of a vector space equipped with a <a
  * href="https://en.wikipedia.org/wiki/Cartesian_coordinate_system">Cartesian
- * coordinate system</a>. They are, among other uses, passed to functions that
- * operate on points in spaces of a priori fixed dimension: rather than using
- * functions like <code>double f(const double x)</code> and <code>double
- * f(const double x, const double y)</code>, you can use   <code>double
- * f(const Point<dim> &p)</code>   instead as it allows writing dimension
- * independent code. deal.II specifically uses Point objects as indicating
- * points that are represented by Cartesian coordinates, i.e., where a point
- * in   @p   dim space dimensions is characterized by signed distances along
- * the axes of a coordinate system spanned by   @p dim   mutually orthogonal
- * unit vectors (called the "coordinate axes"). This choice of representing a
- * vector makes addition and scaling of vectors particularly simple: one only
- * has to add or multiply each coordinate value. On the other hand, adding or
- * scaling vectors is not nearly as simple when a vector is represented in
- * other kinds of coordinate systems (e.g., <a
+ * coordinate system</a>. They are, among other uses, passed to
+ * functions that operate on points in spaces of a priori fixed
+ * dimension: rather than using functions like <code>double f(const
+ * double x)</code> and <code>double f(const double x, const double
+ * y)</code>, you can use <code>double f(const Point<dim> &p)</code>
+ * instead as it allows writing dimension independent code.
+ *
+ * deal.II specifically uses Point objects as indicating points that
+ * are represented by Cartesian coordinates, i.e., where a point in @p
+ * dim space dimensions is characterized by signed distances along the
+ * axes of a coordinate system spanned by @p dim mutually orthogonal
+ * unit vectors (called the "coordinate axes"). This choice of
+ * representing a vector makes addition and scaling of vectors
+ * particularly simple: one only has to add or multiply each
+ * coordinate value. On the other hand, adding or scaling vectors is
+ * not nearly as simple when a vector is represented in other kinds of
+ * coordinate systems (e.g., <a
  * href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">spherical
  * coordinate systems</a>).
  *
- *  <h3>What's a <code>Point@<dim@></code> and what is a
- * <code>Tensor@<1,dim@></code>?</h3> The Point class is derived from Tensor
- * @<1,dim@>   and consequently shares the latter's member functions and other
- * attributes. In fact, it has relatively few additional functions itself (the
- * most notable exception being the distance() function to compute the
- * Euclidean distance between two points in space), and these two classes can
- * therefore often be used interchangeably. Nonetheless, there are semantic
- * differences that make us use these classes in different and well-defined
- * contexts. Within deal.II, we use the <tt>Point</tt> class to denote points
- * in space, i.e., for vectors (rank-1 tensors) that are   <em>  anchored at
- * the origin  </em>  . On the other hand, vectors that are anchored elsewhere
- * (and consequently do not represent   <em>  points  </em>   in the common
- * usage of the word) are represented by objects of type Tensor  @<1,dim@>.
- * In particular, this is the case for direction vectors, normal vectors,
- * gradients, and the differences between two points (i.e., what you get when
- * you subtract one point from another): all of these are represented by
- * Tensor  @<1,dim@>   objects rather than Point  @<dim@>. Furthermore, the
- * Point class is only used where the coordinates of an object can be thought
- * to possess the dimension of a length. An object that represents the weight,
- * height, and cost of an object is neither a point nor a tensor (because it
- * lacks the transformation properties under rotation of the coordinate
- * system) and should consequently not be represented by either of these
- * classes. Use an array of size 3 in this case, or the
- * <code>std::array</code>   class. Alternatively, as in the case of
+ *
+ * <h3>What's a <code>Point@<dim@></code> and what is a
+ * <code>Tensor@<1,dim@></code>?</h3>
+ *
+ * The Point class is derived from Tensor@<1,dim@> and consequently shares the
+ * latter's member functions and other attributes. In fact, it has relatively
+ * few additional functions itself (the most notable exception being the
+ * distance() function to compute the Euclidean distance between two points in
+ * space), and these two classes can therefore often be used interchangeably.
+ *
+ * Nonetheless, there are semantic differences that make us use these classes
+ * in different and well-defined contexts. Within deal.II, we use the
+ * <tt>Point</tt> class to denote points in space, i.e., for vectors (rank-1
+ * tensors) that are <em>anchored at the origin</em>. On the other hand,
+ * vectors that are anchored elsewhere (and consequently do not represent
+ * <em>points</em> in the common usage of the word) are represented by objects
+ * of type Tensor@<1,dim@>. In particular, this is the case for direction
+ * vectors, normal vectors, gradients, and the differences between two points
+ * (i.e., what you get when you subtract one point from another): all of these
+ * are represented by Tensor@<1,dim@> objects rather than Point@<dim@>.
+ *
+ * Furthermore, the Point class is only used where the coordinates of an
+ * object can be thought to possess the dimension of a length. An object that
+ * represents the weight, height, and cost of an object is neither a point nor
+ * a tensor (because it lacks the transformation properties under rotation of
+ * the coordinate system) and should consequently not be represented by either
+ * of these classes. Use an array of size 3 in this case, or the
+ * <code>std::array</code> class. Alternatively, as in the case of
  * vector-valued functions, you can use objects of type Vector or
- * <code>std::vector</code>  .
+ * <code>std::vector</code>.
  *
- * @tparam   dim An integer that denotes the dimension of the space in which a
+ *
+ * @tparam dim An integer that denotes the dimension of the space in which a
  * point lies. This of course equals the number of coordinates that identify a
- * point.   @tparam   Number The data type in which the coordinates values are
- * to be stored. This will, in almost all cases, simply be the default   @p
- * double,   but there are cases where one may want to store coordinates in a
- * different (and always scalar) type. An example would be an interval type
- * that can store the value of a coordinate as well as its uncertainty.
- * Another example would be a type that allows for Automatic Differentiation
- * (see, for example, the Sacado type used in   step-33  ) and thereby can
- * generate analytic (spatial) derivatives of a function when passed a Point
- * object whose coordinates are stored in such a type.
- *
+ * point.
+ * @tparam Number The data type in which the coordinates values are to be
+ * stored. This will, in almost all cases, simply be the default @p double,
+ * but there are cases where one may want to store coordinates in a different
+ * (and always scalar) type. An example would be an interval type that can
+ * store the value of a coordinate as well as its uncertainty. Another example
+ * would be a type that allows for Automatic Differentiation (see, for
+ * example, the Sacado type used in step-33) and thereby can generate analytic
+ * (spatial) derivatives of a function when passed a Point object whose
+ * coordinates are stored in such a type.
  *
  *
  * @ingroup geomprimitives
- *
- *
  */
 template <int dim, typename Number = double>
 class Point : public Tensor<1, dim, Number>
@@ -105,15 +113,14 @@ public:
   /**
    * Standard constructor. Creates an object that corresponds to the origin,
    * i.e., all coordinates are set to zero.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV
   Point();
 
   /**
    * Convert a tensor to a point.
-   *
    */
   explicit DEAL_II_CUDA_HOST_DEV
   Point(const Tensor<1, dim, Number> &);
@@ -123,8 +130,8 @@ public:
    * for <tt>dim==1</tt> since the usage is considered unsafe for points with
    * <tt>dim!=1</tt> as it would leave some components of the point
    * coordinates uninitialized.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   explicit DEAL_II_CUDA_HOST_DEV
   Point(const Number x);
@@ -135,8 +142,8 @@ public:
    * <tt>dim!=2</tt> as it would leave some components of the point
    * coordinates uninitialized (if dim>2) or would not use some arguments (if
    * dim<2).
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV
   Point(const Number x, const Number y);
@@ -147,15 +154,14 @@ public:
    * points with <tt>dim!=3</tt> as it would leave some components of the
    * point coordinates uninitialized (if dim>3) or would not use some
    * arguments (if dim<3).
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV
   Point(const Number x, const Number y, const Number z);
 
   /**
-   * Convert a   boost::geometry::point   to a   dealii::Point.
-   *
+   * Convert a boost::geometry::point to a dealii::Point.
    */
   template <std::size_t dummy_dim,
             typename std::enable_if<(dim == dummy_dim) && (dummy_dim != 0),
@@ -167,47 +173,46 @@ public:
    * Return a unit vector in coordinate direction <tt>i</tt>, i.e., a vector
    * that is zero in all coordinates except for a single 1 in the <tt>i</tt>th
    * coordinate.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   static DEAL_II_CUDA_HOST_DEV Point<dim, Number>
                                unit_vector(const unsigned int i);
 
   /**
    * Read access to the <tt>index</tt>th coordinate.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Number
                         operator()(const unsigned int index) const;
 
   /**
    * Read and write access to the <tt>index</tt>th coordinate.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Number &
                         operator()(const unsigned int index);
 
   /**
    * Assignment operator from Tensor<1, dim, Number> with different underlying
-   * scalar type. This obviously requires that the   @p OtherNumber   type is
-   * convertible to   @p Number.
-   *
+   * scalar type. This obviously requires that the @p OtherNumber type is
+   * convertible to @p Number.
    */
   template <typename OtherNumber>
   Point<dim, Number> &
   operator=(const Tensor<1, dim, OtherNumber> &p);
 
   /**
-   * @name   Addition and subtraction of points.     @{
-   *
+   * @name Addition and subtraction of points.
+   * @{
    */
 
   /**
    * Add an offset given as Tensor<1,dim,Number> to a point.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Point<dim, Number>
                         operator+(const Tensor<1, dim, Number> &) const;
@@ -216,48 +221,48 @@ public:
    * Subtract two points, i.e., obtain the vector that connects the two. As
    * discussed in the documentation of this class, subtracting two points
    * results in a vector anchored at one of the two points (rather than at the
-   * origin) and, consequently, the result is returned as a Tensor  @<1,dim@>
-   * rather than as a Point  @<dim@>.
-   * @note   This function can also be used in CUDA device code.
+   * origin) and, consequently, the result is returned as a Tensor@<1,dim@>
+   * rather than as a Point@<dim@>.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Tensor<1, dim, Number>
                         operator-(const Point<dim, Number> &) const;
 
   /**
-   * Subtract a difference vector (represented by a Tensor  @<1,dim@>)   from
-   * the   current point. This results in another point and, as discussed in
-   * the   documentation of this class, the result is then naturally returned
-   * as a   Point  @<dim@>   object rather than as a Tensor  @<1,dim@>.
-   * @note   This function can also be used in CUDA device code.
+   * Subtract a difference vector (represented by a Tensor@<1,dim@>) from the
+   * current point. This results in another point and, as discussed in the
+   * documentation of this class, the result is then naturally returned as a
+   * Point@<dim@> object rather than as a Tensor@<1,dim@>.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Point<dim, Number>
                         operator-(const Tensor<1, dim, Number> &) const;
 
   /**
    * The opposite vector.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Point<dim, Number>
                         operator-() const;
 
   /**
    * @}
-   *
    */
 
   /**
-   * @name   Multiplication and scaling of points. Dot products. Norms.     @{
-   *
+   * @name Multiplication and scaling of points. Dot products. Norms.
+   * @{
    */
 
   /**
    * Multiply the current point by a factor.
-   * @note   This function can also be used in CUDA device code.
-   * @relatesalso   EnableIfScalar
    *
+   * @note This function can also be used in CUDA device code.
+   *
+   * @relatesalso EnableIfScalar
    */
   template <typename OtherNumber>
   DEAL_II_CUDA_HOST_DEV Point<
@@ -268,8 +273,8 @@ public:
 
   /**
    * Divide the current point by a factor.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   DEAL_II_CUDA_HOST_DEV Point<
@@ -280,8 +285,8 @@ public:
 
   /**
    * Return the scalar product of the vectors representing two points.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Number operator*(const Tensor<1, dim, Number> &p) const;
 
@@ -290,21 +295,22 @@ public:
    * square, or the square of the norm. In case of a complex number type it is
    * equivalent to the contraction of this point vector with a complex
    * conjugate of itself.
-   * @note   This function is equivalent to
-   * Tensor<rank,dim,Number>::norm_square()   which returns the square of the
-   * Frobenius norm.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function is equivalent to
+   * Tensor<rank,dim,Number>::norm_square() which returns the square of the
+   * Frobenius norm.
+   *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV typename numbers::NumberTraits<Number>::real_type
   square() const;
 
   /**
    * Return the Euclidean distance of <tt>this</tt> point to the point
-   * <tt>p</tt>, i.e. the   $l_2$   norm of the difference between the
+   * <tt>p</tt>, i.e. the $l_2$ norm of the difference between the
    * vectors representing the two points.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV typename numbers::NumberTraits<Number>::real_type
   distance(const Point<dim, Number> &p) const;
@@ -312,29 +318,27 @@ public:
   /**
    * Return the squared Euclidean distance of <tt>this</tt> point to the point
    * <tt>p</tt>.
-   * @note   This function can also be used in CUDA device code.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV typename numbers::NumberTraits<Number>::real_type
   distance_square(const Point<dim, Number> &p) const;
 
   /**
    * @}
-   *
    */
 
   /**
    * Read or write the data of this object to or from a stream for the purpose
    * of serialization using the [BOOST serialization
    * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
-   *
    */
   template <class Archive>
   void
   serialize(Archive &ar, const unsigned int version);
 };
 
- /*--------------------------- Inline functions: Point -----------------------*/ 
+/*--------------------------- Inline functions: Point -----------------------*/
 
 #ifndef DOXYGEN
 
@@ -633,17 +637,16 @@ Point<dim, Number>::serialize(Archive &ar, const unsigned int)
 #endif // DOXYGEN
 
 
- /*--------------------------- Global functions: Point -----------------------*/ 
+/*--------------------------- Global functions: Point -----------------------*/
 
 
 /**
  * Global operator scaling a point vector by a scalar.
  *
+ * @note This function can also be used in CUDA device code.
  *
- * @note   This function can also be used in CUDA device code.
- * @relatesalso   Point   @relatesalso   EnableIfScalar
- *
- *
+ * @relatesalso Point
+ * @relatesalso EnableIfScalar
  */
 template <int dim, typename Number, typename OtherNumber>
 inline DEAL_II_CUDA_HOST_DEV
@@ -659,9 +662,8 @@ inline DEAL_II_CUDA_HOST_DEV
 
 /**
  * Output operator for points. Print the elements consecutively, with a space
- * in between.   @relatesalso   Point
- *
- *
+ * in between.
+ * @relatesalso Point
  */
 template <int dim, typename Number>
 inline std::ostream &
@@ -678,9 +680,7 @@ operator<<(std::ostream &out, const Point<dim, Number> &p)
 
 /**
  * Input operator for points. Inputs the elements consecutively.
- * @relatesalso   Point
- *
- *
+ * @relatesalso Point
  */
 template <int dim, typename Number>
 inline std::istream &
@@ -699,8 +699,6 @@ operator>>(std::istream &in, Point<dim, Number> &p)
  * Output operator for points of dimension 1. This is implemented specialized
  * from the general template in order to avoid a compiler warning that the
  * loop is empty.
- *
- *
  */
 template <typename Number>
 inline std::ostream &

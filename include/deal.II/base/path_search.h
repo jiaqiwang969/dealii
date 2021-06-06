@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
 //
@@ -32,15 +32,17 @@ DEAL_II_NAMESPACE_OPEN
 
 /**
  * Support for searching files in a list of paths and with a list of suffixes.
- * A list of search paths is maintained for each file class supported. A file
- * class is defined by a unique string. The classes provided are   <dl>   <dt>
- * MESH   <dd>   mesh input files in various formats (see GridIn) <dt>
- * PARAMETER   <dd>   Parameter files (<tt>.prm</tt>)   </dl> Additional file
- * classes can be added easily by using add_class(). Usage: First, you
- * construct a PathSearch object for a certain file class, e.g. meshes. Then,
- * you use the find() method to obtain a full path name and you can open the
- * file.
  *
+ * A list of search paths is maintained for each file class supported. A file
+ * class is defined by a unique string. The classes provided are <dl> <dt>
+ * MESH <dd> mesh input files in various formats (see GridIn) <dt> PARAMETER
+ * <dd> Parameter files (<tt>.prm</tt>) </dl>
+ *
+ * Additional file classes can be added easily by using add_class().
+ *
+ * Usage: First, you construct a PathSearch object for a certain file class,
+ * e.g. meshes. Then, you use the find() method to obtain a full path name and
+ * you can open the file.
  * @code
  * #include <deal.II/base/path_search.h>
  *
@@ -54,11 +56,12 @@ DEAL_II_NAMESPACE_OPEN
  * file class <tt>MESH</tt>. If it manages to open a file, it returns the
  * <tt>istream</tt> object. If not, it will try to append the first suffix of
  * the suffix list and do the same. And so on. If no file is found in the end,
- * an exception is thrown. If you want to restrict your search to a certain
- * mesh format, <tt>.inp</tt> for instance, then either use
- * <tt>"grid.inp"</tt> in the code above or use the alternative find(const
- * std::string&,const     std::string&,const   char*) function
+ * an exception is thrown.
  *
+ * If you want to restrict your search to a certain mesh format, <tt>.inp</tt>
+ * for instance, then either use <tt>"grid.inp"</tt> in the code above or use
+ * the alternative find(const std::string&,const std::string&,const char*)
+ * function
  * @code
  * std::string full_name = search.find("grid", ".inp");
  * @endcode
@@ -68,24 +71,20 @@ DEAL_II_NAMESPACE_OPEN
  * Use show() to find out the path list for a given class. Paths and suffixes
  * can be added using the functions add_path() and add_suffix(), respectively.
  *
- *
- * @note   Directories in the path list should always end with a trailing
+ * @note Directories in the path list should always end with a trailing
  * <tt>"/"</tt>, while suffixes should always start with a dot. These
  * characters are not added automatically (allowing you to do some real file
  * name editing).
- * @todo   Add support for environment variables like in kpathsea.
  *
+ * @todo Add support for environment variables like in kpathsea.
  *
  * @ingroup input
- *
- *
  */
 class PathSearch
 {
 public:
   /**
    * Position for adding a new item to a list.
-   *
    */
   enum Position
   {
@@ -99,24 +98,27 @@ public:
 
   /**
    * Constructor. The first argument is a string identifying the class of
-   * files to be searched for.     The debug argument determines the verbosity
-   * of this class.
+   * files to be searched for.
    *
+   * The debug argument determines the verbosity of this class.
    */
   PathSearch(const std::string &cls, const unsigned int debug = 0);
 
   /**
    * Find a file in the class specified by the constructor and return its
-   * complete path name (including a possible suffix).     File search works
-   * by actually trying to open the file. If   @p fopen   is   successful with
-   * the provided   @p open_mode,   then the file is found,   otherwise the
-   * search continues.       @warning   Be careful with   @p open_mode!   In
-   * particular, use <tt>"w"</tt>   with great care! If the file does not
-   * exist, it cannot be found. If it   does exist, the   @p fopen   function
-   * will truncate it to zero length.       @param   filename The base name of
-   * the file to be found, without path   components and suffix.     @param
-   * open_mode The mode handed over to the   @p fopen   function.
+   * complete path name (including a possible suffix).
    *
+   * File search works by actually trying to open the file. If @p fopen is
+   * successful with the provided @p open_mode, then the file is found,
+   * otherwise the search continues.
+   *
+   * @warning Be careful with @p open_mode! In particular, use <tt>"w"</tt>
+   * with great care! If the file does not exist, it cannot be found. If it
+   * does exist, the @p fopen function will truncate it to zero length.
+   *
+   * @param filename The base name of the file to be found, without path
+   * components and suffix.
+   * @param open_mode The mode handed over to the @p fopen function.
    */
   std::string
   find(const std::string &filename, const char *open_mode = "r");
@@ -124,17 +126,20 @@ public:
   /**
    * Find a file in the class specified by the constructor and return its
    * complete path name. Do not use the standard suffix list, but only try to
-   * apply the suffix given.     File search works by actually trying to open
-   * the file. If   @p fopen   is   successful with the provided   @p
-   * open_mode,   then the file is found,   otherwise the search continues.
-   * @warning   Be careful with   @p open_mode!   In particular, use
-   * <tt>"w"</tt>   with great care! If the file does not exist, it cannot be
-   * found. If it   does exist, the   @p fopen   function will truncate it to
-   * zero length.       @param   filename The base name of the file to be
-   * found, without path   components and suffix.     @param   suffix The
-   * suffix to be used for opening.     @param   open_mode The mode handed
-   * over to the   @p fopen   function.
+   * apply the suffix given.
    *
+   * File search works by actually trying to open the file. If @p fopen is
+   * successful with the provided @p open_mode, then the file is found,
+   * otherwise the search continues.
+   *
+   * @warning Be careful with @p open_mode! In particular, use <tt>"w"</tt>
+   * with great care! If the file does not exist, it cannot be found. If it
+   * does exist, the @p fopen function will truncate it to zero length.
+   *
+   * @param filename The base name of the file to be found, without path
+   * components and suffix.
+   * @param suffix The suffix to be used for opening.
+   * @param open_mode The mode handed over to the @p fopen function.
    */
   std::string
   find(const std::string &filename,
@@ -143,7 +148,6 @@ public:
 
   /**
    * Show the paths and suffixes used for this object.
-   *
    */
   template <class StreamType>
   void
@@ -151,23 +155,20 @@ public:
 
   /**
    * Add a new class.
-   *
    */
   static void
   add_class(const std::string &cls);
 
   /**
-   * Add a path to the current class. See   PathSearch::Position   for
-   * possible   position arguments.
-   *
+   * Add a path to the current class. See PathSearch::Position for possible
+   * position arguments.
    */
   void
   add_path(const std::string &path, Position pos = back);
 
   /**
-   * Add a path to the current class. See   PathSearch::Position   for
-   * possible   position arguments.
-   *
+   * Add a path to the current class. See PathSearch::Position for possible
+   * position arguments.
    */
   void
   add_suffix(const std::string &suffix, Position pos = back);
@@ -175,7 +176,6 @@ public:
   /**
    * This class was not registered in the path search mechanism.
    * @ingroup Exceptions
-   *
    */
   DeclException1(ExcNoClass,
                  std::string,
@@ -185,7 +185,6 @@ public:
    * The PathSearch class could not find a file with this name in its path
    * list.
    * @ingroup Exceptions
-   *
    */
   DeclException2(ExcFileNotFound,
                  std::string,
@@ -196,13 +195,11 @@ public:
 private:
   /**
    * Type of values in the class maps.
-   *
    */
   using map_type = std::map<std::string, std::vector<std::string>>::value_type;
 
   /**
    * Initialize the static list objects for further use.
-   *
    */
   static void
   initialize_classes();
@@ -210,7 +207,6 @@ private:
   /**
    * Get path list for a certain class. Used to set up #my_path_list in
    * constructor.
-   *
    */
   static std::vector<std::string> &
   get_path_list(const std::string &cls);
@@ -218,56 +214,48 @@ private:
   /**
    * Get suffix list for a certain class. Used to set up #my_suffix_list in
    * constructor.
-   *
    */
   static std::vector<std::string> &
   get_suffix_list(const std::string &cls);
 
   /**
    * The file class handled by this object.
-   *
    */
   const std::string cls;
 
   /**
    * All path lists for all classes, such that we can build them only once.
-   *
    */
   static std::map<std::string, std::vector<std::string>> path_lists;
 
   /**
    * List of suffixes for each class.
-   *
    */
   static std::map<std::string, std::vector<std::string>> suffix_lists;
 
   /**
    * Path list for the class this object belongs to.
-   *
    */
   std::vector<std::string> &my_path_list;
 
   /**
    * Suffix list for the class this object belongs to.
-   *
    */
   std::vector<std::string> &my_suffix_list;
 
   /**
    * Debug flag. No output if zero.
-   *
    */
   const unsigned int debug;
 
   /**
    * The empty string.
-   *
    */
   static std::string empty;
 };
 
 
- /* ----------------------------- inline functions ------------------------- */ 
+/* ----------------------------- inline functions ------------------------- */
 
 
 template <class StreamType>

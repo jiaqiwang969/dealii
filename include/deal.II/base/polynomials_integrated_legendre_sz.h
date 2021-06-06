@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2020 by the deal.II authors
 //
@@ -27,52 +27,34 @@ DEAL_II_NAMESPACE_OPEN
 
 /**
  * Class implementing the integrated Legendre polynomials described in the PhD
- * thesis of Sabine Zaglmayr. This class was written based upon the existing
- * deal.II Legendre class as a base, but with the coefficients adjusted so
- * that the recursive formula is for the integrated Legendre polynomials
- * described in the PhD thesis of Sabine Zaglmayr. The polynomials can be
- * generated recursively from:
+ * thesis of Sabine Zaglmayr.
  *
+ * This class was written based upon the existing deal.II Legendre class as a
+ * base, but with the coefficients adjusted so that the recursive formula is for
+ * the integrated Legendre polynomials described in the PhD thesis of Sabine
+ * Zaglmayr. The polynomials can be generated recursively from:
  *
+ * - $L_{0}(x) = -1$ (added so that it can be generated recursively from 0)
+ * - $L_{1}(x) = x$
+ * - $L_{2}(x) = \frac{(x^2 - 1)}{2}$
+ * - $(n+1)L_{n+1} = (2n-1)L_{n} - (n-2)L_{n-1}$.
  *
- *  -   $L_{0}(x) =
+ * However, it is also possible to generate them directly from the Legendre
+ * polynomials:
  *
- * -1$   (added so that it can be generated recursively from 0)
- *
- *
- *
- *  -   $L_{1}(x) = x$
- *
- *
- *
- *  -   $L_{2}(x) = \frac{(x^2
- *
- * - 1)}{2}$
- *
- *
- *
- *  -   $(n+1)L_{n+1} = (2n-1)L_{n}
- *
- * - (n-2)L_{n-1}$  . However, it is also possible to generate them directly
- * from the Legendre polynomials: $L_{n} = \frac{l_{n}
- *
- * - l_{n-2}}{2n-1)}$
- *
- *
+ * $L_{n} = \frac{l_{n} - l_{n-2}}{2n-1)}$
  */
 class IntegratedLegendreSZ : public Polynomials::Polynomial<double>
 {
 public:
   /**
    * Constructor generating the coefficients of the polynomials at degree p.
-   *
    */
   IntegratedLegendreSZ(const unsigned int p);
 
   /**
    * Return the complete set of Integrated Legendre polynomials up to the
    * given degree.
-   *
    */
   static std::vector<Polynomials::Polynomial<double>>
   generate_complete_basis(const unsigned int degree);
@@ -80,7 +62,6 @@ public:
 private:
   /**
    * Main function to compute the co-efficients of the polynomial at degree p.
-   *
    */
   static const std::vector<double>
   get_coefficients(const unsigned int k);

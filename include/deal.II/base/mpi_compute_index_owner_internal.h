@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
 //
@@ -30,19 +30,17 @@ namespace Utilities
     namespace internal
     {
       /**
-       * An internal namespace used for
-       * Utilities::MPI::compute_index_owner()         and for
-       * Utilities::MPI::Partitioner::set_ghost_indices().
-       *
+       * An internal namespace used for Utilities::MPI::compute_index_owner()
+       * and for Utilities::MPI::Partitioner::set_ghost_indices().
        */
       namespace ComputeIndexOwner
       {
         /**
-         * Specialization of   ConsensusAlgorithms::Process   for setting up
-         * the         Dictionary even if there are ranges in the IndexSet
-         * space not owned         by any processes.
-         * @note   Only for internal usage.
+         * Specialization of ConsensusAlgorithms::Process for setting up the
+         * Dictionary even if there are ranges in the IndexSet space not owned
+         * by any processes.
          *
+         * @note Only for internal usage.
          */
         class DictionaryPayLoad
           : public ConsensusAlgorithms::Process<
@@ -52,7 +50,6 @@ namespace Utilities
         public:
           /**
            * Constructor.
-           *
            */
           DictionaryPayLoad(
             const std::map<unsigned int,
@@ -72,7 +69,6 @@ namespace Utilities
           /**
            * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::compute_targets().
-           *
            */
           virtual std::vector<unsigned int>
           compute_targets() override
@@ -87,7 +83,6 @@ namespace Utilities
           /**
            * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::create_request().
-           *
            */
           virtual void
           create_request(const unsigned int other_rank,
@@ -101,7 +96,6 @@ namespace Utilities
           /**
            * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::answer_request().
-           *
            */
           virtual void
           answer_request(
@@ -159,33 +153,29 @@ namespace Utilities
          * Dictionary class with basic partitioning in terms of a single
          * interval of fixed size known to all MPI ranks for two-stage index
          * lookup.
-         *
          */
         struct Dictionary
         {
           /**
-           * The minimum grain size for the intervals.                     We
-           * choose to limit the smallest size an interval for the
+           * The minimum grain size for the intervals.
+           *
+           * We choose to limit the smallest size an interval for the
            * two-stage lookup can have with the following two conflicting
            * goals in mind: On the one hand, we do not want intervals in the
            * dictionary to become too short. For uneven distributions of
            * unknowns (some ranks with several thousands of unknowns, others
-           * with none), the lookup DoFs
-           *
-           * -> dictionary then involves sending           from one MPI rank
-           * to many other MPI ranks holding dictionary           intervals,
-           * leading to an exceedingly high number of messages some
+           * with none), the lookup DoFs -> dictionary then involves sending
+           * from one MPI rank to many other MPI ranks holding dictionary
+           * intervals, leading to an exceedingly high number of messages some
            * ranks have to send. Also, fewer longer intervals are generally
            * more efficient to look up. On the other hand, a range size too
            * large leads to opposite effect of many messages that come into a
-           * particular dictionary owner in the lookup DoFs
-           *
-           * ->           dictionary. With the current setting, we get at most
-           * 64 messages           coming to a single MPI rank in case there
-           * is 1 dof per MPI rank,           which is reasonably low. At the
-           * same time, uneven distributions           up to factors of 4096
-           * can be handled with at most 64 messages as           well.
-           *
+           * particular dictionary owner in the lookup DoFs ->
+           * dictionary. With the current setting, we get at most 64 messages
+           * coming to a single MPI rank in case there is 1 dof per MPI rank,
+           * which is reasonably low. At the same time, uneven distributions
+           * up to factors of 4096 can be handled with at most 64 messages as
+           * well.
            */
           static const unsigned int range_minimum_grain_size = 64;
 
@@ -194,14 +184,12 @@ namespace Utilities
            * of the current process, and each entry containing the rank of the
            * owner of that dof in the IndexSet `owned_indices`. This is
            * queried in the index lookup, so we keep an expanded list.
-           *
            */
           std::vector<unsigned int> actually_owning_ranks;
 
           /**
            * A sorted vector containing the MPI ranks appearing in
            * `actually_owning_ranks`.
-           *
            */
           std::vector<unsigned int> actually_owning_rank_list;
 
@@ -210,7 +198,6 @@ namespace Utilities
            * used for the index space splitting. For simplicity of index
            * lookup without additional communication, this number is the same
            * on all MPI ranks.
-           *
            */
           types::global_dof_index dofs_per_process;
 
@@ -218,7 +205,6 @@ namespace Utilities
            * The local range of the global index space that is represented in
            * the dictionary, computed from `dofs_per_process`, the current
            * MPI rank, and range_minimum_grain_size.
-           *
            */
           std::pair<types::global_dof_index, types::global_dof_index>
             local_range;
@@ -226,23 +212,18 @@ namespace Utilities
           /**
            * The actual size, computed as the minimum of dofs_per_process and
            * the possible end of the index space. Equivalent to
-           * `local_range.second
-           *
-           *  - local_range.first`.
-           *
+           * `local_range.second - local_range.first`.
            */
           types::global_dof_index locally_owned_size;
 
           /**
            * The global size of the index space.
-           *
            */
           types::global_dof_index size;
 
           /**
            * The number of ranks the `owned_indices` IndexSet is distributed
            * among.
-           *
            */
           unsigned int n_dict_procs_in_owned_indices;
 
@@ -250,7 +231,6 @@ namespace Utilities
            * A stride to distribute the work more evenly over MPI ranks in
            * case the grain size forces us to have fewer ranges than we have
            * processors.
-           *
            */
           unsigned int stride_small_size;
 
@@ -258,7 +238,6 @@ namespace Utilities
            * Set up the dictionary by computing the partitioning from the
            * global size and sending the rank information on locally owned
            * ranges to the owner of the dictionary part.
-           *
            */
           void
           reinit(const IndexSet &owned_indices, const MPI_Comm &comm)
@@ -480,7 +459,6 @@ namespace Utilities
            * Translate a global dof index to the MPI rank in the dictionary
            * using `dofs_per_process`. We multiply by `stride_small_size` to
            * ensure a balance over the MPI ranks due to the grain size.
-           *
            */
           unsigned int
           dof_to_dict_rank(const types::global_dof_index i)
@@ -493,7 +471,6 @@ namespace Utilities
           /**
            * Given an MPI rank id of an arbitrary processor, return the index
            * offset where the local range of that processor begins.
-           *
            */
           types::global_dof_index
           get_index_offset(const unsigned int rank)
@@ -509,7 +486,6 @@ namespace Utilities
            * Given the rank in the owned indices from `actually_owning_ranks`,
            * this returns the index of the rank in the
            * `actually_owning_rank_list`.
-           *
            */
           unsigned int
           get_owning_rank_index(const unsigned int rank_in_owned_indices,
@@ -534,7 +510,6 @@ namespace Utilities
           /**
            * Compute the partition from the global size of the index space and
            * the number of ranks.
-           *
            */
           void
           partition(const IndexSet &owned_indices, const MPI_Comm &comm)
@@ -573,11 +548,10 @@ namespace Utilities
 
 
         /**
-         * Specialization of   ConsensusAlgorithms::Process   for the context
-         * of           Utilities::MPI::compute_index_owner()   and
-         * Utilities::MPI::Partitioner::set_ghost_indices()   with additional
+         * Specialization of ConsensusAlgorithms::Process for the context of
+         * Utilities::MPI::compute_index_owner() and
+         * Utilities::MPI::Partitioner::set_ghost_indices() with additional
          * payload.
-         *
          */
         class ConsensusAlgorithmsPayload
           : public ConsensusAlgorithms::Process<
@@ -587,7 +561,6 @@ namespace Utilities
         public:
           /**
            * Constructor.
-           *
            */
           ConsensusAlgorithmsPayload(const IndexSet &owned_indices,
                                      const IndexSet &indices_to_look_up,
@@ -608,33 +581,28 @@ namespace Utilities
 
           /**
            * The index space which describes the locally owned space.
-           *
            */
           const IndexSet &owned_indices;
 
           /**
            * The indices which are "ghosts" on a given rank and should be
            * looked up in terms of their owner rank from owned_indices.
-           *
            */
           const IndexSet &indices_to_look_up;
 
           /**
            * The underlying MPI communicator.
-           *
            */
           const MPI_Comm comm;
 
           /**
            * The present MPI rank.
-           *
            */
           const unsigned int my_rank;
 
           /**
            * The total number of ranks participating in the MPI communicator
            * `comm`.
-           *
            */
           const unsigned int n_procs;
 
@@ -642,7 +610,6 @@ namespace Utilities
            * Controls whether the origin of ghost owner should also be
            * stored. If true, it will be added into `requesters` and can be
            * queried by `get_requesters()`.
-           *
            */
           const bool track_index_requests;
 
@@ -650,19 +617,17 @@ namespace Utilities
            * The result of the index owner computation: To each index
            * contained in `indices_to_look_up`, this vector contains the MPI
            * rank of the owner in `owned_indices`.
-           *
            */
           std::vector<unsigned int> &owning_ranks;
 
           /**
            * Keeps track of the origin of the requests. The layout of the data
            * structure is as follows: The outermost vector has as many entries
-           * as   Dictionary::actually_owning_rank_list   and represents the
+           * as Dictionary::actually_owning_rank_list and represents the
            * information we should send back to the owners from the present
            * dictionary entry. The second vector then collects a list of MPI
            * ranks that have requested data, using the rank in the first pair
            * entry and a list of index ranges as the second entry.
-           *
            */
           std::vector<std::vector<
             std::pair<unsigned int,
@@ -671,14 +636,12 @@ namespace Utilities
 
           /**
            * The dictionary handling the requests.
-           *
            */
           Dictionary dict;
 
           /**
            * Array to collect the indices to look up, sorted by the rank in
            * the dictionary.
-           *
            */
           std::map<unsigned int, std::vector<types::global_dof_index>>
             indices_to_look_up_by_dict_rank;
@@ -686,7 +649,6 @@ namespace Utilities
           /**
            * The field where the indices for incoming data from the process
            * are stored.
-           *
            */
           std::map<unsigned int, std::vector<unsigned int>> recv_indices;
 
@@ -696,7 +658,6 @@ namespace Utilities
            * adding the owner of a particular index in request_buffer (and
            * keeping track of who requested a particular index in case that
            * information is also desired).
-           *
            */
           virtual void
           answer_request(
@@ -721,7 +682,6 @@ namespace Utilities
           /**
            * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::compute_targets().
-           *
            */
           virtual std::vector<unsigned int>
           compute_targets() override
@@ -780,7 +740,6 @@ namespace Utilities
           /**
            * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::create_request().
-           *
            */
           virtual void
           create_request(const unsigned int other_rank,
@@ -804,7 +763,6 @@ namespace Utilities
           /**
            * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::prepare_buffer_for_answer().
-           *
            */
           virtual void
           prepare_buffer_for_answer(
@@ -817,7 +775,6 @@ namespace Utilities
           /**
            * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::read_answer().
-           *
            */
           virtual void
           read_answer(const unsigned int               other_rank,
@@ -835,9 +792,9 @@ namespace Utilities
            * accumulated in terms of the dictionary owners during the run of
            * the consensus algorithm back to the owner in the original
            * IndexSet. This requires some point-to-point communication.
-           * @return   Map of processors and associated ranges of indices that
-           * are requested from the current rank
            *
+           * @return Map of processors and associated ranges of indices that
+           *         are requested from the current rank
            */
           std::map<unsigned int, IndexSet>
           get_requesters()
@@ -1004,15 +961,13 @@ namespace Utilities
            * out the owner of the index that was requested (using the guess in
            * `owner_index`, as we typically might look up on the same rank
            * several times in a row, which avoids the binary search in
-           * Dictionary::get_owning_rank_index().   Once we know the rank of
-           * the           owner, we the vector entry with the rank of the
-           * request. Here, we           utilize the fact that requests are
-           * processed rank-by-rank, so we           can simply look at the
-           * end of the vector if there is already some           data stored
-           * or not. Finally, we build ranges, again using that           the
-           * index list is sorted and we therefore only need to append at
+           * Dictionary::get_owning_rank_index(). Once we know the rank of the
+           * owner, we the vector entry with the rank of the request. Here, we
+           * utilize the fact that requests are processed rank-by-rank, so we
+           * can simply look at the end of the vector if there is already some
+           * data stored or not. Finally, we build ranges, again using that
+           * the index list is sorted and we therefore only need to append at
            * the end.
-           *
            */
           void
           append_index_origin(const types::global_dof_index index,

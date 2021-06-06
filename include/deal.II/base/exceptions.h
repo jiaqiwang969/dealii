@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
 //
@@ -37,40 +37,35 @@ DEAL_II_NAMESPACE_OPEN
  * methods and variables directly since the interface and mechanism may be
  * subject to change. Rather create new exception classes using the
  * <tt>DeclException</tt> macro family.
- * See the
- * @ref Exceptions   module for more details on this class and what can be
- * done with classes derived from it.
  *
+ * See the
+ * @ref Exceptions
+ * module for more details on this class and what can be done with classes
+ * derived from it.
  *
  * @ingroup Exceptions
- *
- *
  */
 class ExceptionBase : public std::exception
 {
 public:
   /**
    * Default constructor.
-   *
    */
   ExceptionBase();
 
   /**
    * Copy constructor.
-   *
    */
   ExceptionBase(const ExceptionBase &exc);
 
   /**
    * Destructor.
-   *
    */
   virtual ~ExceptionBase() noexcept override;
 
   /**
-   * Copy operator. This operator is deleted since exception objects   are not
-   * copyable.
-   *
+   * Copy operator. This operator is deleted since exception objects
+   * are not copyable.
    */
   ExceptionBase
   operator=(const ExceptionBase &) = delete;
@@ -79,7 +74,6 @@ public:
    * Set the file name and line of where the exception appeared as well as the
    * violated condition and the name of the exception as a char pointer. This
    * function also populates the stacktrace.
-   *
    */
   void
   set_fields(const char *file,
@@ -91,21 +85,18 @@ public:
 
   /**
    * Override the standard function that returns the description of the error.
-   *
    */
   virtual const char *
   what() const noexcept override;
 
   /**
    * Get exception name.
-   *
    */
   const char *
   get_exc_name() const;
 
   /**
    * Print out the general part of the error information.
-   *
    */
   void
   print_exc_data(std::ostream &out) const;
@@ -113,7 +104,6 @@ public:
   /**
    * Print more specific information about the exception which occurred.
    * Overload this function in your own exception classes.
-   *
    */
   virtual void
   print_info(std::ostream &out) const;
@@ -121,7 +111,6 @@ public:
   /**
    * Print a stacktrace, if one has been recorded previously, to the given
    * stream.
-   *
    */
   void
   print_stack_trace(std::ostream &out) const;
@@ -129,52 +118,44 @@ public:
 protected:
   /**
    * Name of the file this exception happens in.
-   *
    */
   const char *file;
 
   /**
    * Line number in this file.
-   *
    */
   unsigned int line;
 
   /**
    * Name of the function, pretty printed.
-   *
    */
   const char *function;
 
   /**
    * The violated condition, as a string.
-   *
    */
   const char *cond;
 
   /**
    * Name of the exception and call sequence.
-   *
    */
   const char *exc;
 
   /**
    * A backtrace to the position where the problem happened, if the system
    * supports this.
-   *
    */
   mutable char **stacktrace;
 
   /**
    * The number of stacktrace frames that are stored in the previous variable.
    * Zero if the system does not support stack traces.
-   *
    */
   int n_stacktrace_frames;
 
 #ifdef DEAL_II_HAVE_GLIBC_STACKTRACE
   /**
    * array of pointers that contains the raw stack trace
-   *
    */
   void *raw_stacktrace[25];
 #endif
@@ -182,7 +163,6 @@ protected:
 private:
   /**
    * Internal function that generates the c_string. Called by what().
-   *
    */
   void
   generate_message() const;
@@ -190,7 +170,6 @@ private:
   /**
    * A pointer to the c_string that will be printed by what(). It is populated
    * by generate_message()
-   *
    */
   mutable std::string what_str;
 };
@@ -200,23 +179,18 @@ private:
 /**
  * Declare an exception class derived from ExceptionBase without parameters.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException0(Exception0)                \
     class Exception0 : public dealii::ExceptionBase \
@@ -229,23 +203,18 @@ private:
  * the exception, it simply reverts to the default text provided when
  * declaring the exception class through this macro.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclExceptionMsg(Exception, defaulttext)    \
     class Exception : public dealii::ExceptionBase    \
@@ -270,23 +239,18 @@ private:
  * Declare an exception class derived from ExceptionBase with one additional
  * parameter.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException1(Exception1, type1, outsequence) \
     class Exception1 : public dealii::ExceptionBase      \
@@ -312,23 +276,18 @@ private:
  * Declare an exception class derived from ExceptionBase with two additional
  * parameters.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException2(Exception2, type1, type2, outsequence) \
     class Exception2 : public dealii::ExceptionBase             \
@@ -356,23 +315,18 @@ private:
  * Declare an exception class derived from ExceptionBase with three additional
  * parameters.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException3(Exception3, type1, type2, type3, outsequence) \
     class Exception3 : public dealii::ExceptionBase                    \
@@ -402,23 +356,18 @@ private:
  * Declare an exception class derived from ExceptionBase with four additional
  * parameters.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException4(Exception4, type1, type2, type3, type4, outsequence) \
     class Exception4 : public dealii::ExceptionBase                           \
@@ -453,23 +402,18 @@ private:
  * Declare an exception class derived from ExceptionBase with five additional
  * parameters.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException5(                                       \
     Exception5, type1, type2, type3, type4, type5, outsequence) \
@@ -503,33 +447,28 @@ private:
       type5 const arg5;                                         \
     }
 
-#else  /*ifndef DOXYGEN*/ 
+#else /*ifndef DOXYGEN*/
 
 // Dummy definitions for doxygen:
 
 /**
  * Declare an exception class derived from ExceptionBase without parameters.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException0(Exception0) \
-     /** @ingroup Exceptions */        \
+    /** @ingroup Exceptions */       \
     static dealii::ExceptionBase &Exception0()
 
 /**
@@ -538,54 +477,44 @@ private:
  * the exception, it simply reverts to the default text provided when
  * declaring the exception class through this macro.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclExceptionMsg(Exception, defaulttext) \
-     /** @ingroup Exceptions */                      \
-     /** @dealiiExceptionMessage{defaulttext} */     \
+    /** @ingroup Exceptions */                     \
+    /** @dealiiExceptionMessage{defaulttext} */    \
     static dealii::ExceptionBase &Exception()
 
 /**
  * Declare an exception class derived from ExceptionBase with one additional
  * parameter.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException1(Exception1, type1, outsequence) \
-     /** @ingroup Exceptions */                            \
-     /** @dealiiExceptionMessage{outsequence} */           \
+    /** @ingroup Exceptions */                           \
+    /** @dealiiExceptionMessage{outsequence} */          \
     static dealii::ExceptionBase &Exception1(type1 arg1)
 
 
@@ -593,27 +522,22 @@ private:
  * Declare an exception class derived from ExceptionBase with two additional
  * parameters.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException2(Exception2, type1, type2, outsequence) \
-     /** @ingroup Exceptions */                                   \
-     /** @dealiiExceptionMessage{outsequence} */                  \
+    /** @ingroup Exceptions */                                  \
+    /** @dealiiExceptionMessage{outsequence} */                 \
     static dealii::ExceptionBase &Exception2(type1 arg1, type2 arg2)
 
 
@@ -621,27 +545,22 @@ private:
  * Declare an exception class derived from ExceptionBase with three additional
  * parameters.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException3(Exception3, type1, type2, type3, outsequence) \
-     /** @ingroup Exceptions */                                          \
-     /** @dealiiExceptionMessage{outsequence} */                         \
+    /** @ingroup Exceptions */                                         \
+    /** @dealiiExceptionMessage{outsequence} */                        \
     static dealii::ExceptionBase &Exception3(type1 arg1, type2 arg2, type3 arg3)
 
 
@@ -649,27 +568,22 @@ private:
  * Declare an exception class derived from ExceptionBase with four additional
  * parameters.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException4(Exception4, type1, type2, type3, type4, outsequence) \
-     /** @ingroup Exceptions */                                                 \
-     /** @dealiiExceptionMessage{outsequence} */                                \
+    /** @ingroup Exceptions */                                                \
+    /** @dealiiExceptionMessage{outsequence} */                               \
     static dealii::ExceptionBase &Exception4(type1 arg1,                      \
                                              type2 arg2,                      \
                                              type3 arg3,                      \
@@ -680,32 +594,27 @@ private:
  * Declare an exception class derived from ExceptionBase with five additional
  * parameters.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException5(                                       \
     Exception5, type1, type2, type3, type4, type5, outsequence) \
-     /** @ingroup Exceptions */                                   \
-     /** @dealiiExceptionMessage{outsequence} */                  \
+    /** @ingroup Exceptions */                                  \
+    /** @dealiiExceptionMessage{outsequence} */                 \
     static dealii::ExceptionBase &Exception5(                   \
       type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5)
 
-#endif  /*ifndef DOXYGEN*/ 
+#endif /*ifndef DOXYGEN*/
 
 
 /**
@@ -713,40 +622,35 @@ private:
  * use these exceptions, instead of having to declare them locally in your
  * class. The namespace in which these exceptions are declared is later
  * included into the global namespace by
- *
  * @code
  * using namespace StandardExceptions;
  * @endcode
  *
- *
- *
  * @ingroup Exceptions
- *
- *
  */
 namespace StandardExceptions
 {
   /**
-   * @addtogroup   Exceptions
-   *
+   * @addtogroup Exceptions
    */
   //@{
 
   /**
    * Exception denoting a division by zero.
-   *
    */
   DeclExceptionMsg(ExcDivideByZero,
                    "A piece of code is attempting a division by zero. This is "
                    "likely going to lead to results that make no sense.");
 
   /**
-   * Exception raised if a number is not finite.     This exception should be
-   * used to catch infinite or not a number results   of arithmetic operations
-   * that do not result from a division by zero (use   ExcDivideByZero for
-   * those).     The exception uses   std::complex   as its argument to ensure
-   * that we can use   it for all scalar arguments (real or complex-valued).
+   * Exception raised if a number is not finite.
    *
+   * This exception should be used to catch infinite or not a number results
+   * of arithmetic operations that do not result from a division by zero (use
+   * ExcDivideByZero for those).
+   *
+   * The exception uses std::complex as its argument to ensure that we can use
+   * it for all scalar arguments (real or complex-valued).
    */
   DeclException1(
     ExcNumberNotFinite,
@@ -782,7 +686,6 @@ namespace StandardExceptions
 
   /**
    * Trying to allocate a new object failed due to lack of free memory.
-   *
    */
   DeclException1(ExcOutOfMemory,
                  std::size_t,
@@ -800,7 +703,6 @@ namespace StandardExceptions
   /**
    * A memory handler reached a point where all allocated objects should have
    * been released. Since this exception is thrown, some were still allocated.
-   *
    */
   DeclException1(ExcMemoryLeak,
                  int,
@@ -809,7 +711,6 @@ namespace StandardExceptions
 
   /**
    * An error occurred reading or writing a file.
-   *
    */
   DeclExceptionMsg(ExcIO,
                    "An input/output error has occurred. There are a number of "
@@ -835,9 +736,10 @@ namespace StandardExceptions
                    "a directory that does not exist.");
 
   /**
-   * An error occurred opening the named file.     The constructor takes a
-   * single argument of type   <tt>std::string</tt>   naming   the file.
+   * An error occurred opening the named file.
    *
+   * The constructor takes a single argument of type <tt>std::string</tt> naming
+   * the file.
    */
   DeclException1(ExcFileNotOpen,
                  std::string,
@@ -862,7 +764,6 @@ namespace StandardExceptions
    * implement. It is therefore quite worth the effort to take a look at the
    * corresponding place and see whether it can be implemented without too
    * much effort.
-   *
    */
   DeclExceptionMsg(ExcNotImplemented,
                    "You are trying to use functionality in deal.II that is "
@@ -887,6 +788,7 @@ namespace StandardExceptions
    * algorithm and are not yet sure whether we got it right; we then put in
    * assertions after each part of the algorithm that check for some
    * conditions that should hold there, and throw an exception if they do not.
+   *
    * We usually leave in these assertions even after we are confident that the
    * implementation is correct, since if someone later changes or extends the
    * algorithm, these exceptions will indicate to them if they violate
@@ -894,7 +796,6 @@ namespace StandardExceptions
    * sometimes happens that an algorithm does not work in very rare corner
    * cases. These cases will then be trapped sooner or later by the exception,
    * so that the algorithm can then be fixed for these cases as well.
-   *
    */
   DeclExceptionMsg(ExcInternalError,
                    "This exception -- which is used in many places in the "
@@ -918,7 +819,6 @@ namespace StandardExceptions
    * functions) but could not be declared pure since the class is intended to
    * be used anyway, even though the respective function may only be called if
    * a derived class is used.
-   *
    */
   DeclExceptionMsg(
     ExcPureFunctionCalled,
@@ -959,21 +859,19 @@ namespace StandardExceptions
 
   /**
    * This exception is used if some object is found uninitialized.
-   *
    */
   DeclException0(ExcNotInitialized);
 
   /**
    * The object is in a state not suitable for this operation.
-   *
    */
   DeclException0(ExcInvalidState);
 
   /**
    * This exception is raised if a functionality is not possible in the given
-   * dimension. Mostly used to throw function calls in 1d.     The constructor
-   * takes a single <tt>int</tt>, denoting the dimension.
+   * dimension. Mostly used to throw function calls in 1d.
    *
+   * The constructor takes a single <tt>int</tt>, denoting the dimension.
    */
   DeclException1(ExcImpossibleInDim,
                  int,
@@ -983,9 +881,10 @@ namespace StandardExceptions
 
   /**
    * This exception is raised if a functionality is not possible in the given
-   * combination of dimension and space-dimension.     The constructor takes
-   * two <tt>int</tt>, denoting the dimension and the   space dimension.
+   * combination of dimension and space-dimension.
    *
+   * The constructor takes two <tt>int</tt>, denoting the dimension and the
+   * space dimension.
    */
   DeclException2(ExcImpossibleInDimSpacedim,
                  int,
@@ -997,7 +896,6 @@ namespace StandardExceptions
 
   /**
    * A number is zero, but it should not be here.
-   *
    */
   DeclExceptionMsg(ExcZero,
                    "In a check in the code, deal.II encountered a zero in "
@@ -1009,7 +907,6 @@ namespace StandardExceptions
   /**
    * The object should have been filled with something before this member
    * function is called.
-   *
    */
   DeclExceptionMsg(ExcEmptyObject,
                    "The object you are trying to access is empty but it makes "
@@ -1018,9 +915,10 @@ namespace StandardExceptions
 
   /**
    * This exception is raised whenever the sizes of two objects were assumed
-   * to be equal, but were not.     Parameters to the constructor are the
-   * first and second size, both of type   <tt>int</tt>.
+   * to be equal, but were not.
    *
+   * Parameters to the constructor are the first and second size, both of type
+   * <tt>int</tt>.
    */
   DeclException2(ExcDimensionMismatch,
                  std::size_t,
@@ -1030,7 +928,6 @@ namespace StandardExceptions
   /**
    * The first dimension should be either equal to the second or the third,
    * but it is neither.
-   *
    */
   DeclException3(ExcDimensionMismatch2,
                  int,
@@ -1040,8 +937,16 @@ namespace StandardExceptions
                  << " nor to " << arg3 << ".");
 
   /**
-   * This exception indicates that an index is not within the expected range.   For example, it may be that you are trying to access an element of a   vector which does not exist.     The constructor takes three <tt>int</tt> arguments, namely     <ol>       <li>   the violating index     <li>   the lower bound     <li>   the upper bound plus one     </ol>
+   * This exception indicates that an index is not within the expected range.
+   * For example, it may be that you are trying to access an element of a
+   * vector which does not exist.
    *
+   * The constructor takes three <tt>int</tt> arguments, namely
+   * <ol>
+   * <li> the violating index
+   * <li> the lower bound
+   * <li> the upper bound plus one
+   * </ol>
    */
   DeclException3(
     ExcIndexRange,
@@ -1058,8 +963,19 @@ namespace StandardExceptions
           ""));
 
   /**
-   * This exception indicates that an index is not within the expected range.   For example, it may be that you are trying to access an element of a   vector which does not exist.     The constructor takes three arguments, namely     <ol>       <li>   the violating index     <li>   the lower bound     <li>   the upper bound plus one     </ol>       This generic exception differs from ExcIndexRange by allowing to specify   the type of indices.
+   * This exception indicates that an index is not within the expected range.
+   * For example, it may be that you are trying to access an element of a
+   * vector which does not exist.
    *
+   * The constructor takes three arguments, namely
+   * <ol>
+   * <li> the violating index
+   * <li> the lower bound
+   * <li> the upper bound plus one
+   * </ol>
+   *
+   * This generic exception differs from ExcIndexRange by allowing to specify
+   * the type of indices.
    */
   template <typename T>
   DeclException3(
@@ -1078,7 +994,6 @@ namespace StandardExceptions
 
   /**
    * A number is too small.
-   *
    */
   DeclException2(ExcLowerRange,
                  int,
@@ -1088,7 +1003,6 @@ namespace StandardExceptions
 
   /**
    * A generic exception definition for the ExcLowerRange above.
-   *
    */
   template <typename T>
   DeclException2(ExcLowerRangeType,
@@ -1100,7 +1014,6 @@ namespace StandardExceptions
   /**
    * This exception indicates that the first argument should be an integer
    * multiple of the second, but is not.
-   *
    */
   DeclException2(ExcNotMultiple,
                  int,
@@ -1111,10 +1024,10 @@ namespace StandardExceptions
   /**
    * This exception is thrown if the iterator you access has corrupted data.
    * It might for instance be, that the container it refers does not have an
-   * entry at the point the iterator refers.     Typically, this will be an
-   * internal error of deal.II, because the   increment and decrement
-   * operators should never yield an invalid iterator.
+   * entry at the point the iterator refers.
    *
+   * Typically, this will be an internal error of deal.II, because the
+   * increment and decrement operators should never yield an invalid iterator.
    */
   DeclExceptionMsg(ExcInvalidIterator,
                    "You are trying to use an iterator, but the iterator is "
@@ -1125,7 +1038,6 @@ namespace StandardExceptions
   /**
    * This exception is thrown if the iterator you incremented or decremented
    * was already at its final state.
-   *
    */
   DeclExceptionMsg(ExcIteratorPastEnd,
                    "You are trying to use an iterator, but the iterator is "
@@ -1138,19 +1050,18 @@ namespace StandardExceptions
    * macro: exceptions declared through DeclException0 do not allow one to
    * specify a message that is displayed when the exception is raised, as
    * opposed to the other exceptions which allow to show a text along with the
-   * given parameters.     When throwing this exception, you can give a
-   * message as a     <tt>std::string</tt>   as argument to the exception that
-   * is then displayed.   The argument can, of course, be constructed at
-   * run-time, for example   including the name of a file that can't be
-   * opened, or any other text you   may want to assemble from different
-   * pieces.
+   * given parameters.
    *
+   * When throwing this exception, you can give a message as a
+   * <tt>std::string</tt> as argument to the exception that is then displayed.
+   * The argument can, of course, be constructed at run-time, for example
+   * including the name of a file that can't be opened, or any other text you
+   * may want to assemble from different pieces.
    */
   DeclException1(ExcMessage, std::string, << arg1);
 
   /**
    * Parallel vectors with ghost elements are read-only vectors.
-   *
    */
   DeclExceptionMsg(ExcGhostsPresent,
                    "You are trying an operation on a vector that is only "
@@ -1165,10 +1076,10 @@ namespace StandardExceptions
 
   /**
    * Some of our numerical classes allow for setting all entries to zero using
-   * the assignment operator <tt>=</tt>.     In many cases, this assignment
-   * operator makes sense <b>only</b> for the   argument zero. In other cases,
-   * this exception is thrown.
+   * the assignment operator <tt>=</tt>.
    *
+   * In many cases, this assignment operator makes sense <b>only</b> for the
+   * argument zero. In other cases, this exception is thrown.
    */
   DeclExceptionMsg(ExcScalarAssignmentOnlyForZeroValue,
                    "You are trying an operation of the form 'vector = C', "
@@ -1184,7 +1095,6 @@ namespace StandardExceptions
 
   /**
    * This function requires support for the LAPACK library.
-   *
    */
   DeclExceptionMsg(
     ExcNeedsLAPACK,
@@ -1194,7 +1104,6 @@ namespace StandardExceptions
 
   /**
    * This function requires support for the MPI library.
-   *
    */
   DeclExceptionMsg(
     ExcNeedsMPI,
@@ -1203,7 +1112,6 @@ namespace StandardExceptions
 
   /**
    * This function requires support for the FunctionParser library.
-   *
    */
   DeclExceptionMsg(
     ExcNeedsFunctionparser,
@@ -1215,7 +1123,6 @@ namespace StandardExceptions
 
   /**
    * This function requires support for the Assimp library.
-   *
    */
   DeclExceptionMsg(
     ExcNeedsAssimp,
@@ -1225,15 +1132,14 @@ namespace StandardExceptions
 
 #ifdef DEAL_II_WITH_CUDA
   /**
-   * This exception is raised if an error happened in a CUDA kernel.     The
-   * constructor takes a single <tt>char*</tt>, the output of
-   * cudaGetErrorString.
+   * This exception is raised if an error happened in a CUDA kernel.
    *
+   * The constructor takes a single <tt>char*</tt>, the output of
+   * cudaGetErrorString.
    */
   DeclException1(ExcCudaError, const char *, << arg1);
   /**
    * This exception is raised if an error happened in a cuSPARSE function.
-   *
    */
   DeclException1(ExcCusparseError,
                  std::string,
@@ -1243,7 +1149,6 @@ namespace StandardExceptions
 
   /**
    * This function requires support for the Exodus II library.
-   *
    */
   DeclExceptionMsg(
     ExcNeedsExodusII,
@@ -1254,23 +1159,24 @@ namespace StandardExceptions
 #ifdef DEAL_II_WITH_MPI
   /**
    * Exception for MPI errors. This exception is only defined if
-   * <code>deal.II</code>   is compiled with MPI support. This exception
-   * should   be used with   <code>AssertThrow</code>   to check error codes
-   * of MPI   functions. For example:
+   * <code>deal.II</code> is compiled with MPI support. This exception should
+   * be used with <code>AssertThrow</code> to check error codes of MPI
+   * functions. For example:
    * @code
    * const int ierr = MPI_Isend(...);
    * AssertThrow(ierr == MPI_SUCCESS, ExcMPI(ierr));
    * @endcode
-   * or, using the convenience macro   <code>AssertThrowMPI</code>  ,
+   * or, using the convenience macro <code>AssertThrowMPI</code>,
    * @code
    * const int ierr = MPI_Irecv(...);
    * AssertThrowMPI(ierr);
    * @endcode
-   * If the assertion fails then the error code will be used to print a
-   * helpful   message to the screen by utilizing the
-   * <code>MPI_Error_string</code>     function.
-   * @ingroup Exceptions
    *
+   * If the assertion fails then the error code will be used to print a helpful
+   * message to the screen by utilizing the <code>MPI_Error_string</code>
+   * function.
+   *
+   * @ingroup Exceptions
    */
   class ExcMPI : public dealii::ExceptionBase
   {
@@ -1289,37 +1195,35 @@ namespace StandardExceptions
 #ifdef DEAL_II_TRILINOS_WITH_SEACAS
   /**
    * Exception for ExodusII errors. This exception is only defined if
-   * <code>deal.II</code>   is compiled with SEACAS support, which is
-   * available   through Trilinos. This function should be used with the
-   * convenience macro   AssertThrowExodusII.
-   * @ingroup Exceptions
+   * <code>deal.II</code> is compiled with SEACAS support, which is available
+   * through Trilinos. This function should be used with the convenience macro
+   * AssertThrowExodusII.
    *
+   * @ingroup Exceptions
    */
   class ExcExodusII : public ExceptionBase
   {
   public:
     /**
-     * Constructor.           @param   error_code The error code returned by
-     * an ExodusII function.
+     * Constructor.
      *
+     * @param error_code The error code returned by an ExodusII function.
      */
     ExcExodusII(const int error_code);
 
     /**
      * Print a description of the error to the given stream.
-     *
      */
     virtual void
     print_info(std::ostream &out) const override;
 
     /**
      * Store the error code.
-     *
      */
     const int error_code;
   };
 #endif // DEAL_II_TRILINOS_WITH_SEACAS
-}  /*namespace StandardExceptions*/ 
+} /*namespace StandardExceptions*/
 
 
 
@@ -1327,22 +1231,18 @@ namespace StandardExceptions
  * In this namespace, functions in connection with the Assert and AssertThrow
  * mechanism are declared.
  *
- *
  * @ingroup Exceptions
- *
- *
  */
 namespace deal_II_exceptions
 {
   namespace internals
   {
     /**
-     * Setting this variable to false will disable deal.II's exception
-     * mechanism     to abort the problem. The Assert() macro will throw the
-     * exception instead     and the AssertNothrow() macro will just print the
-     * error message. This     variable should not be changed directly. Use
-     * disable_abort_on_exception()     instead.
-     *
+     * Setting this variable to false will disable deal.II's exception mechanism
+     * to abort the problem. The Assert() macro will throw the exception instead
+     * and the AssertNothrow() macro will just print the error message. This
+     * variable should not be changed directly. Use disable_abort_on_exception()
+     * instead.
      */
     extern bool allow_abort_on_exception;
   } // namespace internals
@@ -1356,11 +1256,14 @@ namespace deal_II_exceptions
    * redirected to the same console window. In this case, it is convenient to
    * set as additional name the name of the host on which the program runs, so
    * that one can see in which instance of the program the exception occurred.
-   * The string pointed to by the argument is copied, so doesn't need to be
-   * stored after the call to this function.     Previously set additional
-   * output is replaced by the argument given to   this function.       @see
-   * Exceptions
    *
+   * The string pointed to by the argument is copied, so doesn't need to be
+   * stored after the call to this function.
+   *
+   * Previously set additional output is replaced by the argument given to
+   * this function.
+   *
+   * @see Exceptions
    */
   void
   set_additional_assert_output(const char *const p);
@@ -1371,23 +1274,25 @@ namespace deal_II_exceptions
    * to see such a stacktrace; suppressing it, however, is useful if one wants
    * to compare the output of a program across different machines and systems,
    * since the stacktrace shows memory addresses and library names/paths that
-   * depend on the exact setup of a machine.       @see   Exceptions
+   * depend on the exact setup of a machine.
    *
+   * @see Exceptions
    */
   void
   suppress_stacktrace_in_exceptions();
 
   /**
-   * Calling this function switches off the use of   <tt>std::abort()</tt>
-   * when   an exception is created using the Assert() macro. Instead, the
-   * Exception   will be thrown using 'throw', so it can be caught if desired.
-   * Generally,   you want to abort the execution of a program when Assert()
-   * is called, but   it needs to be switched off if you want to log all
-   * exceptions created, or   if you want to test if an assertion is working
-   * correctly. This is done   for example in regression tests. Please note
-   * that some fatal errors will   still call abort(), e.g. when an exception
-   * is caught during exception   handling.       @see   Exceptions
+   * Calling this function switches off the use of <tt>std::abort()</tt> when
+   * an exception is created using the Assert() macro. Instead, the Exception
+   * will be thrown using 'throw', so it can be caught if desired. Generally,
+   * you want to abort the execution of a program when Assert() is called, but
+   * it needs to be switched off if you want to log all exceptions created, or
+   * if you want to test if an assertion is working correctly. This is done
+   * for example in regression tests. Please note that some fatal errors will
+   * still call abort(), e.g. when an exception is caught during exception
+   * handling.
    *
+   * @see Exceptions
    */
   void
   disable_abort_on_exception();
@@ -1396,35 +1301,31 @@ namespace deal_II_exceptions
    * The functions in this namespace are in connection with the Assert and
    * AssertThrow mechanism but are solely for internal purposes and are not
    * for use outside the exception handling and throwing mechanism.
-   * @ingroup Exceptions
    *
+   * @ingroup Exceptions
    */
   namespace internals
   {
     /**
-     * Abort the program by printing the     error message provided by   @p
-     * exc   and calling   <tt>std::abort()</tt>.
-     *
+     * Abort the program by printing the
+     * error message provided by @p exc and calling <tt>std::abort()</tt>.
      */
     [[noreturn]] void
     abort(const ExceptionBase &exc) noexcept;
 
     /**
      * An enum describing how to treat an exception in issue_error_noreturn.
-     *
      */
     enum ExceptionHandling
     {
       /**
-       * Abort the program by calling   <code>std::abort</code>   unless
-       * deal_II_exceptions::disable_abort_on_exception   has been called: in
+       * Abort the program by calling <code>std::abort</code> unless
+       * deal_II_exceptions::disable_abort_on_exception has been called: in
        * that case the program will throw an exception.
-       *
        */
       abort_or_throw_on_exception,
       /**
        * Throw the exception normally.
-       *
        */
       throw_on_exception
     };
@@ -1433,28 +1334,18 @@ namespace deal_II_exceptions
      * This routine does the main work for the exception generation mechanism
      * used in the <tt>Assert</tt> and <tt>AssertThrow</tt> macros: as the
      * name implies, this function either ends by throwing an exception (if
-     * @p handling   is throw_on_exception, or   @p handling   is
-     * try_abort_exception     and
-     * deal_II_exceptions::disable_abort_on_exception   is false) or with a
-     * call to <tt>abort</tt> (if   @p handling   is try_abort_exception and
-     * deal_II_exceptions::disable_abort_on_exception   is true).         The
-     * actual exception object (the last argument) is typically an unnamed
+     * @p handling is throw_on_exception, or @p handling is try_abort_exception
+     * and deal_II_exceptions::disable_abort_on_exception is false) or with a
+     * call to <tt>abort</tt> (if @p handling is try_abort_exception and
+     * deal_II_exceptions::disable_abort_on_exception is true).
+     *
+     * The actual exception object (the last argument) is typically an unnamed
      * object created in place; because we modify it, we can't take it by
      * const reference, and temporaries don't bind to non-const references.
      * So take it by value (=copy it) with a templated type to avoid slicing
+     * -- the performance implications are pretty minimal anyway.
      *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *  -  the performance implications are pretty minimal anyway.           @ref ExceptionBase
-     *
+     * @ref ExceptionBase
      */
     template <class ExceptionType>
     [[noreturn]] void
@@ -1493,16 +1384,16 @@ namespace deal_II_exceptions
 
     /**
      * Internal function that does the work of issue_error_nothrow.
-     *
      */
     void do_issue_error_nothrow(const ExceptionBase &e) noexcept;
 
     /**
-     * Exception generation
-     * mechanism in case we must not throw.           @ref ExceptionBase
-     * @note   This function is defined with a template for the same reasons
-     * as     issue_error_noreturn().
+     * Exception generation mechanism in case we must not throw.
      *
+     * @ref ExceptionBase
+     *
+     * @note This function is defined with a template for the same reasons as
+     * issue_error_noreturn().
      */
     template <class ExceptionType>
     void
@@ -1526,7 +1417,6 @@ namespace deal_II_exceptions
      * Return a string given an error code. This is similar to the
      * cudaGetErrorString function but there is no equivalent function for
      * cuSPARSE.
-     *
      */
     std::string
     get_cusparse_error_string(const cusparseStatus_t error_code);
@@ -1535,46 +1425,40 @@ namespace deal_II_exceptions
      * Return a string given an error code. This is similar to the
      * cudaGetErrorString function but there is no equivalent function for
      * cuSOLVER.
-     *
      */
     std::string
     get_cusolver_error_string(const cusolverStatus_t error_code);
 #endif
-  }  /*namespace internals*/ 
+  } /*namespace internals*/
 
-}  /*namespace deal_II_exceptions*/ 
+} /*namespace deal_II_exceptions*/
 
 
 
 /**
- * A macro that serves as the main routine in the exception mechanism for
- * debug mode error checking. It asserts that a certain condition is
- * fulfilled, otherwise issues an error and aborts the program.
- * A more
- * detailed description can be found in the   @ref Exceptions   module. It is
- * first used in   step-5   and   step-6  . See also the
- * <tt>ExceptionBase</tt> class for more information.
+ * A macro that serves as the main routine in the exception mechanism for debug
+ * mode error checking. It asserts that a certain condition is fulfilled,
+ * otherwise issues an error and aborts the program.
  *
+ * A more detailed description can be found in the
+ * @ref Exceptions
+ * module. It is first used in step-5 and step-6.
+ * See also the <tt>ExceptionBase</tt> class for more information.
  *
- * @note   Active in DEBUG mode only
+ * @note Active in DEBUG mode only
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #ifdef DEBUG
 #  ifdef DEAL_II_HAVE_BUILTIN_EXPECT
@@ -1591,7 +1475,7 @@ namespace deal_II_exceptions
             #exc,                                                        \
             exc);                                                        \
       }
-#  else  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#  else /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 #    define Assert(cond, exc)                                            \
       {                                                                  \
         if (!(cond))                                                     \
@@ -1605,7 +1489,7 @@ namespace deal_II_exceptions
             #exc,                                                        \
             exc);                                                        \
       }
-#  endif  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#  endif /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 #else
 #  define Assert(cond, exc) \
     {}
@@ -1615,33 +1499,29 @@ namespace deal_II_exceptions
 
 /**
  * A variant of the <tt>Assert</tt> macro above that exhibits the same runtime
- * behavior as long as disable_abort_on_exception was not called. However, if
- * disable_abort_on_exception was called, this macro merely prints the
- * exception that would be thrown to deallog and continues normally without
- * throwing an exception.
- * A more
- * detailed description can be found in the   @ref Exceptions   module, in the
- * discussion about the corner case at the bottom of the page.
+ * behavior as long as disable_abort_on_exception was not called.
  *
+ * However, if disable_abort_on_exception was called, this macro merely prints
+ * the exception that would be thrown to deallog and continues normally
+ * without throwing an exception.
  *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
+ * A more detailed description can be found in the
+ * @ref Exceptions
+ * module, in the discussion about the corner case at the bottom of the page.
  *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
- * @note   Active in DEBUG mode only
- *
+ * @note Active in DEBUG mode only
  * @ingroup Exceptions
- *
- *
  */
 #ifdef DEBUG
 #  ifdef DEAL_II_HAVE_BUILTIN_EXPECT
@@ -1651,14 +1531,14 @@ namespace deal_II_exceptions
           ::dealii::deal_II_exceptions::internals::issue_error_nothrow( \
             __FILE__, __LINE__, __PRETTY_FUNCTION__, #cond, #exc, exc); \
       }
-#  else  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#  else /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 #    define AssertNothrow(cond, exc)                                    \
       {                                                                 \
         if (!(cond))                                                    \
           ::dealii::deal_II_exceptions::internals::issue_error_nothrow( \
             __FILE__, __LINE__, __PRETTY_FUNCTION__, #cond, #exc, exc); \
       }
-#  endif  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#  endif /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 #else
 #  define AssertNothrow(cond, exc) \
     {}
@@ -1667,33 +1547,29 @@ namespace deal_II_exceptions
 /**
  * A macro that serves as the main routine in the exception mechanism for
  * dynamic error checking. It asserts that a certain condition is fulfilled,
- * otherwise throws an exception via the C++   @p throw   mechanism. This
- * exception can be caught via a   @p catch   clause, as is shown in   step-6
- * and all following tutorial programs.
- * A more
- * detailed description can be found in the   @ref Exceptions   module. It is
- * first used in   step-9   and   step-13  . See also the
- * <tt>ExceptionBase</tt> class for more information.
+ * otherwise
+ * throws an exception via the C++ @p throw mechanism. This exception can
+ * be caught via a @p catch clause, as is shown in step-6 and all following
+ * tutorial programs.
  *
+ * A more detailed description can be found in the
+ * @ref Exceptions
+ * module. It is first used in step-9 and step-13.
+ * See also the <tt>ExceptionBase</tt> class for more information.
  *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
- *
- * @note   Active in both DEBUG and RELEASE modes
- *
+ * @note Active in both DEBUG and RELEASE modes
  * @ingroup Exceptions
- *
- *
  */
 #ifdef DEAL_II_HAVE_BUILTIN_EXPECT
 #  define AssertThrow(cond, exc)                                       \
@@ -1708,7 +1584,7 @@ namespace deal_II_exceptions
           #exc,                                                        \
           exc);                                                        \
     }
-#else  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#else /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 #  define AssertThrow(cond, exc)                                       \
     {                                                                  \
       if (!(cond))                                                     \
@@ -1721,30 +1597,27 @@ namespace deal_II_exceptions
           #exc,                                                        \
           exc);                                                        \
     }
-#endif  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#endif /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 
 /**
- * Special assertion for dimension mismatch. Since this is used very often and
- * always repeats the arguments, we introduce this special assertion for
- * ExcDimensionMismatch in order to keep the user codes shorter.
+ * Special assertion for dimension mismatch.
  *
+ * Since this is used very often and always repeats the arguments, we
+ * introduce this special assertion for ExcDimensionMismatch in order to keep
+ * the user codes shorter.
  *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #define AssertDimension(dim1, dim2)                                            \
   Assert(static_cast<typename ::dealii::internal::argument_type<void(          \
@@ -1758,26 +1631,20 @@ namespace deal_II_exceptions
 
 /**
  * An assertion that tests whether <tt>vec</tt> has size <tt>dim1</tt>, and
- * each entry of the vector is itself an array that has the size
- * <tt>dim2</tt>.
+ * each entry of the vector is itself an array that has the size <tt>dim2</tt>.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #define AssertVectorVectorDimension(VEC, DIM1, DIM2) \
   AssertDimension(VEC.size(), DIM1);                 \
@@ -1802,27 +1669,23 @@ namespace internal
 } // namespace internal
 
 /**
- * An assertion that tests that a given index is within the half-open range
- * <code>[0,range)</code>  . It throws an exception object
- * <code>ExcIndexRange(index,0,range)</code>   if the assertion fails.
+ * An assertion that tests that a given index is within the half-open
+ * range <code>[0,range)</code>. It throws an exception object
+ * <code>ExcIndexRange(index,0,range)</code> if the assertion
+ * fails.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #define AssertIndexRange(index, range)                                         \
   Assert(                                                                      \
@@ -1838,27 +1701,22 @@ namespace internal
 
 /**
  * An assertion that checks whether a number is finite or not. We explicitly
- * cast the number to   std::complex   to match the signature of the exception
- * (see there for an explanation of why we use   std::complex   at all) and to
- * satisfy the fact that   std::complex   has no implicit conversions.
+ * cast the number to std::complex to match the signature of the exception
+ * (see there for an explanation of why we use std::complex at all) and to
+ * satisfy the fact that std::complex has no implicit conversions.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #define AssertIsFinite(number)               \
   Assert(dealii::numbers::is_finite(number), \
@@ -1867,29 +1725,23 @@ namespace internal
 #ifdef DEAL_II_WITH_MPI
 /**
  * An assertion that checks whether or not an error code returned by an MPI
- * function is equal to   <code>MPI_SUCCESS</code>  . If the check fails then
- * an exception of type ExcMPI is thrown with the given error code as an
+ * function is equal to <code>MPI_SUCCESS</code>. If the check fails then an
+ * exception of type ExcMPI is thrown with the given error code as an
  * argument.
  *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
- *
- * @note   Active only if deal.II is compiled with MPI
- *
+ * @note Active only if deal.II is compiled with MPI
  * @ingroup Exceptions
- *
- *
  */
 #  define AssertThrowMPI(error_code) \
     AssertThrow(error_code == MPI_SUCCESS, dealii::ExcMPI(error_code))
@@ -1903,23 +1755,18 @@ namespace internal
  * An assertion that checks that the error code produced by calling a CUDA
  * routine is equal to cudaSuccess.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertCuda(error_code)      \
@@ -1935,23 +1782,18 @@ namespace internal
 /**
  * The non-throwing equivalent of AssertCuda.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertNothrowCuda(error_code)      \
@@ -1968,23 +1810,18 @@ namespace internal
  * An assertion that checks that the kernel was launched and executed
  * successfully.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertCudaKernel()                                \
@@ -2003,23 +1840,18 @@ namespace internal
  * An assertion that checks that the error code produced by calling a cuSPARSE
  * routine is equal to CUSPARSE_STATUS_SUCCESS.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertCusparse(error_code)                                      \
@@ -2038,23 +1870,18 @@ namespace internal
 /**
  * The non-throwing equivalent of AssertCusparse.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertNothrowCusparse(error_code)                               \
@@ -2074,23 +1901,18 @@ namespace internal
  * An assertion that checks that the error code produced by calling a cuSOLVER
  * routine is equal to CUSOLVER_STATUS_SUCCESS.
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertCusolver(error_code)                                      \
@@ -2113,23 +1935,18 @@ namespace internal
  * Assertion that checks that the error code produced by calling an ExodusII
  * routine is equal to EX_NOERR (which is zero).
  *
- *
- * @note   This and similar macro names are examples of preprocessor
- * definitions in the deal.II library that are not prefixed by a string that
- * likely makes them unique to deal.II. As a consequence, it is possible that
- * other libraries your code interfaces with define the same name, and the
- * result will be name collisions (see
- * https://en.wikipedia.org/wiki/Name_collision). One can
- * <code>\#undef</code>   this macro, as well as all other macros defined by
- * deal.II that are not prefixed with either   <code>DEAL</code> or
- * <code>deal</code>  , by including the header
- * <code>deal.II/base/undefine_macros.h</code>   after all other deal.II
- * headers have been included.
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define AssertThrowExodusII(error_code) \
     AssertThrow(error_code == 0, ExcExodusII(error_code));

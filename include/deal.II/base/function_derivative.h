@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
 //
@@ -31,15 +31,14 @@ DEAL_II_NAMESPACE_OPEN
  * provided on construction. If <tt>b</tt> is the vector, the derivative <tt>b
  * . grad f</tt> is computed. This derivative is evaluated directly, not by
  * computing the gradient of <tt>f</tt> and its scalar product with
- * <tt>b</tt>. The derivative is computed numerically, using one of the
- * provided difference formulas (see <tt>set_formula</tt> for available
- * schemes). Experimenting with <tt>h</tt> and the difference scheme may be
- * necessary to obtain sufficient results.
+ * <tt>b</tt>.
  *
+ * The derivative is computed numerically, using one of the provided
+ * difference formulas (see <tt>set_formula</tt> for available schemes).
+ * Experimenting with <tt>h</tt> and the difference scheme may be necessary to
+ * obtain sufficient results.
  *
  * @ingroup functions
- *
- *
  */
 template <int dim>
 class FunctionDerivative : public AutoDerivativeFunction<dim>
@@ -49,7 +48,6 @@ public:
    * Constructor. Provided are the functions to compute derivatives of, the
    * direction vector of the differentiation and the step size <tt>h</tt> of
    * the difference formula.
-   *
    */
   FunctionDerivative(const Function<dim> &f,
                      const Point<dim> &   direction,
@@ -58,11 +56,14 @@ public:
   /**
    * Constructor. Provided are the functions to compute derivatives of and the
    * direction vector of the differentiation in each quadrature point and the
-   * difference step size.     This is the constructor for a variable velocity
-   * field. Most probably, a   new object of <tt>FunctionDerivative</tt> has
-   * to be constructed for each   set of quadrature points.     The number of
-   * quadrature point must still be the same, when values are   accessed.
+   * difference step size.
    *
+   * This is the constructor for a variable velocity field. Most probably, a
+   * new object of <tt>FunctionDerivative</tt> has to be constructed for each
+   * set of quadrature points.
+   *
+   * The number of quadrature point must still be the same, when values are
+   * accessed.
    */
   FunctionDerivative(const Function<dim> &          f,
                      const std::vector<Point<dim>> &direction,
@@ -70,18 +71,17 @@ public:
 
   /**
    * Choose the difference formula. This is set to the default in the
-   * constructor.     Formulas implemented right now are first order backward
-   * Euler   (<tt>UpwindEuler</tt>), second order symmetric Euler
-   * (<tt>Euler</tt>) and   a symmetric fourth order formula
-   * (<tt>FourthOrder</tt>).
+   * constructor.
    *
+   * Formulas implemented right now are first order backward Euler
+   * (<tt>UpwindEuler</tt>), second order symmetric Euler (<tt>Euler</tt>) and
+   * a symmetric fourth order formula (<tt>FourthOrder</tt>).
    */
   void
   set_formula(typename AutoDerivativeFunction<dim>::DifferenceFormula formula =
                 AutoDerivativeFunction<dim>::Euler);
   /**
    * Change the base step size of the difference formula
-   *
    */
   void
   set_h(const double h);
@@ -100,8 +100,7 @@ public:
   /**
    * Return an estimate for the memory consumption, in bytes, of this object.
    * This is not exact (but will usually be close) because calculating the
-   * memory usage of trees (e.g.,   <tt>std::map</tt>)   is difficult.
-   *
+   * memory usage of trees (e.g., <tt>std::map</tt>) is difficult.
    */
   virtual std::size_t
   memory_consumption() const override;
@@ -109,25 +108,21 @@ public:
 private:
   /**
    * Function for differentiation.
-   *
    */
   const Function<dim> &f;
 
   /**
    * Step size of the difference formula.
-   *
    */
   double h;
 
   /**
    * Difference formula.
-   *
    */
   typename AutoDerivativeFunction<dim>::DifferenceFormula formula;
 
   /**
    * Helper object. Contains the increment vector for the formula.
-   *
    */
   std::vector<Tensor<1, dim>> incr;
 };

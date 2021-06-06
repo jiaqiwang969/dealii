@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2021 by the deal.II authors
 //
@@ -31,15 +31,14 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * A class representing a fixed size array of indices. It is used in tensorial
- * objects like the TableBase and SymmetricTensor classes to represent a
- * nested choice of indices.
- * @tparam   N The number of indices stored in each object.
+ * A class representing a fixed size array of indices.
  *
+ * It is used in tensorial objects like the TableBase and SymmetricTensor
+ * classes to represent a nested choice of indices.
+ *
+ * @tparam N The number of indices stored in each object.
  *
  * @ingroup data
- *
- *
  */
 template <int N>
 class TableIndices
@@ -51,42 +50,37 @@ public:
 
   /**
    * Default constructor. This constructor sets all indices to zero.
-   *
    */
   constexpr TableIndices() = default;
 
   /**
    * Constructor. Initializes the indices stored by this object by the given
-   * arguments   @p indices       This constructor will result in a compiler
-   * error if   the template argument   @p N   is different from the number of
-   * the arguments.
+   * arguments @p indices
    *
+   * This constructor will result in a compiler error if
+   * the template argument @p N is different from the number of the arguments.
    */
   template <typename... T>
   constexpr TableIndices(const T... indices);
 
   /**
    * Read-only access the value of the <tt>i</tt>th index.
-   *
    */
   constexpr std::size_t operator[](const unsigned int i) const;
 
   /**
    * Write access the value of the <tt>i</tt>th index.
-   *
    */
   constexpr std::size_t &operator[](const unsigned int i);
 
   /**
    * Compare two index fields for equality.
-   *
    */
   constexpr bool
   operator==(const TableIndices<N> &other) const;
 
   /**
    * Compare two index fields for inequality.
-   *
    */
   constexpr bool
   operator!=(const TableIndices<N> &other) const;
@@ -94,7 +88,6 @@ public:
   /**
    * Sort the indices in ascending order. While this operation is not very
    * useful for Table objects, it is used for the SymmetricTensor class.
-   *
    */
   DEAL_II_CONSTEXPR void
   sort();
@@ -103,7 +96,6 @@ public:
    * Write or read the data of this object to or from a stream for the purpose
    * of serialization using the [BOOST serialization
    * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
-   *
    */
   template <class Archive>
   void
@@ -112,14 +104,13 @@ public:
 protected:
   /**
    * Store the indices in an array.
-   *
    */
   std::size_t indices[N]{};
 };
 
 
 
- /* --------------------- Template and inline functions ---------------- */ 
+/* --------------------- Template and inline functions ---------------- */
 
 template <int N>
 template <typename... T>
@@ -187,10 +178,9 @@ TableIndices<N>::serialize(Archive &ar, const unsigned int)
 
 /**
  * Output operator for TableIndices objects; reports them in a list like this:
- * <code>[i1,i2,...]</code>  .
- * @relatesalso   TableIndices
+ * <code>[i1,i2,...]</code>.
  *
- *
+ * @relatesalso TableIndices
  */
 template <int N>
 std::ostream &

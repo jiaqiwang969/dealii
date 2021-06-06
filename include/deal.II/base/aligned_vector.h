@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
 //
@@ -45,19 +45,17 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * This is a replacement class for   std::vector   to be used in combination
- * with VectorizedArray and derived data types. It allocates memory aligned to
+ * This is a replacement class for std::vector to be used in combination with
+ * VectorizedArray and derived data types. It allocates memory aligned to
  * addresses of a vectorized data type (in order to avoid segmentation faults
  * when a variable of type VectorizedArray which the compiler assumes to be
  * aligned to certain memory addresses does not actually follow these rules).
- * This could also be achieved by proving   std::vector   with a user-defined
+ * This could also be achieved by proving std::vector with a user-defined
  * allocator. On the other hand, writing an own small vector class lets us
  * implement parallel copy and move operations with TBB, insert deal.II-style
  * assertions, and cut some unnecessary functionality. Note that this vector
- * is a bit more memory-consuming than   std::vector   because of alignment,
- * so it is recommended to only use this vector on long vectors.
- *
- *
+ * is a bit more memory-consuming than std::vector because of alignment, so it
+ * is recommended to only use this vector on long vectors.
  */
 template <class T>
 class AlignedVector
@@ -66,7 +64,6 @@ public:
   /**
    * Declare standard types used in all containers. These types parallel those
    * in the <tt>C++</tt> standard libraries <tt>vector<...></tt> class.
-   *
    */
   using value_type      = T;
   using pointer         = value_type *;
@@ -79,47 +76,45 @@ public:
 
   /**
    * Empty constructor. Sets the vector size to zero.
-   *
    */
   AlignedVector();
 
   /**
    * Set the vector size to the given size and initializes all elements with
-   * T().       @dealiiOperationIsMultithreaded
+   * T().
    *
+   * @dealiiOperationIsMultithreaded
    */
   explicit AlignedVector(const size_type size, const T &init = T());
 
   /**
    * Destructor.
-   *
    */
   ~AlignedVector() = default;
 
   /**
-   * Copy constructor.       @dealiiOperationIsMultithreaded
+   * Copy constructor.
    *
+   * @dealiiOperationIsMultithreaded
    */
   AlignedVector(const AlignedVector<T> &vec);
 
   /**
    * Move constructor. Create a new aligned vector by stealing the contents of
    * @p vec.
-   *
    */
   AlignedVector(AlignedVector<T> &&vec) noexcept;
 
   /**
-   * Assignment to the input vector   @p vec.
-   * @dealiiOperationIsMultithreaded
+   * Assignment to the input vector @p vec.
    *
+   * @dealiiOperationIsMultithreaded
    */
   AlignedVector &
   operator=(const AlignedVector<T> &vec);
 
   /**
    * Move assignment operator.
-   *
    */
   AlignedVector &
   operator=(AlignedVector<T> &&vec) noexcept;
@@ -127,21 +122,24 @@ public:
   /**
    * Change the size of the vector. If the new size is larger than the
    * previous size, then new elements will be added to the end of the
-   * vector; these elements will remain uninitialized (i.e., left in   an
-   * undefined state) if   `std::is_trivial<T>`   is `true`, and   will be
-   * default initialized if   `std::is_trivial<T>`   is `false`.   See
-   * [here](https://en.cppreference.com/w/cpp/types/is_trivial) for   a
-   * definition of what   `std::is_trivial`   does.     If the new size is
-   * less than the previous size, then the last few   elements will be
-   * destroyed if   `std::is_trivial<T>`   will be `false`   or will simply be
-   * ignored in the future if     `std::is_trivial<T>`   is `true`.     As a
-   * consequence of the outline above, the "_fast" suffix of this   function
-   * refers to the fact that for "trivial" classes `T`, this   function omits
-   * constructor/destructor calls and in particular the   initialization of
-   * new elements.
-   * @note   This method can only be invoked for classes   @p T   that define
-   * a   default constructor,   @p T().   Otherwise, compilation will fail.
+   * vector; these elements will remain uninitialized (i.e., left in
+   * an undefined state) if `std::is_trivial<T>` is `true`, and
+   * will be default initialized if `std::is_trivial<T>` is `false`.
+   * See [here](https://en.cppreference.com/w/cpp/types/is_trivial) for
+   * a definition of what `std::is_trivial` does.
    *
+   * If the new size is less than the previous size, then the last few
+   * elements will be destroyed if `std::is_trivial<T>` will be `false`
+   * or will simply be ignored in the future if
+   * `std::is_trivial<T>` is `true`.
+   *
+   * As a consequence of the outline above, the "_fast" suffix of this
+   * function refers to the fact that for "trivial" classes `T`, this
+   * function omits constructor/destructor calls and in particular the
+   * initialization of new elements.
+   *
+   * @note This method can only be invoked for classes @p T that define a
+   * default constructor, @p T(). Otherwise, compilation will fail.
    */
   void
   resize_fast(const size_type new_size);
@@ -149,48 +147,55 @@ public:
   /**
    * Change the size of the vector. It keeps old elements previously
    * available, and initializes each newly added element to a
-   * default-constructed object of type   @p T.       If the new vector size
-   * is shorter than the old one, the memory is   not immediately released
-   * unless the new size is zero; however,   the size of the current object is
-   * of course set to the requested   value. The destructors of released
-   * elements are also called.       @dealiiOperationIsMultithreaded
+   * default-constructed object of type @p T.
    *
+   * If the new vector size is shorter than the old one, the memory is
+   * not immediately released unless the new size is zero; however,
+   * the size of the current object is of course set to the requested
+   * value. The destructors of released elements are also called.
+   *
+   * @dealiiOperationIsMultithreaded
    */
   void
   resize(const size_type new_size);
 
   /**
    * Change the size of the vector. It keeps old elements previously
-   * available, and initializes each newly added element with the   provided
-   * initializer.     If the new vector size is shorter than the old one, the
-   * memory is   not immediately released unless the new size is zero;
-   * however,   the size of the current object is of course set to the
-   * requested   value.
-   * @note   This method can only be invoked for classes that define the copy
-   * assignment operator. Otherwise, compilation will fail.
-   * @dealiiOperationIsMultithreaded
+   * available, and initializes each newly added element with the
+   * provided initializer.
    *
+   * If the new vector size is shorter than the old one, the memory is
+   * not immediately released unless the new size is zero; however,
+   * the size of the current object is of course set to the requested
+   * value.
+   *
+   * @note This method can only be invoked for classes that define the copy
+   * assignment operator. Otherwise, compilation will fail.
+   *
+   * @dealiiOperationIsMultithreaded
    */
   void
   resize(const size_type new_size, const T &init);
 
   /**
-   * Reserve memory space for   @p new_allocated_size   elements.     If the
-   * argument   @p new_allocated_size   is less than the current number of
-   * stored   elements (as indicated by calling size()), then this function
-   * does not   do anything at all. Except if the argument   @p
-   * new_allocated_size   is set   to zero, then all previously allocated
-   * memory is released (this operation   then being equivalent to directly
-   * calling the clear() function).     In order to avoid too frequent
-   * reallocation (which involves copy of the   data), this function doubles
-   * the amount of memory occupied when the given   size is larger than the
-   * previously allocated size.     Note that this function only changes the
-   * amount of elements the object  can* store, but not the number of elements
-   * itactually* stores. As   a consequence, no constructors or destructors of
-   * newly created objects   are run, though the existing elements may be
-   * moved to a new location (which   involves running the move constructor at
-   * the new location and the   destructor at the old location).
+   * Reserve memory space for @p new_allocated_size elements.
    *
+   * If the argument @p new_allocated_size is less than the current number of stored
+   * elements (as indicated by calling size()), then this function does not
+   * do anything at all. Except if the argument @p new_allocated_size is set
+   * to zero, then all previously allocated memory is released (this operation
+   * then being equivalent to directly calling the clear() function).
+   *
+   * In order to avoid too frequent reallocation (which involves copy of the
+   * data), this function doubles the amount of memory occupied when the given
+   * size is larger than the previously allocated size.
+   *
+   * Note that this function only changes the amount of elements the object
+   * *can* store, but not the number of elements it *actually* stores. As
+   * a consequence, no constructors or destructors of newly created objects
+   * are run, though the existing elements may be moved to a new location (which
+   * involves running the move constructor at the new location and the
+   * destructor at the old location).
    */
   void
   reserve(const size_type new_allocated_size);
@@ -198,7 +203,6 @@ public:
   /**
    * Releases all previously allocated memory and leaves the vector in a state
    * equivalent to the state after the default constructor has been called.
-   *
    */
   void
   clear();
@@ -207,21 +211,18 @@ public:
    * Inserts an element at the end of the vector, increasing the vector size
    * by one. Note that the allocated size will double whenever the previous
    * space is not enough to hold the new element.
-   *
    */
   void
   push_back(const T in_data);
 
   /**
    * Return the last element of the vector (read and write access).
-   *
    */
   reference
   back();
 
   /**
    * Return the last element of the vector (read-only access).
-   *
    */
   const_reference
   back() const;
@@ -229,7 +230,6 @@ public:
   /**
    * Inserts several elements at the end of the vector given by a range of
    * elements.
-   *
    */
   template <typename ForwardIterator>
   void
@@ -237,74 +237,113 @@ public:
 
   /**
    * Fills the vector with size() copies of a default constructed object.
-   * @note   Unlike the other fill() function, this method can also be
-   * invoked for classes that do not define a copy assignment   operator.
-   * @dealiiOperationIsMultithreaded
    *
+   * @note Unlike the other fill() function, this method can also be
+   * invoked for classes that do not define a copy assignment
+   * operator.
+   *
+   * @dealiiOperationIsMultithreaded
    */
   void
   fill();
 
   /**
    * Fills the vector with size() copies of the given input.
-   * @note   This method can only be invoked for classes that define the copy
-   * assignment operator. Otherwise, compilation will fail.
-   * @dealiiOperationIsMultithreaded
    *
+   * @note This method can only be invoked for classes that define the copy
+   * assignment operator. Otherwise, compilation will fail.
+   *
+   * @dealiiOperationIsMultithreaded
    */
   void
   fill(const T &element);
 
   /**
    * This function replicates the state found on the process indicated by
-   * @p root_process   across all processes of the MPI communicator. The
-   * current   state found on any of the processes other than   @p
-   * root_process   is lost   in this process. One can imagine this operation
-   * to act like a call to     Utilities::MPI::broadcast()   from the root
-   * process to all other processes,   though in practice the function may try
-   * to move the data into shared   memory regions on each of the machines
-   * that host MPI processes and   let all MPI processes on this machine then
-   * access this shared memory   region instead of keeping their own copy.
+   * @p root_process across all processes of the MPI communicator. The current
+   * state found on any of the processes other than @p root_process is lost
+   * in this process. One can imagine this operation to act like a call to
+   * Utilities::MPI::broadcast() from the root process to all other processes,
+   * though in practice the function may try to move the data into shared
+   * memory regions on each of the machines that host MPI processes and
+   * let all MPI processes on this machine then access this shared memory
+   * region instead of keeping their own copy.
+   *
    * The intent of this function is to quickly exchange large arrays from
    * one process to others, rather than having to compute or create it on
-   * all processes. This is specifically the case for data loaded from   disk
+   * all processes. This is specifically the case for data loaded from
+   * disk -- say, large data tables -- that are more easily dealt with by
+   * reading once and then distributing across all processes in an MPI
+   * universe, than letting each process read the data from disk itself.
+   * Specifically, the use of shared memory regions allows for replicating
+   * the data only once per multicore machine in the MPI universe, rather
+   * than replicating data once for each MPI process. This results in
+   * large memory savings if the data is large on today's machines that
+   * can easily house several dozen MPI processes per shared memory
+   * space. This use case is outlined in the TableBase class documentation
+   * as the current function is called from
+   * TableBase::replicate_across_communicator(). Indeed, the primary rationale
+   * for this function is to enable sharing data tables based on TableBase
+   * across MPI processes.
    *
-   *  -  say, large data tables
+   * This function does not imply a model of keeping data on different processes
+   * in sync, as parallel::distributed::Vector and other vector classes do where
+   * there exists a notion of certain elements of the vector owned by each
+   * process and possibly ghost elements that are mirrored from its owning
+   * process to other processes. Rather, the elements of the current object are
+   * simply copied to the other processes, and it is useful to think of this
+   * operation as creating a set of `const` AlignedVector objects on all
+   * processes that should not be changed any more after the replication
+   * operation, as this is the only way to ensure that the vectors remain the
+   * same on all processes. This is particularly true because of the use of
+   * shared memory regions where any modification of a vector element on one MPI
+   * process may also result in a modification of elements visible on other
+   * processes, assuming they are located within one shared memory node.
    *
-   *  -  that are more easily dealt with by   reading once and then distributing across all processes in an MPI   universe, than letting each process read the data from disk itself.   Specifically, the use of shared memory regions allows for replicating   the data only once per multicore machine in the MPI universe, rather   than replicating data once for each MPI process. This results in   large memory savings if the data is large on today's machines that   can easily house several dozen MPI processes per shared memory   space. This use case is outlined in the TableBase class documentation   as the current function is called from     TableBase::replicate_across_communicator().   Indeed, the primary rationale   for this function is to enable sharing data tables based on TableBase   across MPI processes.     This function does not imply a model of keeping data on different processes   in sync, as   parallel::distributed::Vector   and other vector classes do where   there exists a notion of certain elements of the vector owned by each   process and possibly ghost elements that are mirrored from its owning   process to other processes. Rather, the elements of the current object are   simply copied to the other processes, and it is useful to think of this   operation as creating a set of `const` AlignedVector objects on all   processes that should not be changed any more after the replication   operation, as this is the only way to ensure that the vectors remain the   same on all processes. This is particularly true because of the use of   shared memory regions where any modification of a vector element on one MPI   process may also result in a modification of elements visible on other   processes, assuming they are located within one shared memory node.
-   * @note   The use of shared memory between MPI processes requires     that
-   * the detected MPI installation supports the necessary operations.     This
-   * is the case for MPI 3.0 and higher.
-   * @note   This function is not cheap. It needs to create sub-communicators
-   * of the provided   @p communicator   object, which is generally an
-   * expensive     operation. Likewise, the generation of shared memory spaces
-   * is not     a cheap operation. As a consequence, this function primarily
-   * makes     sense when the goal is to share large read-only data tables
-   * among     processes; examples are data tables that are loaded at start-up
-   * time and then used over the course of the run time of the program.     In
-   * such cases, the start-up cost of running this function can be
-   * amortized over time, and the potential memory savings from not having to
-   * store the table on each process may be substantial on machines with
-   * large core counts on which many MPI processes run on the same machine.
-   * @note   This function only makes sense if the data type `T` is
-   * "self-contained", i.e., all if its information is stored in its
-   * member variables, and if none of the member variables are pointers     to
-   * other parts of the memory. This is because if a type `T` does     have
-   * pointers to other parts of memory, then moving `T` into     a shared
-   * memory space does not result in the other processes having     access to
-   * data that the object points to with its member variable     pointers:
-   * These continue to live only on one process, and are     typically in
-   * memory areas not accessible to the other processes.     As a consequence,
-   * the usual use case for this function is to share     arrays of simple
-   * objects such as `double`s or `int`s.
-   * @note   After calling this function, objects on different MPI processes
-   * share a common state. That means that certain operations become
-   * "collective", i.e., they must be called on all participating
-   * processors at the same time. In particular, you can no longer call
-   * resize(), reserve(), or clear() on one MPI process
+   * @note The use of shared memory between MPI processes requires
+   *   that the detected MPI installation supports the necessary operations.
+   *   This is the case for MPI 3.0 and higher.
    *
-   *  -  you have to do     so on all processes at the same time, because they have to communicate     for these operations. If you do not do so, you will likely get     a deadlock that may be difficult to debug. By extension, this rule of     only collectively resizing extends to this function itself: You can     not call it twice in a row because that implies that first all but the     `root_process` throw away their data, which is not a collective     operation. Generally, these restrictions on what can and can not be     done hint at the correctness of the comments above: You should treat     an AlignedVector on which the current function has been called as     `const`, on which no further operations can be performed until     the destructor is called.
+   * @note This function is not cheap. It needs to create sub-communicators
+   *   of the provided @p communicator object, which is generally an expensive
+   *   operation. Likewise, the generation of shared memory spaces is not
+   *   a cheap operation. As a consequence, this function primarily makes
+   *   sense when the goal is to share large read-only data tables among
+   *   processes; examples are data tables that are loaded at start-up
+   *   time and then used over the course of the run time of the program.
+   *   In such cases, the start-up cost of running this function can be
+   *   amortized over time, and the potential memory savings from not having to
+   *   store the table on each process may be substantial on machines with
+   *   large core counts on which many MPI processes run on the same machine.
    *
+   * @note This function only makes sense if the data type `T` is
+   *   "self-contained", i.e., all if its information is stored in its
+   *   member variables, and if none of the member variables are pointers
+   *   to other parts of the memory. This is because if a type `T` does
+   *   have pointers to other parts of memory, then moving `T` into
+   *   a shared memory space does not result in the other processes having
+   *   access to data that the object points to with its member variable
+   *   pointers: These continue to live only on one process, and are
+   *   typically in memory areas not accessible to the other processes.
+   *   As a consequence, the usual use case for this function is to share
+   *   arrays of simple objects such as `double`s or `int`s.
+   *
+   * @note After calling this function, objects on different MPI processes
+   *   share a common state. That means that certain operations become
+   *   "collective", i.e., they must be called on all participating
+   *   processors at the same time. In particular, you can no longer call
+   *   resize(), reserve(), or clear() on one MPI process -- you have to do
+   *   so on all processes at the same time, because they have to communicate
+   *   for these operations. If you do not do so, you will likely get
+   *   a deadlock that may be difficult to debug. By extension, this rule of
+   *   only collectively resizing extends to this function itself: You can
+   *   not call it twice in a row because that implies that first all but the
+   *   `root_process` throw away their data, which is not a collective
+   *   operation. Generally, these restrictions on what can and can not be
+   *   done hint at the correctness of the comments above: You should treat
+   *   an AlignedVector on which the current function has been called as
+   *   `const`, on which no further operations can be performed until
+   *   the destructor is called.
    */
   void
   replicate_across_communicator(const MPI_Comm &   communicator,
@@ -312,21 +351,18 @@ public:
 
   /**
    * Swaps the given vector with the calling vector.
-   *
    */
   void
   swap(AlignedVector<T> &vec);
 
   /**
    * Return whether the vector is empty, i.e., its size is zero.
-   *
    */
   bool
   empty() const;
 
   /**
    * Return the size of the vector.
-   *
    */
   size_type
   size() const;
@@ -334,70 +370,60 @@ public:
   /**
    * Return the capacity of the vector, i.e., the size this vector can hold
    * without reallocation. Note that capacity() >= size().
-   *
    */
   size_type
   capacity() const;
 
   /**
-   * Read-write access to entry   @p index   in the vector.
-   *
+   * Read-write access to entry @p index in the vector.
    */
   reference operator[](const size_type index);
 
   /**
-   * Read-only access to entry   @p index   in the vector.
-   *
+   * Read-only access to entry @p index in the vector.
    */
   const_reference operator[](const size_type index) const;
 
   /**
    * Return a pointer to the underlying data buffer.
-   *
    */
   pointer
   data();
 
   /**
    * Return a const pointer to the underlying data buffer.
-   *
    */
   const_pointer
   data() const;
 
   /**
    * Return a read and write pointer to the beginning of the data array.
-   *
    */
   iterator
   begin();
 
   /**
    * Return a read and write pointer to the end of the data array.
-   *
    */
   iterator
   end();
 
   /**
    * Return a read-only pointer to the beginning of the data array.
-   *
    */
   const_iterator
   begin() const;
 
   /**
    * Return a read-only pointer to the end of the data array.
-   *
    */
   const_iterator
   end() const;
 
   /**
    * Return the memory consumption of the allocated memory in this class. If
-   * the underlying type   @p T   allocates memory by itself, this memory is
-   * not   counted.
-   *
+   * the underlying type @p T allocates memory by itself, this memory is not
+   * counted.
    */
   size_type
   memory_consumption() const;
@@ -406,7 +432,6 @@ public:
    * Write the data of this object to a stream for the purpose of
    * serialization using the [BOOST serialization
    * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
-   *
    */
   template <class Archive>
   void
@@ -416,7 +441,6 @@ public:
    * Read the data of this object from a stream for the purpose of
    * serialization using the [BOOST serialization
    * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
-   *
    */
   template <class Archive>
   void
@@ -424,10 +448,9 @@ public:
 
 #ifdef DOXYGEN
   /**
-   * Write and read the data of this object from a stream for the purpose   of
-   * serialization using the [BOOST serialization
+   * Write and read the data of this object from a stream for the purpose
+   * of serialization using the [BOOST serialization
    * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
-   *
    */
   template <class Archive>
   void
@@ -441,19 +464,16 @@ public:
 private:
   /**
    * Pointer to actual data array.
-   *
    */
   std::unique_ptr<T[], std::function<void(T *)>> elements;
 
   /**
    * Pointer to one past the last valid value.
-   *
    */
   T *used_elements_end;
 
   /**
    * Pointer to the end of the allocated memory.
-   *
    */
   T *allocated_elements_end;
 };
@@ -465,15 +485,15 @@ private:
  * This namespace defines the copy and set functions used in AlignedVector.
  * These functions operate in parallel when there are enough elements in the
  * vector.
- *
- *
  */
 namespace internal
 {
   /**
    * A class that given a range of memory locations calls the placement-new
    * operator on these memory locations and copy-constructs objects of type
-   * `T` there.     This class is based on the specialized for loop base class
+   * `T` there.
+   *
+   * This class is based on the specialized for loop base class
    * ParallelForLoop in parallel.h whose purpose is the following: When
    * calling a parallel for loop on AlignedVector with apply_to_subranges, it
    * generates different code for every different argument we might choose (as
@@ -483,8 +503,8 @@ namespace internal
    * class channels all copy commands through one call to apply_to_subrange
    * for all possible types, which makes the copy operation much cleaner
    * (thanks to a virtual function, whose cost is negligible in this context).
-   * @relatesalso   AlignedVector
    *
+   * @relatesalso AlignedVector
    */
   template <typename T>
   class AlignedVectorCopyConstruct
@@ -497,11 +517,11 @@ namespace internal
     /**
      * Constructor. Issues a parallel call if there are sufficiently many
      * elements, otherwise works in serial. Copies the data from the half-open
-     * interval between   @p source_begin   and   @p source_end   to array
-     * starting at       @p destination   (by calling the copy constructor
-     * with placement new).         The elements from the source array are
-     * simply copied via the placement     new copy constructor.
+     * interval between @p source_begin and @p source_end to array starting at
+     * @p destination (by calling the copy constructor with placement new).
      *
+     * The elements from the source array are simply copied via the placement
+     * new copy constructor.
      */
     AlignedVectorCopyConstruct(const T *const source_begin,
                                const T *const source_end,
@@ -522,7 +542,6 @@ namespace internal
     /**
      * This method moves elements from the source to the destination given in
      * the constructor on a subrange given by two integers.
-     *
      */
     virtual void
     apply_to_subrange(const std::size_t begin,
@@ -551,9 +570,10 @@ namespace internal
 
 
   /**
-   * Like AlignedVectorCopyConstruct, but use the move-constructor of `T`   to
-   * create new objects.       @relatesalso   AlignedVector
+   * Like AlignedVectorCopyConstruct, but use the move-constructor of `T`
+   * to create new objects.
    *
+   * @relatesalso AlignedVector
    */
   template <typename T>
   class AlignedVectorMoveConstruct
@@ -566,12 +586,11 @@ namespace internal
     /**
      * Constructor. Issues a parallel call if there are sufficiently many
      * elements, otherwise works in serial. Moves the data from the half-open
-     * interval between   @p source_begin   and   @p source_end   to array
-     * starting at       @p destination   (by calling the move constructor
-     * with placement new).         The data is moved between the two arrays
-     * by invoking the destructor on     the source range (preparing for a
-     * subsequent call to free).
+     * interval between @p source_begin and @p source_end to array starting at
+     * @p destination (by calling the move constructor with placement new).
      *
+     * The data is moved between the two arrays by invoking the destructor on
+     * the source range (preparing for a subsequent call to free).
      */
     AlignedVectorMoveConstruct(T *const source_begin,
                                T *const source_end,
@@ -592,7 +611,6 @@ namespace internal
     /**
      * This method moves elements from the source to the destination given in
      * the constructor on a subrange given by two integers.
-     *
      */
     virtual void
     apply_to_subrange(const std::size_t begin,
@@ -622,18 +640,21 @@ namespace internal
 
 
   /**
-   * A class that given a range of memory locations calls either calls   the
-   * placement-new operator on these memory locations (if
-   * `initialize_memory==true`) or just copies the given initializer   into
-   * this memory location (if `initialize_memory==false`). The   latter is
-   * appropriate for classes that have only trivial constructors,   such as
-   * the built-in types `double`, `int`, etc., and structures   composed of
-   * such types.       @tparam   initialize_memory Determines whether the set
-   * command should   initialize memory (with a call to the copy constructor)
-   * or rather use the   copy assignment operator. A template is necessary to
-   * select the   appropriate operation since some classes might define only
-   * one of those   two operations.       @relatesalso   AlignedVector
+   * A class that given a range of memory locations calls either calls
+   * the placement-new operator on these memory locations (if
+   * `initialize_memory==true`) or just copies the given initializer
+   * into this memory location (if `initialize_memory==false`). The
+   * latter is appropriate for classes that have only trivial constructors,
+   * such as the built-in types `double`, `int`, etc., and structures
+   * composed of such types.
    *
+   * @tparam initialize_memory Determines whether the set command should
+   * initialize memory (with a call to the copy constructor) or rather use the
+   * copy assignment operator. A template is necessary to select the
+   * appropriate operation since some classes might define only one of those
+   * two operations.
+   *
+   * @relatesalso AlignedVector
    */
   template <typename T, bool initialize_memory>
   class AlignedVectorInitialize : private dealii::parallel::ParallelForInteger
@@ -645,7 +666,6 @@ namespace internal
     /**
      * Constructor. Issues a parallel call if there are sufficiently many
      * elements, otherwise work in serial.
-     *
      */
     AlignedVectorInitialize(const std::size_t size,
                             const T &         element,
@@ -681,7 +701,6 @@ namespace internal
 
     /**
      * This sets elements on a subrange given by two integers.
-     *
      */
     virtual void
     apply_to_subrange(const std::size_t begin,
@@ -729,13 +748,16 @@ namespace internal
 
 
   /**
-   * Like AlignedVectorInitialize, but use default-constructed objects   as
-   * initializers.       @tparam   initialize_memory Sets whether the set
-   * command should   initialize memory (with a call to the copy constructor)
-   * or rather use the   copy assignment operator. A template is necessary to
-   * select the   appropriate operation since some classes might define only
-   * one of those   two operations.       @relatesalso   AlignedVector
+   * Like AlignedVectorInitialize, but use default-constructed objects
+   * as initializers.
    *
+   * @tparam initialize_memory Sets whether the set command should
+   * initialize memory (with a call to the copy constructor) or rather use the
+   * copy assignment operator. A template is necessary to select the
+   * appropriate operation since some classes might define only one of those
+   * two operations.
+   *
+   * @relatesalso AlignedVector
    */
   template <typename T, bool initialize_memory>
   class AlignedVectorDefaultInitialize
@@ -748,7 +770,6 @@ namespace internal
     /**
      * Constructor. Issues a parallel call if there are sufficiently many
      * elements, otherwise work in serial.
-     *
      */
     AlignedVectorDefaultInitialize(const std::size_t size, T *const destination)
       : destination_(destination)
@@ -765,7 +786,6 @@ namespace internal
 
     /**
      * This initializes elements on a subrange given by two integers.
-     *
      */
     virtual void
     apply_to_subrange(const std::size_t begin,
@@ -1214,7 +1234,7 @@ AlignedVector<T>::replicate_across_communicator(const MPI_Comm &   communicator,
     MPI_Comm shmem_group_communicator_temp;
     int      ierr = MPI_Comm_split_type(communicator,
                                    MPI_COMM_TYPE_SHARED,
-                                    /* key */  0,
+                                   /* key */ 0,
                                    MPI_INFO_NULL,
                                    &shmem_group_communicator_temp);
     AssertThrowMPI(ierr);
@@ -1222,7 +1242,7 @@ AlignedVector<T>::replicate_across_communicator(const MPI_Comm &   communicator,
     const int key =
       (Utilities::MPI::this_mpi_process(communicator) == root_process ? 0 : 1);
     ierr = MPI_Comm_split(shmem_group_communicator_temp,
-                           /* color */  0,
+                          /* color */ 0,
                           key,
                           &shmem_group_communicator);
     AssertThrowMPI(ierr);
@@ -1271,7 +1291,7 @@ AlignedVector<T>::replicate_across_communicator(const MPI_Comm &   communicator,
       (Utilities::MPI::this_mpi_process(communicator) == root_process ? 0 : 1);
 
     const int ierr = MPI_Comm_split(communicator,
-                                     /*color=*/ 
+                                    /*color=*/
                                     (is_shmem_root ? 0 : 1),
                                     key,
                                     &shmem_roots_communicator);
@@ -1784,9 +1804,8 @@ AlignedVector<T>::memory_consumption() const
 
 /**
  * Relational operator == for AlignedVector
- * @relatesalso   AlignedVector
  *
- *
+ * @relatesalso AlignedVector
  */
 template <class T>
 bool
@@ -1807,9 +1826,8 @@ operator==(const AlignedVector<T> &lhs, const AlignedVector<T> &rhs)
 
 /**
  * Relational operator != for AlignedVector
- * @relatesalso   AlignedVector
  *
- *
+ * @relatesalso AlignedVector
  */
 template <class T>
 bool

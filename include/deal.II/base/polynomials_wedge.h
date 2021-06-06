@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
 //
@@ -25,13 +25,13 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Polynomials defined on wedge entities. This class is basis of FE_WedgeP.
+ * Polynomials defined on wedge entities. This class is basis of
+ * FE_WedgeP.
+ *
  * The polynomials are created via a tensor product of a
- * BarycentricPolynomials<2>::get_fe_p_basis(degree)   and a
- * BarycentricPolynomials<1>::get_fe_p_basis(degree),   however, are
+ * BarycentricPolynomials<2>::get_fe_p_basis(degree) and a
+ * BarycentricPolynomials<1>::get_fe_p_basis(degree), however, are
  * re-numerated to better match the definition of FiniteElement.
- *
- *
  */
 template <int dim>
 class ScalarLagrangePolynomialWedge : public ScalarPolynomialsBase<dim>
@@ -39,20 +39,21 @@ class ScalarLagrangePolynomialWedge : public ScalarPolynomialsBase<dim>
 public:
   /**
    * Make the dimension available to the outside.
-   *
    */
   static const unsigned int dimension = dim;
 
-  /*   Constructor taking the polynomial   @p degree   as input.    
-*   @note   Currently, only linear (degree=1) and quadratic polynomials     (degree=2) are implemented.  
-* */
+  /*
+   * Constructor taking the polynomial @p degree as input.
+   *
+   * @note Currently, only linear (degree=1) and quadratic polynomials
+   *   (degree=2) are implemented.
+   */
   ScalarLagrangePolynomialWedge(const unsigned int degree);
 
   /**
-   * @copydoc     ScalarPolynomialsBase::evaluate()
-   * @note   Currently, only the vectors   @p values   and   @p grads   are
-   * filled.
+   * @copydoc ScalarPolynomialsBase::evaluate()
    *
+   * @note Currently, only the vectors @p values and @p grads are filled.
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -66,9 +67,9 @@ public:
   compute_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::compute_derivative()
-   * @note   Currently, only implemented for first derivative.
+   * @copydoc ScalarPolynomialsBase::compute_derivative()
    *
+   * @note Currently, only implemented for first derivative.
    */
   template <int order>
   Tensor<order, dim>
@@ -79,44 +80,44 @@ public:
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::compute_2nd_derivative()
-   * @note   Not implemented yet.
+   * @copydoc ScalarPolynomialsBase::compute_2nd_derivative()
    *
+   * @note Not implemented yet.
    */
   Tensor<2, dim>
   compute_2nd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::compute_3rd_derivative()
-   * @note   Not implemented yet.
+   * @copydoc ScalarPolynomialsBase::compute_3rd_derivative()
    *
+   * @note Not implemented yet.
    */
   Tensor<3, dim>
   compute_3rd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::compute_4th_derivative()
-   * @note   Not implemented yet.
+   * @copydoc ScalarPolynomialsBase::compute_4th_derivative()
    *
+   * @note Not implemented yet.
    */
   Tensor<4, dim>
   compute_4th_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::compute_grad()
-   * @note   Not implemented yet.
+   * @copydoc ScalarPolynomialsBase::compute_grad()
    *
+   * @note Not implemented yet.
    */
   Tensor<1, dim>
   compute_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::compute_grad_grad()
-   * @note   Not implemented yet.
+   * @copydoc ScalarPolynomialsBase::compute_grad_grad()
    *
+   * @note Not implemented yet.
    */
   Tensor<2, dim>
   compute_grad_grad(const unsigned int i, const Point<dim> &p) const override;
@@ -130,13 +131,11 @@ public:
 private:
   /**
    * Scalar polynomials defined on a triangle.
-   *
    */
   const BarycentricPolynomials<2> poly_tri;
 
   /**
    * Scalar polynomials defined on a line.
-   *
    */
   const BarycentricPolynomials<1> poly_line;
 };

@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2020 by the deal.II authors
 //
@@ -50,8 +50,7 @@ namespace parallel
   {
     /**
      * Helper struct to tell us if we can use SIMD instructions for the given
-     * @p Number   type.
-     *
+     * @p Number type.
      */
     template <typename Number>
     struct EnableOpenMPSimdFor
@@ -76,14 +75,12 @@ namespace parallel
     /**
      * Convert a function object of type F into an object that can be applied
      * to all elements of a range of synchronous iterators.
-     *
      */
     template <typename F>
     struct Body
     {
       /**
        * Constructor. Take and package the given function object.
-       *
        */
       Body(const F &f)
         : f(f)
@@ -101,13 +98,11 @@ namespace parallel
     private:
       /**
        * The stored function object.
-       *
        */
       const F f;
 
       /**
        * Apply F to a set of iterators with two elements.
-       *
        */
       template <typename I1, typename I2>
       static void
@@ -118,7 +113,6 @@ namespace parallel
 
       /**
        * Apply F to a set of iterators with three elements.
-       *
        */
       template <typename I1, typename I2, typename I3>
       static void
@@ -129,7 +123,6 @@ namespace parallel
 
       /**
        * Apply F to a set of iterators with three elements.
-       *
        */
       template <typename I1, typename I2, typename I3, typename I4>
       static void
@@ -144,10 +137,8 @@ namespace parallel
     /**
      * Take a function object and create a Body object from it. We do this in
      * this helper function since alternatively we would have to specify the
-     * actual data type of F
-     *
-     *  -  which for function objects is often     extraordinarily complicated.
-     *
+     * actual data type of F -- which for function objects is often
+     * extraordinarily complicated.
      */
     template <typename F>
     Body<F>
@@ -160,8 +151,7 @@ namespace parallel
 
 #ifdef DEAL_II_WITH_TBB
     /**
-     * Encapsulate   tbb::parallel_for.
-     *
+     * Encapsulate tbb::parallel_for.
      */
     template <typename Iterator, typename Functor>
     void
@@ -178,9 +168,7 @@ namespace parallel
 
 
     /**
-     * Encapsulate   tbb::parallel_for   when an affinite_partitioner is
-     * provided.
-     *
+     * Encapsulate tbb::parallel_for when an affinite_partitioner is provided.
      */
     template <typename Iterator, typename Functor>
     void
@@ -198,9 +186,27 @@ namespace parallel
   } // namespace internal
 
   /**
-   * An algorithm that performs the action <code>*out++ =   predicate(*in++)</code> where the   <code>in</code>   iterator ranges over   the given input range.     This algorithm does pretty much what   std::transform   does. The difference   is that the function can run in parallel when deal.II is configured to   use multiple threads.     If running in parallel, the iterator range is split into several chunks   that are each packaged up as a task and given to the Threading Building   Blocks scheduler to work on as compute resources are available. The   function returns once all chunks have been worked on. The last argument   denotes the minimum number of elements of the iterator range per task;   the number must be large enough to amortize the startup cost of new   tasks, and small enough to ensure that tasks can be reasonably load   balanced.     For a discussion of the kind of problems to which this function is   applicable, see the     @ref threads   "Parallel computing with multiple processors"
-   * module.
+   * An algorithm that performs the action <code>*out++ =
+   * predicate(*in++)</code> where the <code>in</code> iterator ranges over
+   * the given input range.
    *
+   * This algorithm does pretty much what std::transform does. The difference
+   * is that the function can run in parallel when deal.II is configured to
+   * use multiple threads.
+   *
+   * If running in parallel, the iterator range is split into several chunks
+   * that are each packaged up as a task and given to the Threading Building
+   * Blocks scheduler to work on as compute resources are available. The
+   * function returns once all chunks have been worked on. The last argument
+   * denotes the minimum number of elements of the iterator range per task;
+   * the number must be large enough to amortize the startup cost of new
+   * tasks, and small enough to ensure that tasks can be reasonably load
+   * balanced.
+   *
+   * For a discussion of the kind of problems to which this function is
+   * applicable, see the
+   * @ref threads "Parallel computing with multiple processors"
+   * module.
    */
   template <typename InputIterator, typename OutputIterator, typename Predicate>
   void
@@ -232,9 +238,27 @@ namespace parallel
 
 
   /**
-   * An algorithm that performs the action <code>*out++ = predicate(*in1++,  in2++)</code> where the   <code>in1</code>   iterator ranges over the given   input range, using the parallel for operator of tbb.     This algorithm does pretty much what   std::transform   does. The difference   is that the function can run in parallel when deal.II is configured to   use multiple threads.     If running in parallel, the iterator range is split into several chunks   that are each packaged up as a task and given to the Threading Building   Blocks scheduler to work on as compute resources are available. The   function returns once all chunks have been worked on. The last argument   denotes the minimum number of elements of the iterator range per task;   the number must be large enough to amortize the startup cost of new   tasks, and small enough to ensure that tasks can be reasonably load   balanced.     For a discussion of the kind of problems to which this function is   applicable, see the     @ref threads   "Parallel computing with multiple processors"
-   * module.
+   * An algorithm that performs the action <code>*out++ = predicate(*in1++,
+   * *in2++)</code> where the <code>in1</code> iterator ranges over the given
+   * input range, using the parallel for operator of tbb.
    *
+   * This algorithm does pretty much what std::transform does. The difference
+   * is that the function can run in parallel when deal.II is configured to
+   * use multiple threads.
+   *
+   * If running in parallel, the iterator range is split into several chunks
+   * that are each packaged up as a task and given to the Threading Building
+   * Blocks scheduler to work on as compute resources are available. The
+   * function returns once all chunks have been worked on. The last argument
+   * denotes the minimum number of elements of the iterator range per task;
+   * the number must be large enough to amortize the startup cost of new
+   * tasks, and small enough to ensure that tasks can be reasonably load
+   * balanced.
+   *
+   * For a discussion of the kind of problems to which this function is
+   * applicable, see the
+   * @ref threads "Parallel computing with multiple processors"
+   * module.
    */
   template <typename InputIterator1,
             typename InputIterator2,
@@ -271,9 +295,27 @@ namespace parallel
 
 
   /**
-   * An algorithm that performs the action <code>*out++ = predicate(*in1++,  in2++,in3++)</code> where the   <code>in1</code>   iterator ranges over   the given input range.     This algorithm does pretty much what   std::transform   does. The difference   is that the function can run in parallel when deal.II is configured to   use multiple threads.     If running in parallel, the iterator range is split into several chunks   that are each packaged up as a task and given to the Threading Building   Blocks scheduler to work on as compute resources are available. The   function returns once all chunks have been worked on. The last argument   denotes the minimum number of elements of the iterator range per task;   the number must be large enough to amortize the startup cost of new   tasks, and small enough to ensure that tasks can be reasonably load   balanced.     For a discussion of the kind of problems to which this function is   applicable, see the     @ref threads   "Parallel computing with multiple processors"
-   * module.
+   * An algorithm that performs the action <code>*out++ = predicate(*in1++,
+   * *in2++, *in3++)</code> where the <code>in1</code> iterator ranges over
+   * the given input range.
    *
+   * This algorithm does pretty much what std::transform does. The difference
+   * is that the function can run in parallel when deal.II is configured to
+   * use multiple threads.
+   *
+   * If running in parallel, the iterator range is split into several chunks
+   * that are each packaged up as a task and given to the Threading Building
+   * Blocks scheduler to work on as compute resources are available. The
+   * function returns once all chunks have been worked on. The last argument
+   * denotes the minimum number of elements of the iterator range per task;
+   * the number must be large enough to amortize the startup cost of new
+   * tasks, and small enough to ensure that tasks can be reasonably load
+   * balanced.
+   *
+   * For a discussion of the kind of problems to which this function is
+   * applicable, see the
+   * @ref threads "Parallel computing with multiple processors"
+   * module.
    */
   template <typename InputIterator1,
             typename InputIterator2,
@@ -319,7 +361,6 @@ namespace parallel
     /**
      * Take a range argument and call the given function with its begin and
      * end.
-     *
      */
     template <typename RangeType, typename Function>
     void
@@ -333,53 +374,73 @@ namespace parallel
 
 
   /**
-   * This function applies the given function argument   @p f   to all
-   * elements in   the range   <code>[begin,end)</code>   and may do so in
-   * parallel. An example   of its use is given in   step-69  .     However,
-   * in many cases it is not efficient to call a function on each   element,
-   * so this function calls the given function object on sub-ranges.   In
-   * other words: if the given range   <code>[begin,end)</code>   is smaller
+   * This function applies the given function argument @p f to all elements in
+   * the range <code>[begin,end)</code> and may do so in parallel. An example
+   * of its use is given in step-69.
+   *
+   * However, in many cases it is not efficient to call a function on each
+   * element, so this function calls the given function object on sub-ranges.
+   * In other words: if the given range <code>[begin,end)</code> is smaller
    * than grainsize or if multithreading is not enabled, then we call
-   * <code>f(begin,end)</code>  ; otherwise, we may execute, possibly in
-   * %parallel, a sequence of calls   <code>f(b,e)</code>   where
-   * <code>[b,e)</code> are subintervals of <code>[begin,end)</code>   and the
-   * collection of calls we do to   <code>f(.,.)</code>   will happen on
-   * disjoint   subintervals that collectively cover the original interval
-   * <code>[begin,end)</code>  .     Oftentimes, the called function will of
-   * course have to get additional   information, such as the object to work
-   * on for a given value of the   iterator argument. This can be achieved by
-   * <i>binding</i> certain   arguments. For example, here is an
-   * implementation of a matrix-vector   multiplication   $y=Ax$   for a full
-   * matrix   $A$   and vectors   $x,y$  :
+   * <code>f(begin,end)</code>; otherwise, we may execute, possibly in
+   * %parallel, a sequence of calls <code>f(b,e)</code> where
+   * <code>[b,e)</code> are subintervals of <code>[begin,end)</code> and the
+   * collection of calls we do to <code>f(.,.)</code> will happen on disjoint
+   * subintervals that collectively cover the original interval
+   * <code>[begin,end)</code>.
+   *
+   * Oftentimes, the called function will of course have to get additional
+   * information, such as the object to work on for a given value of the
+   * iterator argument. This can be achieved by <i>binding</i> certain
+   * arguments. For example, here is an implementation of a matrix-vector
+   * multiplication $y=Ax$ for a full matrix $A$ and vectors $x,y$:
    * @code
-   * void matrix_vector_product (const FullMatrix &A,
-   *                             const Vector     &x,
-   *                             Vector           &y)
-   * {
-   *   parallel::apply_to_subranges
-   *      (0, A.n_rows(),
-   *       [&](const unsigned int begin_row,
-   *           const unsigned int end_row)
-   *       {
-   *         mat_vec_on_subranges(begin_row, end_row, A, x, y);
-   *       },
-   *       50);
-   * }
+   *   void matrix_vector_product (const FullMatrix &A,
+   *                               const Vector     &x,
+   *                               Vector           &y)
+   *   {
+   *     parallel::apply_to_subranges
+   *        (0, A.n_rows(),
+   *         [&](const unsigned int begin_row,
+   *             const unsigned int end_row)
+   *         {
+   *           mat_vec_on_subranges(begin_row, end_row, A, x, y);
+   *         },
+   *         50);
+   *   }
    *
-   * void mat_vec_on_subranges (const unsigned int begin_row,
-   *                            const unsigned int end_row,
-   *                            const FullMatrix &A,
-   *                            const Vector     &x,
-   *                            Vector           &y)
-   * {
-   *   for (unsigned int row=begin_row; row!=end_row; ++row)
-   *     for (unsigned int col=0; col<x.size(); ++col)
-   *       y(row) += A(row,col) x(col);
-   * }
+   *   void mat_vec_on_subranges (const unsigned int begin_row,
+   *                              const unsigned int end_row,
+   *                              const FullMatrix &A,
+   *                              const Vector     &x,
+   *                              Vector           &y)
+   *   {
+   *     for (unsigned int row=begin_row; row!=end_row; ++row)
+   *       for (unsigned int col=0; col<x.size(); ++col)
+   *         y(row) += A(row,col) * x(col);
+   *   }
    * @endcode
-   * Note how we use the lambda function to convert     <code>mat_vec_on_subranges</code>   from a function that takes 5 arguments   to one taking 2 by binding the remaining arguments. The resulting function   object requires only two arguments, `begin_row` and `end_row`, with all   other arguments fixed.     The code, if in single-thread mode, will call     <code>mat_vec_on_subranges</code>   on the entire range     <code>[0,n_rows)</code>   exactly once. In multi-threaded mode, however, it   may be called multiple times on subranges of this interval, possibly   allowing more than one CPU core to take care of part of the work.     The   @p grainsize   argument (50 in the example above) makes sure that   subranges do not become too small, to avoid spending more time on   scheduling subranges to CPU resources than on doing actual work.     For a discussion of the kind of problems to which this function is   applicable, see also the     @ref threads   "Parallel computing with multiple processors"
-   * module.
    *
+   * Note how we use the lambda function to convert
+   * <code>mat_vec_on_subranges</code> from a function that takes 5 arguments
+   * to one taking 2 by binding the remaining arguments. The resulting function
+   * object requires only two arguments, `begin_row` and `end_row`, with all
+   * other arguments fixed.
+   *
+   * The code, if in single-thread mode, will call
+   * <code>mat_vec_on_subranges</code> on the entire range
+   * <code>[0,n_rows)</code> exactly once. In multi-threaded mode, however, it
+   * may be called multiple times on subranges of this interval, possibly
+   * allowing more than one CPU core to take care of part of the work.
+   *
+   * The @p grainsize argument (50 in the example above) makes sure that
+   * subranges do not become too small, to avoid spending more time on
+   * scheduling subranges to CPU resources than on doing actual work.
+   *
+   * For a discussion of the kind of problems to which this function is
+   * applicable, see also the
+   * @ref threads "Parallel computing with multiple processors"
+   * module.
    */
   template <typename RangeType, typename Function>
   void
@@ -416,6 +477,7 @@ namespace parallel
    * larger than grain_size). Inside the function, a virtual function
    * apply_to_subrange specifying a range of two integers <tt>[lower,
    * upper)</tt> is called which needs to be defined in a derived class.
+   *
    * The parallelization cases covered by this class are a subset of what is
    * possible with the function apply_to_subranges (which also covers the case
    * of more general iterators that might not be described by an integer
@@ -423,24 +485,21 @@ namespace parallel
    * like when there are many structurally similar loops, e.g., some simple
    * copy or arithmetic operations on an array of pointers. In that case,
    * apply_to_subranges will generate a lot of code (or rather, a lot of
-   * symbols) because it passes the long names generated by   std::bind   to
-   * the   templated parallel for functions in TBB. This can considerably
-   * increase   compile times and the size of the object code. Similarly, the
-   * incorrect   use of   std::bind   often results in very cryptic error
-   * messages, which can   be avoided by this class (only a virtual function
-   * needs to be defined in   a derived class). Finally, the additional cost
-   * of a virtual function is   negligible in the context of parallel
-   * functions: It is much more   expensive to actually issue the work onto a
-   * thread, which in turn should   be much less than the actual work done in
-   * the for loop.
-   *
+   * symbols) because it passes the long names generated by std::bind to the
+   * templated parallel for functions in TBB. This can considerably increase
+   * compile times and the size of the object code. Similarly, the incorrect
+   * use of std::bind often results in very cryptic error messages, which can
+   * be avoided by this class (only a virtual function needs to be defined in
+   * a derived class). Finally, the additional cost of a virtual function is
+   * negligible in the context of parallel functions: It is much more
+   * expensive to actually issue the work onto a thread, which in turn should
+   * be much less than the actual work done in the for loop.
    */
   struct ParallelForInteger
   {
     /**
      * Destructor. Made virtual to ensure that derived classes also have
      * virtual destructors.
-     *
      */
     virtual ~ParallelForInteger() = default;
 
@@ -451,7 +510,6 @@ namespace parallel
      * because it any operation that changes the data of a derived class will
      * inherently not be thread-safe when several threads work with the same
      * data simultaneously.
-     *
      */
     void
     apply_parallel(const std::size_t begin,
@@ -463,7 +521,6 @@ namespace parallel
      * class.  This function is marked const because it any operation that
      * changes the data of a derived class will inherently not be thread-safe
      * when several threads work with the same data simultaneously.
-     *
      */
     virtual void
     apply_to_subrange(const std::size_t, const std::size_t) const = 0;
@@ -479,25 +536,23 @@ namespace parallel
      * parallel_reduce function. The first template argument denotes the type
      * on which the reduction is to be done. The second denotes the type of
      * the function object that shall be called for each subrange.
-     *
      */
     template <typename ResultType, typename Function>
     struct ReductionOnSubranges
     {
       /**
        * A variable that will hold the result of the reduction.
-       *
        */
       ResultType result;
 
       /**
        * Constructor. Take the function object to call on each sub-range as
        * well as the neutral element with respect to the reduction operation.
+       *
        * The second argument denotes a function object that will be used to
        * reduce the result of two computations into one number. An example if
        * we want to simply accumulate integer results would be
        * std::plus<int>().
-       *
        */
       template <typename Reductor>
       ReductionOnSubranges(const Function & f,
@@ -511,7 +566,6 @@ namespace parallel
 
       /**
        * Splitting constructor. See the TBB book for more details about this.
-       *
        */
       ReductionOnSubranges(const ReductionOnSubranges &r, tbb::split)
         : result(r.neutral_element)
@@ -523,7 +577,6 @@ namespace parallel
       /**
        * Join operation: merge the results from computations on different sub-
        * intervals.
-       *
        */
       void
       join(const ReductionOnSubranges &r)
@@ -533,7 +586,6 @@ namespace parallel
 
       /**
        * Execute the given function on the specified range.
-       *
        */
       template <typename RangeType>
       void
@@ -545,7 +597,6 @@ namespace parallel
     private:
       /**
        * The function object to call on every sub-range.
-       *
        */
       const Function f;
 
@@ -553,14 +604,12 @@ namespace parallel
        * The neutral element with respect to the reduction operation. This is
        * needed when calling the splitting constructor since we have to re-set
        * the result variable in this case.
-       *
        */
       const ResultType neutral_element;
 
       /**
        * The function object to be used to reduce the result of two calls into
        * one number.
-       *
        */
       const std::function<ResultType(ResultType, ResultType)> reductor;
     };
@@ -572,42 +621,61 @@ namespace parallel
    * This function works a lot like the apply_to_subranges(), but it allows to
    * accumulate numerical results computed on each subrange into one number.
    * The type of this number is given by the ResultType template argument that
-   * needs to be explicitly specified.     An example of use of this function
-   * is to compute the value of the   expression   $x^T A x$   for a square
-   * matrix   $A$   and a vector   $x$  . The sum   over rows can be
-   * parallelized and the whole code might look like this:
+   * needs to be explicitly specified.
+   *
+   * An example of use of this function is to compute the value of the
+   * expression $x^T A x$ for a square matrix $A$ and a vector $x$. The sum
+   * over rows can be parallelized and the whole code might look like this:
    * @code
-   * void matrix_norm (const FullMatrix &A,
-   *                   const Vector     &x)
-   * {
-   *   return
-   *    std::sqrt
-   *     (parallel::accumulate_from_subranges<double>
-   *      (0, A.n_rows(),
-   *       [&](const unsigned int begin_row,
-   *           const unsigned int end_row)
-   *       {
-   *         mat_vec_on_subranges(begin_row, end_row, A, x, y);
-   *       },
-   *       50);
-   * }
+   *   void matrix_norm (const FullMatrix &A,
+   *                     const Vector     &x)
+   *   {
+   *     return
+   *      std::sqrt
+   *       (parallel::accumulate_from_subranges<double>
+   *        (0, A.n_rows(),
+   *         [&](const unsigned int begin_row,
+   *             const unsigned int end_row)
+   *         {
+   *           mat_vec_on_subranges(begin_row, end_row, A, x, y);
+   *         },
+   *         50);
+   *   }
    *
-   * double
-   * mat_norm_sqr_on_subranges (const unsigned int begin_row,
-   *                            const unsigned int end_row,
-   *                            const FullMatrix &A,
-   *                            const Vector     &x)
-   * {
-   *   double norm_sqr = 0;
-   *   for (unsigned int row=begin_row; row!=end_row; ++row)
-   *     for (unsigned int col=0; col<x.size(); ++col)
-   *       norm_sqr += x(row) A(row,col) x(col);
-   *   return norm_sqr;
-   * }
+   *   double
+   *   mat_norm_sqr_on_subranges (const unsigned int begin_row,
+   *                              const unsigned int end_row,
+   *                              const FullMatrix &A,
+   *                              const Vector     &x)
+   *   {
+   *     double norm_sqr = 0;
+   *     for (unsigned int row=begin_row; row!=end_row; ++row)
+   *       for (unsigned int col=0; col<x.size(); ++col)
+   *         norm_sqr += x(row) * A(row,col) * x(col);
+   *     return norm_sqr;
+   *   }
    * @endcode
-   * Here,   <code>mat_norm_sqr_on_subranges</code>   is called on the entire   range   <code>[0,A.n_rows())</code>   if this range is less than the minimum   grainsize (above chosen as 50) or if deal.II is configured to not use   multithreading. Otherwise, it may be called on subsets of the given   range, with results from the individual subranges accumulated internally.       @warning   If ResultType is a floating point type, then accumulation is not   an associative operation. In other words, if the given function object is   called three times on three subranges, returning values   $a,b,c$  , then the   returned result of this function is   $(a+b)+c$  . However, depending on how   the three sub-tasks are distributed on available CPU resources, the   result may also be   $(a+c)+b$   or any other permutation; because floating   point addition is not associative (as opposed, of course, to addition of   real %numbers), the result of invoking this function several times may   differ on the order of round-off.     For a discussion of the kind of problems to which this function is   applicable, see also the     @ref threads   "Parallel computing with multiple processors"
-   * module.
    *
+   * Here, <code>mat_norm_sqr_on_subranges</code> is called on the entire
+   * range <code>[0,A.n_rows())</code> if this range is less than the minimum
+   * grainsize (above chosen as 50) or if deal.II is configured to not use
+   * multithreading. Otherwise, it may be called on subsets of the given
+   * range, with results from the individual subranges accumulated internally.
+   *
+   * @warning If ResultType is a floating point type, then accumulation is not
+   * an associative operation. In other words, if the given function object is
+   * called three times on three subranges, returning values $a,b,c$, then the
+   * returned result of this function is $(a+b)+c$. However, depending on how
+   * the three sub-tasks are distributed on available CPU resources, the
+   * result may also be $(a+c)+b$ or any other permutation; because floating
+   * point addition is not associative (as opposed, of course, to addition of
+   * real %numbers), the result of invoking this function several times may
+   * differ on the order of round-off.
+   *
+   * For a discussion of the kind of problems to which this function is
+   * applicable, see also the
+   * @ref threads "Parallel computing with multiple processors"
+   * module.
    */
   template <typename ResultType, typename RangeType, typename Function>
   ResultType
@@ -643,7 +711,6 @@ namespace parallel
    * operations, the shared pointer could lead to race conditions. This
    * class only allows one instance to get a partitioner. The other objects
    * cannot use that object and need to create their own copy.
-   *
    */
   namespace internal
   {
@@ -652,7 +719,6 @@ namespace parallel
     public:
       /**
        * Constructor.
-       *
        */
       TBBPartitioner();
 
@@ -660,7 +726,6 @@ namespace parallel
       /**
        * Destructor. Check that the object is not in use any more, i.e., all
        * loops have been completed.
-       *
        */
       ~TBBPartitioner();
 
@@ -669,7 +734,6 @@ namespace parallel
        * class is free, it is returned here. In case another thread has not
        * released it yet, a new object is created. To free the partitioner
        * again, return it by the release_one_partitioner() call.
-       *
        */
       std::shared_ptr<tbb::affinity_partitioner>
       acquire_one_partitioner();
@@ -678,7 +742,6 @@ namespace parallel
        * After using the partitioner in a tbb loop through
        * acquire_one_partitioner(), this call makes the partitioner available
        * again.
-       *
        */
       void
       release_one_partitioner(std::shared_ptr<tbb::affinity_partitioner> &p);
@@ -686,21 +749,18 @@ namespace parallel
     private:
       /**
        * The stored partitioner that can accumulate knowledge over several
-       * runs of   tbb::parallel_for
-       *
+       * runs of tbb::parallel_for
        */
       std::shared_ptr<tbb::affinity_partitioner> my_partitioner;
 
       /**
        * A flag to indicate whether the partitioner has been acquired but not
        * released yet, i.e., it is in use somewhere else.
-       *
        */
       bool in_use;
 
       /**
        * A mutex to guard the access to the in_use flag.
-       *
        */
       std::mutex mutex;
 #endif
@@ -718,14 +778,14 @@ namespace internal
      * to get a third, and we do the loop over all elements in parallel), then
      * this variable determines the minimum number of elements for which it is
      * profitable to split a range of elements any further to distribute to
-     * different threads.         This variable is available as a global
-     * writable variable in order to     allow the testsuite to also test the
-     * parallel case. By default, it is     set to several thousand elements,
-     * which is a case that the testsuite     would not normally encounter. As
-     * a consequence, in the testsuite we set     it to one
+     * different threads.
      *
-     *  -  a value that's hugely unprofitable but definitely tests     parallel operations.
-     *
+     * This variable is available as a global writable variable in order to
+     * allow the testsuite to also test the parallel case. By default, it is
+     * set to several thousand elements, which is a case that the testsuite
+     * would not normally encounter. As a consequence, in the testsuite we set
+     * it to one -- a value that's hugely unprofitable but definitely tests
+     * parallel operations.
      */
     extern unsigned int minimum_parallel_grain_size;
   } // namespace VectorImplementation
@@ -734,10 +794,9 @@ namespace internal
   namespace SparseMatrixImplementation
   {
     /**
-     * Like   internal::VectorImplementation::minimum_parallel_grain_size,
-     * but now     denoting the number of rows of a matrix that should be
-     * worked on as a     minimum.
-     *
+     * Like internal::VectorImplementation::minimum_parallel_grain_size, but now
+     * denoting the number of rows of a matrix that should be worked on as a
+     * minimum.
      */
     extern unsigned int minimum_parallel_grain_size;
   } // namespace SparseMatrixImplementation
@@ -745,7 +804,7 @@ namespace internal
 } // end of namespace internal
 
 
- /* --------------------------- inline functions ------------------------- */ 
+/* --------------------------- inline functions ------------------------- */
 
 namespace parallel
 {
@@ -756,7 +815,6 @@ namespace parallel
     /**
      * This is the function actually called by TBB for the ParallelForInteger
      * class.
-     *
      */
     struct ParallelForWrapper
     {

@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2021 by the deal.II authors
 //
@@ -33,24 +33,30 @@ DEAL_II_NAMESPACE_OPEN
 
 /**
  * Representation of the space of polynomials of degree at most n in higher
- * dimensions. Given a vector of <i>n</i> one-dimensional polynomials
- * <i>P<sub>0</sub></i> to <i>P<sub>n</sub></i>, where <i>P<sub>i</sub></i>
- * has degree <i>i</i>, this class generates all dim-dimensional polynomials
- * of the form <i> P<sub>ijk</sub>(x,y,z) =
+ * dimensions.
+ *
+ * Given a vector of <i>n</i> one-dimensional polynomials <i>P<sub>0</sub></i>
+ * to <i>P<sub>n</sub></i>, where <i>P<sub>i</sub></i> has degree <i>i</i>,
+ * this class generates all dim-dimensional polynomials of the form <i>
+ * P<sub>ijk</sub>(x,y,z) =
  * P<sub>i</sub>(x)P<sub>j</sub>(y)P<sub>k</sub>(z)</i>, where the sum of
- * <i>i</i>, <i>j</i> and <i>k</i> is less than or equal <i>n</i>. The
- * output_indices() function prints the ordering of the polynomials, i.e. for
- * each dim-dimensional polynomial in the polynomial space it gives the
+ * <i>i</i>, <i>j</i> and <i>k</i> is less than or equal <i>n</i>.
+ *
+ * The output_indices() function prints the ordering of the polynomials, i.e.
+ * for each dim-dimensional polynomial in the polynomial space it gives the
  * indices i,j,k of the one-dimensional polynomials in x,y and z direction.
  * The ordering of the dim-dimensional polynomials can be changed by using the
- * set_numbering() function. The standard ordering of polynomials is that
- * indices for the first space dimension vary fastest and the last space
- * dimension is slowest. In particular, if we take for simplicity the vector
- * of monomials <i>x<sup>0</sup>, x<sup>1</sup>, x<sup>2</sup>,...,
- * x<sup>n</sup></i>, we get <dl>   <dt> 1D   <dd>   <i> x<sup>0</sup>,
- * x<sup>1</sup>,...,x<sup>n</sup></i> <dt> 2D:   <dd>   <i>
- * x<sup>0</sup>y<sup>0</sup>, x<sup>1</sup>y<sup>0</sup>,...,
- * x<sup>n</sup>y<sup>0</sup>,
+ * set_numbering() function.
+ *
+ * The standard ordering of polynomials is that indices for the first space
+ * dimension vary fastest and the last space dimension is slowest. In
+ * particular, if we take for simplicity the vector of monomials
+ * <i>x<sup>0</sup>, x<sup>1</sup>, x<sup>2</sup>,..., x<sup>n</sup></i>, we
+ * get
+ *
+ * <dl> <dt> 1D <dd> <i> x<sup>0</sup>, x<sup>1</sup>,...,x<sup>n</sup></i>
+ * <dt> 2D: <dd> <i> x<sup>0</sup>y<sup>0</sup>,
+ * x<sup>1</sup>y<sup>0</sup>,..., x<sup>n</sup>y<sup>0</sup>,
  * <br>
  * x<sup>0</sup>y<sup>1</sup>, x<sup>1</sup>y<sup>1</sup>,...,
  * x<sup>n-1</sup>y<sup>1</sup>,
@@ -61,7 +67,7 @@ DEAL_II_NAMESPACE_OPEN
  * <br>
  * x<sup>0</sup>y<sup>n-1</sup>, x<sup>1</sup>y<sup>n-1</sup>,
  * <br>
- * x<sup>0</sup>y<sup>n</sup> </i> <dt> 3D:   <dd>   <i>
+ * x<sup>0</sup>y<sup>n</sup> </i> <dt> 3D: <dd> <i>
  * x<sup>0</sup>y<sup>0</sup>z<sup>0</sup>,...,
  * x<sup>n</sup>y<sup>0</sup>z<sup>0</sup>,
  * <br>
@@ -84,12 +90,9 @@ DEAL_II_NAMESPACE_OPEN
  * <br>
  * ...
  * <br>
- * x<sup>0</sup>y<sup>0</sup>z<sup>n</sup> </i>   </dl>
- *
+ * x<sup>0</sup>y<sup>0</sup>z<sup>n</sup> </i> </dl>
  *
  * @ingroup Polynomials
- *
- *
  */
 template <int dim>
 class PolynomialSpace : public ScalarPolynomialsBase<dim>
@@ -98,7 +101,6 @@ public:
   /**
    * Access to the dimension of this object, for checking and automatic
    * setting of dimension in other classes.
-   *
    */
   static const unsigned int dimension = dim;
 
@@ -106,16 +108,14 @@ public:
    * Constructor. <tt>pols</tt> is a vector of pointers to one-dimensional
    * polynomials and will be copied into a private member variable. The static
    * type of the template argument <tt>pols</tt> needs to be convertible to
-   * Polynomials::Polynomial@<double@>,   i.e. should usually be a derived
-   * class   of   Polynomials::Polynomial@<double@>.
-   *
+   * Polynomials::Polynomial@<double@>, i.e. should usually be a derived class
+   * of Polynomials::Polynomial@<double@>.
    */
   template <class Pol>
   PolynomialSpace(const std::vector<Pol> &pols);
 
   /**
    * Prints the list of the indices to <tt>out</tt>.
-   *
    */
   template <class StreamType>
   void
@@ -124,21 +124,22 @@ public:
   /**
    * Set the ordering of the polynomials. Requires
    * <tt>renumber.size()==n()</tt>. Stores a copy of <tt>renumber</tt>.
-   *
    */
   void
   set_numbering(const std::vector<unsigned int> &renumber);
 
   /**
    * Compute the value and the first and second derivatives of each
-   * polynomial at <tt>unit_point</tt>.     The size of the vectors must
-   * either be equal 0 or equal n(). In the first   case, the function will
-   * not compute these values, i.e. you indicate what   you want to have
-   * computed by resizing those vectors which you want   filled.     If you
-   * need values or derivatives of all polynomials then use this   function,
-   * rather than using any of the compute_value(), compute_grad() or
-   * compute_grad_grad() functions, see below, in a loop over all polynomials.
+   * polynomial at <tt>unit_point</tt>.
    *
+   * The size of the vectors must either be equal 0 or equal n(). In the first
+   * case, the function will not compute these values, i.e. you indicate what
+   * you want to have computed by resizing those vectors which you want
+   * filled.
+   *
+   * If you need values or derivatives of all polynomials then use this
+   * function, rather than using any of the compute_value(), compute_grad() or
+   * compute_grad_grad() functions, see below, in a loop over all polynomials.
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -150,49 +151,48 @@ public:
 
   /**
    * Compute the value of the <tt>i</tt>th polynomial at unit point
-   * <tt>p</tt>.     Consider using evaluate() instead.
+   * <tt>p</tt>.
    *
+   * Consider using evaluate() instead.
    */
   double
   compute_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
    * Compute the <tt>order</tt>th derivative of the <tt>i</tt>th polynomial
-   * at unit point <tt>p</tt>.     Consider using evaluate() instead.
-   * @tparam   order The order of the derivative.
+   * at unit point <tt>p</tt>.
    *
+   * Consider using evaluate() instead.
+   *
+   * @tparam order The order of the derivative.
    */
   template <int order>
   Tensor<order, dim>
   compute_derivative(const unsigned int i, const Point<dim> &p) const;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::compute_1st_derivative()
-   *
+   * @copydoc ScalarPolynomialsBase::compute_1st_derivative()
    */
   virtual Tensor<1, dim>
   compute_1st_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::compute_2nd_derivative()
-   *
+   * @copydoc ScalarPolynomialsBase::compute_2nd_derivative()
    */
   virtual Tensor<2, dim>
   compute_2nd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::compute_3rd_derivative()
-   *
+   * @copydoc ScalarPolynomialsBase::compute_3rd_derivative()
    */
   virtual Tensor<3, dim>
   compute_3rd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::compute_4th_derivative()
-   *
+   * @copydoc ScalarPolynomialsBase::compute_4th_derivative()
    */
   virtual Tensor<4, dim>
   compute_4th_derivative(const unsigned int i,
@@ -200,16 +200,18 @@ public:
 
   /**
    * Compute the gradient of the <tt>i</tt>th polynomial at unit point
-   * <tt>p</tt>.     Consider using evaluate() instead.
+   * <tt>p</tt>.
    *
+   * Consider using evaluate() instead.
    */
   Tensor<1, dim>
   compute_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
    * Compute the second derivative (grad_grad) of the <tt>i</tt>th polynomial
-   * at unit point <tt>p</tt>.     Consider using evaluate() instead.
+   * at unit point <tt>p</tt>.
    *
+   * Consider using evaluate() instead.
    */
   Tensor<2, dim>
   compute_grad_grad(const unsigned int i, const Point<dim> &p) const override;
@@ -219,21 +221,18 @@ public:
    * class. Here, if <tt>N</tt> is the number of one-dimensional polynomials
    * given, then the result of this function is <i>N</i> in 1d,
    * <i>N(N+1)/2</i> in 2d, and <i>N(N+1)(N+2)/6</i> in 3d.
-   *
    */
   static unsigned int
   n_polynomials(const unsigned int n);
 
   /**
    * Return the name of the space, which is <tt>PolynomialSpace</tt>.
-   *
    */
   std::string
   name() const override;
 
   /**
-   * @copydoc     ScalarPolynomialsBase::clone()
-   *
+   * @copydoc ScalarPolynomialsBase::clone()
    */
   virtual std::unique_ptr<ScalarPolynomialsBase<dim>>
   clone() const override;
@@ -243,9 +242,9 @@ protected:
    * Compute numbers in x, y and z direction. Given an index <tt>n</tt> in the
    * d-dimensional polynomial space, return the indices i,j,k such that
    * <i>p<sub>n</sub>(x,y,z) =
-   * p<sub>i</sub>(x)p<sub>j</sub>(y)p<sub>k</sub>(z)</i>.     In 1d and 2d,
-   * obviously only i and i,j are returned.
+   * p<sub>i</sub>(x)p<sub>j</sub>(y)p<sub>k</sub>(z)</i>.
    *
+   * In 1d and 2d, obviously only i and i,j are returned.
    */
   std::array<unsigned int, dim>
   compute_index(const unsigned int n) const;
@@ -253,25 +252,22 @@ protected:
 private:
   /**
    * Copy of the vector <tt>pols</tt> of polynomials given to the constructor.
-   *
    */
   const std::vector<Polynomials::Polynomial<double>> polynomials;
 
   /**
    * Index map for reordering the polynomials.
-   *
    */
   std::vector<unsigned int> index_map;
 
   /**
    * Index map for reordering the polynomials.
-   *
    */
   std::vector<unsigned int> index_map_inverse;
 };
 
 
- /* -------------- declaration of explicit specializations --- */ 
+/* -------------- declaration of explicit specializations --- */
 
 template <>
 std::array<unsigned int, 1>
@@ -285,7 +281,7 @@ PolynomialSpace<3>::compute_index(const unsigned int n) const;
 
 
 
- /* -------------- inline and template functions ------------- */ 
+/* -------------- inline and template functions ------------- */
 
 template <int dim>
 template <class Pol>

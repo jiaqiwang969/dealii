@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
 //
@@ -41,66 +41,22 @@ namespace Utilities
      * For example an MPI communicator with 5 processes can be arranged into a
      * 2x2 grid with the 5-th processor being inactive:
      * @code
-     *    |   0     |   1
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     * -----|
-     *
-     * ------- |-----
+     *      |   0     |   1
+     * -----| ------- |-----
      * 0    |   P0    |  P1
-     *    |         |
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     * -----|
-     *
-     * ------- |-----
+     *      |         |
+     * -----| ------- |-----
      * 1    |   P2    |  P3
      * @endcode
-     * A shared pointer to this class is provided to ScaLAPACKMatrix matrices
-     * to     perform block-cyclic distribution.         Note that this class
-     * allows to setup a process grid which has fewer     MPI cores than the
-     * total number of cores in the communicator.         Currently the only
-     * place where one would use a ProcessGrid object is     in connection
-     * with a ScaLAPACKMatrix object.
      *
+     * A shared pointer to this class is provided to ScaLAPACKMatrix matrices to
+     * perform block-cyclic distribution.
+     *
+     * Note that this class allows to setup a process grid which has fewer
+     * MPI cores than the total number of cores in the communicator.
+     *
+     * Currently the only place where one would use a ProcessGrid object is
+     * in connection with a ScaLAPACKMatrix object.
      */
     class ProcessGrid
     {
@@ -110,33 +66,31 @@ namespace Utilities
       friend class dealii::ScaLAPACKMatrix;
 
       /**
-       * Constructor for a process grid with   @p n_rows   and   @p n_columns
-       * for a given   @p mpi_communicator.         The product of rows and
-       * columns should be less or equal to the total       number of cores
-       * in the   @p mpi_communicator.
-       *
+       * Constructor for a process grid with @p n_rows and @p n_columns for a given @p mpi_communicator.
+       * The product of rows and columns should be less or equal to the total
+       * number of cores
+       * in the @p mpi_communicator.
        */
       ProcessGrid(const MPI_Comm &   mpi_communicator,
                   const unsigned int n_rows,
                   const unsigned int n_columns);
 
       /**
-       * Constructor for a process grid for a given   @p mpi_communicator.
+       * Constructor for a process grid for a given @p mpi_communicator.
        * In this case the process grid is heuristically chosen based on the
        * dimensions and block-cyclic distribution of a target matrix provided
-       * in   @p n_rows_matrix,     @p n_columns_matrix,     @p row_block_size
-       * and   @p column_block_size.               The maximum number of MPI
-       * cores one can utilize is         $\min\{\frac{M}{MB}\frac{N}{NB},
-       * Np\}$  , where   $M,N$   are the matrix       dimension and   $MB,NB$
-       * are the block sizes and   $Np$   is the number of       processes in
-       * the   @p mpi_communicator.   This function then creates a 2D
-       * processor grid       assuming the ratio between number of process row
-       * $p$   and columns   $q$   to       be equal the ratio between matrix
-       * dimensions   $M$   and   $N$  .             For example, a square
-       * matrix   $640x640$   with the block size   $32$         and the   @p
-       * mpi_communicator   with 11 cores will result in the   $3x3$
-       * process grid.
+       * in @p n_rows_matrix, @p n_columns_matrix, @p row_block_size and @p column_block_size.
        *
+       * The maximum number of MPI cores one can utilize is
+       * $\min\{\frac{M}{MB}\frac{N}{NB}, Np\}$, where $M,N$ are the matrix
+       * dimension and $MB,NB$ are the block sizes and $Np$ is the number of
+       * processes in the @p mpi_communicator. This function then creates a 2D processor grid
+       * assuming the ratio between number of process row $p$ and columns $q$ to
+       * be equal the ratio between matrix dimensions $M$ and $N$.
+       *
+       * For example, a square matrix $640x640$ with the block size $32$
+       * and the @p mpi_communicator with 11 cores will result in the $3x3$
+       * process grid.
        */
       ProcessGrid(const MPI_Comm &   mpi_communicator,
                   const unsigned int n_rows_matrix,
@@ -146,54 +100,48 @@ namespace Utilities
 
       /**
        * Destructor.
-       *
        */
       ~ProcessGrid();
 
       /**
        * Return the number of rows in the processes grid.
-       *
        */
       unsigned int
       get_process_grid_rows() const;
 
       /**
        * Return the number of columns in the processes grid.
-       *
        */
       unsigned int
       get_process_grid_columns() const;
 
       /**
-       * Return row of this process in the process grid.             It's
-       * negative for inactive processes.
+       * Return row of this process in the process grid.
        *
+       * It's negative for inactive processes.
        */
       int
       get_this_process_row() const;
 
       /**
-       * Return column of this process in the process grid.             It's
-       * negative for inactive processes.
+       * Return column of this process in the process grid.
        *
+       * It's negative for inactive processes.
        */
       int
       get_this_process_column() const;
 
       /**
-       * Send   @p count   values stored consequently starting at   @p value
-       * from       the process with rank zero to processes which       are
-       * not in the process grid.
-       *
+       * Send @p count values stored consequently starting at @p value from
+       * the process with rank zero to processes which
+       * are not in the process grid.
        */
       template <typename NumberType>
       void
       send_to_inactive(NumberType *value, const int count = 1) const;
 
       /**
-       * Return   <code>true</code>   if the process is active within the
-       * grid.
-       *
+       * Return <code>true</code> if the process is active within the grid.
        */
       bool
       is_process_active() const;
@@ -201,78 +149,69 @@ namespace Utilities
     private:
       /**
        * A private constructor which takes grid dimensions as an
-       * <code>std::pair</code>  .
-       *
+       * <code>std::pair</code>.
        */
       ProcessGrid(const MPI_Comm &                             mpi_communicator,
                   const std::pair<unsigned int, unsigned int> &grid_dimensions);
 
       /**
        * An MPI communicator with all processes (active and inactive).
-       *
        */
       MPI_Comm mpi_communicator;
 
       /**
        * An MPI communicator with inactive processes and the process with rank
        * zero.
-       *
        */
       MPI_Comm mpi_communicator_inactive_with_root;
 
       /**
        * BLACS context. This is equivalent to MPI communicators and is
        * used by ScaLAPACK.
-       *
        */
       int blacs_context;
 
       /**
        * Rank of this MPI process.
-       *
        */
       const unsigned int this_mpi_process;
 
       /**
        * Total number of MPI processes.
-       *
        */
       const unsigned int n_mpi_processes;
 
       /**
        * Number of rows in the processes grid.
-       *
        */
       int n_process_rows;
 
       /**
        * Number of columns in the processes grid.
-       *
        */
       int n_process_columns;
 
       /**
-       * Row of this process in the grid.             It's negative for
-       * in-active processes.
+       * Row of this process in the grid.
        *
+       * It's negative for in-active processes.
        */
       int this_process_row;
 
       /**
-       * Column of this process in the grid.             It's negative for
-       * in-active processes.
+       * Column of this process in the grid.
        *
+       * It's negative for in-active processes.
        */
       int this_process_column;
 
       /**
        * A flag which is true for processes within the 2D process grid.
-       *
        */
       bool mpi_process_is_active;
     };
 
-     /*--------------------- Inline functions --------------------------------*/ 
+    /*--------------------- Inline functions --------------------------------*/
 
 #  ifndef DOXYGEN
 

@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2021 by the deal.II authors
 //
@@ -39,7 +39,6 @@ namespace internal
     /**
      * A helper class whose `value` member is true or false depending on
      * whether all of the given boolean template arguments are true.
-     *
      */
     template <bool... Values>
     struct all_true
@@ -52,12 +51,10 @@ namespace internal
 } // namespace internal
 
 /**
- * This struct is a generalization of   std::is_base_of<Base,   Derived> to
- * template parameter packs and tests if all of the Derived... classes have
- * Base as base class or are Base itself. The result is stored in the member
- * variable value.
- *
- *
+ * This struct is a generalization of std::is_base_of<Base, Derived>
+ * to template parameter packs and tests if all of the Derived...
+ * classes have Base as base class or are Base itself. The result
+ * is stored in the member variable value.
  */
 template <class Base, class... Derived>
 struct is_base_of_all
@@ -69,12 +66,10 @@ struct is_base_of_all
 
 
 /**
- * This struct is a generalization of   std::is_same   to template parameter
- * packs and tests if all of the types in the `Types...` parameter pack are
- * equal to the `Type` given as first template argument. The result is stored
- * in the member variable value.
- *
- *
+ * This struct is a generalization of std::is_same to template
+ * parameter packs and tests if all of the types in the `Types...`
+ * parameter pack are equal to the `Type` given as first template
+ * argument. The result is stored in the member variable value.
  */
 template <class Type, class... Types>
 struct all_same_as
@@ -85,10 +80,11 @@ struct all_same_as
 
 
 
-/* A generalization of   `std::enable_if`   that only works if <i>all</i> of the given boolean template parameters are true.
-
-* 
-* */
+/*
+ * A generalization of `std::enable_if` that only works if
+ * <i>all</i> of the given boolean template parameters are
+ * true.
+ */
 template <bool... Values>
 struct enable_if_all
   : std::enable_if<internal::TemplateConstraints::all_true<Values...>::value>
@@ -100,8 +96,6 @@ struct enable_if_all
  * A type trait that checks to see if a class behaves as an iterable container
  * that has a beginning and an end. This implies that the class either defines
  * the `begin()` and `end()` functions, or is a C-style array.
- *
- *
  */
 template <typename T>
 class has_begin_and_end
@@ -128,64 +122,58 @@ public:
  * A template class that simply exports its template argument as a local
  * alias. This class, while at first appearing useless, makes sense in the
  * following context: if you have a function template as follows:
- *
  * @code
  * template <typename T>
  * void f(T, T);
  * @endcode
- * then it can't be called in an expression like   <code>f(1, 3.141)</code>
- * because the type   <code>T</code>   of the template can not be deduced in a
+ * then it can't be called in an expression like <code>f(1, 3.141)</code>
+ * because the type <code>T</code> of the template can not be deduced in a
  * unique way from the types of the arguments. However, if the template is
  * written as
- *
  * @code
  * template <typename T>
  * void f(T, typename identity<T>::type);
  * @endcode
- * then the call becomes valid: the type   <code>T</code>   is not deducible
- * from the second argument to the function, so only the first argument
- * participates in template type resolution. The context for this feature is
- * as follows: consider
+ * then the call becomes valid: the type <code>T</code> is not deducible from
+ * the second argument to the function, so only the first argument
+ * participates in template type resolution.
  *
+ * The context for this feature is as follows: consider
  * @code
  * template <typename RT, typename A>
  * void forward_call(RT (*p) (A), A a)
  * {
- * p(a);
+ *   p(a);
  * }
  *
  * void h (double);
  *
  * void g()
  * {
- * forward_call(&h, 1);
+ *   forward_call(&h, 1);
  * }
  * @endcode
  * This code fails to compile because the compiler can't decide whether the
- * template type   <code>A</code> should be <code>double</code>   (from the
+ * template type <code>A</code> should be <code>double</code> (from the
  * signature of the function given as first argument to
- * <code>forward_call</code>, or <code>int</code>   because the expression
- * <code>1</code>   has that type. Of course, what we would like the compiler
- * to do is simply cast the   <code>1</code> to <code>double</code>  . We can
- * achieve this by writing the code as follows:
- *
+ * <code>forward_call</code>, or <code>int</code> because the expression
+ * <code>1</code> has that type. Of course, what we would like the compiler to
+ * do is simply cast the <code>1</code> to <code>double</code>. We can achieve
+ * this by writing the code as follows:
  * @code
  * template <typename RT, typename A>
  * void forward_call(RT (*p) (A), typename identity<A>::type a)
  * {
- * p(a);
+ *   p(a);
  * }
  *
  * void h (double);
  *
  * void g()
  * {
- * forward_call(&h, 1);
+ *   forward_call(&h, 1);
  * }
  * @endcode
- *
- *
- *
  */
 template <typename T>
 struct identity
@@ -196,11 +184,9 @@ struct identity
 
 
 /**
- * A class that always returns a given value. This is needed as a workaround
- * for lambdas used as default parameters some compilers struggle to deal
- * with.
- *
- *
+ * A class that always returns a given value.
+ * This is needed as a workaround for lambdas used as default parameters
+ * some compilers struggle to deal with.
  */
 template <typename ArgType, typename ValueType>
 struct always_return
@@ -225,18 +211,17 @@ struct always_return
  * only work if the types of the two objects are equal, but the compiler will
  * barf if they are not. However, in the latter case, since the types of the
  * two objects are different, we can be sure that the two objects cannot be
- * the same. This class implements a comparison function that always returns
- * @p false   if the types of its two arguments are different, and returns
- * <tt>p1 == p2</tt> otherwise.
+ * the same.
  *
- *
+ * This class implements a comparison function that always returns @p false if
+ * the types of its two arguments are different, and returns <tt>p1 == p2</tt>
+ * otherwise.
  */
 struct PointerComparison
 {
   /**
-   * Comparison function for pointers of the same type. Returns   @p true   if
-   * the   two pointers are equal.
-   *
+   * Comparison function for pointers of the same type. Returns @p true if the
+   * two pointers are equal.
    */
   template <typename T>
   static bool
@@ -250,8 +235,7 @@ struct PointerComparison
    * Comparison function for pointers of different types. The C++ language
    * does not allow comparing these pointers using <tt>operator==</tt>.
    * However, since the two pointers have different types, we know that they
-   * can't be the same, so we always return   @p false.
-   *
+   * can't be the same, so we always return @p false.
    */
   template <typename T, typename U>
   static bool
@@ -268,13 +252,12 @@ namespace internal
   /**
    * A struct that implements the default product type resulting from the
    * multiplication of two types.
-   * @note   Care should be taken when   @p T   or   @p U   have qualifiers (
-   * @p const   or     @p volatile)   or are   @p lvalue   or   @p rvalue
-   * references! It is recommended   that specialization of this class is only
-   * made for unqualified (fully   stripped) types and that the ProductType
-   * class be used to determine the   result of operating with (potentially)
-   * qualified types.
    *
+   * @note Care should be taken when @p T or @p U have qualifiers (@p const or
+   * @p volatile) or are @p lvalue or @p rvalue references! It is recommended
+   * that specialization of this class is only made for unqualified (fully
+   * stripped) types and that the ProductType class be used to determine the
+   * result of operating with (potentially) qualified types.
    */
   template <typename T, typename U>
   struct ProductTypeImpl
@@ -288,48 +271,49 @@ namespace internal
 
 /**
  * A class with a local alias that represents the type that results from the
- * product of two variables of type   @p T   and   @p U.   In other words, we
- * would like to infer the type of the   <code>product</code>   variable in
- * code like this:
- *
+ * product of two variables of type @p T and @p U. In other words, we would
+ * like to infer the type of the <code>product</code> variable in code like
+ * this:
  * @code
- * T t;
- * U u;
- * auto product = t*u;
+ *   T t;
+ *   U u;
+ *   auto product = t*u;
  * @endcode
  * The local alias of this structure represents the type the variable
- * <code>product</code>   would have.
- *
- *  <h3>Where is this useful</h3> The purpose of this class is principally to
- * represent the type one needs to use to represent the values or gradients of
- * finite element fields at quadrature points. For example, assume you are
- * storing the values   $U_j$   of unknowns in a Vector<float>, then
- * evaluating   $u_h(x_q) = \sum_j U_j \varphi_j(x_q)$   at quadrature points
- * results in values   $u_h(x_q)$   that need to be stored as   @p double
- * variables because the   $U_j$   are   @p float   values and the
- * $\varphi_j(x_q)$   are computed as   @p double   values, and the product
- * are then   @p double   values. On the other hand, if you store your
- * unknowns   $U_j$   as   <code>std::complex@<double@></code>   values and
- * you try to evaluate   $\nabla u_h(x_q) = \sum_j U_j \nabla\varphi_j(x_q)$
- * at quadrature points, then the gradients   $\nabla u_h(x_q)$   need to be
- * stored as objects of type
- * <code>Tensor@<1,dim,std::complex@<double@>@></code>   because that's what
- * you get when you multiply a complex number by a
- * <code>Tensor@<1,dim@></code>   (the type used to represent the gradient of
- * shape functions of scalar finite elements). Likewise, if you are using a
- * vector valued element (with dim components) and the   $U_j$   are stored as
- * @p double   variables, then   $u_h(x_q) = \sum_j U_j \varphi_j(x_q)$
- * needs to have type   <code>Tensor@<1,dim@></code>   (because the shape
- * functions have type   <code>Tensor@<1,dim@></code>  ). Finally, if you
- * store the   $U_j$   as objects of type
- * <code>std::complex@<double@></code>   and you have a vector valued element,
- * then the gradients   $\nabla u_h(x_q) = \sum_j U_j \nabla\varphi_j(x_q)$
- * will result in objects of type   <code>Tensor@<2,dim,std::complex@<double@>
- * @></code>. In all of these cases, this type is used to identify which type
- * needs to be used for the result of computing the product of unknowns and
- * the values, gradients, or other properties of shape functions.
+ * <code>product</code> would have.
  *
  *
+ * <h3>Where is this useful</h3>
+ *
+ * The purpose of this class is principally to represent the type one needs to
+ * use to represent the values or gradients of finite element fields at
+ * quadrature points. For example, assume you are storing the values $U_j$ of
+ * unknowns in a Vector<float>, then evaluating $u_h(x_q) = \sum_j U_j
+ * \varphi_j(x_q)$ at quadrature points results in values $u_h(x_q)$ that need
+ * to be stored as @p double variables because the $U_j$ are @p float values
+ * and the $\varphi_j(x_q)$ are computed as @p double values, and the product
+ * are then @p double values. On the other hand, if you store your unknowns
+ * $U_j$ as <code>std::complex@<double@></code> values and you try to evaluate
+ * $\nabla u_h(x_q) = \sum_j U_j \nabla\varphi_j(x_q)$ at quadrature points,
+ * then the gradients $\nabla u_h(x_q)$ need to be stored as objects of type
+ * <code>Tensor@<1,dim,std::complex@<double@>@></code> because that's what you
+ * get when you multiply a complex number by a <code>Tensor@<1,dim@></code>
+ * (the type used to represent the gradient of shape functions of scalar
+ * finite elements).
+ *
+ * Likewise, if you are using a vector valued element (with dim components)
+ * and the $U_j$ are stored as @p double variables, then $u_h(x_q) = \sum_j
+ * U_j \varphi_j(x_q)$ needs to have type <code>Tensor@<1,dim@></code>
+ * (because the shape functions have type <code>Tensor@<1,dim@></code>).
+ * Finally, if you store the $U_j$ as objects of type
+ * <code>std::complex@<double@></code> and you have a vector valued element,
+ * then the gradients $\nabla u_h(x_q) = \sum_j U_j \nabla\varphi_j(x_q)$ will
+ * result in objects of type <code>Tensor@<2,dim,std::complex@<double@>
+ * @></code>.
+ *
+ * In all of these cases, this type is used to identify which type needs to be
+ * used for the result of computing the product of unknowns and the values,
+ * gradients, or other properties of shape functions.
  */
 template <typename T, typename U>
 struct ProductType
@@ -387,63 +371,59 @@ namespace internal
 
 
 /**
- * This class provides a local alias   @p type   that is equal to the template
+ * This class provides a local alias @p type that is equal to the template
  * argument but only if the template argument corresponds to a scalar type
  * (i.e., one of the floating point types, signed or unsigned integer, or a
- * complex number). If the template type   @p T   is not a scalar, then no
- * class   <code>EnableIfScalar@<T@></code>   is declared and, consequently,
- * no local alias is available. The purpose of the class is to disable certain
- * template functions if one of the arguments is not a scalar number. By way
- * of (nonsensical) example, consider the following function:
+ * complex number). If the template type @p T is not a scalar, then no class
+ * <code>EnableIfScalar@<T@></code> is declared and, consequently, no local
+ * alias is available.
  *
+ * The purpose of the class is to disable certain template functions if one of
+ * the arguments is not a scalar number. By way of (nonsensical) example,
+ * consider the following function:
  * @code
- * template <typename T>
- * T multiply (const T t1, const T t2)
- * {
- *   return t1*t2;
- * }
+ *   template <typename T>
+ *   T multiply (const T t1, const T t2)
+ *   {
+ *     return t1*t2;
+ *   }
  * @endcode
- * This function can be called with any two arguments of the same type   @p T.
+ * This function can be called with any two arguments of the same type @p T.
  * This includes arguments for which this clearly makes no sense.
  * Consequently, one may want to restrict the function to only scalars, and
  * this can be written as
- *
  * @code
- * template <typename T>
- * typename EnableIfScalar<T>::type
- * multiply (const T t1, const T t2)
- * {
- *   return t1*t2;
- * }
+ *   template <typename T>
+ *   typename EnableIfScalar<T>::type
+ *   multiply (const T t1, const T t2)
+ *   {
+ *     return t1*t2;
+ *   }
  * @endcode
  * At a place where you call the function, the compiler will deduce the type
- * @p T   from the arguments. For example, in
- *
+ * @p T from the arguments. For example, in
  * @code
- * multiply(1.234, 2.345);
+ *   multiply(1.234, 2.345);
  * @endcode
- * it will deduce   @p T   to be   @p double,   and because
- * <code>EnableIfScalar@<double@>::%type</code>   equals   @p double,   the
- * compiler will instantiate a function <code>double multiply(const double,
- * const double)</code> from the template above. On the other hand, in a
- * context like
- *
+ * it will deduce @p T to be @p double, and because
+ * <code>EnableIfScalar@<double@>::%type</code> equals @p double, the compiler
+ * will instantiate a function <code>double multiply(const double, const
+ * double)</code> from the template above. On the other hand, in a context
+ * like
  * @code
- * std::vector<char> v1, v2;
- * multiply(v1, v2);
+ *   std::vector<char> v1, v2;
+ *   multiply(v1, v2);
  * @endcode
- * the compiler will deduce   @p T   to be   <code>std::vector@<char@></code>
- * but because   <code>EnableIfScalar@<std::vector@<char@>@>::%type</code>
- * does not exist the compiler does not consider the template for
- * instantiation. This technique is called "Substitution Failure is not an
- * Error (SFINAE)". It makes sure that the template function can not even be
- * called, rather than leading to a later error about the fact that the
- * operation   <code>t1*t2</code>   is not defined (or may lead to some
- * nonsensical result). It also allows the declaration of overloads of a
- * function such as   @p   multiply for different types of arguments, without
- * resulting in ambiguous call errors by the compiler.
- *
- *
+ * the compiler will deduce @p T to be <code>std::vector@<char@></code> but
+ * because <code>EnableIfScalar@<std::vector@<char@>@>::%type</code> does not
+ * exist the compiler does not consider the template for instantiation. This
+ * technique is called "Substitution Failure is not an Error (SFINAE)". It
+ * makes sure that the template function can not even be called, rather than
+ * leading to a later error about the fact that the operation
+ * <code>t1*t2</code> is not defined (or may lead to some nonsensical result).
+ * It also allows the declaration of overloads of a function such as @p
+ * multiply for different types of arguments, without resulting in ambiguous
+ * call errors by the compiler.
  */
 template <typename T>
 struct EnableIfScalar;

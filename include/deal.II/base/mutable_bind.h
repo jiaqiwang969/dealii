@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
 //
@@ -29,11 +29,14 @@ DEAL_II_NAMESPACE_OPEN
 namespace Utilities
 {
   /**
-   * A mutable version of   std::bind,   that binds all arguments of a
-   * function   pointer to a stored tuple, and allows you to update the tuple
-   * between   calls.     An example usage of this class is through the helper
-   * function   mutable_bind() that creates a MutableBind object on the fly,
-   * based on its   arguments:
+   * A mutable version of std::bind, that binds all arguments of a function
+   * pointer to a stored tuple, and allows you to update the tuple between
+   * calls.
+   *
+   * An example usage of this class is through the helper function
+   * mutable_bind() that creates a MutableBind object on the fly, based on its
+   * arguments:
+   *
    * @code
    * void my_function(const int &a, const double &b);
    *
@@ -47,67 +50,62 @@ namespace Utilities
    * bound.parse_arguments("3: 4.0");
    * bound(); // will execute my_function(3, 4.0);
    * @endcode
+   *
    * The arguments are copied to the tuple, with their reference and const
    * attributes removed. Only copy constructible objects are allowed as
    * function arguments. If you need to keep some references around, you may
    * wrap your function into a lambda function:
+   *
    * @code
-   * void
-   * example_function(const Point<2> &p,
-   *                 const double &d,
-   *                 const unsigned int i = 3) {
-   * ...
-   * };
+   *  void
+   *  example_function(const Point<2> &p,
+   *                   const double &d,
+   *                   const unsigned int i = 3) {
+   *  ...
+   *  };
    *
-   * const Point<2> p(1, 2);
+   *  const Point<2> p(1, 2);
    *
-   * Utilities::MutableBind<void, double, unsigned int> exp = {
-   *  [&p](const double &d,
-   *       const unsigned int i)
-   *  {
-   *    example_function(p, d, i);
-   *  },
-   *  {}};
+   *  Utilities::MutableBind<void, double, unsigned int> exp = {
+   *    [&p](const double &d,
+   *         const unsigned int i)
+   *    {
+   *      example_function(p, d, i);
+   *    },
+   *    {}};
    *
-   * exp.parse_arguments("3.0 : 4");
-   * exp(); // calls example_function(p, 3.0, 4);
+   *  exp.parse_arguments("3.0 : 4");
+   *  exp(); // calls example_function(p, 3.0, 4);
    * @endcode
-   *
-   *
    */
   template <typename ReturnType, class... FunctionArgs>
   class MutableBind
   {
   public:
     /**
-     * An alias to the stored   std::tuple   type. Only copy constructible
+     * An alias to the stored std::tuple type. Only copy constructible
      * objects are allowed as tuple members.
-     *
      */
     using TupleType = std::tuple<typename std::remove_cv<
       typename std::remove_reference<FunctionArgs>::type>::type...>;
 
     /**
-     * Construct a MutableBind object specifying the function, and     each
-     * arguments separately.
-     *
+     * Construct a MutableBind object specifying the function, and
+     * each arguments separately.
      */
     template <class FunctionType>
     MutableBind(FunctionType function, FunctionArgs &&... arguments);
 
     /**
-     * Construct a MutableBind object specifying the function, and     the
-     * arguments as a tuple.
-     *
+     * Construct a MutableBind object specifying the function, and
+     * the arguments as a tuple.
      */
     template <class FunctionType>
     MutableBind(FunctionType function, TupleType &&arguments);
 
     /**
-     * Construct a MutableBind object specifying only the function. By
-     * default,     the arguments are left to their default constructor
-     * values.
-     *
+     * Construct a MutableBind object specifying only the function. By default,
+     * the arguments are left to their default constructor values.
      */
     template <class FunctionType>
     MutableBind(FunctionType function);
@@ -115,37 +113,36 @@ namespace Utilities
     /**
      * Call the original function, passing as arguments the elements of the
      * tuple of bound arguments.
-     *
      */
     ReturnType
     operator()() const;
 
     /**
-     * Set the arguments to use in   @p function,   for next time
+     * Set the arguments to use in @p function, for next time
      * operator()() is called, using move semantic.
-     *
      */
     void
     set_arguments(TupleType &&arguments);
 
     /**
-     * Set the arguments to use in   @p function,   for next time
+     * Set the arguments to use in @p function, for next time
      * operator()() is called, using move semantic.
-     *
      */
     void
     set_arguments(FunctionArgs &&... arguments);
 
     /**
-     * Parse the arguments to use in   @p function   from a string, for next
-     * time     operator()() is called.         The conversion is performed
-     * using a user supplied   Patterns::PatternBase       object. By default,
-     * Patterns::Tools::Convert<TupleType>::to_pattern()   is     used to
-     * determine how to convert from   @p value_string   to a TupleType
-     * object.           @param   value_string The string to convert from
-     * @param   pattern A unique pointer to the pattern to use when performing
-     * the conversion
+     * Parse the arguments to use in @p function from a string, for next time
+     * operator()() is called.
      *
+     * The conversion is performed using a user supplied Patterns::PatternBase
+     * object. By default, Patterns::Tools::Convert<TupleType>::to_pattern() is
+     * used to determine how to convert from @p value_string to a TupleType
+     * object.
+     *
+     * @param value_string The string to convert from
+     * @param pattern A unique pointer to the pattern to use when performing
+     * the conversion
      */
     void
     parse_arguments(const std::string &          value_string,
@@ -154,15 +151,13 @@ namespace Utilities
 
   private:
     /**
-     * An   std::function   that stores the original function.
-     *
+     * An std::function that stores the original function.
      */
     const std::function<ReturnType(FunctionArgs...)> function;
 
     /**
      * Currently stored arguments. These are forwarded to the function object
      * above, when calling operator()().
-     *
      */
     TupleType arguments;
   };
@@ -171,7 +166,9 @@ namespace Utilities
 
   /**
    * Create a MutableBind object from a function pointer and a list of
-   * arguments.     An example usage is given by:
+   * arguments.
+   *
+   * An example usage is given by:
    * @code
    * void my_function(const int &a, const double &b);
    *
@@ -185,8 +182,6 @@ namespace Utilities
    * bound.parse_arguments("3: 4.0");
    * bound(); // will execute my_function(3, 4.0);
    * @endcode
-   *
-   *
    */
   template <typename ReturnType, class... FunctionArgs>
   MutableBind<ReturnType, FunctionArgs...>
@@ -194,8 +189,7 @@ namespace Utilities
                typename identity<FunctionArgs>::type &&... arguments);
 
   /**
-   * Same as above, using a   std::function   object.
-   *
+   * Same as above, using a std::function object.
    */
   template <typename ReturnType, class... FunctionArgs>
   MutableBind<ReturnType, FunctionArgs...>
@@ -204,20 +198,20 @@ namespace Utilities
 
   /**
    * Create a MutableBind object from a function pointer, with uninitialized
-   * arguments.     Notice that if you do not call one of the
-   * MutableBind::set_arguments()     methods, or the
-   * MutableBind::parse_arguments()   function on the returned   object, then
-   * the arguments passed to the function object will be   initialized with
-   * the values coming from each of the arguments' default   constructors.
+   * arguments.
    *
+   * Notice that if you do not call one of the MutableBind::set_arguments()
+   * methods, or the MutableBind::parse_arguments() function on the returned
+   * object, then the arguments passed to the function object will be
+   * initialized with the values coming from each of the arguments' default
+   * constructors.
    */
   template <typename ReturnType, class... FunctionArgs>
   MutableBind<ReturnType, FunctionArgs...>
     mutable_bind(ReturnType (*function)(FunctionArgs...));
 
   /**
-   * Same as above, using a   std::function   object.
-   *
+   * Same as above, using a std::function object.
    */
   template <typename ReturnType, class... FunctionArgs>
   MutableBind<ReturnType, FunctionArgs...>

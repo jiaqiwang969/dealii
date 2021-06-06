@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2021 by the deal.II authors
 //
@@ -37,20 +37,21 @@ class LAPACKFullMatrix;
 
 
 /**
- * A class that represents a window of memory locations of type   @p
- * ElementType   and presents it as if it was an array. In essence, this class
- * is nothing more than just a pointer to the first location and an integer
- * that represents the length of the array in elements. The memory remains
- * owned by whoever allocated it, as this class does not take over ownership.
- * The advantage of using this class is that you don't have to pass around
- * pairs of pointers and that   <code>operator[]</code>   checks for the
- * validity of the index with which you subscript this array view. Note that
- * accessing elements is only allowed if the underlying data is stored in CPU
- * memory. This class can handle views to both non-constant and constant
- * memory locations. If you want to represent a view of a constant array, then
- * the template argument type of this class needs to be   @p const   as well.
- * The following code snippet gives an example:
+ * A class that represents a window of memory locations of type @p ElementType
+ * and presents it as if it was an array. In essence, this class is nothing more
+ * than just a pointer to the first location and an integer that represents the
+ * length of the array in elements. The memory remains owned by whoever
+ * allocated it, as this class does not take over ownership.
  *
+ * The advantage of using this class is that you don't have to pass around
+ * pairs of pointers and that <code>operator[]</code> checks for the validity
+ * of the index with which you subscript this array view. Note that accessing
+ * elements is only allowed if the underlying data is stored in CPU memory.
+ *
+ * This class can handle views to both non-constant and constant memory
+ * locations. If you want to represent a view of a constant array, then the
+ * template argument type of this class needs to be @p const as well. The
+ * following code snippet gives an example:
  * @code
  * std::vector<int> array = get_data(); // a writable array
  * ArrayView<int> view (&array[5], 5); // a view of elements 5..9 (inclusive)
@@ -60,27 +61,21 @@ class LAPACKFullMatrix;
  * const_view[2] = 42; // this line won't compile; can't write into this view
  * @endcode
  * In either case, accessing an element of a view does not change the
- * ArrayView object itself, and consequently   ArrayView::operator[]   is a
- * @p   const function. This corresponds to the notion that a view simply
+ * ArrayView object itself, and consequently ArrayView::operator[] is a @p
+ * const function. This corresponds to the notion that a view simply
  * represents a, well, "view" of memory that is owned by someone else. Thus,
  * accessing elements of the view changes the memory managed by some other
- * object, but not the view itself, allowing us to make
- * ArrayView::operator[]   a   @p const   member function. This is in contrast
- * to, say,   std::vector,   which manages the memory it points to and
- * changing an element of the   std::vector   therefore changes the
- * std::vector   object itself
+ * object, but not the view itself, allowing us to make ArrayView::operator[]
+ * a @p const member function. This is in contrast to, say, std::vector, which
+ * manages the memory it points to and changing an element of the std::vector
+ * therefore changes the std::vector object itself -- consequently, the
+ * std::vector::operator[] is non-@p const.
  *
- *  -  consequently, the   std::vector::operator[]   is non-  @p const.
- *
- *
- * @note   This class is similar to
- * [`std::span`](https://en.cppreference.com/w/cpp/container/span),   but the
- * latter is only available starting in C++20.
- *
+ * @note This class is similar to
+ *   [`std::span`](https://en.cppreference.com/w/cpp/container/span), but the
+ *   latter is only available starting in C++20.
  *
  * @ingroup data
- *
- *
  */
 template <typename ElementType, typename MemorySpaceType = MemorySpace::Host>
 class ArrayView
@@ -89,57 +84,53 @@ public:
   /**
    * An alias that denotes the "value_type" of this container-like class,
    * i.e., the type of the element it "stores" or points to.
-   *
    */
   using value_type = ElementType;
 
   /**
    * An alias for iterators pointing into the array.
-   *
    */
   using iterator = value_type *;
 
   /**
    * An alias for const iterators pointing into the array.
-   *
    */
   using const_iterator = const ElementType *;
 
   /**
    * Default constructor.
-   *
    */
   ArrayView();
 
   /**
-   * Constructor.       @param[in]   starting_element A pointer to the first
-   * element of the array   this object should represent.     @param[in]
-   * n_elements The length (in elements) of the chunk of memory   this object
-   * should represent.
-   * @note   The object that is constructed from these arguments has no
-   * knowledge how large the object into which it points really is. As a
-   * consequence, whenever you call   ArrayView::operator[],   the array view
-   * can   check that the given index is within the range of the view, but it
-   * can't   check that the view is indeed a subset of the valid range of
-   * elements of   the underlying object that allocated that range. In other
-   * words, you need   to ensure that the range of the view specified by the
-   * two arguments to   this constructor is in fact a subset of the elements
-   * of the array into   which it points. The appropriate way to do this is to
-   * use the   make_array_view() functions.
+   * Constructor.
    *
+   * @param[in] starting_element A pointer to the first element of the array
+   * this object should represent.
+   * @param[in] n_elements The length (in elements) of the chunk of memory
+   * this object should represent.
+   *
+   * @note The object that is constructed from these arguments has no
+   * knowledge how large the object into which it points really is. As a
+   * consequence, whenever you call ArrayView::operator[], the array view can
+   * check that the given index is within the range of the view, but it can't
+   * check that the view is indeed a subset of the valid range of elements of
+   * the underlying object that allocated that range. In other words, you need
+   * to ensure that the range of the view specified by the two arguments to
+   * this constructor is in fact a subset of the elements of the array into
+   * which it points. The appropriate way to do this is to use the
+   * make_array_view() functions.
    */
   ArrayView(value_type *starting_element, const std::size_t n_elements);
 
   /**
-   * Copy constructor from array views that point to non-  @p const
-   * elements. If   the current object will point to non-  @p const
-   * elements, then this is a   straight forward copy constructor. On the
-   * other hand, if the current   type's   @p ElementType   template argument
-   * is a   @p const   qualified type,   then the current constructor is a
-   * conversion constructor that converts a   non-  @p const   view to a   @p
-   * const   view, akin to converting a non-  @p const     pointer to a   @p
-   * const   pointer.
-   *
+   * Copy constructor from array views that point to non-@p const elements. If
+   * the current object will point to non-@p const elements, then this is a
+   * straight forward copy constructor. On the other hand, if the current
+   * type's @p ElementType template argument is a @p const qualified type,
+   * then the current constructor is a conversion constructor that converts a
+   * non-@p const view to a @p const view, akin to converting a non-@p const
+   * pointer to a @p const pointer.
    */
   ArrayView(const ArrayView<typename std::remove_cv<value_type>::type,
                             MemorySpaceType> &view);
@@ -147,138 +138,135 @@ public:
   /**
    * A constructor that automatically creates a view from a single value_type
    * object. The view so created then has length one.
-   *
    */
   explicit ArrayView(value_type &element);
 
   /**
-   * A constructor that automatically creates a view from a   std::vector
-   * object.   The view encompasses all elements of the given vector.     This
-   * implicit conversion constructor is particularly useful when calling   a
-   * function that takes an ArrayView object as argument, and passing in   a
-   * std::vector.
-   * @note   This constructor takes a reference to a   @p const   vector as
-   * argument.     It can only be used to initialize ArrayView objects that
-   * point to       @p const   memory locations, such as
-   * <code>ArrayView@<const double@></code>  .     You cannot initialize
-   * ArrayView objects to non-  @p const   memory with     such arguments,
-   * such as   <code>ArrayView@<double@></code>  .
+   * A constructor that automatically creates a view from a std::vector object.
+   * The view encompasses all elements of the given vector.
    *
+   * This implicit conversion constructor is particularly useful when calling
+   * a function that takes an ArrayView object as argument, and passing in
+   * a std::vector.
+   *
+   * @note This constructor takes a reference to a @p const vector as argument.
+   *   It can only be used to initialize ArrayView objects that point to
+   *   @p const memory locations, such as <code>ArrayView@<const double@></code>.
+   *   You cannot initialize ArrayView objects to non-@p const memory with
+   *   such arguments, such as <code>ArrayView@<double@></code>.
    */
   ArrayView(
     const std::vector<typename std::remove_cv<value_type>::type> &vector);
 
   /**
-   * A constructor that automatically creates a view from a   std::vector
-   * object.   The view encompasses all elements of the given vector.     This
-   * implicit conversion constructor is particularly useful when calling   a
-   * function that takes an ArrayView object as argument, and passing in   a
-   * std::vector.
-   * @note   This constructor takes a reference to a non-  @p const   vector
-   * as     argument. It can be used to initialize ArrayView objects that
-   * point to     either   @p const   memory locations, such as
-   * <code>ArrayView@<const double@></code>  , or to non-  @p const   memory,
-   * such as   <code>ArrayView@<double@></code>  .
+   * A constructor that automatically creates a view from a std::vector object.
+   * The view encompasses all elements of the given vector.
    *
+   * This implicit conversion constructor is particularly useful when calling
+   * a function that takes an ArrayView object as argument, and passing in
+   * a std::vector.
+   *
+   * @note This constructor takes a reference to a non-@p const vector as
+   *   argument. It can be used to initialize ArrayView objects that point to
+   *   either @p const memory locations, such as
+   *   <code>ArrayView@<const double@></code>, or to non-@p const memory,
+   *   such as <code>ArrayView@<double@></code>.
    */
   ArrayView(std::vector<typename std::remove_cv<value_type>::type> &vector);
 
   /**
-   * A constructor that automatically creates a view for a given C-style
-   * array.   This constructor can be used as follows:
+   * A constructor that automatically creates a view for a given C-style array.
+   * This constructor can be used as follows:
    * @code
-   * ArrayView<const int>
-   * get_data_table ()
-   * {
-   *   static const int my_data[7] = { 1, 1, 2, 3, 5, 8, 13 };
-   *   return {my_data};
-   * }
+   *   ArrayView<const int>
+   *   get_data_table ()
+   *   {
+   *     static const int my_data[7] = { 1, 1, 2, 3, 5, 8, 13 };
+   *     return {my_data};
+   *   }
    * @endcode
    * The object so returned is then a view of the array, with the size 7
    * correctly deduced.
-   *
    */
   template <std::size_t N>
   ArrayView(value_type (&array)[N]);
 
   /**
-   * A constructor that automatically creates a view from a   std::array
-   * object.   The view encompasses all elements of the given vector.     This
-   * implicit conversion constructor is particularly useful when calling   a
-   * function that takes an ArrayView object as argument, and passing in   a
-   * std::array.
+   * A constructor that automatically creates a view from a std::array object.
+   * The view encompasses all elements of the given vector.
    *
+   * This implicit conversion constructor is particularly useful when calling
+   * a function that takes an ArrayView object as argument, and passing in
+   * a std::array.
    */
   template <std::size_t N>
   ArrayView(
     const std::array<typename std::remove_cv<value_type>::type, N> &vector);
 
   /**
-   * A constructor that automatically creates a view from a   std::array
-   * object.   The view encompasses all elements of the given vector.     This
-   * implicit conversion constructor is particularly useful when calling   a
-   * function that takes an ArrayView object as argument, and passing in   a
-   * std::array.
+   * A constructor that automatically creates a view from a std::array object.
+   * The view encompasses all elements of the given vector.
    *
+   * This implicit conversion constructor is particularly useful when calling
+   * a function that takes an ArrayView object as argument, and passing in
+   * a std::array.
    */
   template <std::size_t N>
   ArrayView(std::array<typename std::remove_cv<value_type>::type, N> &vector);
 
   /**
-   * Reinitialize a view.       @param[in]   starting_element A pointer to the
-   * first element of the array   this object should represent.     @param[in]
-   * n_elements The length (in elements) of the chunk of memory   this object
-   * should represent.
-   * @note   The object that is constructed from these arguments has no
-   * knowledge how large the object into which it points really is. As a
-   * consequence, whenever you call   ArrayView::operator[],   the array view
-   * can   check that the given index is within the range of the view, but it
-   * can't   check that the view is indeed a subset of the valid range of
-   * elements of   the underlying object that allocated that range. In other
-   * words, you need   to ensure that the range of the view specified by the
-   * two arguments to   this constructor is in fact a subset of the elements
-   * of the array into   which it points. The appropriate way to do this is to
-   * use the   make_array_view() functions.
+   * Reinitialize a view.
    *
+   * @param[in] starting_element A pointer to the first element of the array
+   * this object should represent.
+   * @param[in] n_elements The length (in elements) of the chunk of memory
+   * this object should represent.
+   *
+   * @note The object that is constructed from these arguments has no
+   * knowledge how large the object into which it points really is. As a
+   * consequence, whenever you call ArrayView::operator[], the array view can
+   * check that the given index is within the range of the view, but it can't
+   * check that the view is indeed a subset of the valid range of elements of
+   * the underlying object that allocated that range. In other words, you need
+   * to ensure that the range of the view specified by the two arguments to
+   * this constructor is in fact a subset of the elements of the array into
+   * which it points. The appropriate way to do this is to use the
+   * make_array_view() functions.
    */
   void
   reinit(value_type *starting_element, const std::size_t n_elements);
 
   /**
-   * Compare two ArrayView objects of the same type. Two objects are
-   * considered   equal if they have the same size and the same starting
-   * pointer.   This version always compares with the const value_type.
-   *
+   * Compare two ArrayView objects of the same type. Two objects are considered
+   * equal if they have the same size and the same starting pointer.
+   * This version always compares with the const value_type.
    */
   bool
   operator==(
     const ArrayView<const value_type, MemorySpaceType> &other_view) const;
 
   /**
-   * Compare two ArrayView objects of the same type. Two objects are
-   * considered   equal if they have the same size and the same starting
-   * pointer.   This version always compares with the non-const value_type.
-   *
+   * Compare two ArrayView objects of the same type. Two objects are considered
+   * equal if they have the same size and the same starting pointer.
+   * This version always compares with the non-const value_type.
    */
   bool
   operator==(const ArrayView<typename std::remove_cv<value_type>::type,
                              MemorySpaceType> &other_view) const;
 
   /**
-   * Compare two ArrayView objects of the same type. Two objects are
-   * considered   equal if they have the same size and the same starting
-   * pointer.   This version always compares with the const value_type.
-   *
+   * Compare two ArrayView objects of the same type. Two objects are considered
+   * equal if they have the same size and the same starting pointer.
+   * This version always compares with the const value_type.
    */
   bool
   operator!=(
     const ArrayView<const value_type, MemorySpaceType> &other_view) const;
 
   /**
-   * Compare two ArrayView objects of the same type. Two objects are
-   * considered   equal if they have the same size and the same starting
-   * pointer.   This version always compares with the non-const value_type.
-   *
+   * Compare two ArrayView objects of the same type. Two objects are considered
+   * equal if they have the same size and the same starting pointer.
+   * This version always compares with the non-const value_type.
    */
   bool
   operator!=(const ArrayView<typename std::remove_cv<value_type>::type,
@@ -287,57 +275,52 @@ public:
   /**
    * Return the size (in elements) of the view of memory this object
    * represents.
-   *
    */
   std::size_t
   size() const;
 
   /**
-   * Return a pointer to the underlying array serving as element storage.   In
-   * case the container is empty a nullptr is returned.
-   *
+   * Return a pointer to the underlying array serving as element storage.
+   * In case the container is empty a nullptr is returned.
    */
   value_type *
   data() const noexcept;
 
   /**
    * Return an iterator pointing to the beginning of the array view.
-   *
    */
   iterator
   begin() const;
 
   /**
    * Return an iterator pointing to one past the end of the array view.
-   *
    */
   iterator
   end() const;
 
   /**
    * Return a constant iterator pointing to the beginning of the array view.
-   *
    */
   const_iterator
   cbegin() const;
 
   /**
-   * Return a constant iterator pointing to one past the end of the array
-   * view.
-   *
+   * Return a constant iterator pointing to one past the end of the array view.
    */
   const_iterator
   cend() const;
 
   /**
-   * Return a reference to the   $i$  th element of the range represented by
-   * the   current object.     This function is marked as   @p const   because
-   * it does not change the     <em>  view object  </em>  . It may however
-   * return a reference to a non-  @p const     memory location depending on
-   * whether the template type of the class is   @p     const or not.     This
-   * function is only allowed to be called if the underlying data is indeed
-   * stored in CPU memory.
+   * Return a reference to the $i$th element of the range represented by the
+   * current object.
    *
+   * This function is marked as @p const because it does not change the
+   * <em>view object</em>. It may however return a reference to a non-@p const
+   * memory location depending on whether the template type of the class is @p
+   * const or not.
+   *
+   * This function is only allowed to be called if the underlying data is indeed
+   * stored in CPU memory.
    */
   value_type &operator[](const std::size_t i) const;
 
@@ -345,13 +328,11 @@ private:
   /**
    * A pointer to the first element of the range of locations in memory that
    * this object represents.
-   *
    */
   value_type *starting_element;
 
   /**
    * The length of the array this object represents.
-   *
    */
   std::size_t n_elements;
 
@@ -654,9 +635,9 @@ namespace internal
   namespace ArrayViewHelper
   {
     /**
-     * Return whether the objects one gets by dereferencing the     iterators
-     * within the given iterator range form a contiguous     range in memory.
-     *
+     * Return whether the objects one gets by dereferencing the
+     * iterators within the given iterator range form a contiguous
+     * range in memory.
      */
     template <class Iterator>
     bool
@@ -672,13 +653,14 @@ namespace internal
 
 
     /**
-     * Return whether the objects one gets by dereferencing the     iterators
-     * within the given iterator range form a contiguous     range in memory.
-     * This specialization for (  @p const   or non-  @p const)   pointers
-     * returns   @p true   unconditionally since the fact that objects
+     * Return whether the objects one gets by dereferencing the
+     * iterators within the given iterator range form a contiguous
+     * range in memory.
+     *
+     * This specialization for (@p const or non-@p const) pointers
+     * returns @p true unconditionally since the fact that objects
      * pointed to by pointers are contiguous is embedded in the memory
      * model of C++.
-     *
      */
     template <class T>
     constexpr bool
@@ -696,17 +678,17 @@ namespace internal
  * Create an ArrayView that takes a pair of iterators as arguments. The type
  * of the ArrayView is inferred from the value type of the iterator (e.g., the
  * view created from two const iterators will have a const type).
- * @warning   The iterators   @p begin   and   @p end   must bound (in the
- * usual half-open way) a contiguous in memory range of values. This function
- * is intended for use with iterators into containers like
- * <code>boost::container::small_vector</code> or <code>std::vector</code>
- * and will not work correctly with, e.g.,
- * <code>boost::container::stable_vector</code> or <code>std::deque</code>  .
+ *
+ * @warning The iterators @p begin and @p end must bound (in the usual half-open
+ * way) a contiguous in memory range of values. This function is intended for
+ * use with iterators into containers like
+ * <code>boost::container::small_vector</code> or <code>std::vector</code> and
+ * will not work correctly with, e.g.,
+ * <code>boost::container::stable_vector</code> or <code>std::deque</code>.
  * In debug mode, we check that the provided iterators represent contiguous
  * memory indeed.
- * @relatesalso   ArrayView
  *
- *
+ * @relatesalso ArrayView
  */
 template <typename Iterator, typename MemorySpaceType = MemorySpace::Host>
 ArrayView<typename std::remove_reference<
@@ -732,13 +714,13 @@ make_array_view(const Iterator begin, const Iterator end)
 
 
 /**
- * Create a view from a pair of pointers.   <code>ElementType</code>   may be
+ * Create a view from a pair of pointers. <code>ElementType</code> may be
  * const-qualified.
- * @warning   The pointers   @p begin   and   @p end   must bound (in the
- * usual half-open way) a contiguous in memory range of values.
- * @relatesalso   ArrayView
  *
+ * @warning The pointers @p begin and @p end must bound (in the usual
+ * half-open way) a contiguous in memory range of values.
  *
+ * @relatesalso ArrayView
  */
 template <typename ElementType, typename MemorySpaceType = MemorySpace::Host>
 ArrayView<ElementType, MemorySpaceType>
@@ -753,13 +735,14 @@ make_array_view(ElementType *const begin, ElementType *const end)
 
 
 /**
- * Create a view from an ArrayView itself. This function is used for   @p
- * const   references to objects of ArrayView type. It only exists for
- * compatibility purposes.
- * @param[in]   array_view The ArrayView that we wish to make a copy of.
- * @relatesalso   ArrayView
+ * Create a view from an ArrayView itself.
  *
+ * This function is used for @p const references to objects of ArrayView type.
+ * It only exists for compatibility purposes.
  *
+ * @param[in] array_view The ArrayView that we wish to make a copy of.
+ *
+ * @relatesalso ArrayView
  */
 template <typename Number, typename MemorySpaceType>
 inline ArrayView<const Number, MemorySpaceType>
@@ -771,13 +754,14 @@ make_array_view(const ArrayView<Number, MemorySpaceType> &array_view)
 
 
 /**
- * Create a view from an ArrayView itself. This function is used for non-  @p
- * const   references to objects of ArrayView type. It only exists for
- * compatibility purposes.
- * @param[in]   array_view The ArrayView that we wish to make a copy of.
- * @relatesalso   ArrayView
+ * Create a view from an ArrayView itself.
  *
+ * This function is used for non-@p const references to objects of ArrayView
+ * type. It only exists for compatibility purposes.
  *
+ * @param[in] array_view The ArrayView that we wish to make a copy of.
+ *
+ * @relatesalso ArrayView
  */
 template <typename Number, typename MemorySpaceType>
 inline ArrayView<Number, MemorySpaceType>
@@ -789,19 +773,20 @@ make_array_view(ArrayView<Number, MemorySpaceType> &array_view)
 
 
 /**
- * Create a view to an entire Tensor object. This is equivalent to
- * initializing an ArrayView object with a pointer to the first element and
- * the size of the given argument. This function is used for   @p const
- * references to objects of Tensor type because they contain immutable
- * elements. Consequently, the return type of this function is a view to a set
- * of   @p const   objects.
- * @param[in]   tensor The Tensor for which we want to have an array view
- * object. The array view corresponds to the   <em>  entire  </em>   object
- * but the order in which the entries are presented in the array is an
- * implementation detail and should not be relied upon.
- * @relatesalso   ArrayView
+ * Create a view to an entire Tensor object. This is equivalent to initializing
+ * an ArrayView object with a pointer to the first element and the size of the
+ * given argument.
  *
+ * This function is used for @p const references to objects of Tensor type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] tensor The Tensor for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> object but the
+ * order in which the entries are presented in the array is an implementation
+ * detail and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <int rank, int dim, typename Number>
 inline ArrayView<const Number>
@@ -813,19 +798,20 @@ make_array_view(const Tensor<rank, dim, Number> &tensor)
 
 
 /**
- * Create a view to an entire Tensor object. This is equivalent to
- * initializing an ArrayView object with a pointer to the first element and
- * the size of the given argument. This function is used for non-  @p const
- * references to objects of Tensor type. Such objects contain elements that
- * can be written to. Consequently, the return type of this function is a view
- * to a set of writable objects.
- * @param[in]   tensor The Tensor for which we want to have an array view
- * object. The array view corresponds to the   <em>  entire  </em>   object
- * but the order in which the entries are presented in the array is an
- * implementation detail and should not be relied upon.
- * @relatesalso   ArrayView
+ * Create a view to an entire Tensor object. This is equivalent to initializing
+ * an ArrayView object with a pointer to the first element and the size of the
+ * given argument.
  *
+ * This function is used for non-@p const references to objects of Tensor type.
+ * Such objects contain elements that can be written to. Consequently,
+ * the return type of this function is a view to a set of writable objects.
  *
+ * @param[in] tensor The Tensor for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> object but the
+ * order in which the entries are presented in the array is an implementation
+ * detail and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <int rank, int dim, typename Number>
 inline ArrayView<Number>
@@ -838,18 +824,19 @@ make_array_view(Tensor<rank, dim, Number> &tensor)
 
 /**
  * Create a view to an entire SymmetricTensor object. This is equivalent to
- * initializing an ArrayView object with a pointer to the first element and
- * the size of the given argument. This function is used for   @p const
- * references to objects of SymmetricTensor type because they contain
- * immutable elements. Consequently, the return type of this function is a
- * view to a set of   @p const   objects.
- * @param[in]   tensor The SymmetricTensor for which we want to have an array
- * view object. The array view corresponds to the   <em>  entire  </em>
- * object but the order in which the entries are presented in the array is an
+ * initializing an ArrayView object with a pointer to the first element and the
+ * size of the given argument.
+ *
+ * This function is used for @p const references to objects of SymmetricTensor
+ * type because they contain immutable elements. Consequently, the return type
+ * of this function is a view to a set of @p const objects.
+ *
+ * @param[in] tensor The SymmetricTensor for which we want to have an array
+ * view object. The array view corresponds to the <em>entire</em> object but
+ * the order in which the entries are presented in the array is an
  * implementation detail and should not be relied upon.
- * @relatesalso   ArrayView
  *
- *
+ * @relatesalso ArrayView
  */
 template <int rank, int dim, typename Number>
 inline ArrayView<const Number>
@@ -862,18 +849,20 @@ make_array_view(const SymmetricTensor<rank, dim, Number> &tensor)
 
 /**
  * Create a view to an entire SymmetricTensor object. This is equivalent to
- * initializing an ArrayView object with a pointer to the first element and
- * the size of the given argument. This function is used for non-  @p const
- * references to objects of SymmetricTensor type. Such objects contain
- * elements that can be written to. Consequently, the return type of this
- * function is a view to a set of writable objects.
- * @param[in]   tensor The SymmetricTensor for which we want to have an array
- * view object. The array view corresponds to the   <em>  entire  </em>
- * object but the order in which the entries are presented in the array is an
+ * initializing an ArrayView object with a pointer to the first element and the
+ * size of the given argument.
+ *
+ * This function is used for non-@p const references to objects of
+ * SymmetricTensor type. Such objects contain elements that can be written to.
+ * Consequently, the return type of this function is a view to a set of writable
+ * objects.
+ *
+ * @param[in] tensor The SymmetricTensor for which we want to have an array
+ * view object. The array view corresponds to the <em>entire</em> object but
+ * the order in which the entries are presented in the array is an
  * implementation detail and should not be relied upon.
- * @relatesalso   ArrayView
  *
- *
+ * @relatesalso ArrayView
  */
 template <int rank, int dim, typename Number>
 inline ArrayView<Number>
@@ -887,13 +876,15 @@ make_array_view(SymmetricTensor<rank, dim, Number> &tensor)
 /**
  * Create a view to an entire C-style array. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element and
- * the size of the given argument. Whether the resulting ArrayView is writable
- * or not depends on the ElementType being a const type or not.
- * @param[in]   array The C-style array for which we want to have an ArrayView
- * object. The ArrayView corresponds to the   <em>  entire  </em>   vector.
- * @relatesalso   ArrayView
+ * the size of the given argument.
  *
+ * Whether the resulting ArrayView is writable or not depends on the
+ * ElementType being a const type or not.
  *
+ * @param[in] array The C-style array for which we want to have an ArrayView
+ * object. The ArrayView corresponds to the <em>entire</em> vector.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType, int N>
 inline ArrayView<ElementType> make_array_view(ElementType (&array)[N])
@@ -906,15 +897,16 @@ inline ArrayView<ElementType> make_array_view(ElementType (&array)[N])
 /**
  * Create a view to an entire Vector object. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element and
- * the size of the given argument. This function is used for non-  @p const
- * references to objects of Vector type. Such objects contain elements that
- * can be written to. Consequently, the return type of this function is a view
- * to a set of writable objects.
- * @param[in]   vector The Vector for which we want to have an array view
- * object. The array view corresponds to the   <em>  entire  </em>   Vector.
- * @relatesalso   ArrayView
+ * the size of the given argument.
  *
+ * This function is used for non-@p const references to objects of Vector
+ * type. Such objects contain elements that can be written to. Consequently,
+ * the return type of this function is a view to a set of writable objects.
  *
+ * @param[in] vector The Vector for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> Vector.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType>
@@ -928,15 +920,16 @@ make_array_view(Vector<ElementType> &vector)
 /**
  * Create a view to an entire Vector object. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element and
- * the size of the given argument. This function is used for   @p const
- * references to objects of Vector type because they contain immutable
- * elements. Consequently, the return type of this function is a view to a set
- * of   @p const   objects.
- * @param[in]   vector The Vector for which we want to have an array view
- * object. The array view corresponds to the   <em>  entire  </em>   Vector.
- * @relatesalso   ArrayView
+ * the size of the given argument.
  *
+ * This function is used for @p const references to objects of Vector type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] vector The Vector for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> Vector.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -948,17 +941,18 @@ make_array_view(const Vector<ElementType> &vector)
 
 
 /**
- * Create a view to an entire   std::vector   object. This is equivalent to
+ * Create a view to an entire std::vector object. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element and
- * the size of the given argument. This function is used for non-  @p const
- * references to objects of vector type. Such objects contain elements that
- * can be written to. Consequently, the return type of this function is a view
- * to a set of writable objects.
- * @param[in]   vector The vector for which we want to have an array view
- * object. The array view corresponds to the   <em>  entire  </em>   vector.
- * @relatesalso   ArrayView
+ * the size of the given argument.
  *
+ * This function is used for non-@p const references to objects of vector
+ * type. Such objects contain elements that can be written to. Consequently,
+ * the return type of this function is a view to a set of writable objects.
  *
+ * @param[in] vector The vector for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> vector.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType>
@@ -970,17 +964,18 @@ make_array_view(std::vector<ElementType> &vector)
 
 
 /**
- * Create a view to an entire   std::vector   object. This is equivalent to
+ * Create a view to an entire std::vector object. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element and
- * the size of the given argument. This function is used for   @p const
- * references to objects of vector type because they contain immutable
- * elements. Consequently, the return type of this function is a view to a set
- * of   @p const   objects.
- * @param[in]   vector The vector for which we want to have an array view
- * object. The array view corresponds to the   <em>  entire  </em>   vector.
- * @relatesalso   ArrayView
+ * the size of the given argument.
  *
+ * This function is used for @p const references to objects of vector type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] vector The vector for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> vector.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -992,21 +987,23 @@ make_array_view(const std::vector<ElementType> &vector)
 
 
 /**
- * Create a view to a part of a   std::vector   object. This is equivalent to
- * initializing the ArrayView object with a pointer to the   @p
- * starting_index-   th element and the   @p size_of_view   as the length of
- * the view. This function is used for non-  @p const   references to objects
- * of vector type. Such objects contain elements that can be written to.
- * Consequently, the return type of this function is a view to a set of
- * writable objects.
- * @param[in]   vector The vector for which we want to have an array view
- * object.   @param[in]   starting_index The index of the first element of the
- * vector that will be part of this view.   @param[in]   size_of_view Number
- * of elements in the new ArrayView. @pre     <code>starting_index +
- * size_of_view <= vector.size()</code>
- * @relatesalso   ArrayView
+ * Create a view to a part of a std::vector object. This is equivalent to
+ * initializing the ArrayView object with a pointer to the @p starting_index-
+ * th element and the @p size_of_view as the length of the view.
  *
+ * This function is used for non-@p const references to objects of vector
+ * type. Such objects contain elements that can be written to. Consequently,
+ * the return type of this function is a view to a set of writable objects.
  *
+ * @param[in] vector The vector for which we want to have an array view
+ * object.
+ * @param[in] starting_index The index of the first element of the vector that
+ * will be part of this view.
+ * @param[in] size_of_view Number of elements in the new ArrayView.
+ *
+ * @pre <code>starting_index + size_of_view <= vector.size()</code>
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType>
@@ -1024,20 +1021,23 @@ make_array_view(std::vector<ElementType> &vector,
 
 
 /**
- * Create a view to a part of a   std::vector   object. This is equivalent to
- * initializing the ArrayView object with a pointer to the   @p
- * starting_index-   th element and the   @p size_of_view   as the length of
- * the view. This function is used for   @p const   references to objects of
- * vector type because they contain immutable elements. Consequently, the
- * return type of this function is a view to a set of   @p const   objects.
- * @param[in]   vector The vector for which we want to have an array view
- * object.   @param[in]   starting_index The index of the first element of the
- * vector that will be part of this view.   @param[in]   size_of_view Number
- * of elements in the new ArrayView. @pre     <code>starting_index +
- * size_of_view <= vector.size()</code>
- * @relatesalso   ArrayView
+ * Create a view to a part of a std::vector object. This is equivalent to
+ * initializing the ArrayView object with a pointer to the @p starting_index-
+ * th element and the @p size_of_view as the length of the view.
  *
+ * This function is used for @p const references to objects of vector type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] vector The vector for which we want to have an array view
+ * object.
+ * @param[in] starting_index The index of the first element of the vector that
+ * will be part of this view.
+ * @param[in] size_of_view Number of elements in the new ArrayView.
+ *
+ * @pre <code>starting_index + size_of_view <= vector.size()</code>
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -1057,17 +1057,18 @@ make_array_view(const std::vector<ElementType> &vector,
 /**
  * Create a view to an entire row of a Table<2> object. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element of the
- * given row, and the length of the row as the length of the view. This
- * function is used for non-  @p const   references to objects of Table type.
+ * given row, and the length of the row as the length of the view.
+ *
+ * This function is used for non-@p const references to objects of Table type.
  * Such objects contain elements that can be written to. Consequently, the
  * return type of this function is a view to a set of writable objects.
- * @param[in]   table The Table for which we want to have an array view
- * object. The array view corresponds to an   <em>  entire  </em>   row.
- * @param[in]   row The index of the row into the table to which this view
+ *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to an <em>entire</em> row.
+ * @param[in] row The index of the row into the table to which this view
  * should correspond.
- * @relatesalso   ArrayView
  *
- *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType>
@@ -1084,16 +1085,17 @@ inline ArrayView<ElementType>
  * Create a view to an entire Table<2> object. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element of the
  * given table, and the number of table entries as the length of the view.
- * This function is used for non-  @p const   references to objects of Table
- * type. Such objects contain elements that can be written to. Consequently,
- * the return type of this function is a view to a set of writable objects.
- * @param[in]   table The Table for which we want to have an array view
- * object. The array view corresponds to the   <em>  entire  </em>   table but
- * the order in which the entries are presented in the array is an
- * implementation detail and should not be relied upon.
- * @relatesalso   ArrayView
  *
+ * This function is used for non-@p const references to objects of Table type.
+ * Such objects contain elements that can be written to. Consequently, the
+ * return type of this function is a view to a set of writable objects.
  *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to the <em>entire</em> table but the order in
+ * which the entries are presented in the array is an implementation detail
+ * and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType> make_array_view(Table<2, ElementType> &table)
@@ -1107,16 +1109,17 @@ inline ArrayView<ElementType> make_array_view(Table<2, ElementType> &table)
  * Create a view to an entire Table<2> object. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element of the
  * given table, and the number of table entries as the length of the view.
- * This function is used for   @p const   references to objects of Table type
+ *
+ * This function is used for @p const references to objects of Table type
  * because they contain immutable elements. Consequently, the return type of
- * this function is a view to a set of   @p const   objects.
- * @param[in]   table The Table for which we want to have an array view
- * object. The array view corresponds to the   <em>  entire  </em>   table but
- * the order in which the entries are presented in the array is an
- * implementation detail and should not be relied upon.
- * @relatesalso   ArrayView
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to the <em>entire</em> table but the order in
+ * which the entries are presented in the array is an implementation detail
+ * and should not be relied upon.
  *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -1129,18 +1132,19 @@ make_array_view(const Table<2, ElementType> &table)
 /**
  * Create a view to an entire LAPACKFullMatrix object. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element of the
- * given object, and the number entries as the length of the view. This
- * function is used for   @p non-const   references to objects of
- * LAPACKFullMatrix type. Such objects contain elements that can be written
- * to. Consequently, the return type of this function is a view to a set of
- * @p non-const   objects.
- * @param[in]   matrix The LAPACKFullMatrix for which we want to have an array
- * view object. The array view corresponds to the   <em>  entire  </em>
- * object but the order in which the entries are presented in the array is an
+ * given object, and the number entries as the length of the view.
+ *
+ * This function is used for @p non-const references to objects of
+ * LAPACKFullMatrix type. Such objects contain elements that can be written to.
+ * Consequently, the return type of this function is a view to a set of
+ * @p non-const objects.
+ *
+ * @param[in] matrix The LAPACKFullMatrix for which we want to have an array
+ * view object. The array view corresponds to the <em>entire</em> object but
+ * the order in which the entries are presented in the array is an
  * implementation detail and should not be relied upon.
- * @relatesalso   ArrayView
  *
- *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType>
@@ -1154,17 +1158,18 @@ make_array_view(LAPACKFullMatrix<ElementType> &matrix)
 /**
  * Create a view to an entire LAPACKFullMatrix object. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element of the
- * given object, and the number of entries as the length of the view. This
- * function is used for   @p const   references to objects of LAPACKFullMatrix
+ * given object, and the number of entries as the length of the view.
+ *
+ * This function is used for @p const references to objects of LAPACKFullMatrix
  * type because they contain immutable elements. Consequently, the return type
- * of this function is a view to a set of   @p const   objects.
- * @param[in]   matrix The LAPACKFullMatrix for which we want to have an array
- * view object. The array view corresponds to the   <em>  entire  </em>
- * object but the order in which the entries are presented in the array is an
+ * of this function is a view to a set of @p const objects.
+ *
+ * @param[in] matrix The LAPACKFullMatrix for which we want to have an array
+ * view object. The array view corresponds to the <em>entire</em> object but
+ * the order in which the entries are presented in the array is an
  * implementation detail and should not be relied upon.
- * @relatesalso   ArrayView
  *
- *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -1178,17 +1183,18 @@ make_array_view(const LAPACKFullMatrix<ElementType> &matrix)
 /**
  * Create a view to an entire row of a Table<2> object. This is equivalent to
  * initializing an ArrayView object with a pointer to the first element of the
- * given row, and the length of the row as the length of the view. This
- * function is used for   @p const   references to objects of Table type
+ * given row, and the length of the row as the length of the view.
+ *
+ * This function is used for @p const references to objects of Table type
  * because they contain immutable elements. Consequently, the return type of
- * this function is a view to a set of   @p const   objects.
- * @param[in]   table The Table for which we want to have an array view
- * object. The array view corresponds to an   <em>  entire  </em>   row.
- * @param[in]   row The index of the row into the table to which this view
+ * this function is a view to a set of @p const objects.
+ *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to an <em>entire</em> row.
+ * @param[in] row The index of the row into the table to which this view
  * should correspond.
- * @relatesalso   ArrayView
  *
- *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -1202,21 +1208,23 @@ make_array_view(const Table<2, ElementType> &                   table,
 
 
 /**
- * Create a view to (a part of) a row of a Table<2> object. This function is
- * used for non-  @p const   references to objects of Table type. Such objects
- * contain elements that can be written to. Consequently, the return type of
- * this function is a view to a set of writable objects.
- * @param[in]   table The Table for which we want to have an array view
- * object. The array view corresponds to an   <em>  entire  </em>   row.
- * @param[in]   row The index of the row into the table to which this view
- * should correspond.   @param[in]   starting_column The index of the column
- * into the given row of the table that corresponds to the first element of
- * this view.   @param[in]   size_of_view The number of elements this view
- * should have. This corresponds to the number of columns in the current row
- * to which the view should correspond.
- * @relatesalso   ArrayView
+ * Create a view to (a part of) a row of a Table<2> object.
  *
+ * This function is used for non-@p const references to objects of Table type.
+ * Such objects contain elements that can be written to. Consequently, the
+ * return type of this function is a view to a set of writable objects.
  *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to an <em>entire</em> row.
+ * @param[in] row The index of the row into the table to which this view
+ * should correspond.
+ * @param[in] starting_column The index of the column into the given row of
+ * the table that corresponds to the first element of this view.
+ * @param[in] size_of_view The number of elements this view should have. This
+ * corresponds to the number of columns in the current row to which the view
+ * should correspond.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType> make_array_view(
@@ -1237,21 +1245,23 @@ inline ArrayView<ElementType> make_array_view(
 
 
 /**
- * Create a view to (a part of) a row of a Table<2> object. This function is
- * used for   @p const   references to objects of Table type because they
- * contain immutable elements. Consequently, the return type of this function
- * is a view to a set of   @p const   objects.
- * @param[in]   table The Table for which we want to have an array view
- * object. The array view corresponds to an   <em>  entire  </em>   row.
- * @param[in]   row The index of the row into the table to which this view
- * should correspond.   @param[in]   starting_column The index of the column
- * into the given row of the table that corresponds to the first element of
- * this view.   @param[in]   size_of_view The number of elements this view
- * should have. This corresponds to the number of columns in the current row
- * to which the view should correspond.
- * @relatesalso   ArrayView
+ * Create a view to (a part of) a row of a Table<2> object.
  *
+ * This function is used for @p const references to objects of Table type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to an <em>entire</em> row.
+ * @param[in] row The index of the row into the table to which this view
+ * should correspond.
+ * @param[in] starting_column The index of the column into the given row of
+ * the table that corresponds to the first element of this view.
+ * @param[in] size_of_view The number of elements this view should have. This
+ * corresponds to the number of columns in the current row to which the view
+ * should correspond.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -1272,12 +1282,16 @@ make_array_view(const Table<2, ElementType> &                   table,
 
 
 
-/* Create a view that doesn't allow the container it points to to be modified. This is useful if the object passed in is not `const` already and a function requires a view to constant memory in its signature.
-*  This function returns an object of type `ArrayView<const T>` where `T` is the element type of the container.
-*    @relatesalso   ArrayView
-
-* 
-* */
+/*
+ * Create a view that doesn't allow the container it points to to be modified.
+ * This is useful if the object passed in is not `const` already and a function
+ * requires a view to constant memory in its signature.
+ *
+ * This function returns an object of type `ArrayView<const T>` where `T` is the
+ * element type of the container.
+ *
+ * @relatesalso ArrayView
+ */
 template <typename Container>
 inline auto
 make_const_array_view(const Container &container)

@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
 //
@@ -50,10 +50,7 @@ DEAL_II_NAMESPACE_OPEN
  * is that tensors of arbitrary rank can be returned, not only vectors, as for
  * them the size can be determined similarly simply.
  *
- *
  * @ingroup functions
- *
- *
  */
 template <int rank, int dim, typename Number = double>
 class TensorFunction
@@ -63,19 +60,16 @@ class TensorFunction
 public:
   /**
    * Alias for the return types of the <tt>value</tt> function.
-   *
    */
   using value_type = Tensor<rank, dim, Number>;
 
   /**
    * Alias for the return types of the <tt>gradient</tt> functions.
-   *
    */
   using gradient_type = Tensor<rank + 1, dim, Number>;
 
   /**
    * The scalar-valued real type used for representing time.
-   *
    */
   using time_type = typename FunctionTime<
     typename numbers::NumberTraits<Number>::real_type>::time_type;
@@ -83,7 +77,6 @@ public:
   /**
    * Constructor. May take an initial value for the time variable, which
    * defaults to zero.
-   *
    */
   TensorFunction(const time_type initial_time = time_type(0.0));
 
@@ -91,13 +84,11 @@ public:
    * Virtual destructor; absolutely necessary in this case, as classes are
    * usually not used by their true type, but rather through pointers to this
    * base class.
-   *
    */
   virtual ~TensorFunction() override = default;
 
   /**
    * Return the value of the function at the given point.
-   *
    */
   virtual value_type
   value(const Point<dim> &p) const;
@@ -106,7 +97,6 @@ public:
    * Set <tt>values</tt> to the point values of the function at the
    * <tt>points</tt>.  It is assumed that <tt>values</tt> already has the
    * right size, i.e.  the same size as the <tt>points</tt> array.
-   *
    */
   virtual void
   value_list(const std::vector<Point<dim>> &points,
@@ -114,7 +104,6 @@ public:
 
   /**
    * Return the gradient of the function at the given point.
-   *
    */
   virtual gradient_type
   gradient(const Point<dim> &p) const;
@@ -123,7 +112,6 @@ public:
    * Set <tt>gradients</tt> to the gradients of the function at the
    * <tt>points</tt>.  It is assumed that <tt>values</tt> already has the
    * right size, i.e.  the same size as the <tt>points</tt> array.
-   *
    */
   virtual void
   gradient_list(const std::vector<Point<dim>> &points,
@@ -136,10 +124,7 @@ public:
  * Provide a tensor valued function which always returns a constant tensor
  * value. Obviously, all derivates of this function are zero.
  *
- *
  * @ingroup functions
- *
- *
  */
 template <int rank, int dim, typename Number = double>
 class ConstantTensorFunction : public TensorFunction<rank, dim, Number>
@@ -147,15 +132,15 @@ class ConstantTensorFunction : public TensorFunction<rank, dim, Number>
 public:
   /**
    * The scalar-valued real type used for representing time.
-   *
    */
   using time_type = typename TensorFunction<rank, dim, Number>::time_type;
 
   /**
    * Constructor; takes the constant tensor value as an argument. The
-   * reference value is copied internally.     An initial value for the time
-   * variable may be specified, otherwise it   defaults to zero.
+   * reference value is copied internally.
    *
+   * An initial value for the time variable may be specified, otherwise it
+   * defaults to zero.
    */
   ConstantTensorFunction(const dealii::Tensor<rank, dim, Number> &value,
                          const time_type initial_time = 0.0);
@@ -191,10 +176,7 @@ private:
  * Provide a tensor valued function which always returns zero. Obviously, all
  * derivates of this function are zero.
  *
- *
  * @ingroup functions
- *
- *
  */
 template <int rank, int dim, typename Number = double>
 class ZeroTensorFunction : public ConstantTensorFunction<rank, dim, Number>
@@ -202,15 +184,15 @@ class ZeroTensorFunction : public ConstantTensorFunction<rank, dim, Number>
 public:
   /**
    * The scalar-valued real type used for representing time.
-   *
    */
   using time_type =
     typename ConstantTensorFunction<rank, dim, Number>::time_type;
 
   /**
-   * Constructor.     An initial value for the time variable may be specified,
-   * otherwise it   defaults to zero.
+   * Constructor.
    *
+   * An initial value for the time variable may be specified, otherwise it
+   * defaults to zero.
    */
   ZeroTensorFunction(const time_type initial_time = 0.0);
 };

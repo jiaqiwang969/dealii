@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
 //
@@ -34,66 +34,95 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A class that simplifies the process of execution logging. It does so by providing   <ul>     <li>   a push and pop mechanism for prefixes, and   <li>   the possibility of distributing information to files and the console.   </ul>
- * The usual usage of this class is through the pregenerated object <tt>deallog</tt>. Typical setup steps are:   <ul>     <li>   <tt>deallog.depth_console(n)</tt>: restrict output on screen to outer loops.   <li>     <tt>deallog.attach(std::ostream)</tt>:   write logging information into a file.   <li>   <tt>deallog.depth_file(n)</tt>: restrict output to file to outer loops.   </ul>
- * Before entering a new phase of your program, e.g. a new loop, a new prefix
- * can be set via   <tt>LogStream::Prefix   p("loopname");</tt>. The
- * destructor of the prefix will pop the prefix text from the stack. Write via
- * the <tt>&lt;&lt;</tt> operator, <tt> deallog << "This is a log
- * notice";</tt> will be buffered thread locally until a   <tt>std::flush</tt>
- * or   <tt>std::endl</tt>   is encountered, which will trigger a writeout to
- * the console and, if set up, the log file. <h3>LogStream and thread
- * safety</h3>
- * In the vicinity of concurrent threads, LogStream behaves in the following manner:   <ul>     <li>   Every write to a Logstream with operator <tt>&lt;&lt;</tt> (or with one of the special member functions) is buffered in a thread-local storage.   <li>   An   <tt>std::flush</tt>   or   <tt>std::endl</tt>   will trigger a writeout to the console and (if attached) to the file stream. This writeout is sequentialized so that output from concurrent threads don't interleave.   <li>   On a new thread, invoking a writeout, as well as a call to #push or #pop will copy the current prefix of the "blessed" thread that created the LogStream instance to a thread-local storage. After that prefixes are thread-local.   </ul>
+ * A class that simplifies the process of execution logging. It does so by
+ * providing
+ * <ul>
+ * <li> a push and pop mechanism for prefixes, and
+ * <li> the possibility of distributing information to files and the console.
+ * </ul>
  *
+ * The usual usage of this class is through the pregenerated object
+ * <tt>deallog</tt>. Typical setup steps are:
+ * <ul>
+ * <li> <tt>deallog.depth_console(n)</tt>: restrict output on screen to outer
+ * loops.
+ * <li> <tt>deallog.attach(std::ostream)</tt>: write logging information into
+ * a file.
+ * <li> <tt>deallog.depth_file(n)</tt>: restrict output to file to outer
+ * loops.
+ * </ul>
+ *
+ * Before entering a new phase of your program, e.g. a new loop, a new prefix
+ * can be set via <tt>LogStream::Prefix p("loopname");</tt>. The destructor of
+ * the prefix will pop the prefix text from the stack.
+ *
+ * Write via the <tt>&lt;&lt;</tt> operator, <tt> deallog << "This is a log
+ * notice";</tt> will be buffered thread locally until a <tt>std::flush</tt>
+ * or <tt>std::endl</tt> is encountered, which will trigger a writeout to the
+ * console and, if set up, the log file.
+ *
+ * <h3>LogStream and thread safety</h3>
+ *
+ * In the vicinity of concurrent threads, LogStream behaves in the following
+ * manner:
+ * <ul>
+ * <li> Every write to a Logstream with operator <tt>&lt;&lt;</tt> (or with
+ * one of the special member functions) is buffered in a thread-local storage.
+ * <li> An <tt>std::flush</tt> or <tt>std::endl</tt> will trigger a writeout
+ * to the console and (if attached) to the file stream. This writeout is
+ * sequentialized so that output from concurrent threads don't interleave.
+ * <li> On a new thread, invoking a writeout, as well as a call to #push or
+ * #pop will copy the current prefix of the "blessed" thread that created the
+ * LogStream instance to a thread-local storage. After that prefixes are
+ * thread-local.
+ * </ul>
  *
  * @ingroup textoutput
- *
- *
  */
 class LogStream : public Subscriptor
 {
 public:
   /**
    * A subclass allowing for the safe generation and removal of prefixes.
+   *
    * Somewhere at the beginning of a block, create one of these objects, and
-   * it will appear as a prefix in LogStream output like   @p deallog.   At
-   * the   end of the block, the prefix will automatically be removed, when
-   * this   object is destroyed.     In other words, the scope of the object
-   * so created determines the   lifetime of the prefix. The advantage of
-   * using such an object is that the   prefix is removed whichever way you
-   * exit the scope
+   * it will appear as a prefix in LogStream output like @p deallog. At the
+   * end of the block, the prefix will automatically be removed, when this
+   * object is destroyed.
    *
-   *  -  by     <code>continue</code>, <code>break</code>, <code>return</code>  ,     <code>throw</code>  , or by simply reaching the closing brace. In all of   these cases, it is not necessary to remember to pop the prefix manually   using   LogStream::pop().   In this, it works just like the better known     std::unique_ptr   and   std::lock_guard   classes.
-   *
+   * In other words, the scope of the object so created determines the
+   * lifetime of the prefix. The advantage of using such an object is that the
+   * prefix is removed whichever way you exit the scope -- by
+   * <code>continue</code>, <code>break</code>, <code>return</code>,
+   * <code>throw</code>, or by simply reaching the closing brace. In all of
+   * these cases, it is not necessary to remember to pop the prefix manually
+   * using LogStream::pop(). In this, it works just like the better known
+   * std::unique_ptr and std::lock_guard classes.
    */
   class Prefix
   {
   public:
     /**
-     * Set a new prefix for   @p deallog,   which will be removed when the
+     * Set a new prefix for @p deallog, which will be removed when the
      * variable is destroyed.
-     *
      */
     Prefix(const std::string &text);
 
     /**
      * Set a new prefix for the given stream, which will be removed when the
      * variable is destroyed.
-     *
      */
     Prefix(const std::string &text, LogStream &stream);
 
     /**
      * Remove the prefix associated with this variable.
-     *
      */
     ~Prefix();
 
   private:
     /**
-     * A pointer to the LogStream object to which the prefix is     applied.
-     *
+     * A pointer to the LogStream object to which the prefix is
+     * applied.
      */
     SmartPointer<LogStream, LogStream::Prefix> stream;
   };
@@ -101,26 +130,27 @@ public:
 
   /**
    * Standard constructor. The constructor sets the output stream to
-   * <tt>std::cout</tt>   and the depth to zero. (Use attach() and
+   * <tt>std::cout</tt> and the depth to zero. (Use attach() and
    * depth_console() to change this.)
-   *
    */
   LogStream();
 
 
   /**
    * Destructor.
-   *
    */
   ~LogStream() override;
 
 
   /**
-   * Enable output to a second stream <tt>o</tt>.       @param   o Attach this
-   * output stream.       @param[in]   print_job_id Whether or not the
-   * JobIdentifier for the current   process should be printed to the stream.
-   * @param[in]   flags Format flags to set on the output stream   @p o.
+   * Enable output to a second stream <tt>o</tt>.
    *
+   * @param o Attach this output stream.
+   *
+   * @param[in] print_job_id Whether or not the JobIdentifier for the current
+   * process should be printed to the stream.
+   *
+   * @param[in] flags Format flags to set on the output stream @p o.
    */
   void
   attach(std::ostream &                o,
@@ -132,7 +162,6 @@ public:
   /**
    * Disable output to the second stream. You may want to call <tt>close</tt>
    * on the stream that was previously attached to this object.
-   *
    */
   void
   detach();
@@ -140,7 +169,6 @@ public:
 
   /**
    * Return the default stream (<tt>std_out</tt>).
-   *
    */
   std::ostream &
   get_console();
@@ -148,16 +176,14 @@ public:
 
   /**
    * Return the file stream.
-   *
    */
   std::ostream &
   get_file_stream();
 
 
   /**
-   * Return   @p true   if file stream has already been attached,     @p false
-   * otherwise.
-   *
+   * Return @p true if file stream has already been attached,
+   * @p false otherwise.
    */
   bool
   has_file() const;
@@ -165,7 +191,6 @@ public:
 
   /**
    * Return the prefix string.
-   *
    */
   const std::string &
   get_prefix() const;
@@ -173,14 +198,15 @@ public:
 
   /**
    * Push another prefix on the stack. Prefixes are automatically separated by
-   * a colon and there is a double colon after the last prefix.     A simpler
-   * way to add a prefix (without the manual need to add the   corresponding
-   * pop()) is to use the   LogStream::Prefix   class. Using   that class has
-   * the advantage that the corresponding pop() call is   issued whenever the
-   * Prefix object goes out of scope
+   * a colon and there is a double colon after the last prefix.
    *
-   *  -  either at   the end of the code block, at the nearest   @p return   statement, or   because an intermediate function call results in an exception that   is not immediately caught.
-   *
+   * A simpler way to add a prefix (without the manual need to add the
+   * corresponding pop()) is to use the LogStream::Prefix class. Using
+   * that class has the advantage that the corresponding pop() call is
+   * issued whenever the Prefix object goes out of scope -- either at
+   * the end of the code block, at the nearest @p return statement, or
+   * because an intermediate function call results in an exception that
+   * is not immediately caught.
    */
   void
   push(const std::string &text);
@@ -188,7 +214,6 @@ public:
 
   /**
    * Remove the last prefix added with push().
-   *
    */
   void
   pop();
@@ -199,10 +224,10 @@ public:
    * which will not generate any output. This function allows one to restrict
    * console output to the highest levels of iterations. Only output with less
    * than <tt>n</tt> prefixes is printed. By calling this function with
-   * <tt>n=0</tt>, no console output will be written. See   step-3   for an
-   * example usage of this method.     The previous value of this parameter is
-   * returned.
+   * <tt>n=0</tt>, no console output will be written. See step-3 for an
+   * example usage of this method.
    *
+   * The previous value of this parameter is returned.
    */
   unsigned int
   depth_console(const unsigned int n);
@@ -211,9 +236,9 @@ public:
   /**
    * Maximum number of levels to be written to the log file. The functionality
    * is the same as <tt>depth_console</tt>, nevertheless, this function should
-   * be used with care, since it may spoil the value of a log file.     The
-   * previous value of this parameter is returned.
+   * be used with care, since it may spoil the value of a log file.
    *
+   * The previous value of this parameter is returned.
    */
   unsigned int
   depth_file(const unsigned int n);
@@ -221,7 +246,6 @@ public:
 
   /**
    * Log the thread id.
-   *
    */
   bool
   log_thread_id(const bool flag);
@@ -231,7 +255,6 @@ public:
    * set the precision for the underlying stream and returns the previous
    * stream precision. This function mimics
    * http://www.cplusplus.com/reference/ios/ios_base/precision/
-   *
    */
   std::streamsize
   precision(const std::streamsize prec);
@@ -241,7 +264,6 @@ public:
    * set the width for the underlying stream and returns the previous stream
    * width. This function mimics
    * http://www.cplusplus.com/reference/ios/ios_base/width/
-   *
    */
   std::streamsize
   width(const std::streamsize wide);
@@ -251,7 +273,6 @@ public:
    * set the flags for the underlying stream and returns the previous stream
    * flags. This function mimics
    * http://www.cplusplus.com/reference/ios/ios_base/flags/
-   *
    */
   std::ios::fmtflags
   flags(const std::ios::fmtflags f);
@@ -259,17 +280,17 @@ public:
 
   /**
    * Treat ostream manipulators. This passes on the whole thing to the
-   * template function with the exception of the   <tt>std::endl</tt>
+   * template function with the exception of the <tt>std::endl</tt>
    * manipulator, for which special action is performed: write the temporary
-   * stream buffer including a header to the file and   <tt>std::cout</tt>
-   * and   empty the buffer.     An overload of this function is needed
-   * anyway, since the compiler can't   bind manipulators like   @p std::endl
-   * directly to template arguments   @p T     like in the previous general
-   * template. This is due to the fact that   @p       std::endl   is actually
-   * an overloaded set of functions for   @p std::ostream,       @p
-   * std::wostream,   and potentially more of this kind. This function is
-   * therefore necessary to pick one element from this overload set.
+   * stream buffer including a header to the file and <tt>std::cout</tt> and
+   * empty the buffer.
    *
+   * An overload of this function is needed anyway, since the compiler can't
+   * bind manipulators like @p std::endl directly to template arguments @p T
+   * like in the previous general template. This is due to the fact that @p
+   * std::endl is actually an overloaded set of functions for @p std::ostream,
+   * @p std::wostream, and potentially more of this kind. This function is
+   * therefore necessary to pick one element from this overload set.
    */
   LogStream &
   operator<<(std::ostream &(*p)(std::ostream &));
@@ -278,8 +299,7 @@ public:
   /**
    * Return an estimate for the memory consumption, in bytes, of this object.
    * This is not exact (but will usually be close) because calculating the
-   * memory usage of trees (e.g.,   <tt>std::map</tt>)   is difficult.
-   *
+   * memory usage of trees (e.g., <tt>std::map</tt>) is difficult.
    */
   std::size_t
   memory_consumption() const;
@@ -291,7 +311,6 @@ private:
    * local stack will be copied from the current stack of the "blessed" thread
    * that created this LogStream instance (usually, in the case of deallog,
    * the "main" thread).
-   *
    */
   std::stack<std::string> &
   get_prefixes() const;
@@ -299,7 +318,6 @@ private:
   /**
    * Stack of strings which are printed at the beginning of each line to allow
    * identification where the output was generated.
-   *
    */
   mutable Threads::ThreadLocalStorage<std::stack<std::string>> prefixes;
 
@@ -307,23 +325,21 @@ private:
    * We record the thread id of the thread creating this object. We need
    * this information to "steal" the current prefix from this "parent"
    * thread on first use of deallog on a new thread.
-   *
    */
   std::thread::id parent_thread;
 
   /**
    * Default stream, where the output is to go to. This stream defaults to
-   * <tt>std::cout</tt>,   but can be set to another stream through the
+   * <tt>std::cout</tt>, but can be set to another stream through the
    * constructor.
-   *
    */
   std::ostream *std_out;
 
   /**
    * Pointer to a stream, where a copy of the output is to go to. Usually,
-   * this will be a file stream.     You can set and reset this stream by the
-   * <tt>attach</tt> function.
+   * this will be a file stream.
    *
+   * You can set and reset this stream by the <tt>attach</tt> function.
    */
   std::ostream *file;
 
@@ -332,31 +348,26 @@ private:
    * output. If more than this number of prefixes is pushed to the stack, then
    * no output will be generated until the number of prefixes shrinks back
    * below this number.
-   *
    */
   unsigned int std_depth;
 
   /**
    * Same for the maximum depth of prefixes for output to a file.
-   *
    */
   unsigned int file_depth;
 
   /**
    * Flag for printing thread id.
-   *
    */
   bool print_thread_id;
 
   /**
    * A flag indicating whether output is currently at a new line
-   *
    */
   bool at_newline;
 
   /**
    * Print head of line.
-   *
    */
   void
   print_line_head();
@@ -364,7 +375,6 @@ private:
   /**
    * Internal wrapper around "thread local" outstreams. This private function
    * will return the correct internal ostringstream buffer for operator<<.
-   *
    */
   std::ostringstream &
   get_stream();
@@ -372,7 +382,6 @@ private:
   /**
    * We use our thread local storage facility to generate a stringstream for
    * every thread that sends log messages.
-   *
    */
   Threads::ThreadLocalStorage<std::shared_ptr<std::ostringstream>> outstreams;
 
@@ -382,19 +391,16 @@ private:
 };
 
 
- /* ----------------------------- Inline functions and templates ----------------
- */ 
+/* ----------------------------- Inline functions and templates ----------------
+ */
 
 
 /**
  * Output a constant something through LogStream:
  *
- *
- * @note   We declare this operator as a non-member function so that it is
+ * @note We declare this operator as a non-member function so that it is
  * possible to overload it with more specialized templated versions under
  * C++11 overload resolution rules
- *
- *
  */
 template <typename T>
 inline LogStream &
@@ -409,8 +415,6 @@ operator<<(LogStream &log, const T &t)
 
 /**
  * The standard log object of deal.II:
- *
- *
  */
 extern LogStream deallog;
 

@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2020 by the deal.II authors
 //
@@ -43,22 +43,24 @@ namespace internal
   /**
    * A helper class specifying the maximal vector length of VectorizedArray
    * for a specified data type Number for the given processor architecture and
-   * optimization level.     The value of the maximal vector length is used as
-   * default template   argument in VectorizedArray, such that
-   * VectorizedArray<Number> is   equivalent to VectorizedArray<Number,
-   * VectorizedArrayWidthSpecifier<Number>::max_width>.
-   * @note   This class is the default implementation for data types for which
-   * no vectorization is supported.       @tparam   Number The underlying data
-   * type for which one wants to find out     the maximal length of hardware
-   * supported vectors.
+   * optimization level.
    *
+   * The value of the maximal vector length is used as default template
+   * argument in VectorizedArray, such that VectorizedArray<Number> is
+   * equivalent to VectorizedArray<Number,
+   * VectorizedArrayWidthSpecifier<Number>::max_width>.
+   *
+   * @note This class is the default implementation for data types for which
+   * no vectorization is supported.
+   *
+   * @tparam Number The underlying data type for which one wants to find out
+   *   the maximal length of hardware supported vectors.
    */
   template <typename Number>
   struct VectorizedArrayWidthSpecifier
   {
     /**
      * Maximal vector length of VectorizedArray for an arbitrary type.
-     *
      */
     constexpr static unsigned int max_width = 1;
   };
@@ -66,16 +68,14 @@ namespace internal
   /**
    * A helper class specifying the maximal vector length of VectorizedArray
    * for the data type `double` for the given processor architecture and
-   * optimization level. For a detailed description of supported maximal
-   * vector   lengths, see the documentation of VectorizedArray.
-   *
+   * optimization level. For a detailed description of supported maximal vector
+   * lengths, see the documentation of VectorizedArray.
    */
   template <>
   struct VectorizedArrayWidthSpecifier<double>
   {
     /**
      * Maximal vector length of VectorizedArray for double.
-     *
      */
     constexpr static unsigned int max_width =
 #if DEAL_II_VECTORIZATION_WIDTH_IN_BITS >= 512
@@ -92,16 +92,14 @@ namespace internal
   /**
    * A helper class specifying the maximal vector length of VectorizedArray
    * for the data type `float` for the given processor architecture and
-   * optimization level. For a detailed description of supported maximal
-   * vector   lengths, see the documentation of VectorizedArray.
-   *
+   * optimization level. For a detailed description of supported maximal vector
+   * lengths, see the documentation of VectorizedArray.
    */
   template <>
   struct VectorizedArrayWidthSpecifier<float>
   {
     /**
      * Maximal vector length of VectorizedArray for float.
-     *
      */
     constexpr static unsigned int max_width =
 #if DEAL_II_VECTORIZATION_WIDTH_IN_BITS >= 128 && defined(__ALTIVEC__)
@@ -189,192 +187,184 @@ DEAL_II_NAMESPACE_OPEN
  * Namespace for the declaration of universal constants. Since the
  * availability in <tt>math.h</tt> is not always guaranteed, we put them here.
  * Since this file is included by <tt>base/config.h</tt>, they are available
- * to the whole library. The constants defined here are a subset of the
- * <tt>M_XXX</tt> constants sometimes declared in the system include file
- * <tt>math.h</tt>, but without the prefix <tt>M_</tt>. In addition to that,
- * we declare  <tt>invalid_unsigned_int</tt> to be the largest unsigned
- * integer representable; this value is widely used in the library as a marker
- * for an invalid index, an invalid size of an array, and similar purposes.
+ * to the whole library.
  *
+ * The constants defined here are a subset of the <tt>M_XXX</tt> constants
+ * sometimes declared in the system include file <tt>math.h</tt>, but without
+ * the prefix <tt>M_</tt>.
  *
+ * In addition to that, we declare  <tt>invalid_unsigned_int</tt> to be the
+ * largest unsigned integer representable; this value is widely used in the
+ * library as a marker for an invalid index, an invalid size of an array, and
+ * similar purposes.
  */
 namespace numbers
 {
   /**
    * e
-   *
    */
   static constexpr double E = 2.7182818284590452354;
 
   /**
    * log_2 e
-   *
    */
   static constexpr double LOG2E = 1.4426950408889634074;
 
   /**
    * log_10 e
-   *
    */
   static constexpr double LOG10E = 0.43429448190325182765;
 
   /**
    * log_e 2
-   *
    */
   static constexpr double LN2 = 0.69314718055994530942;
 
   /**
    * log_e 10
-   *
    */
   static constexpr double LN10 = 2.30258509299404568402;
 
   /**
    * pi
-   *
    */
   static constexpr double PI = 3.14159265358979323846;
 
   /**
    * pi/2
-   *
    */
   static constexpr double PI_2 = 1.57079632679489661923;
 
   /**
    * pi/4
-   *
    */
   static constexpr double PI_4 = 0.78539816339744830962;
 
   /**
    * sqrt(2)
-   *
    */
   static constexpr double SQRT2 = 1.41421356237309504880;
 
   /**
    * 1/sqrt(2)
-   *
    */
   static constexpr double SQRT1_2 = 0.70710678118654752440;
 
   /**
-   * Check whether the given type can be used in CUDA device code.   If not,
-   * DEAL_II_CUDA_HOST_DEV needs to be disabled for functions   that use this
-   * type.
-   *
+   * Check whether the given type can be used in CUDA device code.
+   * If not, DEAL_II_CUDA_HOST_DEV needs to be disabled for functions
+   * that use this type.
    */
   template <typename Number, typename = void>
   struct is_cuda_compatible : std::true_type
   {};
 
   /**
-   * std::complex   cannot be used in CUDA device code.
-   *
+   * std::complex cannot be used in CUDA device code.
    */
   template <typename Number>
   struct is_cuda_compatible<std::complex<Number>, void> : std::false_type
   {};
 
   /**
-   * Return   @p true   if the given value is a finite floating point number,
-   * i.e.   is neither plus or minus infinity nor NaN (not a number).     Note
-   * that the argument type of this function is   <code>double</code>  . In
-   * other words, if you give a very large number of type <code>long
-   * double</code>, this function may return   <code>false</code>   even if
-   * the   number is finite with respect to type   <code>long double</code>  .
+   * Return @p true if the given value is a finite floating point number, i.e.
+   * is neither plus or minus infinity nor NaN (not a number).
    *
+   * Note that the argument type of this function is <code>double</code>. In
+   * other words, if you give a very large number of type <code>long
+   * double</code>, this function may return <code>false</code> even if the
+   * number is finite with respect to type <code>long double</code>.
    */
   bool
   is_finite(const double x);
 
   /**
-   * Return   @p true   if real and imaginary parts of the given complex
-   * number   are finite.
-   *
+   * Return @p true if real and imaginary parts of the given complex number
+   * are finite.
    */
   bool
   is_finite(const std::complex<double> &x);
 
   /**
-   * Return   @p true   if real and imaginary parts of the given complex
-   * number   are finite.
-   *
+   * Return @p true if real and imaginary parts of the given complex number
+   * are finite.
    */
   bool
   is_finite(const std::complex<float> &x);
 
   /**
-   * Return   @p true   if real and imaginary parts of the given complex
-   * number   are finite.     Again may not work correctly if real or
-   * imaginary parts are very large   numbers that are infinite in terms of
-   * <code>double</code>  , but finite   with respect to   <code>long
-   * double</code>  .
+   * Return @p true if real and imaginary parts of the given complex number
+   * are finite.
    *
+   * Again may not work correctly if real or imaginary parts are very large
+   * numbers that are infinite in terms of <code>double</code>, but finite
+   * with respect to <code>long double</code>.
    */
   bool
   is_finite(const std::complex<long double> &x);
 
   /**
-   * Return whether two numbers are equal to one another.     For intricate
-   * data types (e.g. some automatically differentiable numbers),   this
-   * function returns the result of the comparison of scalar values stored
-   * by the input arguments.
-   * @note   This function expects that   @p value_2   is castable to the type
-   * of   @p value_1.
+   * Return whether two numbers are equal to one another.
    *
+   * For intricate data types (e.g. some automatically differentiable numbers),
+   * this function returns the result of the comparison of scalar values stored
+   * by the input arguments.
+   *
+   * @note This function expects that @p value_2 is castable to the type
+   * of @p value_1.
    */
   template <typename Number1, typename Number2>
   constexpr bool
   values_are_equal(const Number1 &value_1, const Number2 &value_2);
 
   /**
-   * Return whether two numbers are not equal to one another.     For
-   * intricate data types (e.g. some automatically differentiable numbers),
-   * this function returns the result of the comparison of scalar values
-   * stored   by the input arguments.
-   * @note   This function expects that   @p value_2   is castable to the type
-   * of   @p value_1.
+   * Return whether two numbers are not equal to one another.
    *
+   * For intricate data types (e.g. some automatically differentiable numbers),
+   * this function returns the result of the comparison of scalar values stored
+   * by the input arguments.
+   *
+   * @note This function expects that @p value_2 is castable to the type
+   * of @p value_1.
    */
   template <typename Number1, typename Number2>
   bool
   values_are_not_equal(const Number1 &value_1, const Number2 &value_2);
 
   /**
-   * Return whether or not a value is equal to zero.     For intricate data
-   * types (e.g. some automatically differentiable numbers),   this function
-   * returns the result of the comparison of scalar values stored   by the
-   * input arguments.
+   * Return whether or not a value is equal to zero.
    *
+   * For intricate data types (e.g. some automatically differentiable numbers),
+   * this function returns the result of the comparison of scalar values stored
+   * by the input arguments.
    */
   template <typename Number>
   constexpr bool
   value_is_zero(const Number &value);
 
   /**
-   * Return whether   @p value_1   is less than that of   @p value_2.
-   * For intricate data types (e.g. some automatically differentiable
-   * numbers),   this function returns the result of the comparison of scalar
-   * values stored   by the input arguments.
-   * @note   This function expects that   @p value_2   is castable to the type
-   * of   @p value_1.
+   * Return whether @p value_1 is less than that of @p value_2.
    *
+   * For intricate data types (e.g. some automatically differentiable numbers),
+   * this function returns the result of the comparison of scalar values stored
+   * by the input arguments.
+   *
+   * @note This function expects that @p value_2 is castable to the type
+   * of @p value_1.
    */
   template <typename Number1, typename Number2>
   bool
   value_is_less_than(const Number1 &value_1, const Number2 &value_2);
 
   /**
-   * Return whether   @p value_1   is less than or equal to that of   @p
-   * value_2.       For intricate data types (e.g. some automatically
-   * differentiable numbers),   this function returns the result of the
-   * comparison of scalar values stored   by the input arguments.
-   * @note   This function expects that   @p value_2   is castable to the type
-   * of   @p value_1.
+   * Return whether @p value_1 is less than or equal to that of @p value_2.
    *
+   * For intricate data types (e.g. some automatically differentiable numbers),
+   * this function returns the result of the comparison of scalar values stored
+   * by the input arguments.
+   *
+   * @note This function expects that @p value_2 is castable to the type
+   * of @p value_1.
    */
   template <typename Number1, typename Number2>
   bool
@@ -384,26 +374,28 @@ namespace numbers
 
 
   /**
-   * Return whether   @p value_1   is greater than that of   @p value_2.
-   * For intricate data types (e.g. some automatically differentiable
-   * numbers),   this function returns the result of the comparison of scalar
-   * values stored   by the input arguments.
-   * @note   This function expects that   @p value_2   is castable to the type
-   * of   @p value_1.
+   * Return whether @p value_1 is greater than that of @p value_2.
    *
+   * For intricate data types (e.g. some automatically differentiable numbers),
+   * this function returns the result of the comparison of scalar values stored
+   * by the input arguments.
+   *
+   * @note This function expects that @p value_2 is castable to the type
+   * of @p value_1.
    */
   template <typename Number1, typename Number2>
   bool
   value_is_greater_than(const Number1 &value_1, const Number2 &value_2);
 
   /**
-   * Return whether   @p value_1   is greater than or equal to that of   @p
-   * value_2.       For intricate data types (e.g. some automatically
-   * differentiable numbers),   this function returns the result of the
-   * comparison of scalar values stored   by the input arguments.
-   * @note   This function expects that   @p value_2   is castable to the type
-   * of   @p value_1.
+   * Return whether @p value_1 is greater than or equal to that of @p value_2.
    *
+   * For intricate data types (e.g. some automatically differentiable numbers),
+   * this function returns the result of the comparison of scalar values stored
+   * by the input arguments.
+   *
+   * @note This function expects that @p value_2 is castable to the type
+   * of @p value_1.
    */
   template <typename Number1, typename Number2>
   bool
@@ -412,12 +404,11 @@ namespace numbers
 
   /**
    * A structure that, together with its partial specializations
-   * NumberTraits<std::complex<number>   >, provides traits and member
-   * functions   that make it possible to write templates that work on both
-   * real number   types and complex number types. This template is mostly
-   * used to implement   linear algebra classes such as vectors and matrices
-   * that work for both   real and complex numbers.
-   *
+   * NumberTraits<std::complex<number> >, provides traits and member functions
+   * that make it possible to write templates that work on both real number
+   * types and complex number types. This template is mostly used to implement
+   * linear algebra classes such as vectors and matrices that work for both
+   * real and complex numbers.
    */
   template <typename number>
   struct NumberTraits
@@ -425,17 +416,15 @@ namespace numbers
     /**
      * A flag that specifies whether the template type given to this class is
      * complex or real. Since the general template is selected for non-complex
-     * types, the answer is   <code>false</code>  .
-     *
+     * types, the answer is <code>false</code>.
      */
     static constexpr bool is_complex = false;
 
     /**
      * For this data type, alias the corresponding real type. Since the
      * general template is selected for all data types that are not
-     * specializations of   std::complex<T>,   the underlying type must be
-     * real-     values, so the real_type is equal to the underlying type.
-     *
+     * specializations of std::complex<T>, the underlying type must be real-
+     * values, so the real_type is equal to the underlying type.
      */
     using real_type = number;
 
@@ -443,19 +432,19 @@ namespace numbers
      * Return the complex-conjugate of the given number. Since the general
      * template is selected if number is not a complex data type, this
      * function simply returns the given number.
-     * @note   This function can also be used in CUDA device code.
      *
+     * @note This function can also be used in CUDA device code.
      */
     static constexpr DEAL_II_CUDA_HOST_DEV const number &
                                                  conjugate(const number &x);
 
     /**
      * Return the square of the absolute value of the given number. Since the
-     * general template is chosen for types not equal to   std::complex,
-     * this     function simply returns the square of the given number.
-     * @note   If the template type can be used in CUDA device code, the same
-     * holds true     for this function.
+     * general template is chosen for types not equal to std::complex, this
+     * function simply returns the square of the given number.
      *
+     * @note If the template type can be used in CUDA device code, the same holds true
+     * for this function.
      */
     template <typename Dummy = number>
     static constexpr DEAL_II_CUDA_HOST_DEV
@@ -473,7 +462,6 @@ namespace numbers
 
     /**
      * Return the absolute value of a number.
-     *
      */
     static real_type
     abs(const number &x);
@@ -482,8 +470,7 @@ namespace numbers
 
   /**
    * Specialization of the general NumberTraits class that provides the
-   * relevant information if the underlying data type is   std::complex<T>.
-   *
+   * relevant information if the underlying data type is std::complex<T>.
    */
   template <typename number>
   struct NumberTraits<std::complex<number>>
@@ -491,23 +478,20 @@ namespace numbers
     /**
      * A flag that specifies whether the template type given to this class is
      * complex or real. Since this specialization of the general template is
-     * selected for complex types, the answer is   <code>true</code>  .
-     *
+     * selected for complex types, the answer is <code>true</code>.
      */
     static constexpr bool is_complex = true;
 
     /**
      * For this data type, alias the corresponding real type. Since this
      * specialization of the template is selected for number types
-     * std::complex<T>,   the real type is equal to the type used to store the
+     * std::complex<T>, the real type is equal to the type used to store the
      * two components of the complex number.
-     *
      */
     using real_type = number;
 
     /**
      * Return the complex-conjugate of the given number.
-     *
      */
     static constexpr std::complex<number>
     conjugate(const std::complex<number> &x);
@@ -515,9 +499,8 @@ namespace numbers
     /**
      * Return the square of the absolute value of the given number. Since this
      * specialization of the general template is chosen for types equal to
-     * std::complex,   this function returns the product of a number and its
+     * std::complex, this function returns the product of a number and its
      * complex conjugate.
-     *
      */
     static constexpr real_type
     abs_square(const std::complex<number> &x);
@@ -525,7 +508,6 @@ namespace numbers
 
     /**
      * Return the absolute value of a complex number.
-     *
      */
     static real_type
     abs(const std::complex<number> &x);
@@ -671,9 +653,8 @@ namespace Differentiation
 namespace internal
 {
   /**
-   * A test to see if it is possible to convert one number   type to the
-   * other.
-   *
+   * A test to see if it is possible to convert one number
+   * type to the other.
    */
   template <typename From, typename To>
   struct is_explicitly_convertible
@@ -701,8 +682,10 @@ namespace internal
     static bool const value = test<From, To>(0);
   };
 
-  /*   The structs below are needed to convert between some special number types.   Also see tensor.h for another specialization.  
-* */
+  /*
+   * The structs below are needed to convert between some special number types.
+   * Also see tensor.h for another specialization.
+   */
   template <typename T>
   struct NumberType
   {
@@ -819,10 +802,10 @@ namespace numbers
    * types (e.g. some automatically differentiable numbers), this function
    * returns only whether the scalar values stored by the input values are
    * equal.
-   * @note   When ADOL-C is compiled with the "advanced branching" feature,
-   * then   this specialization is only intended for use in assertions and
-   * other code paths that do not affect the end result of a computation.
    *
+   * @note When ADOL-C is compiled with the "advanced branching" feature, then
+   * this specialization is only intended for use in assertions and
+   * other code paths that do not affect the end result of a computation.
    */
   // Defined in differentiation/ad/adolc_number_types.cc
   bool
@@ -834,10 +817,10 @@ namespace numbers
    * types (e.g. some automatically differentiable numbers), this function
    * returns only whether the scalar values stored by the input values are
    * equal.
-   * @note   When ADOL-C is compiled with the "advanced branching" feature,
-   * then   this specialization is only intended for use in assertions and
-   * other code paths that do not affect the end result of a computation.
    *
+   * @note When ADOL-C is compiled with the "advanced branching" feature, then
+   * this specialization is only intended for use in assertions and
+   * other code paths that do not affect the end result of a computation.
    */
   template <typename Number>
   bool
@@ -854,10 +837,10 @@ namespace numbers
    * types (e.g. some automatically differentiable numbers), this function
    * returns only whether the scalar values stored by the input values are
    * equal.
-   * @note   When ADOL-C is compiled with the "advanced branching" feature,
-   * then   this specialization is only intended for use in assertions and
-   * other code paths that do not affect the end result of a computation.
    *
+   * @note When ADOL-C is compiled with the "advanced branching" feature, then
+   * this specialization is only intended for use in assertions and
+   * other code paths that do not affect the end result of a computation.
    */
   template <typename Number>
   bool
@@ -868,14 +851,15 @@ namespace numbers
   }
 
   /**
-   * Return whether   @p value_1   is less than that of   @p value_2.
-   * For intricate data types (e.g. some automatically differentiable
-   * numbers),   this function returns the result of the comparison of scalar
-   * values stored   by the input arguments.
-   * @note   When ADOL-C is compiled with the "advanced branching" feature,
-   * then   this specialization is only intended for use in assertions and
-   * other code paths that do not affect the end result of a computation.
+   * Return whether @p value_1 is less than that of @p value_2.
    *
+   * For intricate data types (e.g. some automatically differentiable numbers),
+   * this function returns the result of the comparison of scalar values stored
+   * by the input arguments.
+   *
+   * @note When ADOL-C is compiled with the "advanced branching" feature, then
+   * this specialization is only intended for use in assertions and
+   * other code paths that do not affect the end result of a computation.
    */
   // Defined in differentiation/ad/adolc_number_types.cc
   bool
@@ -883,14 +867,15 @@ namespace numbers
 
 
   /**
-   * Return whether   @p value_1   is less than that of   @p value_2.
-   * For intricate data types (e.g. some automatically differentiable
-   * numbers),   this function returns the result of the comparison of scalar
-   * values stored   by the input arguments.
-   * @note   When ADOL-C is compiled with the "advanced branching" feature,
-   * then   this specialization is only intended for use in assertions and
-   * other code paths that do not affect the end result of a computation.
+   * Return whether @p value_1 is less than that of @p value_2.
    *
+   * For intricate data types (e.g. some automatically differentiable numbers),
+   * this function returns the result of the comparison of scalar values stored
+   * by the input arguments.
+   *
+   * @note When ADOL-C is compiled with the "advanced branching" feature, then
+   * this specialization is only intended for use in assertions and
+   * other code paths that do not affect the end result of a computation.
    */
   template <typename Number>
   bool
@@ -903,14 +888,15 @@ namespace numbers
 
 
   /**
-   * Return whether   @p value_1   is less than that of   @p value_2.
-   * For intricate data types (e.g. some automatically differentiable
-   * numbers),   this function returns the result of the comparison of scalar
-   * values stored   by the input arguments.
-   * @note   When ADOL-C is compiled with the "advanced branching" feature,
-   * then   this specialization is only intended for use in assertions and
-   * other code paths that do not affect the end result of a computation.
+   * Return whether @p value_1 is less than that of @p value_2.
    *
+   * For intricate data types (e.g. some automatically differentiable numbers),
+   * this function returns the result of the comparison of scalar values stored
+   * by the input arguments.
+   *
+   * @note When ADOL-C is compiled with the "advanced branching" feature, then
+   * this specialization is only intended for use in assertions and
+   * other code paths that do not affect the end result of a computation.
    */
   template <typename Number>
   bool

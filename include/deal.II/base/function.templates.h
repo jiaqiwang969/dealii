@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
 //
@@ -478,7 +478,7 @@ namespace Functions
   ConstantFunction<dim, RangeNumberType>::gradient_list(
     const std::vector<Point<dim>> &               points,
     std::vector<Tensor<1, dim, RangeNumberType>> &gradients,
-    const unsigned int  /*component*/ ) const
+    const unsigned int /*component*/) const
   {
     Assert(gradients.size() == points.size(),
            ExcDimensionMismatch(gradients.size(), points.size()));
@@ -763,8 +763,6 @@ VectorFunctionFromScalarFunctionObject<dim, RangeNumberType>::vector_value(
 /**
  * The constructor for <tt>VectorFunctionFromTensorFunction</tt> which
  * initiates the return vector to be size <tt>n_components</tt>.
- *
- *
  */
 template <int dim, typename RangeNumberType>
 VectorFunctionFromTensorFunction<dim, RangeNumberType>::
@@ -834,12 +832,10 @@ VectorFunctionFromTensorFunction<dim, RangeNumberType>::vector_value(
 
 /**
  * Member function <tt>vector_value_list </tt> is the interface for giving a
- * list of points (  <code>vector<Point<dim> ></code>  ) of which to evaluate
+ * list of points (<code>vector<Point<dim> ></code>) of which to evaluate
  * using the <tt>vector_value</tt> member function.  Again, this function is
  * written so as to not replicate the function definition but passes each
  * point on to <tt>vector_value</tt> to be evaluated.
- *
- *
  */
 template <int dim, typename RangeNumberType>
 void
@@ -950,4 +946,4 @@ FunctionFromFunctionObjects<dim, RangeNumberType>::set_function_gradients(
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif  /* dealii_function_templates_h */ 
+#endif /* dealii_function_templates_h */

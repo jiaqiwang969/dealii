@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
 //
@@ -28,10 +28,7 @@ DEAL_II_NAMESPACE_OPEN
  * exists a library object <tt>dealjobid</tt> of this class. This object can
  * be accessed by all output functions to provide an id for the current job.
  *
- *
  * @ingroup utilities
- *
- *
  */
 class JobIdentifier
 {
@@ -39,41 +36,38 @@ public:
   /**
    * Constructor. Set program identifier to value of <tt>program_id</tt>
    * concatenated with the present time.
-   *
    */
   JobIdentifier();
 
   /**
    * This function returns an identifier for the running program. Currently,
-   * the library provides a function returning "JobID".     The user may
-   * define a replacement of this function in their source code and   avoid
-   * linking the library version. Unfortunately, this mechanism does not
-   * work with shared libraries.
+   * the library provides a function returning "JobID".
    *
+   * The user may define a replacement of this function in their source code and
+   * avoid linking the library version. Unfortunately, this mechanism does not
+   * work with shared libraries.
    */
   static const char *
   program_id();
 
   /**
-   * Obtain the base name of the filename passed as argument. That is,   if
-   * the file is <tt>mypath/file.cc</tt> return just   <tt>file</tt>. For
-   * example, this function can be called from a   user program with argument
-   * <tt>__FILE__</tt> to create an   identifier for the program being run.
-   *
+   * Obtain the base name of the filename passed as argument. That is,
+   * if the file is <tt>mypath/file.cc</tt> return just
+   * <tt>file</tt>. For example, this function can be called from a
+   * user program with argument <tt>__FILE__</tt> to create an
+   * identifier for the program being run.
    */
   static std::string
   base_name(const std::string &filename);
 
   /**
    * Return the value of <tt>id</tt>.
-   *
    */
   const std::string
   operator()() const;
 
   /**
    * %Function to identify the presently running program.
-   *
    */
   static const JobIdentifier &
   get_dealjobid();
@@ -81,7 +75,6 @@ public:
 private:
   /**
    * String holding the identifier of the presently running program.
-   *
    */
   std::string id;
 };

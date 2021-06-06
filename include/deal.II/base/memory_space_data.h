@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 by the deal.II authors
 //
@@ -27,13 +27,12 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /**
-  */
+/**
+ */
 namespace MemorySpace
 {
   /**
    * Data structure
-   *
    */
   template <typename Number, typename MemorySpace>
   struct MemorySpaceData
@@ -46,9 +45,8 @@ namespace MemorySpace
     }
 
     /**
-     * Copy the active data (values for Host and values_dev for CUDA) to   @p
-     * begin.       If the data is on the device it is moved to the host.
-     *
+     * Copy the active data (values for Host and values_dev for CUDA) to @p begin.
+     * If the data is on the device it is moved to the host.
      */
     void
     copy_to(Number *begin, std::size_t n_elements)
@@ -58,10 +56,8 @@ namespace MemorySpace
     }
 
     /**
-     * Copy the data in   @p begin   to the active data of the structure
-     * (values for     Host and values_dev for CUDA). The pointer   @p begin
-     * must be on the host.
-     *
+     * Copy the data in @p begin to the active data of the structure (values for
+     * Host and values_dev for CUDA). The pointer @p begin must be on the host.
      */
     void
     copy_from(Number *begin, std::size_t n_elements)
@@ -72,19 +68,16 @@ namespace MemorySpace
 
     /**
      * Pointer to data on the host.
-     *
      */
     std::unique_ptr<Number[], std::function<void(Number *)>> values;
 
     /**
      * Pointer to data on the device.
-     *
      */
     std::unique_ptr<Number[]> values_dev;
 
     /**
      * Pointers to the data of the processes sharing the same memory.
-     *
      */
     std::vector<ArrayView<const Number>> values_sm;
   };
@@ -92,8 +85,7 @@ namespace MemorySpace
 
 
   /**
-   * Swap function similar to   std::swap.
-   *
+   * Swap function similar to std::swap.
    */
   template <typename Number, typename MemorySpace>
   inline void
@@ -183,7 +175,6 @@ namespace MemorySpace
 
     /**
      * This is currently not used.
-     *
      */
     std::vector<ArrayView<const Number>> values_sm;
   };

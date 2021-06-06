@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2021 by the deal.II authors
 //
@@ -30,16 +30,13 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * @addtogroup   Polynomials   @{
- *
- *
+ * @addtogroup Polynomials
+ * @{
  */
 
 /**
  * A namespace in which classes relating to the description of 1d polynomial
  * spaces are declared.
- *
- *
  */
 namespace Polynomials
 {
@@ -47,17 +44,21 @@ namespace Polynomials
    * Definition of piecewise 1D polynomials for the unit interval. This space
    * allows the description of interpolating polynomials on parts of the unit
    * interval, similarly to the definition of finite element basis functions
-   * on subdivided elements. The primary purpose of this class is to   allow
-   * constructing the shape functions of the FE_Q_iso_Q1 class that has   a
-   * number of interpolation points in each coordinate direction, but instead
+   * on subdivided elements. The primary purpose of this class is to
+   * allow constructing the shape functions of the FE_Q_iso_Q1 class that has
+   * a number of interpolation points in each coordinate direction, but instead
    * of using them for higher-order polynomials just chooses piecewise linear
-   * shape functions
+   * shape functions -- in effect, it is a $Q_1$ element defined on a
+   * subdivision of the reference cell, and replicated on each of these
+   * sub-cells.
    *
-   *  -  in effect, it is a   $Q_1$   element defined on a   subdivision of the reference cell, and replicated on each of these   sub-cells.     This class is not derived from the ScalarPolynomialsBase base class   because it is not actually a polynomial
+   * This class is not derived from the ScalarPolynomialsBase base class
+   * because it is not actually a polynomial -- it is a piecewise polynomial.
+   * However, it is interface-compatible with the Polynomials::Polynomial
+   * class, and consequently can be used as template argument for
+   * TensorProductPolynomials.
    *
-   *  -  it is a piecewise polynomial.   However, it is interface-compatible with the   Polynomials::Polynomial     class, and consequently can be used as template argument for   TensorProductPolynomials.
    * @ingroup Polynomials
-   *
    */
   template <typename number>
   class PiecewisePolynomial : public Subscriptor
@@ -69,10 +70,10 @@ namespace Polynomials
      * the size of the subinterval compared to the unit interval, the total
      * number of intervals (subdivisions), the current index of the interval
      * as well as if the polynomial spans onto the next interval (e.g., if it
-     * lives on two neighboring intervals).         If the number of intervals
-     * is one, the piecewise polynomial behaves     exactly like a usual
-     * polynomial.
+     * lives on two neighboring intervals).
      *
+     * If the number of intervals is one, the piecewise polynomial behaves
+     * exactly like a usual polynomial.
      */
     PiecewisePolynomial(const Polynomial<number> &coefficients_on_interval,
                         const unsigned int        n_intervals,
@@ -84,7 +85,6 @@ namespace Polynomials
      * underlying polynomial. The polynomial evaluates to zero when outside of
      * the given interval (and possible the next one to the right when it
      * spans over that range).
-     *
      */
     number
     value(const number x) const;
@@ -93,15 +93,15 @@ namespace Polynomials
      * Return the values and the derivatives of the Polynomial at point
      * <tt>x</tt>.  <tt>values[i], i=0,...,values.size()-1</tt> includes the
      * <tt>i</tt>th derivative. The number of derivatives to be computed is
-     * thus determined by the size of the vector passed.         Note that all
-     * the derivatives evaluate to zero at the border between     intervals
-     * (assuming exact arithmetic) in the interior of the unit     interval,
-     * as there is no unique gradient value in that case for a     piecewise
-     * polynomial. This is not always desired (e.g., when evaluating     jumps
-     * of gradients on the element boundary), but it is the user's
+     * thus determined by the size of the vector passed.
+     *
+     * Note that all the derivatives evaluate to zero at the border between
+     * intervals (assuming exact arithmetic) in the interior of the unit
+     * interval, as there is no unique gradient value in that case for a
+     * piecewise polynomial. This is not always desired (e.g., when evaluating
+     * jumps of gradients on the element boundary), but it is the user's
      * responsibility to avoid evaluation at these points when it does not
      * make sense.
-     *
      */
     void
     value(const number x, std::vector<number> &values) const;
@@ -110,16 +110,16 @@ namespace Polynomials
      * Return the values and the derivatives of the Polynomial at point
      * <tt>x</tt>.  <tt>values[i], i=0,...,n_derivatives</tt> includes the
      * <tt>i</tt>th derivative.The number of derivatives to be computed is
-     * determined by   @p n_derivatives   and   @p values   has to provide
-     * sufficient     space for   @p n_derivatives   + 1 values.         Note
-     * that all the derivatives evaluate to zero at the border between
+     * determined by @p n_derivatives and @p values has to provide sufficient
+     * space for @p n_derivatives + 1 values.
+     *
+     * Note that all the derivatives evaluate to zero at the border between
      * intervals (assuming exact arithmetic) in the interior of the unit
      * interval, as there is no unique gradient value in that case for a
      * piecewise polynomial. This is not always desired (e.g., when evaluating
      * jumps of gradients on the element boundary), but it is the user's
      * responsibility to avoid evaluation at these points when it does not
      * make sense.
-     *
      */
     void
     value(const number       x,
@@ -129,7 +129,6 @@ namespace Polynomials
     /**
      * Degree of the polynomial. This is the degree of the underlying base
      * polynomial.
-     *
      */
     unsigned int
     degree() const;
@@ -138,16 +137,13 @@ namespace Polynomials
      * Write or read the data of this object to or from a stream for the
      * purpose of serialization using the [BOOST serialization
      * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
-     *
      */
     template <class Archive>
     void
     serialize(Archive &ar, const unsigned int version);
 
     /**
-     * Return an estimate (in bytes) for the memory consumption of this
-     * object.
-     *
+     * Return an estimate (in bytes) for the memory consumption of this object.
      */
     virtual std::size_t
     memory_consumption() const;
@@ -156,28 +152,24 @@ namespace Polynomials
     /**
      * Underlying polynomial object that is scaled to a subinterval and
      * concatenated accordingly.
-     *
      */
     Polynomial<number> polynomial;
 
     /**
      * A variable storing the number of intervals that the unit interval is
      * divided into.
-     *
      */
     unsigned int n_intervals;
 
     /**
      * A variable storing the index of the current polynomial in the range of
      * intervals.
-     *
      */
     unsigned int interval;
 
     /**
      * Store if the polynomial spans over two adjacent intervals, i.e., the
      * one given in subinterval and the next one.
-     *
      */
     bool spans_two_intervals;
   };
@@ -188,7 +180,6 @@ namespace Polynomials
    * Generates a complete Lagrange basis on a subdivision of the unit interval
    * in smaller intervals for a given degree on the subintervals and number of
    * intervals.
-   *
    */
   std::vector<PiecewisePolynomial<double>>
   generate_complete_Lagrange_basis_on_subdivisions(
@@ -198,9 +189,9 @@ namespace Polynomials
 } // namespace Polynomials
 
 
- /** @} */ 
+/** @} */
 
- /* -------------------------- inline functions --------------------- */ 
+/* -------------------------- inline functions --------------------- */
 
 namespace Polynomials
 {

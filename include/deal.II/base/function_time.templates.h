@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2019 by the deal.II authors
 //
@@ -48,4 +48,4 @@ FunctionTime<Number>::advance_time(const Number delta_t)
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif  /* dealii_function_time_templates_h */ 
+#endif /* dealii_function_time_templates_h */

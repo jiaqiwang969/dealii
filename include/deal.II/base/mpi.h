@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
 //
@@ -65,12 +65,16 @@ using MPI_Op       = int;
 
 /**
  * Helper macro to remove const from the pointer arguments to some MPI_*
- * functions. This is needed as the input arguments of functions like
- * MPI_Allgather() are not marked as const in OpenMPI 1.6.5. If using MPI 3 or
- * newer, this macro is a NOOP, while we do the following otherwise:
- *  1. remove from type of   @p expr   2. remove const from resulting type 3. add to resulting type 4. const_cast the given expression   @p expr   to this new type.
+ * functions.
  *
+ * This is needed as the input arguments of functions like MPI_Allgather() are
+ * not marked as const in OpenMPI 1.6.5. If using MPI 3 or newer, this macro
+ * is a NOOP, while we do the following otherwise:
  *
+ * 1. remove * from type of @p expr
+ * 2. remove const from resulting type
+ * 3. add * to resulting type
+ * 4. const_cast the given expression @p expr to this new type.
  */
 #ifdef DEAL_II_WITH_MPI
 #  if DEAL_II_MPI_VERSION_GTE(3, 0)
@@ -107,17 +111,16 @@ class IndexSet;
 namespace Utilities
 {
   /**
-   * Given the total number of elements   @p total_size,   create an evenly
-   * distributed 1:1 partitioning of the elements for across   @p
-   * n_partitions.     The local sizes will be equal to the   @p total_size
-   * divided by the number   of partitions plus the remainder being divided
-   * amongst the first   processes. Each process will store a contiguous
-   * subset of indices, and the   index set on process p+1 starts at the index
-   * one larger than the last one   stored on process p.   For example, a   @p
-   * total_size   of 11 with 3 processes will result   in the IndexSets{
-   * [0,4), [4,8), [8,11)] }, and this function will   return the   @p
-   * my_partition_id   's IndexSet.
-   *
+   * Given the total number of elements @p total_size, create an evenly
+   * distributed 1:1 partitioning of the elements for across @p n_partitions.
+   * The local sizes will be equal to the @p total_size divided by the number
+   * of partitions plus the remainder being divided amongst the first
+   * processes. Each process will store a contiguous subset of indices, and the
+   * index set on process p+1 starts at the index one larger than the last one
+   * stored on process p.
+   * For example, a @p total_size of 11 with 3 processes will result
+   * in the IndexSets { [0,4), [4,8), [8,11)] }, and this function will
+   * return the @p my_partition_id 's IndexSet.
    */
   IndexSet
   create_evenly_distributed_partitioning(const unsigned int my_partition_id,
@@ -128,49 +131,61 @@ namespace Utilities
    * A namespace for utility functions that abstract certain operations using
    * the Message Passing Interface (MPI) or provide fallback operations in
    * case deal.II is configured not to use MPI at all.
-   * @ingroup utilities
    *
+   * @ingroup utilities
    */
   namespace MPI
   {
     /**
-     * Return the number of MPI processes there exist in the given       @ref GlossMPICommunicator   "communicator"
-     * object. If this is a sequential job (i.e., the program     is not using
-     * MPI at all, or is using MPI but has been started with     only one MPI
-     * process), then the communicator necessarily involves     only one
-     * process and the function returns 1.
-     *
+     * Return the number of MPI processes there exist in the given
+     * @ref GlossMPICommunicator "communicator"
+     * object. If this is a sequential job (i.e., the program
+     * is not using MPI at all, or is using MPI but has been started with
+     * only one MPI process), then the communicator necessarily involves
+     * only one process and the function returns 1.
      */
     unsigned int
     n_mpi_processes(const MPI_Comm &mpi_communicator);
 
     /**
-     *
+     * Return the
+     * @ref GlossMPIRank "rank of the present MPI process"
+     * in the space of processes described by the given
+     * @ref GlossMPICommunicator "communicator".
+     * This will be a unique value for each process between zero and (less
+     * than) the number of all processes (given by get_n_mpi_processes()).
      */
     unsigned int
     this_mpi_process(const MPI_Comm &mpi_communicator);
 
     /**
-     * Return a vector of the ranks (within   @p comm_large)   of a subset of
-     * processes specified by   @p comm_small.
-     *
+     * Return a vector of the ranks (within @p comm_large) of a subset of
+     * processes specified by @p comm_small.
      */
     const std::vector<unsigned int>
     mpi_processes_within_communicator(const MPI_Comm &comm_large,
                                       const MPI_Comm &comm_small);
 
     /**
-     * Consider an unstructured communication pattern where every process in     an MPI universe wants to send some data to a subset of the other     processors. To do that, the other processors need to know who to expect     messages from. This function computes this information.           @param   mpi_comm A       @ref GlossMPICommunicator   "communicator"
-     * that describes the processors that are going to communicate with each
-     * other.           @param   destinations The list of processors the
-     * current process wants to     send information to. This list need not be
-     * sorted in any way. If it     contains duplicate entries that means that
-     * multiple messages are     intended for a given destination.
-     * @return   A list of processors that have indicated that they want to
-     * send     something to the current processor. The resulting list is not
-     * sorted.     It may contain duplicate entries if processors enter the
-     * same     destination more than once in their destinations list.
+     * Consider an unstructured communication pattern where every process in
+     * an MPI universe wants to send some data to a subset of the other
+     * processors. To do that, the other processors need to know who to expect
+     * messages from. This function computes this information.
      *
+     * @param mpi_comm A
+     * @ref GlossMPICommunicator "communicator"
+     * that describes the processors that are going to communicate with each
+     * other.
+     *
+     * @param destinations The list of processors the current process wants to
+     * send information to. This list need not be sorted in any way. If it
+     * contains duplicate entries that means that multiple messages are
+     * intended for a given destination.
+     *
+     * @return A list of processors that have indicated that they want to send
+     * something to the current processor. The resulting list is not sorted.
+     * It may contain duplicate entries if processors enter the same
+     * destination more than once in their destinations list.
      */
     std::vector<unsigned int>
     compute_point_to_point_communication_pattern(
@@ -178,15 +193,23 @@ namespace Utilities
       const std::vector<unsigned int> &destinations);
 
     /**
-     * Simplified (for efficiency) version of the     compute_point_to_point_communication_pattern()     which only computes the number of processes in an MPI universe to expect     communication from.           @param   mpi_comm A       @ref GlossMPICommunicator   "communicator"
-     * that describes the processors that are going to communicate with each
-     * other.           @param   destinations The list of processors the
-     * current process wants to     send information to. This list need not be
-     * sorted in any way. If it     contains duplicate entries that means that
-     * multiple messages are     intended for a given destination.
-     * @return   A number of processors that want to send something to the
-     * current     processor.
+     * Simplified (for efficiency) version of the
+     * compute_point_to_point_communication_pattern()
+     * which only computes the number of processes in an MPI universe to expect
+     * communication from.
      *
+     * @param mpi_comm A
+     * @ref GlossMPICommunicator "communicator"
+     * that describes the processors that are going to communicate with each
+     * other.
+     *
+     * @param destinations The list of processors the current process wants to
+     * send information to. This list need not be sorted in any way. If it
+     * contains duplicate entries that means that multiple messages are
+     * intended for a given destination.
+     *
+     * @return A number of processors that want to send something to the current
+     * processor.
      */
     unsigned int
     compute_n_point_to_point_communications(
@@ -194,48 +217,53 @@ namespace Utilities
       const std::vector<unsigned int> &destinations);
 
     /**
-     * Given a       @ref GlossMPICommunicator   "communicator",
+     * Given a
+     * @ref GlossMPICommunicator "communicator",
      * generate a new communicator that contains the same set of processors
-     * but that has a different, unique identifier.         This functionality
-     * can be used to ensure that different objects, such     as distributed
-     * matrices, each have unique communicators over which they     can
-     * interact without interfering with each other.         When no longer
-     * needed, the communicator created here needs to be     destroyed using
-     * free_communicator().         This function is equivalent to calling
-     * <code>MPI_Comm_dup(mpi_communicator, &return_value);</code>  .
+     * but that has a different, unique identifier.
      *
+     * This functionality can be used to ensure that different objects, such
+     * as distributed matrices, each have unique communicators over which they
+     * can interact without interfering with each other.
+     *
+     * When no longer needed, the communicator created here needs to be
+     * destroyed using free_communicator().
+     *
+     * This function is equivalent to calling
+     * <code>MPI_Comm_dup(mpi_communicator, &return_value);</code>.
      */
     MPI_Comm
     duplicate_communicator(const MPI_Comm &mpi_communicator);
 
     /**
-     * Free the given       @ref GlossMPICommunicator   "communicator"
-     * @p mpi_communicator   that was duplicated using
-     * duplicate_communicator().         The argument is passed by reference
-     * and will be invalidated and set to     the MPI null handle. This
-     * function is equivalent to calling
-     * <code>MPI_Comm_free(&mpi_communicator);</code>  .
+     * Free the given
+     * @ref GlossMPICommunicator "communicator"
+     * @p mpi_communicator that was duplicated using duplicate_communicator().
      *
+     * The argument is passed by reference and will be invalidated and set to
+     * the MPI null handle. This function is equivalent to calling
+     * <code>MPI_Comm_free(&mpi_communicator);</code>.
      */
     void
     free_communicator(MPI_Comm &mpi_communicator);
 
     /**
-     * Helper class to automatically duplicate and free an MPI       @ref GlossMPICommunicator   "communicator".
-     * This class duplicates the communicator given in the constructor
-     * using duplicate_communicator() and frees it automatically when     this
-     * object gets destroyed by calling free_communicator(). You     can
-     * access the wrapped communicator using operator*.         This class
-     * exists to easily allow duplicating communicators without     having to
-     * worry when and how to free it after usage.
+     * Helper class to automatically duplicate and free an MPI
+     * @ref GlossMPICommunicator "communicator".
      *
+     * This class duplicates the communicator given in the constructor
+     * using duplicate_communicator() and frees it automatically when
+     * this object gets destroyed by calling free_communicator(). You
+     * can access the wrapped communicator using operator*.
+     *
+     * This class exists to easily allow duplicating communicators without
+     * having to worry when and how to free it after usage.
      */
     class DuplicatedCommunicator
     {
     public:
       /**
-       * Create a duplicate of the given   @p communicator.
-       *
+       * Create a duplicate of the given @p communicator.
        */
       explicit DuplicatedCommunicator(const MPI_Comm &communicator)
         : comm(duplicate_communicator(communicator))
@@ -243,13 +271,11 @@ namespace Utilities
 
       /**
        * Do not allow making copies.
-       *
        */
       DuplicatedCommunicator(const DuplicatedCommunicator &) = delete;
 
       /**
        * The destructor will free the communicator automatically.
-       *
        */
       ~DuplicatedCommunicator()
       {
@@ -258,7 +284,6 @@ namespace Utilities
 
       /**
        * Access the stored communicator.
-       *
        */
       const MPI_Comm &operator*() const
       {
@@ -268,7 +293,6 @@ namespace Utilities
 
       /**
        * Do not allow assignment of this class.
-       *
        */
       DuplicatedCommunicator &
       operator=(const DuplicatedCommunicator &) = delete;
@@ -276,51 +300,52 @@ namespace Utilities
     private:
       /**
        * The communicator of course.
-       *
        */
       MPI_Comm comm;
     };
 
     /**
      * This class represents a mutex to guard a critical section for a set of
-     * processors in a parallel computation using MPI.         The lock()
-     * commands waits until all MPI ranks in the communicator have
-     * released a previous lock using unlock().         A typical usage
-     * involves guarding a critical section using a lock guard:
+     * processors in a parallel computation using MPI.
+     *
+     * The lock() commands waits until all MPI ranks in the communicator have
+     * released a previous lock using unlock().
+     *
+     * A typical usage involves guarding a critical section using a lock guard:
      * @code
      * {
-     * static CollectiveMutex      mutex;
-     * CollectiveMutex::ScopedLock lock(mutex, comm);
-     * // [ critical code to be guarded]
+     *   static CollectiveMutex      mutex;
+     *   CollectiveMutex::ScopedLock lock(mutex, comm);
+     *   // [ critical code to be guarded]
      * }
      * @endcode
+     *
      * Here, the critical code will finish on all processors before the mutex
      * can be acquired again (for example by a second execution of the block
-     * above. The critical code block typically involves MPI communication
-     * that     would yield incorrect results without the lock. For example,
-     * if the code     contains nonblocking receives with MPI_ANY_SOURCE,
-     * packets can be     confused between iterations.         Note that the
-     * mutex needs to be the same instance between calls to the     same
-     * critical region. While not required, this can be achieved by making
-     * the instance static (like in the example above). The variable can also
-     * be     a global variable, or a member variable of the object to which
-     * the     executing function belongs.
+     * above. The critical code block typically involves MPI communication that
+     * would yield incorrect results without the lock. For example, if the code
+     * contains nonblocking receives with MPI_ANY_SOURCE, packets can be
+     * confused between iterations.
      *
+     * Note that the mutex needs to be the same instance between calls to the
+     * same critical region. While not required, this can be achieved by making
+     * the instance static (like in the example above). The variable can also be
+     * a global variable, or a member variable of the object to which the
+     * executing function belongs.
      */
     class CollectiveMutex
     {
     public:
       /**
        * This helper class provides a scoped lock for the CollectiveMutex.
-       * See the class documentation of CollectiveMutex for details.
        *
+       * See the class documentation of CollectiveMutex for details.
        */
       class ScopedLock
       {
       public:
         /**
          * Constructor. Blocks until it can acquire the lock.
-         *
          */
         explicit ScopedLock(CollectiveMutex &mutex, const MPI_Comm &comm)
           : mutex(mutex)
@@ -331,7 +356,6 @@ namespace Utilities
 
         /**
          * Destructor. Releases the lock.
-         *
          */
         ~ScopedLock()
         {
@@ -341,41 +365,38 @@ namespace Utilities
       private:
         /**
          * A reference to the mutex.
-         *
          */
         CollectiveMutex &mutex;
         /**
          * The communicator.
-         *
          */
         const MPI_Comm comm;
       };
 
       /**
        * Constructor of this class.
-       *
        */
       explicit CollectiveMutex();
 
       /**
        * Destroy the mutex. Assumes the lock is not currently held.
-       *
        */
       ~CollectiveMutex();
 
       /**
        * Acquire the mutex and, if necessary, wait until we can do so.
+       *
        * This is a collective call that needs to be executed by all processors
        * in the communicator.
-       *
        */
       void
       lock(const MPI_Comm &comm);
 
       /**
-       * Release the lock.             This is a collective call that needs to
-       * be executed by all processors       in the communicator.
+       * Release the lock.
        *
+       * This is a collective call that needs to be executed by all processors
+       * in the communicator.
        */
       void
       unlock(const MPI_Comm &comm);
@@ -383,13 +404,11 @@ namespace Utilities
     private:
       /**
        * Keep track if we have this lock right now.
-       *
        */
       bool locked;
 
       /**
        * The request to keep track of the non-blocking barrier.
-       *
        */
       MPI_Request request;
     };
@@ -397,31 +416,31 @@ namespace Utilities
 
 
     /**
-     * If   @p comm   is an intracommunicator, this function returns a new
-     * communicator   @p newcomm   with communication group defined by the
-     * @p group   argument. The function is only collective over the group of
+     * If @p comm is an intracommunicator, this function returns a new
+     * communicator @p newcomm with communication group defined by the
+     * @p group argument. The function is only collective over the group of
      * processes that actually want to create the communicator, i.e., that
-     * are named in the   @p group   argument. If multiple threads at a given
+     * are named in the @p group argument. If multiple threads at a given
      * process perform concurrent create_group() operations, the user must
-     * distinguish these operations by providing different   @p tag   or   @p
-     * comm       arguments.         This function was introduced in the
-     * MPI-3.0 standard. If available,     the corresponding function in the
-     * provided MPI implementation is used.     Otherwise, the implementation
-     * follows the one described in the     following publication:
+     * distinguish these operations by providing different @p tag or @p comm
+     * arguments.
+     *
+     * This function was introduced in the MPI-3.0 standard. If available,
+     * the corresponding function in the provided MPI implementation is used.
+     * Otherwise, the implementation follows the one described in the
+     * following publication:
      * @code{.bib}
      * @inproceedings{dinan2011noncollective,
-     * title        = {Noncollective communicator creation in MPI},
-     * author       = {Dinan, James and Krishnamoorthy, Sriram and Balaji,
-     *                 Pavan and Hammond, Jeff R and Krishnan, Manojkumar and
-     *                 Tipparaju, Vinod and Vishnu, Abhinav},
-     * booktitle    = {European MPI Users' Group Meeting},
-     * pages        = {282--291},
-     * year         = {2011},
-     * organization = {Springer}
+     *   title        = {Noncollective communicator creation in MPI},
+     *   author       = {Dinan, James and Krishnamoorthy, Sriram and Balaji,
+     *                   Pavan and Hammond, Jeff R and Krishnan, Manojkumar and
+     *                   Tipparaju, Vinod and Vishnu, Abhinav},
+     *   booktitle    = {European MPI Users' Group Meeting},
+     *   pages        = {282--291},
+     *   year         = {2011},
+     *   organization = {Springer}
      * }
      * @endcode
-     *
-     *
      */
 #ifdef DEAL_II_WITH_MPI
     int
@@ -432,25 +451,23 @@ namespace Utilities
 #endif
 
     /**
-     * Given the number of locally owned elements   @p locally_owned_size,
+     * Given the number of locally owned elements @p locally_owned_size,
      * create a 1:1 partitioning of the of elements across the MPI
-     * communicator   @p comm.   The total size of elements is the sum of
-     * @p locally_owned_size   across the MPI communicator.  Each process will
+     * communicator @p comm. The total size of elements is the sum of
+     * @p locally_owned_size across the MPI communicator.  Each process will
      * store contiguous subset of indices, and the index set on process p+1
      * starts at the index one larger than the last one stored on process p.
-     *
      */
     std::vector<IndexSet>
     create_ascending_partitioning(const MPI_Comm &          comm,
                                   const IndexSet::size_type locally_owned_size);
 
     /**
-     * Given the total number of elements   @p total_size,   create an evenly
-     * distributed 1:1 partitioning of the elements across the     MPI
-     * communicator   @p comm.       Uses   @p comm   to determine number of
-     * partitions and processor ID to call the       @p
-     * create_evenly_distributed_partitioning()   function above.
-     *
+     * Given the total number of elements @p total_size, create an evenly
+     * distributed 1:1 partitioning of the elements across the
+     * MPI communicator @p comm.
+     * Uses @p comm to determine number of partitions and processor ID to call the
+     * @p create_evenly_distributed_partitioning() function above.
      */
     IndexSet
     create_evenly_distributed_partitioning(
@@ -459,20 +476,19 @@ namespace Utilities
 
 #ifdef DEAL_II_WITH_MPI
     /**
-     * Calculate mean and standard deviation across the MPI communicator   @p
-     * comm       for values provided as a range `[begin,end)`.     The mean
-     * is computed as   $\bar x=\frac 1N \sum x_k$   where the   $x_k$   are
+     * Calculate mean and standard deviation across the MPI communicator @p comm
+     * for values provided as a range `[begin,end)`.
+     * The mean is computed as $\bar x=\frac 1N \sum x_k$ where the $x_k$ are
      * the elements pointed to by the `begin` and `end` iterators on all
-     * processors (i.e., each processor's `[begin,end)` range points to a
-     * subset     of the overall number of elements). The standard deviation
-     * is calculated     as   $\sigma=\sqrt{\frac {1}{N-1} \sum |x_k
+     * processors (i.e., each processor's `[begin,end)` range points to a subset
+     * of the overall number of elements). The standard deviation is calculated
+     * as $\sigma=\sqrt{\frac {1}{N-1} \sum |x_k -\bar x|^2}$, which is known as
+     * unbiased sample variance.
      *
-     * -\bar x|^2}$  , which is known as     unbiased sample variance.
-     * @tparam   Number specifies the type to store the mean value.     The
-     * standard deviation is stored as the corresponding real type.     This
-     * allows, for example, to calculate statistics from integer input
+     * @tparam Number specifies the type to store the mean value.
+     * The standard deviation is stored as the corresponding real type.
+     * This allows, for example, to calculate statistics from integer input
      * values.
-     *
      */
     template <class Iterator, typename Number = long double>
     std::pair<Number, typename numbers::NumberTraits<Number>::real_type>
@@ -482,21 +498,23 @@ namespace Utilities
 #endif
 
     /**
-     * Return the sum over all processors of the value   @p t.   This function is     collective over all processors given in the       @ref GlossMPICommunicator   "communicator".
+     * Return the sum over all processors of the value @p t. This function is
+     * collective over all processors given in the
+     * @ref GlossMPICommunicator "communicator".
      * If deal.II is not configured for use of MPI, this function simply
-     * returns the value of   @p t.   This function corresponds to the
-     * <code>MPI_Allreduce</code>   function, i.e. all processors receive the
+     * returns the value of @p t. This function corresponds to the
+     * <code>MPI_Allreduce</code> function, i.e. all processors receive the
      * result of this operation.
-     * @note   Sometimes, not all processors need a result and in that case
-     * one     would call the   <code>MPI_Reduce</code>   function instead of
-     * the       <code>MPI_Allreduce</code>   function. The latter is at most
-     * twice as     expensive, so if you are concerned about performance, it
-     * may be     worthwhile investigating whether your algorithm indeed needs
-     * the result     everywhere.
-     * @note   This function is only implemented for certain template
-     * arguments       <code>T</code>, namely <code>float, double, int,
-     * unsigned int</code>  .
      *
+     * @note Sometimes, not all processors need a result and in that case one
+     * would call the <code>MPI_Reduce</code> function instead of the
+     * <code>MPI_Allreduce</code> function. The latter is at most twice as
+     * expensive, so if you are concerned about performance, it may be
+     * worthwhile investigating whether your algorithm indeed needs the result
+     * everywhere.
+     *
+     * @note This function is only implemented for certain template arguments
+     * <code>T</code>, namely <code>float, double, int, unsigned int</code>.
      */
     template <typename T>
     T
@@ -506,10 +524,10 @@ namespace Utilities
      * Like the previous function, but take the sums over the elements of an
      * array of type T. In other words, the i-th element of the results
      * array is the sum over the i-th entries of the input arrays from each
-     * processor. T and U must decay to the same type, e.g. they just differ
-     * by     one of them having a const type qualifier and the other not.
-     * Input and output arrays may be the same.
+     * processor. T and U must decay to the same type, e.g. they just differ by
+     * one of them having a const type qualifier and the other not.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T, typename U>
     void
@@ -517,11 +535,12 @@ namespace Utilities
 
     /**
      * Like the previous function, but take the sums over the elements of an
-     * array as specified by the ArrayView arguments.     In other words, the
-     * i-th element of the results     array is the sum over the i-th entries
-     * of the input arrays from each     processor.         Input and output
-     * arrays may be the same.
+     * array as specified by the ArrayView arguments.
+     * In other words, the i-th element of the results
+     * array is the sum over the i-th entries of the input arrays from each
+     * processor.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T>
     void
@@ -531,8 +550,8 @@ namespace Utilities
 
     /**
      * Perform an MPI sum of the entries of a symmetric tensor.
-     * @relatesalso   SymmetricTensor
      *
+     * @relatesalso SymmetricTensor
      */
     template <int rank, int dim, typename Number>
     SymmetricTensor<rank, dim, Number>
@@ -540,9 +559,9 @@ namespace Utilities
         const MPI_Comm &                          mpi_communicator);
 
     /**
-     * Perform an MPI sum of the entries of a tensor.           @relatesalso
-     * Tensor
+     * Perform an MPI sum of the entries of a tensor.
      *
+     * @relatesalso Tensor
      */
     template <int rank, int dim, typename Number>
     Tensor<rank, dim, Number>
@@ -551,10 +570,11 @@ namespace Utilities
 
     /**
      * Perform an MPI sum of the entries of a SparseMatrix.
-     * @note     @p local   and   @p global   should have the same sparsity
-     * pattern and it should be the same for all MPI processes.
-     * @relatesalso   SparseMatrix
      *
+     * @note @p local and @p global should have the same sparsity
+     * pattern and it should be the same for all MPI processes.
+     *
+     * @relatesalso SparseMatrix
      */
     template <typename Number>
     void
@@ -563,46 +583,49 @@ namespace Utilities
         SparseMatrix<Number> &      global);
 
     /**
-     * Return the maximum over all processors of the value   @p t.   This function     is collective over all processors given in the       @ref GlossMPICommunicator   "communicator".
+     * Return the maximum over all processors of the value @p t. This function
+     * is collective over all processors given in the
+     * @ref GlossMPICommunicator "communicator".
      * If deal.II is not configured for use of MPI, this function simply
-     * returns the value of   @p t.   This function corresponds to the
-     * <code>MPI_Allreduce</code>   function, i.e. all processors receive the
+     * returns the value of @p t. This function corresponds to the
+     * <code>MPI_Allreduce</code> function, i.e. all processors receive the
      * result of this operation.
-     * @note   Sometimes, not all processors need a result and in that case
-     * one     would call the   <code>MPI_Reduce</code>   function instead of
-     * the       <code>MPI_Allreduce</code>   function. The latter is at most
-     * twice as     expensive, so if you are concerned about performance, it
-     * may be     worthwhile investigating whether your algorithm indeed needs
-     * the result     everywhere.
-     * @note   This function is only implemented for certain template
-     * arguments       <code>T</code>, namely <code>float, double, int,
-     * unsigned int</code>  .
      *
+     * @note Sometimes, not all processors need a result and in that case one
+     * would call the <code>MPI_Reduce</code> function instead of the
+     * <code>MPI_Allreduce</code> function. The latter is at most twice as
+     * expensive, so if you are concerned about performance, it may be
+     * worthwhile investigating whether your algorithm indeed needs the result
+     * everywhere.
+     *
+     * @note This function is only implemented for certain template arguments
+     * <code>T</code>, namely <code>float, double, int, unsigned int</code>.
      */
     template <typename T>
     T
     max(const T &t, const MPI_Comm &mpi_communicator);
 
     /**
-     * Like the previous function, but take the maximum over the elements of
-     * an     array of type T. In other words, the i-th element of the results
-     * array is     the maximum over the i-th entries of the input arrays from
-     * each     processor. T and U must decay to the same type, e.g. they just
-     * differ by     one of them having a const type qualifier and the other
-     * not.         Input and output vectors may be the same.
+     * Like the previous function, but take the maximum over the elements of an
+     * array of type T. In other words, the i-th element of the results array is
+     * the maximum over the i-th entries of the input arrays from each
+     * processor. T and U must decay to the same type, e.g. they just differ by
+     * one of them having a const type qualifier and the other not.
      *
+     * Input and output vectors may be the same.
      */
     template <typename T, typename U>
     void
     max(const T &values, const MPI_Comm &mpi_communicator, U &maxima);
 
     /**
-     * Like the previous function, but take the maximum over the elements of
-     * an     array as specified by the ArrayView arguments.     In other
-     * words, the i-th element of the results     array is the maximum over
-     * the i-th entries of the input arrays from each     processor.
-     * Input and output arrays may be the same.
+     * Like the previous function, but take the maximum over the elements of an
+     * array as specified by the ArrayView arguments.
+     * In other words, the i-th element of the results
+     * array is the maximum over the i-th entries of the input arrays from each
+     * processor.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T>
     void
@@ -611,21 +634,23 @@ namespace Utilities
         const ArrayView<T> &      maxima);
 
     /**
-     * Return the minimum over all processors of the value   @p t.   This function     is collective over all processors given in the       @ref GlossMPICommunicator   "communicator".
+     * Return the minimum over all processors of the value @p t. This function
+     * is collective over all processors given in the
+     * @ref GlossMPICommunicator "communicator".
      * If deal.II is not configured for use of MPI, this function simply
-     * returns the value of   @p t.   This function corresponds to the
-     * <code>MPI_Allreduce</code>   function, i.e. all processors receive the
+     * returns the value of @p t. This function corresponds to the
+     * <code>MPI_Allreduce</code> function, i.e. all processors receive the
      * result of this operation.
-     * @note   Sometimes, not all processors need a result and in that case
-     * one     would call the   <code>MPI_Reduce</code>   function instead of
-     * the       <code>MPI_Allreduce</code>   function. The latter is at most
-     * twice as     expensive, so if you are concerned about performance, it
-     * may be     worthwhile investigating whether your algorithm indeed needs
-     * the result     everywhere.
-     * @note   This function is only implemented for certain template
-     * arguments       <code>T</code>, namely <code>float, double, int,
-     * unsigned int</code>  .
      *
+     * @note Sometimes, not all processors need a result and in that case one
+     * would call the <code>MPI_Reduce</code> function instead of the
+     * <code>MPI_Allreduce</code> function. The latter is at most twice as
+     * expensive, so if you are concerned about performance, it may be
+     * worthwhile investigating whether your algorithm indeed needs the result
+     * everywhere.
+     *
+     * @note This function is only implemented for certain template arguments
+     * <code>T</code>, namely <code>float, double, int, unsigned int</code>.
      */
     template <typename T>
     T
@@ -635,22 +660,23 @@ namespace Utilities
      * Like the previous function, but take the minima over the elements of an
      * array of type T. In other words, the i-th element of the results
      * array is the minimum of the i-th entries of the input arrays from each
-     * processor. T and U must decay to the same type, e.g. they just differ
-     * by     one of them having a const type qualifier and the other not.
-     * Input and output arrays may be the same.
+     * processor. T and U must decay to the same type, e.g. they just differ by
+     * one of them having a const type qualifier and the other not.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T, typename U>
     void
     min(const T &values, const MPI_Comm &mpi_communicator, U &minima);
 
     /**
-     * Like the previous function, but take the minimum over the elements of
-     * an     array as specified by the ArrayView arguments.     In other
-     * words, the i-th element of the results     array is the minimum over
-     * the i-th entries of the input arrays from each     processor.
-     * Input and output arrays may be the same.
+     * Like the previous function, but take the minimum over the elements of an
+     * array as specified by the ArrayView arguments.
+     * In other words, the i-th element of the results
+     * array is the minimum over the i-th entries of the input arrays from each
+     * processor.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T>
     void
@@ -659,48 +685,58 @@ namespace Utilities
         const ArrayView<T> &      minima);
 
     /**
-     * Performs a <i>logical or</i> operation over all processors of the value       @p t.   The <i>logical or</i> operator `||` returns the boolean value     `true` if either or all operands are `true` and returns `false`     otherwise. If the provided value   @p t   corresponds to `0` in its     associated data type `T`, it will be interpreted as `false`, and `true`     otherwise. Data type `T` must be of type `integral`, i.e., `bool`,     `char`, `short`, `int`, `long`, or any of their variations.         This function is collective over all processors given in the       @ref GlossMPICommunicator   "communicator".
-     * If deal.II is not configured for use of MPI, this function simply
-     * returns the value of   @p value.   This function corresponds to the
-     * <code>MPI_Allreduce</code>   function, i.e., all processors receive the
-     * result of this operation.
-     * @note   Sometimes, not all processors need a result and in that case
-     * one     would call the   <code>MPI_Reduce</code>   function instead of
-     * the       <code>MPI_Allreduce</code>   function. The latter is at most
-     * twice as     expensive, so if you are concerned about performance, it
-     * may be     worthwhile investigating whether your algorithm indeed needs
-     * the result     everywhere.
+     * Performs a <i>logical or</i> operation over all processors of the value
+     * @p t. The <i>logical or</i> operator `||` returns the boolean value
+     * `true` if either or all operands are `true` and returns `false`
+     * otherwise. If the provided value @p t corresponds to `0` in its
+     * associated data type `T`, it will be interpreted as `false`, and `true`
+     * otherwise. Data type `T` must be of type `integral`, i.e., `bool`,
+     * `char`, `short`, `int`, `long`, or any of their variations.
      *
+     * This function is collective over all processors given in the
+     * @ref GlossMPICommunicator "communicator".
+     * If deal.II is not configured for use of MPI, this function simply
+     * returns the value of @p value. This function corresponds to the
+     * <code>MPI_Allreduce</code> function, i.e., all processors receive the
+     * result of this operation.
+     *
+     * @note Sometimes, not all processors need a result and in that case one
+     * would call the <code>MPI_Reduce</code> function instead of the
+     * <code>MPI_Allreduce</code> function. The latter is at most twice as
+     * expensive, so if you are concerned about performance, it may be
+     * worthwhile investigating whether your algorithm indeed needs the result
+     * everywhere.
      */
     template <typename T>
     T
     logical_or(const T &t, const MPI_Comm &mpi_communicator);
 
     /**
-     * Like the previous function, but performs the <i>logical or</i>
-     * operation     on each element of an array. In other words, the i-th
-     * element of the     results array is the result of the <i>logical or</i>
-     * operation applied on     the i-th entries of the input arrays from each
-     * processor. T and U must     decay to the same type, e.g., they just
-     * differ by one of them having a     const type qualifier and the other
-     * not.         Input and output arrays may be the same.
-     * @note   Depending on your standard library, this function may not work
-     * with       specializations of   `std::vector`   for the data type
-     * `bool`. In that       case, use a different container or data type.
+     * Like the previous function, but performs the <i>logical or</i> operation
+     * on each element of an array. In other words, the i-th element of the
+     * results array is the result of the <i>logical or</i> operation applied on
+     * the i-th entries of the input arrays from each processor. T and U must
+     * decay to the same type, e.g., they just differ by one of them having a
+     * const type qualifier and the other not.
      *
+     * Input and output arrays may be the same.
+     *
+     * @note Depending on your standard library, this function may not work with
+     *   specializations of `std::vector` for the data type `bool`. In that
+     *   case, use a different container or data type.
      */
     template <typename T, typename U>
     void
     logical_or(const T &values, const MPI_Comm &mpi_communicator, U &results);
 
     /**
-     * Like the previous function, but performs the <i>logical or</i>
-     * operation     on each element of an array as specified by the ArrayView
-     * arguments.     In other words, the i-th element of the results array is
-     * the result of     the <i>logical or</i> operation applied on the i-th
-     * entries of the input     arrays from each processor.         Input and
-     * output arrays may be the same.
+     * Like the previous function, but performs the <i>logical or</i> operation
+     * on each element of an array as specified by the ArrayView arguments.
+     * In other words, the i-th element of the results array is the result of
+     * the <i>logical or</i> operation applied on the i-th entries of the input
+     * arrays from each processor.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T>
     void
@@ -709,73 +745,93 @@ namespace Utilities
                const ArrayView<T> &      results);
 
     /**
-     * @note   This structure has no constructors because MPI requires it
-     * to be a POD type.
+     * A data structure to store the result of the min_max_avg() function.
+     * The structure stores the minimum, maximum, and average of one
+     * value contributed by each processor that participates in an
+     * @ref GlossMPICommunicator "MPI communicator".
+     * The structure also stores
+     * the indices (or, more precisely, the
+     * @ref GlossMPIRank "MPI rank")
+     * of the processors that hold the minimum and maximum values,
+     * as well as the sum over all values.
      *
+     * @note This structure has no constructors because MPI requires it
+     *   to be a POD type.
      */
     struct MinMaxAvg
     {
       /**
        * The sum over all values contributed by the processors that
        * participate in the call to min_max_avg().
-       *
        */
       double sum;
 
       /**
        * The minimum value over all values contributed by the processors that
        * participate in the call to min_max_avg().
-       *
        */
       double min;
 
       /**
        * The maximum value over all values contributed by the processors that
        * participate in the call to min_max_avg().
-       *
        */
       double max;
 
       /**
-       *
+       * One of the ranks (i.e.,
+       * @ref GlossMPIRank "MPI rank"
+       * within an
+       * @ref GlossMPICommunicator "MPI communicator")
+       * of the
+       * processors that hold the minimal value.
        */
       unsigned int min_index;
 
       /**
-       *
+       * One of the ranks (i.e.,
+       * @ref GlossMPIRank "MPI rank"
+       * within an
+       * @ref GlossMPICommunicator "MPI communicator")
+       * of the
+       * processors that hold the maximal value.
        */
       unsigned int max_index;
 
       /**
        * The average of the values contributed by the processors that
        * participate in the call to min_max_avg().
-       *
        */
       double avg;
     };
 
     /**
-     * Return sum, average, minimum, maximum, processor id of minimum and     maximum as a collective operation of on the given MPI       @ref GlossMPICommunicator   "communicator"
-     * @p mpi_communicator.   Each processor's value is given in   @p my_value
-     * and     the result will be returned. The result is available on all
-     * machines.
-     * @note   Sometimes, not all processors need a result and in that case
-     * one     would call the   <code>MPI_Reduce</code>   function instead of
-     * the       <code>MPI_Allreduce</code>   function. The latter is at most
-     * twice as     expensive, so if you are concerned about performance, it
-     * may be     worthwhile investigating whether your algorithm indeed needs
-     * the result     everywhere.
+     * Return sum, average, minimum, maximum, processor id of minimum and
+     * maximum as a collective operation of on the given MPI
+     * @ref GlossMPICommunicator "communicator"
+     * @p mpi_communicator. Each processor's value is given in @p my_value and
+     * the result will be returned. The result is available on all machines.
      *
+     * @note Sometimes, not all processors need a result and in that case one
+     * would call the <code>MPI_Reduce</code> function instead of the
+     * <code>MPI_Allreduce</code> function. The latter is at most twice as
+     * expensive, so if you are concerned about performance, it may be
+     * worthwhile investigating whether your algorithm indeed needs the result
+     * everywhere.
      */
     MinMaxAvg
     min_max_avg(const double my_value, const MPI_Comm &mpi_communicator);
 
     /**
-     * Same as above but returning the sum, average, minimum, maximum,     process id of minimum and maximum as a collective operation on the     given MPI       @ref GlossMPICommunicator   "communicator"
-     * @p mpi_communicator   for each entry of the vector.
-     * @note   This function performs a single reduction sweep.           @pre
-     * Size of the input vector has to be the same on all processes.
+     * Same as above but returning the sum, average, minimum, maximum,
+     * process id of minimum and maximum as a collective operation on the
+     * given MPI
+     * @ref GlossMPICommunicator "communicator"
+     * @p mpi_communicator for each entry of the vector.
      *
+     * @note This function performs a single reduction sweep.
+     *
+     * @pre Size of the input vector has to be the same on all processes.
      */
     std::vector<MinMaxAvg>
     min_max_avg(const std::vector<double> &my_value,
@@ -783,12 +839,16 @@ namespace Utilities
 
 
     /**
-     * Same as above but returning the sum, average, minimum, maximum,     process id of minimum and maximum as a collective operation on the     given MPI       @ref GlossMPICommunicator   "communicator"
-     * @p mpi_communicator   for each entry of the ArrayView.
-     * @note   This function performs a single reduction sweep.           @pre
-     * Size of the input ArrayView has to be the same on all processes
-     * and the input and output ArrayVew have to have the same size.
+     * Same as above but returning the sum, average, minimum, maximum,
+     * process id of minimum and maximum as a collective operation on the
+     * given MPI
+     * @ref GlossMPICommunicator "communicator"
+     * @p mpi_communicator for each entry of the ArrayView.
      *
+     * @note This function performs a single reduction sweep.
+     *
+     * @pre Size of the input ArrayView has to be the same on all processes
+     *   and the input and output ArrayVew have to have the same size.
      */
     void
     min_max_avg(const ArrayView<const double> &my_values,
@@ -799,39 +859,45 @@ namespace Utilities
     /**
      * A class that is used to initialize the MPI system at the beginning of a
      * program and to shut it down again at the end. It also allows you to
-     * control the number of threads used within each MPI process.         If
-     * deal.II is configured with PETSc, PETSc will be initialized     via
-     * `PetscInitialize` in the beginning (constructor of this     class) and
-     * de-initialized via `PetscFinalize` at the end (i.e.,     in the
-     * destructor of this class). The same is true for SLEPc.         If
-     * deal.II is configured with p4est, that library will also be
-     * initialized in the beginning, and de-initialized at the end     (by
-     * calling sc_init(), p4est_init(), and sc_finalize()).         If a
-     * program uses MPI one would typically just create an object     of this
-     * type at the beginning of   <code>main()</code>  . The     constructor
-     * of this class then runs   <code>MPI_Init()</code>       with the given
-     * arguments and also initializes the other     libraries mentioned above.
-     * At the end of the program, the     compiler will invoke the destructor
-     * of this object which in     turns calls   <code>MPI_Finalize</code>
-     * to shut down the MPI     system.         This class is used in
-     * step-17  ,   step-18  ,   step-40  ,   step-32  , and     several
-     * others.
-     * @note   This class performs initialization of the MPI subsystem     as
-     * well as the dependent libraries listed above through the
+     * control the number of threads used within each MPI process.
+     *
+     * If deal.II is configured with PETSc, PETSc will be initialized
+     * via `PetscInitialize` in the beginning (constructor of this
+     * class) and de-initialized via `PetscFinalize` at the end (i.e.,
+     * in the destructor of this class). The same is true for SLEPc.
+     *
+     * If deal.II is configured with p4est, that library will also be
+     * initialized in the beginning, and de-initialized at the end
+     * (by calling sc_init(), p4est_init(), and sc_finalize()).
+     *
+     * If a program uses MPI one would typically just create an object
+     * of this type at the beginning of <code>main()</code>. The
+     * constructor of this class then runs <code>MPI_Init()</code>
+     * with the given arguments and also initializes the other
+     * libraries mentioned above. At the end of the program, the
+     * compiler will invoke the destructor of this object which in
+     * turns calls <code>MPI_Finalize</code> to shut down the MPI
+     * system.
+     *
+     * This class is used in step-17, step-18, step-40, step-32, and
+     * several others.
+     *
+     * @note This class performs initialization of the MPI subsystem
+     * as well as the dependent libraries listed above through the
      * `MPI_COMM_WORLD` communicator. This means that you will have to
      * create an MPI_InitFinalize object on <i>all</i> MPI processes,
-     * whether or not you intend to use deal.II on a given     processor. In
-     * most use cases, one will of course want to work     on all MPI
-     * processes using essentially the same program, and so     this is not an
-     * issue. But if you plan to run deal.II-based work     on only a subset
-     * of MPI processes, using an @ ref     GlossMPICommunicator "MPI
-     * communicator" that is a subset of     `MPI_COMM_WORLD` (for example, in
-     * client-server settings where     only a subset of processes is
-     * responsible for the finite     element communications and the remaining
-     * processes do other     things), then you still need to create this
-     * object here on all     MPI processes at the beginning of the program
-     * because it uses     `MPI_COMM_WORLD` during initialization.
-     *
+     * whether or not you intend to use deal.II on a given
+     * processor. In most use cases, one will of course want to work
+     * on all MPI processes using essentially the same program, and so
+     * this is not an issue. But if you plan to run deal.II-based work
+     * on only a subset of MPI processes, using an @ ref
+     * GlossMPICommunicator "MPI communicator" that is a subset of
+     * `MPI_COMM_WORLD` (for example, in client-server settings where
+     * only a subset of processes is responsible for the finite
+     * element communications and the remaining processes do other
+     * things), then you still need to create this object here on all
+     * MPI processes at the beginning of the program because it uses
+     * `MPI_COMM_WORLD` during initialization.
      */
     class MPI_InitFinalize
     {
@@ -840,31 +906,32 @@ namespace Utilities
        * Initialize MPI (and, if deal.II was configured to use it, PETSc) and
        * set the number of threads used by deal.II (via the underlying
        * Threading Building Blocks library) to the given parameter.
-       * @param[in,out]   argc A reference to the 'argc' argument passed to
+       *
+       * @param[in,out] argc A reference to the 'argc' argument passed to
        * main. This argument is used to initialize MPI (and, possibly, PETSc)
-       * as they read arguments from the command line.         @param[in,out]
-       * argv A reference to the 'argv' argument passed to       main.
-       * @param[in]   max_num_threads The maximal number of threads this MPI
+       * as they read arguments from the command line.
+       * @param[in,out] argv A reference to the 'argv' argument passed to
+       * main.
+       * @param[in] max_num_threads The maximal number of threads this MPI
        * process should utilize. If this argument is set to
-       * numbers::invalid_unsigned_int   (the default value), then the number
-       * of       threads is determined automatically in the following way:
-       * the number       of threads to run on this MPI process is set in such
-       * a way that all       of the cores in your node are spoken for. In
-       * other words, if you have       started one MPI process per node,
-       * setting this argument is equivalent       to setting it to the number
-       * of cores present in the node this MPI       process runs on. If you
-       * have started as many MPI processes per node       as there are cores
-       * on each node, then this is equivalent to passing 1       as the
-       * argument. On the other hand, if, for example, you start 4 MPI
+       * numbers::invalid_unsigned_int (the default value), then the number of
+       * threads is determined automatically in the following way: the number
+       * of threads to run on this MPI process is set in such a way that all
+       * of the cores in your node are spoken for. In other words, if you have
+       * started one MPI process per node, setting this argument is equivalent
+       * to setting it to the number of cores present in the node this MPI
+       * process runs on. If you have started as many MPI processes per node
+       * as there are cores on each node, then this is equivalent to passing 1
+       * as the argument. On the other hand, if, for example, you start 4 MPI
        * processes on each 16-core node, then this option will start 4 worker
        * threads for each node. If you start 3 processes on an 8 core node,
        * then they will start 3, 3 and 2 threads, respectively.
-       * @note   This function calls   MultithreadInfo::set_thread_limit()
-       * with       either   @p max_num_threads   or, following the discussion
-       * above, a       number of threads equal to the number of cores
-       * allocated to this MPI       process. However,
-       * MultithreadInfo::set_thread_limit()   in turn also       evaluates
-       * the environment variable DEAL_II_NUM_THREADS. Finally, the
+       *
+       * @note This function calls MultithreadInfo::set_thread_limit() with
+       * either @p max_num_threads or, following the discussion above, a
+       * number of threads equal to the number of cores allocated to this MPI
+       * process. However, MultithreadInfo::set_thread_limit() in turn also
+       * evaluates the environment variable DEAL_II_NUM_THREADS. Finally, the
        * worker threads can only be created on cores to which the current MPI
        * process has access to; some MPI implementations limit the number of
        * cores each process may access to one or a subset of cores in order to
@@ -872,13 +939,13 @@ namespace Utilities
        * that will really be created will be the minimum of the argument
        * passed here, the environment variable (if set), and the number of
        * cores accessible to the thread.
-       * @note     MultithreadInfo::set_thread_limit()   can only work if it
-       * is       called before any threads are created. The safest place for
-       * a call to       it is therefore at the beginning of
-       * <code>main()</code>  .       Consequently, this extends to the
-       * current class: the best place to       create an object of this type
-       * is also at or close to the top of         <code>main()</code>  .
        *
+       * @note MultithreadInfo::set_thread_limit() can only work if it is
+       * called before any threads are created. The safest place for a call to
+       * it is therefore at the beginning of <code>main()</code>.
+       * Consequently, this extends to the current class: the best place to
+       * create an object of this type is also at or close to the top of
+       * <code>main()</code>.
        */
       MPI_InitFinalize(
         int &              argc,
@@ -888,67 +955,64 @@ namespace Utilities
       /**
        * Destructor. Calls <tt>MPI_Finalize()</tt> in case this class owns the
        * MPI process.
-       *
        */
       ~MPI_InitFinalize();
 
       /**
-       * Register a reference to an MPI_Request       on which we need to call
-       * `MPI_Wait` before calling `MPI_Finalize`.             The object   @p
-       * request   needs to exist when MPI_Finalize is called, which means the
-       * request is typically statically allocated. Otherwise, you need to
-       * call       unregister_request() before the request goes out of scope.
-       * Note that it       is acceptable for a request to be already waited
-       * on (and consequently       reset to MPI_REQUEST_NULL).             It
-       * is acceptable to call this function more than once with the same
-       * instance (as it is done in the example below).             Typically,
-       * this function is used by CollectiveMutex and not directly,       but
-       * it can also be used directly like this:
+       * Register a reference to an MPI_Request
+       * on which we need to call `MPI_Wait` before calling `MPI_Finalize`.
+       *
+       * The object @p request needs to exist when MPI_Finalize is called, which means the
+       * request is typically statically allocated. Otherwise, you need to call
+       * unregister_request() before the request goes out of scope. Note that it
+       * is acceptable for a request to be already waited on (and consequently
+       * reset to MPI_REQUEST_NULL).
+       *
+       * It is acceptable to call this function more than once with the same
+       * instance (as it is done in the example below).
+       *
+       * Typically, this function is used by CollectiveMutex and not directly,
+       * but it can also be used directly like this:
        * @code
        * void my_fancy_communication()
        * {
-       * static MPI_Request request = MPI_REQUEST_NULL;
-       * MPI_InitFinalize::register_request(request);
-       * MPI_Wait(&request, MPI_STATUS_IGNORE);
-       * // [some algorithm that is not safe to be executed twice in a row.]
-       * MPI_IBarrier(comm, &request);
+       *   static MPI_Request request = MPI_REQUEST_NULL;
+       *   MPI_InitFinalize::register_request(request);
+       *   MPI_Wait(&request, MPI_STATUS_IGNORE);
+       *   // [some algorithm that is not safe to be executed twice in a row.]
+       *   MPI_IBarrier(comm, &request);
        * }
        * @endcode
-       *
-       *
        */
       static void
       register_request(MPI_Request &request);
 
       /**
        * Unregister a request previously added using register_request().
-       *
        */
       static void
       unregister_request(MPI_Request &request);
 
       /**
-       * A structure that has   boost::signal   objects to register a call
-       * back       to run after MPI init or finalize.             For
-       * documentation on signals, see
-       * http://www.boost.org/doc/libs/release/libs/signals2 .
+       * A structure that has boost::signal objects to register a call back
+       * to run after MPI init or finalize.
        *
+       * For documentation on signals, see
+       * http://www.boost.org/doc/libs/release/libs/signals2 .
        */
       struct Signals
       {
         /**
          * A signal that is triggered immediately after we have
-         * initialized the MPI context with   <code>MPI_Init()</code>  .
-         *
+         * initialized the MPI context with <code>MPI_Init()</code>.
          */
         boost::signals2::signal<void()> at_mpi_init;
 
         /**
          * A signal that is triggered just before we close the MPI context
-         * with   <code>MPI_Finalize()</code>  . It can be used to deallocate
+         * with <code>MPI_Finalize()</code>. It can be used to deallocate
          * statically allocated MPI resources that need to be deallocated
-         * before   <code>MPI_Finalize()</code>   is called.
-         *
+         * before <code>MPI_Finalize()</code> is called.
          */
         boost::signals2::signal<void()> at_mpi_finalize;
       };
@@ -958,38 +1022,40 @@ namespace Utilities
     private:
       /**
        * Requests to MPI_Wait before finalizing
-       *
        */
       static std::set<MPI_Request *> requests;
     };
 
     /**
      * Return whether (i) deal.II has been compiled to support MPI (for
-     * example by compiling with   <code>CXX=mpiCC</code>  ) and if so whether
-     * (ii)   <code>MPI_Init()</code>   has been called (for example using the
-     * Utilities::MPI::MPI_InitFinalize   class). In other words, the result
+     * example by compiling with <code>CXX=mpiCC</code>) and if so whether
+     * (ii) <code>MPI_Init()</code> has been called (for example using the
+     * Utilities::MPI::MPI_InitFinalize class). In other words, the result
      * indicates whether the current job is running under MPI.
-     * @note   The function does not take into account whether an MPI job
+     *
+     * @note The function does not take into account whether an MPI job
      * actually runs on more than one processor or is, in fact, a single-node
      * job that happens to run under MPI.
-     *
      */
     bool
     job_supports_mpi();
 
     /**
      * Initiate a some-to-some communication, and exchange arbitrary objects
-     * (the class T should be serializable using   boost::serialize)   between
-     * processors.           @param[in]   comm MPI communicator.
-     * @param[in]   objects_to_send A map from the rank (unsigned int) of the
-     * process meant to receive the data and the object to send (the type `T`
-     * must be serializable for this function to work properly). If this
-     * map contains an entry with a key equal to the rank of the current
-     * process (i.e., an instruction to a process to send data to itself),
-     * then this data item is simply copied to the returned object.
-     * @return   A map from the rank (unsigned int) of the process      which
-     * sent the data and object received.
+     * (the class T should be serializable using boost::serialize) between
+     * processors.
      *
+     * @param[in] comm MPI communicator.
+     *
+     * @param[in] objects_to_send A map from the rank (unsigned int) of the
+     *  process meant to receive the data and the object to send (the type `T`
+     *  must be serializable for this function to work properly). If this
+     *  map contains an entry with a key equal to the rank of the current
+     *  process (i.e., an instruction to a process to send data to itself),
+     *  then this data item is simply copied to the returned object.
+     *
+     * @return A map from the rank (unsigned int) of the process
+     *  which sent the data and object received.
      */
     template <typename T>
     std::map<unsigned int, T>
@@ -998,14 +1064,16 @@ namespace Utilities
 
     /**
      * A generalization of the classic MPI_Allgather function, that accepts
-     * arbitrary data types T, as long as   boost::serialize   accepts T as an
-     * argument.           @param[in]   comm MPI communicator.
-     * @param[in]   object_to_send An object to send to all other processes
-     * @return   A vector of objects, with size equal to the number of
-     * processes in the MPI communicator. Each entry contains the object
-     * received from the processor with the corresponding rank within the
-     * communicator.
+     * arbitrary data types T, as long as boost::serialize accepts T as an
+     * argument.
      *
+     * @param[in] comm MPI communicator.
+     * @param[in] object_to_send An object to send to all other processes
+     *
+     * @return A vector of objects, with size equal to the number of
+     *  processes in the MPI communicator. Each entry contains the object
+     *  received from the processor with the corresponding rank within the
+     *  communicator.
      */
     template <typename T>
     std::vector<T>
@@ -1013,17 +1081,18 @@ namespace Utilities
 
     /**
      * A generalization of the classic MPI_Gather function, that accepts
-     * arbitrary data types T, as long as   boost::serialize   accepts T as an
-     * argument.           @param[in]   comm MPI communicator.
-     * @param[in]   object_to_send an object to send to the root process
-     * @param[in]   root_process The process, which receives the objects from
-     * all     processes. By default the process with rank 0 is the root
-     * process.           @return   The   @p root_process   receives a vector
-     * of objects, with size equal to the number of      processes in the MPI
-     * communicator. Each entry contains the object      received from the
-     * processor with the corresponding rank within the      communicator. All
-     * other processes receive an empty vector.
+     * arbitrary data types T, as long as boost::serialize accepts T as an
+     * argument.
      *
+     * @param[in] comm MPI communicator.
+     * @param[in] object_to_send an object to send to the root process
+     * @param[in] root_process The process, which receives the objects from all
+     * processes. By default the process with rank 0 is the root process.
+     *
+     * @return The @p root_process receives a vector of objects, with size equal to the number of
+     *  processes in the MPI communicator. Each entry contains the object
+     *  received from the processor with the corresponding rank within the
+     *  communicator. All other processes receive an empty vector.
      */
     template <typename T>
     std::vector<T>
@@ -1032,19 +1101,22 @@ namespace Utilities
            const unsigned int root_process = 0);
 
     /**
-     * Sends an object   @p object_to_send   from the process   @p
-     * root_process       to all other processes.         A generalization of
-     * the classic `MPI_Bcast` function that accepts     arbitrary data types
-     * `T`, as long as   Utilities::pack()   (which in turn     uses
-     * `boost::serialize`,   see in   Utilities::pack()   for details) accepts
-     * `T` as an argument.           @param[in]   comm MPI communicator.
-     * @param[in]   object_to_send An object to send to all processes.
-     * @param[in]   root_process The process that sends the object to all
-     * processes. By default the process with rank 0 is the root process.
-     * @return   On the root process, return a copy of   @p object_to_send.
-     * On every other process, return a copy of the object sent by       the
-     * @p root_process.
+     * Sends an object @p object_to_send from the process @p root_process
+     * to all other processes.
      *
+     * A generalization of the classic `MPI_Bcast` function that accepts
+     * arbitrary data types `T`, as long as Utilities::pack() (which in turn
+     * uses `boost::serialize`, see in Utilities::pack() for details) accepts
+     * `T` as an argument.
+     *
+     * @param[in] comm MPI communicator.
+     * @param[in] object_to_send An object to send to all processes.
+     * @param[in] root_process The process that sends the object to all
+     * processes. By default the process with rank 0 is the root process.
+     *
+     * @return On the root process, return a copy of @p object_to_send.
+     *   On every other process, return a copy of the object sent by
+     *   the @p root_process.
      */
     template <typename T>
     T
@@ -1053,16 +1125,16 @@ namespace Utilities
               const unsigned int root_process = 0);
 
     /**
-     * A function that combines values   @p local_value   from all processes
-     * via a user-specified binary operation   @p combiner   on the   @p
-     * root_process.       As such this function is similar to MPI_Reduce (and
-     * Utilities::MPI::min/max()):   however on the one hand due to the
+     * A function that combines values @p local_value from all processes
+     * via a user-specified binary operation @p combiner on the @p root_process.
+     * As such this function is similar to MPI_Reduce (and
+     * Utilities::MPI::min/max()): however on the one hand due to the
      * user-specified binary operation it is slower for built-in types but
      * on the other hand general object types, including ones that store
-     * variable amounts of data, can be handled.         In contrast to
-     * all_reduce, the result will be only available on a     single rank. On
-     * all other processes, the returned value is undefined.
+     * variable amounts of data, can be handled.
      *
+     * In contrast to all_reduce, the result will be only available on a
+     * single rank. On all other processes, the returned value is undefined.
      */
     template <typename T>
     T
@@ -1072,14 +1144,13 @@ namespace Utilities
            const unsigned int                            root_process = 0);
 
     /**
-     * A function that combines values   @p local_value   from all processes
-     * via a user-specified binary operation   @p combiner   and distributes
-     * the     result back to all processes. As such this function is similar
-     * to     MPI_Allreduce (if it were implemented by a global reduction
-     * followed     by a broadcast step) but due to the user-specified binary
-     * operation also     general object types, including ones that store
-     * variable amounts of data,     can be handled.
-     *
+     * A function that combines values @p local_value from all processes
+     * via a user-specified binary operation @p combiner and distributes the
+     * result back to all processes. As such this function is similar to
+     * MPI_Allreduce (if it were implemented by a global reduction followed
+     * by a broadcast step) but due to the user-specified binary operation also
+     * general object types, including ones that store variable amounts of data,
+     * can be handled.
      */
     template <typename T>
     T
@@ -1088,41 +1159,46 @@ namespace Utilities
                const std::function<T(const T &, const T &)> &combiner);
 
     /**
-     * Given a partitioned index set space, compute the owning MPI process
-     * rank     of each element of a second index set according to the
-     * partitioned index     set. A natural usage of this function is to
-     * compute for each ghosted     degree of freedom the MPI rank of the
-     * process owning that index.         One might think: "But we know which
-     * rank a ghost DoF belongs to based on     the subdomain id of the cell
-     * it is on". But this heuristic fails for DoFs     on interfaces between
-     * ghost cells with different subdomain_ids, or     between a ghost cell
-     * and an artificial cell. Furthermore, this function     enables a
-     * completely abstract exchange of information without the help of     the
-     * mesh in terms of neighbors.         The first argument passed to this
-     * function,   @p owned_indices,   must     uniquely partition an index
-     * space between all processes.     Otherwise, there are no limitations on
-     * this argument: In particular,     there is no need in partitioning
+     * Given a partitioned index set space, compute the owning MPI process rank
+     * of each element of a second index set according to the partitioned index
+     * set. A natural usage of this function is to compute for each ghosted
+     * degree of freedom the MPI rank of the process owning that index.
+     *
+     * One might think: "But we know which rank a ghost DoF belongs to based on
+     * the subdomain id of the cell it is on". But this heuristic fails for DoFs
+     * on interfaces between ghost cells with different subdomain_ids, or
+     * between a ghost cell and an artificial cell. Furthermore, this function
+     * enables a completely abstract exchange of information without the help of
+     * the mesh in terms of neighbors.
+     *
+     * The first argument passed to this function, @p owned_indices, must
+     * uniquely partition an index space between all processes.
+     * Otherwise, there are no limitations on this argument: In particular,
+     * there is no need in partitioning
      * the index space into contiguous subsets. Furthermore, there are no
-     * limitations     on the second index set   @p indices_to_look_up   as
-     * long as the size matches     the first one. It can be chosen
-     * arbitrarily and independently on each     process. In the case that the
-     * second index set also contains locally     owned indices, these indices
-     * will be treated correctly and the rank of     this process is returned
-     * for those entries.
-     * @note   This is a collective operation: all processes within the given
+     * limitations
+     * on the second index set @p indices_to_look_up as long as the size matches
+     * the first one. It can be chosen arbitrarily and independently on each
+     * process. In the case that the second index set also contains locally
+     * owned indices, these indices will be treated correctly and the rank of
+     * this process is returned for those entries.
+     *
+     * @note This is a collective operation: all processes within the given
      * communicator have to call this function. Since this function does not
      * use MPI_Alltoall or MPI_Allgather, but instead uses non-blocking
      * point-to-point communication instead, and only a single non-blocking
      * barrier, it reduces the memory consumption significantly. This function
      * is suited for large-scale simulations with >100k MPI ranks.
-     * @param[in]   owned_indices Index set with indices locally owned by this
-     * process.       @param[in]   indices_to_look_up Index set containing
-     * indices of which the                user is interested the rank of the
-     * owning process.       @param[in]   comm MPI communicator.
-     * @return   List containing the MPI process rank for each entry in the
-     * index             set   @p indices_to_look_up.   The order coincides
-     * with the order             within the ElementIterator.
      *
+     * @param[in] owned_indices Index set with indices locally owned by this
+     *            process.
+     * @param[in] indices_to_look_up Index set containing indices of which the
+     *            user is interested the rank of the owning process.
+     * @param[in] comm MPI communicator.
+     *
+     * @return List containing the MPI process rank for each entry in the index
+     *         set @p indices_to_look_up. The order coincides with the order
+     *         within the ElementIterator.
      */
     std::vector<unsigned int>
     compute_index_owner(const IndexSet &owned_indices,
@@ -1130,19 +1206,18 @@ namespace Utilities
                         const MPI_Comm &comm);
 
     /**
-     * Compute the union of the input vectors   @p vec   of all processes in
-     * the       MPI communicator   @p comm.
-     * @note   This is a collective operation. The result will available on
-     * all       processes.
+     * Compute the union of the input vectors @p vec of all processes in the
+     *   MPI communicator @p comm.
      *
+     * @note This is a collective operation. The result will available on all
+     *   processes.
      */
     template <typename T>
     std::vector<T>
     compute_set_union(const std::vector<T> &vec, const MPI_Comm &comm);
 
     /**
-     * The same as above but for   std::set.
-     *
+     * The same as above but for std::set.
      */
     template <typename T>
     std::set<T>
@@ -1259,7 +1334,7 @@ namespace Utilities
             {
               const auto &rank   = rank_obj.first;
               buffers_to_send[i] = Utilities::pack(rank_obj.second,
-                                                    /*allow_compression=*/ false);
+                                                   /*allow_compression=*/false);
               const int ierr     = MPI_Isend(buffers_to_send[i].data(),
                                          buffers_to_send[i].size(),
                                          MPI_CHAR,
@@ -1306,7 +1381,7 @@ namespace Utilities
                      "I should not receive again from this rank"));
             received_objects[rank] =
               Utilities::unpack<T>(buffer,
-                                    /*allow_compression=*/ false);
+                                   /*allow_compression=*/false);
           }
       }
 

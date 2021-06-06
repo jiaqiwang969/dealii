@@ -1,4 +1,4 @@
-//// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
 //
@@ -33,7 +33,6 @@ namespace Utilities
 {
   /**
    * A namespace for utility structures for CUDA.
-   *
    */
   namespace CUDA
   {
@@ -41,53 +40,45 @@ namespace Utilities
      * Various CUDA APIs need an object to store internal data. This structure
      * creates, initializes, stores, and destroys these so-called handles for
      * the respective CUDA libraries used inside deal.II.
-     *
      */
     struct Handle
     {
       /**
        * Constructor. Initialize the handles for the different libraries.
-       *
        */
       Handle();
 
       /**
        * Copy constructor is deleted.
-       *
        */
       Handle(Handle const &) = delete;
 
       /**
        * Destructor. Destroy the handles.
-       *
        */
       ~Handle();
 
       /**
-       * Pointer to an opaque cuSolverDN context.       The handle must be
-       * passed to every cuSolverDN library function.
-       *
+       * Pointer to an opaque cuSolverDN context.
+       * The handle must be passed to every cuSolverDN library function.
        */
       cusolverDnHandle_t cusolver_dn_handle;
 
       /**
-       * Pointer to an opaque cuSolverSP context.       The handle must be
-       * passed to every cuSolverSP library function.
-       *
+       * Pointer to an opaque cuSolverSP context.
+       * The handle must be passed to every cuSolverSP library function.
        */
       cusolverSpHandle_t cusolver_sp_handle;
 
       /**
-       * Pointer to an opaque cuSPARSE context.       The handle must be
-       * passed to every cuSPARSE library function.
-       *
+       * Pointer to an opaque cuSPARSE context.
+       * The handle must be passed to every cuSPARSE library function.
        */
       cusparseHandle_t cusparse_handle;
     };
 
     /**
-     * Allocate   @p n_elements   on the device.
-     *
+     * Allocate @p n_elements on the device.
      */
     template <typename T>
     inline void
@@ -100,7 +91,6 @@ namespace Utilities
 
     /**
      * Free memory on the device.
-     *
      */
     template <typename T>
     inline void
@@ -112,9 +102,7 @@ namespace Utilities
     }
 
     /**
-     * Allocator to be used for   `std::unique_ptr`   pointing to device
-     * memory.
-     *
+     * Allocator to be used for `std::unique_ptr` pointing to device memory.
      */
     template <typename Number>
     Number *
@@ -126,8 +114,7 @@ namespace Utilities
     }
 
     /**
-     * Deleter to be used for   `std::unique_ptr`   pointing to device memory.
-     *
+     * Deleter to be used for `std::unique_ptr` pointing to device memory.
      */
     template <typename Number>
     void
@@ -138,8 +125,7 @@ namespace Utilities
     }
 
     /**
-     * Copy the device ArrayView   @p in   to the host ArrayView   @p out.
-     *
+     * Copy the device ArrayView @p in to the host ArrayView @p out.
      */
     template <typename T>
     inline void
@@ -155,8 +141,7 @@ namespace Utilities
     }
 
     /**
-     * Copy the host ArrayView   @p in   to the device ArrayView   @p out.
-     *
+     * Copy the host ArrayView @p in to the device ArrayView @p out.
      */
     template <typename T>
     inline void
@@ -172,9 +157,7 @@ namespace Utilities
     }
 
     /**
-     * Copy the elements in   @p pointer_dev   to the host in   @p
-     * vector_host.
-     *
+     * Copy the elements in @p pointer_dev to the host in @p vector_host.
      */
     template <typename T>
     inline void
@@ -186,10 +169,8 @@ namespace Utilities
     }
 
     /**
-     * Copy the elements in   @p vector_host   to the device in   @p
-     * pointer_dev.   The     memory needs to be allocate on the device before
-     * this function is called.
-     *
+     * Copy the elements in @p vector_host to the device in @p pointer_dev. The
+     * memory needs to be allocate on the device before this function is called.
      */
     template <typename T>
     inline void
